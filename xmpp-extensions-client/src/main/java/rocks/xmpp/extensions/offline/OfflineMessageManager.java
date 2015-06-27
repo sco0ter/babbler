@@ -36,7 +36,9 @@ import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.offline.model.OfflineMessage;
 import rocks.xmpp.extensions.offline.model.OfflineMessageHeader;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -131,7 +133,7 @@ public final class OfflineMessageManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0013.html#remove-specific">2.5 Removing Specific Messages</a>
      */
     public void removeMessages(String... ids) throws XmppException {
-        List<OfflineMessage.Item> items = new ArrayList<>();
+        Collection<OfflineMessage.Item> items = new ArrayDeque<>();
         for (String id : ids) {
             items.add(new OfflineMessage.Item(id, OfflineMessage.Item.Action.REMOVE));
         }

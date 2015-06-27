@@ -30,7 +30,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * An implementation of the SOCKS5 protocol as used by XMPP.
@@ -148,7 +148,7 @@ final class Socks5Protocol {
      * @return The connection id.
      * @throws java.io.IOException If a SOCKS5 protocol violation occurred.
      */
-    static String establishServerConnection(Socket socket, List<String> allowedAddresses) throws IOException {
+    static String establishServerConnection(Socket socket, Collection<String> allowedAddresses) throws IOException {
 
         DataInputStream inputStream = new DataInputStream(socket.getInputStream());
         OutputStream outputStream = socket.getOutputStream();

@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.reach.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -46,7 +47,7 @@ public final class Reachability {
 
     private final List<Address> addr = new ArrayList<>();
 
-    public Reachability(List<Address> addresses) {
+    public Reachability(Collection<Address> addresses) {
         this.addr.addAll(addresses);
     }
 

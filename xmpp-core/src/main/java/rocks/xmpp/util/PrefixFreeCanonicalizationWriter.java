@@ -29,7 +29,7 @@ import javax.xml.namespace.NamespaceContext;
 import javax.xml.soap.SOAPConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -264,7 +264,7 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
      */
     private static class ContentNamespaceContext implements NamespaceContext {
 
-        private static final Collection<String> PREFIXED_NAMESPACES = new ArrayList<>(Arrays.asList(SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE, SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE));
+        private static final Collection<String> PREFIXED_NAMESPACES = new ArrayDeque<>(Arrays.asList(SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE, SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE));
 
         /**
          * This is the default content namespace.

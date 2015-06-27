@@ -34,8 +34,8 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.items.Item;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.concurrent.Executors;
 
 /**
@@ -65,7 +65,7 @@ public class DiscoSampleUser1 {
                 // Login
                 xmppSession.login("111", "111", "disco");
 
-                List<Item> myItems = new ArrayList<>();
+                Collection<Item> myItems = new ArrayDeque<>();
                 for (int i = 0; i < 100; i++) {
                     myItems.add(new Item(Jid.valueOf("test"), "myNode" + i, "test" + i));
                 }

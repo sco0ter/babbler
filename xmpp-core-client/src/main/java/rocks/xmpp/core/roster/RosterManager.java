@@ -48,6 +48,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -140,13 +141,13 @@ public final class RosterManager extends Manager {
      * @return All contacts.
      */
     private static Collection<Contact> collectAllContactsInGroup(ContactGroup contactGroup) {
-        Collection<Contact> contacts = new ArrayList<>();
+        Collection<Contact> contacts = new ArrayDeque<>();
         // First, add all contact from this group.
         for (Contact contact : contactGroup.getContacts()) {
             addContactIfNotExists(contact, contacts);
         }
         // Then add all contacts from the subgroups
-        Collection<Contact> contactsInSubGroups = new ArrayList<>();
+        Collection<Contact> contactsInSubGroups = new ArrayDeque<>();
         for (ContactGroup subGroup : contactGroup.getGroups()) {
             contactsInSubGroups.addAll(collectAllContactsInGroup(subGroup));
         }
@@ -201,7 +202,7 @@ public final class RosterManager extends Manager {
      */
     public final Collection<Contact> getContacts() {
         // return defensive copies of mutable internal fields
-        return Collections.unmodifiableCollection(new ArrayList<>(contactMap.values()));
+        return Collections.unmodifiableCollection(new ArrayDeque<>(contactMap.values()));
     }
 
     /**
@@ -344,7 +345,7 @@ public final class RosterManager extends Manager {
      * @param contactGroups The contact groups.
      */
     private void removeContactsFromGroups(Contact contact, Collection<ContactGroup> contactGroups) {
-        List<ContactGroup> emptyGroups = new ArrayList<>();
+        Collection<ContactGroup> emptyGroups = new ArrayDeque<>();
         // Recursively remove the contact from the nested subgroups.
         // If the nested group is empty, it can be removed.
         contactGroups.stream().filter(group -> removeRecursively(contact, group)).forEach(group -> {
@@ -581,7 +582,7 @@ public final class RosterManager extends Manager {
         }
 
         for (Contact contact : contactGroup.getContacts()) {
-            List<String> newGroups = new ArrayList<>(contact.getGroups());
+            Collection<String> newGroups = new ArrayDeque<>(contact.getGroups());
             newGroups.remove(contactGroup.getFullName());
             newGroups.add(newName);
             // Only do a roster update, if the groups have really changed.

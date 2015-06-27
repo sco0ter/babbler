@@ -58,7 +58,7 @@ import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
 import rocks.xmpp.extensions.privatedata.rosternotes.model.Annotation;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -71,7 +71,7 @@ import java.util.Collection;
  */
 public class CoreContext {
 
-    private final Collection<Extension> extensions = new ArrayList<>();
+    private final Collection<Extension> extensions = new ArrayDeque<>();
 
     public CoreContext(Class<?>... extensions) {
         this(Arrays.asList(extensions).stream().map(Extension::of).toArray(Extension[]::new));

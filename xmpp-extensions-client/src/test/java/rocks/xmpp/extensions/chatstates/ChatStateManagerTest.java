@@ -37,7 +37,7 @@ import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Collection;
 
 /**
@@ -53,7 +53,7 @@ public class ChatStateManagerTest extends ExtensionTest {
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         XmppSession xmppSession2 = new TestXmppSession(JULIET.asBareJid(), mockServer);
 
-        final Collection<ChatState> chatStatesReceived = new ArrayList<>();
+        final Collection<ChatState> chatStatesReceived = new ArrayDeque<>();
         xmppSession2.addInboundMessageListener(e -> {
             ChatState chatState = e.getMessage().getExtension(ChatState.class);
             if (chatState != null) {

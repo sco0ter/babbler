@@ -39,8 +39,8 @@ import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
 import rocks.xmpp.extensions.muc.model.Muc;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.concurrent.Executors;
 
 /**
@@ -73,7 +73,7 @@ public class ExternalComponentSample {
                 myComponent.addIQHandler(LanguageSupport.class, new AbstractIQHandler(IQ.Type.GET) {
                     @Override
                     protected IQ processRequest(IQ iq) {
-                        List<LanguageSupport.Item> items = new ArrayList<>();
+                        Collection<LanguageSupport.Item> items = new ArrayDeque<>();
                         items.add(new LanguageSupport.Item("en", Jid.valueOf(myComponent.getDomain()), "de", "testEngine", true, null));
                         return iq.createResult(new LanguageSupport(items));
                     }
@@ -83,7 +83,7 @@ public class ExternalComponentSample {
                     @Override
                     protected IQ processRequest(IQ iq) {
 
-                        List<LanguageTranslation.Translation> translations = new ArrayList<>();
+                        Collection<LanguageTranslation.Translation> translations = new ArrayDeque<>();
                         LanguageTranslation translation = iq.getExtension(LanguageTranslation.class);
 
                         for (LanguageTranslation.Translation t : translation.getTranslations()) {

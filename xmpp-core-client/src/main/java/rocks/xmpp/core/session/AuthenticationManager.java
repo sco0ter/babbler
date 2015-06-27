@@ -41,6 +41,7 @@ import javax.security.sasl.SaslClient;
 import javax.security.sasl.SaslException;
 import java.security.Provider;
 import java.security.Security;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -104,7 +105,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
     final void startAuthentication(Collection<String> mechanisms, String authorizationId, CallbackHandler callbackHandler) throws StreamNegotiationException {
         synchronized (this) {
             try {
-                Collection<String> clientMechanisms = new ArrayList<>(mechanisms);
+                Collection<String> clientMechanisms = new ArrayDeque<>(mechanisms);
 
                 // Retain only the server-supported mechanisms.
                 clientMechanisms.retainAll(supportedMechanisms);

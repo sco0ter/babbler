@@ -29,6 +29,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,7 +46,7 @@ final class LocalSocks5Server {
 
     private static final Logger logger = Logger.getLogger(LocalSocks5Server.class.getName());
 
-    final List<String> allowedAddresses = new CopyOnWriteArrayList<>();
+    final Collection<String> allowedAddresses = new CopyOnWriteArrayList<>();
 
     private int port = 1080; // The default port for SOCKS5.
 

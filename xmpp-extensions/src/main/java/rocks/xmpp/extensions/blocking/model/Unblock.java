@@ -28,6 +28,7 @@ import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +50,7 @@ public final class Unblock {
     /**
      * @param unblockedItems The unblocked items.
      */
-    public Unblock(List<Jid> unblockedItems) {
+    public Unblock(Collection<Jid> unblockedItems) {
         this.item.addAll(unblockedItems.stream().map(Item::new).collect(Collectors.toList()));
     }
 

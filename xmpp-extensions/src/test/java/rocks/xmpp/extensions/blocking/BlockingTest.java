@@ -36,8 +36,8 @@ import rocks.xmpp.extensions.blocking.model.Unblock;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Collection;
 
 /**
  * @author Christian Schudt
@@ -65,7 +65,7 @@ public class BlockingTest extends XmlTest {
 
     @Test
     public void marshalBlock() throws JAXBException, XMLStreamException {
-        List<Jid> items = new ArrayList<>();
+        Collection<Jid> items = new ArrayDeque<>();
         items.add(Jid.valueOf("romeo@montague.net"));
         IQ iq = new IQ(IQ.Type.SET, new Block(items), "1");
         String xml = marshal(iq);
@@ -74,7 +74,7 @@ public class BlockingTest extends XmlTest {
 
     @Test
     public void marshalUnblock() throws JAXBException, XMLStreamException {
-        List<Jid> items = new ArrayList<>();
+        Collection<Jid> items = new ArrayDeque<>();
         items.add(Jid.valueOf("romeo@montague.net"));
         IQ iq = new IQ(IQ.Type.SET, new Unblock(items), "1");
         String xml = marshal(iq);

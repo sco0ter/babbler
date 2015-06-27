@@ -35,9 +35,9 @@ import rocks.xmpp.extensions.rpc.model.Value;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -130,7 +130,7 @@ public class RpcMethodCallTest extends XmlTest {
 
     @Test
     public void marshalRpcMethodCallWithArray() throws JAXBException, XMLStreamException {
-        List<Value> values = new ArrayList<>();
+        Collection<Value> values = new ArrayDeque<>();
         values.add(new Value(1));
         values.add(new Value(2));
         Rpc rpc = new Rpc("testMethod", new Value(values));

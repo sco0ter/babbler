@@ -33,8 +33,9 @@ import rocks.xmpp.extensions.address.model.Addresses;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Collection;
+
 
 /**
  * @author Christian Schudt
@@ -47,7 +48,7 @@ public class AddressTest extends XmlTest {
 
     @Test
     public void marshalAddresses() throws JAXBException, XMLStreamException {
-        List<Address> addressList = new ArrayList<>();
+        Collection<Address> addressList = new ArrayDeque<>();
         addressList.add(new Address(Address.Type.TO, Jid.valueOf("hildjj@jabber.org/Work"), "description", "node"));
         addressList.add(new Address(Address.Type.CC, Jid.valueOf("jer@jabber.org/Home")));
         Addresses addresses = new Addresses(addressList);

@@ -50,7 +50,9 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -418,12 +420,12 @@ public final class EntityCapabilitiesManager extends Manager {
                                 // If the response had duplicates, just check the hash.
 
                                 // 3.5 If the response includes more than one extended service discovery information form with the same FORM_TYPE or the FORM_TYPE field contains more than one <value/> element with different XML character data, consider the entire response to be ill-formed.
-                                List<String> ftValues = new ArrayList<>();
+                                Collection<String> ftValues = new ArrayDeque<>();
                                 for (DataForm dataForm : infoDiscovery.getExtensions()) {
                                     DataForm.Field formType = dataForm.findField(DataForm.FORM_TYPE);
                                     // 3.6 If the response includes an extended service discovery information form where the FORM_TYPE field is not of type "hidden" or the form does not include a FORM_TYPE field, ignore the form but continue processing.
                                     if (formType != null && formType.getType() == DataForm.Field.Type.HIDDEN && !formType.getValues().isEmpty()) {
-                                        List<String> values = new ArrayList<>();
+                                        Collection<String> values = new ArrayDeque<>();
                                         for (String value : formType.getValues()) {
                                             if (values.contains(value)) {
                                                 // ill-formed

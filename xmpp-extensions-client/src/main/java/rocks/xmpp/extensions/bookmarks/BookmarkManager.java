@@ -35,6 +35,7 @@ import rocks.xmpp.extensions.bookmarks.model.WebPageBookmark;
 import rocks.xmpp.extensions.privatedata.PrivateDataManager;
 
 import java.net.URL;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -87,7 +88,7 @@ public final class BookmarkManager extends Manager {
      */
     public final void addBookmark(Bookmark bookmark) throws XmppException {
         BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
-        List<Bookmark> bookmarks = new ArrayList<>(bookmarkStorage.getBookmarks());
+        Collection<Bookmark> bookmarks = new ArrayDeque<>(bookmarkStorage.getBookmarks());
         bookmarks.remove(bookmark);
         bookmarks.add(bookmark);
         privateDataManager.storeData(new BookmarkStorage(bookmarks));
@@ -102,7 +103,7 @@ public final class BookmarkManager extends Manager {
      */
     public final void removeChatRoomBookmark(Jid chatRoom) throws XmppException {
         BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
-        List<Bookmark> bookmarks = new ArrayList<>(bookmarkStorage.getBookmarks());
+        Collection<Bookmark> bookmarks = new ArrayDeque<>(bookmarkStorage.getBookmarks());
         bookmarks.remove(new ChatRoomBookmark("", chatRoom));
         privateDataManager.storeData(new BookmarkStorage(bookmarks));
     }
@@ -116,7 +117,7 @@ public final class BookmarkManager extends Manager {
      */
     public final void removeWebPageBookmark(URL webPage) throws XmppException {
         BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
-        List<Bookmark> bookmarks = new ArrayList<>(bookmarkStorage.getBookmarks());
+        Collection<Bookmark> bookmarks = new ArrayDeque<>(bookmarkStorage.getBookmarks());
         bookmarks.remove(new WebPageBookmark("", webPage));
         privateDataManager.storeData(new BookmarkStorage(bookmarks));
     }

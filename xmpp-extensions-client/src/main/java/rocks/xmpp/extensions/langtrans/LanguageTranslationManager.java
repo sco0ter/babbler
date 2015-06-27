@@ -12,6 +12,7 @@ import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.langtrans.model.LanguageTranslation;
 import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -77,7 +78,7 @@ public final class LanguageTranslationManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0171.html#request">4.3 Requesting a Translation from a Service</a>
      */
     public List<LanguageTranslation.Translation> translate(Jid translationProvider, String text, String sourceLanguage, String... destinationLanguage) throws XmppException {
-        Collection<LanguageTranslation.Translation> translations = new ArrayList<>();
+        Collection<LanguageTranslation.Translation> translations = new ArrayDeque<>();
         for (String dl : destinationLanguage) {
             translations.add(LanguageTranslation.Translation.ofDestinationLanguage(dl));
         }

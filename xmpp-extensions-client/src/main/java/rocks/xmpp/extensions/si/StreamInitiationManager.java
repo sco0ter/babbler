@@ -49,6 +49,7 @@ import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -256,7 +257,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
     }
 
     Collection<String> getSupportedStreamMethods() {
-        Collection<String> allStreamMethods = new ArrayList<>(Arrays.asList(Socks5ByteStream.NAMESPACE, InBandByteStream.NAMESPACE));
+        Collection<String> allStreamMethods = new ArrayDeque<>(Arrays.asList(Socks5ByteStream.NAMESPACE, InBandByteStream.NAMESPACE));
         allStreamMethods.retainAll(xmppSession.getEnabledFeatures());
         return allStreamMethods;
     }

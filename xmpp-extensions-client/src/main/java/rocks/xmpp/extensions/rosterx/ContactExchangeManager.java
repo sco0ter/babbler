@@ -43,6 +43,7 @@ import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 import rocks.xmpp.util.XmppUtils;
 
 import java.time.Instant;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -128,7 +129,7 @@ public final class ContactExchangeManager extends Manager {
         }
     }
 
-    List<ContactExchange.Item> getItemsToProcess(List<ContactExchange.Item> items) {
+    List<ContactExchange.Item> getItemsToProcess(Collection<ContactExchange.Item> items) {
         List<ContactExchange.Item> newItems = new ArrayList<>();
         for (ContactExchange.Item item : items) {
             Contact contact = xmppSession.getManager(RosterManager.class).getContact(item.getJid());
@@ -140,7 +141,7 @@ public final class ContactExchangeManager extends Manager {
 
                     // 3. If the item already exists in the roster but not in the specified group, the receiving application MAY prompt the user
                     // for approval and SHOULD edit the existing item so that will also belong to the specified group (in addition to the existing group, if any).
-                    List<String> specifiedGroups = new ArrayList<>(item.getGroups());
+                    Collection<String> specifiedGroups = new ArrayDeque<>(item.getGroups());
                     // Remove all existing groups.
                     specifiedGroups.removeAll(contact.getGroups());
                     // If there are still new groups.
@@ -158,7 +159,7 @@ public final class ContactExchangeManager extends Manager {
                 if (contact != null) {
                     // 2. If the item exists in the roster but not in the specified group, the receiving application MUST NOT prompt the user for approval and MUST NOT delete the existing item.
                     // 3. If the item exists in the roster and is in both the specified group and another group, the receiving application MAY prompt the user for approval and SHOULD edit the existing item so that it no longer belongs to the specified group.
-                    List<String> specifiedGroups = new ArrayList<>(item.getGroups());
+                    Collection<String> specifiedGroups = new ArrayDeque<>(item.getGroups());
                     // Retain only the groups, that exist in the roster.
                     specifiedGroups.retainAll(contact.getGroups());
                     if (!specifiedGroups.isEmpty() || contact.getGroups().isEmpty()) {
@@ -254,8 +255,8 @@ public final class ContactExchangeManager extends Manager {
                 rosterManager.addContact(new Contact(item.getJid(), item.getName(), item.getGroups()), true, null);
                 action = ContactExchange.Item.Action.ADD;
             } else {
-                List<String> newGroups = new ArrayList<>(contact.getGroups());
-                List<String> additionalGroups = new ArrayList<>(item.getGroups());
+                Collection<String> newGroups = new ArrayDeque<>(contact.getGroups());
+                Collection<String> additionalGroups = new ArrayDeque<>(item.getGroups());
                 // Remove all existing groups from the list.
                 additionalGroups.removeAll(newGroups);
                 if (!additionalGroups.isEmpty()) {
@@ -268,8 +269,8 @@ public final class ContactExchangeManager extends Manager {
             }
         } else if (item.getAction() == ContactExchange.Item.Action.DELETE) {
             if (contact != null) {
-                List<String> existingGroups = new ArrayList<>(contact.getGroups());
-                List<String> specifiedGroups = new ArrayList<>(item.getGroups());
+                Collection<String> existingGroups = new ArrayDeque<>(contact.getGroups());
+                Collection<String> specifiedGroups = new ArrayDeque<>(item.getGroups());
                 // Remove all specified groups from the existing groups.
                 existingGroups.removeAll(specifiedGroups);
                 // If there are still some groups left, only update the contact, but do not delete it.

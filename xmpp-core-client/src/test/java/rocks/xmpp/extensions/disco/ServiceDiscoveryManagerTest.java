@@ -38,9 +38,9 @@ import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Christian Schudt
@@ -136,7 +136,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
 
-        List<Item> items = new ArrayList<>();
+        Collection<Item> items = new ArrayDeque<>();
         for (int i = 0; i < 100; i++) {
             items.add(new Item(Jid.valueOf("test"), "item" + i));
         }
@@ -180,7 +180,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        List<Item> items = new ArrayList<>();
+        Collection<Item> items = new ArrayDeque<>();
         for (int i = 0; i < 30; i++) {
             items.add(new Item(Jid.valueOf("test"), "item" + i));
         }

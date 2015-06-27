@@ -33,7 +33,7 @@ import javax.xml.bind.JAXBException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -128,7 +128,7 @@ public final class XmppSessionConfiguration {
 
         this.extensions = new HashSet<>(context.getExtensions());
 
-        Collection<Class<?>> classesToBeBound = new ArrayList<>();
+        Collection<Class<?>> classesToBeBound = new ArrayDeque<>();
         for (Extension extension : extensions) {
             classesToBeBound.addAll(extension.getClasses());
         }

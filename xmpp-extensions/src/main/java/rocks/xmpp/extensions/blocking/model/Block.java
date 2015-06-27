@@ -28,6 +28,7 @@ import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +50,7 @@ public final class Block {
     /**
      * @param blockedItems The blocked items.
      */
-    public Block(List<Jid> blockedItems) {
+    public Block(Collection<Jid> blockedItems) {
         this.item.addAll(blockedItems.stream().map(Item::new).collect(Collectors.toList()));
     }
 

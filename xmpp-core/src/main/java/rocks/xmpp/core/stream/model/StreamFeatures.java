@@ -27,6 +27,7 @@ package rocks.xmpp.core.stream.model;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,7 +48,7 @@ public final class StreamFeatures implements StreamElement {
     private StreamFeatures() {
     }
 
-    public StreamFeatures(List<Object> features) {
+    public StreamFeatures(Collection<Object> features) {
         this.features.addAll(features);
     }
 

@@ -34,8 +34,9 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class ContactExchangeManagerTest extends ExtensionTest {
     public void testRosterItemAdditionWhenContactDoesNotExist() {
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
-        List<ContactExchange.Item> suggestedContacts = new ArrayList<>();
+        Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
         suggestedContacts.add(new ContactExchange.Item(Jid.valueOf("contact@example.net"), "juliet", Collections.singletonList("friends"), ContactExchange.Item.Action.ADD));
 
         List<ContactExchange.Item> items = contactExchangeManager.getItemsToProcess(suggestedContacts);
@@ -74,16 +75,16 @@ public class ContactExchangeManagerTest extends ExtensionTest {
 
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
-        List<ContactExchange.Item> suggestedContacts = new ArrayList<>();
+        Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
         suggestedContacts.add(new ContactExchange.Item(Jid.valueOf("juliet@example.net"), "juliet", Collections.singletonList("friends"), ContactExchange.Item.Action.ADD));
 
-        List<ContactExchange.Item> items = contactExchangeManager.getItemsToProcess(suggestedContacts);
+        Collection<ContactExchange.Item> items = contactExchangeManager.getItemsToProcess(suggestedContacts);
 
         // Contact already exists in roster (and in same group), therefore do nothing.
         Assert.assertEquals(items.size(), 0);
 
         // Contact already exists, but not in the suggested group
-        List<ContactExchange.Item> suggestedContacts2 = new ArrayList<>();
+        Collection<ContactExchange.Item> suggestedContacts2 = new ArrayDeque<>();
         suggestedContacts2.add(new ContactExchange.Item(Jid.valueOf("juliet@example.net"), "juliet", Collections.singletonList("newGroup"), ContactExchange.Item.Action.ADD));
 
         List<ContactExchange.Item> items2 = contactExchangeManager.getItemsToProcess(suggestedContacts2);
@@ -98,7 +99,7 @@ public class ContactExchangeManagerTest extends ExtensionTest {
     public void testRosterItemDeletionWhenContactDoesNotExist() throws Exception {
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
-        List<ContactExchange.Item> suggestedContacts = new ArrayList<>();
+        Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
         suggestedContacts.add(new ContactExchange.Item(Jid.valueOf("contact@example.net"), "juliet", Collections.singletonList("friends"), ContactExchange.Item.Action.DELETE));
 
         List<ContactExchange.Item> items = contactExchangeManager.getItemsToProcess(suggestedContacts);
@@ -111,7 +112,7 @@ public class ContactExchangeManagerTest extends ExtensionTest {
     public void testRosterItemDeletionWhenContactDoesExistButNotInSpecifiedGroup() throws Exception {
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
-        List<ContactExchange.Item> suggestedContacts = new ArrayList<>();
+        Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
         suggestedContacts.add(new ContactExchange.Item(Jid.valueOf("juliet@example.net"), "juliet", Collections.singletonList("otherGroup"), ContactExchange.Item.Action.DELETE));
 
         List<ContactExchange.Item> items = contactExchangeManager.getItemsToProcess(suggestedContacts);
@@ -125,7 +126,7 @@ public class ContactExchangeManagerTest extends ExtensionTest {
 
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
-        List<ContactExchange.Item> suggestedContacts = new ArrayList<>();
+        Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
         suggestedContacts.add(new ContactExchange.Item(Jid.valueOf("juliet@example.net"), "juliet", Arrays.asList("friends", "unknownGroup"), ContactExchange.Item.Action.DELETE));
 
         List<ContactExchange.Item> items = contactExchangeManager.getItemsToProcess(suggestedContacts);
@@ -142,7 +143,7 @@ public class ContactExchangeManagerTest extends ExtensionTest {
 
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
-        List<ContactExchange.Item> suggestedContacts = new ArrayList<>();
+        Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
         suggestedContacts.add(new ContactExchange.Item(Jid.valueOf("juliet@example.net"), "juliet", Collections.emptyList(), ContactExchange.Item.Action.DELETE));
 
         List<ContactExchange.Item> items = contactExchangeManager.getItemsToProcess(suggestedContacts);
@@ -156,7 +157,7 @@ public class ContactExchangeManagerTest extends ExtensionTest {
 
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
-        List<ContactExchange.Item> suggestedContacts = new ArrayList<>();
+        Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
         suggestedContacts.add(new ContactExchange.Item(Jid.valueOf("juliet@example.net"), "Juliet", Collections.singletonList("newGroup1"), ContactExchange.Item.Action.MODIFY));
 
         List<ContactExchange.Item> items = contactExchangeManager.getItemsToProcess(suggestedContacts);
@@ -174,7 +175,7 @@ public class ContactExchangeManagerTest extends ExtensionTest {
 
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
-        List<ContactExchange.Item> suggestedContacts = new ArrayList<>();
+        Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
         suggestedContacts.add(new ContactExchange.Item(Jid.valueOf("contact@example.net"), "contact", Collections.emptyList(), ContactExchange.Item.Action.MODIFY));
         suggestedContacts.add(new ContactExchange.Item(Jid.valueOf("romeo@example.net"), "romeo", Collections.emptyList(), ContactExchange.Item.Action.MODIFY));
 

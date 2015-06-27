@@ -39,7 +39,7 @@ import rocks.xmpp.extensions.reach.model.Address;
 import rocks.xmpp.extensions.reach.model.Reachability;
 import rocks.xmpp.util.XmppUtils;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -92,7 +92,7 @@ public final class ReachabilityManager extends Manager {
             if (presence.isAvailable() && presence.getTo() == null) {
                 synchronized (addresses) {
                     if (!addresses.isEmpty()) {
-                        presence.getExtensions().add(new Reachability(new ArrayList<>(addresses)));
+                        presence.getExtensions().add(new Reachability(new ArrayDeque<>(addresses)));
                     }
                 }
             }

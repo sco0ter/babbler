@@ -41,8 +41,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Collection;
 
 /**
  * @author Christian Schudt
@@ -63,7 +63,7 @@ public class PrefixFreeCanonicalizationWriterTest {
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
 
 
-        List<Contact> contacts = new ArrayList<>();
+        Collection<Contact> contacts = new ArrayDeque<>();
         contacts.add(new Contact(new Jid("domain")));
         Roster roster = new Roster(contacts);
         IQ iq = ClientIQ.from(new IQ(IQ.Type.GET, roster, "1"));

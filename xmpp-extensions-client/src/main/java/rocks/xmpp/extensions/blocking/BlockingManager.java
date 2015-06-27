@@ -37,6 +37,7 @@ import rocks.xmpp.extensions.blocking.model.BlockList;
 import rocks.xmpp.extensions.blocking.model.Unblock;
 import rocks.xmpp.util.XmppUtils;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -171,7 +172,7 @@ public final class BlockingManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#block">3.3 User Blocks Contact</a>
      */
     public final void blockContact(Jid... jids) throws XmppException {
-        List<Jid> items = new ArrayList<>();
+        Collection<Jid> items = new ArrayDeque<>();
         Collections.addAll(items, jids);
         xmppSession.query(new IQ(IQ.Type.SET, new Block(items)));
     }
@@ -186,7 +187,7 @@ public final class BlockingManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#unblockall">3.5 User Unblocks All Contacts</a>
      */
     public final void unblockContact(Jid... jids) throws XmppException {
-        List<Jid> items = new ArrayList<>();
+        Collection<Jid> items = new ArrayDeque<>();
         Collections.addAll(items, jids);
         xmppSession.query(new IQ(IQ.Type.SET, new Unblock(items)));
     }

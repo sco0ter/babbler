@@ -59,6 +59,7 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -530,60 +531,60 @@ public final class PubSub {
         return new PubSub(new Retract(node, new ItemElement(id), notify));
     }
 
-    public Default getDefault() {
+    public final Default getDefault() {
         if (type instanceof Default) {
             return (Default) type;
         }
         return null;
     }
 
-    public Subscription getSubscription() {
+    public final Subscription getSubscription() {
         if (type instanceof SubscriptionInfo) {
             return (SubscriptionInfo) type;
         }
         return null;
     }
 
-    public Options getOptions() {
+    public final Options getOptions() {
         return options;
     }
 
-    public List<Item> getItems() {
+    public final List<Item> getItems() {
         if (type instanceof Items) {
-            return Collections.unmodifiableList(new ArrayList<>(((Items) type).getItems()));
+            return Collections.unmodifiableList(new ArrayList<>(((Items) type).item));
         }
         return null;
     }
 
-    public Publish getPublish() {
+    public final Publish getPublish() {
         if (type instanceof Publish) {
             return (Publish) type;
         }
         return null;
     }
 
-    public DataForm getConfigurationForm() {
+    public final DataForm getConfigurationForm() {
         if (configure != null) {
-            return configure.getConfigurationForm();
+            return configure.dataForm;
         }
         return null;
     }
 
-    public List<Subscription> getSubscriptions() {
+    public final List<Subscription> getSubscriptions() {
         if (type instanceof Subscriptions) {
-            return Collections.unmodifiableList(new ArrayList<>(((Subscriptions) type).getSubscriptions()));
+            return Collections.unmodifiableList(new ArrayList<>(((Subscriptions) type).subscription));
         }
         return null;
     }
 
-    public List<Affiliation> getAffiliations() {
+    public final List<Affiliation> getAffiliations() {
         if (type instanceof AffiliationsElement) {
-            return Collections.unmodifiableList(new ArrayList<>(((AffiliationsElement) type).getAffiliations()));
+            return Collections.unmodifiableList(new ArrayList<>(((AffiliationsElement) type).affiliation));
         }
         return null;
     }
 
-    public String getNode() {
+    public final String getNode() {
         if (type != null) {
             return type.getNode();
         } else if (create != null) {
@@ -594,8 +595,8 @@ public final class PubSub {
         return null;
     }
 
-    public DataForm getPublishOptions() {
-        return publishOptions != null ? publishOptions.getDataForm() : null;
+    public final DataForm getPublishOptions() {
+        return publishOptions != null ? publishOptions.dataForm : null;
     }
 
     private static final class Create extends PubSubChildElement {
@@ -611,9 +612,10 @@ public final class PubSub {
     private static final class Subscribe extends PubSubChildElement {
 
         @XmlAttribute
-        private Jid jid;
+        private final Jid jid;
 
         private Subscribe() {
+            this(null, null);
         }
 
         private Subscribe(String node, Jid jid) {
@@ -627,31 +629,29 @@ public final class PubSub {
      *
      * @see #withOptions(String, Jid, String, rocks.xmpp.extensions.data.model.DataForm)
      */
-    public static final class Options {
+    public static final class Options extends PubSubChildElement {
         @XmlAttribute
-        private String node;
+        private final Jid jid;
 
         @XmlAttribute
-        private Jid jid;
-
-        @XmlAttribute
-        private String subid;
+        private final String subid;
 
         @XmlElementRef
-        private DataForm dataForm;
+        private final DataForm dataForm;
 
         private Options() {
+            this(null, null, null, null);
         }
 
         private Options(String node, Jid jid, String subid, DataForm dataForm) {
-            this.node = node;
+            super(node);
             this.jid = jid;
             this.subid = subid;
             this.dataForm = dataForm;
         }
 
         private Options(DataForm dataForm) {
-            this.dataForm = dataForm;
+            this(null, null, null, dataForm);
         }
 
         /**
@@ -659,7 +659,7 @@ public final class PubSub {
          *
          * @return The data form.
          */
-        public DataForm getDataForm() {
+        public final DataForm getDataForm() {
             return dataForm;
         }
     }
@@ -675,34 +675,31 @@ public final class PubSub {
             super(node);
         }
 
-        private List<? extends Affiliation> getAffiliations() {
-            return affiliation;
-        }
-
-        private static final class AffiliationInfo implements Affiliation {
+        private static final class AffiliationInfo extends PubSubChildElement implements Affiliation {
 
             @XmlAttribute
-            private String node;
+            private final AffiliationState affiliation;
 
             @XmlAttribute
-            private AffiliationState affiliation;
-
-            @XmlAttribute
-            private Jid jid;
+            private final Jid jid;
 
             @Override
-            public Jid getJid() {
+            public final Jid getJid() {
                 return jid;
             }
 
-            @Override
-            public AffiliationState getAffiliationState() {
-                return affiliation;
+            private AffiliationInfo() {
+                this(null, null);
+            }
+
+            private AffiliationInfo(Jid jid, AffiliationState affiliation) {
+                this.jid = jid;
+                this.affiliation = affiliation;
             }
 
             @Override
-            public String getNode() {
-                return node;
+            public final AffiliationState getAffiliationState() {
+                return affiliation;
             }
         }
     }
@@ -715,17 +712,19 @@ public final class PubSub {
     public static final class Default extends PubSubChildElement {
 
         @XmlAttribute
-        private Type type;
+        private final Type type;
 
         @XmlElementRef
-        private DataForm dataForm;
+        private final DataForm dataForm;
 
         public Default() {
-
+            this(null);
         }
 
         private Default(String node) {
             super(node);
+            this.dataForm = null;
+            this.type = null;
         }
 
         /**
@@ -733,7 +732,7 @@ public final class PubSub {
          *
          * @return The default subscription options.
          */
-        public DataForm getDataForm() {
+        public final DataForm getDataForm() {
             return dataForm;
         }
 
@@ -750,32 +749,34 @@ public final class PubSub {
         private final List<ItemElement> item = new ArrayList<>();
 
         @XmlAttribute(name = "max_items")
-        private Integer maxItems;
+        private final Integer maxItems;
 
         @XmlAttribute
-        private String subid;
+        private final String subid;
 
-        private Retract retract;
+        private final Retract retract;
 
         private Items() {
+            this(null);
         }
 
         private Items(String node) {
-            super(node);
+            this(node, Collections.emptyList());
         }
 
         private Items(String node, int maxItems) {
             super(node);
             this.maxItems = maxItems;
+            this.subid = null;
+            this.retract = null;
         }
 
         private Items(String node, List<ItemElement> items) {
             super(node);
+            this.maxItems = null;
             this.item.addAll(items);
-        }
-
-        private List<? extends Item> getItems() {
-            return item;
+            this.subid = null;
+            this.retract = null;
         }
     }
 
@@ -786,9 +787,10 @@ public final class PubSub {
      */
     public static final class Publish extends PubSubChildElement {
 
-        private ItemElement item;
+        private final ItemElement item;
 
         private Publish() {
+            this(null, null);
         }
 
         private Publish(String node, ItemElement item) {
@@ -801,7 +803,7 @@ public final class PubSub {
          *
          * @return The item.
          */
-        public Item getItem() {
+        public final Item getItem() {
             return item;
         }
     }
@@ -809,17 +811,14 @@ public final class PubSub {
     private static final class PublishOptions extends PubSubChildElement {
 
         @XmlElementRef
-        private DataForm dataForm;
+        private final DataForm dataForm;
 
         private PublishOptions() {
+            this(null);
         }
 
         public PublishOptions(DataForm dataForm) {
             this.dataForm = dataForm;
-        }
-
-        public DataForm getDataForm() {
-            return dataForm;
         }
     }
 
@@ -827,79 +826,97 @@ public final class PubSub {
     private static final class Retract extends PubSubChildElement {
 
         @XmlAttribute
-        private Boolean notify;
+        private final Boolean notify;
 
-        private ItemElement item;
+        private final ItemElement item;
 
         @XmlAttribute
-        private String id;
+        private final String id;
 
         private Retract() {
-
+            this(null, null, null);
         }
 
         private Retract(String node, ItemElement item, Boolean notify) {
             super(node);
             this.item = item;
             this.notify = notify;
-        }
-
-        private String getId() {
-            return id;
+            this.id = null;
         }
     }
 
     private static final class SubscriptionInfo extends PubSubChildElement implements Subscription {
 
         @XmlAttribute
-        private Jid jid;
+        private final Jid jid;
 
         @XmlAttribute
-        private String subid;
+        private final String subid;
 
         @XmlAttribute
-        private SubscriptionState subscription;
+        private final SubscriptionState subscription;
 
         @XmlAttribute
         @XmlJavaTypeAdapter(InstantAdapter.class)
-        private Instant expiry;
+        private final Instant expiry;
 
         @XmlElement(name = "subscribe-options")
-        private SubscribeOptions options;
+        private final SubscribeOptions options;
+
+        private SubscriptionInfo() {
+            this(null, null, null, null, null, null);
+        }
+
+        private SubscriptionInfo(String node, Jid jid, String subid, SubscriptionState subscription, Instant expiry, SubscribeOptions options) {
+            super(node);
+            this.jid = jid;
+            this.subid = subid;
+            this.subscription = subscription;
+            this.expiry = expiry;
+            this.options = options;
+        }
 
         @Override
-        public String getSubId() {
+        public final String getSubId() {
             return subid;
         }
 
         @Override
-        public SubscriptionState getSubscriptionState() {
+        public final SubscriptionState getSubscriptionState() {
             return subscription;
         }
 
         @Override
-        public Jid getJid() {
+        public final Jid getJid() {
             return jid;
         }
 
         @Override
-        public Instant getExpiry() {
+        public final Instant getExpiry() {
             return expiry;
         }
 
         @Override
-        public boolean isConfigurationRequired() {
+        public final boolean isConfigurationRequired() {
             return options != null && options.isRequired();
         }
 
         @Override
-        public boolean isConfigurationSupported() {
+        public final boolean isConfigurationSupported() {
             return options != null;
         }
 
         private static final class SubscribeOptions {
 
-            private String required;
+            private final String required;
+
+            private SubscribeOptions() {
+                this.required = null;
+            }
+
+            private SubscribeOptions(boolean required) {
+                this.required = required ? "" : null;
+            }
 
             private boolean isRequired() {
                 return required != null;
@@ -917,24 +934,18 @@ public final class PubSub {
         private Subscriptions(String node) {
             super(node);
         }
-
-        private List<? extends Subscription> getSubscriptions() {
-            return subscription;
-        }
     }
 
     private static final class Unsubscribe extends PubSubChildElement {
 
         @XmlAttribute
-        private String node;
+        private final Jid jid;
 
         @XmlAttribute
-        private Jid jid;
-
-        @XmlAttribute
-        private String subid;
+        private final String subid;
 
         private Unsubscribe() {
+            this(null, null, null);
         }
 
         private Unsubscribe(String node, Jid jid, String subid) {
@@ -944,43 +955,38 @@ public final class PubSub {
         }
     }
 
-    private static final class Configure {
-        @XmlAttribute
-        private String node;
-
+    private static final class Configure extends PubSubChildElement {
         @XmlElementRef
-        private DataForm dataForm;
+        private final DataForm dataForm;
 
         private Configure() {
+            this(null, null);
         }
 
         private Configure(String node, DataForm dataForm) {
-            this.node = node;
+            super(node);
             this.dataForm = dataForm;
         }
 
         private Configure(DataForm dataForm) {
-            this.dataForm = dataForm;
-        }
-
-        private DataForm getConfigurationForm() {
-            return dataForm;
+            this(null, dataForm);
         }
     }
 
     private static final class ItemElement implements Item {
 
         @XmlAnyElement(lax = true)
-        private Object object;
+        private final Object object;
 
         @XmlAttribute
-        private String id;
+        private final String id;
 
         private ItemElement() {
+            this(null, null);
         }
 
         private ItemElement(String id) {
-            this.id = id;
+            this(id, null);
         }
 
         private ItemElement(String id, Object object) {
@@ -989,39 +995,41 @@ public final class PubSub {
         }
 
         @Override
-        public Object getPayload() {
+        public final Object getPayload() {
             return object;
         }
 
         @Override
-        public String getId() {
+        public final String getId() {
             return id;
         }
 
         @Override
-        public String getNode() {
+        public final String getNode() {
             return null;
         }
 
         @Override
-        public String getPublisher() {
+        public final String getPublisher() {
             return null;
         }
     }
 
+    @XmlTransient
     private abstract static class PubSubChildElement {
 
         @XmlAttribute
-        private String node;
+        private final String node;
 
         private PubSubChildElement() {
+            this(null);
         }
 
         private PubSubChildElement(String node) {
             this.node = node;
         }
 
-        public String getNode() {
+        public final String getNode() {
             return node;
         }
     }

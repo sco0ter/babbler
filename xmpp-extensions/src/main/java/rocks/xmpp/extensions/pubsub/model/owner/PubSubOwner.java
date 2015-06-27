@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.time.Instant;
@@ -62,9 +63,10 @@ public final class PubSubOwner {
             @XmlElement(name = "purge", type = Purge.class),
             @XmlElement(name = "subscriptions", type = Subscriptions.class)
     })
-    private PubSubOwnerChildElement type;
+    private final PubSubOwnerChildElement type;
 
     private PubSubOwner() {
+        this.type = null;
     }
 
     private PubSubOwner(PubSubOwnerChildElement type) {
@@ -242,11 +244,11 @@ public final class PubSubOwner {
      * @see #isConfigure()
      * @see #isDefault()
      */
-    public DataForm getConfigurationForm() {
+    public final DataForm getConfigurationForm() {
         if (type instanceof Configure) {
             return ((Configure) type).getDataForm();
         } else if (type instanceof Default) {
-            return ((Default) type).getDataForm();
+            return ((Default) type).dataForm;
         }
         return null;
     }
@@ -256,8 +258,8 @@ public final class PubSubOwner {
      *
      * @return The node.
      */
-    public String getNode() {
-        return type != null ? type.getNode() : null;
+    public final String getNode() {
+        return type != null ? type.node : null;
     }
 
     /**
@@ -266,7 +268,7 @@ public final class PubSubOwner {
      * @return True, if the pubsub element contains a 'configure' child element.
      * @see #getConfigurationForm()
      */
-    public boolean isConfigure() {
+    public final boolean isConfigure() {
         return type instanceof Configure;
     }
 
@@ -276,7 +278,7 @@ public final class PubSubOwner {
      * @return True, if the pubsub element contains a 'default' child element.
      * @see #getConfigurationForm()
      */
-    public boolean isDefault() {
+    public final boolean isDefault() {
         return type instanceof Default;
     }
 
@@ -285,7 +287,7 @@ public final class PubSubOwner {
      *
      * @return True, if the pubsub element contains a 'delete' child element.
      */
-    public boolean isDelete() {
+    public final boolean isDelete() {
         return type instanceof Delete;
     }
 
@@ -294,7 +296,7 @@ public final class PubSubOwner {
      *
      * @return True, if the pubsub element contains a 'purge' child element.
      */
-    public boolean isPurge() {
+    public final boolean isPurge() {
         return type instanceof Purge;
     }
 
@@ -304,7 +306,7 @@ public final class PubSubOwner {
      * @return True, if the pubsub element contains a 'subscriptions' child element.
      * @see #getSubscriptions()
      */
-    public boolean isSubscriptions() {
+    public final boolean isSubscriptions() {
         return type instanceof Subscriptions;
     }
 
@@ -314,7 +316,7 @@ public final class PubSubOwner {
      * @return True, if the pubsub element contains a 'subscriptions' child element.
      * @see #getAffiliations()
      */
-    public boolean isAffiliations() {
+    public final boolean isAffiliations() {
         return type instanceof Affiliations;
     }
 
@@ -323,9 +325,9 @@ public final class PubSubOwner {
      *
      * @return The subscriptions, if the pubsub element contains a 'subscriptions' child element; otherwise an empty list.
      */
-    public List<? extends Subscription> getSubscriptions() {
+    public final List<Subscription> getSubscriptions() {
         if (type instanceof Subscriptions) {
-            return Collections.unmodifiableList(((Subscriptions) type).getSubscriptions());
+            return Collections.unmodifiableList(new ArrayList<>(((Subscriptions) type).subscription));
         }
         return Collections.emptyList();
     }
@@ -335,9 +337,9 @@ public final class PubSubOwner {
      *
      * @return The affiliations, if the pubsub element contains a 'affiliations' child element; otherwise an empty list.
      */
-    public List<? extends Affiliation> getAffiliations() {
+    public final List<Affiliation> getAffiliations() {
         if (type instanceof Affiliations) {
-            return Collections.unmodifiableList(((Affiliations) type).getAffiliations());
+            return Collections.unmodifiableList(new ArrayList<>(((Affiliations) type).affiliation));
         }
         return Collections.emptyList();
     }
@@ -347,9 +349,9 @@ public final class PubSubOwner {
      *
      * @return The redirect URI, if this pubsub element contains a 'delete' element; otherwise null.
      */
-    public URI getRedirectUri() {
+    public final URI getRedirectUri() {
         if (type instanceof Delete && ((Delete) type).getRedirect() != null) {
-            return ((Delete) type).getRedirect().getUri();
+            return ((Delete) type).getRedirect().uri;
         }
         return null;
     }
@@ -359,47 +361,49 @@ public final class PubSubOwner {
         private final List<AffiliationNodeOwner> affiliation = new ArrayList<>();
 
         private Affiliations() {
-            super(null);
+            this(null);
         }
 
         private Affiliations(String node, Affiliation... affiliations) {
             super(node);
             for (Affiliation affiliation : affiliations) {
-                AffiliationNodeOwner affiliationNodeOwner = new AffiliationNodeOwner();
-                affiliationNodeOwner.affiliation = affiliation.getAffiliationState();
-                affiliationNodeOwner.jid = affiliation.getJid();
-                affiliationNodeOwner.node = affiliation.getNode();
-                this.affiliation.add(affiliationNodeOwner);
+                this.affiliation.add(new AffiliationNodeOwner(affiliation.getNode(), affiliation.getAffiliationState(), affiliation.getJid()));
             }
-        }
-
-        private List<? extends Affiliation> getAffiliations() {
-            return affiliation;
         }
 
         private static final class AffiliationNodeOwner implements Affiliation {
 
             @XmlAttribute
-            private String node;
+            private final String node;
 
             @XmlAttribute
-            private AffiliationState affiliation;
+            private final AffiliationState affiliation;
 
             @XmlAttribute
-            private Jid jid;
+            private final Jid jid;
+
+            private AffiliationNodeOwner() {
+                this(null, null, null);
+            }
+
+            private AffiliationNodeOwner(String node, AffiliationState affiliation, Jid jid) {
+                this.node = node;
+                this.affiliation = affiliation;
+                this.jid = jid;
+            }
 
             @Override
-            public Jid getJid() {
+            public final Jid getJid() {
                 return jid;
             }
 
             @Override
-            public AffiliationState getAffiliationState() {
+            public final AffiliationState getAffiliationState() {
                 return affiliation;
             }
 
             @Override
-            public String getNode() {
+            public final String getNode() {
                 return node;
             }
         }
@@ -408,21 +412,18 @@ public final class PubSubOwner {
     private static final class Configure extends PubSubOwnerChildElement {
 
         @XmlElementRef
-        private DataForm dataForm;
+        private final DataForm dataForm;
 
         private Configure() {
+            this(null);
         }
 
         private Configure(String node) {
-            super(node);
+            this(node, null);
         }
 
         private Configure(String node, DataForm dataForm) {
             super(node);
-            this.dataForm = dataForm;
-        }
-
-        private Configure(DataForm dataForm) {
             this.dataForm = dataForm;
         }
 
@@ -434,25 +435,23 @@ public final class PubSubOwner {
     private static final class Default extends PubSubOwnerChildElement {
 
         @XmlElementRef
-        private DataForm dataForm;
+        private final DataForm dataForm;
 
         private Default() {
-        }
-
-        private DataForm getDataForm() {
-            return dataForm;
+            this.dataForm = null;
         }
     }
 
     private static final class Delete extends PubSubOwnerChildElement {
 
-        private Redirect redirect;
+        private final Redirect redirect;
 
         private Delete() {
+            this(null);
         }
 
         private Delete(String node) {
-            super(node);
+            this(node, null);
         }
 
         private Delete(String node, Redirect redirect) {
@@ -466,17 +465,14 @@ public final class PubSubOwner {
 
         private static final class Redirect {
             @XmlAttribute
-            private URI uri;
+            private final URI uri;
 
             private Redirect() {
+                this(null);
             }
 
             private Redirect(URI uri) {
                 this.uri = uri;
-            }
-
-            private URI getUri() {
-                return uri;
             }
         }
     }
@@ -501,82 +497,81 @@ public final class PubSubOwner {
         private Subscriptions(String node, Subscription... subscriptions) {
             super(node);
             for (Subscription subscription : subscriptions) {
-                SubscriptionOwner subscriptionOwner = new SubscriptionOwner();
-                subscriptionOwner.expiry = subscription.getExpiry();
-                subscriptionOwner.jid = subscription.getJid();
-                subscriptionOwner.node = subscription.getNode();
-                subscriptionOwner.subid = subscription.getSubId();
-                subscriptionOwner.subscription = subscription.getSubscriptionState();
-                subscriptionOwner.options = subscription.isConfigurationSupported() ? new SubscriptionOwner.Options() : null;
-                if (subscription.isConfigurationRequired() && subscriptionOwner.options != null) {
-                    subscriptionOwner.options.required = "";
-                }
-                this.subscription.add(subscriptionOwner);
+                this.subscription.add(new SubscriptionOwner(subscription.getNode(), subscription.getJid(), subscription.getSubId(), subscription.getSubscriptionState(), subscription.getExpiry(), subscription.isConfigurationSupported() ? new SubscriptionOwner.Options(subscription.isConfigurationRequired()) : null));
             }
         }
 
-        private List<SubscriptionOwner> getSubscriptions() {
-            return subscription;
-        }
-
-        private static final class SubscriptionOwner implements Subscription {
+        private static final class SubscriptionOwner extends PubSubOwnerChildElement implements Subscription {
             @XmlAttribute
-            private String node;
+            private final Jid jid;
 
             @XmlAttribute
-            private Jid jid;
+            private final String subid;
 
             @XmlAttribute
-            private String subid;
-
-            @XmlAttribute
-            private SubscriptionState subscription;
+            private final SubscriptionState subscription;
 
             @XmlAttribute
             @XmlJavaTypeAdapter(InstantAdapter.class)
-            private Instant expiry;
+            private final Instant expiry;
 
             @XmlElement(name = "subscribe-options")
-            private Options options;
+            private final Options options;
+
+            private SubscriptionOwner() {
+                this(null, null, null, null, null, null);
+            }
+
+            private SubscriptionOwner(String node, Jid jid, String subid, SubscriptionState subscription, Instant expiry, Options options) {
+                super(node);
+                this.jid = jid;
+                this.subid = subid;
+                this.subscription = subscription;
+                this.expiry = expiry;
+                this.options = options;
+            }
 
             @Override
-            public SubscriptionState getSubscriptionState() {
+            public final SubscriptionState getSubscriptionState() {
                 return subscription;
             }
 
             @Override
-            public String getNode() {
-                return node;
-            }
-
-            @Override
-            public Jid getJid() {
+            public final Jid getJid() {
                 return jid;
             }
 
             @Override
-            public String getSubId() {
+            public final String getSubId() {
                 return subid;
             }
 
             @Override
-            public Instant getExpiry() {
+            public final Instant getExpiry() {
                 return expiry;
             }
 
             @Override
-            public boolean isConfigurationRequired() {
+            public final boolean isConfigurationRequired() {
                 return options != null && options.isRequired();
             }
 
             @Override
-            public boolean isConfigurationSupported() {
+            public final boolean isConfigurationSupported() {
                 return options != null;
             }
 
             private static final class Options {
 
-                private String required;
+                private final String required;
+
+                private Options() {
+                    this.required = null;
+                }
+
+                private Options(boolean required) {
+                    this.required = required ? "" : null;
+                }
 
                 private boolean isRequired() {
                     return required != null;
@@ -585,19 +580,21 @@ public final class PubSubOwner {
         }
     }
 
+    @XmlTransient
     private abstract static class PubSubOwnerChildElement {
 
         @XmlAttribute
-        private String node;
+        private final String node;
 
         private PubSubOwnerChildElement() {
+            this(null);
         }
 
         private PubSubOwnerChildElement(String node) {
             this.node = node;
         }
 
-        private String getNode() {
+        public final String getNode() {
             return node;
         }
     }

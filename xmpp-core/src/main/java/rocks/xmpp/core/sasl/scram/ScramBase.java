@@ -67,7 +67,7 @@ abstract class ScramBase {
 
     String channelBinding;
 
-    public ScramBase(String hashAlgorithm, CallbackHandler callbackHandler) {
+    ScramBase(String hashAlgorithm, CallbackHandler callbackHandler) {
         hashAlgorithm = hashAlgorithm.toUpperCase();
 
         if ("SHA-1".equals(hashAlgorithm)) {

@@ -51,7 +51,7 @@ public class PubSubSubscriberUseCasesTest extends XmlTest {
     public void marshalSubscriptions() throws JAXBException, XMLStreamException {
         PubSub pubSub = PubSub.withSubscribe("princely_musings", Jid.valueOf("francisco@denmark.lit"));
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><subscribe jid=\"francisco@denmark.lit\" node=\"princely_musings\"></subscribe></pubsub>");
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><subscribe node=\"princely_musings\" jid=\"francisco@denmark.lit\"></subscribe></pubsub>");
     }
 
     @Test
@@ -150,7 +150,7 @@ public class PubSubSubscriberUseCasesTest extends XmlTest {
     public void marshalUnsubscribe() throws JAXBException, XMLStreamException {
         PubSub pubSub = PubSub.withUnsubscribe("node6", Jid.valueOf("francisco@denmark.lit"), null);
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><unsubscribe jid=\"francisco@denmark.lit\" node=\"node6\"></unsubscribe></pubsub>");
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><unsubscribe node=\"node6\" jid=\"francisco@denmark.lit\"></unsubscribe></pubsub>");
     }
 
     @Test
@@ -265,7 +265,7 @@ public class PubSubSubscriberUseCasesTest extends XmlTest {
     public void marshalRequestMostRecentItems() throws JAXBException, XMLStreamException {
         PubSub pubSub = PubSub.withItems("princely_musings", 2);
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><items max_items=\"2\" node=\"princely_musings\"></items></pubsub>");
+        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><items node=\"princely_musings\" max_items=\"2\"></items></pubsub>");
     }
 
     @Test

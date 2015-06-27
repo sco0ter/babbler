@@ -142,7 +142,7 @@ public final class NodeMetaData {
      *
      * @return The underlying data form.
      */
-    public DataForm getDataForm() {
+    public final DataForm getDataForm() {
         return dataForm;
     }
 
@@ -151,7 +151,7 @@ public final class NodeMetaData {
      *
      * @return The contacts.
      */
-    public List<Jid> getContacts() {
+    public final List<Jid> getContacts() {
         return dataForm.findValuesAsJid(CONTACT);
     }
 
@@ -160,7 +160,7 @@ public final class NodeMetaData {
      *
      * @return The creation date.
      */
-    public Instant getCreationDate() {
+    public final Instant getCreationDate() {
         return dataForm.findValueAsInstant(CREATION_DATE);
     }
 
@@ -169,7 +169,7 @@ public final class NodeMetaData {
      *
      * @return The creator.
      */
-    public Jid getCreator() {
+    public final Jid getCreator() {
         return dataForm.findValueAsJid(CREATOR);
     }
 
@@ -178,7 +178,7 @@ public final class NodeMetaData {
      *
      * @return The description.
      */
-    public String getDescription() {
+    public final String getDescription() {
         return dataForm.findValue(DESCRIPTION);
     }
 
@@ -187,7 +187,7 @@ public final class NodeMetaData {
      *
      * @return The language.
      */
-    public String getLanguage() {
+    public final String getLanguage() {
         return dataForm.findValue(LANGUAGE);
     }
 
@@ -196,7 +196,7 @@ public final class NodeMetaData {
      *
      * @return The subscribers.
      */
-    public Integer getNumberOfSubscribers() {
+    public final Integer getNumberOfSubscribers() {
         return dataForm.findValueAsInteger(NUM_SUBSCRIBERS);
     }
 
@@ -205,7 +205,7 @@ public final class NodeMetaData {
      *
      * @return The owners.
      */
-    public List<Jid> getOwners() {
+    public final List<Jid> getOwners() {
         return dataForm.findValuesAsJid(OWNER);
     }
 
@@ -214,7 +214,7 @@ public final class NodeMetaData {
      *
      * @return The publishers.
      */
-    public List<Jid> getPublishers() {
+    public final List<Jid> getPublishers() {
         return dataForm.findValuesAsJid(PUBLISHER);
     }
 
@@ -223,7 +223,7 @@ public final class NodeMetaData {
      *
      * @return The title.
      */
-    public String getNodeTitle() {
+    public final String getNodeTitle() {
         return dataForm.findValue(TITLE);
     }
 
@@ -232,7 +232,7 @@ public final class NodeMetaData {
      *
      * @return The payload type.
      */
-    public String getPayloadType() {
+    public final String getPayloadType() {
         return dataForm.findValue(TYPE);
     }
 
@@ -269,7 +269,7 @@ public final class NodeMetaData {
          * @param contacts The contacts.
          * @return The builder.
          */
-        public Builder contacts(Collection<Jid> contacts) {
+        public final Builder contacts(Collection<Jid> contacts) {
             this.contacts = contacts;
             return this;
         }
@@ -280,7 +280,7 @@ public final class NodeMetaData {
          * @param creationDate The creation date.
          * @return The builder.
          */
-        public Builder creationDate(Instant creationDate) {
+        public final Builder creationDate(Instant creationDate) {
             this.creationDate = creationDate;
             return this;
         }
@@ -291,7 +291,7 @@ public final class NodeMetaData {
          * @param creator The creator.
          * @return The builder.
          */
-        public Builder creator(Jid creator) {
+        public final Builder creator(Jid creator) {
             this.creator = creator;
             return this;
         }
@@ -302,7 +302,7 @@ public final class NodeMetaData {
          * @param description The description.
          * @return The builder.
          */
-        public Builder description(String description) {
+        public final Builder description(String description) {
             this.description = description;
             return this;
         }
@@ -313,7 +313,7 @@ public final class NodeMetaData {
          * @param language The language.
          * @return The builder.
          */
-        public Builder language(String language) {
+        public final Builder language(String language) {
             this.language = language;
             return this;
         }
@@ -324,7 +324,7 @@ public final class NodeMetaData {
          * @param numberOfSubscribers The number of subscribers to the node.
          * @return The builder.
          */
-        public Builder numberOfSubscribers(int numberOfSubscribers) {
+        public final Builder numberOfSubscribers(int numberOfSubscribers) {
             this.numberOfSubscribers = numberOfSubscribers;
             return this;
         }
@@ -335,7 +335,7 @@ public final class NodeMetaData {
          * @param owners The owners.
          * @return The builder.
          */
-        public Builder owners(Collection<Jid> owners) {
+        public final Builder owners(Collection<Jid> owners) {
             this.owners = owners;
             return this;
         }
@@ -346,7 +346,7 @@ public final class NodeMetaData {
          * @param publishers The publishers.
          * @return The builder.
          */
-        public Builder publishers(Collection<Jid> publishers) {
+        public final Builder publishers(Collection<Jid> publishers) {
             this.publishers = publishers;
             return this;
         }
@@ -357,7 +357,7 @@ public final class NodeMetaData {
          * @param title The title.
          * @return The builder.
          */
-        public Builder nodeTitle(String title) {
+        public final Builder nodeTitle(String title) {
             this.nodeTitle = title;
             return this;
         }
@@ -368,13 +368,13 @@ public final class NodeMetaData {
          * @param payloadType The payload type.
          * @return The builder.
          */
-        public Builder payloadType(String payloadType) {
+        public final Builder payloadType(String payloadType) {
             this.payloadType = payloadType;
             return this;
         }
 
         @Override
-        protected Builder self() {
+        protected final Builder self() {
             return this;
         }
 
@@ -383,7 +383,7 @@ public final class NodeMetaData {
          *
          * @return The meta data form.
          */
-        public NodeMetaData build() {
+        public final NodeMetaData build() {
             List<DataForm.Field> fields = new ArrayList<>();
 
             if (contacts != null && !contacts.isEmpty()) {

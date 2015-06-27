@@ -120,7 +120,7 @@ public final class PublishOptions {
      *
      * @return The underlying data form.
      */
-    public DataForm getDataForm() {
+    public final DataForm getDataForm() {
         return dataForm;
     }
 
@@ -129,7 +129,7 @@ public final class PublishOptions {
      *
      * @return The access model.
      */
-    public AccessModel getAccessModel() {
+    public final AccessModel getAccessModel() {
         String value = dataForm.findValue(ACCESS_MODEL);
         if (value != null) {
             return AccessModel.valueOf(value.toUpperCase());
@@ -142,7 +142,7 @@ public final class PublishOptions {
      *
      * @return Whether items are persisted.
      */
-    public Boolean isPersistItems() {
+    public final Boolean isPersistItems() {
         return dataForm.findValueAsBoolean(PERSIST_ITEMS);
     }
 
@@ -151,7 +151,7 @@ public final class PublishOptions {
      *
      * @return When to send the last published item.
      */
-    public SendLastPublishedItem getSendLastPublishedItem() {
+    public final SendLastPublishedItem getSendLastPublishedItem() {
         String value = dataForm.findValue(SEND_LAST_PUBLISHED_ITEM);
         if (value != null) {
             return SendLastPublishedItem.valueOf(value.toUpperCase());
@@ -164,7 +164,7 @@ public final class PublishOptions {
      *
      * @return The allowed roster groups.
      */
-    public List<String> getRosterGroupsAllowed() {
+    public final List<String> getRosterGroupsAllowed() {
         return dataForm.findValues(ROSTER_GROUPS_ALLOWED);
     }
 
@@ -181,28 +181,28 @@ public final class PublishOptions {
 
         private List<String> rosterGroupsAllowed;
 
-        public Builder accessModel(AccessModel accessModel) {
+        public final Builder accessModel(AccessModel accessModel) {
             this.accessModel = accessModel;
             return this;
         }
 
-        public Builder persistItems(boolean persistItems) {
+        public final Builder persistItems(boolean persistItems) {
             this.persistItems = persistItems;
             return this;
         }
 
-        public Builder sendLastPublishedItem(SendLastPublishedItem sendLastPublishedItem) {
+        public final Builder sendLastPublishedItem(SendLastPublishedItem sendLastPublishedItem) {
             this.sendLastPublishedItem = sendLastPublishedItem;
             return this;
         }
 
-        public Builder rosterGroupsAllowed(List<String> rosterGroupsAllowed) {
+        public final Builder rosterGroupsAllowed(List<String> rosterGroupsAllowed) {
             this.rosterGroupsAllowed = rosterGroupsAllowed;
             return this;
         }
 
         @Override
-        protected Builder self() {
+        protected final Builder self() {
             return this;
         }
 

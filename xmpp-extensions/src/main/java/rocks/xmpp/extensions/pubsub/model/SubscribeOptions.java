@@ -126,7 +126,7 @@ public final class SubscribeOptions {
      *
      * @return The underlying data form.
      */
-    public DataForm getDataForm() {
+    public final DataForm getDataForm() {
         return dataForm;
     }
 
@@ -135,7 +135,7 @@ public final class SubscribeOptions {
      *
      * @return True, if notifications are delivered.
      */
-    public Boolean isDeliver() {
+    public final Boolean isDeliver() {
         return dataForm.findValueAsBoolean(DELIVER);
     }
 
@@ -156,7 +156,7 @@ public final class SubscribeOptions {
      *
      * @return The digest frequency.
      */
-    public Integer getDigestFrequency() {
+    public final Integer getDigestFrequency() {
         return dataForm.findValueAsInteger(DIGEST_FREQUENCY);
     }
 
@@ -166,7 +166,7 @@ public final class SubscribeOptions {
      *
      * @return The expiration date.
      */
-    public Instant getExpire() {
+    public final Instant getExpire() {
         DataForm.Field field = dataForm.findField(EXPIRE);
         if (!field.getValues().isEmpty() && field.getValues().get(0) != null && !field.getValues().get(0).equals("presence")) {
             return field.getValueAsInstant();
@@ -181,7 +181,7 @@ public final class SubscribeOptions {
      *
      * @return True, if the body is included.
      */
-    public Boolean isIncludeBody() {
+    public final Boolean isIncludeBody() {
         return dataForm.findValueAsBoolean(INCLUDE_BODY);
     }
 
@@ -190,7 +190,7 @@ public final class SubscribeOptions {
      *
      * @return The show values.
      */
-    public List<Presence.Show> getShowValues() {
+    public final List<Presence.Show> getShowValues() {
         List<String> values = dataForm.findValues(SHOW_VALUES);
         List<Presence.Show> list = new ArrayList<>();
         for (String value : values) {
@@ -208,7 +208,7 @@ public final class SubscribeOptions {
      *
      * @return The subscription type.
      */
-    public SubscriptionType getSubscriptionType() {
+    public final SubscriptionType getSubscriptionType() {
         String value = dataForm.findValue(SUBSCRIPTION_TYPE);
         if (value != null) {
             return SubscriptionType.valueOf(value.toUpperCase());
@@ -221,7 +221,7 @@ public final class SubscribeOptions {
      *
      * @return The subscription depth.
      */
-    public Integer getSubscriptionDepth() {
+    public final Integer getSubscriptionDepth() {
         String value = dataForm.findValue(SUBSCRIPTION_DEPTH);
         if ("all".equals(value)) {
             return -1;
@@ -235,7 +235,7 @@ public final class SubscribeOptions {
      *
      * @return True, if the subscription is temporary.
      */
-    public boolean isTemporary() {
+    public final boolean isTemporary() {
         DataForm.Field field = dataForm.findField(EXPIRE);
         return !field.getValues().isEmpty() && field.getValues().get(0) != null && field.getValues().get(0).equals("presence");
     }
@@ -290,7 +290,7 @@ public final class SubscribeOptions {
          * @param deliver Whether an entity wants to receive or disable notifications.
          * @return The builder.
          */
-        public Builder deliver(boolean deliver) {
+        public final Builder deliver(boolean deliver) {
             this.deliver = deliver;
             return this;
         }
@@ -301,7 +301,7 @@ public final class SubscribeOptions {
          * @param digest Whether you want to receive digests (aggregations) of notifications or all notifications individually.
          * @return The builder.
          */
-        public Builder digest(boolean digest) {
+        public final Builder digest(boolean digest) {
             this.digest = digest;
             return this;
         }
@@ -312,7 +312,7 @@ public final class SubscribeOptions {
          * @param digestFrequency The minimum number of milliseconds between sending any two notification digests.
          * @return The builder.
          */
-        public Builder digestFrequency(int digestFrequency) {
+        public final Builder digestFrequency(int digestFrequency) {
             this.digestFrequency = digestFrequency;
             return this;
         }
@@ -324,7 +324,7 @@ public final class SubscribeOptions {
          * @return The builder.
          * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-body">12.7 Including a Message Body</a>
          */
-        public Builder includeBody(boolean includeBody) {
+        public final Builder includeBody(boolean includeBody) {
             this.includeBody = includeBody;
             return this;
         }
@@ -335,7 +335,7 @@ public final class SubscribeOptions {
          * @param showValues The presence states for which an entity wants to receive notifications.
          * @return The builder.
          */
-        public Builder showValues(Collection<Presence.Show> showValues) {
+        public final Builder showValues(Collection<Presence.Show> showValues) {
             this.showValues = showValues;
             return this;
         }
@@ -347,7 +347,7 @@ public final class SubscribeOptions {
          * @return The builder.
          * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-leases">12.18 Time-Based Subscriptions (Leases)</a>
          */
-        public Builder expireAt(Instant expireAt) {
+        public final Builder expireAt(Instant expireAt) {
             this.expireAt = expireAt;
             return this;
         }
@@ -359,7 +359,7 @@ public final class SubscribeOptions {
          * @return The builder.
          * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-tempsub">12.4 Temporary Subscriptions</a>
          */
-        public Builder temporary(boolean temporary) {
+        public final Builder temporary(boolean temporary) {
             this.temporary = temporary;
             return this;
         }
@@ -371,7 +371,7 @@ public final class SubscribeOptions {
          * @return The builder.
          * @see <a href="http://xmpp.org/extensions/xep-0060.html#auto-subscribe">9.1 Auto-Subscribe</a>
          */
-        public Builder subscriptionType(SubscriptionType subscriptionType) {
+        public final Builder subscriptionType(SubscriptionType subscriptionType) {
             this.subscriptionType = subscriptionType;
             return this;
         }
@@ -383,13 +383,13 @@ public final class SubscribeOptions {
          * @return The builder.
          * @see <a href="http://xmpp.org/extensions/xep-0060.html#auto-subscribe">9.1 Auto-Subscribe</a>
          */
-        public Builder subscriptionDepth(int subscriptionDepth) {
+        public final Builder subscriptionDepth(int subscriptionDepth) {
             this.subscriptionDepth = subscriptionDepth;
             return this;
         }
 
         @Override
-        protected SubscribeOptions.Builder self() {
+        protected final SubscribeOptions.Builder self() {
             return this;
         }
 
@@ -398,7 +398,7 @@ public final class SubscribeOptions {
          *
          * @return The subscribe options.
          */
-        public SubscribeOptions build() {
+        public final SubscribeOptions build() {
             List<DataForm.Field> fields = new ArrayList<>();
             if (deliver != null) {
                 fields.add(DataForm.Field.builder().var(DELIVER).value(deliver).build());

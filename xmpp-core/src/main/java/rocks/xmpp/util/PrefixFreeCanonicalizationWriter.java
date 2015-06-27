@@ -55,7 +55,7 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
 
     private final ContentNamespaceContext nc;
 
-    public PrefixFreeCanonicalizationWriter(XMLStreamWriter xsw, String contentNamespace) throws XMLStreamException {
+    PrefixFreeCanonicalizationWriter(XMLStreamWriter xsw, String contentNamespace) throws XMLStreamException {
         this.xsw = xsw;
         nc = new ContentNamespaceContext(contentNamespace);
         xsw.setNamespaceContext(nc);

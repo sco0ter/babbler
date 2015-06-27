@@ -177,7 +177,7 @@ public final class NodeConfiguration {
      *
      * @return The underlying data form.
      */
-    public DataForm getDataForm() {
+    public final DataForm getDataForm() {
         return dataForm;
     }
 
@@ -186,7 +186,7 @@ public final class NodeConfiguration {
      *
      * @return The access model.
      */
-    public AccessModel getAccessModel() {
+    public final AccessModel getAccessModel() {
         String value = dataForm.findValue(ACCESS_MODEL);
         if (value != null) {
             return AccessModel.valueOf(value.toUpperCase());
@@ -201,7 +201,7 @@ public final class NodeConfiguration {
      *
      * @return The URL.
      */
-    public URL getBodyXslt() {
+    public final URL getBodyXslt() {
         String value = dataForm.findValue(BODY_XSLT);
         try {
             return value != null ? new URL(value) : null;
@@ -215,7 +215,7 @@ public final class NodeConfiguration {
      *
      * @return The children association policy.
      */
-    public ChildrenAssociationPolicy getChildrenAssociationPolicy() {
+    public final ChildrenAssociationPolicy getChildrenAssociationPolicy() {
         String value = dataForm.findValue(CHILDREN_ASSOCIATION_POLICY);
         if (value != null) {
             return ChildrenAssociationPolicy.valueOf(value.toUpperCase());
@@ -228,7 +228,7 @@ public final class NodeConfiguration {
      *
      * @return The whitelist.
      */
-    public List<Jid> getChildrenAssociationWhitelist() {
+    public final List<Jid> getChildrenAssociationWhitelist() {
         return dataForm.findValuesAsJid(CHILDREN_ASSOCIATION_WHITELIST);
     }
 
@@ -237,7 +237,7 @@ public final class NodeConfiguration {
      *
      * @return The child nodes.
      */
-    public List<String> getChildren() {
+    public final List<String> getChildren() {
         return dataForm.findValues(CHILDREN);
     }
 
@@ -246,7 +246,7 @@ public final class NodeConfiguration {
      *
      * @return The max child nodes.
      */
-    public Integer getChildrenMax() {
+    public final Integer getChildrenMax() {
         return dataForm.findValueAsInteger(CHILDREN_MAX);
     }
 
@@ -255,7 +255,7 @@ public final class NodeConfiguration {
      *
      * @return The collection(s).
      */
-    public List<String> getCollection() {
+    public final List<String> getCollection() {
         return dataForm.findValues(COLLECTION);
     }
 
@@ -264,7 +264,7 @@ public final class NodeConfiguration {
      *
      * @return The contacts.
      */
-    public List<Jid> getContacts() {
+    public final List<Jid> getContacts() {
         return dataForm.findValuesAsJid(CONTACT);
     }
 
@@ -277,7 +277,7 @@ public final class NodeConfiguration {
      *
      * @return The URL.
      */
-    public URL getDataformXslt() {
+    public final URL getDataformXslt() {
         String value = dataForm.findValue(DATAFORM_XSLT);
         try {
             return value != null ? new URL(value) : null;
@@ -291,7 +291,7 @@ public final class NodeConfiguration {
      *
      * @return True, if whether event notifications are delivered.
      */
-    public Boolean isDeliverNotifications() {
+    public final Boolean isDeliverNotifications() {
         return dataForm.findValueAsBoolean(DELIVER_NOTIFICATIONS);
     }
 
@@ -300,7 +300,7 @@ public final class NodeConfiguration {
      *
      * @return True, if payloads are delivered.
      */
-    public Boolean isDeliverPayloads() {
+    public final Boolean isDeliverPayloads() {
         return dataForm.findValueAsBoolean(DELIVER_PAYLOADS);
     }
 
@@ -309,7 +309,7 @@ public final class NodeConfiguration {
      *
      * @return The description.
      */
-    public String getDescription() {
+    public final String getDescription() {
         return dataForm.findValue(DESCRIPTION);
     }
 
@@ -318,7 +318,7 @@ public final class NodeConfiguration {
      *
      * @return The seconds.
      */
-    public Integer getItemExpire() {
+    public final Integer getItemExpire() {
         return dataForm.findValueAsInteger(ITEM_EXPIRE);
     }
 
@@ -327,7 +327,7 @@ public final class NodeConfiguration {
      *
      * @return The item reply.
      */
-    public ItemReply getItemReply() {
+    public final ItemReply getItemReply() {
         String value = dataForm.findValue(ITEM_REPLY);
         if (value != null) {
             return ItemReply.valueOf(value.toUpperCase());
@@ -340,7 +340,7 @@ public final class NodeConfiguration {
      *
      * @return The language.
      */
-    public String getLanguage() {
+    public final String getLanguage() {
         return dataForm.findValue(LANGUAGE);
     }
 
@@ -349,7 +349,7 @@ public final class NodeConfiguration {
      *
      * @return The max items.
      */
-    public Integer getMaxItems() {
+    public final Integer getMaxItems() {
         return dataForm.findValueAsInteger(MAX_ITEMS);
     }
 
@@ -358,7 +358,7 @@ public final class NodeConfiguration {
      *
      * @return The max payload size.
      */
-    public Integer getMaxPayloadSize() {
+    public final Integer getMaxPayloadSize() {
         return dataForm.findValueAsInteger(MAX_PAYLOAD_SIZE);
     }
 
@@ -367,7 +367,7 @@ public final class NodeConfiguration {
      *
      * @return The node type.
      */
-    public NodeType getNodeType() {
+    public final NodeType getNodeType() {
         String value = dataForm.findValue(NODE_TYPE);
         if (value != null) {
             return NodeType.valueOf(value.toUpperCase());
@@ -380,7 +380,7 @@ public final class NodeConfiguration {
      *
      * @return The notification type.
      */
-    public Message.Type getNotificationType() {
+    public final Message.Type getNotificationType() {
         String value = dataForm.findValue(NOTIFICATION_TYPE);
         if (value != null) {
             return Message.Type.valueOf(value.toUpperCase());
@@ -393,7 +393,7 @@ public final class NodeConfiguration {
      *
      * @return True, if subscribers are notified when the node configuration changes.
      */
-    public Boolean isNotifyConfig() {
+    public final Boolean isNotifyConfig() {
         return dataForm.findValueAsBoolean(NOTIFY_CONFIG);
     }
 
@@ -402,7 +402,7 @@ public final class NodeConfiguration {
      *
      * @return True, if subscribers are notified when the node is deleted.
      */
-    public Boolean isNotifyDelete() {
+    public final Boolean isNotifyDelete() {
         return dataForm.findValueAsBoolean(NOTIFY_DELETE);
     }
 
@@ -411,7 +411,7 @@ public final class NodeConfiguration {
      *
      * @return True, if subscribers are notified when items are removed from the node.
      */
-    public Boolean isNotifyRetract() {
+    public final Boolean isNotifyRetract() {
         return dataForm.findValueAsBoolean(NOTIFY_RETRACT);
     }
 
@@ -420,7 +420,7 @@ public final class NodeConfiguration {
      *
      * @return True, if owners are notified about new subscribers and unsubscribes.
      */
-    public Boolean isNotifySub() {
+    public final Boolean isNotifySub() {
         return dataForm.findValueAsBoolean(NOTIFY_SUB);
     }
 
@@ -429,7 +429,7 @@ public final class NodeConfiguration {
      *
      * @return True if items are persisted to storage.
      */
-    public Boolean isPersistItems() {
+    public final Boolean isPersistItems() {
         return dataForm.findValueAsBoolean(PERSIST_ITEMS);
     }
 
@@ -438,7 +438,7 @@ public final class NodeConfiguration {
      *
      * @return True, if notifications are only delivered to available users.
      */
-    public Boolean isPresenceBasedDelivery() {
+    public final Boolean isPresenceBasedDelivery() {
         return dataForm.findValueAsBoolean(PRESENCE_BASED_DELIVERY);
     }
 
@@ -447,7 +447,7 @@ public final class NodeConfiguration {
      *
      * @return The publisher model.
      */
-    public PublisherModel getPublisherModel() {
+    public final PublisherModel getPublisherModel() {
         String value = dataForm.findValue(PUBLISH_MODEL);
         if (value != null) {
             return PublisherModel.valueOf(value.toUpperCase());
@@ -460,7 +460,7 @@ public final class NodeConfiguration {
      *
      * @return True, if all items are purged, when the relevant publisher goes offline.
      */
-    public Boolean isPurgeOffline() {
+    public final Boolean isPurgeOffline() {
         return dataForm.findValueAsBoolean(PURGE_OFFLINE);
     }
 
@@ -469,7 +469,7 @@ public final class NodeConfiguration {
      *
      * @return The allowed roster groups.
      */
-    public List<String> getRosterGroupsAllowed() {
+    public final List<String> getRosterGroupsAllowed() {
         return dataForm.findValues(ROSTER_GROUPS_ALLOWED);
     }
 
@@ -478,7 +478,7 @@ public final class NodeConfiguration {
      *
      * @return When to send the last published item.
      */
-    public SendLastPublishedItem getSendLastPublishedItem() {
+    public final SendLastPublishedItem getSendLastPublishedItem() {
         String value = dataForm.findValue(SEND_LAST_PUBLISHED_ITEM);
         if (value != null) {
             return SendLastPublishedItem.valueOf(value.toUpperCase());
@@ -491,7 +491,7 @@ public final class NodeConfiguration {
      *
      * @return True, if subscriptions are temporary.
      */
-    public Boolean isTemporarySubscriptions() {
+    public final Boolean isTemporarySubscriptions() {
         return dataForm.findValueAsBoolean(TEMPSUB);
     }
 
@@ -500,7 +500,7 @@ public final class NodeConfiguration {
      *
      * @return True, if subscriptions are allowed.
      */
-    public Boolean isAllowSubscriptions() {
+    public final Boolean isAllowSubscriptions() {
         return dataForm.findValueAsBoolean(SUBSCRIBE);
     }
 
@@ -509,7 +509,7 @@ public final class NodeConfiguration {
      *
      * @return The title.
      */
-    public String getNodeTitle() {
+    public final String getNodeTitle() {
         return dataForm.findValue(TITLE);
     }
 
@@ -519,7 +519,7 @@ public final class NodeConfiguration {
      *
      * @return The payload type.
      */
-    public String getPayloadType() {
+    public final String getPayloadType() {
         return dataForm.findValue(TYPE);
     }
 
@@ -603,7 +603,7 @@ public final class NodeConfiguration {
          * @param accessModel Who may subscribe and retrieve items.
          * @return The builder.
          */
-        public Builder accessModel(AccessModel accessModel) {
+        public final Builder accessModel(AccessModel accessModel) {
             this.accessModel = accessModel;
             return this;
         }
@@ -616,7 +616,7 @@ public final class NodeConfiguration {
          * @param bodyXslt The URL.
          * @return The builder.
          */
-        public Builder bodyXslt(URL bodyXslt) {
+        public final Builder bodyXslt(URL bodyXslt) {
             this.bodyXslt = bodyXslt;
             return this;
         }
@@ -627,7 +627,7 @@ public final class NodeConfiguration {
          * @param childrenAssociationPolicy Who may associate leaf nodes with a collection.
          * @return The builder.
          */
-        public Builder childrenAssociationPolicy(ChildrenAssociationPolicy childrenAssociationPolicy) {
+        public final Builder childrenAssociationPolicy(ChildrenAssociationPolicy childrenAssociationPolicy) {
             this.childrenAssociationPolicy = childrenAssociationPolicy;
             return this;
         }
@@ -638,7 +638,7 @@ public final class NodeConfiguration {
          * @param childrenAssociationWhitelist The list of JIDs that may associate leaf nodes with a collection.
          * @return The builder.
          */
-        public Builder childrenAssociationWhitelist(Collection<Jid> childrenAssociationWhitelist) {
+        public final Builder childrenAssociationWhitelist(Collection<Jid> childrenAssociationWhitelist) {
             this.childrenAssociationWhitelist = childrenAssociationWhitelist;
             return this;
         }
@@ -649,7 +649,7 @@ public final class NodeConfiguration {
          * @param children The child nodes (leaf or collection) associated with a collection.
          * @return The builder.
          */
-        public Builder children(Collection<String> children) {
+        public final Builder children(Collection<String> children) {
             this.children = children;
             return this;
         }
@@ -660,7 +660,7 @@ public final class NodeConfiguration {
          * @param childrenMax The maximum number of child nodes that can be associated with a collection.
          * @return The builder.
          */
-        public Builder childrenMax(int childrenMax) {
+        public final Builder childrenMax(int childrenMax) {
             this.childrenMax = childrenMax;
             return this;
         }
@@ -671,7 +671,7 @@ public final class NodeConfiguration {
          * @param collection The collection(s) with which a node is affiliated.
          * @return The builder.
          */
-        public Builder collection(Collection<String> collection) {
+        public final Builder collection(Collection<String> collection) {
             this.collection = collection;
             return this;
         }
@@ -682,7 +682,7 @@ public final class NodeConfiguration {
          * @param contacts The JIDs of those to contact with questions.
          * @return The builder.
          */
-        public Builder contacts(Collection<Jid> contacts) {
+        public final Builder contacts(Collection<Jid> contacts) {
             this.contacts = contacts;
             return this;
         }
@@ -697,7 +697,7 @@ public final class NodeConfiguration {
          * @param dataformXslt The URL.
          * @return The builder.
          */
-        public Builder dataformXslt(URL dataformXslt) {
+        public final Builder dataformXslt(URL dataformXslt) {
             this.dataformXslt = dataformXslt;
             return this;
         }
@@ -708,7 +708,7 @@ public final class NodeConfiguration {
          * @param deliverNotifications Whether to deliver event notifications.
          * @return The builder.
          */
-        public Builder deliverNotifications(boolean deliverNotifications) {
+        public final Builder deliverNotifications(boolean deliverNotifications) {
             this.deliverNotifications = deliverNotifications;
             return this;
         }
@@ -719,7 +719,7 @@ public final class NodeConfiguration {
          * @param deliverPayloads Whether to deliver payloads with event notifications; applies only to leaf nodes.
          * @return The builder.
          */
-        public Builder deliverPayloads(boolean deliverPayloads) {
+        public final Builder deliverPayloads(boolean deliverPayloads) {
             this.deliverPayloads = deliverPayloads;
             return this;
         }
@@ -730,7 +730,7 @@ public final class NodeConfiguration {
          * @param description A description of the node.
          * @return The builder.
          */
-        public Builder description(String description) {
+        public final Builder description(String description) {
             this.description = description;
             return this;
         }
@@ -741,7 +741,7 @@ public final class NodeConfiguration {
          * @param itemExpire Number of seconds after which to automatically purge items.
          * @return The builder.
          */
-        public Builder itemExpire(int itemExpire) {
+        public final Builder itemExpire(int itemExpire) {
             this.itemExpire = itemExpire;
             return this;
         }
@@ -752,7 +752,7 @@ public final class NodeConfiguration {
          * @param itemReply Whether owners or publisher should receive replies to items.
          * @return The builder.
          */
-        public Builder itemReply(ItemReply itemReply) {
+        public final Builder itemReply(ItemReply itemReply) {
             this.itemReply = itemReply;
             return this;
         }
@@ -763,7 +763,7 @@ public final class NodeConfiguration {
          * @param language The default language of the node.
          * @return The builder.
          */
-        public Builder language(String language) {
+        public final Builder language(String language) {
             this.language = language;
             return this;
         }
@@ -774,7 +774,7 @@ public final class NodeConfiguration {
          * @param maxItems The maximum number of items to persist.
          * @return The builder.
          */
-        public Builder maxItems(int maxItems) {
+        public final Builder maxItems(int maxItems) {
             this.maxItems = maxItems;
             return this;
         }
@@ -785,7 +785,7 @@ public final class NodeConfiguration {
          * @param maxPayloadSize The maximum payload size in bytes.
          * @return The builder.
          */
-        public Builder maxPayloadSize(int maxPayloadSize) {
+        public final Builder maxPayloadSize(int maxPayloadSize) {
             this.maxPayloadSize = maxPayloadSize;
             return this;
         }
@@ -796,7 +796,7 @@ public final class NodeConfiguration {
          * @param nodeType Whether the node is a leaf (default) or a collection.
          * @return The builder.
          */
-        public Builder nodeType(NodeType nodeType) {
+        public final Builder nodeType(NodeType nodeType) {
             this.nodeType = nodeType;
             return this;
         }
@@ -807,7 +807,7 @@ public final class NodeConfiguration {
          * @param notificationType The notification type.
          * @return The builder.
          */
-        public Builder notificationType(Message.Type notificationType) {
+        public final Builder notificationType(Message.Type notificationType) {
             if (notificationType != Message.Type.HEADLINE && notificationType != Message.Type.NORMAL) {
                 throw new IllegalArgumentException("only 'normal' and 'headline' type allowed.");
             }
@@ -821,7 +821,7 @@ public final class NodeConfiguration {
          * @param notifyConfig Whether to notify subscribers when the node configuration changes.
          * @return The builder.
          */
-        public Builder notifyConfig(boolean notifyConfig) {
+        public final Builder notifyConfig(boolean notifyConfig) {
             this.notifyConfig = notifyConfig;
             return this;
         }
@@ -832,7 +832,7 @@ public final class NodeConfiguration {
          * @param notifyDelete Whether to notify subscribers when the node is deleted.
          * @return The builder.
          */
-        public Builder notifyDelete(boolean notifyDelete) {
+        public final Builder notifyDelete(boolean notifyDelete) {
             this.notifyDelete = notifyDelete;
             return this;
         }
@@ -843,7 +843,7 @@ public final class NodeConfiguration {
          * @param notifyRetract Whether to notify subscribers when items are removed from the node.
          * @return The builder.
          */
-        public Builder notifyRetract(boolean notifyRetract) {
+        public final Builder notifyRetract(boolean notifyRetract) {
             this.notifyRetract = notifyRetract;
             return this;
         }
@@ -854,7 +854,7 @@ public final class NodeConfiguration {
          * @param notifySub Whether to notify owners about new subscribers and unsubscribes.
          * @return The builder.
          */
-        public Builder notifySub(boolean notifySub) {
+        public final Builder notifySub(boolean notifySub) {
             this.notifySub = notifySub;
             return this;
         }
@@ -865,7 +865,7 @@ public final class NodeConfiguration {
          * @param persistItems Whether to persist items to storage.
          * @return The builder.
          */
-        public Builder persistItems(boolean persistItems) {
+        public final Builder persistItems(boolean persistItems) {
             this.persistItems = persistItems;
             return this;
         }
@@ -876,7 +876,7 @@ public final class NodeConfiguration {
          * @param presenceBasedDelivery Whether to deliver notifications to available users only.
          * @return The builder.
          */
-        public Builder presenceBasedDelivery(boolean presenceBasedDelivery) {
+        public final Builder presenceBasedDelivery(boolean presenceBasedDelivery) {
             this.presenceBasedDelivery = presenceBasedDelivery;
             return this;
         }
@@ -887,7 +887,7 @@ public final class NodeConfiguration {
          * @param publisherModel The publisher model.
          * @return The builder.
          */
-        public Builder publisherModel(PublisherModel publisherModel) {
+        public final Builder publisherModel(PublisherModel publisherModel) {
             this.publisherModel = publisherModel;
             return this;
         }
@@ -898,7 +898,7 @@ public final class NodeConfiguration {
          * @param purgeOffline Whether to purge all items when the relevant publisher goes offline.
          * @return The builder.
          */
-        public Builder purgeOffline(boolean purgeOffline) {
+        public final Builder purgeOffline(boolean purgeOffline) {
             this.purgeOffline = purgeOffline;
             return this;
         }
@@ -909,7 +909,7 @@ public final class NodeConfiguration {
          * @param rosterGroupsAllowed The roster group(s) allowed to subscribe and retrieve items.
          * @return The builder.
          */
-        public Builder rosterGroupsAllowed(Collection<String> rosterGroupsAllowed) {
+        public final Builder rosterGroupsAllowed(Collection<String> rosterGroupsAllowed) {
             this.rosterGroupsAllowed = rosterGroupsAllowed;
             return this;
         }
@@ -920,7 +920,7 @@ public final class NodeConfiguration {
          * @param sendLastPublishedItem When to send the last published item.
          * @return The builder.
          */
-        public Builder sendLastPublishedItem(SendLastPublishedItem sendLastPublishedItem) {
+        public final Builder sendLastPublishedItem(SendLastPublishedItem sendLastPublishedItem) {
             this.sendLastPublishedItem = sendLastPublishedItem;
             return this;
         }
@@ -932,7 +932,7 @@ public final class NodeConfiguration {
          * @return The builder.
          * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-tempsub">12.4 Temporary Subscriptions</a>
          */
-        public Builder temporarySubscriptions(boolean temporarySubscriptions) {
+        public final Builder temporarySubscriptions(boolean temporarySubscriptions) {
             this.temporarySubscriptions = temporarySubscriptions;
             return this;
         }
@@ -943,7 +943,7 @@ public final class NodeConfiguration {
          * @param allowSubscriptions Whether to allow subscriptions.
          * @return The builder.
          */
-        public Builder allowSubscriptions(boolean allowSubscriptions) {
+        public final Builder allowSubscriptions(boolean allowSubscriptions) {
             this.allowSubscriptions = allowSubscriptions;
             return this;
         }
@@ -954,7 +954,7 @@ public final class NodeConfiguration {
          * @param title The title.
          * @return The name.
          */
-        public Builder nodeTitle(String title) {
+        public final Builder nodeTitle(String title) {
             this.nodeTitle = title;
             return this;
         }
@@ -965,8 +965,13 @@ public final class NodeConfiguration {
          * @param type The type.
          * @return The builder.
          */
-        public Builder type(String type) {
+        public final Builder type(String type) {
             this.type = type;
+            return this;
+        }
+
+        @Override
+        protected final Builder self() {
             return this;
         }
 
@@ -975,7 +980,7 @@ public final class NodeConfiguration {
          *
          * @return The data form.
          */
-        public NodeConfiguration build() {
+        public final NodeConfiguration build() {
 
             List<DataForm.Field> fields = new ArrayList<>();
             if (accessModel != null) {
@@ -1079,12 +1084,6 @@ public final class NodeConfiguration {
             }
             fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);
             return new NodeConfiguration(new DataForm(this));
-        }
-
-
-        @Override
-        protected Builder self() {
-            return this;
         }
     }
 }

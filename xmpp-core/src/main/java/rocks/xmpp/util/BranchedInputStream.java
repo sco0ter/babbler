@@ -33,7 +33,7 @@ final class BranchedInputStream extends FilterInputStream {
 
     private final OutputStream branch;
 
-    public BranchedInputStream(InputStream input, OutputStream branch) {
+    BranchedInputStream(InputStream input, OutputStream branch) {
         super(input);
         this.branch = branch;
     }

@@ -59,7 +59,7 @@ final class SaslPrep {
      *
      * @return The mapped string.
      */
-    public static String prepare(String input) {
+    static String prepare(String input) {
 
         // 2.1. Mapping
         // This profile specifies:

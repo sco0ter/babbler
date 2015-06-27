@@ -33,7 +33,7 @@ final class BranchedOutputStream extends OutputStream {
 
     private final OutputStream branch;
 
-    public BranchedOutputStream(OutputStream out, OutputStream branch) {
+    BranchedOutputStream(OutputStream out, OutputStream branch) {
         this.out = out;
         this.branch = branch;
     }

@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.time.Instant;
@@ -61,13 +62,10 @@ public final class Event {
             @XmlElement(name = "purge", type = Purge.class),
             @XmlElement(name = "subscription", type = SubscriptionInfo.class)
     })
-    private PubSubEventChildElement type;
+    private final PubSubEventChildElement type;
 
     private Event() {
-    }
-
-    private Event(PubSubEventChildElement type) {
-        this.type = type;
+        this.type = null;
     }
 
     /**
@@ -75,7 +73,7 @@ public final class Event {
      *
      * @return The node.
      */
-    public String getNode() {
+    public final String getNode() {
         return type != null ? type.getNode() : null;
     }
 
@@ -84,7 +82,7 @@ public final class Event {
      *
      * @return True, if the configuration has changed.
      */
-    public boolean isConfiguration() {
+    public final boolean isConfiguration() {
         return type instanceof Configuration;
     }
 
@@ -93,7 +91,7 @@ public final class Event {
      *
      * @return True, if a node has been deleted.
      */
-    public boolean isDelete() {
+    public final boolean isDelete() {
         return type instanceof Delete;
     }
 
@@ -102,7 +100,7 @@ public final class Event {
      *
      * @return True, if a node has been purged.
      */
-    public boolean isPurge() {
+    public final boolean isPurge() {
         return type instanceof Purge;
     }
 
@@ -111,7 +109,7 @@ public final class Event {
      *
      * @return The subscription approval or null, if the event did not include a subscription.
      */
-    public Subscription getSubscription() {
+    public final Subscription getSubscription() {
         if (type instanceof SubscriptionInfo) {
             return ((SubscriptionInfo) type);
         }
@@ -123,9 +121,9 @@ public final class Event {
      *
      * @return The items of the event or an empty list, if the event did not include any items.
      */
-    public List<Item> getItems() {
+    public final List<Item> getItems() {
         if (type instanceof Items) {
-            return Collections.unmodifiableList(((Items) type).getItems());
+            return Collections.unmodifiableList(((Items) type).item);
         }
         return Collections.emptyList();
     }
@@ -136,9 +134,9 @@ public final class Event {
      * @return The configuration form or null, if the configuration form isn't included.
      * @see #isConfiguration()
      */
-    public DataForm getConfigurationForm() {
+    public final DataForm getConfigurationForm() {
         if (type instanceof Configuration) {
-            return ((Configuration) type).getConfigurationForm();
+            return ((Configuration) type).dataForm;
         }
         return null;
     }
@@ -149,9 +147,9 @@ public final class Event {
      * @return The redirect URI or null, if a redirect URI isn't included.
      * @see #isDelete()
      */
-    public URI getRedirectUri() {
-        if (type instanceof Delete && ((Delete) type).getRedirect() != null) {
-            return ((Delete) type).getRedirect().getUri();
+    public final URI getRedirectUri() {
+        if (type instanceof Delete && ((Delete) type).redirect != null) {
+            return ((Delete) type).redirect.uri;
         }
         return null;
     }
@@ -159,46 +157,31 @@ public final class Event {
     private static final class Configuration extends PubSubEventChildElement {
 
         @XmlElementRef
-        private DataForm dataForm;
+        private final DataForm dataForm;
 
-        private DataForm getConfigurationForm() {
-            return dataForm;
+        private Configuration() {
+            this.dataForm = null;
         }
     }
 
     private static final class Delete extends PubSubEventChildElement {
 
-        private Redirect redirect;
+        private final Redirect redirect;
 
         private Delete() {
-        }
-
-        private Delete(String node) {
-            super(node);
-        }
-
-        private Delete(String node, Redirect redirect) {
-            super(node);
-            this.redirect = redirect;
-        }
-
-        private Redirect getRedirect() {
-            return redirect;
+            this.redirect = null;
         }
 
         private static final class Redirect {
             @XmlAttribute
-            private URI uri;
+            private final URI uri;
 
             private Redirect() {
+                this(null);
             }
 
             private Redirect(URI uri) {
                 this.uri = uri;
-            }
-
-            private URI getUri() {
-                return uri;
             }
         }
     }
@@ -208,36 +191,22 @@ public final class Event {
         private final List<ItemElement> item = new ArrayList<>();
 
         @XmlAttribute(name = "max_items")
-        private Long maxItems;
+        private final Long maxItems;
 
         @XmlAttribute
-        private String subid;
+        private final String subid;
 
-        private Retract retract;
+        private final Retract retract;
 
         private Items() {
+            this(null, null);
         }
 
-        private Items(String node) {
-            super(node);
-        }
-
-        private Items(String node, long maxItems) {
+        private Items(String node, Long maxItems) {
             super(node);
             this.maxItems = maxItems;
-        }
-
-        private Items(String node, ItemElement item) {
-            super(node);
-            this.item.add(item);
-        }
-
-        private List<? extends Item> getItems() {
-            return item;
-        }
-
-        private Retract getRetract() {
-            return retract;
+            this.subid = null;
+            this.retract = null;
         }
     }
 
@@ -245,35 +214,29 @@ public final class Event {
 
         private Purge() {
         }
-
-        private Purge(String node) {
-            super(node);
-        }
     }
 
     private static final class Retract {
         @XmlAttribute
-        private String node;
+        private final String node;
 
         @XmlAttribute
-        private Boolean notify;
+        private final Boolean notify;
 
-        private ItemElement item;
+        private final ItemElement item;
 
         @XmlAttribute
-        private String id;
+        private final String id;
 
         private Retract() {
+            this(null, null, null);
         }
 
         private Retract(String node, ItemElement item, Boolean notify) {
             this.node = node;
             this.item = item;
             this.notify = notify;
-        }
-
-        private String getId() {
-            return id;
+            this.id = null;
         }
     }
 
@@ -281,44 +244,51 @@ public final class Event {
 
         @XmlAttribute
         @XmlJavaTypeAdapter(InstantAdapter.class)
-        private Instant expiry;
+        private final Instant expiry;
 
         @XmlAttribute
-        private Jid jid;
+        private final Jid jid;
 
         @XmlAttribute
-        private String subid;
+        private final String subid;
 
         @XmlAttribute
-        private SubscriptionState subscription;
+        private final SubscriptionState subscription;
+
+        private SubscriptionInfo() {
+            this.expiry = null;
+            this.jid = null;
+            this.subid = null;
+            this.subscription = null;
+        }
 
         @Override
-        public Jid getJid() {
+        public final Jid getJid() {
             return jid;
         }
 
         @Override
-        public String getSubId() {
+        public final String getSubId() {
             return subid;
         }
 
         @Override
-        public SubscriptionState getSubscriptionState() {
+        public final SubscriptionState getSubscriptionState() {
             return subscription;
         }
 
         @Override
-        public Instant getExpiry() {
+        public final Instant getExpiry() {
             return expiry;
         }
 
         @Override
-        public boolean isConfigurationRequired() {
+        public final boolean isConfigurationRequired() {
             return false;
         }
 
         @Override
-        public boolean isConfigurationSupported() {
+        public final boolean isConfigurationSupported() {
             return false;
         }
     }
@@ -326,62 +296,57 @@ public final class Event {
     private static final class ItemElement implements Item {
 
         @XmlAnyElement(lax = true)
-        private Object object;
+        private final Object object;
 
         @XmlAttribute
-        private String id;
+        private final String id;
 
         @XmlAttribute
-        private String node;
+        private final String node;
 
         @XmlAttribute
-        private String publisher;
+        private final String publisher;
 
         private ItemElement() {
-        }
-
-        private ItemElement(String id) {
-            this.id = id;
-        }
-
-        private ItemElement(Object object) {
-            this.object = object;
+            this.object = this.id = this.node = this.publisher = null;
         }
 
         @Override
-        public Object getPayload() {
+        public final Object getPayload() {
             return object;
         }
 
         @Override
-        public String getId() {
+        public final String getId() {
             return id;
         }
 
         @Override
-        public String getNode() {
+        public final String getNode() {
             return node;
         }
 
         @Override
-        public String getPublisher() {
+        public final String getPublisher() {
             return publisher;
         }
     }
 
+    @XmlTransient
     private abstract static class PubSubEventChildElement {
 
         @XmlAttribute
-        private String node;
+        private final String node;
 
         private PubSubEventChildElement() {
+            this(null);
         }
 
         private PubSubEventChildElement(String node) {
             this.node = node;
         }
 
-        public String getNode() {
+        public final String getNode() {
             return node;
         }
     }

@@ -230,7 +230,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #getIdentities()
      */
     public final void addIdentity(Identity identity) {
-        if (identities.add(identity)) {
+        if (identities.add(identity) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
     }
@@ -243,7 +243,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #getIdentities()
      */
     public final void removeIdentity(Identity identity) {
-        if (identities.remove(identity)) {
+        if (identities.remove(identity) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
     }
@@ -260,7 +260,9 @@ public final class ServiceDiscoveryManager extends Manager {
         if (features.add(feature)) {
             Extension extension = featureToExtension.get(feature);
             setEnabled(extension != null ? Collections.singleton(extension) : null, feature, true);
-            XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
+            if (xmppSession.isConnected()) {
+                XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
+            }
         }
     }
 
@@ -275,7 +277,9 @@ public final class ServiceDiscoveryManager extends Manager {
         if (features.remove(feature)) {
             Extension extension = featureToExtension.get(feature);
             setEnabled(extension != null ? Collections.singleton(extension) : null, feature, false);
-            XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
+            if (xmppSession.isConnected()) {
+                XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
+            }
         }
     }
 
@@ -312,7 +316,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public final void addExtension(DataForm extension) {
-        if (extensions.add(extension)) {
+        if (extensions.add(extension) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
     }
@@ -326,7 +330,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public final void removeExtension(DataForm extension) {
-        if (extensions.remove(extension)) {
+        if (extensions.remove(extension) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
     }
@@ -516,9 +520,12 @@ public final class ServiceDiscoveryManager extends Manager {
                 Class<? extends Manager> managerClass = extension.getManager();
                 if (managerClass != null) {
                     Manager manager = xmppSession.getManager(managerClass);
-                    manager.setEnabled(enabled);
+                    if (enabled != manager.isEnabled()) {
+                        manager.setEnabled(enabled);
+                    }
                 }
                 enableFeature(extension.getNamespace(), enabled);
+
                 for (String subFeature : extension.getFeatures()) {
                     enableFeature(subFeature, enabled);
                 }

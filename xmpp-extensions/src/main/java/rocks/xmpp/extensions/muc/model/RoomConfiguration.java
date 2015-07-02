@@ -31,6 +31,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -134,15 +135,20 @@ public final class RoomConfiguration {
         return new Builder();
     }
 
-    private static String rolesToValue(Collection<Role> roles) {
-        if (roles.contains(Role.MODERATOR) && roles.contains(Role.PARTICIPANT)) {
-            return "anyone";
-        } else if (roles.contains(Role.PARTICIPANT)) {
-            return "participants";
-        } else if (roles.contains(Role.MODERATOR)) {
-            return "moderators";
-        } else {
+    private static String rolesToValue(Collection<Role> roles, boolean isWhois) {
+        if (roles.isEmpty() || roles.contains(Role.NONE)) {
             return "none";
+        } else if (roles.contains(Role.MODERATOR) && roles.contains(Role.PARTICIPANT) && roles.contains(Role.VISITOR)) {
+            return "anyone";
+        } else if (roles.contains(Role.PARTICIPANT) && !isWhois) {
+            // The _whois configuration option specifies whether the room is
+            // non-anonymous (a value of "anyone"),
+            // semi-anonymous (a value of "moderators"),
+            // or fully anonmyous (a value of "none", not shown here).
+            // => it lacks "participant" value, therefore don't use it.
+            return "participants";
+        } else {
+            return "moderators";
         }
     }
 
@@ -151,13 +157,14 @@ public final class RoomConfiguration {
         if (value != null) {
             switch (value) {
                 case "anyone":
-                    roles.add(Role.MODERATOR);
-                    roles.add(Role.PARTICIPANT);
+                    roles.addAll(EnumSet.of(Role.MODERATOR, Role.PARTICIPANT, Role.VISITOR));
                     break;
                 case "participants":
-                    roles.add(Role.PARTICIPANT);
+                    // Anyone with Voice
+                    roles.addAll(EnumSet.of(Role.MODERATOR, Role.PARTICIPANT));
                     break;
                 case "moderators":
+                    // Moderators Only
                     roles.add(Role.MODERATOR);
                     break;
                 default:
@@ -675,7 +682,7 @@ public final class RoomConfiguration {
                 fields.add(DataForm.Field.builder().var(MAX_HISTORY_FETCH).value(maxHistoryFetch).build());
             }
             if (rolesThatMaySendPrivateMessages != null && !rolesThatMaySendPrivateMessages.isEmpty()) {
-                fields.add(DataForm.Field.builder().var(ALLOW_PM).value(rolesToValue(rolesThatMaySendPrivateMessages)).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().var(ALLOW_PM).value(rolesToValue(rolesThatMaySendPrivateMessages, false)).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (invitesAllowed != null) {
                 fields.add(DataForm.Field.builder().var(ALLOW_INVITES).value(invitesAllowed).build());
@@ -732,7 +739,7 @@ public final class RoomConfiguration {
                 fields.add(DataForm.Field.builder().var(ROOM_SECRET).value(password).build());
             }
             if (whois != null && !whois.isEmpty()) {
-                fields.add(DataForm.Field.builder().var(WHOIS).value(rolesToValue(whois)).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().var(WHOIS).value(rolesToValue(whois, true)).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);
             return new RoomConfiguration(new DataForm(this));

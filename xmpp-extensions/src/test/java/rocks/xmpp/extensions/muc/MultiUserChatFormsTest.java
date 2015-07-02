@@ -85,11 +85,11 @@ public class MultiUserChatFormsTest extends XmlTest {
 
         RoomConfiguration roomConfiguration = RoomConfiguration.builder()
                 .maxHistoryMessages(4)
-                .rolesThatMaySendPrivateMessages(Arrays.asList(Role.MODERATOR, Role.PARTICIPANT))
+                .rolesThatMaySendPrivateMessages(EnumSet.of(Role.MODERATOR, Role.PARTICIPANT, Role.VISITOR))
                 .invitesAllowed(true)
                 .changeSubjectAllowed(true)
                 .loggingEnabled(true)
-                .rolesThatMayRetrieveMemberList(Collections.singletonList(Role.PARTICIPANT))
+                .rolesThatMayRetrieveMemberList(EnumSet.of(Role.PARTICIPANT))
                 .language("en")
                 .pubSubNode(URI.create("xmpp:pubsub.shakespeare.lit?;node=princely_musings"))
                 .maxUsers(30)
@@ -97,7 +97,7 @@ public class MultiUserChatFormsTest extends XmlTest {
                 .moderated(true)
                 .passwordProtected(true)
                 .persistent(true)
-                .rolesForWhichPresenceIsBroadcast(Arrays.asList(Role.MODERATOR, Role.PARTICIPANT))
+                .rolesForWhichPresenceIsBroadcast(EnumSet.of(Role.MODERATOR, Role.PARTICIPANT))
                 .publicRoom(true)
                 .administrators(Arrays.asList(Jid.valueOf("admin1"), Jid.valueOf("admin2")))
                 .description("description")
@@ -140,7 +140,7 @@ public class MultiUserChatFormsTest extends XmlTest {
         RoomConfiguration roomConfiguration1 = new RoomConfiguration(dataForm);
 
         Assert.assertEquals(roomConfiguration1.getMaxHistoryMessages(), Integer.valueOf(4));
-        Assert.assertEquals(roomConfiguration1.getRolesThatMaySendPrivateMessages(), Arrays.asList(Role.MODERATOR, Role.PARTICIPANT));
+        Assert.assertEquals(roomConfiguration1.getRolesThatMaySendPrivateMessages(), EnumSet.of(Role.MODERATOR, Role.PARTICIPANT, Role.VISITOR));
         Assert.assertTrue(roomConfiguration1.isInvitesAllowed());
         Assert.assertTrue(roomConfiguration1.isChangeSubjectAllowed());
         Assert.assertTrue(roomConfiguration1.isLoggingEnabled());

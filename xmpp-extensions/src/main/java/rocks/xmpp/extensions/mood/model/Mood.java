@@ -279,7 +279,7 @@ public final class Mood {
             sb.append(value);
         }
         if (text != null) {
-            sb.append(" (").append(text).append(")");
+            sb.append(" (").append(text).append(')');
         }
         return sb.toString();
     }

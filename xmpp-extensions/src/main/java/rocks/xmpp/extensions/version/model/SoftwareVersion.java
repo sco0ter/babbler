@@ -120,7 +120,7 @@ public final class SoftwareVersion {
         }
         if (version != null) {
             if (!sb.toString().isEmpty()) {
-                sb.append(" ");
+                sb.append(' ');
             }
             sb.append(version);
         }

@@ -287,7 +287,7 @@ public final class Contact implements Comparable<Contact> {
     public final String toString() {
         StringBuilder sb = new StringBuilder(jid.toString());
         if (name != null) {
-            sb.append(" (").append(name).append(")");
+            sb.append(" (").append(name).append(')');
         }
         return sb.toString();
     }

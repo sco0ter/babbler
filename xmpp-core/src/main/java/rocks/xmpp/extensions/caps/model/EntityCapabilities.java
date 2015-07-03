@@ -113,19 +113,19 @@ public final class EntityCapabilities extends StreamFeature {
             if (identity.getCategory() != null) {
                 sb.append(identity.getCategory());
             }
-            sb.append("/");
+            sb.append('/');
             if (identity.getType() != null) {
                 sb.append(identity.getType());
             }
-            sb.append("/");
+            sb.append('/');
             if (identity.getLanguage() != null) {
                 sb.append(identity.getLanguage());
             }
-            sb.append("/");
+            sb.append('/');
             if (identity.getName() != null) {
                 sb.append(identity.getName());
             }
-            sb.append("<");
+            sb.append('<');
         }
 
         // 4. Sort the supported service discovery features.
@@ -164,7 +164,7 @@ public final class EntityCapabilities extends StreamFeature {
                     if (!DataForm.FORM_TYPE.equals(field.getVar())) {
                         // 7.3.1. Append the value of the "var" attribute, followed by the '<' character.
                         sb.append(field.getVar());
-                        sb.append("<");
+                        sb.append('<');
 
                         // 7.3.2. Sort values by the XML character data of the <value/> element.
                         values.sort(null);
@@ -173,7 +173,7 @@ public final class EntityCapabilities extends StreamFeature {
                     // 7.3.3. For each <value/> element, append the XML character data, followed by the '<' character.
                     for (String value : values) {
                         sb.append(value);
-                        sb.append("<");
+                        sb.append('<');
                     }
                 }
             }

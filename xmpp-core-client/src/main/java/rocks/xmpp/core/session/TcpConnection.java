@@ -402,7 +402,7 @@ public final class TcpConnection extends Connection {
             sb.append(String.format(" to %s:%s", hostname, port));
         }
         if (streamId != null) {
-            sb.append(" (").append(streamId).append(")");
+            sb.append(" (").append(streamId).append(')');
         }
         if (from != null) {
             sb.append(", from: ").append(from);

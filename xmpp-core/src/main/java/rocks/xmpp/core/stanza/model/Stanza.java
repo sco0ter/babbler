@@ -190,13 +190,13 @@ public abstract class Stanza implements StreamElement {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if (id != null) {
-            sb.append(" (").append(id).append(")");
+            sb.append(" (").append(id).append(')');
         }
         if (from != null) {
-            sb.append(" from '").append(from).append("'");
+            sb.append(" from '").append(from).append('\'');
         }
         if (to != null) {
-            sb.append(" to '").append(to).append("'");
+            sb.append(" to '").append(to).append('\'');
         }
         return sb.toString();
     }

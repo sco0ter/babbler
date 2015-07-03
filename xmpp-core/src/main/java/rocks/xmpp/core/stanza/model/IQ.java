@@ -164,7 +164,7 @@ public class IQ extends Stanza {
     public final String toString() {
         StringBuilder sb = new StringBuilder("IQ");
         if (type != null) {
-            sb.append("-").append(type.name().toLowerCase());
+            sb.append('-').append(type.name().toLowerCase());
         }
         return sb.append(super.toString()).toString();
     }

@@ -122,7 +122,7 @@ public final class Item implements ResultSetItem {
         if (name != null) {
             sb.append(" (");
             sb.append(name);
-            sb.append(")");
+            sb.append(')');
         }
         return sb.toString();
     }

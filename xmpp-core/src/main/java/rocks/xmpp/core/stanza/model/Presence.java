@@ -349,11 +349,11 @@ public class Presence extends Stanza implements Comparable<Presence> {
         StringBuilder sb = new StringBuilder();
         if (type != null) {
             String sType = type.name();
-            sb.append(sType.substring(0, 1)).append(sType.substring(1).toLowerCase()).append(" ");
+            sb.append(sType.substring(0, 1)).append(sType.substring(1).toLowerCase()).append(' ');
         }
         sb.append("Presence");
         if (show != null) {
-            sb.append(" ").append(show.name());
+            sb.append(' ').append(show.name());
         }
         sb.append(super.toString());
 

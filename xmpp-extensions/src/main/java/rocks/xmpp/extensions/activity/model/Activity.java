@@ -157,7 +157,7 @@ public final class Activity {
                 sb.append(" / ").append(category.specificActivity);
             }
             if (text != null) {
-                sb.append(" (").append(text).append(")");
+                sb.append(" (").append(text).append(')');
             }
             return sb.toString();
         }

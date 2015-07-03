@@ -812,7 +812,7 @@ public final class BoshConnection extends Connection {
             sb.append(String.format(" to %s", url));
         }
         if (sessionId != null) {
-            sb.append(" (").append(sessionId).append(")");
+            sb.append(" (").append(sessionId).append(')');
         }
         if (from != null) {
             sb.append(", from: ").append(from);

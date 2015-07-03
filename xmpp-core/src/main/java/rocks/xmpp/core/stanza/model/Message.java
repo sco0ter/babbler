@@ -339,7 +339,7 @@ public class Message extends Stanza {
         StringBuilder sb = new StringBuilder();
         if (type != null) {
             String sType = type.name();
-            sb.append(sType.substring(0, 1)).append(sType.substring(1).toLowerCase()).append(" ");
+            sb.append(sType.substring(0, 1)).append(sType.substring(1).toLowerCase()).append(' ');
         }
         sb.append("Message");
         sb.append(super.toString());

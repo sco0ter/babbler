@@ -229,7 +229,7 @@ public final class StanzaError {
         sb.append(condition);
         sb.append("  -  (");
         sb.append(type);
-        sb.append(")");
+        sb.append(')');
 
         if (text != null) {
             sb.append("\n        ");

@@ -44,8 +44,6 @@ import javax.naming.directory.InitialDirContext;
 import javax.net.ssl.HttpsURLConnection;
 import javax.xml.bind.JAXBElement;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.XMLEvent;
 import java.io.ByteArrayOutputStream;
@@ -93,10 +91,6 @@ public final class BoshConnection extends Connection {
      * The request id. A large number which will get incremented with every request.
      */
     private final AtomicLong rid = new AtomicLong();
-
-    private final XMLOutputFactory xmlOutputFactory;
-
-    private final XMLInputFactory xmlInputFactory;
 
     private final BoshConnectionConfiguration boshConnectionConfiguration;
 
@@ -171,8 +165,6 @@ public final class BoshConnection extends Connection {
         this.boshConnectionConfiguration = configuration;
         this.debugger = getXmppSession().getDebugger();
 
-        xmlOutputFactory = XMLOutputFactory.newFactory();
-        xmlInputFactory = XMLInputFactory.newFactory();
         compressionMethods = new LinkedHashMap<>();
         for (CompressionMethod compressionMethod : boshConnectionConfiguration.getCompressionMethods()) {
             compressionMethods.put(compressionMethod.getName(), compressionMethod);
@@ -653,7 +645,7 @@ public final class BoshConnection extends Connection {
                                     XMLStreamWriter xmlStreamWriter = null;
                                     try (OutputStream xmppOutputStream = debugger != null ? debugger.createOutputStream(branchedOutputStream) : branchedOutputStream) {
                                         // Create the writer for this connection.
-                                        xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(xmppOutputStream, "UTF-8"));
+                                        xmlStreamWriter = XmppUtils.createXmppStreamWriter(getXmppSession().getConfiguration().getXmlOutputFactory().createXMLStreamWriter(xmppOutputStream, "UTF-8"));
 
                                         // Then write the XML to the output stream by marshalling the object to the writer.
                                         // Marshaller needs to be recreated here, because it's not thread-safe.
@@ -690,7 +682,7 @@ public final class BoshConnection extends Connection {
                                         XMLEventReader xmlEventReader = null;
                                         try {
                                             // Read the response.
-                                            xmlEventReader = xmlInputFactory.createXMLEventReader(xmppInputStream, "UTF-8");
+                                            xmlEventReader = getXmppSession().getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
                                             while (xmlEventReader.hasNext()) {
                                                 XMLEvent xmlEvent = xmlEventReader.peek();
 

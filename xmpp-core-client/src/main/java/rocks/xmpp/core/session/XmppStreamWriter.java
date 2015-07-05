@@ -32,7 +32,6 @@ import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.Marshaller;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -57,11 +56,11 @@ final class XmppStreamWriter {
 
     private final ExecutorService executor;
 
-    private final XMLOutputFactory xmlOutputFactory;
-
     private final Marshaller marshaller;
 
     private final XmppDebugger debugger;
+
+    private final String namespace;
 
     /**
      * An executor which periodically schedules a whitespace ping.
@@ -89,16 +88,12 @@ final class XmppStreamWriter {
      */
     private boolean streamOpened;
 
-    private final String namespace;
-
-    XmppStreamWriter(String namespace, final XmppSession xmppSession, XMLOutputFactory xmlOutputFactory) {
+    XmppStreamWriter(String namespace, final XmppSession xmppSession) {
         this.namespace = namespace;
         this.xmppSession = xmppSession;
-        this.xmlOutputFactory = xmlOutputFactory;
         this.marshaller = xmppSession.createMarshaller();
         this.debugger = xmppSession.getDebugger();
-
-        executor = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("XMPP Writer Thread"));
+        this.executor = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("XMPP Writer Thread"));
     }
 
     void initialize(int keepAliveInterval) {
@@ -157,7 +152,7 @@ final class XmppStreamWriter {
                     } else {
                         xmppOutputStream = outputStream;
                     }
-                    xmlStreamWriter = xmlOutputFactory.createXMLStreamWriter(xmppOutputStream, "UTF-8");
+                    xmlStreamWriter = xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(xmppOutputStream, "UTF-8");
 
                     prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, namespace);
                     streamOpened = false;

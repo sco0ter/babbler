@@ -42,7 +42,6 @@ import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.cache.DirectoryCache;
 
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -298,7 +297,7 @@ public final class RosterManager extends Manager {
             try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
                 XMLStreamWriter xmppStreamWriter = null;
                 try {
-                    xmppStreamWriter = XmppUtils.createXmppStreamWriter(XMLOutputFactory.newFactory().createXMLStreamWriter(outputStream));
+                    xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(outputStream));
                     xmppStreamWriter.flush();
                     xmppSession.createMarshaller().marshal(roster, xmppStreamWriter);
                 } finally {

@@ -42,7 +42,6 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
-import javax.xml.stream.XMLOutputFactory;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -181,13 +180,12 @@ public final class TcpConnection extends Connection {
         outputStream = new BufferedOutputStream(socket.getOutputStream());
         inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
-        XMLOutputFactory xmlOutputFactory = XMLOutputFactory.newFactory();
-        xmppStreamWriter = new XmppStreamWriter(namespace, this.getXmppSession(), xmlOutputFactory);
+        xmppStreamWriter = new XmppStreamWriter(namespace, this.getXmppSession());
         xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
         xmppStreamWriter.openStream(outputStream, from);
 
         // Start reading from the input stream.
-        xmppStreamReader = new XmppStreamReader(namespace, this, this.getXmppSession(), xmlOutputFactory, onStreamOpened);
+        xmppStreamReader = new XmppStreamReader(namespace, this, this.getXmppSession(), onStreamOpened);
         xmppStreamReader.startReading(inputStream);
     }
 

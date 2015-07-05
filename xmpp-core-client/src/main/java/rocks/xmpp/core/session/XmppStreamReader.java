@@ -35,8 +35,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.Attribute;
@@ -64,10 +62,6 @@ final class XmppStreamReader {
 
     private final ExecutorService executorService;
 
-    private final XMLInputFactory xmlInputFactory;
-
-    private final XMLOutputFactory xmlOutputFactory;
-
     private final XmppDebugger debugger;
 
     private final Marshaller marshaller;
@@ -78,15 +72,13 @@ final class XmppStreamReader {
 
     private final String namespace;
 
-    public XmppStreamReader(String namespace, final TcpConnection connection, XmppSession xmppSession, XMLOutputFactory xmlOutputFactory, Consumer<String> onStreamOpened) {
+    public XmppStreamReader(String namespace, final TcpConnection connection, XmppSession xmppSession, Consumer<String> onStreamOpened) {
         this.connection = connection;
         this.xmppSession = xmppSession;
         this.debugger = xmppSession.getDebugger();
         this.marshaller = xmppSession.createMarshaller();
         this.unmarshaller = xmppSession.createUnmarshaller();
         this.executorService = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("XMPP Reader Thread"));
-        this.xmlInputFactory = XMLInputFactory.newFactory();
-        this.xmlOutputFactory = xmlOutputFactory;
         this.onStreamOpened = onStreamOpened;
         this.namespace = namespace;
     }
@@ -106,7 +98,7 @@ final class XmppStreamReader {
                         xmppInputStream = inputStream;
                     }
                     XMLEvent startDocument = null;
-                    xmlEventReader = xmlInputFactory.createXMLEventReader(xmppInputStream, "UTF-8");
+                    xmlEventReader = xmppSession.getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
                     while (!doRestart && xmlEventReader.hasNext()) {
                         XMLEvent xmlEvent = xmlEventReader.peek();
                         StringWriter stringWriter = null;
@@ -131,7 +123,7 @@ final class XmppStreamReader {
                                     onStreamOpened.accept(fromAttribute != null ? fromAttribute.getValue() : null);
                                 }
                                 if (debugger != null) {
-                                    XMLEventWriter writer = xmlOutputFactory.createXMLEventWriter(stringWriter);
+                                    XMLEventWriter writer = xmppSession.getConfiguration().getXmlOutputFactory().createXMLEventWriter(stringWriter);
                                     writer.add(startDocument);
                                     writer.add(xmlEvent);
                                     writer.flush();
@@ -144,7 +136,7 @@ final class XmppStreamReader {
 
                                 if (debugger != null) {
                                     // Marshal the inbound stanza. The byteArrayOutputStream cannot be used for that, even if we reset() it, because it could already contain the next stanza.
-                                    XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(stringWriter), namespace);
+                                    XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(stringWriter), namespace);
                                     marshaller.marshal(object, xmlStreamWriter);
                                     xmlStreamWriter.flush();
                                     debugger.readStanza(stringWriter.toString(), object);

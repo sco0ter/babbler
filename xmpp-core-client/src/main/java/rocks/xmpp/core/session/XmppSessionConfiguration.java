@@ -30,6 +30,8 @@ import rocks.xmpp.core.stanza.model.Presence;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -91,6 +93,10 @@ public final class XmppSessionConfiguration {
 
     private final JAXBContext jaxbContext;
 
+    private final XMLInputFactory xmlInputFactory;
+
+    private final XMLOutputFactory xmlOutputFactory;
+
     private final Class<? extends XmppDebugger> xmppDebugger;
 
     private final int defaultResponseTimeout;
@@ -114,6 +120,8 @@ public final class XmppSessionConfiguration {
         this.authenticationMechanisms = builder.authenticationMechanisms;
         this.cacheDirectory = builder.cacheDirectory;
         this.initialPresence = builder.initialPresence;
+        this.xmlInputFactory = XMLInputFactory.newFactory();
+        this.xmlOutputFactory = XMLOutputFactory.newFactory();
 
         CoreContext context = builder.context;
 
@@ -245,6 +253,24 @@ public final class XmppSessionConfiguration {
 
     final Collection<Extension> getExtensions() {
         return extensions;
+    }
+
+    /**
+     * Gets the XML input factory.
+     *
+     * @return the XML input factory
+     */
+    public final XMLInputFactory getXmlInputFactory() {
+        return xmlInputFactory;
+    }
+
+    /**
+     * Gets the XML output factory.
+     *
+     * @return The XML output factory
+     */
+    public final XMLOutputFactory getXmlOutputFactory() {
+        return xmlOutputFactory;
     }
 
     /**

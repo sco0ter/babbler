@@ -111,6 +111,8 @@ public final class XmppClient extends XmppSession {
 
     private final AuthenticationManager authenticationManager;
 
+    private final StreamFeaturesManager streamFeaturesManager;
+
     /**
      * The user, which is assigned by the server after resource binding.
      */
@@ -149,7 +151,7 @@ public final class XmppClient extends XmppSession {
     public XmppClient(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
         super(xmppServiceDomain, configuration, connectionConfigurations);
 
-        StreamFeaturesManager streamFeaturesManager = getManager(StreamFeaturesManager.class);
+        streamFeaturesManager = getManager(StreamFeaturesManager.class);
 
         authenticationManager = new AuthenticationManager(this);
 
@@ -203,7 +205,7 @@ public final class XmppClient extends XmppSession {
 
             // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
             try {
-                getManager(StreamFeaturesManager.class).awaitNegotiation(Mechanisms.class, 10000);
+                streamFeaturesManager.awaitNegotiation(Mechanisms.class, 10000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw e;
@@ -342,7 +344,7 @@ public final class XmppClient extends XmppSession {
             } else {
                 authenticationManager.startAuthentication(mechanisms, authorizationId, callbackHandler);
             }
-            StreamFeaturesManager streamFeaturesManager = getManager(StreamFeaturesManager.class);
+
             // Negotiate all pending features until <bind/> would be negotiated.
             streamFeaturesManager.awaitNegotiation(Bind.class, configuration.getDefaultResponseTimeout());
 
@@ -424,7 +426,7 @@ public final class XmppClient extends XmppSession {
         // Deprecated method of session binding, according to the <a href="http://xmpp.org/rfcs/rfc3921.html#session">old specification</a>
         // This is no longer used, according to the <a href="http://xmpp.org/rfcs/rfc6120.html">updated specification</a>.
         // But some old server implementation still require it.
-        Session session = (Session) getManager(StreamFeaturesManager.class).getFeatures().get(Session.class);
+        Session session = (Session) streamFeaturesManager.getFeatures().get(Session.class);
         if (session != null && session.isMandatory()) {
             logger.fine("Establishing session.");
             query(new IQ(IQ.Type.SET, new Session()));

@@ -254,17 +254,6 @@ final class XmppStreamWriter {
                 keepAliveExecutor.shutdown();
             }
             executor.shutdown();
-
-            // Wait for termination after shutdown.
-            try {
-                if (keepAliveExecutor != null) {
-                    keepAliveExecutor.awaitTermination(100, TimeUnit.MILLISECONDS);
-                }
-                executor.awaitTermination(250, TimeUnit.MILLISECONDS);
-
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
         }
     }
 }

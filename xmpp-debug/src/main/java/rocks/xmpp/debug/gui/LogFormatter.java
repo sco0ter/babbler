@@ -44,11 +44,11 @@ public class LogFormatter extends SimpleFormatter {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
 
         LocalDateTime resultDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(record.getMillis()), ZoneId.systemDefault());
-        sb.append(dateTimeFormatter.format(resultDate));
-        sb.append(' ');
-        sb.append(record.getLevel());
-        sb.append("  ");
-        sb.append(formatMessage(record));
+        sb.append(dateTimeFormatter.format(resultDate))
+                .append(' ')
+                .append(record.getLevel())
+                .append("  ")
+                .append(formatMessage(record));
         if (record.getThrown() != null) {
             sb.append('\n');
             StringWriter stringWriter = new StringWriter();
@@ -56,7 +56,7 @@ public class LogFormatter extends SimpleFormatter {
             record.getThrown().printStackTrace(printWriter);
             sb.append(stringWriter.toString());
         }
-        sb.append("\n");
+        sb.append('\n');
         return sb.toString();
     }
 }

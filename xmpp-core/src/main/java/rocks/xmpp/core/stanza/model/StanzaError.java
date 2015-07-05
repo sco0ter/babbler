@@ -226,19 +226,13 @@ public final class StanzaError {
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(condition);
-        sb.append("  -  (");
-        sb.append(type);
-        sb.append(')');
-
+        sb.append(condition).append("  -  (").append(type).append(')');
         if (text != null) {
-            sb.append("\n        ");
-            sb.append(text.getText());
+            sb.append("\n        ").append(text);
         }
 
         if (extension != null) {
-            sb.append("\n        ");
-            sb.append(extension);
+            sb.append("\n        ").append(extension);
         }
         return sb.toString();
     }

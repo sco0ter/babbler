@@ -114,15 +114,12 @@ public final class Item implements ResultSetItem {
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(jid.toString());
+        sb.append(jid);
         if (node != null) {
-            sb.append(" / ");
-            sb.append(node);
+            sb.append(" / ").append(node);
         }
         if (name != null) {
-            sb.append(" (");
-            sb.append(name);
-            sb.append(')');
+            sb.append(" (").append(name).append(')');
         }
         return sb.toString();
     }

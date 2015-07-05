@@ -574,8 +574,7 @@ public final class RosterManager extends Manager {
             }
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < groups.length - 1; i++) {
-                sb.append(groups[i]);
-                sb.append(groupDelimiter);
+                sb.append(groups[i]).append(groupDelimiter);
             }
             sb.append(groups[groups.length - 1]);
             newName = sb.toString();

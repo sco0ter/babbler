@@ -568,7 +568,7 @@ public final class DebugController implements Initializable {
         StringBuilder sb = new StringBuilder();
 
         for (StanzaEntry stanzaEntry : filteredList) {
-            sb.append(stanzaEntry).append("\n");
+            sb.append(stanzaEntry).append('\n');
         }
 
         Toolkit toolkit = Toolkit.getDefaultToolkit();

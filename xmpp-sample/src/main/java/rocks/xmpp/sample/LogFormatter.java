@@ -41,15 +41,15 @@ public class LogFormatter extends SimpleFormatter {
         StringBuilder sb = new StringBuilder();
         DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
         LocalDateTime resultDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(record.getMillis()), ZoneId.systemDefault());
-        sb.append(dateFormat.format(resultDate));
-        sb.append(' ');
-        sb.append(record.getLevel());
-        sb.append("  ");
-        sb.append(formatMessage(record));
+        sb.append(dateFormat.format(resultDate))
+                .append(' ')
+                .append(record.getLevel())
+                .append("  ")
+                .append(formatMessage(record));
         if (record.getThrown() != null) {
             record.getThrown().printStackTrace();
         }
-        sb.append("\n");
+        sb.append('\n');
         return sb.toString();
     }
 }

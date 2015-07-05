@@ -163,8 +163,7 @@ public final class EntityCapabilities extends StreamFeature {
                     // 7.3. For each field other than FORM_TYPE:
                     if (!DataForm.FORM_TYPE.equals(field.getVar())) {
                         // 7.3.1. Append the value of the "var" attribute, followed by the '<' character.
-                        sb.append(field.getVar());
-                        sb.append('<');
+                        sb.append(field.getVar()).append('<');
 
                         // 7.3.2. Sort values by the XML character data of the <value/> element.
                         values.sort(null);
@@ -172,8 +171,7 @@ public final class EntityCapabilities extends StreamFeature {
                     // 7.1. Append the XML character data of the FORM_TYPE field's <value/> element, followed by the '<' character.
                     // 7.3.3. For each <value/> element, append the XML character data, followed by the '<' character.
                     for (String value : values) {
-                        sb.append(value);
-                        sb.append('<');
+                        sb.append(value).append('<');
                     }
                 }
             }

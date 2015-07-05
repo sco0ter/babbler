@@ -293,17 +293,13 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(action.name().toLowerCase());
-        sb.append(", ");
-        sb.append(order);
+        sb.append(action.name().toLowerCase()).append(", ").append(order);
 
         if (type != null) {
-            sb.append(", ");
-            sb.append(type.name().toLowerCase());
+            sb.append(", ").append(type.name().toLowerCase());
         }
         if (value != null) {
-            sb.append(", ");
-            sb.append(value);
+            sb.append(", ").append(value);
         }
 
         return sb.toString();

@@ -341,8 +341,7 @@ public class Message extends Stanza {
             String sType = type.name();
             sb.append(sType.substring(0, 1)).append(sType.substring(1).toLowerCase()).append(' ');
         }
-        sb.append("Message");
-        sb.append(super.toString());
+        sb.append("Message").append(super.toString());
         String body = getBody();
         if (body != null) {
             sb.append(": ").append(body);

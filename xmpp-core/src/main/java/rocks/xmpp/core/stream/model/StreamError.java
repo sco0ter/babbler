@@ -120,16 +120,14 @@ public final class StreamError implements StreamElement {
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(getCondition().toString());
+        sb.append(condition);
 
-        if (getText() != null) {
-            sb.append("\n        ");
-            sb.append(getText());
+        if (text != null) {
+            sb.append("\n        ").append(text);
         }
 
-        if (getExtension() != null) {
-            sb.append("\n        ");
-            sb.append(getExtension().toString());
+        if (extension != null) {
+            sb.append("\n        ").append(extension);
         }
         return sb.toString();
     }

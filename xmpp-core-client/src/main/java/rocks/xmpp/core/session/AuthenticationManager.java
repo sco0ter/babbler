@@ -146,7 +146,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
                     Failure authenticationFailure = (Failure) element;
                     String failureText = saslClient.getMechanismName() + " authentication failed with condition " + authenticationFailure.toString();
                     if (authenticationFailure.getText() != null) {
-                        failureText += " (" + authenticationFailure.getText() + ")";
+                        failureText += " (" + authenticationFailure.getText() + ')';
                     }
                     throw new AuthenticationException(failureText, authenticationFailure);
                 } else if (element instanceof Success) {

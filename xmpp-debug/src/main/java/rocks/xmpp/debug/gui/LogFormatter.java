@@ -45,12 +45,12 @@ public class LogFormatter extends SimpleFormatter {
 
         LocalDateTime resultDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(record.getMillis()), ZoneId.systemDefault());
         sb.append(dateTimeFormatter.format(resultDate));
-        sb.append(" ");
+        sb.append(' ');
         sb.append(record.getLevel());
         sb.append("  ");
         sb.append(formatMessage(record));
         if (record.getThrown() != null) {
-            sb.append("\n");
+            sb.append('\n');
             StringWriter stringWriter = new StringWriter();
             PrintWriter printWriter = new PrintWriter(stringWriter);
             record.getThrown().printStackTrace(printWriter);

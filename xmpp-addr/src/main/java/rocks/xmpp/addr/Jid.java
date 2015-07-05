@@ -485,11 +485,11 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
         StringBuilder sb = new StringBuilder();
         if (local != null) {
             sb.append(local);
-            sb.append("@");
+            sb.append('@');
         }
         sb.append(domain);
         if (resource != null) {
-            sb.append("/");
+            sb.append('/');
             sb.append(resource);
         }
         return sb.toString();

@@ -108,7 +108,7 @@ public final class Failure implements StreamElement {
     @Override
     public final String toString() {
         String text = getText();
-        return condition != null ? condition.toString() : "" + (text != null ? " (" + text + ")" : "");
+        return condition != null ? condition.toString() : "" + (text != null ? " (" + text + ')' : "");
     }
 
     /**
@@ -407,7 +407,7 @@ public final class Failure implements StreamElement {
 
         @Override
         public final String toString() {
-            return "<" + getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase() + "/>";
+            return '<' + getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase() + "/>";
         }
     }
 

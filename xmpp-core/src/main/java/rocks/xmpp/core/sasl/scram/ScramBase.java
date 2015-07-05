@@ -164,7 +164,7 @@ abstract class ScramBase {
         //                    server-first-message + "," +
         //                    client-final-message-without-proof
         String clientFinalMessageWithoutProof = "c=" + channelBinding + ",r=" + nonce;
-        return clientFirstMessageBare + "," + serverFirstMessage + "," + clientFinalMessageWithoutProof;
+        return clientFirstMessageBare + ',' + serverFirstMessage + ',' + clientFinalMessageWithoutProof;
     }
 
     /**

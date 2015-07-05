@@ -65,7 +65,7 @@ public final class ScramClient extends ScramBase implements SaslClient {
         if (authorizationId != null) {
             this.authorizationId = new String(authorizationId.getBytes(StandardCharsets.UTF_8));
         }
-        this.gs2Header = GS2_CBIND_FLAG + "," + (authorizationId != null ? "a=" + authorizationId : "") + ",";
+        this.gs2Header = GS2_CBIND_FLAG + ',' + (authorizationId != null ? "a=" + authorizationId : "") + ',';
     }
 
     /**

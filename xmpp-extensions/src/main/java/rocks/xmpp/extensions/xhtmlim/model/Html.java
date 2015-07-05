@@ -121,7 +121,7 @@ public final class Html {
                 StringWriter writer = new StringWriter();
                 transformer.transform(new DOMSource(((Element) body)), new StreamResult(writer));
                 String body = writer.toString();
-                return body.substring(body.indexOf(">") + 1, body.lastIndexOf("<"));
+                return body.substring(body.indexOf('>') + 1, body.lastIndexOf('<'));
             } catch (TransformerException e) {
                 throw new RuntimeException(e);
             }

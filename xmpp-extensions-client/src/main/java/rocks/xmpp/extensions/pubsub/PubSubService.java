@@ -90,10 +90,10 @@ public final class PubSubService {
 
     Collection<PubSubFeature> getFeatures(InfoNode infoNode) {
         Collection<PubSubFeature> features = EnumSet.noneOf(PubSubFeature.class);
-        infoNode.getFeatures().stream().filter(feature -> feature.startsWith(PubSub.NAMESPACE + "#")).forEach(feature -> {
-            String f = feature.substring(feature.indexOf("#") + 1);
+        infoNode.getFeatures().stream().filter(feature -> feature.startsWith(PubSub.NAMESPACE + '#')).forEach(feature -> {
+            String f = feature.substring(feature.indexOf('#') + 1);
             try {
-                PubSubFeature pubSubFeature = PubSubFeature.valueOf(f.toUpperCase().replace("-", "_"));
+                PubSubFeature pubSubFeature = PubSubFeature.valueOf(f.toUpperCase().replace('-', '_'));
                 if (pubSubFeature != null) {
                     features.add(pubSubFeature);
                 }

@@ -87,7 +87,7 @@ public final class HeaderManager extends Manager implements InfoNode {
      */
     public List<String> discoverSupportedHeaders(Jid jid) throws XmppException {
         InfoNode infoNode = serviceDiscoveryManager.discoverInformation(jid, Headers.NAMESPACE);
-        return infoNode.getFeatures().stream().map(feature -> feature.substring(feature.indexOf("#") + 1)).collect(Collectors.toList());
+        return infoNode.getFeatures().stream().map(feature -> feature.substring(feature.indexOf('#') + 1)).collect(Collectors.toList());
     }
 
     @Override
@@ -105,7 +105,7 @@ public final class HeaderManager extends Manager implements InfoNode {
     @Override
     public Set<String> getFeatures() {
         // http://xmpp.org/extensions/xep-0131.html#disco-header
-        return supportedHeaders.stream().map(supportedHeader -> Headers.NAMESPACE + "#" + supportedHeader).collect(Collectors.toSet());
+        return supportedHeaders.stream().map(supportedHeader -> Headers.NAMESPACE + '#' + supportedHeader).collect(Collectors.toSet());
     }
 
     @Override

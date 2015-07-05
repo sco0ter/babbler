@@ -231,7 +231,7 @@ public final class EntityCapabilitiesManager extends Manager {
             // Cache our own capabilities.
             writeToCache(verification, infoDiscovery);
 
-            final String node = getNode() + "#" + verification.verificationString;
+            final String node = getNode() + '#' + verification.verificationString;
 
             publishedNodes.put(node, verification);
             serviceDiscoveryManager.addInfoNode(new InfoNode() {
@@ -383,7 +383,7 @@ public final class EntityCapabilitiesManager extends Manager {
                     }
                 }
             } catch (Exception e) {
-                logger.log(Level.WARNING, e, () -> "Could not read entity capabilities from persistent cache (file: " + fileName + ")");
+                logger.log(Level.WARNING, e, () -> "Could not read entity capabilities from persistent cache (file: " + fileName + ')');
             }
         }
         // The verification string is unknown, Service Discovery needs to be done.
@@ -406,7 +406,7 @@ public final class EntityCapabilitiesManager extends Manager {
                     // Need to synchronize this.
                     if (!serviceDiscoverer.isShutdown()) {
                         serviceDiscoverer.execute(() -> {
-                            String nodeToDiscover = entityCapabilities.getNode() + "#" + entityCapabilities.getVerificationString();
+                            String nodeToDiscover = entityCapabilities.getNode() + '#' + entityCapabilities.getVerificationString();
                             try {
                                 // 3. If the value of the 'hash' attribute matches one of the processing application's supported hash functions, validate the verification string by doing the following:
                                 final MessageDigest messageDigest = MessageDigest.getInstance(entityCapabilities.getHashingAlgorithm());
@@ -507,7 +507,7 @@ public final class EntityCapabilitiesManager extends Manager {
 
         @Override
         public String toString() {
-            return hashAlgorithm + "+" + verificationString;
+            return hashAlgorithm + '+' + verificationString;
         }
     }
 }

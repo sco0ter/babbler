@@ -62,6 +62,8 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public final class StreamFeaturesManager extends Manager {
 
+    private static final EnumSet<StreamFeatureNegotiator.Status> NEGOTIATION_COMPLETED = EnumSet.of(StreamFeatureNegotiator.Status.SUCCESS, StreamFeatureNegotiator.Status.IGNORE);
+
     private final Lock lock = new ReentrantLock();
 
     private final Map<Class<? extends StreamFeature>, Condition> featureNegotiationStartedConditions = new ConcurrentHashMap<>();
@@ -185,7 +187,7 @@ public final class StreamFeaturesManager extends Manager {
                 // Mark the feature negotiation as started.
                 negotiatingFeatures.add(streamFeatureNegotiator.getFeatureClass());
                 // If the feature has been successfully negotiated.
-                if (EnumSet.of(StreamFeatureNegotiator.Status.SUCCESS, StreamFeatureNegotiator.Status.IGNORE).contains(status)) {
+                if (NEGOTIATION_COMPLETED.contains(status)){
                     // Check if the feature expects a restart now.
                     if (status == StreamFeatureNegotiator.Status.SUCCESS && streamFeatureNegotiator.needsRestart()) {
                         return true;

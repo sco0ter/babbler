@@ -66,6 +66,10 @@ import java.util.UUID;
 @XmlTransient
 public class IQ extends Stanza {
 
+    private static final EnumSet<Type> IS_REQUEST = EnumSet.of(Type.GET, Type.SET);
+
+    private static final EnumSet<Type> IS_RESPONSE = EnumSet.of(Type.RESULT, Type.ERROR);
+
     @XmlAttribute
     private final Type type;
 
@@ -175,7 +179,7 @@ public class IQ extends Stanza {
      * @return True if this is a get or set IQ.
      */
     public final boolean isRequest() {
-        return EnumSet.of(Type.GET, Type.SET).contains(type);
+        return IS_REQUEST.contains(type);
     }
 
     /**
@@ -184,7 +188,7 @@ public class IQ extends Stanza {
      * @return If this is a result or error IQ.
      */
     public final boolean isResponse() {
-        return EnumSet.of(Type.RESULT, Type.ERROR).contains(type);
+        return IS_RESPONSE.contains(type);
     }
 
     /**

@@ -100,6 +100,8 @@ public abstract class XmppSession implements AutoCloseable {
 
     private static final Logger logger = Logger.getLogger(XmppSession.class.getName());
 
+    private static final EnumSet<Status> IS_CONNECTED = EnumSet.of(Status.CONNECTED, Status.AUTHENTICATED, Status.AUTHENTICATING);
+
     private final Set<Consumer<MessageEvent>> inboundMessageListeners = new CopyOnWriteArraySet<>();
 
     private final Set<Consumer<MessageEvent>> outboundMessageListeners = new CopyOnWriteArraySet<>();
@@ -762,8 +764,9 @@ public abstract class XmppSession implements AutoCloseable {
      * @see #getStatus()
      */
     public final boolean isConnected() {
-        return EnumSet.of(Status.CONNECTED, Status.AUTHENTICATED, Status.AUTHENTICATING).contains(getStatus());
+        return IS_CONNECTED.contains(getStatus());
     }
+
 
     /**
      * Handles an XMPP element.

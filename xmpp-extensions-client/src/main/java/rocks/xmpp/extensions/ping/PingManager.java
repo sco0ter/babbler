@@ -186,27 +186,29 @@ public final class PingManager extends Manager {
         rescheduleNextPing();
     }
 
-    private void rescheduleNextPing() {
+    private synchronized void rescheduleNextPing() {
         // Reschedule in a separate thread, so that it won't interrupt the "pinging" thread due to the cancel, which then causes the ping to fail.
-        scheduledExecutorService.schedule(() -> {
-            synchronized (PingManager.this) {
-                cancelNextPing();
-                if (pingInterval > 0 && !scheduledExecutorService.isShutdown()) {
-                    nextPing = scheduledExecutorService.schedule(() -> {
-                        if (isEnabled() && xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
-                            if (!pingServer()) {
-                                try {
-                                    throw new XmppException("Server ping failed.");
-                                } catch (XmppException e) {
-                                    xmppSession.notifyException(e);
+        if (!scheduledExecutorService.isShutdown()) {
+            scheduledExecutorService.schedule(() -> {
+                synchronized (PingManager.this) {
+                    cancelNextPing();
+                    if (pingInterval > 0 && !scheduledExecutorService.isShutdown()) {
+                        nextPing = scheduledExecutorService.schedule(() -> {
+                            if (isEnabled() && xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
+                                if (!pingServer()) {
+                                    try {
+                                        throw new XmppException("Server ping failed.");
+                                    } catch (XmppException e) {
+                                        xmppSession.notifyException(e);
+                                    }
                                 }
                             }
-                        }
-                        // Rescheduling of the next ping is already done by the IQ response of the ping.
-                    }, pingInterval, TimeUnit.SECONDS);
+                            // Rescheduling of the next ping is already done by the IQ response of the ping.
+                        }, pingInterval, TimeUnit.SECONDS);
+                    }
                 }
-            }
-        }, 0, TimeUnit.MILLISECONDS);
+            }, 0, TimeUnit.MILLISECONDS);
+        }
     }
 
     /**

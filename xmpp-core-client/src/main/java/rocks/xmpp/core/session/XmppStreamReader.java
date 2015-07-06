@@ -56,6 +56,10 @@ import java.util.function.Consumer;
  */
 final class XmppStreamReader {
 
+    private static final QName STREAM_ID = new QName("id");
+
+    private static final QName FROM = new QName("from");
+
     private final TcpConnection connection;
 
     private final XmppSession xmppSession;
@@ -99,8 +103,8 @@ final class XmppStreamReader {
                     }
                     XMLEvent startDocument = null;
                     xmlEventReader = xmppSession.getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
-                    while (!doRestart && xmlEventReader.hasNext()) {
-                        XMLEvent xmlEvent = xmlEventReader.peek();
+                    XMLEvent xmlEvent;
+                    while (!doRestart && (xmlEvent = xmlEventReader.nextEvent()) != null) {
                         StringWriter stringWriter = null;
                         if (debugger != null) {
                             stringWriter = new StringWriter();
@@ -111,13 +115,13 @@ final class XmppStreamReader {
                         if (xmlEvent.isStartElement()) {
                             StartElement startElement = xmlEvent.asStartElement();
                             if (startElement.getName().getLocalPart().equals("stream") && startElement.getName().getNamespaceURI().equals("http://etherx.jabber.org/streams")) {
-                                Attribute idAttribute = startElement.getAttributeByName(new QName("id"));
+                                Attribute idAttribute = startElement.getAttributeByName(STREAM_ID);
                                 if (idAttribute != null) {
                                     synchronized (connection) {
                                         connection.streamId = idAttribute.getValue();
                                     }
                                 }
-                                Attribute fromAttribute = startElement.getAttributeByName(new QName("from"));
+                                Attribute fromAttribute = startElement.getAttributeByName(FROM);
 
                                 if (onStreamOpened != null) {
                                     onStreamOpened.accept(fromAttribute != null ? fromAttribute.getValue() : null);
@@ -130,7 +134,7 @@ final class XmppStreamReader {
                                     writer.close();
                                     debugger.readStanza(stringWriter.toString(), null);
                                 }
-                                xmlEventReader.next();
+                                xmlEventReader.nextEvent();
                             } else {
                                 Object object = unmarshaller.unmarshal(xmlEventReader);
 
@@ -144,9 +148,9 @@ final class XmppStreamReader {
                                 doRestart = xmppSession.handleElement(object);
                             }
                         } else {
-                            xmlEventReader.next();
+                            xmlEventReader.nextEvent();
                         }
-                        if (xmlEvent.getEventType() == XMLEvent.END_ELEMENT) {
+                        if (xmlEvent.isEndElement()) {
                             // The stream gets closed with </stream:stream>
                             if (debugger != null) {
                                 QName qName = xmlEvent.asEndElement().getName();

@@ -40,7 +40,6 @@ import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
-import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.subscription.PresenceManager;
@@ -111,8 +110,6 @@ public final class XmppClient extends XmppSession {
 
     private final AuthenticationManager authenticationManager;
 
-    private final StreamFeaturesManager streamFeaturesManager;
-
     /**
      * The user, which is assigned by the server after resource binding.
      */
@@ -150,8 +147,6 @@ public final class XmppClient extends XmppSession {
      */
     public XmppClient(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
         super(xmppServiceDomain, configuration, connectionConfigurations);
-
-        streamFeaturesManager = getManager(StreamFeaturesManager.class);
 
         authenticationManager = new AuthenticationManager(this);
 

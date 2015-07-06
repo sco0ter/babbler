@@ -128,6 +128,8 @@ public abstract class XmppSession implements AutoCloseable {
 
     protected final ServiceDiscoveryManager serviceDiscoveryManager;
 
+    protected final StreamFeaturesManager streamFeaturesManager;
+
     ExecutorService iqHandlerExecutor;
 
     ExecutorService stanzaListenerExecutor;
@@ -165,6 +167,7 @@ public abstract class XmppSession implements AutoCloseable {
         this.stanzaListenerExecutor = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Stanza Listener Thread"));
         this.iqHandlerExecutor = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("IQ Handler Thread"));
         this.serviceDiscoveryManager = getManager(ServiceDiscoveryManager.class);
+        this.streamFeaturesManager = getManager(StreamFeaturesManager.class);
 
         // Add a shutdown hook, which will gracefully close the connection, when the JVM is halted.
         shutdownHook = new Thread() {
@@ -827,12 +830,12 @@ public abstract class XmppSession implements AutoCloseable {
         } else if (element instanceof Presence) {
             stanzaListenerExecutor.execute(() -> XmppUtils.notifyEventListeners(inboundPresenceListeners, new PresenceEvent(this, (Presence) element, true)));
         } else if (element instanceof StreamFeatures) {
-            getManager(StreamFeaturesManager.class).processFeatures((StreamFeatures) element);
+            streamFeaturesManager.processFeatures((StreamFeatures) element);
         } else if (element instanceof StreamError) {
             throw new StreamErrorException((StreamError) element);
         } else {
             // Let's see, if the element is known to any feature negotiator.
-            return getManager(StreamFeaturesManager.class).processElement(element);
+            return streamFeaturesManager.processElement(element);
         }
         return false;
     }
@@ -927,7 +930,7 @@ public abstract class XmppSession implements AutoCloseable {
         // If the exception occurred during stream negotiation, i.e. before the connect() method has finished, the exception will be thrown.
         exception = Objects.requireNonNull(e, "exception must not be null");
         // Release a potential waiting thread.
-        getManager(StreamFeaturesManager.class).cancelNegotiation();
+        streamFeaturesManager.cancelNegotiation();
 
         if (EnumSet.of(Status.AUTHENTICATED, Status.AUTHENTICATING, Status.CONNECTED, Status.CONNECTING).contains(getStatus())) {
 

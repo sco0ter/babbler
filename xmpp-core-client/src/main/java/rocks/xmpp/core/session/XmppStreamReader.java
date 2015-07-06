@@ -104,7 +104,7 @@ final class XmppStreamReader {
                     XMLEvent startDocument = null;
                     xmlEventReader = xmppSession.getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
                     XMLEvent xmlEvent;
-                    while (!doRestart && (xmlEvent = xmlEventReader.nextEvent()) != null) {
+                    while (!doRestart && (xmlEvent = xmlEventReader.peek()) != null) {
                         StringWriter stringWriter = null;
                         if (debugger != null) {
                             stringWriter = new StringWriter();
@@ -121,9 +121,9 @@ final class XmppStreamReader {
                                         connection.streamId = idAttribute.getValue();
                                     }
                                 }
-                                Attribute fromAttribute = startElement.getAttributeByName(FROM);
 
                                 if (onStreamOpened != null) {
+                                    Attribute fromAttribute = startElement.getAttributeByName(FROM);
                                     onStreamOpened.accept(fromAttribute != null ? fromAttribute.getValue() : null);
                                 }
                                 if (debugger != null) {
@@ -154,7 +154,7 @@ final class XmppStreamReader {
                             // The stream gets closed with </stream:stream>
                             if (debugger != null) {
                                 QName qName = xmlEvent.asEndElement().getName();
-                                debugger.readStanza("</" + qName.getPrefix() + ":" + qName.getLocalPart() + ">", null);
+                                debugger.readStanza("</" + qName.getPrefix() + ':' + qName.getLocalPart() + '>', null);
                             }
                         }
                     }

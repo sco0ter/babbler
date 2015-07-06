@@ -41,6 +41,11 @@ import java.util.List;
 @XmlRootElement(name = "features")
 public final class StreamFeatures implements StreamElement {
 
+    /**
+     * http://etherx.jabber.org/streams
+     */
+    public static final String NAMESPACE = "http://etherx.jabber.org/streams";
+
     @XmlAnyElement(lax = true)
     @SuppressWarnings("unused")
     private final List<Object> features = new ArrayList<>();

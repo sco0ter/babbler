@@ -27,6 +27,7 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.util.XmppUtils;
 
@@ -76,7 +77,7 @@ final class XmppStreamReader {
 
     private final String namespace;
 
-    public XmppStreamReader(String namespace, final TcpConnection connection, XmppSession xmppSession, Consumer<String> onStreamOpened) {
+    XmppStreamReader(String namespace, final TcpConnection connection, XmppSession xmppSession, Consumer<String> onStreamOpened) {
         this.connection = connection;
         this.xmppSession = xmppSession;
         this.debugger = xmppSession.getDebugger();
@@ -114,7 +115,7 @@ final class XmppStreamReader {
                         }
                         if (xmlEvent.isStartElement()) {
                             StartElement startElement = xmlEvent.asStartElement();
-                            if (startElement.getName().getLocalPart().equals("stream") && startElement.getName().getNamespaceURI().equals("http://etherx.jabber.org/streams")) {
+                            if ("stream".equals(startElement.getName().getLocalPart()) && StreamFeatures.NAMESPACE.equals(startElement.getName().getNamespaceURI())) {
                                 Attribute idAttribute = startElement.getAttributeByName(STREAM_ID);
                                 if (idAttribute != null) {
                                     synchronized (connection) {

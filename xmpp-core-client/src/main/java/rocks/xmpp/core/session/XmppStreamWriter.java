@@ -28,6 +28,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.XMLConstants;
@@ -158,17 +159,17 @@ final class XmppStreamWriter {
                     streamOpened = false;
 
                     xmlStreamWriter.writeStartDocument("UTF-8", "1.0");
-                    xmlStreamWriter.writeStartElement("stream", "stream", "http://etherx.jabber.org/streams");
+                    xmlStreamWriter.writeStartElement("stream", "stream", StreamFeatures.NAMESPACE);
                     xmlStreamWriter.writeAttribute(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI, "lang", Locale.getDefault().getLanguage());
                     if (xmppSession.getDomain() != null && !xmppSession.getDomain().isEmpty()) {
                         xmlStreamWriter.writeAttribute("to", xmppSession.getDomain());
                     }
                     if (from != null) {
-                        xmlStreamWriter.writeAttribute("from", from.toString());
+                        xmlStreamWriter.writeAttribute("from", from.toEscapedString());
                     }
                     xmlStreamWriter.writeAttribute("version", "1.0");
                     xmlStreamWriter.writeNamespace("", namespace);
-                    xmlStreamWriter.writeNamespace("stream", "http://etherx.jabber.org/streams");
+                    xmlStreamWriter.writeNamespace("stream", StreamFeatures.NAMESPACE);
                     xmlStreamWriter.writeCharacters("");
                     xmlStreamWriter.flush();
                     if (debugger != null) {

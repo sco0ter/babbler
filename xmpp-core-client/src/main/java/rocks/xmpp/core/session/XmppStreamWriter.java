@@ -38,7 +38,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.EnumSet;
 import java.util.Locale;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -55,19 +54,13 @@ final class XmppStreamWriter {
 
     private final XmppSession xmppSession;
 
-    private final ExecutorService executor;
+    private final ScheduledExecutorService executor;
 
     private final Marshaller marshaller;
 
     private final XmppDebugger debugger;
 
     private final String namespace;
-
-    /**
-     * An executor which periodically schedules a whitespace ping.
-     * Guarded by "this".
-     */
-    private ScheduledExecutorService keepAliveExecutor;
 
     /**
      * Will be accessed only by the writer thread.
@@ -94,23 +87,20 @@ final class XmppStreamWriter {
         this.xmppSession = xmppSession;
         this.marshaller = xmppSession.createMarshaller();
         this.debugger = xmppSession.getDebugger();
-        this.executor = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("XMPP Writer Thread"));
+        this.executor = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Writer Thread"));
     }
 
     void initialize(int keepAliveInterval) {
         if (keepAliveInterval > 0) {
             synchronized (this) {
-                keepAliveExecutor = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP KeepAlive Thread"));
-                keepAliveExecutor.scheduleAtFixedRate(() -> {
+                executor.scheduleAtFixedRate(() -> {
                     if (EnumSet.of(XmppSession.Status.CONNECTED, XmppSession.Status.AUTHENTICATED).contains(xmppSession.getStatus())) {
-                        executor.execute(() -> {
-                            try {
-                                xmlStreamWriter.writeCharacters(" ");
-                                xmlStreamWriter.flush();
-                            } catch (Exception e) {
-                                notifyException(e);
-                            }
-                        });
+                        try {
+                            xmlStreamWriter.writeCharacters(" ");
+                            xmlStreamWriter.flush();
+                        } catch (Exception e) {
+                            notifyException(e);
+                        }
                     }
                 }, 0, keepAliveInterval, TimeUnit.SECONDS);
             }
@@ -213,10 +203,6 @@ final class XmppStreamWriter {
 
         // Shutdown the executors.
         synchronized (this) {
-            if (keepAliveExecutor != null) {
-                keepAliveExecutor.shutdown();
-                keepAliveExecutor = null;
-            }
             executor.shutdown();
 
             if (prefixFreeCanonicalizationWriter != null) {
@@ -245,10 +231,6 @@ final class XmppStreamWriter {
         if (!executor.isShutdown()) {
             // Send the closing stream tag.
             closeStream();
-            // Shutdown the executor
-            if (keepAliveExecutor != null) {
-                keepAliveExecutor.shutdown();
-            }
             executor.shutdown();
         }
     }

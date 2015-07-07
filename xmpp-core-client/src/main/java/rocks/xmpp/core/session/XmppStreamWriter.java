@@ -92,18 +92,16 @@ final class XmppStreamWriter {
 
     void initialize(int keepAliveInterval) {
         if (keepAliveInterval > 0) {
-            synchronized (this) {
-                executor.scheduleAtFixedRate(() -> {
-                    if (EnumSet.of(XmppSession.Status.CONNECTED, XmppSession.Status.AUTHENTICATED).contains(xmppSession.getStatus())) {
-                        try {
-                            xmlStreamWriter.writeCharacters(" ");
-                            xmlStreamWriter.flush();
-                        } catch (Exception e) {
-                            notifyException(e);
-                        }
+            executor.scheduleAtFixedRate(() -> {
+                if (EnumSet.of(XmppSession.Status.CONNECTED, XmppSession.Status.AUTHENTICATED).contains(xmppSession.getStatus())) {
+                    try {
+                        xmlStreamWriter.writeCharacters(" ");
+                        xmlStreamWriter.flush();
+                    } catch (Exception e) {
+                        notifyException(e);
                     }
-                }, 0, keepAliveInterval, TimeUnit.SECONDS);
-            }
+                }
+            }, 0, keepAliveInterval, TimeUnit.SECONDS);
         }
     }
 

@@ -42,6 +42,7 @@ import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.extensions.rtt.InboundRealTimeMessage;
 import rocks.xmpp.extensions.rtt.OutboundRealTimeMessage;
 import rocks.xmpp.extensions.rtt.RealTimeTextManager;
+import rocks.xmpp.extensions.rtt.model.RealTimeText;
 
 /**
  * @author Christian Schudt
@@ -67,28 +68,32 @@ public class RealTimeTextSample extends Application {
                 .build();
 
 
-        final XmppClient xmppSession = new XmppClient("localhost", xmppSessionConfiguration, tcpConnectionConfiguration);
-        xmppSession.connect();
-        xmppSession.login("222", "222");
+        final XmppClient xmppClient = new XmppClient("localhost", xmppSessionConfiguration, tcpConnectionConfiguration);
 
-        final Jid contact = new Jid("222", xmppSession.getDomain());
+        // Enable XEP-0301 Real-time Text
+        xmppClient.enableFeature(RealTimeText.NAMESPACE);
+
+        xmppClient.connect();
+        xmppClient.login("111", "111");
+
+        final Jid contact = new Jid("111", xmppClient.getDomain());
 
         // Create a chat session with another user.
-        final Chat chat = xmppSession.getManager(ChatManager.class).createChatSession(contact);
-        final RealTimeTextManager realTimeTextManager = xmppSession.getManager(RealTimeTextManager.class);
+        final Chat chat = xmppClient.getManager(ChatManager.class).createChatSession(contact);
+        RealTimeTextManager realTimeTextManager = xmppClient.getManager(RealTimeTextManager.class);
         // Create an new RTT message.
         realTimeMessage = realTimeTextManager.createRealTimeMessage(chat);
+
+        TextArea textArea = new TextArea();
+        textArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            realTimeMessage.update(newValue);
+        });
         final Label label = new Label();
 
         // Upon receiving a RTT message, display it.
         realTimeTextManager.addRealTimeMessageListener(e -> {
-            final InboundRealTimeMessage rtt = e.getRealTimeMessage();
+            InboundRealTimeMessage rtt = e.getRealTimeMessage();
             rtt.addRealTimeTextChangeListener(e1 -> Platform.runLater(() -> label.setText(e1.getText())));
-        });
-
-        final TextArea textArea = new TextArea();
-        textArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            realTimeMessage.update(newValue);
         });
 
         Button button = new Button("Send");
@@ -97,6 +102,7 @@ public class RealTimeTextSample extends Application {
             realTimeMessage = realTimeTextManager.createRealTimeMessage(chat);
             textArea.clear();
         });
+
 
         Scene scene = new Scene(new VBox(label, textArea, button));
         primaryStage.setScene(scene);

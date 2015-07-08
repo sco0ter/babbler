@@ -24,6 +24,7 @@
 
 package rocks.xmpp.addr;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.text.Bidi;
@@ -64,6 +65,7 @@ import java.util.regex.Pattern;
  *
  * @author Christian Schudt
  */
+@XmlJavaTypeAdapter(JidAdapter.class)
 public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
 
     /**
@@ -530,52 +532,28 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
             int result;
             // First compare domain parts.
             if (domain != null) {
-                if (o.domain != null) {
-                    result = domain.compareTo(o.domain);
-                } else {
-                    result = -1;
-                }
+                result = o.domain != null ? domain.compareTo(o.domain) : -1;
             } else {
-                if (o.domain != null) {
-                    result = 1;
-                } else {
-                    result = 0;
-                }
+                result = o.domain != null ? 1 : 0;
             }
             // If the domains are equal, compare local parts.
             if (result == 0) {
                 if (local != null) {
-                    if (o.local != null) {
-                        result = local.compareTo(o.local);
-                    } else {
-                        // If this local part is not null, but the other is null, move this down (1).
-                        result = 1;
-                    }
+                    // If this local part is not null, but the other is null, move this down (1).
+                    result = o.local != null ? local.compareTo(o.local) : 1;
                 } else {
                     // If this local part is null, but the other is not, move this up (-1).
-                    if (o.local != null) {
-                        result = -1;
-                    } else {
-                        result = 0;
-                    }
+                    result = o.local != null ? -1 : 0;
                 }
             }
             // If the local parts are equal, compare resource parts.
             if (result == 0) {
                 if (resource != null) {
-                    if (o.resource != null) {
-                        result = resource.compareTo(o.resource);
-                    } else {
-                        // If this resource part is not null, but the other is null, move this down (1).
-                        result = 1;
-                    }
+                    // If this resource part is not null, but the other is null, move this down (1).
+                    return o.resource != null ? resource.compareTo(o.resource) : 1;
                 } else {
                     // If this resource part is null, but the other is not, move this up (-1).
-                    if (o.resource != null) {
-                        result = -1;
-                    } else {
-                        result = 0;
-                    }
+                    return o.resource != null ? -1 : 0;
                 }
             }
             return result;

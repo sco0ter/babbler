@@ -29,15 +29,10 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
 @XmlSchema(namespace = "jabber:component:accept", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.component.accept.model;
-
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.addr.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 

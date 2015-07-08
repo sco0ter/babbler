@@ -30,13 +30,9 @@
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:xmpp:langtrans:items", elementFormDefault = XmlNsForm.QUALIFIED)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class) package rocks.xmpp.extensions.langtrans.model.items;
-
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.addr.JidAdapter;
+package rocks.xmpp.extensions.langtrans.model.items;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 /**
  * Converts a String representation of a JID to JID object and vice a versa.
  */
-public final class JidAdapter extends XmlAdapter<String, Jid> {
+final class JidAdapter extends XmlAdapter<String, Jid> {
 
     @Override
     public Jid unmarshal(String v) throws Exception {

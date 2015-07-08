@@ -25,12 +25,7 @@
 /**
  * Provides <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas">XML Stanzas</a> and <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error">Stanza Errors</a>.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class) package rocks.xmpp.core.stanza.model;
-
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.addr.JidAdapter;
+@XmlAccessorType(XmlAccessType.FIELD) package rocks.xmpp.core.stanza.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

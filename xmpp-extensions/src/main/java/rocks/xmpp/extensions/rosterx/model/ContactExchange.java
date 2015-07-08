@@ -25,12 +25,10 @@
 package rocks.xmpp.extensions.rosterx.model;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.addr.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -73,7 +71,6 @@ public final class ContactExchange {
         @XmlAttribute
         private final Action action;
 
-        @XmlJavaTypeAdapter(JidAdapter.class)
         @XmlAttribute
         private final Jid jid;
 

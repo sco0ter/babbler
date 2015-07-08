@@ -26,15 +26,11 @@
  * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a> (#event).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
 @XmlSchema(namespace = PubSub.NAMESPACE + "#event", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.pubsub.model.event;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.addr.JidAdapter;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

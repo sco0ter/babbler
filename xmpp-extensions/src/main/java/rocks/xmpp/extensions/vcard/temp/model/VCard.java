@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.vcard.temp.model;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.addr.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -133,7 +132,6 @@ public final class VCard {
     @XmlElement(name = "LABEL")
     private List<AddressLabel> labels;
 
-    @XmlJavaTypeAdapter(JidAdapter.class)
     @XmlElement(name = "JABBERID")
     private Jid jid;
 

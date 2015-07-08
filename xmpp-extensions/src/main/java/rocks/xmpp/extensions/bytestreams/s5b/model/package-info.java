@@ -26,14 +26,9 @@
  * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
 @XmlSchema(namespace = Socks5ByteStream.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.bytestreams.s5b.model;
-
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.addr.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

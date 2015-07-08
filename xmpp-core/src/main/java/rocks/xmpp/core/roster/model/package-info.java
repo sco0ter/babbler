@@ -26,17 +26,12 @@
  * Provides XML schema implementations of the <a href="http://xmpp.org/rfcs/rfc6121.html#schema">Roster Namespace</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(type = Jid.class, value = JidAdapter.class)
 @XmlSchema(namespace = "jabber:iq:roster", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.core.roster.model;
-
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.addr.JidAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 

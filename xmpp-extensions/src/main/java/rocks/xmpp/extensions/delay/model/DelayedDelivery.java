@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.delay.model;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.addr.JidAdapter;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.util.adapters.InstantAdapter;
 
@@ -62,7 +61,6 @@ public final class DelayedDelivery {
     public static final String NAMESPACE = "urn:xmpp:delay";
 
     @XmlAttribute
-    @XmlJavaTypeAdapter(JidAdapter.class)
     private final Jid from;
 
     @XmlAttribute

@@ -4,6 +4,7 @@
 ## Version 0.6.0-SNAPSHOT
 
 * Add support for [XEP-0114: Jabber Component Protocol](http://www.xmpp.org/extensions/xep-0114.html)
+* Add support for [XEP-0171: Language Translation](http://xmpp.org/extensions/xep-0171.html)
 * Add support for [XEP-0205: Best Practices to Discourage Denial of Service Attacks](http://www.xmpp.org/extensions/xep-0205.html) (error conditions)
 * Add support for [XEP-0301: In-Band Real Time Text](http://www.xmpp.org/extensions/xep-0301.html)
 * Add support for [XEP-0319: Last User Interaction in Presence](http://xmpp.org/extensions/xep-0319.html)

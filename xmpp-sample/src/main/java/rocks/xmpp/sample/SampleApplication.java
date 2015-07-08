@@ -24,32 +24,21 @@
 
 package rocks.xmpp.sample;
 
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
-import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.debug.gui.VisualDebugger;
-import rocks.xmpp.extensions.compress.CompressionManager;
-import rocks.xmpp.extensions.disco.model.items.Item;
-import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
-import rocks.xmpp.extensions.langtrans.LanguageTranslationManager;
-import rocks.xmpp.extensions.langtrans.model.LanguageTranslation;
+import rocks.xmpp.core.session.debug.ConsoleDebugger;
+import rocks.xmpp.core.stanza.model.Message;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
+import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.concurrent.Executors;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -57,91 +46,82 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author Christian Schudt
+ * A simple example for connecting and sending a message.
  */
 public class SampleApplication {
 
     public static void main(String[] args) throws IOException {
 
+        // Create a "main application" thread, which keeps the JVM running.
         Executors.newFixedThreadPool(1).execute(() -> {
             try {
 
-                Handler consoleHandler = new ConsoleHandler();
-                consoleHandler.setLevel(Level.FINE);
-                consoleHandler.setFormatter(new LogFormatter());
-
-                final Logger logger = Logger.getLogger("rocks.xmpp");
-                logger.addHandler(consoleHandler);
-
-                SSLContext sslContext = SSLContext.getInstance("TLS");
-                sslContext.init(null, new TrustManager[]{
-                        new X509TrustManager() {
-                            @Override
-                            public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-                            }
-
-                            @Override
-                            public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-                            }
-
-                            @Override
-                            public X509Certificate[] getAcceptedIssuers() {
-                                return new X509Certificate[0];
-                            }
-                        }
-                }, new SecureRandom());
+                configureLogging();
 
                 TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
-                        .hostname("localhost")
-                        .port(5222)
-                        .sslContext(sslContext)
-                        .compressionMethods(CompressionManager.ZLIB)
-                        .secure(true)
+                        .hostname("localhost") // The hostname.
+                        .port(5222) // The XMPP default port.
+                        .sslContext(getTrustAllSslContext()) // Use an SSL context, which trusts every server. Only use it for testing!
+                        .secure(true) // We want to negotiate a TLS connection.
                         .build();
 
-
-                BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
-                        .hostname("localhost")
-                        .port(7070)
-                                //.secure(true)
-                                //.sslContext(sslContext)
-                        .hostnameVerifier((s, sslSession) -> true)
-                        .file("/http-bind/")
-                        .build();
-
-                Class<?>[] extensions = new Class<?>[0];
-                Arrays.asList(extensions, XmppSession.class);
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                        .debugger(VisualDebugger.class)
-                        .defaultResponseTimeout(5000)
+                        .debugger(ConsoleDebugger.class)
                         .build();
 
-                XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);
+                XmppClient xmppClient = new XmppClient("localhost", configuration, tcpConfiguration);
 
                 // Listen for inbound messages.
-                xmppSession.addInboundMessageListener(e -> System.out.println(e.getMessage()));
+                xmppClient.addInboundMessageListener(e -> System.out.println("Received: " + e.getMessage()));
+
+                // Listen for inbound presence.
+                xmppClient.addInboundPresenceListener(e -> System.out.println("Received: " + e.getPresence()));
+
                 // Connect
-                xmppSession.connect();
+                xmppClient.connect();
                 // Login
-                xmppSession.login("admin", "admin", "xmpp");
+                xmppClient.login("admin", "admin", "xmpp");
 
-                LanguageTranslationManager languageTranslationManager = xmppSession.getManager(LanguageTranslationManager.class);
+                // Send a message to myself, which is caught by the listener above.
+                xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
 
-                Collection<Item> services = languageTranslationManager.discoverTranslationProviders(Jid.valueOf(xmppSession.getDomain()));
-                if (!services.isEmpty()) {
-
-                    Jid serviceAddress = services.iterator().next().getJid();
-//                    LanguageTranslation.Source source = new LanguageTranslation.Source("Hello World", "en");
-//                    LanguageTranslation languageTranslation = new LanguageTranslation(source, Collections.emptyList());
-//
-//                    xmppSession.query(new IQ(serviceAddress, IQ.Type.GET, languageTranslation));
-                    languageTranslationManager.discoverLanguageSupport(serviceAddress);
-                }
-
-                System.out.println(xmppSession.getActiveConnection());
-            } catch (XmppException | NoSuchAlgorithmException | KeyManagementException e) {
+                System.out.println(xmppClient.getActiveConnection());
+            } catch (XmppException | GeneralSecurityException e) {
                 e.printStackTrace();
             }
         });
+    }
+
+    protected static void configureLogging() {
+
+        // Log everything from the rocks.xmpp package with level FINE or above to the console.
+
+        Handler consoleHandler = new ConsoleHandler();
+        consoleHandler.setLevel(Level.FINE);
+        consoleHandler.setFormatter(new LogFormatter());
+
+        Logger logger = Logger.getLogger("rocks.xmpp");
+        logger.addHandler(consoleHandler);
+    }
+
+    protected static SSLContext getTrustAllSslContext() throws GeneralSecurityException {
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, new TrustManager[]{
+                new X509TrustManager() {
+                    @Override
+                    public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                    }
+
+                    @Override
+                    public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                    }
+
+                    @Override
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return new X509Certificate[0];
+                    }
+                }
+        }, new SecureRandom());
+        return sslContext;
     }
 }

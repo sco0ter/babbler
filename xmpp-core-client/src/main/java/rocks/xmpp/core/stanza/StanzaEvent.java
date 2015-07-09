@@ -33,13 +33,13 @@ import java.util.EventObject;
  *
  * @author Christian Schudt
  */
-public abstract class StanzaEvent<S extends Stanza> extends EventObject {
+abstract class StanzaEvent<S extends Stanza> extends EventObject {
 
-    protected final S stanza;
+    final S stanza;
 
     private final boolean inbound;
 
-    public StanzaEvent(Object source, S stanza, boolean inbound) {
+    StanzaEvent(Object source, S stanza, boolean inbound) {
         super(source);
         this.stanza = stanza;
         this.inbound = inbound;

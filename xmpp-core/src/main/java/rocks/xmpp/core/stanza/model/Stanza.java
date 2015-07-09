@@ -29,8 +29,12 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.XMLConstants;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * The abstract base class for a XML stanza.
@@ -56,6 +60,9 @@ public abstract class Stanza implements StreamElement {
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
     private final String lang;
 
+    @XmlAnyElement(lax = true)
+    private final List<Object> extensions = new CopyOnWriteArrayList<>();
+
     private final StanzaError error;
 
     protected Stanza() {
@@ -66,11 +73,14 @@ public abstract class Stanza implements StreamElement {
         this.error = null;
     }
 
-    protected Stanza(Jid to, Jid from, String id, String language, StanzaError error) {
+    protected Stanza(Jid to, Jid from, String id, String language, Collection<?> extensions, StanzaError error) {
         this.to = to;
         this.from = from;
         this.id = id;
         this.lang = language;
+        if (extensions != null) {
+            this.extensions.addAll(extensions);
+        }
         this.error = error;
     }
 
@@ -138,6 +148,30 @@ public abstract class Stanza implements StreamElement {
     }
 
     /**
+     * Gets all extensions.
+     *
+     * @return The extensions.
+     */
+    public final List<Object> getExtensions() {
+        return extensions;
+    }
+
+    /**
+     * Gets all extensions.
+     *
+     * @return The extensions.
+     */
+    @SuppressWarnings("unchecked")
+    public final <T> T getExtension(Class<T> type) {
+        for (Object extension : extensions) {
+            if (type.isAssignableFrom(extension.getClass())) {
+                return (T) extension;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Gets the stanza's 'error' element.
      * <blockquote>
      * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a></cite></p>
@@ -176,15 +210,6 @@ public abstract class Stanza implements StreamElement {
      * @see #getError()
      */
     public abstract Stanza createError(Condition condition);
-
-    /**
-     * Gets an extension by type.
-     *
-     * @param type The class.
-     * @param <T>  The type.
-     * @return The extension or null.
-     */
-    public abstract <T> T getExtension(Class<T> type);
 
     @Override
     public String toString() {

@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlType;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "iq")
-@XmlType(propOrder = {"from", "id", "to", "type", "lang", "extension", "error"})
+@XmlType(propOrder = {"from", "id", "to", "type", "lang", "extensions", "error"})
 public final class ComponentIQ extends IQ {
 
     /**

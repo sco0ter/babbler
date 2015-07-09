@@ -27,11 +27,11 @@ package rocks.xmpp.core.stanza.model;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
-import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.UUID;
@@ -73,16 +73,12 @@ public class IQ extends Stanza {
     @XmlAttribute
     private final Type type;
 
-    @XmlAnyElement(lax = true)
-    private final Object extension;
-
     /**
      * Default constructor for unmarshalling.
      */
     @SuppressWarnings("unused")
     protected IQ() {
         this.type = null;
-        this.extension = null;
     }
 
     /**
@@ -141,9 +137,8 @@ public class IQ extends Stanza {
      * @param error     The error.
      */
     public IQ(Jid to, Type type, Object extension, String id, Jid from, String language, StanzaError error) {
-        super(to, from, id == null ? UUID.randomUUID().toString() : id, language, error);
+        super(to, from, id == null ? UUID.randomUUID().toString() : id, language, extension != null ? Collections.singleton(extension) : Collections.emptyList(), error);
         this.type = Objects.requireNonNull(type, "type must not be null.");
-        this.extension = extension;
     }
 
     /**
@@ -153,15 +148,6 @@ public class IQ extends Stanza {
      */
     public final Type getType() {
         return type;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public final <T> T getExtension(Class<T> type) {
-        if (extension != null && type != null && type.isAssignableFrom(extension.getClass())) {
-            return (T) extension;
-        }
-        return null;
     }
 
     @Override

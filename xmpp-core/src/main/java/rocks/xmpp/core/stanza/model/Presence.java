@@ -27,7 +27,6 @@ package rocks.xmpp.core.stanza.model;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
-import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlTransient;
@@ -52,9 +51,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @XmlTransient
 public class Presence extends Stanza implements Comparable<Presence> {
-
-    @XmlAnyElement(lax = true)
-    private final List<Object> extensions = new CopyOnWriteArrayList<>();
 
     private final List<Text> status = new CopyOnWriteArrayList<>();
 
@@ -179,16 +175,13 @@ public class Presence extends Stanza implements Comparable<Presence> {
      * @param error      The stanza error.
      */
     public Presence(Jid to, Type type, Show show, Collection<Text> status, Byte priority, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
-        super(to, from, id, language, error);
+        super(to, from, id, language, extensions, error);
         this.show = show;
         this.type = type;
         if (status != null) {
             this.status.addAll(status);
         }
         this.priority = priority;
-        if (extensions != null) {
-            this.extensions.addAll(extensions);
-        }
     }
 
     /**
@@ -272,26 +265,6 @@ public class Presence extends Stanza implements Comparable<Presence> {
         }
         if (!status.isEmpty()) {
             return status.get(0).getText();
-        }
-        return null;
-    }
-
-    /**
-     * Gets all extensions.
-     *
-     * @return The extensions.
-     */
-    public final List<Object> getExtensions() {
-        return extensions;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public final <T> T getExtension(Class<T> type) {
-        for (Object extension : extensions) {
-            if (type.isAssignableFrom(extension.getClass())) {
-                return (T) extension;
-            }
         }
         return null;
     }

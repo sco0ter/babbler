@@ -27,7 +27,6 @@ package rocks.xmpp.core.stanza.model;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
-import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlTransient;
@@ -54,8 +53,6 @@ public class Message extends Stanza {
 
     private final List<Text> body = new CopyOnWriteArrayList<>();
 
-    @XmlAnyElement(lax = true)
-    private final List<Object> extensions = new CopyOnWriteArrayList<>();
 
     @XmlAttribute
     private final Type type;
@@ -156,7 +153,7 @@ public class Message extends Stanza {
      * @param error        The error.
      */
     public Message(Jid to, Type type, Collection<Text> bodies, Collection<Text> subjects, String thread, String parentThread, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
-        super(to, from, id, language, error);
+        super(to, from, id, language, extensions, error);
         this.type = type;
         if (bodies != null) {
             this.body.addAll(bodies);
@@ -168,9 +165,6 @@ public class Message extends Stanza {
             this.thread = new Thread(thread, parentThread);
         } else {
             this.thread = null;
-        }
-        if (extensions != null) {
-            this.extensions.addAll(extensions);
         }
     }
 
@@ -295,26 +289,6 @@ public class Message extends Stanza {
     public final String getParentThread() {
         if (thread != null) {
             return thread.parent;
-        }
-        return null;
-    }
-
-    /**
-     * Gets all extensions.
-     *
-     * @return The extensions.
-     */
-    public final List<Object> getExtensions() {
-        return extensions;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public final <T> T getExtension(Class<T> type) {
-        for (Object extension : extensions) {
-            if (type.isAssignableFrom(extension.getClass())) {
-                return (T) extension;
-            }
         }
         return null;
     }

@@ -61,11 +61,11 @@ public abstract class Stanza implements StreamElement {
     private final String lang;
 
     @XmlAnyElement(lax = true)
-    private final List<Object> extensions = new CopyOnWriteArrayList<>();
+    final List<Object> extensions = new CopyOnWriteArrayList<>();
 
     private final StanzaError error;
 
-    protected Stanza() {
+    Stanza() {
         this.to = null;
         this.from = null;
         this.id = null;
@@ -73,7 +73,7 @@ public abstract class Stanza implements StreamElement {
         this.error = null;
     }
 
-    protected Stanza(Jid to, Jid from, String id, String language, Collection<?> extensions, StanzaError error) {
+    Stanza(Jid to, Jid from, String id, String language, Collection<?> extensions, StanzaError error) {
         this.to = to;
         this.from = from;
         this.id = id;
@@ -145,15 +145,6 @@ public abstract class Stanza implements StreamElement {
      */
     public final String getLanguage() {
         return lang;
-    }
-
-    /**
-     * Gets all extensions.
-     *
-     * @return The extensions.
-     */
-    public final List<Object> getExtensions() {
-        return extensions;
     }
 
     /**

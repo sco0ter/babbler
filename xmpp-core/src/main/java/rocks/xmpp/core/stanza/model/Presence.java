@@ -50,7 +50,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Christian Schudt
  */
 @XmlTransient
-public class Presence extends Stanza implements Comparable<Presence> {
+public class Presence extends ExtensibleStanza implements Comparable<Presence> {
 
     private final List<Text> status = new CopyOnWriteArrayList<>();
 
@@ -65,6 +65,7 @@ public class Presence extends Stanza implements Comparable<Presence> {
      * Constructs an empty presence to indicate availability.
      */
     public Presence() {
+        super(null, null, null, null, null, null);
         this.priority = null;
         this.show = null;
         this.type = null;

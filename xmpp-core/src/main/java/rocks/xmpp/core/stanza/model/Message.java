@@ -47,12 +47,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Christian Schudt
  */
 @XmlTransient
-public class Message extends Stanza {
+public class Message extends ExtensibleStanza {
 
     private final List<Text> subject = new CopyOnWriteArrayList<>();
 
     private final List<Text> body = new CopyOnWriteArrayList<>();
-
 
     @XmlAttribute
     private final Type type;

@@ -34,6 +34,7 @@ import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.Text;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -239,5 +240,14 @@ public class MessageTest extends XmlTest {
         Assert.assertEquals(withFrom.getId(), "id");
         Assert.assertEquals(withFrom.getFrom(), Jid.valueOf("from"));
         Assert.assertNotNull(withFrom.getExtension(Roster.class));
+    }
+
+    @Test
+    public void testRemoveExtension() {
+        Message message = new Message();
+        message.addExtension(new EntityCapabilities("node", "hash", "ver"));
+        message.removeExtension(EntityCapabilities.class);
+
+        Assert.assertTrue(message.getExtensions().isEmpty());
     }
 }

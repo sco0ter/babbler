@@ -83,13 +83,13 @@ import java.util.logging.Logger;
  * <p>
  * To date there are three kinds of sessions:
  * <ul>
- * <li>A normal client-to-server session. This is the default and most used XMPP session. It's concrete implementation is the {@link XmppClient}</li>
+ * <li>A normal client-to-server session. This is the default and most used XMPP session. It's concrete implementation is the {@link XmppClient}.</li>
  * <li>An external component session (<a href="http://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>).</li>
- * <li>A client-to-client session (<a href="http://xmpp.org/extensions/xep-0174.html">XEP-0174: Serverless Messaging</a>) (no implementation yet)</li>
+ * <li>A client-to-client session (<a href="http://xmpp.org/extensions/xep-0174.html">XEP-0174: Serverless Messaging</a>) (no implementation yet).</li>
  * </ul>
  * This class provides the common functionality and abstract methods for connection establishment, sending and receiving XML stanzas, closing the session, etc.
  * <p>
- * Concrete implementations may have different concepts for authentication, e.g. normal c2s sessions use SASL, while the Jabber Component Protocol use a different kind of handshake for authenticating.
+ * Concrete implementations may have different concepts for authentication, e.g. normal C2S sessions use SASL, while the Jabber Component Protocol uses a different kind of handshake for authenticating.
  *
  * @author Christian Schudt
  * @see XmppClient

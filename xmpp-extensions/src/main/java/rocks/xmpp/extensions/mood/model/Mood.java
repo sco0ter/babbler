@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.Objects;
 
 /**
@@ -287,6 +288,7 @@ public final class Mood {
     /**
      * An abstract base class for all possible mood values.
      */
+    @XmlTransient
     public abstract static class Value {
 
         @XmlAnyElement(lax = true)

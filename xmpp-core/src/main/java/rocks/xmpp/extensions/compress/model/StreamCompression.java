@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Objects;
 
@@ -39,6 +40,7 @@ import java.util.Objects;
  *
  * @author Christian Schudt
  */
+@XmlTransient
 @XmlSeeAlso({CompressionFeature.class, StreamCompression.Compress.class, StreamCompression.Compressed.class, StreamCompression.Failure.class})
 public abstract class StreamCompression {
 
@@ -95,6 +97,7 @@ public abstract class StreamCompression {
         /**
          * An abstract base class for a compression failure condition.
          */
+        @XmlTransient
         public abstract static class Condition {
             /**
              * If the receiving entity finds the requested method unacceptable or unworkable for any other reason.
@@ -112,6 +115,10 @@ public abstract class StreamCompression {
             public static final Condition UNSUPPORTED_METHOD = new UnsupportedMethod();
 
             private final String name;
+
+            private Condition() {
+                this.name = null;
+            }
 
             private Condition(String name) {
                 this.name = name;
@@ -168,7 +175,7 @@ public abstract class StreamCompression {
 
     /**
      * The implementation of the {@code <compress/>} element in the {@code http://jabber.org/protocol/compress} namespace.
-     * <p>
+     * <p/>
      * This class is immutable.
      *
      * @author Christian Schudt

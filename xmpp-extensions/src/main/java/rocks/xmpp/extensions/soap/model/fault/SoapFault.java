@@ -24,9 +24,12 @@
 
 package rocks.xmpp.extensions.soap.model.fault;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 /**
  * @author Christian Schudt
  */
+@XmlTransient
 abstract class SoapFault {
 
     @Override

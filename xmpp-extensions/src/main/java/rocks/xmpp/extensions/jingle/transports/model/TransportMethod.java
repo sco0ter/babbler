@@ -34,4 +34,6 @@ package rocks.xmpp.extensions.jingle.transports.model;
  * @see rocks.xmpp.extensions.jingle.model.Jingle.Content#getTransportMethod()
  */
 public abstract class TransportMethod {
+    protected TransportMethod() {
+    }
 }

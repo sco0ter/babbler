@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.invisible.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -36,6 +37,7 @@ import javax.xml.bind.annotation.XmlType;
  * @see #VISIBLE
  * @see <a href="http://xmpp.org/extensions/xep-0186.html">XEP-0186: Invisible Command</a>
  */
+@XmlTransient
 @XmlSeeAlso({InvisibleCommand.Invisible.class, InvisibleCommand.Visible.class})
 public abstract class InvisibleCommand {
     /**

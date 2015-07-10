@@ -25,10 +25,12 @@
 package rocks.xmpp.extensions.sm.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * @author Christian Schudt
  */
+@XmlTransient
 abstract class AbstractResume {
 
     @XmlAttribute(name = "h")

@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.receipts.model;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Objects;
 
@@ -50,6 +51,7 @@ import java.util.Objects;
  * @see <a href="http://xmpp.org/extensions/xep-0184.html">XEP-0184: Message Delivery Receipts</a>
  * @see <a href="http://xmpp.org/extensions/xep-0184.html#schema">XML Schema</a>
  */
+@XmlTransient
 @XmlSeeAlso({MessageDeliveryReceipts.Request.class, MessageDeliveryReceipts.Received.class})
 public abstract class MessageDeliveryReceipts {
 

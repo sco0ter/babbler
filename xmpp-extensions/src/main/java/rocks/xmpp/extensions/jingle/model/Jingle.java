@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -514,6 +515,7 @@ public final class Jingle {
         /**
          * The base class for the defined conditions for a reason.
          */
+        @XmlTransient
         public abstract static class Condition {
             private Condition() {
             }

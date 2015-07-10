@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
@@ -301,6 +302,7 @@ public final class Failure implements StreamElement {
     /**
      * A general class for a SASL failure condition.
      */
+    @XmlTransient
     public abstract static class Condition {
 
         /**

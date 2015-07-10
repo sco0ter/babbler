@@ -26,11 +26,14 @@ package rocks.xmpp.extensions.pubsub.model.errors;
 
 import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 /**
  * An enclosing class for pubsub errors.
  *
  * @author Christian Schudt
  */
+@XmlTransient
 public abstract class PubSubError {
     /**
      * The {@code <closed-node/>} pubsub error.

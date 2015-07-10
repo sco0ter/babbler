@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.activity.model;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * An abstract class for specific activities.

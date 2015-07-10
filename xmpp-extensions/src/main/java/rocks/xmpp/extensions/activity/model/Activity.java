@@ -167,6 +167,7 @@ public final class Activity {
     /**
      * An abstract class for general activities.
      */
+    @XmlTransient
     abstract static class AbstractCategory {
 
         @XmlTransient
@@ -174,6 +175,10 @@ public final class Activity {
 
         @XmlElementRef
         private final SpecificActivity specificActivity;
+
+        private AbstractCategory() {
+            this(null, null);
+        }
 
         private AbstractCategory(Category category) {
             this(category, null);

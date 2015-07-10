@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
 
 /**
@@ -140,6 +141,7 @@ public final class Validation {
      *
      * @see <a href="http://xmpp.org/extensions/xep-0122.html#usecases-validation">3.2 Validation Methods</a>
      */
+    @XmlTransient
     public abstract static class ValidationMethod {
 
         @XmlValue

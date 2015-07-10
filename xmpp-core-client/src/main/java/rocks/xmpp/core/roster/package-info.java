@@ -23,6 +23,6 @@
  */
 
 /**
- * Provides classes for roster management.
+ * Provides classes for <a href="http://xmpp.org/rfcs/rfc6121.html#roster">roster management</a>.
  */
 package rocks.xmpp.core.roster;

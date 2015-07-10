@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides classes for the XMPP address format (JID).
+ * Provides classes for the <a href="http://xmpp.org/rfcs/rfc6122.html">XMPP Address Format</a> (JID).
  *
  * @see <a href="http://xmpp.org/rfcs/rfc6122.html">Extensible Messaging and Presence Protocol (XMPP): Address Format</a>
  */

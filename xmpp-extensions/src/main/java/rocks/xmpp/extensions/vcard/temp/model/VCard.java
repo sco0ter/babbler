@@ -39,6 +39,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -61,7 +62,7 @@ public final class VCard {
      * Some Jabber implementations add a 'version' attribute to the {@code <vCard/>} element, with the value set at "2.0" or "3.0". The DTD is incorrect, and the examples in draft-dawson-vcard-xml-dtd-01 clearly show that version information is to be included by means of a 'version' attribute, not the {@code <VERSION/>} element as defined in the DTD. However, to conform to draft-dawson-vcard-xml-dtd-01, the value should be "3.0", not "2.0".
      */
     @XmlAttribute
-    private String version = "3.0";
+    private static final String VERSION = "3.0";
 
     /**
      * To specify the formatted text corresponding to the name of the object the vCard represents.
@@ -90,7 +91,7 @@ public final class VCard {
     /**
      * To specify the birth date of the object the vCard represents.
      */
-    @XmlJavaTypeAdapter(DateFormatterAdapter.class)
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
     @XmlElement(name = "BDAY")
     private LocalDate birthday;
 
@@ -1738,43 +1739,37 @@ public final class VCard {
     public static final class Organization {
 
         @XmlElement(name = "ORGNAME")
-        private String organizationName;
+        private final String name;
 
         @XmlElement(name = "ORGUNIT")
-        private List<String> orgUnits = new ArrayList<>();
+        private final List<String> orgUnits = new ArrayList<>();
 
         private Organization() {
+            this(null);
+        }
+
+        private Organization(String name) {
+            this.name = name;
         }
 
         /**
          * Creates an organization.
          *
-         * @param organizationName The organization name.
-         * @param orgUnits         The organization units.
+         * @param name     The organization name.
+         * @param orgUnits The organization units.
          */
-        public Organization(String organizationName, String... orgUnits) {
-            this.organizationName = organizationName;
-            this.orgUnits = Arrays.asList(orgUnits);
+        public Organization(String name, String... orgUnits) {
+            this.name = name;
+            this.orgUnits.addAll(Arrays.asList(orgUnits));
         }
 
         /**
          * Gets the organization name.
          *
          * @return The organization name.
-         * @see #setOrganizationName(String)
          */
-        public String getOrganizationName() {
-            return organizationName;
-        }
-
-        /**
-         * Sets the organization name.
-         *
-         * @param organizationName organization name.
-         * @see #getOrganizationName()
-         */
-        public void setOrganizationName(String organizationName) {
-            this.organizationName = organizationName;
+        public String getName() {
+            return name;
         }
 
         /**
@@ -1783,7 +1778,7 @@ public final class VCard {
          * @return The units.
          */
         public List<String> getOrgUnits() {
-            return orgUnits;
+            return Collections.unmodifiableList(orgUnits);
         }
     }
 
@@ -1792,21 +1787,22 @@ public final class VCard {
      */
     public static final class Name {
         @XmlElement(name = "FAMILY")
-        private String familyName;
+        private final String familyName;
 
         @XmlElement(name = "GIVEN")
-        private String givenName;
+        private final String givenName;
 
         @XmlElement(name = "MIDDLE")
-        private String middleName;
+        private final String middleName;
 
         @XmlElement(name = "PREFIX")
-        private String prefix;
+        private final String prefix;
 
         @XmlElement(name = "SUFFIX")
-        private String suffix;
+        private final String suffix;
 
         private Name() {
+            this(null, null, null);
         }
 
         /**
@@ -1841,100 +1837,45 @@ public final class VCard {
          * Gets the family name.
          *
          * @return The family name.
-         * @see #setFamilyName(String)
          */
         public String getFamilyName() {
             return familyName;
         }
 
         /**
-         * Sets the family name.
-         *
-         * @param familyName The family name.
-         * @see #getFamilyName()
-         */
-        public void setFamilyName(String familyName) {
-            this.familyName = familyName;
-        }
-
-        /**
          * Gets the given name.
          *
          * @return The given name.
-         * @see #setGivenName(String)
          */
         public String getGivenName() {
             return givenName;
         }
 
         /**
-         * Sets the given name.
-         *
-         * @param givenName The given name.
-         * @see #setGivenName(String)
-         */
-        public void setGivenName(String givenName) {
-            this.givenName = givenName;
-        }
-
-        /**
          * Gets the middle name.
          *
          * @return The middle name.
-         * @see #setMiddleName(String)
          */
         public String getMiddleName() {
             return middleName;
         }
 
         /**
-         * Sets the middle name.
-         *
-         * @param middleName The middle name.
-         * @see #getMiddleName()
-         */
-        public void setMiddleName(String middleName) {
-            this.middleName = middleName;
-        }
-
-        /**
          * Gets the prefix.
          *
          * @return The prefix.
-         * @see #setPrefix(String)
          */
         public String getPrefix() {
             return prefix;
         }
 
         /**
-         * Sets the prefix.
-         *
-         * @param prefix The prefix.
-         * @see #getPrefix()
-         */
-        public void setPrefix(String prefix) {
-            this.prefix = prefix;
-        }
-
-        /**
          * Gets the suffix.
          *
          * @return The suffix.
-         * @see #setSuffix(String)
          */
         public String getSuffix() {
             return suffix;
-        }
-
-        /**
-         * Sets the suffix.
-         *
-         * @param suffix The suffix.
-         * @see #getSuffix()
-         */
-        public void setSuffix(String suffix) {
-            this.suffix = suffix;
         }
     }
 
@@ -1944,15 +1885,18 @@ public final class VCard {
     public static final class Image {
 
         @XmlElement(name = "TYPE")
-        private String type;
+        private final String type;
 
         @XmlElement(name = "BINVAL")
-        private byte[] value;
+        private final byte[] value;
 
         @XmlElement(name = "EXTVAL")
-        private URI uri;
+        private final URI uri;
 
         private Image() {
+            this.type = null;
+            this.value = null;
+            this.uri = null;
         }
 
         /**
@@ -1964,6 +1908,7 @@ public final class VCard {
         public Image(String type, byte[] value) {
             this.type = type;
             this.value = value;
+            this.uri = null;
         }
 
         /**
@@ -1973,46 +1918,26 @@ public final class VCard {
          */
         public Image(URI uri) {
             this.uri = uri;
+            this.type = null;
+            this.value = null;
         }
 
         /**
          * Gets the mime type of the photo, e.g. image/png.
          *
          * @return The mime type.
-         * @see #setType(String)
          */
         public String getType() {
             return type;
         }
 
         /**
-         * Sets the mime type of the photo, e.g. image/png.
-         *
-         * @param type The mime type.
-         * @see #getType()
-         */
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        /**
          * Gets the photo as byte array.
          *
          * @return The photo.
-         * @see #setValue(byte[])
          */
         public byte[] getValue() {
             return value;
-        }
-
-        /**
-         * Sets the photo as byte array.
-         *
-         * @param value The photo.
-         * @see #getValue()
-         */
-        public void setValue(byte[] value) {
-            this.value = value;
         }
 
         /**
@@ -2023,15 +1948,6 @@ public final class VCard {
         public URI getUri() {
             return uri;
         }
-
-        /**
-         * Sets an URI to an external photo.
-         *
-         * @param uri The URI.
-         */
-        public void setUri(URI uri) {
-            this.uri = uri;
-        }
     }
 
     /**
@@ -2040,32 +1956,31 @@ public final class VCard {
     public static final class Sound {
 
         @XmlElement(name = "BINVAL")
-        private byte[] value;
+        private final byte[] value;
 
         @XmlElement(name = "EXTVAL")
-        private URI uri;
+        private final URI uri;
 
         @XmlElement(name = "PHONETIC")
-        private String phonetic;
+        private final String phonetic;
+
+        private Sound() {
+            this(null, null, null);
+        }
+
+        public Sound(byte[] value, URI uri, String phonetic) {
+            this.value = value;
+            this.uri = uri;
+            this.phonetic = phonetic;
+        }
 
         /**
          * Gets the binary digital audio pronunciation.
          *
          * @return The photo.
-         * @see #setValue(byte[])
          */
         public byte[] getValue() {
             return value;
-        }
-
-        /**
-         * Sets the binary digital audio pronunciation.
-         *
-         * @param value The photo.
-         * @see #getValue()
-         */
-        public void setValue(byte[] value) {
-            this.value = value;
         }
 
         /**
@@ -2078,32 +1993,12 @@ public final class VCard {
         }
 
         /**
-         * Sets an URI to an external binary digital audio pronunciation.
-         *
-         * @param uri The URI.
-         */
-        public void setUri(URI uri) {
-            this.uri = uri;
-        }
-
-        /**
          * Gets the textual phonetic pronunciation.
          *
          * @return The textual phonetic pronunciation
-         * @see #setPhonetic(String)
          */
         public String getPhonetic() {
             return phonetic;
-        }
-
-        /**
-         * Sets the textual phonetic pronunciation.
-         *
-         * @param phonetic The textual phonetic pronunciation
-         * @see #getPhonetic()
-         */
-        public void setPhonetic(String phonetic) {
-            this.phonetic = phonetic;
         }
     }
 
@@ -2113,53 +2008,40 @@ public final class VCard {
     public static final class Key {
 
         @XmlElement(name = "TYPE")
-        private String type;
+        private final String type;
 
         @XmlElement(name = "CRED")
-        private String credential;
+        private final String credential;
+
+        private Key() {
+            this(null, null);
+        }
+
+        public Key(String type, String credential) {
+            this.type = type;
+            this.credential = credential;
+        }
 
         /**
          * Gets the credential.
          *
          * @return The credential.
-         * @see #setCredential(String)
          */
         public String getCredential() {
             return credential;
         }
 
         /**
-         * Sets the credential.
-         *
-         * @param credential The credential.
-         * @see #getCredential()
-         */
-        public void setCredential(String credential) {
-            this.credential = credential;
-        }
-
-        /**
          * Gets the type.
          *
          * @return The type.
-         * @see #setType(String)
          */
         public String getType() {
             return type;
         }
-
-        /**
-         * Sets the type.
-         *
-         * @param type The type.
-         * @see #getType()
-         */
-        public void setType(String type) {
-            this.type = type;
-        }
     }
 
-    private static final class DateFormatterAdapter extends XmlAdapter<String, LocalDate> {
+    private static final class LocalDateAdapter extends XmlAdapter<String, LocalDate> {
 
         @Override
         public LocalDate unmarshal(final String v) throws Exception {

@@ -117,7 +117,7 @@ public class VCardTest extends XmlTest {
         Assert.assertEquals(vCard.getBirthday().getMonth(), Month.AUGUST);
         Assert.assertEquals(vCard.getBirthday().getDayOfMonth(), 6);
         Assert.assertNotNull(vCard.getOrganization());
-        Assert.assertEquals(vCard.getOrganization().getOrganizationName(), "XMPP Standards Foundation");
+        Assert.assertEquals(vCard.getOrganization().getName(), "XMPP Standards Foundation");
         Assert.assertEquals(vCard.getOrganization().getOrgUnits().size(), 1);
         Assert.assertEquals(vCard.getTitle(), "Executive Director");
         Assert.assertEquals(vCard.getRole(), "Patron Saint");

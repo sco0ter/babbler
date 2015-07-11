@@ -28,13 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.extensions.sm.model.Answer;
-import rocks.xmpp.extensions.sm.model.Enable;
-import rocks.xmpp.extensions.sm.model.Enabled;
-import rocks.xmpp.extensions.sm.model.Failed;
-import rocks.xmpp.extensions.sm.model.Request;
-import rocks.xmpp.extensions.sm.model.Resume;
-import rocks.xmpp.extensions.sm.model.Resumed;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 
 import javax.xml.bind.JAXBException;
@@ -58,14 +51,14 @@ public class StreamManagementTest extends XmlTest {
 
     @Test
     public void marshalEnable() throws JAXBException, XMLStreamException {
-        Enable enable = new Enable();
+        StreamManagement.Enable enable = new StreamManagement.Enable();
         String xml = marshal(enable);
         Assert.assertEquals("<enable xmlns=\"urn:xmpp:sm:3\"></enable>", xml);
     }
 
     @Test
     public void marshalEnableWithResume() throws JAXBException, XMLStreamException {
-        Enable enable = new Enable(true, 23);
+        StreamManagement.Enable enable = new StreamManagement.Enable(true, 23);
         String xml = marshal(enable);
         Assert.assertEquals("<enable xmlns=\"urn:xmpp:sm:3\" resume=\"true\" max=\"23\"></enable>", xml);
     }
@@ -73,7 +66,7 @@ public class StreamManagementTest extends XmlTest {
     @Test
     public void unmarshalEnabled() throws XMLStreamException, JAXBException {
         String xml = "<enabled xmlns='urn:xmpp:sm:3' id='some-long-sm-id' resume='true' max='23' location='domain'/>";
-        Enabled enabled = unmarshal(xml, Enabled.class);
+        StreamManagement.Enabled enabled = unmarshal(xml, StreamManagement.Enabled.class);
         Assert.assertNotNull(enabled);
         Assert.assertEquals(enabled.getId(), "some-long-sm-id");
         Assert.assertTrue(enabled.isResume());
@@ -86,22 +79,21 @@ public class StreamManagementTest extends XmlTest {
         String xml = "<failed xmlns='urn:xmpp:sm:3'>\n" +
                 "     <unexpected-request xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>\n" +
                 "   </failed>";
-        Failed failed = unmarshal(xml, Failed.class);
+        StreamManagement.Failed failed = unmarshal(xml, StreamManagement.Failed.class);
         Assert.assertNotNull(failed);
         Assert.assertTrue(failed.getError() == Condition.UNEXPECTED_REQUEST);
     }
 
     @Test
     public void marshalAnswer() throws JAXBException, XMLStreamException {
-        Answer answer = new Answer(1);
+        StreamManagement.Answer answer = new StreamManagement.Answer(1);
         String xml = marshal(answer);
         Assert.assertEquals("<a xmlns=\"urn:xmpp:sm:3\" h=\"1\"></a>", xml);
     }
 
     @Test
     public void marshalRequest() throws JAXBException, XMLStreamException {
-        Request request = new Request();
-        String xml = marshal(request);
+        String xml = marshal(StreamManagement.REQUEST);
         Assert.assertEquals("<r xmlns=\"urn:xmpp:sm:3\"></r>", xml);
     }
 
@@ -111,7 +103,7 @@ public class StreamManagementTest extends XmlTest {
                 "            h='2'\n" +
                 "            previd='some-long-sm-id'/>\n";
 
-        Resume resume = unmarshal(xml, Resume.class);
+        StreamManagement.Resume resume = unmarshal(xml, StreamManagement.Resume.class);
         Assert.assertNotNull(resume);
         Assert.assertEquals(resume.getPreviousId(), "some-long-sm-id");
         Assert.assertEquals(resume.getLastHandledStanza(), 2);
@@ -123,7 +115,7 @@ public class StreamManagementTest extends XmlTest {
                 "            h='2'\n" +
                 "            previd='some-long-sm-id'/>\n";
 
-        Resumed resumed = unmarshal(xml, Resumed.class);
+        StreamManagement.Resumed resumed = unmarshal(xml, StreamManagement.Resumed.class);
         Assert.assertNotNull(resumed);
         Assert.assertEquals(resumed.getPreviousId(), "some-long-sm-id");
         Assert.assertEquals(resumed.getLastHandledStanza(), 2);

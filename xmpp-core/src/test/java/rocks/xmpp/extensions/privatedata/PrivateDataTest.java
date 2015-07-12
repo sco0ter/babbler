@@ -28,24 +28,23 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.privatedata.model.PrivateData;
-import rocks.xmpp.extensions.privatedata.rosternotes.model.Annotation;
+import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.util.Collections;
 
 /**
  * @author Christian Schudt
  */
 public class PrivateDataTest extends XmlTest {
     protected PrivateDataTest() throws JAXBException, XMLStreamException {
-        super(PrivateData.class, Annotation.class);
+        super(PrivateData.class, RosterDelimiter.class);
     }
 
     @Test
     public void marshalPrivateData() throws JAXBException, XMLStreamException {
-        PrivateData privateData = new PrivateData(new Annotation(Collections.emptyList()));
+        PrivateData privateData = new PrivateData(new RosterDelimiter("::"));
         String xml = marshal(privateData);
-        Assert.assertEquals("<query xmlns=\"jabber:iq:private\"><storage xmlns=\"storage:rosternotes\"></storage></query>", xml);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:private\"><roster xmlns=\"roster:delimiter\">::</roster></query>");
     }
 }

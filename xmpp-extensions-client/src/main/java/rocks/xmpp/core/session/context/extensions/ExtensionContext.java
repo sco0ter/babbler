@@ -75,7 +75,6 @@ import rocks.xmpp.extensions.jingle.transports.iceudp.model.IceUdpTransportMetho
 import rocks.xmpp.extensions.jingle.transports.s5b.model.S5bTransportMethod;
 import rocks.xmpp.extensions.json.model.Json;
 import rocks.xmpp.extensions.langtrans.model.LanguageTranslation;
-import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
 import rocks.xmpp.extensions.last.LastActivityManager;
 import rocks.xmpp.extensions.last.model.LastActivity;
 import rocks.xmpp.extensions.messagecorrect.MessageCorrectionManager;
@@ -95,6 +94,7 @@ import rocks.xmpp.extensions.ping.PingManager;
 import rocks.xmpp.extensions.ping.model.Ping;
 import rocks.xmpp.extensions.privacy.PrivacyListManager;
 import rocks.xmpp.extensions.privacy.model.Privacy;
+import rocks.xmpp.extensions.privatedata.rosternotes.model.Annotation;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 import rocks.xmpp.extensions.reach.ReachabilityManager;
 import rocks.xmpp.extensions.reach.model.Reachability;
@@ -260,6 +260,9 @@ public class ExtensionContext extends CoreContext {
 
                 // XEP-0144: Roster Item Exchange
                 Extension.of(ContactExchange.NAMESPACE, ContactExchangeManager.class, false, ContactExchange.class),
+
+                // XEP-0145: Annotations
+                Extension.of(Annotation.class),
 
                 // XEP-0152: Reachability Addresses
                 Extension.of(Reachability.NAMESPACE, ReachabilityManager.class, false, Reachability.class),

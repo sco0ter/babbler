@@ -55,7 +55,6 @@ import rocks.xmpp.extensions.errors.model.TooManyStanzas;
 import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.extensions.privatedata.model.PrivateData;
 import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
-import rocks.xmpp.extensions.privatedata.rosternotes.model.Annotation;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 import java.util.ArrayDeque;
@@ -115,9 +114,6 @@ public class CoreContext {
 
                 // XEP-0141: Data Forms Layout
                 Extension.of(Page.NAMESPACE, false, Page.class),
-
-                // XEP-0145: Annotations
-                Extension.of(Annotation.class),
 
                 // XEP-0205: Best Practices to Discourage Denial of Service Attacks
                 Extension.of(ResourceLimitExceeded.class, StanzaTooBig.class, TooManyStanzas.class),

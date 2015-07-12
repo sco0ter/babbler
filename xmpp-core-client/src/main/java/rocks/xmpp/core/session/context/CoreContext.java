@@ -73,7 +73,7 @@ public class CoreContext {
     private final Collection<Extension> extensions = new ArrayDeque<>();
 
     public CoreContext(Class<?>... extensions) {
-        this(Arrays.asList(extensions).stream().map(Extension::of).toArray(Extension[]::new));
+        this(Arrays.stream(extensions).map(Extension::of).toArray(Extension[]::new));
     }
 
     public CoreContext(Extension... extensions) {

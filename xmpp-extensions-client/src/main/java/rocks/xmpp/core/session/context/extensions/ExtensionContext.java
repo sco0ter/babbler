@@ -160,7 +160,7 @@ public class ExtensionContext extends CoreContext {
     }
 
     public ExtensionContext(Class<?>... extensions) {
-        this(Arrays.asList(extensions).stream().map(Extension::of).toArray(Extension[]::new));
+        this(Arrays.stream(extensions).map(Extension::of).toArray(Extension[]::new));
     }
 
     public ExtensionContext(Extension... extensions) {

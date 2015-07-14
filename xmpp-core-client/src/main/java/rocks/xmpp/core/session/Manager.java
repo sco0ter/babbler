@@ -45,7 +45,7 @@ public abstract class Manager {
         this.enabled = enabled;
         if (disposable) {
             xmppSession.addSessionStatusListener(e -> {
-                if (e.getStatus() == XmppSession.Status.CLOSED) {
+                if (e.getStatus() == XmppSession.Status.CLOSING) {
                     dispose();
                 }
             });

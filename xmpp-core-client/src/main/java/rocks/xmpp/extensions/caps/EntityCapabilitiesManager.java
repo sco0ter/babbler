@@ -60,6 +60,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -212,9 +213,14 @@ public final class EntityCapabilitiesManager extends Manager {
                         handleEntityCaps(serverCapabilities, Jid.valueOf(xmppSession.getDomain()));
                     }
                     break;
-                case CLOSED:
+                case CLOSING:
                     synchronized (serviceDiscoverer) {
                         serviceDiscoverer.shutdown();
+                        try {
+                            serviceDiscoverer.awaitTermination(50, TimeUnit.MILLISECONDS);
+                        } catch (InterruptedException ex) {
+                            Thread.currentThread().interrupt();
+                        }
                     }
                     break;
             }

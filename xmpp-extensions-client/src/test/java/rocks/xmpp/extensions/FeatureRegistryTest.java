@@ -29,6 +29,8 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
+import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.ping.PingManager;
 import rocks.xmpp.extensions.ping.model.Ping;
 
@@ -38,7 +40,7 @@ import rocks.xmpp.extensions.ping.model.Ping;
 public class FeatureRegistryTest {
 
     @Test
-    public void test() {
+    public void testEnablingAndDisablingOfFeatures() {
         XmppSession xmppSession = new TestXmppSession();
         // By default ping is enabled.
         Assert.assertTrue(xmppSession.getManager(ServiceDiscoveryManager.class).getFeatures().contains(Ping.NAMESPACE));
@@ -57,5 +59,31 @@ public class FeatureRegistryTest {
 
         Assert.assertTrue(xmppSession.getManager(PingManager.class).isEnabled());
         Assert.assertTrue(xmppSession.getManager(ServiceDiscoveryManager.class).getFeatures().contains(Ping.NAMESPACE));
+    }
+
+    @Test
+    public void shouldNotDisableManagerIfThereIsStillAnEnabledFeature() {
+        XmppSession xmppSession = new TestXmppSession();
+        Assert.assertTrue(xmppSession.getManager(ServiceDiscoveryManager.class).isEnabled());
+
+        // We disable the disco#items feature.
+        xmppSession.disableFeature(ItemDiscovery.NAMESPACE);
+
+        // Service Discovery Manager should still be enabled, because disco#info is still enabled.
+        Assert.assertTrue(xmppSession.getManager(ServiceDiscoveryManager.class).isEnabled());
+
+        // We disable the disco#info feature.
+        xmppSession.disableFeature(InfoDiscovery.NAMESPACE);
+
+        // Service Discovery Manager should now be disabled.
+        Assert.assertFalse(xmppSession.getManager(ServiceDiscoveryManager.class).isEnabled());
+
+        Assert.assertFalse(xmppSession.getEnabledFeatures().contains(InfoDiscovery.NAMESPACE));
+        Assert.assertFalse(xmppSession.getEnabledFeatures().contains(ItemDiscovery.NAMESPACE));
+
+        xmppSession.enableFeature(ServiceDiscoveryManager.class);
+
+        Assert.assertTrue(xmppSession.getEnabledFeatures().contains(InfoDiscovery.NAMESPACE));
+        Assert.assertTrue(xmppSession.getEnabledFeatures().contains(ItemDiscovery.NAMESPACE));
     }
 }

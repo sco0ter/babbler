@@ -517,15 +517,31 @@ public final class ServiceDiscoveryManager extends Manager {
     private void setEnabled(Iterable<Extension> extensions, String feature, boolean enabled) {
         if (extensions != null) {
             for (Extension extension : extensions) {
+                // Check if the extension has an associated manager class, which we need to enable/disable.
                 Class<? extends Manager> managerClass = extension.getManager();
                 if (managerClass != null) {
                     Manager manager = xmppSession.getManager(managerClass);
-                    if (enabled != manager.isEnabled()) {
+                    // A manager can manage multiple features (e.g. ServiceDiscoveryManager manages disco#items and disco#info feature)
+                    // If we disable one feature, but not the other one, the manager should still be enabled.
+                    boolean mayDisable = true;
+                    if (feature != null && !enabled) {
+                        Set<Extension> ex = managersToExtensions.get(managerClass);
+                        for (Extension e : ex) {
+                            if (features.contains(e.getNamespace())) {
+                                mayDisable = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (mayDisable && enabled != manager.isEnabled()) {
                         manager.setEnabled(enabled);
                     }
                 }
+
+                // Enable the feature (by adding it to the Service Discovery list)
                 enableFeature(extension.getNamespace(), enabled);
 
+                // Do the same for each sub-feature.
                 for (String subFeature : extension.getFeatures()) {
                     enableFeature(subFeature, enabled);
                 }

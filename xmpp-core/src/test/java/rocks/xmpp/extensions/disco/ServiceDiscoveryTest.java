@@ -79,8 +79,8 @@ public class ServiceDiscoveryTest extends XmlTest {
         Assert.assertEquals(serviceDiscovery.getIdentities().size(), 2);
         Assert.assertEquals(serviceDiscovery.getFeatures().size(), 7);
 
-        Identity identity1 = new Identity("conference", "text", "Play-Specific Chatrooms");
-        Identity identity2 = new Identity("directory", "chatroom", "Play-Specific Chatrooms");
+        Identity identity1 = Identity.conferenceText().withName("Play-Specific Chatrooms");
+        Identity identity2 = Identity.directoryChatRoom().withName("Play-Specific Chatrooms");
 
         Assert.assertTrue(serviceDiscovery.getIdentities().contains(identity1));
         Assert.assertTrue(serviceDiscovery.getIdentities().contains(identity2));

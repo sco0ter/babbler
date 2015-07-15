@@ -59,8 +59,8 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         // Tests if two Identities are equal although their name is different. That is because there must not be multiple identities with the same category+type+xml:lang but different names.
         // From XEP-0030: the <query/> element MAY include multiple <identity/> elements with the same category+type but with different 'xml:lang' values, however the <query/> element MUST NOT include multiple <identity/> elements with the same category+type+xml:lang but with different 'name' values
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-        serviceDiscoveryManager.addIdentity(new Identity("conference", "text", "name1", "en"));
-        Assert.assertTrue(serviceDiscoveryManager.getIdentities().contains(new Identity("conference", "text", "name2", "en")));
+        serviceDiscoveryManager.addIdentity(Identity.ofCategoryAndType("conference", "text").withName("name1", "en"));
+        Assert.assertTrue(serviceDiscoveryManager.getIdentities().contains(Identity.ofCategoryAndType("conference", "text").withName("name2", "en")));
     }
 
     @Test
@@ -234,8 +234,8 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         serviceDiscoveryManager.addCapabilitiesChangeListener(evt -> listenerCalled[0]++);
         serviceDiscoveryManager.addFeature("dummy");
         serviceDiscoveryManager.removeFeature("dummy");
-        serviceDiscoveryManager.addIdentity(new Identity("cat", "type"));
-        serviceDiscoveryManager.removeIdentity(new Identity("cat", "type"));
+        serviceDiscoveryManager.addIdentity(Identity.clientBot());
+        serviceDiscoveryManager.removeIdentity(Identity.clientBot());
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT);
         serviceDiscoveryManager.addExtension(dataForm);
         serviceDiscoveryManager.removeExtension(dataForm);

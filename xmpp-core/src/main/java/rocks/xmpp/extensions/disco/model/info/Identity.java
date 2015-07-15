@@ -98,7 +98,9 @@ public final class Identity implements Comparable<Identity> {
      *
      * @param category The category.
      * @param type     The type.
+     * @deprecated Use {@link #ofCategoryAndType(String, String)}
      */
+    @Deprecated
     public Identity(String category, String type) {
         this(category, type, null);
     }
@@ -109,7 +111,9 @@ public final class Identity implements Comparable<Identity> {
      * @param category The category.
      * @param type     The type.
      * @param name     The name.
+     * @deprecated Use {@link #ofCategoryAndType(String, String)} and {@link #withName(String)}
      */
+    @Deprecated
     public Identity(String category, String type, String name) {
         this(category, type, name, null);
     }
@@ -121,7 +125,9 @@ public final class Identity implements Comparable<Identity> {
      * @param type     The type.
      * @param name     The name.
      * @param language The language.
+     * @deprecated Use {@link #ofCategoryAndType(String, String)} and {@link #withName(String, String)}
      */
+    @Deprecated
     public Identity(String category, String type, String name, String language) {
         this.category = Objects.requireNonNull(category);
         this.type = Objects.requireNonNull(type);
@@ -130,152 +136,15 @@ public final class Identity implements Comparable<Identity> {
     }
 
     /**
-     * Gets the category, e.g. server, client, gateway, directory, etc.
+     * Creates an identity with a category and type.
+     * <p>
+     * Only use this method in exceptional cases, in most case you should use one of the many static factory methods, which creates a registered identity, e.g. {@link #clientBot()}
      *
-     * @return The category.
+     * @param category The category.
+     * @param type     The type.
      */
-    public final String getCategory() {
-        return category;
-    }
-
-    /**
-     * Gets the type within the {@linkplain #getCategory() category}, e.g. IM server, phone vs. handheld client, MSN gateway vs. AIM gateway, user directory vs. chatroom directory, etc.
-     *
-     * @return The type.
-     */
-    public final String getType() {
-        return type;
-    }
-
-    /**
-     * Gets the identity's name.
-     *
-     * @return The name
-     */
-    public final String getName() {
-        return name;
-    }
-
-    /**
-     * The optional language to localize the {@linkplain #getName() name}.
-     *
-     * @return The language.
-     */
-    public final String getLanguage() {
-        return lang;
-    }
-
-    /**
-     * An identity is considered equal, if category, type and language are equal, because there cannot be two identities with the same category, type and language, but with different names.
-     *
-     * @param o The other object.
-     * @return True, if category, type and language are equal.
-     */
-    @Override
-    public final boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof Identity)) {
-            return false;
-        }
-        Identity other = (Identity) o;
-
-        return Objects.equals(category, other.category)
-                && Objects.equals(type, other.type)
-                && Objects.equals(lang, other.lang);
-    }
-
-    @Override
-    public final int hashCode() {
-        return Objects.hash(category, type, lang);
-    }
-
-    /**
-     * Implements a natural ordering of an identity, as suggested and required by <a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>.
-     *
-     * @param o The other identity.
-     * @return The result of the comparison.
-     */
-    @Override
-    public final int compareTo(Identity o) {
-        int result;
-        if (o == null) {
-            result = 1;
-        } else {
-            if (getCategory() == null && o.getCategory() == null) {
-                result = 0;
-            } else if (getCategory() == null) {
-                result = -1;
-            } else if (o.getCategory() == null) {
-                result = 1;
-            } else {
-                result = getCategory().compareTo(o.getCategory());
-            }
-
-            if (result == 0) {
-                if (getType() == null && o.getType() == null) {
-                    result = 0;
-                } else if (getType() == null) {
-                    result = -1;
-                } else if (o.getType() == null) {
-                    result = 1;
-                } else {
-                    result = getType().compareTo(o.getType());
-                }
-            }
-
-            if (result == 0) {
-                if (getLanguage() == null && o.getLanguage() == null) {
-                    result = 0;
-                } else if (getLanguage() == null) {
-                    result = -1;
-                } else if (o.getLanguage() == null) {
-                    result = 1;
-                } else {
-                    result = getLanguage().compareTo(o.getLanguage());
-                }
-            }
-
-            if (result == 0) {
-                if (getName() == null && o.getName() == null) {
-                    result = 0;
-                } else if (getName() == null) {
-                    result = -1;
-                } else if (o.getName() == null) {
-                    result = 1;
-                } else {
-                    result = getName().compareTo(o.getName());
-                }
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public final String toString() {
-        return String.format("Category: %s / Type: %s / Name: %s", category, type, name);
-    }
-
-    /**
-     * Creates a new identity with a name.
-     *
-     * @param name The name.
-     * @return The identity.
-     */
-    public Identity withName(String name) {
-        return new Identity(category, type, name);
-    }
-
-    /**
-     * Creates a new identity with a name and a language.
-     *
-     * @param name     The name.
-     * @param language The language.
-     * @return The identity.
-     */
-    public Identity withName(String name, String language) {
-        return new Identity(category, type, name, language);
+    public static Identity ofCategoryAndType(String category, String type) {
+        return new Identity(Objects.requireNonNull(category), Objects.requireNonNull(type));
     }
 
     /**
@@ -960,6 +829,155 @@ public final class Identity implements Comparable<Identity> {
      */
     public static Identity storePostgreSQL() {
         return new Identity(STORE, "postgres");
+    }
+
+    /**
+     * Gets the category, e.g. server, client, gateway, directory, etc.
+     *
+     * @return The category.
+     */
+    public final String getCategory() {
+        return category;
+    }
+
+    /**
+     * Gets the type within the {@linkplain #getCategory() category}, e.g. IM server, phone vs. handheld client, MSN gateway vs. AIM gateway, user directory vs. chatroom directory, etc.
+     *
+     * @return The type.
+     */
+    public final String getType() {
+        return type;
+    }
+
+    /**
+     * Gets the identity's name.
+     *
+     * @return The name
+     */
+    public final String getName() {
+        return name;
+    }
+
+    /**
+     * The optional language to localize the {@linkplain #getName() name}.
+     *
+     * @return The language.
+     */
+    public final String getLanguage() {
+        return lang;
+    }
+
+    /**
+     * An identity is considered equal, if category, type and language are equal, because there cannot be two identities with the same category, type and language, but with different names.
+     *
+     * @param o The other object.
+     * @return True, if category, type and language are equal.
+     */
+    @Override
+    public final boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Identity)) {
+            return false;
+        }
+        Identity other = (Identity) o;
+
+        return Objects.equals(category, other.category)
+                && Objects.equals(type, other.type)
+                && Objects.equals(lang, other.lang);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(category, type, lang);
+    }
+
+    /**
+     * Implements a natural ordering of an identity, as suggested and required by <a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>.
+     *
+     * @param o The other identity.
+     * @return The result of the comparison.
+     */
+    @Override
+    public final int compareTo(Identity o) {
+        int result;
+        if (o == null) {
+            result = 1;
+        } else {
+            if (getCategory() == null && o.getCategory() == null) {
+                result = 0;
+            } else if (getCategory() == null) {
+                result = -1;
+            } else if (o.getCategory() == null) {
+                result = 1;
+            } else {
+                result = getCategory().compareTo(o.getCategory());
+            }
+
+            if (result == 0) {
+                if (getType() == null && o.getType() == null) {
+                    result = 0;
+                } else if (getType() == null) {
+                    result = -1;
+                } else if (o.getType() == null) {
+                    result = 1;
+                } else {
+                    result = getType().compareTo(o.getType());
+                }
+            }
+
+            if (result == 0) {
+                if (getLanguage() == null && o.getLanguage() == null) {
+                    result = 0;
+                } else if (getLanguage() == null) {
+                    result = -1;
+                } else if (o.getLanguage() == null) {
+                    result = 1;
+                } else {
+                    result = getLanguage().compareTo(o.getLanguage());
+                }
+            }
+
+            if (result == 0) {
+                if (getName() == null && o.getName() == null) {
+                    result = 0;
+                } else if (getName() == null) {
+                    result = -1;
+                } else if (o.getName() == null) {
+                    result = 1;
+                } else {
+                    result = getName().compareTo(o.getName());
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public final String toString() {
+        return String.format("Category: %s / Type: %s / Name: %s", category, type, name);
+    }
+
+    /**
+     * Creates a new identity with a name.
+     *
+     * @param name The name.
+     * @return The identity.
+     */
+    public Identity withName(String name) {
+        return new Identity(category, type, name, lang);
+    }
+
+    /**
+     * Creates a new identity with a name and a language.
+     *
+     * @param name     The name.
+     * @param language The language.
+     * @return The identity.
+     */
+    public Identity withName(String name, String language) {
+        return new Identity(category, type, name, language);
     }
 }
 

@@ -75,7 +75,7 @@ import java.util.function.Consumer;
  */
 public final class ServiceDiscoveryManager extends Manager {
 
-    private static final Set<Identity> DEFAULT_IDENTITY = Collections.singleton(new Identity("client", "pc"));
+    private static final Set<Identity> DEFAULT_IDENTITY = Collections.singleton(Identity.clientPc());
 
     private final Set<Identity> identities = Collections.newSetFromMap(new ConcurrentHashMap<>());
 

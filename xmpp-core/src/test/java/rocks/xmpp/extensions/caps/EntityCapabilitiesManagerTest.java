@@ -66,12 +66,12 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
     @Test
     public void testSortIdentities() throws XMLStreamException, JAXBException {
 
-        Identity identity1 = new Identity("AAA", "aaa", "name1", "en");
-        Identity identity2 = new Identity("AAA", "aaa", "name2", "de");
-        Identity identity3 = new Identity("AAA", "bbb", "name2", "de");
-        Identity identity4 = new Identity("BBB", "bbb", "name2", "de");
-        Identity identity5 = new Identity("BBB", "aaa", "name1", "en");
-        Identity identity6 = new Identity("CCC", "aaa", "name2", "de");
+        Identity identity1 = Identity.ofCategoryAndType("AAA", "aaa").withName("name1", "en");
+        Identity identity2 = Identity.ofCategoryAndType("AAA", "aaa").withName("name2", "de");
+        Identity identity3 = Identity.ofCategoryAndType("AAA", "bbb").withName("name2", "de");
+        Identity identity4 = Identity.ofCategoryAndType("BBB", "bbb").withName("name2", "de");
+        Identity identity5 = Identity.ofCategoryAndType("BBB", "aaa").withName("name1", "en");
+        Identity identity6 = Identity.ofCategoryAndType("CCC", "aaa").withName("name2", "de");
 
         List<Identity> identities = new ArrayList<>();
         identities.add(identity1);
@@ -150,7 +150,7 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
     @Test
     public void testVerificationString() throws NoSuchAlgorithmException {
         List<Identity> identities = new ArrayList<>();
-        identities.add(new Identity("client", "pc", "Exodus 0.9.1"));
+        identities.add(Identity.clientPc().withName("Exodus 0.9.1"));
 
         List<String> features = new ArrayList<>();
         features.add("http://jabber.org/protocol/disco#info");
@@ -171,8 +171,8 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
     @Test
     public void testVerificationStringComplex() throws NoSuchAlgorithmException {
         List<Identity> identities = new ArrayList<>();
-        identities.add(new Identity("client", "pc", "Psi 0.11", "en"));
-        identities.add(new Identity("client", "pc", "P 0.11", "el"));
+        identities.add(Identity.clientPc().withName("Psi 0.11", "en"));
+        identities.add(Identity.clientPc().withName("P 0.11", "el"));
 
         List<String> features = new ArrayList<>();
         features.add("http://jabber.org/protocol/caps");
@@ -197,7 +197,7 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
     @Test
     public void testVerificationStringWithExtendedForm() throws NoSuchAlgorithmException {
         List<Identity> identities = new ArrayList<>();
-        identities.add(new Identity("client", "pc", "Exodus 0.9.1"));
+        identities.add(Identity.clientPc().withName("Exodus 0.9.1"));
 
         List<String> features = new ArrayList<>();
         features.add("http://jabber.org/protocol/disco#info");
@@ -225,7 +225,7 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
     @Test
     public void testVerificationString3() throws NoSuchAlgorithmException {
         List<Identity> identities = new ArrayList<>();
-        identities.add(new Identity("client", "pc"));
+        identities.add(Identity.clientPc());
 
         List<String> features = new ArrayList<>();
         features.add("http://jabber.org/protocol/disco#info");

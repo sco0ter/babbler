@@ -39,19 +39,27 @@ import java.time.Instant;
  */
 public final class History {
     @XmlAttribute
-    private Integer maxchars;
+    private final Integer maxchars;
 
     @XmlAttribute
-    private Integer maxstanzas;
+    private final Integer maxstanzas;
 
     @XmlAttribute
-    private Integer seconds;
+    private final Integer seconds;
 
     @XmlAttribute
     @XmlJavaTypeAdapter(InstantAdapter.class)
-    private Instant since;
+    private final Instant since;
 
     private History() {
+        this(null, null, null, null);
+    }
+
+    private History(Integer maxchars, Integer maxstanzas, Integer seconds, Instant since) {
+        this.maxchars = maxchars;
+        this.maxstanzas = maxstanzas;
+        this.seconds = seconds;
+        this.since = since;
     }
 
     /**
@@ -61,9 +69,7 @@ public final class History {
      * @return The history.
      */
     public static History forMaxChars(int maxChars) {
-        History history = new History();
-        history.maxchars = maxChars;
-        return history;
+        return new History(maxChars, null, null, null);
     }
 
     /**
@@ -73,9 +79,7 @@ public final class History {
      * @return The history.
      */
     public static History forMaxMessages(int maxMessages) {
-        History history = new History();
-        history.maxstanzas = maxMessages;
-        return history;
+        return new History(null, maxMessages, null, null);
     }
 
     /**
@@ -85,9 +89,7 @@ public final class History {
      * @return The history.
      */
     public static History forSeconds(int seconds) {
-        History history = new History();
-        history.seconds = seconds;
-        return history;
+        return new History(null, null, seconds, null);
     }
 
     /**
@@ -97,9 +99,7 @@ public final class History {
      * @return The history.
      */
     public static History since(Instant date) {
-        History history = new History();
-        history.since = date;
-        return history;
+        return new History(null, null, null, date);
     }
 
     /**
@@ -108,8 +108,6 @@ public final class History {
      * @return The history.
      */
     public static History none() {
-        History history = new History();
-        history.maxchars = 0;
-        return history;
+        return new History(0, null, null, null);
     }
 }

@@ -48,8 +48,12 @@ public final class Header {
     private final String value;
 
     private Header() {
-        this.name = null;
-        this.value = null;
+        this(null, null);
+    }
+
+    private Header(String name, String value) {
+        this.name = name;
+        this.value = value;
     }
 
     /**
@@ -58,9 +62,8 @@ public final class Header {
      * @param name  The name of the header. See <a href="http://xmpp.org/extensions/xep-0131.html#registrar-shim">9.3 SHIM Headers Registry</a> for registered headers.
      * @param value The header value.
      */
-    public Header(String name, String value) {
-        this.name = Objects.requireNonNull(name);
-        this.value = value;
+    public static Header of(String name, String value) {
+        return new Header(Objects.requireNonNull(name), value);
     }
 
     /**
@@ -70,7 +73,7 @@ public final class Header {
      * @return The header.
      * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
      */
-    public static Header start(OffsetDateTime dateTime) {
+    public static Header ofStartDate(OffsetDateTime dateTime) {
         return new Header("Start", dateTime.toString());
     }
 
@@ -81,7 +84,7 @@ public final class Header {
      * @return The header.
      * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
      */
-    public static Header stop(OffsetDateTime dateTime) {
+    public static Header ofStopDate(OffsetDateTime dateTime) {
         return new Header("Stop", dateTime.toString());
     }
 

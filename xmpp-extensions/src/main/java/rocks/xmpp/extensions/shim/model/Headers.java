@@ -54,8 +54,18 @@ public final class Headers {
     private Headers() {
     }
 
-    public Headers(Header... headers) {
+    private Headers(Header... headers) {
         this.header.addAll(Arrays.asList(headers));
+    }
+
+    /**
+     * Creates a headers element.
+     *
+     * @param headers The headers.
+     * @return The header.
+     */
+    public static Headers of(Header... headers) {
+        return new Headers(headers);
     }
 
     /**
@@ -66,12 +76,12 @@ public final class Headers {
      * @return The header.
      * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
      */
-    public static Headers timePeriod(OffsetDateTime start, OffsetDateTime stop) {
+    public static Headers ofTimePeriod(OffsetDateTime start, OffsetDateTime stop) {
         // If both a start time and a stop time are specified, the stop time MUST be later than the start time.
         if (start.isAfter(stop)) {
             throw new IllegalArgumentException("start date must not be after the start date.");
         }
-        return new Headers(Header.start(start), Header.stop(stop));
+        return of(Header.ofStartDate(start), Header.ofStopDate(stop));
     }
 
     /**

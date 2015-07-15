@@ -43,33 +43,33 @@ import javax.xml.bind.annotation.XmlRootElement;
 public final class MucOwner {
 
     @XmlElementRef
-    private DataForm dataForm;
+    private final DataForm dataForm;
 
-    private MucOwnerDestroy destroy;
+    private final MucOwnerDestroy destroy;
 
     /**
      * Creates an empty query element.
      */
-    public MucOwner() {
-    }
-
-    /**
-     * Creates a query element with a configuration form.
-     *
-     * @param dataForm The configuration form.
-     */
-    public MucOwner(DataForm dataForm) {
-        this.dataForm = dataForm;
+    private MucOwner() {
+        this(null, null);
     }
 
     /**
      * Creates a query element with a {@code <destroy/>} element.
      *
-     * @param jid    The jid.
-     * @param reason The reason.
+     * @param dataForm The data form element.
+     * @param destroy  The destroy element.
      */
-    private MucOwner(Jid jid, String reason) {
-        this.destroy = new MucOwnerDestroy(jid, reason);
+    private MucOwner(DataForm dataForm, MucOwnerDestroy destroy) {
+        this.destroy = destroy;
+        this.dataForm = dataForm;
+    }
+
+    /**
+     * Creates an empty query element.
+     */
+    public static MucOwner empty() {
+        return new MucOwner();
     }
 
     /**
@@ -90,7 +90,17 @@ public final class MucOwner {
      * @return The {@link MucOwner} instance.
      */
     public static MucOwner withDestroy(Jid jid, String reason) {
-        return new MucOwner(jid, reason);
+        return new MucOwner(null, new MucOwnerDestroy(jid, reason));
+    }
+
+    /**
+     * Creates a {@code <query/>} element with a {@code <x/>} (data form) child element.
+     *
+     * @param dataForm The configuration form.
+     * @return The {@link MucOwner} instance.
+     */
+    public static MucOwner withConfiguration(DataForm dataForm) {
+        return new MucOwner(dataForm, null);
     }
 
     /**
@@ -113,12 +123,13 @@ public final class MucOwner {
 
     private static final class MucOwnerDestroy implements Destroy {
 
-        private String reason;
+        private final String reason;
 
         @XmlAttribute
-        private Jid jid;
+        private final Jid jid;
 
         private MucOwnerDestroy() {
+            this(null, null);
         }
 
         private MucOwnerDestroy(Jid jid, String reason) {

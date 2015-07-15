@@ -47,14 +47,27 @@ public final class Muc {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/muc";
 
-    private String password;
+    private final String password;
 
-    private History history;
+    private final History history;
 
     /**
      * Creates an empty element.
      */
-    public Muc() {
+    private Muc() {
+        this(null, null);
+    }
+
+    private Muc(String password, History history) {
+        this.password = password;
+        this.history = history;
+    }
+
+    /**
+     * Creates an empty element.
+     */
+    public static Muc empty() {
+        return new Muc();
     }
 
     /**
@@ -62,8 +75,8 @@ public final class Muc {
      *
      * @param password The password.
      */
-    public Muc(String password) {
-        this.password = password;
+    public static Muc withPassword(String password) {
+        return new Muc(password, null);
     }
 
     /**
@@ -71,8 +84,8 @@ public final class Muc {
      *
      * @param history The history.
      */
-    public Muc(History history) {
-        this.history = history;
+    public static Muc withHistory(History history) {
+        return new Muc(null, history);
     }
 
     /**
@@ -81,8 +94,7 @@ public final class Muc {
      * @param password The password.
      * @param history  The history.
      */
-    public Muc(String password, History history) {
-        this.password = password;
-        this.history = history;
+    public static Muc withPasswordAndHistory(String password, History history) {
+        return new Muc(password, history);
     }
 }

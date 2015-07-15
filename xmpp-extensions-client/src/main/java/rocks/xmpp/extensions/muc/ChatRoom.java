@@ -343,7 +343,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
             xmppSession.addInboundPresenceListener(presenceListener);
 
             final Presence enterPresence = new Presence(roomJid.withResource(nick));
-            enterPresence.getExtensions().add(new Muc(password, history));
+            enterPresence.getExtensions().add(Muc.withPasswordAndHistory(password, history));
             this.nick = nick;
             xmppSession.sendAndAwaitPresence(enterPresence, presence -> {
                 Jid room = presence.getFrom().asBareJid();
@@ -714,7 +714,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      */
     public void createRoom() throws XmppException {
         enter(nick);
-        xmppSession.query(new IQ(roomJid, IQ.Type.SET, new MucOwner(new DataForm(DataForm.Type.SUBMIT))));
+        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucOwner.withConfiguration(new DataForm(DataForm.Type.SUBMIT))));
     }
 
     /**
@@ -814,7 +814,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see #configure(rocks.xmpp.extensions.muc.model.RoomConfiguration)
      */
     public DataForm getConfigurationForm() throws XmppException {
-        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, new MucOwner()));
+        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucOwner.empty()));
         MucOwner mucOwner = result.getExtension(MucOwner.class);
         return mucOwner.getConfigurationForm();
     }
@@ -830,7 +830,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      */
     public void configure(RoomConfiguration roomConfiguration) throws XmppException {
         Objects.requireNonNull(roomConfiguration, "roomConfiguration must not be null.");
-        MucOwner mucOwner = new MucOwner(roomConfiguration.getDataForm());
+        MucOwner mucOwner = MucOwner.withConfiguration(roomConfiguration.getDataForm());
         IQ iq = new IQ(roomJid, IQ.Type.SET, mucOwner);
         xmppSession.query(iq);
     }

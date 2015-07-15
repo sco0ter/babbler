@@ -132,14 +132,14 @@ public class MultiUserChatOwnerTest extends XmlTest {
 
     @Test
     public void marshalCreateInstantRoom() throws JAXBException, XMLStreamException {
-        MucOwner mucOwner = new MucOwner(new DataForm(DataForm.Type.SUBMIT));
+        MucOwner mucOwner = MucOwner.withConfiguration(new DataForm(DataForm.Type.SUBMIT));
         String xml = marshal(mucOwner);
         Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#owner\"><x xmlns=\"jabber:x:data\" type=\"submit\"></x></query>");
     }
 
     @Test
     public void marshalRequestConfigurationForm() throws JAXBException, XMLStreamException {
-        MucOwner mucOwner = new MucOwner();
+        MucOwner mucOwner = MucOwner.empty();
         String xml = marshal(mucOwner);
         Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#owner\"></query>");
     }

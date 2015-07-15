@@ -53,12 +53,20 @@ public final class RosterDelimiter {
     @XmlValue
     private final String rosterDelimiter;
 
-    public RosterDelimiter() {
-        this.rosterDelimiter = null;
+    private RosterDelimiter() {
+        this(null);
     }
 
-    public RosterDelimiter(String rosterDelimiter) {
+    private RosterDelimiter(String rosterDelimiter) {
         this.rosterDelimiter = rosterDelimiter;
+    }
+
+    public static RosterDelimiter of(String rosterDelimiter) {
+        return new RosterDelimiter(rosterDelimiter);
+    }
+
+    public static RosterDelimiter empty() {
+        return new RosterDelimiter();
     }
 
     /**

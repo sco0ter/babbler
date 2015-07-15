@@ -43,7 +43,7 @@ public class PrivateDataTest extends XmlTest {
 
     @Test
     public void marshalPrivateData() throws JAXBException, XMLStreamException {
-        PrivateData privateData = new PrivateData(new RosterDelimiter("::"));
+        PrivateData privateData = new PrivateData(RosterDelimiter.of("::"));
         String xml = marshal(privateData);
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:private\"><roster xmlns=\"roster:delimiter\">::</roster></query>");
     }

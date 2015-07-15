@@ -648,7 +648,7 @@ public final class RosterManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
      */
     public final synchronized void storeGroupDelimiter(String groupDelimiter) throws XmppException {
-        privateDataManager.storeData(new RosterDelimiter(groupDelimiter));
+        privateDataManager.storeData(RosterDelimiter.of(groupDelimiter));
         setGroupDelimiter(groupDelimiter);
     }
 

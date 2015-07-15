@@ -54,7 +54,7 @@ final class Feature implements Comparable<Feature> {
      *
      * @param var A protocol namespace or other feature offered by the entity.
      */
-    public Feature(String var) {
+    Feature(String var) {
         this.var = Objects.requireNonNull(var);
     }
 
@@ -63,7 +63,7 @@ final class Feature implements Comparable<Feature> {
      *
      * @return A protocol namespace or other feature offered by the entity.
      */
-    public final String getVar() {
+    final String getVar() {
         return var;
     }
 

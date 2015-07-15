@@ -92,21 +92,21 @@ public class RpcMethodCallTest extends XmlTest {
 
     @Test
     public void marshalRpcMethodCallWithInteger() throws JAXBException, XMLStreamException {
-        Rpc rpc = new Rpc("testMethod", new Value(1));
+        Rpc rpc = Rpc.ofMethodCall("testMethod", Value.of(1));
         String xml = marshal(rpc);
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:rpc\"><methodCall><methodName>testMethod</methodName><params><param><value><int>1</int></value></param></params></methodCall></query>");
     }
 
     @Test
     public void marshalRpcMethodCallWithString() throws JAXBException, XMLStreamException {
-        Rpc rpc = new Rpc("testMethod", new Value("test"));
+        Rpc rpc = Rpc.ofMethodCall("testMethod", Value.of("test"));
         String xml = marshal(rpc);
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:rpc\"><methodCall><methodName>testMethod</methodName><params><param><value><string>test</string></value></param></params></methodCall></query>");
     }
 
     @Test
     public void marshalRpcMethodCallWithDouble() throws JAXBException, XMLStreamException {
-        Rpc rpc = new Rpc("testMethod", new Value(10.4));
+        Rpc rpc = Rpc.ofMethodCall("testMethod", Value.of(10.4));
         String xml = marshal(rpc);
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:rpc\"><methodCall><methodName>testMethod</methodName><params><param><value><double>10.4</double></value></param></params></methodCall></query>");
     }
@@ -115,7 +115,7 @@ public class RpcMethodCallTest extends XmlTest {
     public void marshalRpcMethodCallWithBase64() throws JAXBException, XMLStreamException {
         byte[] bytes = new byte[1];
         bytes[0] = 65;
-        Rpc rpc = new Rpc("testMethod", new Value(bytes));
+        Rpc rpc = Rpc.ofMethodCall("testMethod", Value.of(bytes));
         String xml = marshal(rpc);
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:rpc\"><methodCall><methodName>testMethod</methodName><params><param><value><base64>QQ==</base64></value></param></params></methodCall></query>");
     }
@@ -123,7 +123,7 @@ public class RpcMethodCallTest extends XmlTest {
     @Test
     public void marshalRpcMethodCallWithDate() throws JAXBException, XMLStreamException {
         OffsetDateTime dateTime = OffsetDateTime.parse("2014-01-23T22:37:34+04:00");
-        Rpc rpc = new Rpc("testMethod", new Value(dateTime));
+        Rpc rpc = Rpc.ofMethodCall("testMethod", Value.of(dateTime));
         String xml = marshal(rpc);
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:rpc\"><methodCall><methodName>testMethod</methodName><params><param><value><dateTime.iso8601>" + dateTime.toString() + "</dateTime.iso8601></value></param></params></methodCall></query>");
     }
@@ -131,9 +131,9 @@ public class RpcMethodCallTest extends XmlTest {
     @Test
     public void marshalRpcMethodCallWithArray() throws JAXBException, XMLStreamException {
         Collection<Value> values = new ArrayDeque<>();
-        values.add(new Value(1));
-        values.add(new Value(2));
-        Rpc rpc = new Rpc("testMethod", new Value(values));
+        values.add(Value.of(1));
+        values.add(Value.of(2));
+        Rpc rpc = Rpc.ofMethodCall("testMethod", Value.of(values));
         String xml = marshal(rpc);
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:rpc\"><methodCall><methodName>testMethod</methodName><params><param><value><array><data><value><int>1</int></value><value><int>2</int></value></data></array></value></param></params></methodCall></query>");
     }
@@ -141,9 +141,9 @@ public class RpcMethodCallTest extends XmlTest {
     @Test
     public void marshalRpcMethodCallWithMap() throws JAXBException, XMLStreamException {
         Map<String, Value> map = new LinkedHashMap<>();
-        map.put("key1", new Value(1));
-        map.put("key2", new Value(true));
-        Rpc rpc = new Rpc("testMethod", new Value(map));
+        map.put("key1", Value.of(1));
+        map.put("key2", Value.of(true));
+        Rpc rpc = Rpc.ofMethodCall("testMethod", Value.of(map));
         String xml = marshal(rpc);
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:rpc\"><methodCall><methodName>testMethod</methodName><params><param><value><struct><member><name>key1</name><value><int>1</int></value></member><member><name>key2</name><value><boolean>1</boolean></value></member></struct></value></param></params></methodCall></query>");
     }

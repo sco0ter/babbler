@@ -64,12 +64,12 @@ public class RpcManagerTest extends ExtensionTest {
         rpcManager.setEnabled(true);
         rpcManager.setRpcHandler((requester, methodName, parameters) -> {
             if (methodName.equals("square")) {
-                return new Value(parameters.get(0).getAsInteger() * parameters.get(0).getAsInteger());
+                return Value.of(parameters.get(0).getAsInteger() * parameters.get(0).getAsInteger());
             }
             return null;
         });
 
-        Value result = xmppSession2.getManager(RpcManager.class).call(ROMEO, "square", new Value(2));
+        Value result = xmppSession2.getManager(RpcManager.class).call(ROMEO, "square", Value.of(2));
         Assert.assertEquals(result.getAsInteger().intValue(), 4);
     }
 
@@ -93,7 +93,7 @@ public class RpcManagerTest extends ExtensionTest {
         });
 
         try {
-            xmppSession2.getManager(RpcManager.class).call(ROMEO, "fault", new Value(2));
+            xmppSession2.getManager(RpcManager.class).call(ROMEO, "fault", Value.of(2));
         } catch (RpcException e) {
             Assert.assertEquals(e.getFaultCode(), 2);
             Assert.assertEquals(e.getFaultString(), "faulty");

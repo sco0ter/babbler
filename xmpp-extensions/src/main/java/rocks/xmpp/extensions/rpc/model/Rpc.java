@@ -64,7 +64,9 @@ public final class Rpc {
      *
      * @param methodName The method name.
      * @param parameters The parameters.
+     * @deprecated Use {@link #ofMethodCall(String, Value...)}}
      */
+    @Deprecated
     public Rpc(String methodName, Value... parameters) {
         this.methodCall = new MethodCall(methodName, parameters);
     }
@@ -73,7 +75,9 @@ public final class Rpc {
      * Creates a method response.
      *
      * @param value The return value.
+     * @deprecated Use {@link #ofMethodResponse(Value)}
      */
+    @Deprecated
     public Rpc(Value value) {
         this.methodResponse = new MethodResponse(value);
     }
@@ -82,9 +86,39 @@ public final class Rpc {
      * Creates a method response with a fault.
      *
      * @param fault The fault.
+     * @deprecated Use {@link #ofFaultResponse(MethodResponse.Fault)}
      */
+    @Deprecated
     public Rpc(MethodResponse.Fault fault) {
         this.methodResponse = new MethodResponse(fault);
+    }
+
+    /**
+     * Creates a method call with a list of parameters.
+     *
+     * @param methodName The method name.
+     * @param parameters The parameters.
+     */
+    public static Rpc ofMethodCall(String methodName, Value... parameters) {
+        return new Rpc(methodName, parameters);
+    }
+
+    /**
+     * Creates a method response.
+     *
+     * @param value The return value.
+     */
+    public static Rpc ofMethodResponse(Value value) {
+        return new Rpc(value);
+    }
+
+    /**
+     * Creates a method response with a fault.
+     *
+     * @param fault The fault.
+     */
+    public static Rpc ofFaultResponse(MethodResponse.Fault fault) {
+        return new Rpc(fault);
     }
 
     /**
@@ -206,8 +240,8 @@ public final class Rpc {
              */
             public Fault(int faultCode, String faultString) {
                 Map<String, Value> faultMap = new LinkedHashMap<>();
-                faultMap.put("faultCode", new Value(faultCode));
-                faultMap.put("faultString", new Value(faultString));
+                faultMap.put("faultCode", Value.of(faultCode));
+                faultMap.put("faultString", Value.of(faultString));
                 this.value = new Value(faultMap);
             }
 

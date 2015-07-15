@@ -66,6 +66,7 @@ public final class Value {
      *
      * @param integer The integer value.
      */
+    @Deprecated
     public Value(Integer integer) {
         this.value = integer;
     }
@@ -75,6 +76,7 @@ public final class Value {
      *
      * @param string The string value.
      */
+    @Deprecated
     public Value(String string) {
         this.value = string;
     }
@@ -84,6 +86,7 @@ public final class Value {
      *
      * @param d The double value.
      */
+    @Deprecated
     public Value(Double d) {
         this.value = d;
     }
@@ -93,6 +96,7 @@ public final class Value {
      *
      * @param bytes The binary value.
      */
+    @Deprecated
     public Value(byte[] bytes) {
         this.value = bytes;
     }
@@ -102,6 +106,7 @@ public final class Value {
      *
      * @param b The boolean value.
      */
+    @Deprecated
     public Value(Boolean b) {
         this.value = new NumericBoolean(b);
     }
@@ -111,6 +116,7 @@ public final class Value {
      *
      * @param date The date value.
      */
+    @Deprecated
     public Value(OffsetDateTime date) {
         XMLGregorianCalendar xmlGregorianCalendar;
         try {
@@ -131,6 +137,7 @@ public final class Value {
      *
      * @param list The array type value.
      */
+    @Deprecated
     public Value(Collection<Value> list) {
         if (list != null) {
             ArrayType arrayType = new ArrayType();
@@ -146,6 +153,7 @@ public final class Value {
      *
      * @param map The struct type value.
      */
+    @Deprecated
     public Value(Map<String, Value> map) {
         if (map != null) {
             StructType structType = new StructType();
@@ -154,6 +162,78 @@ public final class Value {
         } else {
             this.value = null;
         }
+    }
+
+    /**
+     * Creates an integer value.
+     *
+     * @param integer The integer value.
+     */
+    public static Value of(Integer integer) {
+        return new Value(integer);
+    }
+
+    /**
+     * Creates a string value.
+     *
+     * @param string The string value.
+     */
+    public static Value of(String string) {
+        return new Value(string);
+    }
+
+    /**
+     * Creates a double value.
+     *
+     * @param d The double value.
+     */
+    public static Value of(Double d) {
+        return new Value(d);
+    }
+
+    /**
+     * Creates a binary (base64) value.
+     *
+     * @param bytes The binary value.
+     */
+    public static Value of(byte[] bytes) {
+        return new Value(bytes);
+    }
+
+    /**
+     * Creates a boolean value.
+     *
+     * @param b The boolean value.
+     */
+    public static Value of(Boolean b) {
+        return new Value(b);
+    }
+
+    /**
+     * Creates a date value.
+     *
+     * @param dateTime The date time value.
+     */
+    public static Value of(OffsetDateTime dateTime) {
+        return new Value(dateTime);
+    }
+
+    /**
+     * Creates an array type value.
+     *
+     * @param list The array type value.
+     */
+    public static Value of(Collection<Value> list) {
+        return new Value(list);
+    }
+
+    /**
+     * Creates a struct type value.
+     *
+     * @param map The struct type value.
+     */
+    public static Value of(Map<String, Value> map) {
+        return new Value(map);
     }
 
     /**

@@ -75,9 +75,9 @@ public final class RpcManager extends Manager {
 
                     try {
                         Value value = rpcHandler1.process(iq.getFrom(), methodCall.getMethodName(), parameters);
-                        return iq.createResult(new Rpc(value));
+                        return iq.createResult(Rpc.ofMethodResponse(value));
                     } catch (RpcException e1) {
-                        return iq.createResult(new Rpc(new Rpc.MethodResponse.Fault(e1.getFaultCode(), e1.getFaultString())));
+                        return iq.createResult(Rpc.ofFaultResponse(new Rpc.MethodResponse.Fault(e1.getFaultCode(), e1.getFaultString())));
                     } catch (Throwable e1) {
                         logger.log(Level.WARNING, e1.getMessage(), e1);
                         return iq.createError(Condition.INTERNAL_SERVER_ERROR);
@@ -112,7 +112,7 @@ public final class RpcManager extends Manager {
      * @throws RpcException                                If the RPC returned with an application-level error ({@code <fault/>} element).
      */
     public Value call(Jid jid, String methodName, Value... parameters) throws XmppException, RpcException {
-        IQ result = xmppSession.query(new IQ(jid, IQ.Type.SET, new Rpc(methodName, parameters)));
+        IQ result = xmppSession.query(new IQ(jid, IQ.Type.SET, Rpc.ofMethodCall(methodName, parameters)));
         if (result != null) {
             Rpc rpc = result.getExtension(Rpc.class);
             if (rpc != null) {

@@ -41,21 +41,32 @@ public final class ResultSetManagement {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/rsm";
 
-    private Integer max;
+    private final Integer max;
 
-    private String after;
+    private final String after;
 
-    private String before;
+    private final String before;
 
-    private Integer count;
+    private final Integer count;
 
-    private First first;
+    private final First first;
 
-    private Integer index;
+    private final Integer index;
 
-    private String last;
+    private final String last;
 
     private ResultSetManagement() {
+        this(null, null, null, null, null, null, null);
+    }
+
+    private ResultSetManagement(Integer max, String after, String before, Integer count, First first, Integer index, String last) {
+        this.max = max;
+        this.after = after;
+        this.before = before;
+        this.count = count;
+        this.first = first;
+        this.index = index;
+        this.last = last;
     }
 
     /**
@@ -66,9 +77,7 @@ public final class ResultSetManagement {
      * @see <a href="http://xmpp.org/extensions/xep-0059.html#limit">2.1 Limiting the Number of Items</a>
      */
     public static ResultSetManagement forLimit(int limit) {
-        ResultSetManagement resultSet = new ResultSetManagement();
-        resultSet.max = limit;
-        return resultSet;
+        return new ResultSetManagement(limit, null, null, null, null, null, null);
     }
 
     /**
@@ -80,10 +89,7 @@ public final class ResultSetManagement {
      * @see <a href="http://xmpp.org/extensions/xep-0059.html#forwards">2.2 Paging Forwards Through a Result Set</a>
      */
     public static ResultSetManagement forNextPage(int max, String id) {
-        ResultSetManagement resultSet = new ResultSetManagement();
-        resultSet.max = max;
-        resultSet.after = id;
-        return resultSet;
+        return new ResultSetManagement(max, id, null, null, null, null, null);
     }
 
     /**
@@ -95,10 +101,7 @@ public final class ResultSetManagement {
      * @see <a href="http://xmpp.org/extensions/xep-0059.html#backwards">2.3 Paging Backwards Through a Result Set</a>
      */
     public static ResultSetManagement forPreviousPage(int max, String id) {
-        ResultSetManagement resultSet = new ResultSetManagement();
-        resultSet.max = max;
-        resultSet.before = id;
-        return resultSet;
+        return new ResultSetManagement(max, null, id, null, null, null, null);
     }
 
     /**
@@ -109,10 +112,7 @@ public final class ResultSetManagement {
      * @see <a href="http://xmpp.org/extensions/xep-0059.html#last">2.5 Requesting the Last Page in a Result Set</a>
      */
     public static ResultSetManagement forLastPage(int limit) {
-        ResultSetManagement resultSet = new ResultSetManagement();
-        resultSet.max = limit;
-        resultSet.before = "";
-        return resultSet;
+        return new ResultSetManagement(limit, null, "", null, null, null, null);
     }
 
     /**
@@ -124,10 +124,7 @@ public final class ResultSetManagement {
      * @see <a href="http://xmpp.org/extensions/xep-0059.html#jump">2.6 Retrieving a Page Out of Order</a>
      */
     public static ResultSetManagement forLimit(int limit, int index) {
-        ResultSetManagement resultSet = new ResultSetManagement();
-        resultSet.max = limit;
-        resultSet.index = index;
-        return resultSet;
+        return new ResultSetManagement(limit, null, null, null, null, index, null);
     }
 
     /**
@@ -138,9 +135,7 @@ public final class ResultSetManagement {
      * @see <a href="http://xmpp.org/extensions/xep-0059.html#jump">2.6 Retrieving a Page Out of Order</a>
      */
     public static ResultSetManagement forCount(int count) {
-        ResultSetManagement resultSet = new ResultSetManagement();
-        resultSet.count = count;
-        return resultSet;
+        return new ResultSetManagement(null, null, null, count, null, null, null);
     }
 
     /**
@@ -154,11 +149,7 @@ public final class ResultSetManagement {
      * @see <a href="http://xmpp.org/extensions/xep-0059.html#jump">2.6 Retrieving a Page Out of Order</a>
      */
     public static ResultSetManagement forCount(Integer count, Integer index, String first, String last) {
-        ResultSetManagement resultSet = new ResultSetManagement();
-        resultSet.count = count;
-        resultSet.first = new First(index, first);
-        resultSet.last = last;
-        return resultSet;
+        return new ResultSetManagement(null, null, null, count, new First(index, first), null, last);
     }
 
     /**

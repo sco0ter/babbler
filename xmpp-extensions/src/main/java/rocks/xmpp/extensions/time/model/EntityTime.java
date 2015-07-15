@@ -31,7 +31,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Objects;
 
@@ -77,7 +76,7 @@ public final class EntityTime {
      * @return The date.
      */
     public final OffsetDateTime getDateTime() {
-        return utc != null ? OffsetDateTime.ofInstant(utc, tzo != null ? tzo : ZoneId.of("Z")) : null;
+        return utc != null ? OffsetDateTime.ofInstant(utc, tzo != null ? tzo : ZoneOffset.UTC) : null;
     }
 
     @Override

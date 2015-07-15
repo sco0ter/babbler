@@ -71,7 +71,7 @@ public class SaslTest extends XmlTest {
     public void unmarshalAbort() throws XMLStreamException, JAXBException {
         String xml = "<abort xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>";
         Abort abort = unmarshal(xml, Abort.class);
-        Assert.assertNotNull(abort);
+        Assert.assertTrue(Abort.INSTANCE == abort);
     }
 
     @Test

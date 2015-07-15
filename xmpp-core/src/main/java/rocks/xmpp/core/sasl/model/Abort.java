@@ -27,6 +27,7 @@ package rocks.xmpp.core.sasl.model;
 import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <abort/>} element to abort SASL negotiation.
@@ -41,5 +42,18 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Christian Schudt
  */
 @XmlRootElement
+@XmlType(factoryMethod = "create")
 public final class Abort implements StreamElement {
+
+    /**
+     * The implementation of the {@code <abort/>} element.
+     */
+    public static final Abort INSTANCE = new Abort();
+
+    private Abort() {
+    }
+
+    private static Abort create() {
+        return INSTANCE;
+    }
 }

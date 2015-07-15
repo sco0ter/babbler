@@ -188,26 +188,20 @@ public final class PingManager extends Manager {
 
     private synchronized void rescheduleNextPing() {
         // Reschedule in a separate thread, so that it won't interrupt the "pinging" thread due to the cancel, which then causes the ping to fail.
-        if (!scheduledExecutorService.isShutdown()) {
-            scheduledExecutorService.schedule(() -> {
-                synchronized (PingManager.this) {
-                    cancelNextPing();
-                    if (pingInterval > 0 && !scheduledExecutorService.isShutdown()) {
-                        nextPing = scheduledExecutorService.schedule(() -> {
-                            if (isEnabled() && xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
-                                if (!pingServer()) {
-                                    try {
-                                        throw new XmppException("Server ping failed.");
-                                    } catch (XmppException e) {
-                                        xmppSession.notifyException(e);
-                                    }
-                                }
-                            }
-                            // Rescheduling of the next ping is already done by the IQ response of the ping.
-                        }, pingInterval, TimeUnit.SECONDS);
+        if (pingInterval > 0 && !scheduledExecutorService.isShutdown()) {
+            cancelNextPing();
+            nextPing = scheduledExecutorService.schedule(() -> {
+                if (isEnabled() && xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
+                    if (!pingServer()) {
+                        try {
+                            throw new XmppException("Server ping failed.");
+                        } catch (XmppException e) {
+                            xmppSession.notifyException(e);
+                        }
                     }
                 }
-            }, 0, TimeUnit.MILLISECONDS);
+                // Rescheduling of the next ping is already done by the IQ response of the ping.
+            }, pingInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -216,7 +210,7 @@ public final class PingManager extends Manager {
      */
     private synchronized void cancelNextPing() {
         if (nextPing != null) {
-            nextPing.cancel(true);
+            nextPing.cancel(false);
             nextPing = null;
         }
     }

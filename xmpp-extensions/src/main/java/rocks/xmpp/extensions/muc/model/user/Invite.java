@@ -37,29 +37,19 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public final class Invite {
 
-    private String reason;
+    private final String reason;
 
     @XmlAttribute
-    private Jid from;
+    private final Jid from;
 
     @XmlAttribute
-    private Jid to;
+    private final Jid to;
 
     @XmlElement(name = "continue")
-    private Continue aContinue;
+    private final Continue aContinue;
 
     private Invite() {
-    }
-
-    /**
-     * Creates an invite element with a reason.
-     *
-     * @param to     The invitee, who will receive the invitation.
-     * @param reason The reason.
-     */
-    public Invite(Jid to, String reason) {
-        this.to = to;
-        this.reason = reason;
+        this(null, null, null);
     }
 
     /**
@@ -72,16 +62,27 @@ public final class Invite {
     }
 
     /**
+     * Creates an invite element with a reason.
+     *
+     * @param to     The invitee, who will receive the invitation.
+     * @param reason The reason.
+     */
+    public Invite(Jid to, String reason) {
+        this(to, reason, null);
+    }
+
+    /**
      * Creates an 'invite' element with a reason and a 'continue' element.
      *
-     * @param to        The invitee, who will receive the invitation.
-     * @param reason    The reason.
-     * @param aContinue The 'continue' element.
+     * @param to     The invitee, who will receive the invitation.
+     * @param reason The reason.
+     * @param thread The thread to continue.
      */
-    public Invite(Jid to, String reason, Continue aContinue) {
+    public Invite(Jid to, String reason, String thread) {
         this.to = to;
         this.reason = reason;
-        this.aContinue = aContinue;
+        this.aContinue = thread != null ? new Continue(thread) : null;
+        this.from = null;
     }
 
     /**
@@ -128,6 +129,6 @@ public final class Invite {
      * @see #isContinue()
      */
     public String getThread() {
-        return aContinue != null ? aContinue.getThread() : null;
+        return aContinue != null ? aContinue.thread : null;
     }
 }

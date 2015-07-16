@@ -28,15 +28,18 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * The implementation of the {@code <continue/>} element.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#continue">7.9 Converting a One-to-One Chat Into a Multi-User Conference</a>
  */
-public final class Continue {
+final class Continue {
     @XmlAttribute
-    private String thread;
+    final String thread;
 
     private Continue() {
+        this.thread = null;
     }
 
     /**
@@ -44,16 +47,7 @@ public final class Continue {
      *
      * @param thread The thread.
      */
-    public Continue(String thread) {
+    Continue(String thread) {
         this.thread = thread;
-    }
-
-    /**
-     * Gets the thread of the previous one-to-one chat session.
-     *
-     * @return The thread.
-     */
-    public String getThread() {
-        return thread;
     }
 }

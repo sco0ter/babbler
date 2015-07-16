@@ -36,15 +36,16 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 public final class Decline {
 
-    private String reason;
+    private final String reason;
 
     @XmlAttribute
-    private Jid from;
+    private final Jid from;
 
     @XmlAttribute
-    private Jid to;
+    private final Jid to;
 
     private Decline() {
+        this(null, null);
     }
 
     /**
@@ -56,6 +57,7 @@ public final class Decline {
     public Decline(Jid to, String reason) {
         this.to = to;
         this.reason = reason;
+        this.from = null;
     }
 
     /**

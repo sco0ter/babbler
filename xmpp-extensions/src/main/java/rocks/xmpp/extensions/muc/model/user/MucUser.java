@@ -40,6 +40,14 @@ import java.util.List;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code http://jabber.org/protocol/muc#user} namespace.
+ * <h3>Usage</h3>
+ * <pre>
+ * {@code
+ * // To create an element with an item of 'owner' and 'moderator'
+ * MucUser mucUser = MucUser.withItem(Affiliation.OWNER, Role.MODERATOR);
+ * }
+ * </pre>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>

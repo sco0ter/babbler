@@ -31,6 +31,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code jabber:x:conference} namespace, which represents a direct multi-user chat invitation.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */

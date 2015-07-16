@@ -38,6 +38,14 @@ import java.util.List;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/muc#admin} namespace.
+ * <h3>Usage</h3>
+ * <pre>
+ * {@code
+ * // To create an element with an item of a role
+ * MucAdmin mucAdmin = MucAdmin.withItem(Role.MODERATOR);
+ * }
+ * </pre>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>

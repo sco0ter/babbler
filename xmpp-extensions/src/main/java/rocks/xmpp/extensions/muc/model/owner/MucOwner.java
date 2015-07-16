@@ -34,6 +34,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/muc#owner} namespace.
+ * <h3>Usage</h3>
+ * <pre>
+ * {@code
+ * // To create an empty element (to query the configuration form).
+ * MucOwner mucOwner = MucOwner.empty();
+ * }
+ * </pre>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>

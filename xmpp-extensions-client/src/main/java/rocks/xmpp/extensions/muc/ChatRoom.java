@@ -43,7 +43,7 @@ import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
 import rocks.xmpp.extensions.muc.model.Actor;
 import rocks.xmpp.extensions.muc.model.Affiliation;
-import rocks.xmpp.extensions.muc.model.History;
+import rocks.xmpp.extensions.muc.model.DiscussionHistory;
 import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.extensions.muc.model.MucFeature;
 import rocks.xmpp.extensions.muc.model.RequestVoice;
@@ -314,12 +314,12 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Enters the room and requests history messages.
      *
      * @param nick    The nickname.
-     * @param history The history.
+     * @param discussionHistory The history.
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public void enter(String nick, History history) throws XmppException {
-        enter(nick, null, history);
+    public void enter(String nick, DiscussionHistory discussionHistory) throws XmppException {
+        enter(nick, null, discussionHistory);
     }
 
     /**
@@ -327,11 +327,11 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      *
      * @param nick     The nickname.
      * @param password The password.
-     * @param history  The history.
+     * @param discussionHistory  The history.
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public synchronized void enter(final String nick, String password, History history) throws XmppException {
+    public synchronized void enter(final String nick, String password, DiscussionHistory discussionHistory) throws XmppException {
         Objects.requireNonNull(nick, "nick must not be null.");
 
         if (entered) {
@@ -343,7 +343,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
             xmppSession.addInboundPresenceListener(presenceListener);
 
             final Presence enterPresence = new Presence(roomJid.withResource(nick));
-            enterPresence.getExtensions().add(Muc.withPasswordAndHistory(password, history));
+            enterPresence.getExtensions().add(Muc.withPasswordAndHistory(password, discussionHistory));
             this.nick = nick;
             xmppSession.sendAndAwaitPresence(enterPresence, presence -> {
                 Jid room = presence.getFrom().asBareJid();

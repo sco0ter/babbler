@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.muc.model;
 import rocks.xmpp.addr.Jid;
 
 /**
- * The {@code <item/>} element, which is used in both #admin and #user namespace to manage members and indicate users in a chat room.
+ * The {@code <item/>} element, which is used in both <code>#admin</code> and <code>#user</code> namespace to manage members and indicate users in a chat room.
  *
  * @author Christian Schudt
  */

@@ -31,13 +31,30 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.Instant;
 
 /**
- * The discussion history.
+ * The discussion history for a multi-user chat room, which can be requested when entering a room.
+ * <h3>Usage</h3>
+ * <pre>
+ * {@code
+ * // To request discussion history for max. 65000 characters
+ * DiscussionHistory history = DiscussionHistory.forMaxChars(65000);
+ *
+ * // To request discussion history for max. the last 25 messages
+ * DiscussionHistory history = DiscussionHistory.forMaxMessages(25);
+ *
+ * // To request discussion history for the last 180 seconds
+ * DiscussionHistory history = DiscussionHistory.forSeconds(180);
+ *
+ * // To request no discussion history at all
+ * DiscussionHistory history = DiscussionHistory.none();
+ * }
+ * </pre>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#enter-history">7.2.14 Discussion History</a>
  * @see <a href="http://xmpp.org/extensions/xep-0045.html#enter-managehistory">7.2.15 Managing Discussion History</a>
  */
-public final class History {
+public final class DiscussionHistory {
     @XmlAttribute
     private final Integer maxchars;
 
@@ -51,11 +68,11 @@ public final class History {
     @XmlJavaTypeAdapter(InstantAdapter.class)
     private final Instant since;
 
-    private History() {
+    private DiscussionHistory() {
         this(null, null, null, null);
     }
 
-    private History(Integer maxchars, Integer maxstanzas, Integer seconds, Instant since) {
+    private DiscussionHistory(Integer maxchars, Integer maxstanzas, Integer seconds, Instant since) {
         this.maxchars = maxchars;
         this.maxstanzas = maxstanzas;
         this.seconds = seconds;
@@ -68,8 +85,8 @@ public final class History {
      * @param maxChars The maximal character count.
      * @return The history.
      */
-    public static History forMaxChars(int maxChars) {
-        return new History(maxChars, null, null, null);
+    public static DiscussionHistory forMaxChars(int maxChars) {
+        return new DiscussionHistory(maxChars, null, null, null);
     }
 
     /**
@@ -78,8 +95,8 @@ public final class History {
      * @param maxMessages The maximal number of messages.
      * @return The history.
      */
-    public static History forMaxMessages(int maxMessages) {
-        return new History(null, maxMessages, null, null);
+    public static DiscussionHistory forMaxMessages(int maxMessages) {
+        return new DiscussionHistory(null, maxMessages, null, null);
     }
 
     /**
@@ -88,8 +105,8 @@ public final class History {
      * @param seconds The seconds.
      * @return The history.
      */
-    public static History forSeconds(int seconds) {
-        return new History(null, null, seconds, null);
+    public static DiscussionHistory forSeconds(int seconds) {
+        return new DiscussionHistory(null, null, seconds, null);
     }
 
     /**
@@ -98,8 +115,8 @@ public final class History {
      * @param date The date.
      * @return The history.
      */
-    public static History since(Instant date) {
-        return new History(null, null, null, date);
+    public static DiscussionHistory since(Instant date) {
+        return new DiscussionHistory(null, null, null, date);
     }
 
     /**
@@ -107,7 +124,7 @@ public final class History {
      *
      * @return The history.
      */
-    public static History none() {
-        return new History(0, null, null, null);
+    public static DiscussionHistory none() {
+        return new DiscussionHistory(0, null, null, null);
     }
 }

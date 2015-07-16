@@ -25,6 +25,8 @@
 package rocks.xmpp.extensions.muc.model;
 
 /**
+ * A feature of a multi-user chat service.
+ *
  * @author Christian Schudt
  */
 public enum MucFeature {
@@ -100,6 +102,11 @@ public enum MucFeature {
         this.feature = feature;
     }
 
+    /**
+     * Gets the name of the feature as it is used by service discovery.
+     *
+     * @return The feature name.
+     */
     public String getServiceDiscoveryFeature() {
         return feature;
     }

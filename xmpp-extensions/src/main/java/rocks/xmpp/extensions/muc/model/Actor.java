@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.muc.model;
 import rocks.xmpp.addr.Jid;
 
 /**
- * The {@code <actor/>} element, which is used in both #admin and #user namespace to indicate who has kicked or banned another user.
+ * The {@code <actor/>} element, which is used in both <code>#admin</code> and <code>#user</code> namespace to indicate who has kicked or banned another user.
  *
  * @author Christian Schudt
  */

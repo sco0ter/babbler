@@ -33,6 +33,17 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code http://jabber.org/protocol/muc} namespace, which allows to enter a room.
+ * <h3>Usage</h3>
+ * <pre>
+ * {@code
+ * // To create an empty element, e.g to indicate support in a presence
+ * Muc muc = Muc.empty();
+ *
+ * // To create an element with a password.
+ * Muc muc  = Muc.withPassword("secret");
+ * }
+ * </pre>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
@@ -49,7 +60,7 @@ public final class Muc {
 
     private final String password;
 
-    private final History history;
+    private final DiscussionHistory history;
 
     /**
      * Creates an empty element.
@@ -58,9 +69,9 @@ public final class Muc {
         this(null, null);
     }
 
-    private Muc(String password, History history) {
+    private Muc(String password, DiscussionHistory discussionHistory) {
         this.password = password;
-        this.history = history;
+        this.history = discussionHistory;
     }
 
     /**
@@ -82,19 +93,19 @@ public final class Muc {
     /**
      * Creates an element with a history element, indicating the user wishes to retrieve history.
      *
-     * @param history The history.
+     * @param discussionHistory The history.
      */
-    public static Muc withHistory(History history) {
-        return new Muc(null, history);
+    public static Muc withHistory(DiscussionHistory discussionHistory) {
+        return new Muc(null, discussionHistory);
     }
 
     /**
      * Creates an element with a history element and a password for the room.
      *
-     * @param password The password.
-     * @param history  The history.
+     * @param password          The password.
+     * @param discussionHistory The history.
      */
-    public static Muc withPasswordAndHistory(String password, History history) {
-        return new Muc(password, history);
+    public static Muc withPasswordAndHistory(String password, DiscussionHistory discussionHistory) {
+        return new Muc(password, discussionHistory);
     }
 }

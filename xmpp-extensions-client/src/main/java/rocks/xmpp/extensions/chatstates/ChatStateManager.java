@@ -86,11 +86,11 @@ public final class ChatStateManager extends Manager {
             // This protocol SHOULD NOT be used with message types other than "chat" or "groupchat".
             if (message.getType() == Message.Type.CHAT || message.getType() == Message.Type.GROUPCHAT) {
                 // For outbound messages append <active/>.
-                boolean containsChatState = message.getExtension(ChatState.class) != null;
+                boolean containsChatState = message.hasExtension(ChatState.class);
                 if (!e.isInbound()) {
                     // Append an <active/> chat state to every outbound content message (with <body> or <html> extension), if it doesn't contain a chat state yet
                     // and the recipient supports chat states or it is unknown if he supports them.
-                    if (!containsChatState && (message.getBody() != null && !message.getBody().trim().equals("") || message.getExtension(Html.class) != null)) {
+                    if (!containsChatState && (message.getBody() != null && !message.getBody().trim().equals("") || message.hasExtension(Html.class))) {
                         // If either support of chat states is unknown (== null) or it's known to be supported (== true), include an active chat state.
                         // (1. If the User desires chat state notifications, the message(s) that it sends to the Contact before receiving a reply MUST contain a chat state notification extension, which SHOULD be <active/>.)
                         Boolean isSupportedByPeer = contactSupportsChatStateNotifications.get(message.getTo());

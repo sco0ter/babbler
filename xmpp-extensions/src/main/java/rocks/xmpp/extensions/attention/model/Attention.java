@@ -40,7 +40,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * {@code
  * xmppClient.addInboundMessageListener(e -> {
- *     if (e.getMessage().getExtension(Attention.class) != null) {
+ *     if (e.getMessage().hasExtension(Attention.class)) {
  *         // Handle attention request.
  *     }
  * });

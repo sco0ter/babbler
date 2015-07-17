@@ -91,7 +91,7 @@ public final class MessageDeliveryReceiptsManager extends Manager {
         this.inboundMessageListener = e -> {
             Message message = e.getMessage();
             // If a client requests a receipt, send an ack message.
-            if (message.getExtension(MessageDeliveryReceipts.Request.class) != null && message.getId() != null) {
+            if (message.hasExtension(MessageDeliveryReceipts.Request.class) && message.getId() != null) {
                 // Add an empty body. Otherwise some servers, won't store it in offline storage.
                 Message receiptMessage = new Message(message.getFrom(), Message.Type.NORMAL, " ");
                 receiptMessage.addExtension(new MessageDeliveryReceipts.Received(message.getId()));

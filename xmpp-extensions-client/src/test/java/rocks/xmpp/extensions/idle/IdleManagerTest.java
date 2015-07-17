@@ -48,7 +48,7 @@ public class IdleManagerTest extends ExtensionTest {
             @Override
             public void accept(PresenceEvent e) {
                 xmppSession1.removeInboundPresenceListener(this);
-                Assert.assertTrue(e.getPresence().getExtension(Idle.class) != null);
+                Assert.assertTrue(e.getPresence().hasExtension(Idle.class));
             }
         });
         xmppSession1.send(new Message(JULIET));
@@ -58,7 +58,7 @@ public class IdleManagerTest extends ExtensionTest {
     @Test
     public void testIdleInXAPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
-        xmppSession1.addOutboundPresenceListener(e -> Assert.assertTrue(e.getPresence().getExtension(Idle.class) != null));
+        xmppSession1.addOutboundPresenceListener(e -> Assert.assertTrue(e.getPresence().hasExtension(Idle.class)));
         xmppSession1.send(new Message(JULIET));
         xmppSession1.send(new Presence(Presence.Show.XA));
     }

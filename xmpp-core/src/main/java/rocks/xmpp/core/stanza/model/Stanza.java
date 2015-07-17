@@ -148,9 +148,10 @@ public abstract class Stanza implements StreamElement {
     }
 
     /**
-     * Gets all extensions.
+     * Gets the extension of the given type or null, if there's no such extension.
      *
-     * @return The extensions.
+     * @param type The extension class.
+     * @return The extension.
      */
     @SuppressWarnings("unchecked")
     public final <T> T getExtension(Class<T> type) {
@@ -160,6 +161,16 @@ public abstract class Stanza implements StreamElement {
             }
         }
         return null;
+    }
+
+    /**
+     * Checks if the stanza has an extension of the given type.
+     *
+     * @param type The extension class.
+     * @return If the extension could be removed.
+     */
+    public final boolean hasExtension(Class<?> type) {
+        return getExtension(type) != null;
     }
 
     /**

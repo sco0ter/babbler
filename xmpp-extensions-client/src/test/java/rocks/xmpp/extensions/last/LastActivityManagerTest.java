@@ -79,7 +79,7 @@ public class LastActivityManagerTest extends ExtensionTest {
             @Override
             public void accept(PresenceEvent e) {
                 xmppSession1.removeInboundPresenceListener(this);
-                Assert.assertTrue(e.getPresence().getExtension(LastActivity.class) != null);
+                Assert.assertTrue(e.getPresence().hasExtension(LastActivity.class));
             }
         });
         xmppSession1.send(new Message(JULIET));
@@ -90,7 +90,7 @@ public class LastActivityManagerTest extends ExtensionTest {
     public void testLastActivityInXAPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.getManager(AvatarManager.class).setEnabled(false);
-        xmppSession1.addOutboundPresenceListener(e -> Assert.assertTrue(e.getPresence().getExtension(LastActivity.class) != null));
+        xmppSession1.addOutboundPresenceListener(e -> Assert.assertTrue(e.getPresence().hasExtension(LastActivity.class)));
         xmppSession1.send(new Message(JULIET));
         xmppSession1.send(new Presence(Presence.Show.AWAY));
     }
@@ -99,7 +99,7 @@ public class LastActivityManagerTest extends ExtensionTest {
     public void testLastActivityInChatPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.getManager(AvatarManager.class).setEnabled(false);
-        xmppSession1.addOutboundPresenceListener(e -> Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null));
+        xmppSession1.addOutboundPresenceListener(e -> Assert.assertFalse(e.getPresence().hasExtension(LastActivity.class)));
         xmppSession1.send(new Presence(Presence.Show.CHAT));
     }
 
@@ -107,7 +107,7 @@ public class LastActivityManagerTest extends ExtensionTest {
     public void testLastActivityInDndPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
         xmppSession1.getManager(AvatarManager.class).setEnabled(false);
-        xmppSession1.addOutboundPresenceListener(e -> Assert.assertFalse(e.getPresence().getExtension(LastActivity.class) != null));
+        xmppSession1.addOutboundPresenceListener(e -> Assert.assertFalse(e.getPresence().hasExtension(LastActivity.class)));
         xmppSession1.send(new Presence(Presence.Show.DND));
     }
 

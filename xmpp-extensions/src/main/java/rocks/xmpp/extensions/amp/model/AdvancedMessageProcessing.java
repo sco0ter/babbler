@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -89,7 +90,7 @@ public final class AdvancedMessageProcessing extends StreamFeature {
      *
      * @param rules The rules.
      */
-    public AdvancedMessageProcessing(List<Rule> rules) {
+    public AdvancedMessageProcessing(Collection<Rule> rules) {
         this(rules, null);
     }
 
@@ -99,7 +100,7 @@ public final class AdvancedMessageProcessing extends StreamFeature {
      * @param rules  The rules.
      * @param perHop The per-hop attribute.
      */
-    public AdvancedMessageProcessing(List<Rule> rules, Boolean perHop) {
+    public AdvancedMessageProcessing(Collection<Rule> rules, Boolean perHop) {
         this.rule.addAll(rules);
         this.perHop = perHop;
         this.status = null;

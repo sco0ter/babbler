@@ -61,10 +61,21 @@ public final class Rule {
      * @param condition The condition.
      * @param value     The value. This depends on the condition.
      */
-    public Rule(Action action, Condition condition, String value) {
+    private Rule(Action action, Condition condition, String value) {
         this.action = Objects.requireNonNull(action);
         this.condition = Objects.requireNonNull(condition);
         this.value = Objects.requireNonNull(value);
+    }
+
+    /**
+     * Creates a rule.
+     *
+     * @param action    The action.
+     * @param condition The condition.
+     * @param value     The value. This depends on the condition.
+     */
+    public static Rule of(Action action, Condition condition, String value) {
+        return new Rule(action, condition, value);
     }
 
     /**

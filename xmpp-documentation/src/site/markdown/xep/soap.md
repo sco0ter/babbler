@@ -32,7 +32,7 @@ SOAPElement soapBodyElem2 = soapBody.addChildElement("arriving", "p");
 soapBodyElem2.addTextNode("Los Angeles");
 
 Message message = new Message(Jid.valueOf("juliet@example.net"));
-message.getExtensions().add(envelope);
+message.addExtension(envelope);
 ```
 
 This will generate the following XML on the XMPP stream.

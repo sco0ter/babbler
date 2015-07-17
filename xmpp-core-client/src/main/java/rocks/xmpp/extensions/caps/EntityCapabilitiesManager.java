@@ -162,7 +162,7 @@ public final class EntityCapabilitiesManager extends Manager {
                     // Get the last generated verification string here.
                     List<Verification> verifications = new ArrayList<>(publishedNodes.values());
                     Verification verification = verifications.get(verifications.size() - 1);
-                    presence.getExtensions().add(new EntityCapabilities(getNode(), verification.hashAlgorithm, verification.verificationString));
+                    presence.addExtension(new EntityCapabilities(getNode(), verification.hashAlgorithm, verification.verificationString));
                     capsSent = true;
                 }
             }

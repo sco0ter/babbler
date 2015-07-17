@@ -207,7 +207,7 @@ public final class AvatarManager extends Manager {
 
                 if (myHash == null) {
                     // 2. If a client is not yet ready to advertise an image, it MUST send an empty update child element:
-                    presence.getExtensions().add(new AvatarUpdate());
+                    presence.addExtension(new AvatarUpdate());
 
                     synchronized (avatarRequester) {
                         if (avatarRequester.isShutdown()) {
@@ -234,7 +234,7 @@ public final class AvatarManager extends Manager {
                     }
 
                 } else if (presence.getExtension(AvatarUpdate.class) == null) {
-                    presence.getExtensions().add(new AvatarUpdate(myHash));
+                    presence.addExtension(new AvatarUpdate(myHash));
                 }
             }
         };

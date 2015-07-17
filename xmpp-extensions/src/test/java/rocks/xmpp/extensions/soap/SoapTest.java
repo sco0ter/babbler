@@ -141,7 +141,7 @@ public class SoapTest extends XmlTest {
         soapBodyElem2.addTextNode("Los Angeles");
 
         Message message = new Message(Jid.valueOf("juliet@example.net"));
-        message.getExtensions().add(envelope);
+        message.addExtension(envelope);
         String xml = marshal(message);
 
         Assert.assertEquals(xml, "<message to=\"juliet@example.net\"><env:Envelope xmlns:p=\"http://travelcompany.example.org/reservation/travel\" xmlns:env=\"http://www.w3.org/2003/05/soap-envelope\"><env:Header></env:Header><env:Body><p:departing>New York</p:departing><p:arriving>Los Angeles</p:arriving></env:Body></env:Envelope></message>");

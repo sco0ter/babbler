@@ -45,39 +45,39 @@ public class OccupantTest {
     @Test
     public void testComparable() {
         Presence presence1 = new Presence().withFrom(Jid.valueOf("room@conference/firstwitch"));
-        presence1.getExtensions().add(MucUser.withItem(Affiliation.OWNER, Role.MODERATOR));
+        presence1.addExtension(MucUser.withItem(Affiliation.OWNER, Role.MODERATOR));
         Occupant occupant1 = new Occupant(presence1, true);
 
         Presence presence2 = new Presence().withFrom(Jid.valueOf("room@conference/secondwitch"));
-        presence2.getExtensions().add(MucUser.withItem(Affiliation.OWNER, Role.PARTICIPANT));
+        presence2.addExtension(MucUser.withItem(Affiliation.OWNER, Role.PARTICIPANT));
         Occupant occupant2 = new Occupant(presence2, true);
 
         Presence presence2a = new Presence().withFrom(Jid.valueOf("room@conference/thirdwitch"));
-        presence2a.getExtensions().add(MucUser.withItem(Affiliation.OWNER, Role.VISITOR));
+        presence2a.addExtension(MucUser.withItem(Affiliation.OWNER, Role.VISITOR));
         Occupant occupant2a = new Occupant(presence2a, true);
 
         Presence presence2b = new Presence().withFrom(Jid.valueOf("room@conference/zzz"));
-        presence2b.getExtensions().add(MucUser.withItem(Affiliation.OWNER, Role.VISITOR));
+        presence2b.addExtension(MucUser.withItem(Affiliation.OWNER, Role.VISITOR));
         Occupant occupant2b = new Occupant(presence2b, true);
 
         Presence presence3 = new Presence().withFrom(Jid.valueOf("room@conference/aaa"));
-        presence3.getExtensions().add(MucUser.withItem(Affiliation.ADMIN, Role.MODERATOR));
+        presence3.addExtension(MucUser.withItem(Affiliation.ADMIN, Role.MODERATOR));
         Occupant occupant3 = new Occupant(presence3, true);
 
         Presence presence4 = new Presence().withFrom(Jid.valueOf("room@conference/bbb"));
-        presence4.getExtensions().add(MucUser.withItem(Affiliation.MEMBER, Role.PARTICIPANT));
+        presence4.addExtension(MucUser.withItem(Affiliation.MEMBER, Role.PARTICIPANT));
         Occupant occupant4 = new Occupant(presence4, true);
 
         Presence presence5 = new Presence().withFrom(Jid.valueOf("room@conference/bbb"));
-        presence5.getExtensions().add(MucUser.withItem(Affiliation.OUTCAST, Role.PARTICIPANT));
+        presence5.addExtension(MucUser.withItem(Affiliation.OUTCAST, Role.PARTICIPANT));
         Occupant occupant5 = new Occupant(presence5, true);
 
         Presence presence5a = new Presence().withFrom(Jid.valueOf("room@conference/ccc"));
-        presence5a.getExtensions().add(MucUser.withItem(Affiliation.OUTCAST, Role.PARTICIPANT));
+        presence5a.addExtension(MucUser.withItem(Affiliation.OUTCAST, Role.PARTICIPANT));
         Occupant occupant5a = new Occupant(presence5a, true);
 
         Presence presence6 = new Presence().withFrom(Jid.valueOf("room@conference/bbb"));
-        presence6.getExtensions().add(MucUser.withItem(Affiliation.NONE, Role.PARTICIPANT));
+        presence6.addExtension(MucUser.withItem(Affiliation.NONE, Role.PARTICIPANT));
         Occupant occupant6 = new Occupant(presence6, true);
 
         List<Occupant> occupants = new ArrayList<>();

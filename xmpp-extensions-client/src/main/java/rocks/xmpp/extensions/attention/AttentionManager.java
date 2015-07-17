@@ -71,7 +71,7 @@ public final class AttentionManager extends Manager {
      */
     public final void captureAttention(Jid jid) {
         Message message = new Message(jid, Message.Type.HEADLINE);
-        message.getExtensions().add(Attention.INSTANCE);
+        message.addExtension(Attention.INSTANCE);
         xmppSession.send(message);
     }
 }

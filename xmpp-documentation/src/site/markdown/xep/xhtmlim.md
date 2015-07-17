@@ -29,7 +29,7 @@ Then add the extension:
 
 ```java
 Message message = new Message(Jid.valueOf("romeo@example.im", "Hi!"));
-message.getExtensions().add(html);
+message.addExtension(html);
 ```
 
 Alternatively you can pass valid XHTML (which will be appended to the `<body>` element), directly as String to the constructor:

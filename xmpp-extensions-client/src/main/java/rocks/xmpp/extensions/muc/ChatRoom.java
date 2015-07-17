@@ -343,7 +343,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
             xmppSession.addInboundPresenceListener(presenceListener);
 
             final Presence enterPresence = new Presence(roomJid.withResource(nick));
-            enterPresence.getExtensions().add(Muc.withPasswordAndHistory(password, discussionHistory));
+            enterPresence.addExtension(Muc.withPasswordAndHistory(password, discussionHistory));
             this.nick = nick;
             xmppSession.sendAndAwaitPresence(enterPresence, presence -> {
                 Jid room = presence.getFrom().asBareJid();
@@ -449,10 +449,10 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         Message message;
         if (direct) {
             message = new Message(invitee, Message.Type.NORMAL);
-            message.getExtensions().add(new DirectInvitation(roomJid, null, reason));
+            message.addExtension(new DirectInvitation(roomJid, null, reason));
         } else {
             message = new Message(roomJid, Message.Type.NORMAL);
-            message.getExtensions().add(MucUser.withInvites(new Invite(invitee, reason)));
+            message.addExtension(MucUser.withInvites(new Invite(invitee, reason)));
         }
         xmppSession.send(message);
     }
@@ -527,7 +527,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     public void requestVoice() {
         Message message = new Message(roomJid);
         RequestVoice requestVoice = RequestVoice.builder().role(Role.PARTICIPANT).build();
-        message.getExtensions().add(requestVoice.getDataForm());
+        message.addExtension(requestVoice.getDataForm());
         xmppSession.send(message);
     }
 

@@ -191,7 +191,7 @@ public final class RealTimeTextManager extends Manager {
     public final void activate(Chat chat) {
         Message message = new Message();
         RealTimeText realTimeText = new RealTimeText(RealTimeText.Event.INIT, Collections.emptyList(), 0, null);
-        message.getExtensions().add(realTimeText);
+        message.addExtension(realTimeText);
         chat.sendMessage(message);
     }
 
@@ -204,7 +204,7 @@ public final class RealTimeTextManager extends Manager {
     public final void deactivate(Chat chat) {
         Message message = new Message();
         RealTimeText realTimeText = new RealTimeText(RealTimeText.Event.CANCEL, Collections.emptyList(), 0, null);
-        message.getExtensions().add(realTimeText);
+        message.addExtension(realTimeText);
         chat.sendMessage(message);
     }
 

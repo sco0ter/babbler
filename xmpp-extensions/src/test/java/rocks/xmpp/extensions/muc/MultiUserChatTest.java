@@ -48,7 +48,7 @@ public class MultiUserChatTest extends XmlTest {
     @Test
     public void testEnterRoom() throws JAXBException, XMLStreamException {
         Presence presence = new Presence();
-        presence.getExtensions().add(Muc.empty());
+        presence.addExtension(Muc.empty());
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence><x xmlns=\"http://jabber.org/protocol/muc\"></x></presence>");
     }
@@ -56,7 +56,7 @@ public class MultiUserChatTest extends XmlTest {
     @Test
     public void testEnterRoomWithPassword() throws JAXBException, XMLStreamException {
         Presence presence = new Presence();
-        presence.getExtensions().add(Muc.withPassword("cauldronburn"));
+        presence.addExtension(Muc.withPassword("cauldronburn"));
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence><x xmlns=\"http://jabber.org/protocol/muc\"><password>cauldronburn</password></x></presence>");
     }
@@ -64,7 +64,7 @@ public class MultiUserChatTest extends XmlTest {
     @Test
     public void testEnterRoomWithHistoryMaxChars() throws JAXBException, XMLStreamException {
         Presence presence = new Presence();
-        presence.getExtensions().add(Muc.withHistory(DiscussionHistory.forMaxChars(65000)));
+        presence.addExtension(Muc.withHistory(DiscussionHistory.forMaxChars(65000)));
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence><x xmlns=\"http://jabber.org/protocol/muc\"><history maxchars=\"65000\"></history></x></presence>");
     }
@@ -72,7 +72,7 @@ public class MultiUserChatTest extends XmlTest {
     @Test
     public void testEnterRoomWithHistoryMaxStanzas() throws JAXBException, XMLStreamException {
         Presence presence = new Presence();
-        presence.getExtensions().add(Muc.withHistory(DiscussionHistory.forMaxMessages(20)));
+        presence.addExtension(Muc.withHistory(DiscussionHistory.forMaxMessages(20)));
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence><x xmlns=\"http://jabber.org/protocol/muc\"><history maxstanzas=\"20\"></history></x></presence>");
     }
@@ -80,7 +80,7 @@ public class MultiUserChatTest extends XmlTest {
     @Test
     public void testEnterRoomWithHistorySeconds() throws JAXBException, XMLStreamException {
         Presence presence = new Presence();
-        presence.getExtensions().add(Muc.withHistory(DiscussionHistory.forSeconds(180)));
+        presence.addExtension(Muc.withHistory(DiscussionHistory.forSeconds(180)));
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence><x xmlns=\"http://jabber.org/protocol/muc\"><history seconds=\"180\"></history></x></presence>");
     }
@@ -89,7 +89,7 @@ public class MultiUserChatTest extends XmlTest {
     public void testEnterRoomWithHistorySince() throws JAXBException, XMLStreamException {
         Instant now = Instant.now();
         Presence presence = new Presence();
-        presence.getExtensions().add(Muc.withHistory(DiscussionHistory.since(now)));
+        presence.addExtension(Muc.withHistory(DiscussionHistory.since(now)));
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence><x xmlns=\"http://jabber.org/protocol/muc\"><history since=\"" + now.toString() + "\"></history></x></presence>");
     }

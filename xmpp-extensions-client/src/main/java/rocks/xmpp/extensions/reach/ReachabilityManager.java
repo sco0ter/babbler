@@ -92,7 +92,7 @@ public final class ReachabilityManager extends Manager {
             if (presence.isAvailable() && presence.getTo() == null) {
                 synchronized (addresses) {
                     if (!addresses.isEmpty()) {
-                        presence.getExtensions().add(new Reachability(new ArrayDeque<>(addresses)));
+                        presence.addExtension(new Reachability(new ArrayDeque<>(addresses)));
                     }
                 }
             }

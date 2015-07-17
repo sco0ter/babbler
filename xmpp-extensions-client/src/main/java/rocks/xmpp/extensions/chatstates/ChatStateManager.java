@@ -95,7 +95,7 @@ public final class ChatStateManager extends Manager {
                         // (1. If the User desires chat state notifications, the message(s) that it sends to the Contact before receiving a reply MUST contain a chat state notification extension, which SHOULD be <active/>.)
                         Boolean isSupportedByPeer = contactSupportsChatStateNotifications.get(message.getTo());
                         if (isSupportedByPeer == null || isSupportedByPeer) {
-                            message.getExtensions().add(ChatState.ACTIVE);
+                            message.addExtension(ChatState.ACTIVE);
                         }
                     }
                 } else if (message.getType() != Message.Type.GROUPCHAT) {
@@ -141,7 +141,7 @@ public final class ChatStateManager extends Manager {
         }
 
         Message message = new Message();
-        message.getExtensions().add(chatState);
+        message.addExtension(chatState);
         chat.sendMessage(message);
         return true;
     }

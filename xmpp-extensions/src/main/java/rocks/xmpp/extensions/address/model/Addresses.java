@@ -40,7 +40,7 @@ import java.util.List;
  * Address address = new Address(Address.Type.CC, Jid.valueOf("juliet@example.net"));
  * Addresses addresses = new Addresses(Arrays.asList(address));
  * Message message = new Message(Jid.valueOf("romeo@example.net"));
- * message.getExtensions().add(addresses);
+ * message.addExtension(addresses);
  * </code></pre>
  * <p>
  * This class is immutable.

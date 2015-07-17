@@ -80,7 +80,7 @@ public final class InvitationEvent extends EventObject {
         // Therefore only decline mediated invitations.
         if (mediated) {
             Message message = new Message(room);
-            message.getExtensions().add(new Decline(inviter, reason));
+            message.addExtension(new Decline(inviter, reason));
             xmppSession.send(message);
         }
     }

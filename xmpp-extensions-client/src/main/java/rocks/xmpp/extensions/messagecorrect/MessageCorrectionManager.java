@@ -65,7 +65,7 @@ public final class MessageCorrectionManager extends Manager {
      */
     public void correctMessage(String id, Message message) {
         Objects.requireNonNull(message, "message must not be null");
-        message.getExtensions().add(new Replace(id));
+        message.addExtension(new Replace(id));
         xmppSession.send(message);
     }
 }

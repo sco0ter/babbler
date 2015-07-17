@@ -68,7 +68,7 @@ public final class IdleManager extends Manager {
                     if (idleStrategy != null && presence.getExtension(Idle.class) == null) {
                         Instant idleSince = idleStrategy.get();
                         if (idleSince != null) {
-                            presence.getExtensions().add(new Idle(OffsetDateTime.ofInstant(idleSince, ZoneOffset.UTC)));
+                            presence.addExtension(new Idle(OffsetDateTime.ofInstant(idleSince, ZoneOffset.UTC)));
                         }
                     }
                 } else {

@@ -37,13 +37,13 @@ import java.util.Objects;
  * To include a {@code <request/>} element in a message (it's a singleton):
  * <pre>
  * {@code
- * message.getExtensions().add(MessageDeliveryReceipts.REQUEST);
+ * message.addExtension(MessageDeliveryReceipts.REQUEST);
  * }
  * </pre>
  * To include a {@code <received/>} element in a message:
  * <pre>
  * {@code
- * message.getExtensions().add(new MessageDeliveryReceipts.Received(id));
+ * message.addExtension(new MessageDeliveryReceipts.Received(id));
  * }
  * </pre>
  *

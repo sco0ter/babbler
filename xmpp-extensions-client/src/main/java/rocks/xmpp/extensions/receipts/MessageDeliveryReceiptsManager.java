@@ -94,7 +94,7 @@ public final class MessageDeliveryReceiptsManager extends Manager {
             if (message.getExtension(MessageDeliveryReceipts.Request.class) != null && message.getId() != null) {
                 // Add an empty body. Otherwise some servers, won't store it in offline storage.
                 Message receiptMessage = new Message(message.getFrom(), Message.Type.NORMAL, " ");
-                receiptMessage.getExtensions().add(new MessageDeliveryReceipts.Received(message.getId()));
+                receiptMessage.addExtension(new MessageDeliveryReceipts.Received(message.getId()));
                 xmppSession.send(receiptMessage);
             }
             // If the message is a receipt.
@@ -119,7 +119,7 @@ public final class MessageDeliveryReceiptsManager extends Manager {
             if (!predicate.test(message)) {
                 return;
             }
-            message.getExtensions().add(MessageDeliveryReceipts.REQUEST);
+            message.addExtension(MessageDeliveryReceipts.REQUEST);
         };
     }
 

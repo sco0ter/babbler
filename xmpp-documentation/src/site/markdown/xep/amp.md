@@ -9,17 +9,17 @@ Here are some simple examples:
 
 ```java
 AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.matchResource(Rule.Action.ALERT, Rule.MatchResourceValue.EXACT));
-message.getExtensions().add(amp);
+message.addExtension(amp);
 ```
 
 ```java
 AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.expireAt(Rule.Action.DROP, Instant.now()));
-message.getExtensions().add(amp);
+message.addExtension(amp);
 ```
 
 ```java
 AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.deliver(Rule.Action.ALERT, Rule.DeliverValue.STORED));
-message.getExtensions().add(amp);
+message.addExtension(amp);
 ```
 
 

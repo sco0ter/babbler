@@ -294,7 +294,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
     private void sendRttMessage(RealTimeText.Event event) {
         Message message = new Message();
         RealTimeText realTimeText = new RealTimeText(event, actions, this.sequence++, id);
-        message.getExtensions().add(realTimeText);
+        message.addExtension(realTimeText);
         chat.sendMessage(message);
         actions.clear();
     }

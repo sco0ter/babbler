@@ -66,7 +66,7 @@ public final class XmppUtils {
      * Message forwardedMessage = new Message(Jid.valueOf("romeo@example.net"), Message.Type.CHAT, "Hi!!");
      *
      * Message message = new Message(Jid.valueOf("juliet@example.net"));
-     * message.getExtensions().add(new Sent(new Forwarded(forwardedMessage)));
+     * message.addExtension(new Sent(new Forwarded(forwardedMessage)));
      *
      * marshaller.marshal(message, xmppStreamWriter);
      *

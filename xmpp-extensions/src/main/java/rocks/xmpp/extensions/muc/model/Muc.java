@@ -76,6 +76,8 @@ public final class Muc {
 
     /**
      * Creates an empty element.
+     *
+     * @return The MUC element.
      */
     public static Muc empty() {
         return new Muc();
@@ -85,6 +87,7 @@ public final class Muc {
      * Creates an element with a password for the room.
      *
      * @param password The password.
+     * @return The MUC element.
      */
     public static Muc withPassword(String password) {
         return new Muc(password, null);
@@ -94,6 +97,7 @@ public final class Muc {
      * Creates an element with a history element, indicating the user wishes to retrieve history.
      *
      * @param discussionHistory The history.
+     * @return The MUC element.
      */
     public static Muc withHistory(DiscussionHistory discussionHistory) {
         return new Muc(null, discussionHistory);
@@ -104,6 +108,7 @@ public final class Muc {
      *
      * @param password          The password.
      * @param discussionHistory The history.
+     * @return The MUC element.
      */
     public static Muc withPasswordAndHistory(String password, DiscussionHistory discussionHistory) {
         return new Muc(password, discussionHistory);

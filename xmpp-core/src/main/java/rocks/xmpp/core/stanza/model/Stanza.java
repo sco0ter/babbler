@@ -150,13 +150,14 @@ public abstract class Stanza implements StreamElement {
     /**
      * Gets the extension of the given type or null, if there's no such extension.
      *
-     * @param type The extension class.
+     * @param <T>   The extension type.
+     * @param clazz The extension class.
      * @return The extension.
      */
     @SuppressWarnings("unchecked")
-    public final <T> T getExtension(Class<T> type) {
+    public final <T> T getExtension(Class<T> clazz) {
         for (Object extension : extensions) {
-            if (type.isAssignableFrom(extension.getClass())) {
+            if (clazz.isAssignableFrom(extension.getClass())) {
                 return (T) extension;
             }
         }
@@ -166,11 +167,11 @@ public abstract class Stanza implements StreamElement {
     /**
      * Checks if the stanza has an extension of the given type.
      *
-     * @param type The extension class.
+     * @param clazz The extension class.
      * @return If the extension could be removed.
      */
-    public final boolean hasExtension(Class<?> type) {
-        return getExtension(type) != null;
+    public final boolean hasExtension(Class<?> clazz) {
+        return getExtension(clazz) != null;
     }
 
     /**

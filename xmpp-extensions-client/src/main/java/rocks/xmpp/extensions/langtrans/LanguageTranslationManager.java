@@ -40,7 +40,8 @@ public final class LanguageTranslationManager extends Manager {
      *
      * @param server The server address.
      * @return The list of translation providers.
-     * @throws XmppException
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0171.html#disco">4.2 Discovering Translation Providers</a>
      */
     public List<Item> discoverTranslationProviders(Jid server) throws XmppException {
@@ -60,7 +61,8 @@ public final class LanguageTranslationManager extends Manager {
      *
      * @param translationProvider The translation provider.
      * @return The list of supported languages with details.
-     * @throws XmppException
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0171.html#disco-lang">4.2.3 Discovering Language Support</a>
      */
     public List<LanguageSupport.Item> discoverLanguageSupport(Jid translationProvider) throws XmppException {
@@ -75,6 +77,8 @@ public final class LanguageTranslationManager extends Manager {
      * @param sourceLanguage      The source language.
      * @param destinationLanguage The destination language.
      * @return The translations.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0171.html#request">4.3 Requesting a Translation from a Service</a>
      */
     public List<LanguageTranslation.Translation> translate(Jid translationProvider, String text, String sourceLanguage, String... destinationLanguage) throws XmppException {

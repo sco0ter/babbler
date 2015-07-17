@@ -98,6 +98,7 @@ public final class Rpc {
      *
      * @param methodName The method name.
      * @param parameters The parameters.
+     * @return The RPC element.
      */
     public static Rpc ofMethodCall(String methodName, Value... parameters) {
         return new Rpc(methodName, parameters);
@@ -107,6 +108,7 @@ public final class Rpc {
      * Creates a method response.
      *
      * @param value The return value.
+     * @return The RPC element.
      */
     public static Rpc ofMethodResponse(Value value) {
         return new Rpc(value);
@@ -116,6 +118,7 @@ public final class Rpc {
      * Creates a method response with a fault.
      *
      * @param fault The fault.
+     * @return The RPC element.
      */
     public static Rpc ofFaultResponse(MethodResponse.Fault fault) {
         return new Rpc(fault);

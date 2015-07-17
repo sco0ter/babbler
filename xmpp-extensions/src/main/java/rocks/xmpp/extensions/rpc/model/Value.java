@@ -168,6 +168,7 @@ public final class Value {
      * Creates an integer value.
      *
      * @param integer The integer value.
+     * @return The value element.
      */
     public static Value of(Integer integer) {
         return new Value(integer);
@@ -177,6 +178,7 @@ public final class Value {
      * Creates a string value.
      *
      * @param string The string value.
+     * @return The value element.
      */
     public static Value of(String string) {
         return new Value(string);
@@ -186,6 +188,7 @@ public final class Value {
      * Creates a double value.
      *
      * @param d The double value.
+     * @return The value element.
      */
     public static Value of(Double d) {
         return new Value(d);
@@ -195,6 +198,7 @@ public final class Value {
      * Creates a binary (base64) value.
      *
      * @param bytes The binary value.
+     * @return The value element.
      */
     public static Value of(byte[] bytes) {
         return new Value(bytes);
@@ -204,6 +208,7 @@ public final class Value {
      * Creates a boolean value.
      *
      * @param b The boolean value.
+     * @return The value element.
      */
     public static Value of(Boolean b) {
         return new Value(b);
@@ -213,6 +218,7 @@ public final class Value {
      * Creates a date value.
      *
      * @param dateTime The date time value.
+     * @return The value element.
      */
     public static Value of(OffsetDateTime dateTime) {
         return new Value(dateTime);
@@ -222,6 +228,7 @@ public final class Value {
      * Creates an array type value.
      *
      * @param list The array type value.
+     * @return The value element.
      */
     public static Value of(Collection<Value> list) {
         return new Value(list);
@@ -231,6 +238,7 @@ public final class Value {
      * Creates a struct type value.
      *
      * @param map The struct type value.
+     * @return The value element.
      */
     public static Value of(Map<String, Value> map) {
         return new Value(map);

@@ -75,6 +75,8 @@ public final class MucOwner {
 
     /**
      * Creates an empty query element.
+     *
+     * @return The {@link MucOwner} instance.
      */
     public static MucOwner empty() {
         return new MucOwner();

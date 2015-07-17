@@ -175,7 +175,7 @@ public abstract class StreamCompression {
 
     /**
      * The implementation of the {@code <compress/>} element in the {@code http://jabber.org/protocol/compress} namespace.
-     * <p/>
+     * <p>
      * This class is immutable.
      *
      * @author Christian Schudt

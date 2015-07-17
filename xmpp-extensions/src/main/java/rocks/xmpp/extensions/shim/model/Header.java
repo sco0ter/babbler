@@ -61,6 +61,7 @@ public final class Header {
      *
      * @param name  The name of the header. See <a href="http://xmpp.org/extensions/xep-0131.html#registrar-shim">9.3 SHIM Headers Registry</a> for registered headers.
      * @param value The header value.
+     * @return The header.
      */
     public static Header of(String name, String value) {
         return new Header(Objects.requireNonNull(name), value);

@@ -73,6 +73,7 @@ public final class Rule {
      * @param action    The action.
      * @param condition The condition.
      * @param value     The value. This depends on the condition.
+     * @return The rule.
      */
     public static Rule of(Action action, Condition condition, String value) {
         return new Rule(action, condition, value);

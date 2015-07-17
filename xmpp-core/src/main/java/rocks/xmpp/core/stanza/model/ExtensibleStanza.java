@@ -53,11 +53,11 @@ abstract class ExtensibleStanza extends Stanza {
     /**
      * Removes all extensions of the given type.
      *
-     * @param type The extension class.
+     * @param clazz The extension class.
      * @return If the extension could be removed.
      */
-    public final boolean removeExtension(Class<?> type) {
-        return getExtensions().removeIf(extension -> type.isAssignableFrom(extension.getClass()));
+    public final boolean removeExtension(Class<?> clazz) {
+        return getExtensions().removeIf(extension -> clazz.isAssignableFrom(extension.getClass()));
     }
 
     /**

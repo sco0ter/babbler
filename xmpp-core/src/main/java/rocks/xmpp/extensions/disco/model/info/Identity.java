@@ -142,6 +142,7 @@ public final class Identity implements Comparable<Identity> {
      *
      * @param category The category.
      * @param type     The type.
+     * @return The identity.
      */
     public static Identity ofCategoryAndType(String category, String type) {
         return new Identity(Objects.requireNonNull(category), Objects.requireNonNull(type));

@@ -28,7 +28,6 @@ import rocks.xmpp.core.session.Extension;
 import rocks.xmpp.core.session.context.CoreContext;
 import rocks.xmpp.extensions.activity.model.Activity;
 import rocks.xmpp.extensions.address.model.Addresses;
-import rocks.xmpp.extensions.attention.AttentionManager;
 import rocks.xmpp.extensions.attention.model.Attention;
 import rocks.xmpp.extensions.avatar.AvatarManager;
 import rocks.xmpp.extensions.avatar.model.data.AvatarData;
@@ -307,7 +306,7 @@ public class ExtensionContext extends CoreContext {
                 Extension.of(DelayedDelivery.class),
 
                 // XEP-0224: Attention
-                Extension.of(Attention.NAMESPACE, AttentionManager.class, false, Attention.class),
+                Extension.of(Attention.NAMESPACE, false, Attention.class),
 
                 // XEP-0231: Bits of Binary
                 Extension.of(Data.NAMESPACE, null, false, Data.class),

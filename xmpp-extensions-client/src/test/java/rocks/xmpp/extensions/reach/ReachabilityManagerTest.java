@@ -26,41 +26,14 @@ package rocks.xmpp.extensions.reach;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.session.TestXmppSession;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.ExtensionTest;
-import rocks.xmpp.extensions.attention.AttentionManager;
-import rocks.xmpp.extensions.attention.model.Attention;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
 /**
  * @author Christian Schudt
  */
 public class ReachabilityManagerTest extends ExtensionTest {
-
-    @Test
-    public void testReachabilityManager() {
-
-        MockServer mockServer = new MockServer();
-
-        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
-        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
-
-        final boolean[] attentionReceived = {false};
-        xmppSession2.addInboundMessageListener(e -> {
-            if (e.getMessage().getExtension(Attention.class) != null && e.getMessage().getType() == Message.Type.HEADLINE) {
-                attentionReceived[0] = true;
-                Assert.assertEquals(e.getMessage().getType(), Message.Type.HEADLINE);
-            }
-        });
-
-        AttentionManager attentionManager = xmppSession1.getManager(AttentionManager.class);
-        attentionManager.captureAttention(JULIET);
-
-        Assert.assertTrue(attentionReceived[0]);
-    }
 
     @Test
     public void testServiceDiscoveryEntry() {

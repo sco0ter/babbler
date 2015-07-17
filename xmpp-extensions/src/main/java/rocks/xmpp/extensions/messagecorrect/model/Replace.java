@@ -30,6 +30,25 @@ import java.util.Objects;
 
 /**
  * The implementation of the {@code <replace/>} element in the {@code urn:xmpp:message-correct:0} namespace.
+ * <h3>Usage</h3>
+ * <h4>Advertising Support for Message Correction</h4>
+ * <pre><code>
+ * xmppClient.enableFeature(Replace.NAMESPACE);
+ * </code></pre>
+ * <h4>Checking if a Message Should be Corrected</h4>
+ * <pre><code>
+ * Replace replace = message.getExtension(Replace.class);
+ * if (replace != null) {
+ *     String oldMessageId = replace.getId();
+ *     // Replace old message with message...
+ * }
+ * </code></pre>
+ * <h4>Correcting a Message</h4>
+ * <pre><code>
+ * Message correctedMessage = new Message(jid, Message.Type.CHAT, "This is the corrected text");
+ * correctedMessage.addExtension(new Replace(id));
+ * xmppClient.send(correctedMessage);
+ * </code></pre>
  * <p>
  * This class is immutable.
  *
@@ -56,7 +75,7 @@ public final class Replace {
      * @param id The id of the message which shall be corrected.
      */
     public Replace(String id) {
-        this.id = Objects.requireNonNull(id, "id must not be null");
+        this.id = Objects.requireNonNull(id);
     }
 
     /**

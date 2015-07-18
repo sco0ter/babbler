@@ -82,7 +82,7 @@ public class EntityTimeTest extends XmlTest {
         Assert.assertEquals(str, "-08:00");
 
         ZoneId timeZoneUtc = adapter.unmarshal("Z");
-        Assert.assertEquals(timeZoneUtc, ZoneOffset.of("Z"));
+        Assert.assertEquals(timeZoneUtc, ZoneOffset.UTC);
     }
 
     @Test

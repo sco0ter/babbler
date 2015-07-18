@@ -43,6 +43,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 /**
@@ -50,13 +51,15 @@ import java.util.logging.Logger;
  */
 public class SampleApplication {
 
+    private static Logger logger = Logger.getLogger(SampleApplication.class.getName());
+
     public static void main(String[] args) throws IOException {
+
+        configureLogging();
 
         // Create a "main application" thread, which keeps the JVM running.
         Executors.newFixedThreadPool(1).execute(() -> {
             try {
-
-                configureLogging();
 
                 TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
                         .hostname("localhost") // The hostname.
@@ -72,10 +75,10 @@ public class SampleApplication {
                 XmppClient xmppClient = new XmppClient("localhost", configuration, tcpConfiguration);
 
                 // Listen for inbound messages.
-                xmppClient.addInboundMessageListener(e -> System.out.println("Received: " + e.getMessage()));
+                xmppClient.addInboundMessageListener(e -> logger.info("Received: " + e.getMessage()));
 
                 // Listen for inbound presence.
-                xmppClient.addInboundPresenceListener(e -> System.out.println("Received: " + e.getPresence()));
+                xmppClient.addInboundPresenceListener(e -> logger.info("Received: " + e.getPresence()));
 
                 // Connect
                 xmppClient.connect();
@@ -85,7 +88,7 @@ public class SampleApplication {
                 // Send a message to myself, which is caught by the listener above.
                 xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
 
-                System.out.println(xmppClient.getActiveConnection());
+                logger.info(xmppClient.getActiveConnection().toString());
             } catch (XmppException | GeneralSecurityException e) {
                 e.printStackTrace();
             }
@@ -94,6 +97,8 @@ public class SampleApplication {
 
     protected static void configureLogging() {
 
+        LogManager.getLogManager().reset();
+
         // Log everything from the rocks.xmpp package with level FINE or above to the console.
 
         Handler consoleHandler = new ConsoleHandler();
@@ -101,6 +106,7 @@ public class SampleApplication {
         consoleHandler.setFormatter(new LogFormatter());
 
         Logger logger = Logger.getLogger("rocks.xmpp");
+        logger.setLevel(Level.FINE);
         logger.addHandler(consoleHandler);
     }
 

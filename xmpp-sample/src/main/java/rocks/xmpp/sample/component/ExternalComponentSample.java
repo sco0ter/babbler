@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 /**
  * @author Christian Schudt
@@ -86,9 +87,11 @@ public class ExternalComponentSample {
                         Collection<LanguageTranslation.Translation> translations = new ArrayDeque<>();
                         LanguageTranslation translation = iq.getExtension(LanguageTranslation.class);
 
-                        for (LanguageTranslation.Translation t : translation.getTranslations()) {
-                            translations.add(LanguageTranslation.Translation.ofDestinationLanguage(t.getDestinationLanguage()).withSourceLanguage(translation.getSourceLanguage()).withTranslatedText("HALLO"));
-                        }
+                        translations.addAll(translation.getTranslations().stream()
+                                .map(t -> LanguageTranslation.Translation.ofDestinationLanguage(t.getDestinationLanguage())
+                                        .withSourceLanguage(translation.getSourceLanguage())
+                                        .withTranslatedText("HALLO"))
+                                .collect(Collectors.toList()));
                         LanguageTranslation languageTranslation = new LanguageTranslation(translations);
                         return iq.createResult(languageTranslation);
                     }

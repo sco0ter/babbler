@@ -65,7 +65,7 @@ public final class IdleManager extends Manager {
             Presence presence = e.getPresence();
             synchronized (this) {
                 if (presence.isAvailable() && EnumSet.of(Presence.Show.AWAY, Presence.Show.XA).contains(presence.getShow())) {
-                    if (idleStrategy != null && presence.getExtension(Idle.class) == null) {
+                    if (idleStrategy != null && !presence.hasExtension(Idle.class)) {
                         Instant idleSince = idleStrategy.get();
                         if (idleSince != null) {
                             presence.addExtension(new Idle(OffsetDateTime.ofInstant(idleSince, ZoneOffset.UTC)));

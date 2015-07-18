@@ -66,11 +66,11 @@ public final class MessageDeliveryReceiptsManager extends Manager {
             // A sender could request receipts on any non-error content message (chat, groupchat, headline, or normal) no matter if the recipient's address is a bare JID <localpart@domain.tld> or a full JID <localpart@domain.tld/resource>.
             message.getType() != Message.Type.ERROR
                     // To prevent looping, an entity MUST NOT include a receipt request (i.e., the <request/> element) in an ack message (i.e., a message stanza that includes the <received/> element).
-                    && message.getExtension(MessageDeliveryReceipts.Received.class) == null
+                    && !message.hasExtension(MessageDeliveryReceipts.Received.class)
                     // A sender MUST include an 'id' attribute on every content message that requests a receipt, so that the sender can properly track ack messages.
                     && message.getId() != null
                     // The message must not have a request extension already.
-                    && message.getExtension(MessageDeliveryReceipts.Request.class) == null;
+                    && !message.hasExtension(MessageDeliveryReceipts.Request.class);
 
     final Set<Consumer<MessageDeliveredEvent>> messageDeliveredListeners = new CopyOnWriteArraySet<>();
 

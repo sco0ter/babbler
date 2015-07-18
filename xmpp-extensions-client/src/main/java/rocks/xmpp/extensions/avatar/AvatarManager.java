@@ -233,7 +233,7 @@ public final class AvatarManager extends Manager {
                         }
                     }
 
-                } else if (presence.getExtension(AvatarUpdate.class) == null) {
+                } else if (!presence.hasExtension(AvatarUpdate.class)) {
                     presence.addExtension(new AvatarUpdate(myHash));
                 }
             }

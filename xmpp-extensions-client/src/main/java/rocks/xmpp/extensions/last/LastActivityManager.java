@@ -85,7 +85,7 @@ public final class LastActivityManager extends Manager {
             if (presence.getTo() == null) {
                 synchronized (LastActivityManager.this) {
                     // If an available presence with <show/> value 'away' or 'xa' is sent, append last activity information.
-                    if (idleManager.getIdleStrategy() != null && presence.isAvailable() && (presence.getShow() == Presence.Show.AWAY || presence.getShow() == Presence.Show.XA) && presence.getExtension(LastActivity.class) == null) {
+                    if (idleManager.getIdleStrategy() != null && presence.isAvailable() && (presence.getShow() == Presence.Show.AWAY || presence.getShow() == Presence.Show.XA) && !presence.hasExtension(LastActivity.class)) {
                         presence.addExtension(new LastActivity(getSecondsSince(idleManager.getIdleStrategy().get()), presence.getStatus()));
                     }
                 }

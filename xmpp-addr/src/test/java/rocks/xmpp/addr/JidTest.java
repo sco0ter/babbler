@@ -348,6 +348,13 @@ public class JidTest {
         Assert.assertEquals(withReource, Jid.valueOf("test@domain/resource"));
     }
 
+    @Test
+    public void testWithLocal() {
+        Jid jid = Jid.valueOf("test@domain/resource");
+        Jid withLocal = jid.withLocal("newLocal");
+        Assert.assertEquals(withLocal, Jid.valueOf("newLocal@domain/resource"));
+    }
+
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testWithIllegalChars() {
         Jid.valueOf("test\u001Ftest@domain");

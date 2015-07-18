@@ -67,8 +67,8 @@ public final class ChatService implements Comparable<ChatService> {
      * Discovers the list of chat rooms hosted by this chat service.
      *
      * @return The public rooms.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the chat service did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-rooms">6.3 Discovering Rooms</a>
      */
     public List<ChatRoom> discoverRooms() throws XmppException {
@@ -89,7 +89,7 @@ public final class ChatService implements Comparable<ChatService> {
      * @return The chat room.
      */
     public ChatRoom createRoom(String room) {
-        ChatRoom chatRoom = new ChatRoom(new Jid(room, serviceAddress.getDomain()), null, xmppSession, serviceDiscoveryManager, multiUserChatManager);
+        ChatRoom chatRoom = new ChatRoom(serviceAddress.withLocal(room), null, xmppSession, serviceDiscoveryManager, multiUserChatManager);
         chatRoom.initialize();
         return chatRoom;
     }

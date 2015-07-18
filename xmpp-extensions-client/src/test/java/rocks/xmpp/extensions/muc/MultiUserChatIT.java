@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.muc;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.IntegrationTest;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
@@ -75,7 +74,7 @@ public class MultiUserChatIT extends IntegrationTest {
 
         chatRoom[0] = chatService0.createRoom("test");
         chatRoom[1] = chatService1.createRoom("test");
-        Assert.assertEquals(chatRoom[0].getAddress(), new Jid("test", chatService0.getAddress().toString()));
+        Assert.assertEquals(chatRoom[0].getAddress(), chatService0.getAddress().withLocal("test"));
     }
 
     @Test

@@ -24,7 +24,6 @@
 
 package rocks.xmpp.sample.customiq;
 
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
@@ -66,7 +65,7 @@ public class CustomIQHandlerRequester {
                 Addition addition = new Addition(52, 22);
                 System.out.println("Requesting: " + addition);
                 // Request the sum of two values (52 + 22). 111 will calculate it for you and return a result.
-                IQ resultIQ = xmppSession.query(IQ.get(new Jid("111", xmppSession.getDomain().toString(), "iq"), addition));
+                IQ resultIQ = xmppSession.query(IQ.get(xmppSession.getDomain().withLocal("111").withResource("iq"), addition));
 
                 // Print the result.
                 System.out.println(resultIQ.getExtension(Addition.class));

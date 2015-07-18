@@ -398,6 +398,16 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     }
 
     /**
+     * Returns a new JID with a new local part and the same domain and resource part of the current JID.
+     *
+     * @param local The local part.
+     * @return The JID with a new local part.
+     */
+    public Jid withLocal(String local) {
+        return new Jid(local, domain, resource, false, true);
+    }
+
+    /**
      * Returns a new full JID with a resource and the same local and domain part of the current JID.
      *
      * @param resource The resource.

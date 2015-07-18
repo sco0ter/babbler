@@ -105,7 +105,7 @@ public class LanguageTranslationTest extends XmlTest {
         Assert.assertEquals(languageSupport.getItems().size(), 7);
         LanguageSupport.Item item = languageSupport.getItems().get(0);
         Assert.assertEquals(item.getSourceLanguage(), "en");
-        Assert.assertEquals(item.getJid(), Jid.valueOf("translation.shakespeare.lit"));
+        Assert.assertEquals(item.getJid(), Jid.of("translation.shakespeare.lit"));
         Assert.assertEquals(item.getDestinationLanguage(), "fr");
         Assert.assertEquals(item.getEngine(), "SYSTRANS 2005 Release 2");
         Assert.assertTrue(item.isPivotable());

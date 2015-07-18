@@ -28,7 +28,7 @@ body.appendChild(p);
 Then add the extension:
 
 ```java
-Message message = new Message(Jid.valueOf("romeo@example.im", "Hi!"));
+Message message = new Message(Jid.of("romeo@example.im", "Hi!"));
 message.addExtension(html);
 ```
 

@@ -38,9 +38,9 @@ import javax.xml.stream.XMLStreamException;
  */
 public class BaseTest {
 
-    protected static final Jid JULIET = Jid.valueOf("juliet@example.com/resource");
+    protected static final Jid JULIET = Jid.of("juliet@example.com/resource");
 
-    protected static final Jid ROMEO = Jid.valueOf("romeo@example.com/resource");
+    protected static final Jid ROMEO = Jid.of("romeo@example.com/resource");
 
     protected Marshaller marshaller;
 

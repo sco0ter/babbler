@@ -67,7 +67,7 @@ public class PrefixFreeCanonicalizationWriterTest {
 
 
         Collection<Contact> contacts = new ArrayDeque<>();
-        contacts.add(new Contact(new Jid("domain")));
+        contacts.add(new Contact(Jid.ofDomain("domain")));
         Roster roster = new Roster(contacts);
         IQ iq = ClientIQ.from(new IQ(IQ.Type.GET, roster, "1"));
 

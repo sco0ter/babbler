@@ -202,7 +202,7 @@ public class DataFormsTest extends XmlTest {
 
     @Test
     public void marshalJidField() throws JAXBException, XMLStreamException {
-        DataForm.Field field = DataForm.Field.builder().var("test").value(Jid.valueOf("domain")).build();
+        DataForm.Field field = DataForm.Field.builder().var("test").value(Jid.of("domain")).build();
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(field));
         String xml = marshal(dataForm);
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"jid-single\" var=\"test\"><value>domain</value></field></x>");
@@ -218,7 +218,7 @@ public class DataFormsTest extends XmlTest {
 
     @Test
     public void marshalJidsField() throws JAXBException, XMLStreamException {
-        DataForm.Field field = DataForm.Field.builder().var("test").valuesJid(Collections.singleton(Jid.valueOf("domain"))).build();
+        DataForm.Field field = DataForm.Field.builder().var("test").valuesJid(Collections.singleton(Jid.of("domain"))).build();
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(field));
         String xml = marshal(dataForm);
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"jid-multi\" var=\"test\"><value>domain</value></field></x>");

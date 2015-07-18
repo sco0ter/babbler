@@ -140,7 +140,7 @@ public class SoapTest extends XmlTest {
         SOAPElement soapBodyElem2 = soapBody.addChildElement("arriving", "p");
         soapBodyElem2.addTextNode("Los Angeles");
 
-        Message message = new Message(Jid.valueOf("juliet@example.net"));
+        Message message = new Message(Jid.of("juliet@example.net"));
         message.addExtension(envelope);
         String xml = marshal(message);
 

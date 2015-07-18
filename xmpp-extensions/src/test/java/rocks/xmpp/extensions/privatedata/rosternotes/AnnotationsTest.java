@@ -64,11 +64,11 @@ public class AnnotationsTest extends XmlTest {
         Assert.assertTrue(privateData.getData() instanceof Annotation);
         Annotation annotations = (Annotation) privateData.getData();
         Assert.assertEquals(annotations.getNotes().size(), 2);
-        Assert.assertEquals(annotations.getNotes().get(0).getJid(), Jid.valueOf("hamlet@shakespeare.lit"));
+        Assert.assertEquals(annotations.getNotes().get(0).getJid(), Jid.of("hamlet@shakespeare.lit"));
         Assert.assertEquals(annotations.getNotes().get(0).getValue(), "Seems to be a good writer");
         Assert.assertNotNull(annotations.getNotes().get(0).getCreationDate());
         Assert.assertNotNull(annotations.getNotes().get(0).getModificationDate());
-        Assert.assertEquals(annotations.getNotes().get(1).getJid(), Jid.valueOf("juliet@capulet.com"));
+        Assert.assertEquals(annotations.getNotes().get(1).getJid(), Jid.of("juliet@capulet.com"));
         Assert.assertEquals(annotations.getNotes().get(1).getValue(), "Oh my sweetest love ...");
         Assert.assertNotNull(annotations.getNotes().get(1).getCreationDate());
         Assert.assertNotNull(annotations.getNotes().get(1).getModificationDate());

@@ -9,7 +9,7 @@ The `BookmarkManager` facilitates the access to the private storage by providing
 
 ```java
 BookmarkManager bookmarkManager = xmppClient.getManager(BookmarkManager.class);
-bookmarkManager.addBookmark(new ChatRoomBookmark("chatroom", Jid.valueOf("chat@conference.domain")));
+bookmarkManager.addBookmark(new ChatRoomBookmark("chatroom", Jid.of("chat@conference.domain")));
 ```
 
 ```java
@@ -29,7 +29,7 @@ Collection<WebPageBookmark> webPageBookmarks = bookmarkManager.getWebPageBookmar
 ## Removing a Bookmark
 
 ```java
-bookmarkManager.removeChatRoomBookmark(Jid.valueOf("chat@conference.domain"));
+bookmarkManager.removeChatRoomBookmark(Jid.of("chat@conference.domain"));
 ```
 
 ```java

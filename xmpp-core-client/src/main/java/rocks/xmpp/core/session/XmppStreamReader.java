@@ -126,7 +126,7 @@ final class XmppStreamReader {
 
                                 if (onStreamOpened != null) {
                                     Attribute fromAttribute = startElement.getAttributeByName(FROM);
-                                    onStreamOpened.accept(fromAttribute != null ? Jid.valueOf(fromAttribute.getValue()) : null);
+                                    onStreamOpened.accept(fromAttribute != null ? Jid.of(fromAttribute.getValue()) : null);
                                 }
                                 if (debugger != null) {
                                     XMLEventWriter writer = xmppSession.getConfiguration().getXmlOutputFactory().createXMLEventWriter(stringWriter);

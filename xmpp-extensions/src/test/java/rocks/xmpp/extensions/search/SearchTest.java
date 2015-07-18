@@ -121,13 +121,13 @@ public class SearchTest extends XmlTest {
 
         Assert.assertNotNull(search);
         Assert.assertEquals(search.getItems().size(), 2);
-        Assert.assertEquals(search.getItems().get(0).getJid(), Jid.valueOf("juliet@capulet.com"));
+        Assert.assertEquals(search.getItems().get(0).getJid(), Jid.of("juliet@capulet.com"));
         Assert.assertEquals(search.getItems().get(0).getFirst(), "Juliet");
         Assert.assertEquals(search.getItems().get(0).getLast(), "Capulet");
         Assert.assertEquals(search.getItems().get(0).getNick(), "JuliC");
         Assert.assertEquals(search.getItems().get(0).getEmail(), "juliet@shakespeare.lit");
 
-        Assert.assertEquals(search.getItems().get(1).getJid(), Jid.valueOf("tybalt@shakespeare.lit"));
+        Assert.assertEquals(search.getItems().get(1).getJid(), Jid.of("tybalt@shakespeare.lit"));
         Assert.assertEquals(search.getItems().get(1).getFirst(), "Tybalt");
         Assert.assertEquals(search.getItems().get(1).getLast(), "Capulet");
         Assert.assertEquals(search.getItems().get(1).getNick(), "ty");

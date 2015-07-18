@@ -63,9 +63,9 @@ public final class XmppUtils {
      * Marshaller marshaller = jaxbContext.createMarshaller();
      * marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
      *
-     * Message forwardedMessage = new Message(Jid.valueOf("romeo@example.net"), Message.Type.CHAT, "Hi!!");
+     * Message forwardedMessage = new Message(Jid.of("romeo@example.net"), Message.Type.CHAT, "Hi!!");
      *
-     * Message message = new Message(Jid.valueOf("juliet@example.net"));
+     * Message message = new Message(Jid.of("juliet@example.net"));
      * message.addExtension(new Sent(new Forwarded(forwardedMessage)));
      *
      * marshaller.marshal(message, xmppStreamWriter);

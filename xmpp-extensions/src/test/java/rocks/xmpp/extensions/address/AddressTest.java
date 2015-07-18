@@ -49,8 +49,8 @@ public class AddressTest extends XmlTest {
     @Test
     public void marshalAddresses() throws JAXBException, XMLStreamException {
         Collection<Address> addressList = new ArrayDeque<>();
-        addressList.add(new Address(Address.Type.TO, Jid.valueOf("hildjj@jabber.org/Work"), "description", "node"));
-        addressList.add(new Address(Address.Type.CC, Jid.valueOf("jer@jabber.org/Home")));
+        addressList.add(new Address(Address.Type.TO, Jid.of("hildjj@jabber.org/Work"), "description", "node"));
+        addressList.add(new Address(Address.Type.CC, Jid.of("jer@jabber.org/Home")));
         Addresses addresses = new Addresses(addressList);
 
         String xml = marshal(addresses);

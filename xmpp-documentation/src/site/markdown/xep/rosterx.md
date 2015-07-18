@@ -11,7 +11,7 @@ This will suggest the contact "Juliet" to be added to "Romeo's" roster:
 
 ```java
 ContactExchangeManager contactExchangeManager = xmppClient.getManager(ContactExchangeManager.class);
-contactExchangeManager.suggestContactAddition(Jid.valueOf("romeo@example.net"), new Contact(Jid.valueOf("juliet@example.net"), "Juliet"));
+contactExchangeManager.suggestContactAddition(Jid.of("romeo@example.net"), new Contact(Jid.of("juliet@example.net"), "Juliet"));
 ```
 
 ## Listening for Contact Exchange Suggestions

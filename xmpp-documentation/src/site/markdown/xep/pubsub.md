@@ -24,7 +24,7 @@ The resulting list will contain the available PubSub services on your server. Mo
 If you know the address of a PubSub service, you can also create a pubsub service like this:
 
 ```java
-PubSubService pubSubService = pubSubManager.createPubSubService(Jid.valueOf("pubsub.yourxmppdomain"));
+PubSubService pubSubService = pubSubManager.createPubSubService(Jid.of("pubsub.yourxmppdomain"));
 ```
 
 The `PubSubService` instance allows you to perform all use cases described in [XEP-0060][PubSub]. Here are the most important of them:
@@ -111,7 +111,7 @@ The following shows, how to deal with pubsub specific errors.
 
 ```java
 try {
-    PubSubService pubSubService = pubSubManager.createPubSubService(Jid.valueOf("pubsub.yourdomain"));
+    PubSubService pubSubService = pubSubManager.createPubSubService(Jid.of("pubsub.yourdomain"));
     PubSubNode pubSubNode = pubSubService.node("princely_musings");
     pubSubNode.subscribe();
 }  catch (StanzaException e) {

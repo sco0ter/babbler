@@ -98,7 +98,7 @@ public class S5bTransportMethodTest extends XmlTest {
         Assert.assertEquals(s5bTransportMethod.getCandidates().size(), 4);
         Assert.assertEquals(s5bTransportMethod.getCandidates().get(0).getCid(), "ht567dq");
         Assert.assertEquals(s5bTransportMethod.getCandidates().get(0).getHost(), "192.169.1.10");
-        Assert.assertEquals(s5bTransportMethod.getCandidates().get(0).getJid(), Jid.valueOf("juliet@capulet.lit/balcony"));
+        Assert.assertEquals(s5bTransportMethod.getCandidates().get(0).getJid(), Jid.of("juliet@capulet.lit/balcony"));
         Assert.assertEquals(s5bTransportMethod.getCandidates().get(0).getPort(), 6539);
         Assert.assertEquals(s5bTransportMethod.getCandidates().get(0).getPriority(), 8257636);
         Assert.assertEquals(s5bTransportMethod.getCandidates().get(0).getType(), S5bTransportMethod.Candidate.Type.DIRECT);
@@ -107,17 +107,17 @@ public class S5bTransportMethodTest extends XmlTest {
 
         Assert.assertEquals(s5bTransportMethod.getCandidates().get(2).getType(), S5bTransportMethod.Candidate.Type.ASSISTED);
 
-        Assert.assertEquals(s5bTransportMethod.getCandidates().get(3).getJid(), Jid.valueOf("proxy.marlowe.lit"));
+        Assert.assertEquals(s5bTransportMethod.getCandidates().get(3).getJid(), Jid.of("proxy.marlowe.lit"));
         Assert.assertEquals(s5bTransportMethod.getCandidates().get(3).getType(), S5bTransportMethod.Candidate.Type.PROXY);
     }
 
     @Test
     public void testCandidatePriority() {
         List<S5bTransportMethod.Candidate> candidateList = new ArrayList<>();
-        S5bTransportMethod.Candidate candidate1 = new S5bTransportMethod.Candidate("123", "host1", Jid.valueOf("test"), 1, S5bTransportMethod.Candidate.Type.DIRECT, 0);
-        S5bTransportMethod.Candidate candidate2 = new S5bTransportMethod.Candidate("123", "host1", Jid.valueOf("test"), 65538, S5bTransportMethod.Candidate.Type.ASSISTED, 0);
-        S5bTransportMethod.Candidate candidate3 = new S5bTransportMethod.Candidate("123", "host1", Jid.valueOf("test"), 3, S5bTransportMethod.Candidate.Type.TUNNEL, 0);
-        S5bTransportMethod.Candidate candidate4 = new S5bTransportMethod.Candidate("123", "host1", Jid.valueOf("test"), 65536, S5bTransportMethod.Candidate.Type.PROXY, 0);
+        S5bTransportMethod.Candidate candidate1 = new S5bTransportMethod.Candidate("123", "host1", Jid.of("test"), 1, S5bTransportMethod.Candidate.Type.DIRECT, 0);
+        S5bTransportMethod.Candidate candidate2 = new S5bTransportMethod.Candidate("123", "host1", Jid.of("test"), 65538, S5bTransportMethod.Candidate.Type.ASSISTED, 0);
+        S5bTransportMethod.Candidate candidate3 = new S5bTransportMethod.Candidate("123", "host1", Jid.of("test"), 3, S5bTransportMethod.Candidate.Type.TUNNEL, 0);
+        S5bTransportMethod.Candidate candidate4 = new S5bTransportMethod.Candidate("123", "host1", Jid.of("test"), 65536, S5bTransportMethod.Candidate.Type.PROXY, 0);
         candidateList.add(candidate1);
         candidateList.add(candidate2);
         candidateList.add(candidate3);

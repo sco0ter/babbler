@@ -72,7 +72,7 @@ public final class PubSubManager extends Manager {
     /**
      * Creates a pubsub service.
      *
-     * @param service The pubsub service address, e.g. {@code Jid.valueOf("pubsub.mydomain")}
+     * @param service The pubsub service address, e.g. {@code Jid.of("pubsub.mydomain")}
      * @return The pubsub service.
      */
     public PubSubService createPubSubService(Jid service) {

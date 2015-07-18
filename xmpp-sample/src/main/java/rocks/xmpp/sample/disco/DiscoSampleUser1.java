@@ -67,7 +67,7 @@ public class DiscoSampleUser1 {
 
                 Collection<Item> myItems = new ArrayDeque<>();
                 for (int i = 0; i < 100; i++) {
-                    myItems.add(new Item(Jid.valueOf("test"), "myNode" + i, "test" + i));
+                    myItems.add(new Item(Jid.of("test"), "myNode" + i, "test" + i));
                 }
 
                 ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);

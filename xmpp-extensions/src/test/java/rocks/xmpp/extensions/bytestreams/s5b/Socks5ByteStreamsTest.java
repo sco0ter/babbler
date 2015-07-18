@@ -55,13 +55,13 @@ public class Socks5ByteStreamsTest extends XmlTest {
         Assert.assertNotNull(data);
         Assert.assertEquals(data.getStreamHosts().size(), 1);
         Assert.assertEquals(data.getStreamHosts().get(0).getHost(), "24.24.24.1");
-        Assert.assertEquals(data.getStreamHosts().get(0).getJid(), Jid.valueOf("streamer.example.com"));
+        Assert.assertEquals(data.getStreamHosts().get(0).getJid(), Jid.of("streamer.example.com"));
         Assert.assertEquals(data.getStreamHosts().get(0).getPort(), 7625);
     }
 
     @Test
     public void marshalStreamHostUsed() throws XMLStreamException, JAXBException {
-        String xml = marshal(Socks5ByteStream.streamHostUsed(Jid.valueOf("test")));
+        String xml = marshal(Socks5ByteStream.streamHostUsed(Jid.of("test")));
         Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/bytestreams\"><streamhost-used jid=\"test\"></streamhost-used></query>");
     }
 }

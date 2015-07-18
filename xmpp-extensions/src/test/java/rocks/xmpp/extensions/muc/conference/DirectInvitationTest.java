@@ -60,7 +60,7 @@ public class DirectInvitationTest extends XmlTest {
         DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);
         Assert.assertNotNull(directInvitation);
         Assert.assertTrue(directInvitation.isContinue());
-        Assert.assertEquals(directInvitation.getRoomAddress(), Jid.valueOf("darkcave@macbeth.shakespeare.lit"));
+        Assert.assertEquals(directInvitation.getRoomAddress(), Jid.of("darkcave@macbeth.shakespeare.lit"));
         Assert.assertEquals(directInvitation.getPassword(), "cauldronburn");
         Assert.assertEquals(directInvitation.getReason(), "Hey Hecate, this is the place for all good witches!");
         Assert.assertEquals(directInvitation.getThread(), "e0ffe42b28561960c6b12b944a092794b9683a38");

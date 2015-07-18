@@ -162,7 +162,7 @@ public abstract class XmppSession implements AutoCloseable {
     protected volatile boolean wasLoggedIn;
 
     protected XmppSession(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
-        this.xmppServiceDomain = xmppServiceDomain != null ? Jid.valueOf(xmppServiceDomain) : null;
+        this.xmppServiceDomain = xmppServiceDomain != null ? Jid.of(xmppServiceDomain) : null;
         this.configuration = configuration;
         this.stanzaListenerExecutor = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Stanza Listener Thread"));
         this.iqHandlerExecutor = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("IQ Handler Thread"));

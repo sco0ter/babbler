@@ -73,7 +73,7 @@ import java.util.logging.Logger;
  * Once connected, you can send messages:
  * <pre>
  * {@code
- * xmppClient.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT));
+ * xmppClient.send(new Message(Jid.of("juliet@example.net"), Message.Type.CHAT));
  * }
  * </pre>
  * <h3>Closing the Session</h3>

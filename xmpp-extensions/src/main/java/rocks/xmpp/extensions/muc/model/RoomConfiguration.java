@@ -65,10 +65,10 @@ import java.util.stream.Collectors;
  *     .persistent(true)
  *     .rolesForWhichPresenceIsBroadcast(Arrays.asList(Role.MODERATOR, Role.PARTICIPANT))
  *     .publicRoom(true)
- *     .administrators(Arrays.asList(Jid.valueOf("admin1"), Jid.valueOf("admin2")))
+ *     .administrators(Arrays.asList(Jid.of("admin1"), Jid.of("admin2")))
  *     .description("description")
  *     .name("name")
- *     .owners(Arrays.asList(Jid.valueOf("owner1"), Jid.valueOf("owner2")))
+ *     .owners(Arrays.asList(Jid.of("owner1"), Jid.of("owner2")))
  *     .password("pass")
  *     .rolesThatMayDiscoverRealJids(EnumSet.of(Role.MODERATOR))
  *     .build();

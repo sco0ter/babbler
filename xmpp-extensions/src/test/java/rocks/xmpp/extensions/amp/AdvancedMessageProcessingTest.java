@@ -73,7 +73,7 @@ public class AdvancedMessageProcessingTest extends XmlTest {
         Assert.assertNotNull(amp);
         Assert.assertTrue(amp.isPerHop());
         Assert.assertEquals(amp.getStatus(), Rule.Action.ALERT);
-        Assert.assertEquals(amp.getFrom(), Jid.valueOf("bernardo@hamlet.lit/elsinore"));
+        Assert.assertEquals(amp.getFrom(), Jid.of("bernardo@hamlet.lit/elsinore"));
         Assert.assertEquals(amp.getRules().size(), 1);
         Assert.assertEquals(amp.getRules().get(0).getCondition(), Rule.Condition.EXPIRE_AT);
         Assert.assertEquals(amp.getRules().get(0).getAction(), Rule.Action.DROP);
@@ -103,7 +103,7 @@ public class AdvancedMessageProcessingTest extends XmlTest {
         AdvancedMessageProcessing amp = message.getExtension(AdvancedMessageProcessing.class);
         Assert.assertNotNull(amp);
         Assert.assertEquals(amp.getStatus(), Rule.Action.ERROR);
-        Assert.assertEquals(amp.getTo(), Jid.valueOf("bernardo@hamlet.lit/elsinore"));
+        Assert.assertEquals(amp.getTo(), Jid.of("bernardo@hamlet.lit/elsinore"));
         Assert.assertEquals(amp.getRules().size(), 1);
         Assert.assertTrue(message.getError().getExtension() instanceof FailedRules);
         FailedRules failedRules = (FailedRules) (message.getError().getExtension());

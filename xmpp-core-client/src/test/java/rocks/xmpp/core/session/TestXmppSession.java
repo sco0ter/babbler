@@ -48,7 +48,7 @@ public final class TestXmppSession extends XmppSession {
     private final Jid connectedResource;
 
     public TestXmppSession() {
-        this(Jid.valueOf("test@domain/resource"), new MockServer());
+        this(Jid.of("test@domain/resource"), new MockServer());
     }
 
     public TestXmppSession(Jid jid, MockServer mockServer) {

@@ -63,7 +63,7 @@ public class BookmarkStorageTest extends XmlTest {
         ChatRoomBookmark bookmark = (ChatRoomBookmark) bookmarkStorage.getBookmarks().get(0);
         Assert.assertEquals(bookmark.getName(), "Council of Oberon");
         Assert.assertTrue(bookmark.isAutojoin());
-        Assert.assertEquals(bookmark.getRoom(), Jid.valueOf("council@conference.underhill.org"));
+        Assert.assertEquals(bookmark.getRoom(), Jid.of("council@conference.underhill.org"));
         Assert.assertEquals(bookmark.getNick(), "Puck");
 
         WebPageBookmark bookmark2 = (WebPageBookmark) bookmarkStorage.getBookmarks().get(1);

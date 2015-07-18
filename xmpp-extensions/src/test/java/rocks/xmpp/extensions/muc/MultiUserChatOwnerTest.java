@@ -125,7 +125,7 @@ public class MultiUserChatOwnerTest extends XmlTest {
         MucAdmin mucAdmin = iq.getExtension(MucAdmin.class);
         Assert.assertNotNull(mucAdmin);
         Assert.assertNotNull(mucAdmin.getItems());
-        Assert.assertEquals(mucAdmin.getItems().get(0).getJid(), Jid.valueOf("earlofcambridge@shakespeare.lit"));
+        Assert.assertEquals(mucAdmin.getItems().get(0).getJid(), Jid.of("earlofcambridge@shakespeare.lit"));
         Assert.assertEquals(mucAdmin.getItems().get(0).getAffiliation(), Affiliation.OUTCAST);
         Assert.assertEquals(mucAdmin.getItems().get(0).getReason(), "Treason");
     }
@@ -164,7 +164,7 @@ public class MultiUserChatOwnerTest extends XmlTest {
 
     @Test
     public void marshalDestroyRoom() throws JAXBException, XMLStreamException {
-        MucOwner mucOwner = MucOwner.withDestroy(Jid.valueOf("coven@chat.shakespeare.lit"), "Macbeth doth come.");
+        MucOwner mucOwner = MucOwner.withDestroy(Jid.of("coven@chat.shakespeare.lit"), "Macbeth doth come.");
         String xml = marshal(mucOwner);
         Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#owner\"><destroy jid=\"coven@chat.shakespeare.lit\"><reason>Macbeth doth come.</reason></destroy></query>");
     }

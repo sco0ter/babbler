@@ -34,7 +34,7 @@ final class JidAdapter extends XmlAdapter<String, Jid> {
     @Override
     public Jid unmarshal(String v) throws Exception {
         if (v != null) {
-            return Jid.valueOf(v, true);
+            return Jid.ofEscaped(v);
         }
         return null;
     }

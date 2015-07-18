@@ -67,7 +67,7 @@ public class JingleTest extends XmlTest {
         Jingle jingle = iq.getExtension(Jingle.class);
         Assert.assertNotNull(jingle);
         Assert.assertEquals(jingle.getAction(), Jingle.Action.SESSION_INITIATE);
-        Assert.assertEquals(jingle.getInitiator(), Jid.valueOf("romeo@montague.lit/orchard"));
+        Assert.assertEquals(jingle.getInitiator(), Jid.of("romeo@montague.lit/orchard"));
         Assert.assertEquals(jingle.getSessionId(), "a73sjjvkla37jfea");
     }
 
@@ -92,7 +92,7 @@ public class JingleTest extends XmlTest {
         Jingle jingle = iq.getExtension(Jingle.class);
         Assert.assertNotNull(jingle);
         Assert.assertEquals(jingle.getAction(), Jingle.Action.SESSION_ACCEPT);
-        Assert.assertEquals(jingle.getResponder(), Jid.valueOf("juliet@capulet.lit/balcony"));
+        Assert.assertEquals(jingle.getResponder(), Jid.of("juliet@capulet.lit/balcony"));
         Assert.assertEquals(jingle.getSessionId(), "a73sjjvkla37jfea");
     }
 

@@ -419,7 +419,7 @@ public final class DataForm implements Comparable<DataForm> {
      * // <field type="jid-single" var="test"><value>domain</value></field>
      * DataForm.Field.builder()
      *     .var("test")
-     *     .value(Jid.valueOf("domain"))
+     *     .value(Jid.of("domain"))
      *     .build();
      * }
      * </pre>
@@ -587,7 +587,7 @@ public final class DataForm implements Comparable<DataForm> {
          * @return The JID list.
          */
         public final List<Jid> getValuesAsJid() {
-            return Collections.unmodifiableList(value.stream().map(value -> Jid.valueOf(value, true)).collect(Collectors.toList()));
+            return Collections.unmodifiableList(value.stream().map(Jid::ofEscaped).collect(Collectors.toList()));
         }
 
         /**
@@ -596,7 +596,7 @@ public final class DataForm implements Comparable<DataForm> {
          * @return The JID or null, if the values are empty.
          */
         public final Jid getValueAsJid() {
-            return value.isEmpty() ? null : Jid.valueOf(value.get(0));
+            return value.isEmpty() ? null : Jid.of(value.get(0));
         }
 
         /**

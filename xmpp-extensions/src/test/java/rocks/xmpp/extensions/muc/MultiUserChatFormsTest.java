@@ -56,7 +56,7 @@ public class MultiUserChatFormsTest extends XmlTest {
     public void testRequestVoiceForm() throws JAXBException, XMLStreamException, MalformedURLException {
 
         RequestVoice requestVoice = RequestVoice.builder()
-                .jid(Jid.valueOf("hag66@shakespeare.lit/pda"))
+                .jid(Jid.of("hag66@shakespeare.lit/pda"))
                 .role(Role.MODERATOR)
                 .roomNick("thirdwitch")
                 .allowRequest(true)
@@ -76,7 +76,7 @@ public class MultiUserChatFormsTest extends XmlTest {
 
         Assert.assertEquals(requestVoice1.getRoomNick(), "thirdwitch");
         Assert.assertEquals(requestVoice1.getRole(), Role.MODERATOR);
-        Assert.assertEquals(requestVoice1.getJid(), Jid.valueOf("hag66@shakespeare.lit/pda"));
+        Assert.assertEquals(requestVoice1.getJid(), Jid.of("hag66@shakespeare.lit/pda"));
         Assert.assertTrue(requestVoice1.isRequestAllowed());
     }
 
@@ -99,10 +99,10 @@ public class MultiUserChatFormsTest extends XmlTest {
                 .persistent(true)
                 .rolesForWhichPresenceIsBroadcast(EnumSet.of(Role.MODERATOR, Role.PARTICIPANT))
                 .publicRoom(true)
-                .administrators(Arrays.asList(Jid.valueOf("admin1"), Jid.valueOf("admin2")))
+                .administrators(Arrays.asList(Jid.of("admin1"), Jid.of("admin2")))
                 .description("description")
                 .name("name")
-                .owners(Arrays.asList(Jid.valueOf("owner1"), Jid.valueOf("owner2")))
+                .owners(Arrays.asList(Jid.of("owner1"), Jid.of("owner2")))
                 .password("pass")
                 .rolesThatMayDiscoverRealJids(EnumSet.of(Role.MODERATOR))
                 .build();
@@ -154,10 +154,10 @@ public class MultiUserChatFormsTest extends XmlTest {
         Assert.assertTrue(roomConfiguration1.isPersistent());
         Assert.assertEquals(roomConfiguration1.getRolesForWhichPresenceIsBroadcast(), Arrays.asList(Role.MODERATOR, Role.PARTICIPANT));
         Assert.assertTrue(roomConfiguration1.isPublicRoom());
-        Assert.assertEquals(roomConfiguration1.getAdministrators(), Arrays.asList(Jid.valueOf("admin1"), Jid.valueOf("admin2")));
+        Assert.assertEquals(roomConfiguration1.getAdministrators(), Arrays.asList(Jid.of("admin1"), Jid.of("admin2")));
         Assert.assertEquals(roomConfiguration1.getDescription(), "description");
         Assert.assertEquals(roomConfiguration1.getName(), "name");
-        Assert.assertEquals(roomConfiguration1.getOwners(), Arrays.asList(Jid.valueOf("owner1"), Jid.valueOf("owner2")));
+        Assert.assertEquals(roomConfiguration1.getOwners(), Arrays.asList(Jid.of("owner1"), Jid.of("owner2")));
         Assert.assertEquals(roomConfiguration1.getPassword(), "pass");
         Assert.assertEquals(roomConfiguration1.getRolesThatMayDiscoverRealJids(), Collections.singleton(Role.MODERATOR));
     }
@@ -205,7 +205,7 @@ public class MultiUserChatFormsTest extends XmlTest {
 
         RoomInfo roomInfo = RoomInfo.builder()
                 .maxHistoryMessages(50)
-                .contacts(Arrays.asList(Jid.valueOf("contact1"), Jid.valueOf("contact2")))
+                .contacts(Arrays.asList(Jid.of("contact1"), Jid.of("contact2")))
                 .description("The place for all good witches!")
                 .language("en")
                 .ldapGroup("cn=witches,dc=shakespeare,dc=lit")
@@ -236,7 +236,7 @@ public class MultiUserChatFormsTest extends XmlTest {
 
         Assert.assertEquals(roomInfo2.getDescription(), "The place for all good witches!");
         Assert.assertTrue(roomInfo2.isChangeSubjectAllowed());
-        Assert.assertEquals(roomInfo2.getContacts(), Arrays.asList(Jid.valueOf("contact1"), Jid.valueOf("contact2")));
+        Assert.assertEquals(roomInfo2.getContacts(), Arrays.asList(Jid.of("contact1"), Jid.of("contact2")));
         Assert.assertEquals(roomInfo2.getSubject(), "Spells");
         Assert.assertEquals(roomInfo2.getCurrentNumberOfOccupants(), Integer.valueOf(45));
         Assert.assertEquals(roomInfo2.getLdapGroup(), "cn=witches,dc=shakespeare,dc=lit");

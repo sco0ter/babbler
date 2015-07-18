@@ -195,7 +195,7 @@ public class PubSubEventTest extends XmlTest {
         Assert.assertNotNull(event.getSubscription());
         Assert.assertNotNull(event.getSubscription().getExpiry());
         Assert.assertEquals(event.getSubscription().getNode(), "princely_musings");
-        Assert.assertEquals(event.getSubscription().getJid(), Jid.valueOf("francisco@denmark.lit"));
+        Assert.assertEquals(event.getSubscription().getJid(), Jid.of("francisco@denmark.lit"));
         Assert.assertEquals(event.getSubscription().getSubscriptionState(), SubscriptionState.SUBSCRIBED);
         Assert.assertEquals(event.getSubscription().getSubId(), "ba49252aaa4f5d320c24d3766f0bdcade78c78d3");
     }

@@ -18,7 +18,7 @@ Collection<ChatService> chatServices = multiUserChatManager.discoverChatServices
 If you already know the address of your chat service, you can also create an instance of the `ChatService` directly:
 
 ```java
-ChatService chatService = multiUserChatManager.createChatService(Jid.valueOf("conference.yourxmppdomain"));
+ChatService chatService = multiUserChatManager.createChatService(Jid.of("conference.yourxmppdomain"));
 ```
 
 A chat service allows you to do two things:
@@ -124,7 +124,7 @@ chatRoom.changeNickname("newNickname");
 #### Inviting Other Users
 
 ```java
-chatRoom.invite(Jid.valueOf("romeo@example.net"), "Hey, please join the room");
+chatRoom.invite(Jid.of("romeo@example.net"), "Hey, please join the room");
 ```
 
 #### Requesting Voice
@@ -176,7 +176,7 @@ chatRoom.changeRole(Role.MODERATOR, "nick", "You are now a moderator!");
 If you are allowed (you need to be admin or owner), you can ban a user based on his JID:
 
 ```java
-chatRoom.changeAffiliation(Affiliation.OUTCAST, Jid.valueOf("juliet@example.net"), "You are banned!");
+chatRoom.changeAffiliation(Affiliation.OUTCAST, Jid.of("juliet@example.net"), "You are banned!");
 ```
 
 #### Kicking an Occupant

@@ -108,7 +108,7 @@ public final class OfflineMessageManager extends Manager {
         List<OfflineMessageHeader> result = new ArrayList<>();
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         ItemNode itemNode = serviceDiscoveryManager.discoverItems(null, OfflineMessage.NAMESPACE);
-        result.addAll(itemNode.getItems().stream().map(item -> new OfflineMessageHeader(Jid.valueOf(item.getName()), item.getNode())).collect(Collectors.toList()));
+        result.addAll(itemNode.getItems().stream().map(item -> new OfflineMessageHeader(Jid.of(item.getName()), item.getNode())).collect(Collectors.toList()));
         return result;
     }
 

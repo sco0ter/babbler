@@ -43,9 +43,9 @@ import java.util.regex.Pattern;
  * <p>
  * [ localpart "@" ] domainpart [ "/" resourcepart ]
  * </p>
- * The easiest way to create a JID is to use the {@link #valueOf(String)} method:
+ * The easiest way to create a JID is to use the {@link #of(String)} method:
  * <pre><code>
- * Jid jid = Jid.valueOf("juliet@capulet.lit/balcony");
+ * Jid jid = Jid.of("juliet@capulet.lit/balcony");
  * </code></pre>
  * You can then get the parts from it via the respective methods:
  * <pre><code>
@@ -55,11 +55,11 @@ import java.util.regex.Pattern;
  * </code></pre>
  * This class overrides <code>equals()</code> and <code>hashCode()</code>, so that different instances with the same value are equal:
  * <pre><code>
- * Jid.valueOf("romeo@capulet.lit/balcony").equals(Jid.valueOf("romeo@capulet.lit/balcony")); // true
+ * Jid.of("romeo@capulet.lit/balcony").equals(Jid.of("romeo@capulet.lit/balcony")); // true
  * </code></pre>
  * This class also supports <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>, i.e.
  * <pre><code>
- * Jid.valueOf("d'artagnan@musketeers.lit")
+ * Jid.of("d'artagnan@musketeers.lit")
  * </code></pre>
  * is escaped as <code>d\\27artagnan@musketeers.lit</code>.
  *
@@ -118,7 +118,9 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * Creates a bare JID with only the domain part.
      *
      * @param domain The domain.
+     * @deprecated Use {@link #ofDomain(String)}
      */
+    @Deprecated
     public Jid(String domain) {
         this(null, domain, null);
     }
@@ -128,7 +130,9 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      *
      * @param local  The local part.
      * @param domain The domain part.
+     * @deprecated Use {@link #ofLocalAndDomain(String, String)}
      */
+    @Deprecated
     public Jid(String local, String domain) {
         this(local, domain, null);
     }
@@ -139,7 +143,9 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @param local    The local part.
      * @param domain   The domain part.
      * @param resource The resource part.
+     * @deprecated Use {@link #of(String, String, String)}}
      */
+    @Deprecated
     public Jid(String local, String domain, String resource) {
         this(local, domain, resource, false, true);
     }
@@ -167,7 +173,73 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     }
 
     /**
+     * Returns a JID from a string. The format must be
+     * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>.
+     * The input string will be escaped.
+     *
+     * @param jid The JID.
+     * @return The JID.
+     * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
+     * @deprecated Use {@link #of(String)}
+     */
+    @Deprecated
+    public static Jid valueOf(String jid) {
+        return of(jid);
+    }
+
+    /**
      * Creates a JID from a string. The format must be
+     * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>
+     *
+     * @param jid        The JID.
+     * @param doUnescape If the jid parameter will be unescaped.
+     * @return The JID.
+     * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
+     * @deprecated Use {@link #of(String)} or {@link #ofEscaped(String)}}
+     */
+    @Deprecated
+    public static Jid valueOf(String jid, boolean doUnescape) {
+        return of(jid, doUnescape);
+    }
+
+    /**
+     * Returns a bare JID with a domain and resource part, e.g. <code>capulet.com/balcony</code>
+     *
+     * @param domain The domain.
+     */
+    public static Jid of(String local, String domain, String resource) {
+        return new Jid(local, domain, resource);
+    }
+
+    /**
+     * Returns a bare JID with only the domain part, e.g. <code>capulet.com</code>
+     *
+     * @param domain The domain.
+     */
+    public static Jid ofDomain(String domain) {
+        return new Jid(domain);
+    }
+
+    /**
+     * Returns a bare JID with a local and domain part, e.g. <code>juliet@capulet.com</code>
+     *
+     * @param domain The domain.
+     */
+    public static Jid ofLocalAndDomain(String local, String domain) {
+        return new Jid(local, domain);
+    }
+
+    /**
+     * Returns a bare JID with a domain and resource part, e.g. <code>capulet.com/balcony</code>
+     *
+     * @param domain The domain.
+     */
+    public static Jid ofDomainAndResource(String domain, String resource) {
+        return new Jid(null, domain, resource);
+    }
+
+    /**
+     * Returns a JID from a string. The format must be
      * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>.
      * The input string will be escaped.
      *
@@ -175,8 +247,20 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @return The JID.
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
-    public static Jid valueOf(String jid) {
-        return valueOf(jid, false);
+    public static Jid of(String jid) {
+        return of(jid, false);
+    }
+
+    /**
+     * Creates a JID from a escaped JID string. The format must be
+     * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>
+     *
+     * @param jid The JID.
+     * @return The JID.
+     * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
+     */
+    public static Jid ofEscaped(String jid) {
+        return of(jid, true);
     }
 
     /**
@@ -188,7 +272,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @return The JID.
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
-    public static Jid valueOf(String jid, boolean doUnescape) {
+    private static Jid of(String jid, boolean doUnescape) {
         Objects.requireNonNull(jid, "jid must not be null.");
 
         jid = jid.trim();

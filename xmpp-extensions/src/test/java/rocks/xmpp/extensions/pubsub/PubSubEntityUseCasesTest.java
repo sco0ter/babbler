@@ -116,7 +116,7 @@ public class PubSubEntityUseCasesTest extends XmlTest {
         Assert.assertNotNull(pubSub.getSubscriptions());
         Assert.assertEquals(pubSub.getSubscriptions().size(), 5);
         Assert.assertEquals(pubSub.getSubscriptions().get(0).getNode(), "node1");
-        Assert.assertEquals(pubSub.getSubscriptions().get(0).getJid(), Jid.valueOf("francisco@denmark.lit"));
+        Assert.assertEquals(pubSub.getSubscriptions().get(0).getJid(), Jid.of("francisco@denmark.lit"));
         Assert.assertEquals(pubSub.getSubscriptions().get(0).getSubscriptionState(), SubscriptionState.SUBSCRIBED);
 
         Assert.assertEquals(pubSub.getSubscriptions().get(2).getSubscriptionState(), SubscriptionState.UNCONFIGURED);

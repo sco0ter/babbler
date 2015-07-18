@@ -64,7 +64,7 @@ public class DelayedDeliveryTest extends XmlTest {
         Assert.assertEquals(message.getExtensions().size(), 1);
         DelayedDelivery delay = message.getExtension(DelayedDelivery.class);
         Assert.assertNotNull(delay);
-        Assert.assertEquals(delay.getFrom(), new Jid("capulet.com"));
+        Assert.assertEquals(delay.getFrom(), Jid.ofDomain("capulet.com"));
         Assert.assertEquals(delay.getTimeStamp(), Instant.parse("2002-09-10T23:08:25Z"));
         Assert.assertEquals(delay.getReason(), "Offline Storage");
     }

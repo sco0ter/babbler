@@ -20,7 +20,7 @@ Creating or updating a privacy list use the same protocol, therefore there's onl
 
 ```java
 PrivacyList privacyList = new PrivacyList("listName");
-privacyList.getPrivacyRules().add(new PrivacyRule(PrivacyRule.Action.DENY, 1, Jid.valueOf("juliet@example.com")));
+privacyList.getPrivacyRules().add(new PrivacyRule(PrivacyRule.Action.DENY, 1, Jid.of("juliet@example.com")));
 privacyListManager.createOrUpdateList(privacyList);
 ```
 
@@ -75,13 +75,13 @@ A common use case for Privacy Lists is to block communication with another user.
 For this use case you should add a privacy rule for the user, which denies all communication.
 
 ```java
-privacyList.getPrivacyRules().add(new PrivacyRule(PrivacyRule.Action.DENY, 1, Jid.valueOf("tybalt@example.com")));
+privacyList.getPrivacyRules().add(new PrivacyRule(PrivacyRule.Action.DENY, 1, Jid.of("tybalt@example.com")));
 ```
 
 Privacy rules can also be defined more granular. E.g. if you only want to block IQ stanzas, but allow presences and messages, you would define the rule like:
 
 ```java
-PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.DENY, 1, Jid.valueOf("tybalt@example.com"))
+PrivacyRule privacyRule = new PrivacyRule(PrivacyRule.Action.DENY, 1, Jid.of("tybalt@example.com"))
     .filterIQ();
 ```
 

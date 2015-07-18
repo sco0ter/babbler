@@ -108,7 +108,7 @@ public class MultiUserChatIT extends IntegrationTest {
             System.out.println(e);
             if (e.getReason().equals("join!")) {
                 countDownLatch.countDown();
-                //ChatRoom chatRoom = multiUserChatManager[0].createChatService(Jid.valueOf(e.getRoomAddress().getDomain())).createRoom(e.getRoomAddress().getLocal());
+                //ChatRoom chatRoom = multiUserChatManager[0].createChatService(Jid.of(e.getRoomAddress().getDomain())).createRoom(e.getRoomAddress().getLocal());
             }
         });
         try {

@@ -43,7 +43,7 @@ import java.util.List;
  * <pre>
  * {@code
  * RequestVoice requestVoice = RequestVoice.builder()
- *     .jid(Jid.valueOf("hag66@shakespeare.lit/pda"))
+ *     .jid(Jid.of("hag66@shakespeare.lit/pda"))
  *     .role(Role.PARTICIPANT)
  *     .roomNick("thirdwitch")
  *     .allowRequest(true)

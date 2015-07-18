@@ -47,7 +47,7 @@ import java.util.List;
  * {@code
  * RoomInfo roomInfo = RoomInfo.builder()
  *     .maxHistoryMessages(50)
- *     .contacts(Arrays.asList(Jid.valueOf("contact1"), Jid.valueOf("contact2")))
+ *     .contacts(Arrays.asList(Jid.of("contact1"), Jid.of("contact2")))
  *     .description("The place for all good witches!")
  *     .language("en")
  *     .ldapGroup("cn=witches,dc=shakespeare,dc=lit")

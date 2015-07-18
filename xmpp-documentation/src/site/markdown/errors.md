@@ -46,7 +46,7 @@ Here's an example:
 
 ```java
 try {
-    EntityTime entityTime = entityTimeManager.getEntityTime(Jid.valueOf("juliet@example.net/balcony"));
+    EntityTime entityTime = entityTimeManager.getEntityTime(Jid.of("juliet@example.net/balcony"));
 } catch (NoResponseException e) {
     // The entity did not respond
 } catch (StanzaException e) {

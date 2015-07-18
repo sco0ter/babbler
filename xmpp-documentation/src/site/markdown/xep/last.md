@@ -16,7 +16,7 @@ If you want to find out how long ago a user logged out, you query for the user's
 
 ```java
 LastActivityManager lastActivityManager = xmppClient.getManager(LastActivityManager.class);
-LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.valueOf("juliet@im.example.com"));
+LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.of("juliet@im.example.com"));
 // user logged out lastActivity.getSeconds() ago
 ```
 
@@ -26,7 +26,7 @@ In order to query a connected user for its idle time you must query for its full
 
 ```java
 LastActivityManager lastActivityManager = xmppClient.getManager(LastActivityManager.class);
-LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.valueOf("juliet@im.example.com/resource"));
+LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.of("juliet@im.example.com/resource"));
 ```
 
 If supported by the client, it will respond with its idle time.
@@ -55,7 +55,7 @@ When querying a server or component the result is the uptime of it.
 
 ```java
 LastActivityManager lastActivityManager = xmppClient.getManager(LastActivityManager.class);
-LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.valueOf("im.example.com"));
+LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.of("im.example.com"));
 ```
 
 or just pass `null`, if you want to query your connected server.

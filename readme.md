@@ -314,7 +314,7 @@ Initial presence is sent automatically, so that you are now an \"available resou
 Sending a simple chat message works like this:
 
 ```java
-xmppClient.send(new Message(Jid.valueOf("juliet@example.net"), Message.Type.CHAT));
+xmppClient.send(new Message(Jid.of("juliet@example.net"), Message.Type.CHAT));
 ```
 
 ## Changing Availability

@@ -10,7 +10,7 @@ Real Time Text is transmitted in the context of a chat session, which is usually
 So first you need to retrieve a `Chat` instance, e.g. as follows:
 
 ```
-Chat chat = xmppClient.getManager(ChatManager.class).createChatSession(Jid.valueOf("juliet@example.net"));
+Chat chat = xmppClient.getManager(ChatManager.class).createChatSession(Jid.of("juliet@example.net"));
 ```
 
 Next, create an `OutboundRealTimeMessage` object. It takes care of various aspects of real-time text, like:

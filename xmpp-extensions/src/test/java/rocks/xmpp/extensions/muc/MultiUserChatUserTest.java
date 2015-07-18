@@ -145,7 +145,7 @@ public class MultiUserChatUserTest extends XmlTest {
         MucUser mucUser = presence.getExtension(MucUser.class);
         Assert.assertNotNull(mucUser);
         Assert.assertNotNull(mucUser.getItem());
-        Assert.assertEquals(mucUser.getItem().getJid(), Jid.valueOf("hag66@shakespeare.lit/pda"));
+        Assert.assertEquals(mucUser.getItem().getJid(), Jid.of("hag66@shakespeare.lit/pda"));
         Assert.assertEquals(mucUser.getItem().getNick(), "oldhag");
     }
 
@@ -166,7 +166,7 @@ public class MultiUserChatUserTest extends XmlTest {
         MucUser mucUser = message.getExtension(MucUser.class);
         Assert.assertNotNull(mucUser);
         Assert.assertNotNull(mucUser.getInvites());
-        Assert.assertEquals(mucUser.getInvites().get(0).getTo(), Jid.valueOf("hecate@shakespeare.lit"));
+        Assert.assertEquals(mucUser.getInvites().get(0).getTo(), Jid.of("hecate@shakespeare.lit"));
         Assert.assertEquals(mucUser.getInvites().get(0).getReason(), "Hey Hecate, this is the place for all good witches!");
         Assert.assertEquals(mucUser.getPassword(), "cauldronburn");
     }
@@ -187,7 +187,7 @@ public class MultiUserChatUserTest extends XmlTest {
         MucUser mucUser = message.getExtension(MucUser.class);
         Assert.assertNotNull(mucUser);
         Assert.assertNotNull(mucUser.getDecline());
-        Assert.assertEquals(mucUser.getDecline().getTo(), Jid.valueOf("crone1@shakespeare.lit"));
+        Assert.assertEquals(mucUser.getDecline().getTo(), Jid.of("crone1@shakespeare.lit"));
         Assert.assertEquals(mucUser.getDecline().getReason(), "Sorry, I'm too busy right now.");
     }
 
@@ -213,10 +213,10 @@ public class MultiUserChatUserTest extends XmlTest {
         Assert.assertNotNull(mucUser);
         Assert.assertNotNull(mucUser.getInvites());
         Assert.assertEquals(mucUser.getInvites().size(), 2);
-        Assert.assertEquals(mucUser.getInvites().get(0).getTo(), Jid.valueOf("wiccarocks@shakespeare.lit/laptop"));
+        Assert.assertEquals(mucUser.getInvites().get(0).getTo(), Jid.of("wiccarocks@shakespeare.lit/laptop"));
         Assert.assertEquals(mucUser.getInvites().get(0).getThread(), "e0ffe42b28561960c6b12b944a092794b9683a38");
         Assert.assertTrue(mucUser.getInvites().get(0).isContinue());
-        Assert.assertEquals(mucUser.getInvites().get(1).getTo(), Jid.valueOf("hag66@shakespeare.lit"));
+        Assert.assertEquals(mucUser.getInvites().get(1).getTo(), Jid.of("hag66@shakespeare.lit"));
         Assert.assertEquals(mucUser.getInvites().get(1).getThread(), "e0ffe42b28561960c6b12b944a092794b9683a38");
     }
 
@@ -259,13 +259,13 @@ public class MultiUserChatUserTest extends XmlTest {
         MucUser mucUser = presence.getExtension(MucUser.class);
         Assert.assertNotNull(mucUser);
         Assert.assertNotNull(mucUser.getDestroy());
-        Assert.assertEquals(mucUser.getDestroy().getJid(), Jid.valueOf("coven@chat.shakespeare.lit"));
+        Assert.assertEquals(mucUser.getDestroy().getJid(), Jid.of("coven@chat.shakespeare.lit"));
         Assert.assertEquals(mucUser.getDestroy().getReason(), "Macbeth doth come.");
     }
 
     @Test
     public void marshalDestroyRoom() throws JAXBException, XMLStreamException {
-        MucUser mucUser = MucUser.withDestroy(Affiliation.NONE, Role.NONE, Jid.valueOf("coven@chat.shakespeare.lit"), "Macbeth doth come.");
+        MucUser mucUser = MucUser.withDestroy(Affiliation.NONE, Role.NONE, Jid.of("coven@chat.shakespeare.lit"), "Macbeth doth come.");
         String xml = marshal(mucUser);
         Assert.assertEquals(mucUser.getDestroy().getReason(), "Macbeth doth come.");
         Assert.assertEquals(xml, "<x xmlns=\"http://jabber.org/protocol/muc#user\"><item affiliation=\"none\" role=\"none\"></item><destroy jid=\"coven@chat.shakespeare.lit\"><reason>Macbeth doth come.</reason></destroy></x>");
@@ -273,7 +273,7 @@ public class MultiUserChatUserTest extends XmlTest {
 
     @Test
     public void marshalWithItem() throws JAXBException, XMLStreamException {
-        MucUser mucUser = MucUser.withItem(Affiliation.NONE, Role.NONE, Jid.valueOf("coven@chat.shakespeare.lit"), "Nick");
+        MucUser mucUser = MucUser.withItem(Affiliation.NONE, Role.NONE, Jid.of("coven@chat.shakespeare.lit"), "Nick");
         String xml = marshal(mucUser);
         Assert.assertEquals(mucUser.getItem().getNick(), "Nick");
         Assert.assertEquals(xml, "<x xmlns=\"http://jabber.org/protocol/muc#user\"><item affiliation=\"none\" jid=\"coven@chat.shakespeare.lit\" nick=\"Nick\" role=\"none\"></item></x>");
@@ -281,7 +281,7 @@ public class MultiUserChatUserTest extends XmlTest {
 
     @Test
     public void marshalWithInvites() throws JAXBException, XMLStreamException {
-        MucUser mucUser = MucUser.withInvites(new Invite(Jid.valueOf("coven@chat.shakespeare.lit"), "reason"));
+        MucUser mucUser = MucUser.withInvites(new Invite(Jid.of("coven@chat.shakespeare.lit"), "reason"));
         String xml = marshal(mucUser);
         Assert.assertEquals(mucUser.getInvites().size(), 1);
         Assert.assertEquals(xml, "<x xmlns=\"http://jabber.org/protocol/muc#user\"><invite to=\"coven@chat.shakespeare.lit\"><reason>reason</reason></invite></x>");
@@ -297,7 +297,7 @@ public class MultiUserChatUserTest extends XmlTest {
 
     @Test
     public void marshalWithDecline() throws JAXBException, XMLStreamException {
-        MucUser mucUser = MucUser.withDecline(Jid.valueOf("coven@chat.shakespeare.lit"), "reason");
+        MucUser mucUser = MucUser.withDecline(Jid.of("coven@chat.shakespeare.lit"), "reason");
         String xml = marshal(mucUser);
         Assert.assertEquals(mucUser.getDecline().getReason(), "reason");
         Assert.assertEquals(xml, "<x xmlns=\"http://jabber.org/protocol/muc#user\"><decline to=\"coven@chat.shakespeare.lit\"><reason>reason</reason></decline></x>");

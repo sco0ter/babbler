@@ -103,14 +103,14 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(Collections.singleton(new Item(Jid.valueOf("test"), "root", "name"))));
+        serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(Collections.singleton(new Item(Jid.of("test"), "root", "name"))));
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getManager(ServiceDiscoveryManager.class);
         ItemNode result = serviceDiscoveryManager2.discoverItems(ROMEO);
         Assert.assertEquals(result.getItems().size(), 1);
         Assert.assertEquals(result.getItems().get(0).getNode(), "root");
         Assert.assertEquals(result.getItems().get(0).getName(), "name");
-        Assert.assertEquals(result.getItems().get(0).getJid(), Jid.valueOf("test"));
+        Assert.assertEquals(result.getItems().get(0).getJid(), Jid.of("test"));
     }
 
     @Test
@@ -120,7 +120,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
 
-        DefaultItemProvider defaultItemProvider = new DefaultItemProvider(Collections.singleton(new Item(Jid.valueOf("test"), "node1")));
+        DefaultItemProvider defaultItemProvider = new DefaultItemProvider(Collections.singleton(new Item(Jid.of("test"), "node1")));
         serviceDiscoveryManager.setItemProvider("node1", defaultItemProvider);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getManager(ServiceDiscoveryManager.class);
@@ -138,7 +138,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
 
         Collection<Item> items = new ArrayDeque<>();
         for (int i = 0; i < 100; i++) {
-            items.add(new Item(Jid.valueOf("test"), "item" + i));
+            items.add(new Item(Jid.of("test"), "item" + i));
         }
         serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(items));
 
@@ -182,7 +182,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         Collection<Item> items = new ArrayDeque<>();
         for (int i = 0; i < 30; i++) {
-            items.add(new Item(Jid.valueOf("test"), "item" + i));
+            items.add(new Item(Jid.of("test"), "item" + i));
         }
         serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(items));
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);

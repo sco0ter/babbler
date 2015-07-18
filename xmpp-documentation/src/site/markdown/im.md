@@ -4,7 +4,7 @@
 ## Adding Contacts to Your Roster
 
 ```java
-xmppClient.getManager(RosterManager.class).addContact(new Contact(Jid.valueOf("juliet@example.net"), "Juliet"), true, "Hi Juliet, please add me.");
+xmppClient.getManager(RosterManager.class).addContact(new Contact(Jid.of("juliet@example.net"), "Juliet"), true, "Hi Juliet, please add me.");
 ```
 
 This will create a contact on your roster and subsequently sends a presence subscription request to the user.

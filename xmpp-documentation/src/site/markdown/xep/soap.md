@@ -7,7 +7,7 @@ There's some very basic support for [XEP-0072: SOAP Over XMPP][SOAP Over XMPP]. 
 
 ```java
 SoapManager soapManager = xmppClient.getManager(SoapManager.class);
-boolean isSupported = soapManager.isSupported(Jid.valueOf("responder@example.com/soap-server"));
+boolean isSupported = soapManager.isSupported(Jid.of("responder@example.com/soap-server"));
 ```
 
 ## Sending a SOAP Message Over XMPP
@@ -31,7 +31,7 @@ soapBodyElem1.addTextNode("New York");
 SOAPElement soapBodyElem2 = soapBody.addChildElement("arriving", "p");
 soapBodyElem2.addTextNode("Los Angeles");
 
-Message message = new Message(Jid.valueOf("juliet@example.net"));
+Message message = new Message(Jid.of("juliet@example.net"));
 message.addExtension(envelope);
 ```
 

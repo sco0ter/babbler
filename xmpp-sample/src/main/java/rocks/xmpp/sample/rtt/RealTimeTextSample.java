@@ -76,7 +76,7 @@ public class RealTimeTextSample extends Application {
         xmppClient.connect();
         xmppClient.login("111", "111");
 
-        final Jid contact = new Jid("111", xmppClient.getDomain());
+        final Jid contact = new Jid("111", xmppClient.getDomain().toString());
 
         // Create a chat session with another user.
         final Chat chat = xmppClient.getManager(ChatManager.class).createChatSession(contact);

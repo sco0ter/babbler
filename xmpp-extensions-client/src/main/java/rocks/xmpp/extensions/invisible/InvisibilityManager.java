@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.invisible;
 
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
@@ -46,8 +45,8 @@ public final class InvisibilityManager extends Manager {
     /**
      * Becomes invisible.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public synchronized void becomeInvisible() throws XmppException {
         xmppSession.query(IQ.set(InvisibleCommand.INVISIBLE));
@@ -57,8 +56,8 @@ public final class InvisibilityManager extends Manager {
     /**
      * Becomes visible.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public synchronized void becomeVisible() throws XmppException {
         xmppSession.query(IQ.set(InvisibleCommand.VISIBLE));
@@ -78,11 +77,11 @@ public final class InvisibilityManager extends Manager {
      * Checks, whether invisibility is supported by the server.
      *
      * @return True, if invisibility is supported.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public boolean isSupported() throws XmppException {
         EntityCapabilitiesManager entityCapabilitiesManager = xmppSession.getManager(EntityCapabilitiesManager.class);
-        return entityCapabilitiesManager.isSupported(InvisibleCommand.NAMESPACE, Jid.valueOf(xmppSession.getDomain()));
+        return entityCapabilitiesManager.isSupported(InvisibleCommand.NAMESPACE, xmppSession.getDomain());
     }
 }

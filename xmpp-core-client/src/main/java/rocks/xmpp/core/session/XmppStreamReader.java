@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.session;
 
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamError;
@@ -73,11 +74,11 @@ final class XmppStreamReader {
 
     private final Unmarshaller unmarshaller;
 
-    private final Consumer<String> onStreamOpened;
+    private final Consumer<Jid> onStreamOpened;
 
     private final String namespace;
 
-    XmppStreamReader(String namespace, final TcpConnection connection, XmppSession xmppSession, Consumer<String> onStreamOpened) {
+    XmppStreamReader(String namespace, final TcpConnection connection, XmppSession xmppSession, Consumer<Jid> onStreamOpened) {
         this.connection = connection;
         this.xmppSession = xmppSession;
         this.debugger = xmppSession.getDebugger();
@@ -125,7 +126,7 @@ final class XmppStreamReader {
 
                                 if (onStreamOpened != null) {
                                     Attribute fromAttribute = startElement.getAttributeByName(FROM);
-                                    onStreamOpened.accept(fromAttribute != null ? fromAttribute.getValue() : null);
+                                    onStreamOpened.accept(fromAttribute != null ? Jid.valueOf(fromAttribute.getValue()) : null);
                                 }
                                 if (debugger != null) {
                                     XMLEventWriter writer = xmppSession.getConfiguration().getXmlOutputFactory().createXMLEventWriter(stringWriter);

@@ -71,7 +71,7 @@ public final class TestXmppSession extends XmppSession {
             }
 
             @Override
-            public void connect(Jid from, String namespace, Consumer<String> onConnected) throws IOException {
+            public void connect(Jid from, String namespace, Consumer<Jid> onConnected) throws IOException {
 
             }
 

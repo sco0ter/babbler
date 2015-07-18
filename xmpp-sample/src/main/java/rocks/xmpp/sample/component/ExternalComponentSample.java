@@ -24,7 +24,6 @@
 
 package rocks.xmpp.sample.component;
 
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -75,7 +74,7 @@ public class ExternalComponentSample {
                     @Override
                     protected IQ processRequest(IQ iq) {
                         Collection<LanguageSupport.Item> items = new ArrayDeque<>();
-                        items.add(new LanguageSupport.Item("en", Jid.valueOf(myComponent.getDomain()), "de", "testEngine", true, null));
+                        items.add(new LanguageSupport.Item("en", myComponent.getDomain(), "de", "testEngine", true, null));
                         return iq.createResult(new LanguageSupport(items));
                     }
                 });

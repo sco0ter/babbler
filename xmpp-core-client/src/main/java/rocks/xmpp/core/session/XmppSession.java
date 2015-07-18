@@ -139,7 +139,7 @@ public abstract class XmppSession implements AutoCloseable {
     /**
      * The XMPP domain which will be assigned by the server's response. This is read by different threads, so make it volatile to ensure visibility of the written value.
      */
-    protected volatile String xmppServiceDomain;
+    protected volatile Jid xmppServiceDomain;
 
     /**
      * Holds the connection state.
@@ -162,7 +162,7 @@ public abstract class XmppSession implements AutoCloseable {
     protected volatile boolean wasLoggedIn;
 
     protected XmppSession(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
-        this.xmppServiceDomain = xmppServiceDomain;
+        this.xmppServiceDomain = xmppServiceDomain != null ? Jid.valueOf(xmppServiceDomain) : null;
         this.configuration = configuration;
         this.stanzaListenerExecutor = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Stanza Listener Thread"));
         this.iqHandlerExecutor = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("IQ Handler Thread"));
@@ -219,7 +219,7 @@ public abstract class XmppSession implements AutoCloseable {
 
     public abstract void connect(Jid from) throws XmppException;
 
-    protected final void tryConnect(Jid from, String namespace, Consumer<String> onStreamOpened) throws XmppException {
+    protected final void tryConnect(Jid from, String namespace, Consumer<Jid> onStreamOpened) throws XmppException {
         Iterator<Connection> connectionIterator = getConnections().iterator();
         while (connectionIterator.hasNext()) {
             Connection connection = connectionIterator.next();
@@ -636,7 +636,7 @@ public abstract class XmppSession implements AutoCloseable {
      *
      * @param xmppServiceDomain The XMPP service domain.
      */
-    protected final void setXmppServiceDomain(String xmppServiceDomain) {
+    protected final void setXmppServiceDomain(Jid xmppServiceDomain) {
         this.xmppServiceDomain = xmppServiceDomain;
     }
 
@@ -950,7 +950,7 @@ public abstract class XmppSession implements AutoCloseable {
      *
      * @return The XMPP domain.
      */
-    public final String getDomain() {
+    public final Jid getDomain() {
         return xmppServiceDomain;
     }
 

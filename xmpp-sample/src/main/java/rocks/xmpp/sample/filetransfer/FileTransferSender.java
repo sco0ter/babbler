@@ -64,7 +64,7 @@ public class FileTransferSender {
                 xmppSession.login("111", "111", "filetransfer");
 
                 FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
-                FileTransfer fileTransfer = fileTransferManager.offerFile(Paths.get("info.png"), "Description", new Jid("222", xmppSession.getDomain(), "filetransfer"), 5000);
+                FileTransfer fileTransfer = fileTransferManager.offerFile(Paths.get("info.png"), "Description", new Jid("222", xmppSession.getDomain().toString(), "filetransfer"), 5000);
                 fileTransfer.transfer();
 
             } catch (Exception e) {

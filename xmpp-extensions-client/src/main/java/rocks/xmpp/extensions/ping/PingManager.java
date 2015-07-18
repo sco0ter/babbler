@@ -162,7 +162,7 @@ public final class PingManager extends Manager {
      * @return True if a response has been received, false otherwise.
      */
     public final boolean pingServer() {
-        return ping(new Jid(xmppSession.getDomain()));
+        return ping(xmppSession.getDomain());
     }
 
     /**

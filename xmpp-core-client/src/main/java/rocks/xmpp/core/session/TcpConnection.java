@@ -154,7 +154,7 @@ public final class TcpConnection extends Connection {
      * @throws IOException If the underlying socket throws an exception.
      */
     @Override
-    public final synchronized void connect(Jid from, String namespace, Consumer<String> onStreamOpened) throws IOException {
+    public final synchronized void connect(Jid from, String namespace, Consumer<Jid> onStreamOpened) throws IOException {
 
         if (socket != null) {
             // Already connected.
@@ -170,7 +170,7 @@ public final class TcpConnection extends Connection {
         } else if (getXmppSession().getDomain() != null) {
             if (!connectWithXmppServiceDomain(getXmppSession().getDomain())) {
                 // 9. If the initiating entity does not receive a response to its SRV query, it SHOULD attempt the fallback process described in the next section.
-                connectToSocket(InetAddress.getByName(getXmppSession().getDomain()), getPort(), getProxy());
+                connectToSocket(InetAddress.getByName(getXmppSession().getDomain().toString()), getPort(), getProxy());
             }
         } else {
             throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
@@ -224,7 +224,7 @@ public final class TcpConnection extends Connection {
         synchronized (this) {
             socket = sslContext.getSocketFactory().createSocket(
                     socket,
-                    getXmppSession().getDomain(),
+                    getXmppSession().getDomain().toString(),
                     socket.getPort(),
                     true);
             sslSocket = (SSLSocket) socket;
@@ -245,7 +245,7 @@ public final class TcpConnection extends Connection {
             sslSocket.startHandshake();
             // We are calling an "alien" method here, i.e. code we don't control.
             // Don't call alien methods from within synchronized regions, that's why the regions are split.
-            if (!verifier.verify(getXmppSession().getDomain(), sslSocket.getSession())) {
+            if (!verifier.verify(getXmppSession().getDomain().toString(), sslSocket.getSession())) {
                 throw new CertificateException("Server failed to authenticate as " + getXmppSession().getDomain());
             }
         }
@@ -314,7 +314,7 @@ public final class TcpConnection extends Connection {
      * @return If the connection could be established.
      * @throws IOException If no connection could be established to a resolved host.
      */
-    private boolean connectWithXmppServiceDomain(String xmppServiceDomain) throws IOException {
+    private boolean connectWithXmppServiceDomain(Jid xmppServiceDomain) throws IOException {
 
         // 1. The initiating entity constructs a DNS SRV query whose inputs are:
         //

@@ -157,7 +157,7 @@ public final class VisualDebugger implements XmppDebugger {
                 if (e.getStatus() == XmppSession.Status.CONNECTED && xmppSession.getActiveConnection() != null) {
                     debugController.viewModel.server.set(xmppSession.getActiveConnection().getHostname());
                     debugController.viewModel.port.set(xmppSession.getActiveConnection().getPort());
-                    title.set(xmppSession.getDomain());
+                    title.set(xmppSession.getDomain().toString());
                 }
                 if (e.getStatus() == XmppSession.Status.AUTHENTICATED) {
                     title.set(xmppSession.getConnectedResource().toString());
@@ -213,7 +213,7 @@ public final class VisualDebugger implements XmppDebugger {
                     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("DebugView.fxml"));
                     TabPane debugView = fxmlLoader.load();
                     debugController = fxmlLoader.getController();
-                    final Tab tab = new Tab(xmppSession.getDomain());
+                    final Tab tab = new Tab(xmppSession.getDomain().toString());
                     tab.setContent(debugView);
                     tab.textProperty().bind(title);
                     CONNECTION_LISTENER_MAP.put(tab, connectionListener);

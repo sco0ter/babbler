@@ -113,7 +113,7 @@ public final class ExternalComponent extends XmppSession {
             // Check if the server returned a stream error, e.g. conflict.
             throwAsXmppExceptionIfNotNull(exception);
 
-            connectedResource = Jid.valueOf(getDomain());
+            connectedResource = getDomain();
             updateStatus(Status.CONNECTED);
 
             login(sharedSecret);
@@ -182,7 +182,7 @@ public final class ExternalComponent extends XmppSession {
         }
     }
 
-    private void onStreamOpened(String domain) {
+    private void onStreamOpened(Jid domain) {
         setXmppServiceDomain(domain);
         streamHeaderReceived = true;
         lock.lock();

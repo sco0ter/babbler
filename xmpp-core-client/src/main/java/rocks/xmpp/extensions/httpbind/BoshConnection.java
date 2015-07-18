@@ -158,7 +158,7 @@ public final class BoshConnection extends Connection {
      */
     private URL url;
 
-    private Consumer<String> onStreamOpened;
+    private Consumer<Jid> onStreamOpened;
 
     BoshConnection(XmppSession xmppSession, BoshConnectionConfiguration configuration) {
         super(xmppSession, configuration);
@@ -282,7 +282,7 @@ public final class BoshConnection extends Connection {
      * @throws IOException If a connection could not be established.
      */
     @Override
-    public final synchronized void connect(Jid from, String namespace, Consumer<String> onStreamOpened) throws IOException {
+    public final synchronized void connect(Jid from, String namespace, Consumer<Jid> onStreamOpened) throws IOException {
 
         if (sessionId != null) {
             // Already connected.
@@ -302,13 +302,13 @@ public final class BoshConnection extends Connection {
                 url = new URL(protocol, getHostname(), targetPort, boshConnectionConfiguration.getFile());
             } else if (getXmppSession().getDomain() != null) {
                 // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
-                String resolvedUrl = findBoshUrl(getXmppSession().getDomain(), boshConnectionConfiguration.getConnectTimeout());
+                String resolvedUrl = findBoshUrl(getXmppSession().getDomain().toString(), boshConnectionConfiguration.getConnectTimeout());
                 if (resolvedUrl != null) {
                     url = new URL(resolvedUrl);
                 } else {
                     // Fallback mechanism:
                     // If the URL could not be resolved, use the domain name and port 5280 as default.
-                    url = new URL(protocol, getXmppSession().getDomain(), targetPort, boshConnectionConfiguration.getFile());
+                    url = new URL(protocol, getXmppSession().getDomain().toString(), targetPort, boshConnectionConfiguration.getFile());
                 }
                 this.port = url.getPort() > 0 ? url.getPort() : url.getDefaultPort();
                 this.hostname = url.getHost();
@@ -348,8 +348,8 @@ public final class BoshConnection extends Connection {
             }
         }
 
-        if (getXmppSession().getDomain() != null && !getXmppSession().getDomain().isEmpty()) {
-            body.to(getXmppSession().getDomain());
+        if (getXmppSession().getDomain() != null) {
+            body.to(getXmppSession().getDomain().toString());
         }
 
         // Try if we can connect in order to fail fast if we can't.
@@ -412,7 +412,7 @@ public final class BoshConnection extends Connection {
                     }
                 }
                 if (responseBody.getFrom() != null) {
-                    onStreamOpened.accept(responseBody.getFrom().getDomain());
+                    onStreamOpened.accept(responseBody.getFrom());
                 }
             }
         }
@@ -457,7 +457,7 @@ public final class BoshConnection extends Connection {
         synchronized (this) {
             bodyBuilder = Body.builder()
                     .restart(true)
-                    .to(getXmppSession().getDomain())
+                    .to(getXmppSession().getDomain().toString())
                     .language(Locale.getDefault().getLanguage())
                     .sessionId(getSessionId())
                     .from(from)

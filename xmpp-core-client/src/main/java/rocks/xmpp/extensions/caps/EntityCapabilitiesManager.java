@@ -210,7 +210,7 @@ public final class EntityCapabilitiesManager extends Manager {
                     EntityCapabilities serverCapabilities = (EntityCapabilities) xmppSession.getManager(StreamFeaturesManager.class).getFeatures().get(EntityCapabilities.class);
                     // If yes, treat it as other caps.
                     if (serverCapabilities != null) {
-                        handleEntityCaps(serverCapabilities, Jid.valueOf(xmppSession.getDomain()));
+                        handleEntityCaps(serverCapabilities, xmppSession.getDomain());
                     }
                     break;
                 case CLOSING:

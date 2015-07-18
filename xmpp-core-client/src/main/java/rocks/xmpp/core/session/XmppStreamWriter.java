@@ -149,8 +149,8 @@ final class XmppStreamWriter {
                     xmlStreamWriter.writeStartDocument("UTF-8", "1.0");
                     xmlStreamWriter.writeStartElement("stream", "stream", StreamFeatures.NAMESPACE);
                     xmlStreamWriter.writeAttribute(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI, "lang", Locale.getDefault().getLanguage());
-                    if (xmppSession.getDomain() != null && !xmppSession.getDomain().isEmpty()) {
-                        xmlStreamWriter.writeAttribute("to", xmppSession.getDomain());
+                    if (xmppSession.getDomain() != null) {
+                        xmlStreamWriter.writeAttribute("to", xmppSession.getDomain().toString());
                     }
                     if (from != null) {
                         xmlStreamWriter.writeAttribute("from", from.toEscapedString());

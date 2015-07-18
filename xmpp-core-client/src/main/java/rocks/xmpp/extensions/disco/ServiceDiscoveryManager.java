@@ -436,7 +436,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
      */
     public final Collection<Item> discoverServices(String feature) throws XmppException {
-        ItemNode itemDiscovery = discoverItems(Jid.valueOf(xmppSession.getDomain()));
+        ItemNode itemDiscovery = discoverItems(xmppSession.getDomain());
         Collection<Item> services = new ArrayList<>();
         XmppException exception = null;
         for (Item item : itemDiscovery.getItems()) {

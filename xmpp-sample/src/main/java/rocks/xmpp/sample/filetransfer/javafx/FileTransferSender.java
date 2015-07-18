@@ -119,7 +119,7 @@ public class FileTransferSender extends Application {
                     protected Void call() throws Exception {
                         FileTransferManager fileTransferManager = xmppSession.get().getManager(FileTransferManager.class);
                         updateMessage("Offering file... waiting for acceptance");
-                        FileTransfer fileTransfer = fileTransferManager.offerFile(file, "Hello", new Jid("222", xmppSession.get().getDomain(), "filetransfer"), 10000);
+                        FileTransfer fileTransfer = fileTransferManager.offerFile(file, "Hello", new Jid("222", xmppSession.get().getDomain().toString(), "filetransfer"), 10000);
                         fileTransfer.addFileTransferStatusListener(e -> {
                             System.out.println(e);
                             try {

@@ -60,7 +60,7 @@ public final class RegistrationManager extends Manager {
         // Since the stream feature is only optional, discover the server features, too.
         if (!isSupported) {
             ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-            InfoNode infoNode = serviceDiscoveryManager.discoverInformation(Jid.valueOf(xmppSession.getDomain()));
+            InfoNode infoNode = serviceDiscoveryManager.discoverInformation(xmppSession.getDomain());
             isSupported = infoNode.getFeatures().contains(Registration.NAMESPACE);
         }
         return isSupported;

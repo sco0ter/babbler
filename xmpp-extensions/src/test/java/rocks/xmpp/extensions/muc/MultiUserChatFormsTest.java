@@ -144,7 +144,7 @@ public class MultiUserChatFormsTest extends XmlTest {
         Assert.assertTrue(roomConfiguration1.isInvitesAllowed());
         Assert.assertTrue(roomConfiguration1.isChangeSubjectAllowed());
         Assert.assertTrue(roomConfiguration1.isLoggingEnabled());
-        Assert.assertEquals(roomConfiguration1.getRolesThatMayRetrieveMemberList(), Collections.singletonList(Role.PARTICIPANT));
+        Assert.assertEquals(roomConfiguration1.getRolesThatMayRetrieveMemberList(), Collections.singleton(Role.PARTICIPANT));
         Assert.assertEquals(roomConfiguration1.getLanguage(), "en");
         Assert.assertEquals(roomConfiguration1.getPubSubNode(), URI.create("xmpp:pubsub.shakespeare.lit?;node=princely_musings"));
         Assert.assertEquals(roomConfiguration1.getMaxUsers(), Integer.valueOf(30));
@@ -159,7 +159,7 @@ public class MultiUserChatFormsTest extends XmlTest {
         Assert.assertEquals(roomConfiguration1.getName(), "name");
         Assert.assertEquals(roomConfiguration1.getOwners(), Arrays.asList(Jid.valueOf("owner1"), Jid.valueOf("owner2")));
         Assert.assertEquals(roomConfiguration1.getPassword(), "pass");
-        Assert.assertEquals(roomConfiguration1.getRolesThatMayDiscoverRealJids(), Collections.singletonList(Role.MODERATOR));
+        Assert.assertEquals(roomConfiguration1.getRolesThatMayDiscoverRealJids(), Collections.singleton(Role.MODERATOR));
     }
 
     @Test

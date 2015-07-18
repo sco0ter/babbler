@@ -322,7 +322,7 @@ public class PresenceTest extends XmlTest {
 
     @Test
     public void testWithFrom() throws JAXBException, XMLStreamException {
-        Presence presence = new Presence(new Jid("to", "domain"), Presence.Type.SUBSCRIBE, Presence.Show.AWAY, Collections.singletonList(new Text("status")), null, "id", null, null, Collections.singletonList(new Roster()), null);
+        Presence presence = new Presence(new Jid("to", "domain"), Presence.Type.SUBSCRIBE, Presence.Show.AWAY, Collections.singleton(new Text("status")), null, "id", null, null, Collections.singleton(new Roster()), null);
         Presence withFrom = presence.withFrom(Jid.valueOf("from"));
         Assert.assertEquals(withFrom.getType(), Presence.Type.SUBSCRIBE);
         Assert.assertEquals(withFrom.getId(), "id");

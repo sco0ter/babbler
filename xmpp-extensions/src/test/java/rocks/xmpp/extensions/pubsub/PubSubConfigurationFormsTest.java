@@ -63,14 +63,14 @@ public class PubSubConfigurationFormsTest extends XmlTest {
     public void testMetaData() throws JAXBException, XMLStreamException {
         Instant now = Instant.now();
         NodeMetaData pubSubMetaDataForm = NodeMetaData.builder()
-                .contacts(Collections.singletonList(Jid.valueOf("contact")))
+                .contacts(Collections.singleton(Jid.valueOf("contact")))
                 .creationDate(now)
                 .creator(Jid.valueOf("creator"))
                 .description("desc")
                 .language("de")
                 .numberOfSubscribers(2)
-                .owners(Collections.singletonList(Jid.valueOf("owner")))
-                .publishers(Collections.singletonList(Jid.valueOf("publisher")))
+                .owners(Collections.singleton(Jid.valueOf("owner")))
+                .publishers(Collections.singleton(Jid.valueOf("publisher")))
                 .nodeTitle("title")
                 .payloadType("namespace")
                 .build();
@@ -96,8 +96,8 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertEquals(pubSubMetaDataForm1.getDescription(), "desc");
         Assert.assertEquals(pubSubMetaDataForm1.getLanguage(), "de");
         Assert.assertEquals(pubSubMetaDataForm1.getNumberOfSubscribers(), new Integer(2));
-        Assert.assertEquals(pubSubMetaDataForm1.getOwners(), Collections.singletonList(Jid.valueOf("owner")));
-        Assert.assertEquals(pubSubMetaDataForm1.getPublishers(), Collections.singletonList(Jid.valueOf("publisher")));
+        Assert.assertEquals(pubSubMetaDataForm1.getOwners(), Collections.singleton(Jid.valueOf("owner")));
+        Assert.assertEquals(pubSubMetaDataForm1.getPublishers(), Collections.singleton(Jid.valueOf("publisher")));
         Assert.assertEquals(pubSubMetaDataForm1.getNodeTitle(), "title");
         Assert.assertEquals(pubSubMetaDataForm1.getPayloadType(), "namespace");
     }
@@ -107,7 +107,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         PublishOptions publishOptions = PublishOptions.builder()
                 .accessModel(AccessModel.AUTHORIZE)
                 .persistItems(true)
-                .rosterGroupsAllowed(Collections.singletonList("Friends"))
+                .rosterGroupsAllowed(Collections.singleton("Friends"))
                 .sendLastPublishedItem(SendLastPublishedItem.ON_SUB)
                 .build();
 
@@ -124,7 +124,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertEquals(publishOptionsForm.getAccessModel(), AccessModel.AUTHORIZE);
         Assert.assertTrue(publishOptionsForm.isPersistItems());
         Assert.assertEquals(publishOptionsForm.getSendLastPublishedItem(), SendLastPublishedItem.ON_SUB);
-        Assert.assertEquals(publishOptionsForm.getRosterGroupsAllowed(), Collections.singletonList("Friends"));
+        Assert.assertEquals(publishOptionsForm.getRosterGroupsAllowed(), Collections.singleton("Friends"));
     }
 
     @Test
@@ -133,11 +133,11 @@ public class PubSubConfigurationFormsTest extends XmlTest {
                 .accessModel(AccessModel.AUTHORIZE)
                 .bodyXslt(new URL("http://xmpp.org"))
                 .childrenAssociationPolicy(ChildrenAssociationPolicy.OWNERS)
-                .childrenAssociationWhitelist(Collections.singletonList(Jid.valueOf("domain")))
-                .children(Collections.singletonList("collection1"))
+                .childrenAssociationWhitelist(Collections.singleton(Jid.valueOf("domain")))
+                .children(Collections.singleton("collection1"))
                 .childrenMax(23)
-                .collection(Collections.singletonList("collections"))
-                .contacts(Collections.singletonList(Jid.valueOf("contact")))
+                .collection(Collections.singleton("collections"))
+                .contacts(Collections.singleton(Jid.valueOf("contact")))
                 .dataformXslt(new URL("http://www.xmpp.org"))
                 .deliverNotifications(true)
                 .deliverPayloads(false)
@@ -208,10 +208,10 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertEquals(nodeConfiguration1.getAccessModel(), AccessModel.AUTHORIZE);
         Assert.assertEquals(nodeConfiguration1.getBodyXslt(), new URL("http://xmpp.org"));
         Assert.assertEquals(nodeConfiguration1.getChildrenAssociationPolicy(), ChildrenAssociationPolicy.OWNERS);
-        Assert.assertEquals(nodeConfiguration1.getChildrenAssociationWhitelist(), Collections.singletonList(Jid.valueOf("domain")));
-        Assert.assertEquals(nodeConfiguration1.getChildren(), Collections.singletonList("collection1"));
+        Assert.assertEquals(nodeConfiguration1.getChildrenAssociationWhitelist(), Collections.singleton(Jid.valueOf("domain")));
+        Assert.assertEquals(nodeConfiguration1.getChildren(), Collections.singleton("collection1"));
         Assert.assertEquals(nodeConfiguration1.getChildrenMax(), Integer.valueOf(23));
-        Assert.assertEquals(nodeConfiguration1.getContacts(), Collections.singletonList(Jid.valueOf("contact")));
+        Assert.assertEquals(nodeConfiguration1.getContacts(), Collections.singleton(Jid.valueOf("contact")));
         Assert.assertEquals(nodeConfiguration1.getDataformXslt(), new URL("http://www.xmpp.org"));
         Assert.assertTrue(nodeConfiguration1.isDeliverNotifications());
         Assert.assertFalse(nodeConfiguration1.isDeliverPayloads());

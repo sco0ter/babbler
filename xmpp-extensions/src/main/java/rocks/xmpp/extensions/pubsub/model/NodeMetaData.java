@@ -45,14 +45,14 @@ import java.util.List;
  * <pre>
  * {@code
  * NodeMetaData nodeMetaData = NodeMetaData.builder()
- *     .contacts(Arrays.asList(Jid.valueOf("contact")))
+ *     .contacts(Collections.singleton(Jid.valueOf("contact")))
  *     .creationDate(date)
  *     .creator(Jid.valueOf("creator"))
  *     .description("desc")
  *     .language("de")
  *     .numberOfSubscribers(2)
- *     .owners(Arrays.asList(Jid.valueOf("owner")))
- *     .publishers(Arrays.asList(Jid.valueOf("publisher")))
+ *     .owners(Collections.singleton(Jid.valueOf("owner")))
+ *     .publishers(Collections.singleton(Jid.valueOf("publisher")))
  *     .title("title")
  *     .payloadType("namespace")
  *     .build();

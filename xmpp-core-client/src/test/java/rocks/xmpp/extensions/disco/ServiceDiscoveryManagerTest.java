@@ -103,7 +103,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(Collections.singletonList(new Item(Jid.valueOf("test"), "root", "name"))));
+        serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(Collections.singleton(new Item(Jid.valueOf("test"), "root", "name"))));
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getManager(ServiceDiscoveryManager.class);
         ItemNode result = serviceDiscoveryManager2.discoverItems(ROMEO);
@@ -120,7 +120,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
 
-        DefaultItemProvider defaultItemProvider = new DefaultItemProvider(Collections.singletonList(new Item(Jid.valueOf("test"), "node1")));
+        DefaultItemProvider defaultItemProvider = new DefaultItemProvider(Collections.singleton(new Item(Jid.valueOf("test"), "node1")));
         serviceDiscoveryManager.setItemProvider("node1", defaultItemProvider);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager2 = connection2.getManager(ServiceDiscoveryManager.class);

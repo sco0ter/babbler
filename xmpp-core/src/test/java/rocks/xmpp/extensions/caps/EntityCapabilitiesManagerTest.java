@@ -98,7 +98,7 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
         DataForm dataForm1 = new DataForm(DataForm.Type.FORM, Arrays.asList(DataForm.Field.builder().var("ccc").type(DataForm.Field.Type.BOOLEAN).build(),
                 DataForm.Field.builder().var("FORM_TYPE").value("aaa").type(DataForm.Field.Type.HIDDEN).build()));
 
-        DataForm dataForm2 = new DataForm(DataForm.Type.FORM, Collections.singletonList(DataForm.Field.builder().var("bbb").type(DataForm.Field.Type.BOOLEAN).build()));
+        DataForm dataForm2 = new DataForm(DataForm.Type.FORM, Collections.singleton(DataForm.Field.builder().var("bbb").type(DataForm.Field.Type.BOOLEAN).build()));
 
         DataForm dataForm3 = new DataForm(DataForm.Type.FORM, Arrays.asList(DataForm.Field.builder().var("FORM_TYPE").value("bbb").type(DataForm.Field.Type.HIDDEN).build(),
                 DataForm.Field.builder().var("aaa").type(DataForm.Field.Type.BOOLEAN).build()));
@@ -189,7 +189,7 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
                 DataForm.Field.builder().var("software_version").value("0.11").type(DataForm.Field.Type.TEXT_SINGLE).build()
 
         ));
-        InfoDiscovery infoDiscovery = new InfoDiscovery(identities, features, Collections.singletonList(dataForm));
+        InfoDiscovery infoDiscovery = new InfoDiscovery(identities, features, Collections.singleton(dataForm));
         String verificationString = EntityCapabilities.getVerificationString(infoDiscovery, MessageDigest.getInstance("sha-1"));
         Assert.assertEquals(verificationString, "dsMdhhH+tbCICmoptvSp3x+DafI=");
     }
@@ -208,7 +208,7 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
         DataForm dataForm1 = new DataForm(DataForm.Type.FORM, Arrays.asList(DataForm.Field.builder().var("ccc").build(),
                 DataForm.Field.builder().var("FORM_TYPE").type(DataForm.Field.Type.HIDDEN).build()));
 
-        DataForm dataForm2 = new DataForm(DataForm.Type.FORM, Collections.singletonList(
+        DataForm dataForm2 = new DataForm(DataForm.Type.FORM, Collections.singleton(
                 DataForm.Field.builder().var("bbb").type(DataForm.Field.Type.BOOLEAN).build()
         ));
 

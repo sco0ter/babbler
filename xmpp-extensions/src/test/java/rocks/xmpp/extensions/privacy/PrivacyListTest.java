@@ -230,7 +230,7 @@ public class PrivacyListTest extends XmlTest {
 
     @Test
     public void marshalPrivacyRule() throws XMLStreamException, JAXBException {
-        PrivacyList privacyList = new PrivacyList("test", Collections.singletonList(new PrivacyRule(PrivacyRule.Action.ALLOW, 0, Contact.Subscription.BOTH)));
+        PrivacyList privacyList = new PrivacyList("test", Collections.singleton(new PrivacyRule(PrivacyRule.Action.ALLOW, 0, Contact.Subscription.BOTH)));
         String xml = marshal(new Privacy(privacyList));
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"test\"><item type=\"subscription\" value=\"both\" action=\"allow\" order=\"0\"></item></list></query>");
     }
@@ -272,28 +272,28 @@ public class PrivacyListTest extends XmlTest {
 
     @Test
     public void marshalWithMessageFilter() throws XMLStreamException, JAXBException {
-        PrivacyList privacyList = new PrivacyList("message", Collections.singletonList(new PrivacyRule(PrivacyRule.Action.ALLOW, 1).filterMessage()));
+        PrivacyList privacyList = new PrivacyList("message", Collections.singleton(new PrivacyRule(PrivacyRule.Action.ALLOW, 1).filterMessage()));
         String xml = marshal(new Privacy(privacyList));
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"message\"><item action=\"allow\" order=\"1\"><message></message></item></list></query>");
     }
 
     @Test
     public void marshalWithIQFilter() throws XMLStreamException, JAXBException {
-        PrivacyList privacyList = new PrivacyList("iq", Collections.singletonList(new PrivacyRule(PrivacyRule.Action.ALLOW, 1).filterIQ()));
+        PrivacyList privacyList = new PrivacyList("iq", Collections.singleton(new PrivacyRule(PrivacyRule.Action.ALLOW, 1).filterIQ()));
         String xml = marshal(new Privacy(privacyList));
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"iq\"><item action=\"allow\" order=\"1\"><iq></iq></item></list></query>");
     }
 
     @Test
     public void marshalWithPresenceInFilter() throws XMLStreamException, JAXBException {
-        PrivacyList privacyList = new PrivacyList("presence-in", Collections.singletonList(new PrivacyRule(PrivacyRule.Action.ALLOW, 1).filterPresenceIn()));
+        PrivacyList privacyList = new PrivacyList("presence-in", Collections.singleton(new PrivacyRule(PrivacyRule.Action.ALLOW, 1).filterPresenceIn()));
         String xml = marshal(new Privacy(privacyList));
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"presence-in\"><item action=\"allow\" order=\"1\"><presence-in></presence-in></item></list></query>");
     }
 
     @Test
     public void marshalWithPresenceOutFilter() throws XMLStreamException, JAXBException {
-        PrivacyList privacyList = new PrivacyList("presence-out", Collections.singletonList(new PrivacyRule(PrivacyRule.Action.ALLOW, 1).filterPresenceOut().filterMessage()));
+        PrivacyList privacyList = new PrivacyList("presence-out", Collections.singleton(new PrivacyRule(PrivacyRule.Action.ALLOW, 1).filterPresenceOut().filterMessage()));
         String xml = marshal(new Privacy(privacyList));
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"presence-out\"><item action=\"allow\" order=\"1\"><message></message><presence-out></presence-out></item></list></query>");
     }

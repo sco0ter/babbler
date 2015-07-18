@@ -234,7 +234,7 @@ public class MessageTest extends XmlTest {
 
     @Test
     public void testWithFrom() throws JAXBException, XMLStreamException {
-        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT, "body", "subject", "thread", null, "id", null, null, Collections.singletonList(new Roster()), null);
+        Message message = new Message(new Jid("to", "domain"), Message.Type.CHAT, "body", "subject", "thread", null, "id", null, null, Collections.singleton(new Roster()), null);
         Message withFrom = message.withFrom(Jid.valueOf("from"));
         Assert.assertEquals(withFrom.getType(), Message.Type.CHAT);
         Assert.assertEquals(withFrom.getId(), "id");

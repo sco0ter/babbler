@@ -155,7 +155,7 @@ public class RosterManagerTest extends BaseTest {
         Roster roster1 = new Roster(new Contact(Jid.valueOf("contact1@domain"), "contact1", "group1"),
                 new Contact(Jid.valueOf("contact2@domain"), "contact2", "group2"),
                 new Contact(Jid.valueOf("contact3@domain"), "contact3", true, null, Contact.Subscription.FROM, Collections.emptyList()),
-                new Contact(Jid.valueOf("contact4@domain"), "contact4", true, null, Contact.Subscription.FROM, Collections.singletonList("group2")));
+                new Contact(Jid.valueOf("contact4@domain"), "contact4", true, null, Contact.Subscription.FROM, Collections.singleton("group2")));
         rosterManager.updateRoster(roster1, false);
 
         Assert.assertEquals(rosterManager.getUnaffiliatedContacts().size(), 1);
@@ -172,7 +172,7 @@ public class RosterManagerTest extends BaseTest {
 
         Assert.assertEquals(rosterManager.getContactGroups().size(), 2);
 
-        Roster roster3 = new Roster(new Contact(Jid.valueOf("contact2@domain"), "contact2", true, null, Contact.Subscription.TO, Collections.singletonList("group1")));
+        Roster roster3 = new Roster(new Contact(Jid.valueOf("contact2@domain"), "contact2", true, null, Contact.Subscription.TO, Collections.singleton("group1")));
         rosterManager.updateRoster(roster3, true);
 
         groups = new ArrayList<>(rosterManager.getContactGroups());

@@ -69,8 +69,8 @@ public class ReachabilityTest extends XmlTest {
     @Test
     public void testReachabilityEquality() {
 
-        Reachability reachability1 = new Reachability(Collections.singletonList(new Address(URI.create("sip:room123@example.com"), new Address.Description("In-room video system", "en"))));
-        Reachability reachability2 = new Reachability(Collections.singletonList(new Address(URI.create("sip:room123@example.com"), new Address.Description("In-room video system", "en"))));
+        Reachability reachability1 = new Reachability(Collections.singleton(new Address(URI.create("sip:room123@example.com"), new Address.Description("In-room video system", "en"))));
+        Reachability reachability2 = new Reachability(Collections.singleton(new Address(URI.create("sip:room123@example.com"), new Address.Description("In-room video system", "en"))));
 
         Assert.assertEquals(reachability1, reachability2);
     }

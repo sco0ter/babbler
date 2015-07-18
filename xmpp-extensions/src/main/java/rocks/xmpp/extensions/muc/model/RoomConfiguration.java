@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
  *     .invitesAllowed(true)
  *     .changeSubjectAllowed(true)
  *     .loggingEnabled(true)
- *     .rolesThatMayRetrieveMemberList(Arrays.asList(Role.PARTICIPANT))
+ *     .rolesThatMayRetrieveMemberList(Collections.singleton(Role.PARTICIPANT))
  *     .language("en")
  *     .pubSubNode(URI.create("xmpp:pubsub.shakespeare.lit?;node=princely_musings"))
  *     .maxUsers(30)

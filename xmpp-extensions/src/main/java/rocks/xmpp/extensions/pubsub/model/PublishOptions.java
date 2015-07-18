@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.pubsub.model;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -44,7 +45,7 @@ import java.util.List;
  * PublishOptions publishOptions = PublishOptions.builder()
  *     .accessModel(AccessModel.AUTHORIZE)
  *     .persistItems(true)
- *     .rosterGroupsAllowed(Arrays.asList("Friends"))
+ *     .rosterGroupsAllowed(Collections.singleton("Friends"))
  *     .sendLastPublishedItem(SendLastPublishedItem.ON_SUB)
  *     .build();
  * }
@@ -61,6 +62,7 @@ import java.util.List;
  * PublishOptions publishOptions = PublishOptions.forStorageOfPrivateData();
  * }
  * </pre>
+ *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#registrar-formtypes-publish">16.4.5 pubsub#publish-options FORM_TYPE</a>
  * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish-options">7.1.5 Publishing Options</a>
@@ -179,7 +181,7 @@ public final class PublishOptions {
 
         private SendLastPublishedItem sendLastPublishedItem;
 
-        private List<String> rosterGroupsAllowed;
+        private Collection<String> rosterGroupsAllowed;
 
         public final Builder accessModel(AccessModel accessModel) {
             this.accessModel = accessModel;
@@ -196,7 +198,7 @@ public final class PublishOptions {
             return this;
         }
 
-        public final Builder rosterGroupsAllowed(List<String> rosterGroupsAllowed) {
+        public final Builder rosterGroupsAllowed(Collection<String> rosterGroupsAllowed) {
             this.rosterGroupsAllowed = rosterGroupsAllowed;
             return this;
         }

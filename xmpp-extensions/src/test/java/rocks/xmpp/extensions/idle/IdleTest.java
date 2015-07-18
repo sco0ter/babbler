@@ -62,7 +62,7 @@ public class IdleTest extends XmlTest {
     @Test
     public void marshalIdle() throws JAXBException, XMLStreamException {
         OffsetDateTime now = OffsetDateTime.now();
-        Idle idle = new Idle(now);
+        Idle idle = Idle.since(now);
         String xml = marshal(idle);
         Assert.assertNotNull(idle);
         Assert.assertEquals(xml, "<idle xmlns=\"urn:xmpp:idle:1\" since=\"" + now.toString() + "\"></idle>");
@@ -78,7 +78,7 @@ public class IdleTest extends XmlTest {
                 "     stamp='2002-09-10T23:41:07Z'/>\n" +
                 "</presence>\n";
         Presence presence = unmarshal(xml, Presence.class);
-        Instant instant = Idle.idleSince(presence);
+        Instant instant = Idle.timeFromPresence(presence);
         Assert.assertEquals(instant, Instant.parse("2002-09-10T23:31:07Z"));
     }
 
@@ -89,7 +89,7 @@ public class IdleTest extends XmlTest {
                 "  <idle xmlns='urn:xmpp:idle:1' since='1969-07-21T02:56:15Z'/>\n" +
                 "</presence>\n";
         Presence presence = unmarshal(xml, Presence.class);
-        Instant instant = Idle.idleSince(presence);
+        Instant instant = Idle.timeFromPresence(presence);
         Assert.assertEquals(instant, Instant.parse("1969-07-21T02:56:15Z"));
     }
 }

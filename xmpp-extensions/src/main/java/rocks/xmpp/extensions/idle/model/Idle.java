@@ -35,12 +35,19 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.EnumSet;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <idle/>} element in the {@code urn:xmpp:idle:1} namespace.
  * <p>
- * It also provides a {@linkplain #idleSince(Presence) convenient method}, which gets the idle time from a presence with respect to the superseded <a href="http://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
+ * It also provides a {@linkplain #timeFromPresence(Presence) convenient method}, which gets the idle time from a presence with respect to <a href="http://xmpp.org/extensions/xep-0319.html">XEP-0319: Last User Interaction in Presence</a> and the superseded <a href="http://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
  * <p>
+ * <h3>Usage</h3>
+ * <pre>
+ * {@code
+ * presence.addExtension(Idle.since(OffsetDateTime.ofInstant(idleSince, ZoneOffset.UTC)));
+ * }
+ * </pre>
  * This class is immutable.
  *
  * @author Christian Schudt
@@ -65,8 +72,18 @@ public final class Idle {
     /**
      * @param since The date/time since the entity is idle.
      */
-    public Idle(OffsetDateTime since) {
+    private Idle(OffsetDateTime since) {
         this.since = since;
+    }
+
+    /**
+     * Creates an idle element with the date since when the user is idle.
+     *
+     * @param since The date.
+     * @return The idle element.
+     */
+    public static Idle since(OffsetDateTime since) {
+        return new Idle(Objects.requireNonNull(since));
     }
 
     /**
@@ -79,7 +96,7 @@ public final class Idle {
      * @param presence The presence.
      * @return The idle time or null if the presence contains no idle information.
      */
-    public static Instant idleSince(Presence presence) {
+    public static Instant timeFromPresence(Presence presence) {
         // Check XEP-0319: Last User Interaction in Presence
         Idle idle = presence.getExtension(Idle.class);
         if (idle != null) {

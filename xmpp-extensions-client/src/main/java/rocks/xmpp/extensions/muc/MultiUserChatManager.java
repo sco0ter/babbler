@@ -32,9 +32,9 @@ import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.disco.DefaultItemProvider;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
-import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.extensions.muc.model.user.Invite;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
@@ -134,7 +134,7 @@ public final class MultiUserChatManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-service">6.1 Discovering a MUC Service</a>
      */
     public Collection<ChatService> discoverChatServices() throws XmppException {
-        Collection<Item> services = serviceDiscoveryManager.discoverServices(Muc.NAMESPACE);
+        Collection<Item> services = serviceDiscoveryManager.discoverServices(Identity.conferenceText());
         return services.stream().map(service -> new ChatService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager, this)).collect(Collectors.toList());
     }
 

@@ -6,14 +6,12 @@ import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.items.Item;
-import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.langtrans.model.LanguageTranslation;
 import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -36,24 +34,15 @@ public final class LanguageTranslationManager extends Manager {
     }
 
     /**
-     * Discovers the language provider on a server.
+     * Discovers the language provider on the connected server.
      *
-     * @param server The server address.
      * @return The list of translation providers.
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0171.html#disco">4.2 Discovering Translation Providers</a>
      */
-    public List<Item> discoverTranslationProviders(Jid server) throws XmppException {
-        ItemNode itemNode = serviceDiscoveryManager.discoverItems(server);
-        List<Item> items = new ArrayList<>();
-        for (Item item : itemNode.getItems()) {
-            InfoNode infoNode = serviceDiscoveryManager.discoverInformation(item.getJid());
-            if (infoNode.getFeatures().contains(LanguageTranslation.NAMESPACE)) {
-                items.add(item);
-            }
-        }
-        return items;
+    public Collection<Item> discoverTranslationProviders() throws XmppException {
+        return serviceDiscoveryManager.discoverServices(Identity.automationTranslation());
     }
 
     /**

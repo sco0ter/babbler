@@ -35,6 +35,7 @@ import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.bytestreams.s5b.model.StreamHost;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.util.XmppUtils;
 
@@ -186,7 +187,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      * @see <a href="http://xmpp.org/extensions/xep-0065.html#disco">4. Discovering Proxies</a>
      */
     public List<StreamHost> discoverProxies() throws XmppException {
-        Collection<Item> services = serviceDiscoveryManager.discoverServices(Socks5ByteStream.NAMESPACE);
+        Collection<Item> services = serviceDiscoveryManager.discoverServices(Identity.proxyByteStreams());
         for (Item service : services) {
             IQ result = xmppSession.query(IQ.get(service.getJid(), new Socks5ByteStream()));
             Socks5ByteStream socks5ByteStream = result.getExtension(Socks5ByteStream.class);

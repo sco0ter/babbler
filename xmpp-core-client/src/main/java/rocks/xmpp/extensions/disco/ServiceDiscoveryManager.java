@@ -58,6 +58,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Manages <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>.
@@ -428,6 +429,29 @@ public final class ServiceDiscoveryManager extends Manager {
     }
 
     /**
+     * Discovers a service on the connected server by its identity.
+     * <p>
+     * E.g. to discover MUC services you could call this method with {@link Identity#conferenceText()};
+     * <p>
+     * This method is generally preferred over {@link #discoverServices(String)}.
+     *
+     * @param identity The identity.
+     * @return The services, that belong to the namespace.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
+     */
+    public final Collection<Item> discoverServices(Identity identity) throws XmppException {
+        return discoverServices(infoNode -> {
+            for (Identity id : infoNode.getIdentities()) {
+                if (id.getCategory().equals(identity.getCategory()) && id.getType().equals(identity.getType())) {
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+
+    /**
      * Discovers a service on the connected server by its feature namespace.
      *
      * @param feature The feature namespace.
@@ -436,13 +460,17 @@ public final class ServiceDiscoveryManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
      */
     public final Collection<Item> discoverServices(String feature) throws XmppException {
+        return discoverServices(infoNode -> infoNode.getFeatures().contains(feature));
+    }
+
+    private Collection<Item> discoverServices(Predicate<InfoNode> predicate) throws XmppException {
         ItemNode itemDiscovery = discoverItems(xmppSession.getDomain());
         Collection<Item> services = new ArrayList<>();
         XmppException exception = null;
         for (Item item : itemDiscovery.getItems()) {
             try {
                 InfoNode infoDiscovery = discoverInformation(item.getJid());
-                if (infoDiscovery.getFeatures().contains(feature)) {
+                if (predicate.test(infoDiscovery)) {
                     services.add(item);
                 }
             } catch (XmppException e) {

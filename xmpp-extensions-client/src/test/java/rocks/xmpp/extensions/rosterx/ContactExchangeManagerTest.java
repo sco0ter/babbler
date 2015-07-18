@@ -49,9 +49,8 @@ public class ContactExchangeManagerTest extends ExtensionTest {
     public void prepareRoster() throws Exception {
         Roster roster = new Roster(new Contact(Jid.valueOf("juliet@example.net"), "juliet", "friends", "friends2"),
                 new Contact(Jid.valueOf("romeo@example.net"), "romeo", "friends"));
-        IQ iq = new IQ(IQ.Type.SET, roster);
         // Simulate a roster push in order to fill the roster.
-        xmppSession.handleElement(iq);
+        xmppSession.handleElement(IQ.set(roster));
     }
 
     @Test

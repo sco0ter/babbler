@@ -154,7 +154,7 @@ public final class BlockingManager extends Manager {
      */
     public final Collection<Jid> getBlockedContacts() throws XmppException {
         synchronized (blockedContacts) {
-            IQ result = xmppSession.query(new IQ(IQ.Type.GET, new BlockList()));
+            IQ result = xmppSession.query(IQ.get(new BlockList()));
             BlockList blockList = result.getExtension(BlockList.class);
             if (blockList != null) {
                 blockedContacts.addAll(blockList.getItems().stream().collect(Collectors.toList()));
@@ -174,7 +174,7 @@ public final class BlockingManager extends Manager {
     public final void blockContact(Jid... jids) throws XmppException {
         Collection<Jid> items = new ArrayDeque<>();
         Collections.addAll(items, jids);
-        xmppSession.query(new IQ(IQ.Type.SET, new Block(items)));
+        xmppSession.query(IQ.set(new Block(items)));
     }
 
     /**
@@ -189,7 +189,7 @@ public final class BlockingManager extends Manager {
     public final void unblockContact(Jid... jids) throws XmppException {
         Collection<Jid> items = new ArrayDeque<>();
         Collections.addAll(items, jids);
-        xmppSession.query(new IQ(IQ.Type.SET, new Unblock(items)));
+        xmppSession.query(IQ.set(new Unblock(items)));
     }
 
     @Override

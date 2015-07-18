@@ -215,7 +215,7 @@ public final class ContactExchangeManager extends Manager {
             // http://xmpp.org/extensions/xep-0144.html#stanza
             Presence presence = xmppSession.getManager(PresenceManager.class).getPresence(jid);
             if (presence.isAvailable()) {
-                xmppSession.query(new IQ(presence.getFrom(), IQ.Type.SET, contactExchange));
+                xmppSession.query(IQ.set(presence.getFrom(), contactExchange));
             } else {
                 // If the sending entity does not know that the receiving entity is online and available, it MUST send a <message/> stanza to the receiving entity's "bare JID" (user@host) rather than an <iq/> stanza to a particular resource.
                 Message message = new Message(jid, Message.Type.NORMAL);

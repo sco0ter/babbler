@@ -74,7 +74,7 @@ class BitsOfBinaryManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public Data getData(String contentId, Jid to) throws XmppException {
-        IQ result = xmppSession.query(new IQ(to, IQ.Type.GET, new Data(contentId)));
+        IQ result = xmppSession.query(IQ.get(to, new Data(contentId)));
         Data data = result.getExtension(Data.class);
 //        // Only cache the data, if the max-age attribute absent or not zero.
 //        if (data != null && (data.getMaxAge() != null && data.getMaxAge() != 0 || data.getMaxAge() == null)) {

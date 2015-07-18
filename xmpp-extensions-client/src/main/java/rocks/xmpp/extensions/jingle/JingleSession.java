@@ -99,7 +99,7 @@ public final class JingleSession {
         if (!createdLocally) {
             throw new UnsupportedOperationException("You are not the initiator.");
         }
-        xmppSession.query(new IQ(peer, IQ.Type.SET, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.SESSION_INITIATE, contents)));
+        xmppSession.query(IQ.set(peer, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.SESSION_INITIATE, contents)));
         state = State.PENDING;
     }
 
@@ -132,7 +132,7 @@ public final class JingleSession {
             }
         }
 
-        xmppSession.query(new IQ(peer, IQ.Type.SET, Jingle.responder(xmppSession.getConnectedResource(), sessionId, Jingle.Action.SESSION_ACCEPT, Arrays.asList(contents))));
+        xmppSession.query(IQ.set(peer, Jingle.responder(xmppSession.getConnectedResource(), sessionId, Jingle.Action.SESSION_ACCEPT, Arrays.asList(contents))));
         // The session is now in the ACTIVE state.
         state = State.ACTIVE;
     }
@@ -153,7 +153,7 @@ public final class JingleSession {
         // (even before receiving acknowledgement from the other party).
         state = State.ENDED;
         try {
-            xmppSession.query(new IQ(peer, IQ.Type.SET, new Jingle(sessionId, Jingle.Action.SESSION_TERMINATE, reason)));
+            xmppSession.query(IQ.set(peer, new Jingle(sessionId, Jingle.Action.SESSION_TERMINATE, reason)));
         } finally {
             jingleManager.removeSession(sessionId);
         }
@@ -168,17 +168,17 @@ public final class JingleSession {
      */
     public void replaceTransport(String contentName, TransportMethod transportMethod) throws XmppException {
         Jingle.Content content = new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
-        xmppSession.query(new IQ(peer, IQ.Type.SET, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REPLACE, Collections.singletonList(content))));
+        xmppSession.query(IQ.set(peer, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REPLACE, Collections.singletonList(content))));
     }
 
     public void acceptTransport(String contentName, TransportMethod transportMethod) throws XmppException {
         Jingle.Content content = new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
-        xmppSession.query(new IQ(peer, IQ.Type.SET, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_ACCEPT, Collections.singletonList(content))));
+        xmppSession.query(IQ.set(peer, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_ACCEPT, Collections.singletonList(content))));
     }
 
     public void rejectTransport(String contentName, TransportMethod transportMethod) throws XmppException {
         Jingle.Content content = new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
-        xmppSession.query(new IQ(peer, IQ.Type.SET, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REJECT, Collections.singletonList(content))));
+        xmppSession.query(IQ.set(peer, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REJECT, Collections.singletonList(content))));
     }
 
     /**
@@ -193,7 +193,7 @@ public final class JingleSession {
         if (state == State.INITIAL) {
             throw new IllegalStateException("The session has not yet been initialized.");
         }
-        xmppSession.query(new IQ(peer, IQ.Type.SET, new Jingle(sessionId, Jingle.Action.SESSION_INFO, object)));
+        xmppSession.query(IQ.set(peer, new Jingle(sessionId, Jingle.Action.SESSION_INFO, object)));
     }
 
     /**

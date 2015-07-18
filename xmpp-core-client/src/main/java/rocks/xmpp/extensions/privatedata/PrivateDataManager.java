@@ -63,7 +63,7 @@ public final class PrivateDataManager extends Manager {
             Constructor<T> constructor = type.getDeclaredConstructor();
             constructor.setAccessible(true);
             T instance = constructor.newInstance();
-            IQ result = xmppSession.query(new IQ(IQ.Type.GET, new PrivateData(instance)));
+            IQ result = xmppSession.query(IQ.get(new PrivateData(instance)));
             PrivateData privateData = result.getExtension(PrivateData.class);
             return (T) privateData.getData();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -81,6 +81,6 @@ public final class PrivateDataManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public final void storeData(Object privateData) throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, new PrivateData(privateData)));
+        xmppSession.query(IQ.set(new PrivateData(privateData)));
     }
 }

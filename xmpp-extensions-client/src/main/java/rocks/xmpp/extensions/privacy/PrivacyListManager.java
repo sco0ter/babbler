@@ -130,7 +130,7 @@ public final class PrivacyListManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
      */
     public Collection<PrivacyList> getPrivacyLists() throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new Privacy()));
+        IQ result = xmppSession.query(IQ.get(new Privacy()));
         Privacy privacy = result.getExtension(Privacy.class);
 
         List<PrivacyList> privacyLists = new ArrayList<>();
@@ -155,7 +155,7 @@ public final class PrivacyListManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
      */
     public PrivacyList getPrivacyList(String name) throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new Privacy(new PrivacyList(name))));
+        IQ result = xmppSession.query(IQ.get(new Privacy(new PrivacyList(name))));
         Privacy privacy = result.getExtension(Privacy.class);
         if (privacy != null) {
             return privacy.getPrivacyLists().get(0);
@@ -237,7 +237,7 @@ public final class PrivacyListManager extends Manager {
     }
 
     private void setPrivacy(Privacy privacy) throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, privacy));
+        xmppSession.query(IQ.set(privacy));
     }
 
     @Override

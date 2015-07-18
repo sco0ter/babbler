@@ -403,8 +403,7 @@ public final class XmppClient extends XmppSession {
         logger.log(Level.FINE, "Negotiating resource binding, resource: {0}.", resource);
 
         // Bind the resource
-        IQ iq = new IQ(IQ.Type.SET, new Bind(this.resource));
-        IQ result = query(iq);
+        IQ result = query(IQ.set(new Bind(this.resource)));
 
         Bind bindResult = result.getExtension(Bind.class);
         this.connectedResource = bindResult.getJid();
@@ -424,7 +423,7 @@ public final class XmppClient extends XmppSession {
         Session session = (Session) streamFeaturesManager.getFeatures().get(Session.class);
         if (session != null && session.isMandatory()) {
             logger.fine("Establishing session.");
-            query(new IQ(IQ.Type.SET, new Session()));
+            query(IQ.set(new Session()));
         }
     }
 

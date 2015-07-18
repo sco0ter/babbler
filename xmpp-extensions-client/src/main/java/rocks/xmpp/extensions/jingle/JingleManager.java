@@ -121,10 +121,10 @@ public final class JingleManager extends Manager {
 
                             if (!hasSupportedApplications) {
                                 // Terminate the session with <unsupported-applications/>.
-                                xmppSession.send(new IQ(iq.getFrom(), IQ.Type.SET, new Jingle(jingle.getSessionId(), Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.UnsupportedApplications()))));
+                                xmppSession.send(IQ.set(iq.getFrom(), new Jingle(jingle.getSessionId(), Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.UnsupportedApplications()))));
                             } else if (!hasSupportedTransports) {
                                 // Terminate the session with <unsupported-transports/>.
-                                xmppSession.send(new IQ(iq.getFrom(), IQ.Type.SET, new Jingle(jingle.getSessionId(), Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.UnsupportedTransports()))));
+                                xmppSession.send(IQ.set(iq.getFrom(), new Jingle(jingle.getSessionId(), Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.UnsupportedTransports()))));
                             } else {
                                 // Everything is fine, create the session and notify the listeners.
                                 JingleSession jingleSession = new JingleSession(jingle.getSessionId(), iq.getFrom(), false, xmppSession, JingleManager.this, jingle.getContents());

@@ -66,7 +66,7 @@ public final class LanguageTranslationManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0171.html#disco-lang">4.2.3 Discovering Language Support</a>
      */
     public List<LanguageSupport.Item> discoverLanguageSupport(Jid translationProvider) throws XmppException {
-        return xmppSession.query(new IQ(translationProvider, IQ.Type.GET, new LanguageSupport())).getExtension(LanguageSupport.class).getItems();
+        return xmppSession.query(IQ.get(translationProvider, new LanguageSupport())).getExtension(LanguageSupport.class).getItems();
     }
 
     /**
@@ -86,7 +86,7 @@ public final class LanguageTranslationManager extends Manager {
         for (String dl : destinationLanguage) {
             translations.add(LanguageTranslation.Translation.ofDestinationLanguage(dl));
         }
-        IQ result = xmppSession.query(new IQ(translationProvider, IQ.Type.GET, new LanguageTranslation(text, sourceLanguage, translations)));
+        IQ result = xmppSession.query(IQ.get(translationProvider, new LanguageTranslation(text, sourceLanguage, translations)));
         LanguageTranslation languageTranslation = result.getExtension(LanguageTranslation.class);
         return languageTranslation != null ? languageTranslation.getTranslations() : Collections.emptyList();
     }

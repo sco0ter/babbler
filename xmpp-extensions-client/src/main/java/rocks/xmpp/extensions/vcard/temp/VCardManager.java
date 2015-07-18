@@ -58,7 +58,7 @@ public final class VCardManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public VCard getVCard() throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new VCard()));
+        IQ result = xmppSession.query(IQ.get(new VCard()));
         return result.getExtension(VCard.class);
     }
 
@@ -71,7 +71,7 @@ public final class VCardManager extends Manager {
      */
     public void setVCard(VCard vCard) throws XmppException {
         // Update the vCard
-        xmppSession.query(new IQ(IQ.Type.SET, vCard));
+        xmppSession.query(IQ.set(vCard));
 
         // Then inform about the update by sending a presence. The avatar manager will add the update extension.
         AvatarManager avatarManager = xmppSession.getManager(AvatarManager.class);
@@ -95,7 +95,7 @@ public final class VCardManager extends Manager {
      */
     public VCard getVCard(Jid jid) throws XmppException {
         Objects.requireNonNull(jid, "jid must not be null.");
-        IQ result = xmppSession.query(new IQ(jid.asBareJid(), IQ.Type.GET, new VCard()));
+        IQ result = xmppSession.query(IQ.get(jid.asBareJid(), new VCard()));
         return result.getExtension(VCard.class);
     }
 }

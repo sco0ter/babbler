@@ -484,7 +484,7 @@ public final class RosterManager extends Manager {
             rosterRequest = new Roster();
         }
 
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, rosterRequest));
+        IQ result = xmppSession.query(IQ.get(rosterRequest));
         Roster rosterResult = result.getExtension(Roster.class);
         // null result means, the requested roster version (from cache) is taken and any updates (if any) are done via roster pushes.
         if (rosterResult != null) {
@@ -505,7 +505,7 @@ public final class RosterManager extends Manager {
      */
     public final void addContact(Contact contact, boolean requestSubscription, String status) throws XmppException {
         Objects.requireNonNull(contact, "contact must not be null.");
-        xmppSession.query(new IQ(IQ.Type.SET, new Roster(contact)));
+        xmppSession.query(IQ.set(new Roster(contact)));
         if (requestSubscription) {
             xmppSession.getManager(PresenceManager.class).requestSubscription(contact.getJid(), status);
         }
@@ -531,7 +531,7 @@ public final class RosterManager extends Manager {
      */
     public final void removeContact(Jid jid) throws XmppException {
         Roster roster = new Roster(new Contact(jid, null, null, null, Contact.Subscription.REMOVE, Collections.emptyList()));
-        xmppSession.query(new IQ(IQ.Type.SET, roster));
+        xmppSession.query(IQ.set(roster));
     }
 
     /**

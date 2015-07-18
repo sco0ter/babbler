@@ -185,7 +185,7 @@ public final class ReachabilityManager extends Manager {
      */
     public List<Address> requestReachabilityAddresses(Jid contact) throws XmppException {
         // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get".
-        IQ result = xmppSession.query(new IQ(contact, IQ.Type.GET, new Reachability()));
+        IQ result = xmppSession.query(IQ.get(contact, new Reachability()));
         Reachability reachability = result.getExtension(Reachability.class);
         if (reachability != null) {
             return reachability.getAddresses();

@@ -110,7 +110,7 @@ public final class SoftwareVersionManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public SoftwareVersion getSoftwareVersion(Jid jid) throws XmppException {
-        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new SoftwareVersion()));
+        IQ result = xmppSession.query(IQ.get(jid, new SoftwareVersion()));
         return result.getExtension(SoftwareVersion.class);
     }
 

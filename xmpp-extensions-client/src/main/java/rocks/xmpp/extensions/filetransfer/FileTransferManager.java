@@ -90,7 +90,7 @@ public final class FileTransferManager extends Manager {
      */
     public void offerFile(URL url, String description, Jid recipient, long timeout) throws XmppException {
         try {
-            xmppSession.query(new IQ(recipient, IQ.Type.SET, new OobIQ(url, description)), timeout);
+            xmppSession.query(IQ.set(recipient, new OobIQ(url, description)), timeout);
         } catch (StanzaException e) {
             if (e.getStanza().getError().getCondition() == Condition.NOT_ACCEPTABLE) {
                 throw new FileTransferRejectedException();

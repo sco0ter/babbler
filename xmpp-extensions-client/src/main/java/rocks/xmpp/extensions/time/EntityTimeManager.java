@@ -78,7 +78,7 @@ public final class EntityTimeManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public OffsetDateTime getEntityTime(Jid jid) throws XmppException {
-        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new EntityTime()));
+        IQ result = xmppSession.query(IQ.get(jid, new EntityTime()));
         EntityTime entityTime = result.getExtension(EntityTime.class);
         return entityTime != null ? entityTime.getDateTime() : null;
     }

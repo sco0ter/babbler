@@ -139,7 +139,7 @@ public final class LastActivityManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public LastActivity getLastActivity(Jid jid) throws XmppException {
-        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new LastActivity()));
+        IQ result = xmppSession.query(IQ.get(jid, new LastActivity()));
         return result.getExtension(LastActivity.class);
     }
 }

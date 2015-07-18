@@ -370,7 +370,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #discoverInformation(Jid)
      */
     public final InfoNode discoverInformation(Jid jid, String node) throws XmppException {
-        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new InfoDiscovery(node)));
+        IQ result = xmppSession.query(IQ.get(jid, new InfoDiscovery(node)));
         return result.getExtension(InfoDiscovery.class);
     }
 
@@ -423,7 +423,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public final ItemNode discoverItems(Jid jid, String node, ResultSetManagement resultSetManagement) throws XmppException {
-        IQ result = xmppSession.query(new IQ(jid, IQ.Type.GET, new ItemDiscovery(node, resultSetManagement)));
+        IQ result = xmppSession.query(IQ.get(jid, new ItemDiscovery(node, resultSetManagement)));
         return result.getExtension(ItemDiscovery.class);
     }
 

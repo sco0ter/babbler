@@ -65,7 +65,7 @@ public final class SearchManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public Search discoverSearchFields(Jid service) throws XmppException {
-        IQ result = xmppSession.query(new IQ(service, IQ.Type.GET, new Search()));
+        IQ result = xmppSession.query(IQ.get(service, new Search()));
         return result.getExtension(Search.class);
     }
 
@@ -80,7 +80,7 @@ public final class SearchManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public Search search(Search search, Jid service) throws XmppException {
-        IQ result = xmppSession.query(new IQ(service, IQ.Type.SET, search));
+        IQ result = xmppSession.query(IQ.set(service, search));
         return result.getExtension(Search.class);
     }
 }

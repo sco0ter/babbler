@@ -142,7 +142,7 @@ public final class PingManager extends Manager {
      */
     public final boolean ping(Jid jid, long timeout) {
         try {
-            xmppSession.query(new IQ(jid, IQ.Type.GET, Ping.INSTANCE), timeout);
+            xmppSession.query(IQ.get(jid, Ping.INSTANCE), timeout);
             return true;
         } catch (StanzaException e) {
             // If we pinged a full JID and the resource if offline, the server will respond on behalf of the user with <service-unavailable/>.

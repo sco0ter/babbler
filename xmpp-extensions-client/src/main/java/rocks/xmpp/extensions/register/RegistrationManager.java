@@ -80,7 +80,7 @@ public final class RegistrationManager extends Manager {
      * @see rocks.xmpp.extensions.register.model.Registration
      */
     public Registration getRegistration() throws XmppException {
-        IQ result = xmppSession.query(new IQ(IQ.Type.GET, new Registration()));
+        IQ result = xmppSession.query(IQ.get(new Registration()));
         return result.getExtension(Registration.class);
     }
 
@@ -93,7 +93,7 @@ public final class RegistrationManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-register">3.1 Entity Registers with a Host</a>
      */
     public void register(Registration registration) throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, registration));
+        xmppSession.query(IQ.set(registration));
     }
 
     /**
@@ -104,7 +104,7 @@ public final class RegistrationManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-cancel">3.2 Entity Cancels an Existing Registration</a>
      */
     public void cancelRegistration() throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, Registration.remove()));
+        xmppSession.query(IQ.set(Registration.remove()));
     }
 
     /**
@@ -117,6 +117,6 @@ public final class RegistrationManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-changepw">3.3 User Changes Password</a>
      */
     public void changePassword(String username, String password) throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, Registration.builder().username(username).password(password).build()));
+        xmppSession.query(IQ.set(Registration.builder().username(username).password(password).build()));
     }
 }

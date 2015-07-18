@@ -121,7 +121,7 @@ public final class OfflineMessageManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0013.html#retrieve-specific">2.4 Retrieving Specific Messages</a>
      */
     public void requestMessage(String id) throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.GET, new OfflineMessage(new OfflineMessage.Item(id, OfflineMessage.Item.Action.VIEW))));
+        xmppSession.query(IQ.get(new OfflineMessage(new OfflineMessage.Item(id, OfflineMessage.Item.Action.VIEW))));
     }
 
     /**
@@ -137,7 +137,7 @@ public final class OfflineMessageManager extends Manager {
         for (String id : ids) {
             items.add(new OfflineMessage.Item(id, OfflineMessage.Item.Action.REMOVE));
         }
-        xmppSession.query(new IQ(IQ.Type.SET, new OfflineMessage(items)));
+        xmppSession.query(IQ.set(new OfflineMessage(items)));
     }
 
     /**
@@ -148,7 +148,7 @@ public final class OfflineMessageManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0013.html#retrieve-all">2.6 Retrieving All Messages</a>
      */
     public void requestAllMessages() throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.GET, new OfflineMessage(true, false)));
+        xmppSession.query(IQ.get(new OfflineMessage(true, false)));
     }
 
     /**
@@ -159,6 +159,6 @@ public final class OfflineMessageManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0013.html#remove-all">2.7 Removing All Messages</a>
      */
     public void removeAllMessages() throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, new OfflineMessage(false, true)));
+        xmppSession.query(IQ.set(new OfflineMessage(false, true)));
     }
 }

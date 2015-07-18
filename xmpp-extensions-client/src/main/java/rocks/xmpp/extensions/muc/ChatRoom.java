@@ -313,7 +313,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     /**
      * Enters the room and requests history messages.
      *
-     * @param nick    The nickname.
+     * @param nick              The nickname.
      * @param discussionHistory The history.
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
@@ -325,9 +325,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     /**
      * Enters the room with a password and requests history messages.
      *
-     * @param nick     The nickname.
-     * @param password The password.
-     * @param discussionHistory  The history.
+     * @param nick              The nickname.
+     * @param password          The password.
+     * @param discussionHistory The history.
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
@@ -467,7 +467,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see rocks.xmpp.extensions.muc.model.RoomRegistration
      */
     public DataForm getRegistrationForm() throws XmppException {
-        IQ iq = new IQ(roomJid, IQ.Type.GET, new Registration());
+        IQ iq = IQ.get(roomJid, new Registration());
         IQ result = xmppSession.query(iq);
         Registration registration = result.getExtension(Registration.class);
         if (registration != null) {
@@ -495,8 +495,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                 throw new IllegalArgumentException("Data Form is not of type 'http://jabber.org/protocol/muc#register'");
             }
         }
-        IQ iq = new IQ(roomJid, IQ.Type.SET, registration);
-        xmppSession.query(iq);
+        xmppSession.query(IQ.set(roomJid, registration));
     }
 
     /**
@@ -576,7 +575,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyvoice">8.5 Modifying the Voice List</a>
      */
     public List<? extends rocks.xmpp.extensions.muc.model.Item> getVoiceList() throws XmppException {
-        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.PARTICIPANT, null, null)));
+        IQ result = xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Role.PARTICIPANT, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
@@ -594,7 +593,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyadmin">10.8 Modifying the Admin List</a>
      */
     public void changeAffiliationsOrRoles(List<rocks.xmpp.extensions.muc.model.Item> items) throws XmppException {
-        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItems(items)));
+        xmppSession.query(IQ.set(roomJid, MucAdmin.withItems(items)));
     }
 
     /**
@@ -606,7 +605,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyban">9.2 Modifying the Ban List</a>
      */
     public List<? extends rocks.xmpp.extensions.muc.model.Item> getBanList() throws XmppException {
-        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Affiliation.OUTCAST, null, null)));
+        IQ result = xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Affiliation.OUTCAST, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
@@ -640,7 +639,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokeadmin">10.7 Revoking Admin Status</a>
      */
     public void changeAffiliation(Affiliation affiliation, Jid user, String reason) throws XmppException {
-        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(affiliation, user, reason)));
+        xmppSession.query(IQ.set(roomJid, MucAdmin.withItem(affiliation, user, reason)));
     }
 
     /**
@@ -668,7 +667,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemod">9.7 Revoking Moderator Status</a>
      */
     public void changeRole(Role role, String nickname, String reason) throws XmppException {
-        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucAdmin.withItem(role, nickname, reason)));
+        xmppSession.query(IQ.set(roomJid, MucAdmin.withItem(role, nickname, reason)));
     }
 
     /**
@@ -686,7 +685,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
     public List<? extends rocks.xmpp.extensions.muc.model.Item> getMembers() throws XmppException {
-        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Affiliation.MEMBER, null, null)));
+        IQ result = xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Affiliation.MEMBER, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
@@ -700,7 +699,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymod">9.8 Modifying the Moderator List</a>
      */
     public List<? extends rocks.xmpp.extensions.muc.model.Item> getModerators() throws XmppException {
-        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucAdmin.withItem(Role.MODERATOR, null, null)));
+        IQ result = xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Role.MODERATOR, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }
@@ -714,7 +713,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      */
     public void createRoom() throws XmppException {
         enter(nick);
-        xmppSession.query(new IQ(roomJid, IQ.Type.SET, MucOwner.withConfiguration(new DataForm(DataForm.Type.SUBMIT))));
+        xmppSession.query(IQ.set(roomJid, MucOwner.withConfiguration(new DataForm(DataForm.Type.SUBMIT))));
     }
 
     /**
@@ -814,7 +813,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see #configure(rocks.xmpp.extensions.muc.model.RoomConfiguration)
      */
     public DataForm getConfigurationForm() throws XmppException {
-        IQ result = xmppSession.query(new IQ(roomJid, IQ.Type.GET, MucOwner.empty()));
+        IQ result = xmppSession.query(IQ.get(roomJid, MucOwner.empty()));
         MucOwner mucOwner = result.getExtension(MucOwner.class);
         return mucOwner.getConfigurationForm();
     }
@@ -831,8 +830,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     public void configure(RoomConfiguration roomConfiguration) throws XmppException {
         Objects.requireNonNull(roomConfiguration, "roomConfiguration must not be null.");
         MucOwner mucOwner = MucOwner.withConfiguration(roomConfiguration.getDataForm());
-        IQ iq = new IQ(roomJid, IQ.Type.SET, mucOwner);
-        xmppSession.query(iq);
+        xmppSession.query(IQ.set(roomJid, mucOwner));
     }
 
     /**
@@ -854,8 +852,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      */
     public void destroy(String reason) throws XmppException {
         MucOwner mucOwner = MucOwner.withDestroy(roomJid, reason);
-        IQ iq = new IQ(roomJid, IQ.Type.SET, mucOwner);
-        xmppSession.query(iq);
+        xmppSession.query(IQ.set(roomJid, mucOwner));
     }
 
     /**

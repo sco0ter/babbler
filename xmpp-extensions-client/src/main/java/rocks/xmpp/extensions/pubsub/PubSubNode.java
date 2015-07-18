@@ -167,7 +167,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-subscriptions">5.6 Retrieve Subscriptions</a>
      */
     public List<Subscription> getSubscriptions() throws XmppException {
-        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withSubscriptions(nodeId)));
+        IQ result = xmppSession.query(IQ.get(pubSubServiceAddress, PubSub.withSubscriptions(nodeId)));
         return result.getExtension(PubSub.class).getSubscriptions();
     }
 
@@ -181,7 +181,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-affiliations">5.7 Retrieve Affiliations</a>
      */
     public List<Affiliation> getAffiliations() throws XmppException {
-        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withAffiliations(nodeId)));
+        IQ result = xmppSession.query(IQ.get(pubSubServiceAddress, PubSub.withAffiliations(nodeId)));
         return result.getExtension(PubSub.class).getAffiliations();
     }
 
@@ -207,7 +207,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-subandconfig">6.3.7 Subscribe and Configure</a>
      */
     public Subscription subscribe(SubscribeOptions subscribeOptions) throws XmppException {
-        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withSubscribe(Objects.requireNonNull(nodeId, "nodeId must not be null"), xmppSession.getConnectedResource().asBareJid(), subscribeOptions != null ? subscribeOptions.getDataForm() : null)));
+        IQ result = xmppSession.query(IQ.set(pubSubServiceAddress, PubSub.withSubscribe(Objects.requireNonNull(nodeId, "nodeId must not be null"), xmppSession.getConnectedResource().asBareJid(), subscribeOptions != null ? subscribeOptions.getDataForm() : null)));
         return result.getExtension(PubSub.class).getSubscription();
     }
 
@@ -231,7 +231,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe">6.2 Unsubscribe from a Node</a>
      */
     public void unsubscribe(String subscriptionId) throws XmppException {
-        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withUnsubscribe(nodeId, xmppSession.getConnectedResource().asBareJid(), subscriptionId)));
+        xmppSession.query(IQ.set(pubSubServiceAddress, PubSub.withUnsubscribe(nodeId, xmppSession.getConnectedResource().asBareJid(), subscriptionId)));
     }
 
     /**
@@ -247,7 +247,7 @@ public final class PubSubNode {
      */
     public SubscribeOptions getSubscriptionOptions(boolean defaultOptions) throws XmppException {
         if (defaultOptions) {
-            IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withDefault(nodeId)));
+            IQ result = xmppSession.query(IQ.get(pubSubServiceAddress, PubSub.withDefault(nodeId)));
             return new SubscribeOptions(result.getExtension(PubSub.class).getDefault().getDataForm());
         } else {
             return getSubscriptionOptions();
@@ -278,7 +278,7 @@ public final class PubSubNode {
      * @see #configureSubscription(rocks.xmpp.extensions.pubsub.model.SubscribeOptions)
      */
     public SubscribeOptions getSubscriptionOptions(String subId) throws XmppException {
-        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), subId, null)));
+        IQ result = xmppSession.query(IQ.get(pubSubServiceAddress, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), subId, null)));
         return new SubscribeOptions(result.getExtension(PubSub.class).getOptions().getDataForm());
     }
 
@@ -291,7 +291,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
      */
     public void configureSubscription(SubscribeOptions subscribeOptions) throws XmppException {
-        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), null, subscribeOptions != null ? subscribeOptions.getDataForm() : null)));
+        xmppSession.query(IQ.set(pubSubServiceAddress, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), null, subscribeOptions != null ? subscribeOptions.getDataForm() : null)));
     }
 
     /**
@@ -303,7 +303,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestall">6.5.2 Requesting All Items</a>
      */
     public List<Item> getItems() throws XmppException {
-        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withItems(nodeId)));
+        IQ result = xmppSession.query(IQ.get(pubSubServiceAddress, PubSub.withItems(nodeId)));
         return result.getExtension(PubSub.class).getItems();
     }
 
@@ -318,7 +318,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestone">6.5.8 Requesting a Particular Item</a>
      */
     public List<Item> getItems(String... ids) throws XmppException {
-        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withItems(nodeId, ids)));
+        IQ result = xmppSession.query(IQ.get(pubSubServiceAddress, PubSub.withItems(nodeId, ids)));
         return result.getExtension(PubSub.class).getItems();
     }
 
@@ -333,7 +333,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestrecent">6.5.7 Requesting the Most Recent Items</a>
      */
     public List<Item> getItems(int maxItems) throws XmppException {
-        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSub.withItems(nodeId, maxItems)));
+        IQ result = xmppSession.query(IQ.get(pubSubServiceAddress, PubSub.withItems(nodeId, maxItems)));
         return result.getExtension(PubSub.class).getItems();
     }
 
@@ -391,7 +391,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish-options">7.1.5 Publishing Options</a>
      */
     public String publish(String id, Object item, PublishOptions publishOptions) throws XmppException {
-        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withPublish(nodeId, id, item, publishOptions != null ? publishOptions.getDataForm() : null)));
+        IQ result = xmppSession.query(IQ.set(pubSubServiceAddress, PubSub.withPublish(nodeId, id, item, publishOptions != null ? publishOptions.getDataForm() : null)));
         PubSub pubSub = result.getExtension(PubSub.class);
         if (pubSub != null && pubSub.getPublish() != null && pubSub.getPublish().getItem() != null) {
             return pubSub.getPublish().getItem().getId();
@@ -409,7 +409,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-delete">7.2 Delete an Item from a Node</a>
      */
     private void deleteItem(String id, boolean notify) throws XmppException {
-        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withRetract(nodeId, id, notify)));
+        xmppSession.query(IQ.set(pubSubServiceAddress, PubSub.withRetract(nodeId, id, notify)));
     }
 
     /**
@@ -434,7 +434,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create-and-configure">8.1.3 Create and Configure a Node</a>
      */
     public String create(NodeConfiguration nodeConfiguration) throws XmppException {
-        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSub.withCreate(nodeId, nodeConfiguration != null ? nodeConfiguration.getDataForm() : null)));
+        IQ result = xmppSession.query(IQ.set(pubSubServiceAddress, PubSub.withCreate(nodeId, nodeConfiguration != null ? nodeConfiguration.getDataForm() : null)));
         if (nodeId != null) {
             return nodeId;
         }
@@ -457,7 +457,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure-request">8.2.1 Request</a>
      */
     public NodeConfiguration getNodeConfiguration() throws XmppException {
-        IQ result = xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.GET, PubSubOwner.withConfigure(nodeId)));
+        IQ result = xmppSession.query(IQ.get(pubSubServiceAddress, PubSubOwner.withConfigure(nodeId)));
         PubSubOwner pubSubOwner = result.getExtension(PubSubOwner.class);
         return new NodeConfiguration(pubSubOwner.getConfigurationForm());
     }
@@ -471,7 +471,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure-submit">8.2.4 Form Submission</a>
      */
     public void configureNode(NodeConfiguration nodeConfiguration) throws XmppException {
-        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSubOwner.withConfigure(nodeId, nodeConfiguration.getDataForm())));
+        xmppSession.query(IQ.set(pubSubServiceAddress, PubSubOwner.withConfigure(nodeId, nodeConfiguration.getDataForm())));
     }
 
     /**
@@ -482,7 +482,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-delete">8.4 Delete a Node</a>
      */
     public void delete() throws XmppException {
-        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSubOwner.withDelete(nodeId)));
+        xmppSession.query(IQ.set(pubSubServiceAddress, PubSubOwner.withDelete(nodeId)));
     }
 
     /**
@@ -494,7 +494,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-delete">8.4 Delete a Node</a>
      */
     public void delete(URI uri) throws XmppException {
-        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSubOwner.withDelete(nodeId, uri)));
+        xmppSession.query(IQ.set(pubSubServiceAddress, PubSubOwner.withDelete(nodeId, uri)));
     }
 
     /**
@@ -505,7 +505,7 @@ public final class PubSubNode {
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-purge">8.5 Purge All Node Items</a>
      */
     public void purge() throws XmppException {
-        xmppSession.query(new IQ(pubSubServiceAddress, IQ.Type.SET, PubSubOwner.withPurge(nodeId)));
+        xmppSession.query(IQ.set(pubSubServiceAddress, PubSubOwner.withPurge(nodeId)));
     }
 
     /**

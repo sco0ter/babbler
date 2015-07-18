@@ -50,7 +50,7 @@ public final class InvisibilityManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public synchronized void becomeInvisible() throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, InvisibleCommand.INVISIBLE));
+        xmppSession.query(IQ.set(InvisibleCommand.INVISIBLE));
         invisible = true;
     }
 
@@ -61,7 +61,7 @@ public final class InvisibilityManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
     public synchronized void becomeVisible() throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, InvisibleCommand.VISIBLE));
+        xmppSession.query(IQ.set(InvisibleCommand.VISIBLE));
         invisible = false;
     }
 

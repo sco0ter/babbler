@@ -58,16 +58,16 @@ public final class MessageCarbonsManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public final void enableCarbons() throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, MessageCarbons.ENABLE));
+        xmppSession.query(IQ.set(MessageCarbons.ENABLE));
     }
 
     /**
-     * Enables message carbons on the server for this session.
+     * Disables message carbons on the server for this session.
      *
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
     public final void disableCarbons() throws XmppException {
-        xmppSession.query(new IQ(IQ.Type.SET, MessageCarbons.DISABLE));
+        xmppSession.query(IQ.set(MessageCarbons.DISABLE));
     }
 }

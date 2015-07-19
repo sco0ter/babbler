@@ -28,6 +28,7 @@ import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -103,12 +104,12 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      * @see <a href="http://xmpp.org/extensions/xep-0126.html#vis-select-jid">3.2.1 Becoming Visible by JID</a>
      */
     public static PrivacyList createInvisibilityListExceptForUsers(String listName, Jid... jids) {
-        List<PrivacyRule> rules = new ArrayList<>();
+        Collection<PrivacyRule> rules = new ArrayDeque<>();
         long order = 1;
         for (Jid jid : jids) {
-            rules.add(new PrivacyRule(PrivacyRule.Action.ALLOW, order++, jid).filterPresenceOut());
+            rules.add(PrivacyRule.of(jid, PrivacyRule.Action.ALLOW, order++).appliedToOutboundPresence());
         }
-        rules.add(new PrivacyRule(PrivacyRule.Action.DENY, order).filterPresenceOut());
+        rules.add(PrivacyRule.blockOutboundPresence(order));
         return new PrivacyList(listName, rules);
     }
 
@@ -122,12 +123,12 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      * @see <a href="http://xmpp.org/extensions/xep-0126.html#vis-select-roster">3.2.2 Becoming Visible by Roster Group</a>
      */
     public static PrivacyList createInvisibilityListExceptForGroups(String listName, String... groups) {
-        List<PrivacyRule> rules = new ArrayList<>();
+        Collection<PrivacyRule> rules = new ArrayDeque<>();
         long order = 1;
         for (String group : groups) {
-            rules.add(new PrivacyRule(PrivacyRule.Action.ALLOW, order++, group).filterPresenceOut());
+            rules.add(PrivacyRule.of(group, PrivacyRule.Action.ALLOW, order++).appliedToOutboundPresence());
         }
-        rules.add(new PrivacyRule(PrivacyRule.Action.DENY, order).filterPresenceOut());
+        rules.add(PrivacyRule.blockOutboundPresence(order));
         return new PrivacyList(listName, rules);
     }
 
@@ -141,12 +142,12 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      * @see <a href="http://xmpp.org/extensions/xep-0126.html#invis-select-jid">3.4.1 Becoming Invisible by JID</a>
      */
     public static PrivacyList createInvisibilityListForUsers(String listName, Jid... jids) {
-        List<PrivacyRule> rules = new ArrayList<>();
+        Collection<PrivacyRule> rules = new ArrayDeque<>();
         long order = 1;
         for (Jid jid : jids) {
-            rules.add(new PrivacyRule(PrivacyRule.Action.DENY, order++, jid).filterPresenceOut());
+            rules.add(PrivacyRule.blockPresenceTo(jid, order++));
         }
-        rules.add(new PrivacyRule(PrivacyRule.Action.ALLOW, order).filterPresenceOut());
+        rules.add(PrivacyRule.of(PrivacyRule.Action.ALLOW, order).appliedToOutboundPresence());
         return new PrivacyList(listName, rules);
     }
 
@@ -160,12 +161,12 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      * @see <a href="http://xmpp.org/extensions/xep-0126.html#invis-select-roster">3.4.2 Becoming Invisible by Roster Group</a>
      */
     public static PrivacyList createInvisibilityListForGroups(String listName, String... groups) {
-        List<PrivacyRule> rules = new ArrayList<>();
+        Collection<PrivacyRule> rules = new ArrayDeque<>();
         long order = 1;
         for (String group : groups) {
-            rules.add(new PrivacyRule(PrivacyRule.Action.DENY, order++, group).filterPresenceOut());
+            rules.add(PrivacyRule.blockPresenceToRosterGroup(group, order++));
         }
-        rules.add(new PrivacyRule(PrivacyRule.Action.ALLOW, order).filterPresenceOut());
+        rules.add(PrivacyRule.of(PrivacyRule.Action.ALLOW, order).appliedToOutboundPresence());
         return new PrivacyList(listName, rules);
     }
 

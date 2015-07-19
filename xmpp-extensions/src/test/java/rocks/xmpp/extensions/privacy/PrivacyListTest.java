@@ -230,7 +230,7 @@ public class PrivacyListTest extends XmlTest {
 
     @Test
     public void marshalPrivacyRule() throws XMLStreamException, JAXBException {
-        PrivacyList privacyList = new PrivacyList("test", Collections.singleton(new PrivacyRule(PrivacyRule.Action.ALLOW, 0, Contact.Subscription.BOTH)));
+        PrivacyList privacyList = new PrivacyList("test", Collections.singleton(PrivacyRule.of(Contact.Subscription.BOTH, PrivacyRule.Action.ALLOW, 0)));
         String xml = marshal(new Privacy(privacyList));
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"test\"><item type=\"subscription\" value=\"both\" action=\"allow\" order=\"0\"></item></list></query>");
     }
@@ -272,28 +272,28 @@ public class PrivacyListTest extends XmlTest {
 
     @Test
     public void marshalWithMessageFilter() throws XMLStreamException, JAXBException {
-        PrivacyList privacyList = new PrivacyList("message", Collections.singleton(new PrivacyRule(PrivacyRule.Action.ALLOW, 1).filterMessage()));
+        PrivacyList privacyList = new PrivacyList("message", Collections.singleton(PrivacyRule.of(PrivacyRule.Action.ALLOW, 1).appliedToMessages()));
         String xml = marshal(new Privacy(privacyList));
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"message\"><item action=\"allow\" order=\"1\"><message></message></item></list></query>");
     }
 
     @Test
     public void marshalWithIQFilter() throws XMLStreamException, JAXBException {
-        PrivacyList privacyList = new PrivacyList("iq", Collections.singleton(new PrivacyRule(PrivacyRule.Action.ALLOW, 1).filterIQ()));
+        PrivacyList privacyList = new PrivacyList("iq", Collections.singleton(PrivacyRule.of(PrivacyRule.Action.ALLOW, 1).appliedToIQs()));
         String xml = marshal(new Privacy(privacyList));
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"iq\"><item action=\"allow\" order=\"1\"><iq></iq></item></list></query>");
     }
 
     @Test
     public void marshalWithPresenceInFilter() throws XMLStreamException, JAXBException {
-        PrivacyList privacyList = new PrivacyList("presence-in", Collections.singleton(new PrivacyRule(PrivacyRule.Action.ALLOW, 1).filterPresenceIn()));
+        PrivacyList privacyList = new PrivacyList("presence-in", Collections.singleton(PrivacyRule.of(PrivacyRule.Action.ALLOW, 1).appliedToInboundPresence()));
         String xml = marshal(new Privacy(privacyList));
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"presence-in\"><item action=\"allow\" order=\"1\"><presence-in></presence-in></item></list></query>");
     }
 
     @Test
     public void marshalWithPresenceOutFilter() throws XMLStreamException, JAXBException {
-        PrivacyList privacyList = new PrivacyList("presence-out", Collections.singleton(new PrivacyRule(PrivacyRule.Action.ALLOW, 1).filterPresenceOut().filterMessage()));
+        PrivacyList privacyList = new PrivacyList("presence-out", Collections.singleton(PrivacyRule.of(PrivacyRule.Action.ALLOW, 1).appliedToOutboundPresence().appliedToMessages()));
         String xml = marshal(new Privacy(privacyList));
         Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"presence-out\"><item action=\"allow\" order=\"1\"><message></message><presence-out></presence-out></item></list></query>");
     }
@@ -332,11 +332,11 @@ public class PrivacyListTest extends XmlTest {
     @Test
     public void testComparePrivacyRules() {
 
-        PrivacyRule privacyRule1 = new PrivacyRule(PrivacyRule.Action.DENY, 0);
-        PrivacyRule privacyRule2 = new PrivacyRule(PrivacyRule.Action.DENY, 1);
-        PrivacyRule privacyRule3 = new PrivacyRule(PrivacyRule.Action.DENY, 2);
-        PrivacyRule privacyRule4 = new PrivacyRule(PrivacyRule.Action.DENY, 3);
-        PrivacyRule privacyRule5 = new PrivacyRule(PrivacyRule.Action.DENY, 4);
+        PrivacyRule privacyRule1 = PrivacyRule.of(PrivacyRule.Action.DENY, 0);
+        PrivacyRule privacyRule2 = PrivacyRule.of(PrivacyRule.Action.DENY, 1);
+        PrivacyRule privacyRule3 = PrivacyRule.of(PrivacyRule.Action.DENY, 2);
+        PrivacyRule privacyRule4 = PrivacyRule.of(PrivacyRule.Action.DENY, 3);
+        PrivacyRule privacyRule5 = PrivacyRule.of(PrivacyRule.Action.DENY, 4);
 
 
         List<PrivacyRule> list = new ArrayList<>();
@@ -355,5 +355,110 @@ public class PrivacyListTest extends XmlTest {
         Assert.assertEquals(list.get(2), privacyRule3);
         Assert.assertEquals(list.get(3), privacyRule4);
         Assert.assertEquals(list.get(4), privacyRule5);
+    }
+
+    @Test
+    public void marshalBlockMessages() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy(new PrivacyList("", Collections.singleton(PrivacyRule.blockMessagesFrom(Jid.of("romeo@example.net/orchard"), 1))));
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"\"><item type=\"jid\" value=\"romeo@example.net/orchard\" action=\"deny\" order=\"1\"><message></message></item></list></query>");
+    }
+
+    @Test
+    public void marshalBlockMessagesFromRosterGroup() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy(new PrivacyList("", Collections.singleton(PrivacyRule.blockMessagesFromRosterGroup("group", 1))));
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"\"><item type=\"group\" value=\"group\" action=\"deny\" order=\"1\"><message></message></item></list></query>");
+    }
+
+    @Test
+    public void marshalBlockMessagesFromSubscription() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy(new PrivacyList("", Collections.singleton(PrivacyRule.blockMessagesFromEntitiesWithSubscription(Contact.Subscription.NONE, 1))));
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"\"><item type=\"subscription\" value=\"none\" action=\"deny\" order=\"1\"><message></message></item></list></query>");
+    }
+
+    @Test
+    public void marshalBlockInboundPresencesFromEntity() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy(new PrivacyList("", Collections.singleton(PrivacyRule.blockPresenceFrom(Jid.of("romeo@example.net/orchard"), 1))));
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"\"><item type=\"jid\" value=\"romeo@example.net/orchard\" action=\"deny\" order=\"1\"><presence-in></presence-in></item></list></query>");
+    }
+
+    @Test
+    public void marshalBlockInboundPresencesFromRosterGroup() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy(new PrivacyList("", Collections.singleton(PrivacyRule.blockPresenceFromRosterGroup("group", 1))));
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"\"><item type=\"group\" value=\"group\" action=\"deny\" order=\"1\"><presence-in></presence-in></item></list></query>");
+    }
+
+    @Test
+    public void marshalBlockInboundPresencesFromSubscription() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy(new PrivacyList("", Collections.singleton(PrivacyRule.blockPresenceFromEntitiesWithSubscription(Contact.Subscription.NONE, 1))));
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"\"><item type=\"subscription\" value=\"none\" action=\"deny\" order=\"1\"><presence-in></presence-in></item></list></query>");
+    }
+
+    @Test
+    public void marshalBlockOutboundPresencesFromEntity() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy(new PrivacyList("", Collections.singleton(PrivacyRule.blockPresenceTo(Jid.of("romeo@example.net/orchard"), 1))));
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"\"><item type=\"jid\" value=\"romeo@example.net/orchard\" action=\"deny\" order=\"1\"><presence-out></presence-out></item></list></query>");
+    }
+
+    @Test
+    public void marshalBlockOutboundPresencesFromRosterGroup() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy(new PrivacyList("", Collections.singleton(PrivacyRule.blockPresenceToRosterGroup("group", 1))));
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"\"><item type=\"group\" value=\"group\" action=\"deny\" order=\"1\"><presence-out></presence-out></item></list></query>");
+    }
+
+    @Test
+    public void marshalBlockOutboundPresencesFromSubscription() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy(new PrivacyList("", Collections.singleton(PrivacyRule.blockPresenceToEntitiesWithSubscription(Contact.Subscription.NONE, 1))));
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"\"><item type=\"subscription\" value=\"none\" action=\"deny\" order=\"1\"><presence-out></presence-out></item></list></query>");
+    }
+
+    @Test
+    public void marshalBlockIQFromEntity() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy(new PrivacyList("", Collections.singleton(PrivacyRule.blockIQFrom(Jid.of("romeo@example.net/orchard"), 1))));
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"\"><item type=\"jid\" value=\"romeo@example.net/orchard\" action=\"deny\" order=\"1\"><iq></iq></item></list></query>");
+    }
+
+    @Test
+    public void marshalBlockIQFromRosterGroup() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy(new PrivacyList("", Collections.singleton(PrivacyRule.blockIQFromRosterGroup("group", 1))));
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"\"><item type=\"group\" value=\"group\" action=\"deny\" order=\"1\"><iq></iq></item></list></query>");
+    }
+
+    @Test
+    public void marshalBlockIQFromSubscription() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy(new PrivacyList("", Collections.singleton(PrivacyRule.blockIQFromEntitiesWithSubscription(Contact.Subscription.NONE, 1))));
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"\"><item type=\"subscription\" value=\"none\" action=\"deny\" order=\"1\"><iq></iq></item></list></query>");
+    }
+
+    @Test
+    public void marshalAllCommunicationFromEntity() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy(new PrivacyList("", Collections.singleton(PrivacyRule.blockAllCommunicationWith(Jid.of("romeo@example.net/orchard"), 1))));
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"\"><item type=\"jid\" value=\"romeo@example.net/orchard\" action=\"deny\" order=\"1\"></item></list></query>");
+    }
+
+    @Test
+    public void marshalAllCommunicationFromRosterGroup() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy(new PrivacyList("", Collections.singleton(PrivacyRule.blockAllCommunicationWithRosterGroup("group", 1))));
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"\"><item type=\"group\" value=\"group\" action=\"deny\" order=\"1\"></item></list></query>");
+    }
+
+    @Test
+    public void marshalAllCommunicationFromSubscription() throws XMLStreamException, JAXBException {
+        Privacy privacy = new Privacy(new PrivacyList("", Collections.singleton(PrivacyRule.blockAllCommunicationWithEntitiesWithSubscription(Contact.Subscription.NONE, 1))));
+        String xml = marshal(privacy);
+        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:privacy\"><list name=\"\"><item type=\"subscription\" value=\"none\" action=\"deny\" order=\"1\"></item></list></query>");
     }
 }

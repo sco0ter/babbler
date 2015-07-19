@@ -96,7 +96,7 @@ public final class EntityCapabilitiesManager extends Manager {
     // Cache the capabilities of an entity.
     private static final Map<Jid, InfoNode> ENTITY_CAPABILITIES = new ConcurrentHashMap<>();
 
-    private static final ConcurrentHashMap<Jid, Lock> REQUESTING_LOCKS = new ConcurrentHashMap<>();
+    private static final Map<Jid, Lock> REQUESTING_LOCKS = new ConcurrentHashMap<>();
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
@@ -305,19 +305,14 @@ public final class EntityCapabilitiesManager extends Manager {
             // Use the double-checked locking idiom.
 
             // Acquire the lock for the JID.
-            Lock lock = new ReentrantLock();
-            Lock existingLock = REQUESTING_LOCKS.putIfAbsent(jid, lock);
-            if (existingLock != null) {
-                lock = existingLock;
-            }
-
+            Lock lock = REQUESTING_LOCKS.computeIfAbsent(jid, key -> new ReentrantLock());
             lock.lock();
-            // Recheck the cache (this is the double-check), maybe it has been inserted by another thread.
-            infoNode = ENTITY_CAPABILITIES.get(jid);
-            if (infoNode != null) {
-                return infoNode;
-            }
             try {
+                // Recheck the cache (this is the double-check), maybe it has been inserted by another thread.
+                infoNode = ENTITY_CAPABILITIES.get(jid);
+                if (infoNode != null) {
+                    return infoNode;
+                }
                 infoNode = serviceDiscoveryManager.discoverInformation(jid);
                 ENTITY_CAPABILITIES.put(jid, infoNode);
             } finally {

@@ -371,12 +371,7 @@ public final class AvatarManager extends Manager {
     private byte[] getAvatarByVCard(Jid contact) throws XmppException {
         byte[] avatar = null;
 
-        Lock lock = new ReentrantLock();
-        Lock existingLock = requestingAvatarLocks.putIfAbsent(contact, lock);
-        if (existingLock != null) {
-            lock = existingLock;
-        }
-
+        Lock lock = requestingAvatarLocks.computeIfAbsent(contact, key -> new ReentrantLock());
         lock.lock();
         try {
             // Let's see, if there's a stored image already.

@@ -110,7 +110,8 @@ This information helps requesting entities to determine the group or "bucket" of
 You can add such identities with:
 
 ```
-serviceDiscoveryManager.addIdentity(new Identity("client", "pc"));
+// Adds an identity of category "client" and type "pc":
+serviceDiscoveryManager.addIdentity(Identity.clientPc());
 ```
 
 *client/pc* is also the default identity, if none was added (every entity requires at least one identity), so in most cases you don't need to add one.

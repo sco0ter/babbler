@@ -5,11 +5,10 @@
 
 ## Advertising Support
 
-If your client supports this feature it should be advertising support for it. You can do it by simple enabling the manager.
+If your client supports this feature it should advertise support for it:
 
 ```java
-MessageCorrectionManager messageCorrectionManager = xmppClient.getManager(MessageCorrectionManager.class);
-messageCorrectionManager.setEnabled(true);
+xmppClient.enableFeature(Replace.NAMESPACE);
 ```
 
 ## Correcting a Message
@@ -25,8 +24,9 @@ xmppClient.send(message);
 You then recognize the typo in it and want to correct it. You would send a replacement message, replacing the old message:
 
 ```java
-MessageCorrectionManager messageCorrectionManager = xmppClient.getManager(MessageCorrectionManager.class);
-messageCorrectionManager.correctMessage("123", new Message(Jid.of("juliet@example.net/balcony"), Message.Type.CHAT, "Hello, my friend"));
+Message correctedMessage = new Message(jid, Message.Type.CHAT, "Hello, my friend");
+correctedMessage.addExtension(new Replace("123"));
+xmppClient.send(correctedMessage);
 ```
 
 

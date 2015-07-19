@@ -801,7 +801,7 @@ public final class BoshConnection extends Connection {
     public final synchronized String toString() {
         StringBuilder sb = new StringBuilder("BOSH connection");
         if (hostname != null) {
-            sb.append(String.format(" to %s", url));
+            sb.append(" to ").append(url);
         }
         if (sessionId != null) {
             sb.append(" (").append(sessionId).append(')');

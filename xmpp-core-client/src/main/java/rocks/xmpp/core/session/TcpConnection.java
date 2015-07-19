@@ -397,7 +397,7 @@ public final class TcpConnection extends Connection {
     public final synchronized String toString() {
         StringBuilder sb = new StringBuilder("TCP connection");
         if (hostname != null) {
-            sb.append(String.format(" to %s:%s", hostname, port));
+            sb.append(" to ").append(hostname).append(':').append(port);
         }
         if (streamId != null) {
             sb.append(" (").append(streamId).append(')');

@@ -93,11 +93,11 @@ chatRoom.addOccupantListener(e -> {
 
 chatRoom.addInboundMessageListener(e -> {
     Message message = e.getMessage();
-    System.out.println(String.format("%s: %s", message.getFrom().getResource(), message.getBody()));
+    System.out.println(message.getFrom().getResource() + ": " + message.getBody());
 });
 
 chatRoom.addSubjectChangeListener(e -> {
-    System.out.println(String.format("%s changed the subject to '%s'", e.getNickname(), e.getSubject()));
+    System.out.println(e.getNickname() + " changed the subject to '" + e.getSubject() + "'.");
 });
 
 chatRoom.enter("nickname");

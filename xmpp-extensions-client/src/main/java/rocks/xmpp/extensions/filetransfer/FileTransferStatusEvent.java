@@ -37,7 +37,7 @@ public final class FileTransferStatusEvent extends EventObject {
     /**
      * Constructs a prototypical Event.
      *
-     * @param source The object on which the Event initially occurred.
+     * @param source           The object on which the Event initially occurred.
      * @param bytesTransferred The number of bytes transferred so far.
      * @throws IllegalArgumentException if source is null.
      */
@@ -55,25 +55,25 @@ public final class FileTransferStatusEvent extends EventObject {
     public FileTransfer.Status getStatus() {
         return status;
     }
-    
+
     private final long bytesTransferred;
 
     /**
      * Gets the number of bytes transferred so far.
-     * 
+     *
      * @return The number of bytes transferred so far.
      */
     public final long getBytesTransferred() {
-    	return bytesTransferred;
+        return bytesTransferred;
     }
-    
-	/**
-	 * Returns a {@code String} representation of this {@code FileTransferStatusEvent} object.
-	 * 
-	 * @since 0.5.0
-	 */
-	@Override
-	public final String toString() {
-		return String.format("%s[source=%s, status=%s, bytesTransferred=%d]", FileTransferStatusEvent.class.getName(), source, status, bytesTransferred);
-	}
+
+    /**
+     * Returns a {@code String} representation of this {@code FileTransferStatusEvent} object.
+     *
+     * @since 0.5.0
+     */
+    @Override
+    public final String toString() {
+        return FileTransferStatusEvent.class.getName() + "[source=" + source + ", status=" + status + ", bytesTransferred=" + bytesTransferred + "]";
+    }
 }

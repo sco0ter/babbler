@@ -957,7 +957,7 @@ public final class Identity implements Comparable<Identity> {
 
     @Override
     public final String toString() {
-        return String.format("Category: %s / Type: %s / Name: %s", category, type, name);
+        return "Category: " + category + " / Type: " + type + " / Name: " + name;
     }
 
     /**

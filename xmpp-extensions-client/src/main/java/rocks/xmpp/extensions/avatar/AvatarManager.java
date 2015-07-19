@@ -322,7 +322,7 @@ public final class AvatarManager extends Manager {
                                                         }
                                                     }
                                                 } catch (XmppException e1) {
-                                                    logger.log(Level.WARNING, () -> String.format("Failed to retrieve avatar '%s' from PEP service for user '%s'", item.getId(), message.getFrom()));
+                                                    logger.log(Level.WARNING, () -> "Failed to retrieve avatar '" + item.getId() + "' from PEP service for user '" + message.getFrom() + "'");
                                                 }
                                             });
                                         }

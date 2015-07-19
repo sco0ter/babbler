@@ -6,8 +6,7 @@ There's some very basic support for [XEP-0072: SOAP Over XMPP][SOAP Over XMPP]. 
 ## Discovering Support
 
 ```java
-SoapManager soapManager = xmppClient.getManager(SoapManager.class);
-boolean isSupported = soapManager.isSupported(Jid.of("responder@example.com/soap-server"));
+boolean isSupported = xmppClient.isSupported("http://jabber.org/protocol/soap", Jid.of("responder@example.com/soap-server"));
 ```
 
 ## Sending a SOAP Message Over XMPP

@@ -25,6 +25,8 @@
 * Stanza classes refactoring:
     * Stanzas moved from `rocks.xmpp.core.stanza.model.client` to `rocks.xmpp.core.stanza.model`. This was a necessary change for XEP-0114.
     * `Message.Body`, `Message.Subject`, `Presence.Status` classes have been replaced by a common `Text` class, since they are all the same.
+    * There are new `addExtension()` / `removeExtension()` / `hasExtension()` methods.
+* `XmppSession.getDomain()` returns a `Jid` instead of a `String`.    
 
 ## Version 0.5.1 (2015-06-18)
 

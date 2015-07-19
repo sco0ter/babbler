@@ -13,7 +13,7 @@ rpcManager.setRpcHandler((requester, methodName, parameters) -> {
     if (methodName.equals("examples.getStateName")) {
         if (!parameters.isEmpty()) {
             if (parameters.get(0).getAsInteger() == 6) {
-                return new Value("Colorado");
+                return Value.of("Colorado");
             }
         }
     }
@@ -61,7 +61,7 @@ Assume you want to call the above remote procedure (`examples.getStateName`), yo
 ```java
 RpcManager rpcManager = xmppClient.getManager(RpcManager.class);
 try {
-    Value response = rpcManager.call(Jid.of("responder@company-a.com/jrpc-server"), "examples.getStateName", new Value(6));
+    Value response = rpcManager.call(Jid.of("responder@company-a.com/jrpc-server"), "examples.getStateName", Value.of(6));
     System.out.println(response.getAsString()); // Colorado
 } catch (XmppException e) {
     e.printStackTrace();

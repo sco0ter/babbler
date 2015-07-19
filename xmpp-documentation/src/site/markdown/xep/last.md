@@ -1,16 +1,11 @@
-# XEP-0012: Last Activity
+# Last Activity and Idle Time
 ---
 
 [XEP-0012: Last Activity][Last Activity] allows you to determine the last activity of an XMPP entity.
 
-This XEP defines three use cases:
+It's also tightly coupled with [XEP-0256: Last Activity in Presence][Last Activity in Presence] and [XEP-0319: Last User Interaction in Presence][Last User Interaction in Presence]. 
 
-1. [Finding out, how long ago a user logged out.](#lastlogout)
-2. [Finding out the idle time of a connected user.](#idletime)
-3. [Finding out the uptime of a server or component.](#serveruptime)
-
-
-## <a name="lastlogout"></a>Getting the Last Logout Date
+## Getting the Last Logout Date
 
 If you want to find out how long ago a user logged out, you query for the user's bare JID. The server should then answer on behalf of the user with the last logout date.
 
@@ -20,7 +15,7 @@ LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.of("juliet@i
 // user logged out lastActivity.getSeconds() ago
 ```
 
-## <a name="idletime"></a>Getting the Idle Time of a Connected Resource
+## Getting the Idle Time of Available Entities
 
 In order to query a connected user for its idle time you must query for its full JID, so that the XMPP server routes the query directly to the resource.
 
@@ -31,25 +26,42 @@ LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.of("juliet@i
 
 If supported by the client, it will respond with its idle time.
 
-You can also set the strategy for determining idle time of your session/client. E.g. you could track the last mouse movement or keyboard input. By default, the last sent message is used.
+Alternatively, if a contact/client supports [XEP-0256: Last Activity in Presence][Last Activity in Presence] or [XEP-0319: Last User Interaction in Presence][Last User Interaction in Presence], it will include idle time in its presence.
 
-You can set a different strategy for determining idle time:
+Just listen for presence and extract the idle time like shown below, which will try to get the idle time by first trying XEP-0319, and then XEP-0256 (also respecting delayed delivery).
 
 ```java
-lastActivityManager.setLastActivityStrategy(() -> {
-    // Return whatever you think is your client's last activity.
+xmppClient.addInboundPresenceListener(e -> {
+    Instant idleSince = Idle.timeFromPresence(e.getPresence());
+});
+```
+                
+## Setting the Idle Time of Your Client
+
+The idle time can be set via a strategy pattern, which let's you define different strategies for determining idle time. E.g. you could track the last mouse movement or keyboard input. By default, the last sent message is used to determine your idle time.
+
+```java
+IdleManager idleManager = xmppClient.getManager(IdleManager.class);
+idleManager.setIdleStrategy(() -> {
+    // Return whatever your idle time is.
     return Instant.now();
 });
 ```
 
-If you don't want your XMPP session to respond to last activiy queries, you have to disable `LastActivityManager`, otherwise keep it enabled.
+This time will be returned if another entity asks you for your idle time and will also be included in outbound 'away' and 'extended away' presences,
+in order to inform your contacts automatically, so that they don't need to ask you.
+            
+If you don't want to reveal your idle time, you have to disable both managers, otherwise keep it enabled.
 
 ```java
-LastActivityManager lastActivityManager = xmppClient.getManager(LastActivityManager.class);
+// To not include XEP-0256 extension in outbound presences and to not respond to idle time queries.
 lastActivityManager.setEnabled(false);
+
+// To not include XEP-0319 extension in outbound presences. 
+idleManager.setEnabled(false);
 ```
 
-## <a name="serveruptime"></a>Getting the Server Uptime
+## Getting the Server Uptime
 
 When querying a server or component the result is the uptime of it.
 
@@ -64,19 +76,6 @@ or just pass `null`, if you want to query your connected server.
 LastActivity lastActivity = lastActivityManager.getLastActivity(null);
 ```
 
-## Sending Last Activity in Presence
-
-There's also a related specification: [XEP-0256: Last Activity in Presence][Last Activity in Presence], which basically says:
-"Let's just inform my contacts about my last activity automatically, so that they don't need to ask me".
-
-By default this information is automatically attached to your outbound presence stanzas of type "away" and "dnd".
-
-If you don't want it, disable the manager:
-
-```java
-LastActivityManager lastActivityManager = xmppClient.getManager(LastActivityManager.class);
-lastActivityManager.setEnabled(true);
-```
-
 [Last Activity]: http://xmpp.org/extensions/xep-0012.html "XEP-0012: Last Activity"
 [Last Activity in Presence]: http://xmpp.org/extensions/xep-0256.html "XEP-0256: Last Activity in Presence"
+[Last User Interaction in Presence]: http://xmpp.org/extensions/xep-0319.html "XEP-0319: Last User Interaction in Presence"

@@ -8,7 +8,7 @@
 Here are some simple examples:
 
 ```java
-AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.matchResource(Rule.Action.ALERT, Rule.MatchResourceValue.EXACT));
+AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.matchResource(Rule.Action.ALERT, Rule.MatchResource.EXACT));
 message.addExtension(amp);
 ```
 
@@ -18,7 +18,7 @@ message.addExtension(amp);
 ```
 
 ```java
-AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.deliver(Rule.Action.ALERT, Rule.DeliverValue.STORED));
+AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.deliver(Rule.Action.ALERT, Rule.DeliveryMode.STORED));
 message.addExtension(amp);
 ```
 

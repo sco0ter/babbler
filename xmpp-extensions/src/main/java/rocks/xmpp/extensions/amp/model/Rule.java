@@ -97,7 +97,7 @@ public final class Rule {
      * @param value  The value.
      * @return The rule.
      */
-    public static Rule deliver(Action action, DeliverValue value) {
+    public static Rule deliver(Action action, DeliveryMode value) {
         return new Rule(action, Condition.DELIVER, value.name().toLowerCase());
     }
 
@@ -108,7 +108,7 @@ public final class Rule {
      * @param value  The value.
      * @return The rule.
      */
-    public static Rule matchResource(Action action, MatchResourceValue value) {
+    public static Rule matchResource(Action action, MatchResource value) {
         return new Rule(action, Condition.MATCH_RESOURCE, value.name().toLowerCase());
     }
 
@@ -209,7 +209,7 @@ public final class Rule {
      *
      * @see <a href="http://xmpp.org/extensions/xep-0079.html#conditions-def-deliver">3.3.1 deliver</a>
      */
-    public enum DeliverValue {
+    public enum DeliveryMode {
         /**
          * The message would be immediately delivered to the intended recipient or routed to the next hop.
          */
@@ -237,7 +237,7 @@ public final class Rule {
      *
      * @see <a href="http://xmpp.org/extensions/xep-0079.html#conditions-def-match">3.3.3 match-resource</a>
      */
-    public enum MatchResourceValue {
+    public enum MatchResource {
         /**
          * Destination resource matches any value, effectively ignoring the intended resource.
          */

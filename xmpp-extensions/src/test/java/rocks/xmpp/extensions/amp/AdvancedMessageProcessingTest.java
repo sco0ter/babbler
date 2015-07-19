@@ -215,14 +215,14 @@ public class AdvancedMessageProcessingTest extends XmlTest {
 
     @Test
     public void marshalDeliver() throws XMLStreamException, JAXBException {
-        AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.deliver(Rule.Action.ALERT, Rule.DeliverValue.FORWARD));
+        AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.deliver(Rule.Action.ALERT, Rule.DeliveryMode.FORWARD));
         String xml = marshal(amp);
         Assert.assertEquals(xml, "<amp xmlns=\"http://jabber.org/protocol/amp\"><rule action=\"alert\" condition=\"deliver\" value=\"forward\"></rule></amp>");
     }
 
     @Test
     public void marshalMatchResource() throws XMLStreamException, JAXBException {
-        AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.matchResource(Rule.Action.ALERT, Rule.MatchResourceValue.EXACT));
+        AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.matchResource(Rule.Action.ALERT, Rule.MatchResource.EXACT));
         String xml = marshal(amp);
         Assert.assertEquals(xml, "<amp xmlns=\"http://jabber.org/protocol/amp\"><rule action=\"alert\" condition=\"match-resource\" value=\"exact\"></rule></amp>");
     }

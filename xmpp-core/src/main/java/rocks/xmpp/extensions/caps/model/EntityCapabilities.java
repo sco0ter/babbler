@@ -136,7 +136,7 @@ public final class EntityCapabilities extends StreamFeature {
             if (feature != null) {
                 sb.append(feature);
             }
-            sb.append("<");
+            sb.append('<');
         }
 
         // 6. If the service discovery information response includes XEP-0128 data forms, sort the forms by the FORM_TYPE (i.e., by the XML character data of the <value/> element).

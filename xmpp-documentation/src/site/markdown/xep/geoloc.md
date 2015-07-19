@@ -12,7 +12,10 @@ Publishing your location to the [Personal Eventing Service][XEP-0163: Personal E
 
 ```java
 GeoLocationManager geoLocationManager = xmppClient.getManager(GeoLocationManager.class);
-geoLocationManager.publish(new GeoLocation(50.35, 7.59));
+geoLocationManager.publish(GeoLocation.builder()
+    .latitude(50.35)
+    .longitude(7.59)
+    .build());
 ```
 
 ## Listening for User Location Updates

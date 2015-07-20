@@ -35,19 +35,19 @@ public final class ChatSessionEvent extends EventObject {
 
     private final ChatSession chatSession;
 
-    private final boolean createdByInboundMessage;
+    private final boolean inbound;
 
     /**
      * Constructs a chat session event.
      *
-     * @param source                  The chat manager on which the event initially occurred.
-     * @param chatSession             The chat session.
-     * @param createdByInboundMessage True, if the chat session has been created by an inbound message.
+     * @param source      The chat manager on which the event initially occurred.
+     * @param chatSession The chat session.
+     * @param inbound     True, if the chat session has been created by an inbound message.
      */
-    ChatSessionEvent(ChatManager source, ChatSession chatSession, boolean createdByInboundMessage) {
+    ChatSessionEvent(ChatManager source, ChatSession chatSession, boolean inbound) {
         super(source);
         this.chatSession = chatSession;
-        this.createdByInboundMessage = createdByInboundMessage;
+        this.inbound = inbound;
     }
 
     /**
@@ -64,7 +64,17 @@ public final class ChatSessionEvent extends EventObject {
      *
      * @return True, if the chat session has been created by an inbound message.
      */
+    @Deprecated
     public final boolean isCreatedByIncomingMessage() {
-        return createdByInboundMessage;
+        return inbound;
+    }
+
+    /**
+     * Indicates, whether the chat session has been created by an inbound message or programmatically.
+     *
+     * @return True, if the chat session has been created by an inbound message; false if it was created programmatically.
+     */
+    public final boolean isInbound() {
+        return inbound;
     }
 }

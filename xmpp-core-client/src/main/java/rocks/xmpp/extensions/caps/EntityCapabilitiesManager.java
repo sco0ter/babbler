@@ -453,7 +453,7 @@ public final class EntityCapabilitiesManager extends Manager {
 
                                 // 3.9 If the values of the received and reconstructed hashes do not match, the processing application MUST consider the result to be invalid and MUST NOT globally cache the verification string;
                             } catch (XmppException e1) {
-                                logger.log(Level.WARNING, "Failed to discover information for entity '{0}' for node '{1}'", new Object[]{entity, nodeToDiscover});
+                                logger.log(Level.WARNING, "Failed to discover information for entity ''{0}'' for node ''{1}''", new Object[]{entity, nodeToDiscover});
                             } catch (NoSuchAlgorithmException e1) {
                                 // 2. If the value of the 'hash' attribute does not match one of the processing application's supported hash functions, do the following:
                                 try {
@@ -462,7 +462,7 @@ public final class EntityCapabilitiesManager extends Manager {
                                     // 2.3 Do not validate or globally cache the verification string as described below; instead, the processing application SHOULD associate the discovered identity+features only with the JabberID of the generating entity.
                                     ENTITY_CAPABILITIES.put(entity, serviceDiscoveryManager.discoverInformation(entity, nodeToDiscover));
                                 } catch (XmppException e2) {
-                                    logger.log(Level.WARNING, "Failed to discover information for entity '{0}' for node '{1}'", new Object[]{entity, nodeToDiscover});
+                                    logger.log(Level.WARNING, "Failed to discover information for entity ''{0}'' for node ''{1}''", new Object[]{entity, nodeToDiscover});
                                 }
                             }
                         });

@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 /**
  * Manages subscription requests and presences.
@@ -53,8 +52,6 @@ import java.util.logging.Logger;
 public final class PresenceManager extends Manager {
 
     // TODO auto deny or auto approve some or all requests.
-
-    private static final Logger logger = Logger.getLogger(PresenceManager.class.getName());
 
     private final Map<Jid, Map<String, Presence>> presenceMap = new ConcurrentHashMap<>();
 

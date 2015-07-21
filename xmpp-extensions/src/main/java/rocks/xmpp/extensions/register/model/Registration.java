@@ -34,6 +34,34 @@ import java.net.URL;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:register} namespace.
+ * <p>
+ * <h3>Usage</h3>
+ * To request the registration form:
+ * <pre>
+ * {@code
+ * Registration registration = Registration.empty();
+ * }
+ * </pre>
+ * To create a registration for submission:
+ * <pre>
+ * {@code
+ * Registration registration = Registration.builder()
+ *     .username("user")
+ *     .password("pass")
+ *     .familyName("Family Name")
+ *     .givenName("Given Name")
+ *     .nickname("Nick Name")
+ *     .email("E-Mail")
+ *     .build();
+ * }
+ * </pre>
+ * To create a registration for removing the current account:
+ * <pre>
+ * {@code
+ * Registration registration = Registration.remove();
+ * }
+ * </pre>
+ * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a>
@@ -47,52 +75,58 @@ public final class Registration {
      */
     public static final String NAMESPACE = "jabber:iq:register";
 
-    private String registered;
+    private final String registered;
 
-    private String instructions;
+    private final String instructions;
 
-    private String username;
+    private final String username;
 
-    private String nick;
+    private final String nick;
 
-    private String password;
+    private final String password;
 
-    private String name;
+    private final String name;
 
     @XmlElement(name = "first")
-    private String givenName;
+    private final String givenName;
 
     @XmlElement(name = "last")
-    private String familyName;
+    private final String familyName;
 
-    private String email;
+    private final String email;
 
     @XmlElement(name = "address")
-    private String street;
+    private final String street;
 
-    private String city;
+    private final String city;
 
-    private String region;
+    private final String region;
 
     @XmlElement(name = "zip")
-    private String postalCode;
+    private final String postalCode;
 
     @XmlElement(name = "phone")
-    private String telephone;
+    private final String telephone;
 
-    private URL url;
+    private final URL url;
 
-    private String date;
+    private final String date;
 
-    private String remove;
-
-    @XmlElementRef
-    private DataForm dataForm;
+    private final String remove;
 
     @XmlElementRef
-    private OobX oobX;
+    private final DataForm dataForm;
+
+    @XmlElementRef
+    private final OobX oobX;
+
+    private Registration() {
+        this(false);
+    }
 
     private Registration(Builder builder) {
+        this.registered = null;
+        this.instructions = null;
         this.username = builder.username;
         this.nick = builder.nickname;
         this.password = builder.password;
@@ -109,12 +143,32 @@ public final class Registration {
         this.date = builder.date;
         this.dataForm = builder.dataForm;
         this.oobX = builder.oobX;
+        this.remove = null;
     }
 
     /**
      * Creates an empty registration element to request the registration.
      */
-    public Registration() {
+    private Registration(boolean remove) {
+        this.registered = null;
+        this.instructions = null;
+        this.username = null;
+        this.nick = null;
+        this.password = null;
+        this.name = null;
+        this.givenName = null;
+        this.familyName = null;
+        this.email = null;
+        this.street = null;
+        this.city = null;
+        this.region = null;
+        this.postalCode = null;
+        this.telephone = null;
+        this.url = null;
+        this.date = null;
+        this.dataForm = null;
+        this.oobX = null;
+        this.remove = remove ? "" : null;
     }
 
     /**
@@ -123,9 +177,16 @@ public final class Registration {
      * @return The registration.
      */
     public static Registration remove() {
-        Registration registration = new Registration();
-        registration.remove = "";
-        return registration;
+        return new Registration(true);
+    }
+
+    /**
+     * Creates an empty registration element for requesting the registration form.
+     *
+     * @return The registration.
+     */
+    public static Registration empty() {
+        return new Registration(false);
     }
 
     /**

@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.register;
 
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
@@ -80,7 +79,7 @@ public final class RegistrationManager extends Manager {
      * @see rocks.xmpp.extensions.register.model.Registration
      */
     public Registration getRegistration() throws XmppException {
-        IQ result = xmppSession.query(IQ.get(new Registration()));
+        IQ result = xmppSession.query(IQ.get(Registration.empty()));
         return result.getExtension(Registration.class);
     }
 

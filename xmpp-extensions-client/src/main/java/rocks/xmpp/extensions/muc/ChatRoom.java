@@ -467,7 +467,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see rocks.xmpp.extensions.muc.model.RoomRegistration
      */
     public DataForm getRegistrationForm() throws XmppException {
-        IQ iq = IQ.get(roomJid, new Registration());
+        IQ iq = IQ.get(roomJid, Registration.empty());
         IQ result = xmppSession.query(iq);
         Registration registration = result.getExtension(Registration.class);
         if (registration != null) {

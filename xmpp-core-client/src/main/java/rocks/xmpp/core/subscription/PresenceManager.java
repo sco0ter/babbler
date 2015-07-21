@@ -124,8 +124,9 @@ public final class PresenceManager extends Manager {
                 }
             }
         }
-
-        return new Presence(Presence.Type.UNAVAILABLE).withFrom(jid);
+        Presence presence = new Presence(Presence.Type.UNAVAILABLE);
+        presence.setFrom(jid);
+        return presence;
     }
 
     /**

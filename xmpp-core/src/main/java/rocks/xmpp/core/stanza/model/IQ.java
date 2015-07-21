@@ -60,6 +60,7 @@ import java.util.UUID;
  * </ol>
  * </div>
  * </blockquote>
+ * This class is thread-safe.
  *
  * @author Christian Schudt
  */
@@ -71,7 +72,7 @@ public class IQ extends Stanza {
     private static final EnumSet<Type> IS_RESPONSE = EnumSet.of(Type.RESULT, Type.ERROR);
 
     @XmlAttribute
-    private final Type type;
+    private Type type;
 
     /**
      * Default constructor for unmarshalling.
@@ -183,18 +184,26 @@ public class IQ extends Stanza {
         return set(null, extension);
     }
 
-
     /**
      * Gets the type.
      *
      * @return The type.
      */
-    public final Type getType() {
+    public final synchronized Type getType() {
         return type;
     }
 
+    /**
+     * Sets the type.
+     *
+     * @param type The type.
+     */
+    public final synchronized void setType(Type type) {
+        this.type = type;
+    }
+
     @Override
-    public final String toString() {
+    public final synchronized String toString() {
         StringBuilder sb = new StringBuilder("IQ");
         if (type != null) {
             sb.append('-').append(type.name().toLowerCase());
@@ -207,7 +216,7 @@ public class IQ extends Stanza {
      *
      * @return True if this is a get or set IQ.
      */
-    public final boolean isRequest() {
+    public final synchronized boolean isRequest() {
         return IS_REQUEST.contains(type);
     }
 
@@ -216,7 +225,7 @@ public class IQ extends Stanza {
      *
      * @return If this is a result or error IQ.
      */
-    public final boolean isResponse() {
+    public final synchronized boolean isResponse() {
         return IS_RESPONSE.contains(type);
     }
 
@@ -247,11 +256,6 @@ public class IQ extends Stanza {
     @Override
     public final IQ createError(Condition condition) {
         return createError(new StanzaError(condition));
-    }
-
-    @Override
-    public final IQ withFrom(Jid from) {
-        return new IQ(getTo(), getType(), getExtension(Object.class), getId(), from, getLanguage(), getError());
     }
 
     /**

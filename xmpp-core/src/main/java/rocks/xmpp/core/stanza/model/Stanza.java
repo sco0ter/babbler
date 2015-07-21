@@ -49,21 +49,21 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class Stanza implements StreamElement {
 
     @XmlAttribute
-    private final Jid from;
+    private Jid from;
 
     @XmlAttribute
-    private final String id;
+    private String id;
 
     @XmlAttribute
-    private final Jid to;
+    private Jid to;
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-    private final String lang;
+    private String lang;
 
     @XmlAnyElement(lax = true)
     final List<Object> extensions = new CopyOnWriteArrayList<>();
 
-    private final StanzaError error;
+    private StanzaError error;
 
     Stanza() {
         this.to = null;
@@ -85,16 +85,26 @@ public abstract class Stanza implements StreamElement {
     }
 
     /**
-     * Gets the stanza's 'to' attribute.
+     * Gets the stanza's 'from' attribute.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-attributes-to">8.1.1.  to</a></cite></p>
-     * <p>The 'to' attribute specifies the JID of the intended recipient for the stanza.</p>
+     * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-attributes-from">8.1.2.  from</a></cite></p>
+     * <p>The 'from' attribute specifies the JID of the sender.</p>
      * </blockquote>
      *
      * @return The JID.
      */
-    public final Jid getTo() {
-        return to;
+    public final synchronized Jid getFrom() {
+        return from;
+    }
+
+    /**
+     * Sets the stanza's 'from' attribute, i.e. the sender.
+     *
+     * @param from The sender.
+     * @see #getFrom() ()
+     */
+    public final synchronized void setFrom(Jid from) {
+        this.from = from;
     }
 
     /**
@@ -109,33 +119,45 @@ public abstract class Stanza implements StreamElement {
      *
      * @return The id.
      */
-    public final String getId() {
+    public final synchronized String getId() {
         return id;
     }
 
     /**
-     * Gets the stanza's 'from' attribute.
-     * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-attributes-from">8.1.2.  from</a></cite></p>
-     * <p>The 'from' attribute specifies the JID of the sender.</p>
-     * </blockquote>
+     * Sets the stanza's 'id' attribute.
      *
-     * @return The JID.
+     * @param id The id.
+     * @see #getId()
      */
-    public final Jid getFrom() {
-        return from;
+    public final synchronized void setId(String id) {
+        this.id = id;
     }
 
     /**
-     * Creates a copy of this stanza and adds a from attribute to it.
+     * Gets the stanza's 'to' attribute, i.e. the recipient.
+     * <blockquote>
+     * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-attributes-to">8.1.1.  to</a></cite></p>
+     * <p>The 'to' attribute specifies the JID of the intended recipient for the stanza.</p>
+     * </blockquote>
      *
-     * @param from The sender.
-     * @return A new stanza with a from attribute.
+     * @return The recipient.
      */
-    public abstract Stanza withFrom(Jid from);
+    public final synchronized Jid getTo() {
+        return to;
+    }
 
     /**
-     * Gets the stanza's 'xml:lang' attribute.
+     * Sets the stanza's 'to' attribute, i.e. the recipient.
+     *
+     * @param to The recipient.
+     * @see #getTo()
+     */
+    public final synchronized void setTo(Jid to) {
+        this.to = to;
+    }
+
+    /**
+     * Gets the stanza's 'xml:lang' attribute, i.e. its language.
      * <blockquote>
      * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-attributes-lang">8.1.5.  xml:lang</a></cite></p>
      * <p>A stanza SHOULD possess an 'xml:lang' attribute (as defined in Section 2.12 of [XML]) if the stanza contains XML character data that is intended to be presented to a human user (as explained in [CHARSETS], "internationalization is for humans"). The value of the 'xml:lang' attribute specifies the default language of any such human-readable XML character data.</p>
@@ -143,8 +165,18 @@ public abstract class Stanza implements StreamElement {
      *
      * @return The language.
      */
-    public final String getLanguage() {
+    public final synchronized String getLanguage() {
         return lang;
+    }
+
+    /**
+     * Sets the stanza's 'xml:lang' attribute, i.e. its language.
+     *
+     * @param language The language.
+     * @see #getLanguage()
+     */
+    public final synchronized void setLanguage(String language) {
+        this.lang = language;
     }
 
     /**
@@ -192,8 +224,18 @@ public abstract class Stanza implements StreamElement {
      *
      * @return The stanza error.
      */
-    public final StanzaError getError() {
+    public final synchronized StanzaError getError() {
         return error;
+    }
+
+    /**
+     * Sets the stanza's 'error' element.
+     *
+     * @param stanzaError The stanza error.
+     * @see #getError()
+     */
+    public final synchronized void setError(StanzaError stanzaError) {
+        this.error = stanzaError;
     }
 
     /**
@@ -215,7 +257,7 @@ public abstract class Stanza implements StreamElement {
     public abstract Stanza createError(Condition condition);
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         StringBuilder sb = new StringBuilder();
         if (id != null) {
             sb.append(" (").append(id).append(')');

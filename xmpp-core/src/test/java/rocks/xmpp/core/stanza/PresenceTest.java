@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.roster.model.Roster;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Text;
 import rocks.xmpp.core.stanza.model.client.ClientPresence;
@@ -318,15 +317,5 @@ public class PresenceTest extends XmlTest {
         Assert.assertEquals(list.get(6), presenceUnavailable);
         Assert.assertEquals(list.get(7), presencePrio1Unavailble);
 
-    }
-
-    @Test
-    public void testWithFrom() throws JAXBException, XMLStreamException {
-        Presence presence = new Presence(Jid.ofLocalAndDomain("to", "domain"), Presence.Type.SUBSCRIBE, Presence.Show.AWAY, Collections.singleton(new Text("status")), null, "id", null, null, Collections.singleton(new Roster()), null);
-        Presence withFrom = presence.withFrom(Jid.ofDomain("from"));
-        Assert.assertEquals(withFrom.getType(), Presence.Type.SUBSCRIBE);
-        Assert.assertEquals(withFrom.getId(), "id");
-        Assert.assertEquals(withFrom.getFrom(), Jid.of("from"));
-        Assert.assertNotNull(withFrom.getExtension(Roster.class));
     }
 }

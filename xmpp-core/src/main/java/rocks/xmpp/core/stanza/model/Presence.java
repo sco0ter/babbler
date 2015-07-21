@@ -45,21 +45,22 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * <p>After a client completes the preconditions specified in [XMPP-CORE], it can establish a "presence session" at its server by sending initial presence, where the presence session is terminated by sending unavailable presence. For the duration of its presence session, a connected resource (in the terminology of [XMPP-CORE]) is said to be an "available resource".</p>
  * <p>In XMPP, applications that combine messaging and presence functionality, the default type of communication for which presence signals availability is messaging; however, it is not necessary for XMPP applications to combine messaging and presence functionality, and they can provide standalone presence features without messaging (in addition, XMPP servers do not require information about network availability in order to successfully route message and IQ stanzas).</p>
  * </blockquote>
- * Please also refer to <a href="http://xmpp.org/rfcs/rfc6121.html#presence-syntax">4.7.  Presence Syntax</a>.
+ * This class is thread-safe.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/rfcs/rfc6121.html#presence-syntax">4.7.  Presence Syntax</a>
  */
 @XmlTransient
 public class Presence extends ExtensibleStanza implements Comparable<Presence> {
 
     private final List<Text> status = new CopyOnWriteArrayList<>();
 
-    private final Byte priority;
+    private Byte priority;
 
-    private final Show show;
+    private Show show;
 
     @XmlAttribute
-    private final Type type;
+    private Type type;
 
     /**
      * Constructs an empty presence to indicate availability.
@@ -194,7 +195,7 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      *
      * @return True, if the presence is available.
      */
-    public final boolean isAvailable() {
+    public final synchronized boolean isAvailable() {
         return type == null;
     }
 
@@ -204,8 +205,18 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      * @return The {@code <show/>} element.
      * @see Show
      */
-    public final Show getShow() {
+    public final synchronized Show getShow() {
         return show;
+    }
+
+    /**
+     * Sets the {@code <show/>} element.
+     *
+     * @param show The {@code <show/>} element.
+     * @see #getShow()
+     */
+    public final synchronized void setShow(Show show) {
+        this.show = show;
     }
 
     /**
@@ -217,8 +228,18 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      *
      * @return The priority.
      */
-    public final Byte getPriority() {
+    public final synchronized Byte getPriority() {
         return priority;
+    }
+
+    /**
+     * Sets the priority.
+     *
+     * @param priority The priority.
+     * @see #getPriority()
+     */
+    public final synchronized void setPriority(byte priority) {
+        this.priority = priority;
     }
 
     /**
@@ -227,8 +248,18 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      * @return The type.
      * @see Type
      */
-    public final Type getType() {
+    public final synchronized Type getType() {
         return type;
+    }
+
+    /**
+     * Sets the type of the presence.
+     *
+     * @param type The type.
+     * @see #getType()
+     */
+    public final synchronized void setType(Type type) {
+        this.type = type;
     }
 
     /**
@@ -264,10 +295,34 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
                 return status.getText();
             }
         }
-        if (!status.isEmpty()) {
-            return status.get(0).getText();
+        synchronized (this) {
+            if (!status.isEmpty()) {
+                return status.get(0).getText();
+            }
         }
         return null;
+    }
+
+    /**
+     * Sets the default status element.
+     *
+     * @param text The status text.
+     * @see #getStatus() ()
+     */
+    public final void setStatus(String text) {
+        if (text != null) {
+            synchronized (this) {
+                for (Text s : status) {
+                    if (s.getLanguage() == null || s.getLanguage().isEmpty()) {
+                        status.remove(s);
+                        break;
+                    }
+                }
+                this.status.add(0, new Text(text));
+            }
+        } else {
+            this.status.clear();
+        }
     }
 
     @Override
@@ -281,12 +336,7 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
     }
 
     @Override
-    public final Presence withFrom(Jid from) {
-        return new Presence(getTo(), getType(), getShow(), getStatuses(), getPriority(), getId(), from, getLanguage(), getExtensions(), getError());
-    }
-
-    @Override
-    public final int compareTo(Presence o) {
+    public final synchronized int compareTo(Presence o) {
         if (o == null) {
             return -1;
         }
@@ -319,7 +369,7 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
     }
 
     @Override
-    public final String toString() {
+    public final synchronized String toString() {
         StringBuilder sb = new StringBuilder();
         if (type != null) {
             String sType = type.name();

@@ -101,7 +101,8 @@ public final class TestXmppSession extends XmppSession {
     public StreamElement send(StreamElement element) {
         StreamElement sent = super.send(element);
         if (mockServer != null && sent instanceof Stanza) {
-            mockServer.receive(((Stanza) sent).withFrom(connectedResource));
+            ((Stanza) sent).setFrom(connectedResource);
+            mockServer.receive((Stanza) sent);
         }
         return element;
     }

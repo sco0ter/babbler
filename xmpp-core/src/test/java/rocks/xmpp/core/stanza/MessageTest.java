@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.roster.model.Roster;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.Text;
@@ -88,6 +87,9 @@ public class MessageTest extends XmlTest {
         Assert.assertEquals(message.getLanguage(), "en");
         Assert.assertEquals(message.getBody(), "Wherefore art thou, Romeo?");
         Assert.assertEquals(message.getBodies().get(1).getText(), "Wo bist du, Romeo?");
+
+        message.setBody("test");
+        Assert.assertEquals(message.getBody(), "test");
     }
 
     @Test
@@ -230,16 +232,6 @@ public class MessageTest extends XmlTest {
         Message message = new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT, null, Arrays.asList(new Text("subject1", "de"), new Text("subject2", "fr")), null, null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
         String xml = marshal(message);
         Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><subject xml:lang=\"de\">subject1</subject><subject xml:lang=\"fr\">subject2</subject></message>");
-    }
-
-    @Test
-    public void testWithFrom() throws JAXBException, XMLStreamException {
-        Message message = new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT, "body", "subject", "thread", null, "id", null, null, Collections.singleton(new Roster()), null);
-        Message withFrom = message.withFrom(Jid.of("from"));
-        Assert.assertEquals(withFrom.getType(), Message.Type.CHAT);
-        Assert.assertEquals(withFrom.getId(), "id");
-        Assert.assertEquals(withFrom.getFrom(), Jid.of("from"));
-        Assert.assertNotNull(withFrom.getExtension(Roster.class));
     }
 
     @Test

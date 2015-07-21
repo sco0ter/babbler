@@ -43,8 +43,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#message">5.  Exchanging Messages</a></cite></p>
  * <p>Once a client has authenticated with a server and bound a resource to an XML stream as described in [XMPP-CORE], an XMPP server will route XML stanzas to and from that client. One kind of stanza that can be exchanged is {@code <message/>} (if, that is, messaging functionality is enabled on the server). Exchanging messages is a basic use of XMPP and occurs when a user generates a message stanza that is addressed to another entity. As defined under Section 8, the sender's server is responsible for delivering the message to the intended recipient (if the recipient is on the same local server) or for routing the message to the recipient's server (if the recipient is on a remote server). Thus a message stanza is used to "push" information to another entity.</p>
  * </blockquote>
+ * This class is thread-safe.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/rfcs/rfc6121.html#message-syntax">5.2.  Message Syntax</a>
  */
 @XmlTransient
 public class Message extends ExtensibleStanza {
@@ -54,9 +56,9 @@ public class Message extends ExtensibleStanza {
     private final List<Text> body = new CopyOnWriteArrayList<>();
 
     @XmlAttribute
-    private final Type type;
+    private Type type;
 
-    private final Thread thread;
+    private Thread thread;
 
     public Message() {
         this(null);
@@ -202,10 +204,34 @@ public class Message extends ExtensibleStanza {
                 return body.getText();
             }
         }
-        if (!body.isEmpty()) {
-            return body.get(0).getText();
+        synchronized (this) {
+            if (!body.isEmpty()) {
+                return body.get(0).getText();
+            }
         }
         return null;
+    }
+
+    /**
+     * Sets the default body element.
+     *
+     * @param body The body text.
+     * @see #getBody()
+     */
+    public final void setBody(String body) {
+        if (body != null) {
+            synchronized (this) {
+                for (Text b : this.body) {
+                    if (b.getLanguage() == null || b.getLanguage().isEmpty()) {
+                        this.body.remove(b);
+                        break;
+                    }
+                }
+                this.body.add(0, new Text(body));
+            }
+        } else {
+            this.body.clear();
+        }
     }
 
     /**
@@ -241,11 +267,36 @@ public class Message extends ExtensibleStanza {
                 return subject.getText();
             }
         }
-        if (!subject.isEmpty()) {
-            return subject.get(0).getText();
+        synchronized (this) {
+            if (!subject.isEmpty()) {
+                return subject.get(0).getText();
+            }
         }
         return null;
     }
+
+    /**
+     * Sets the default subject.
+     *
+     * @param subject The subject text.
+     * @see #getSubject()
+     */
+    public final void setSubject(String subject) {
+        if (subject != null) {
+            synchronized (this) {
+                for (Text s : this.subject) {
+                    if (s.getLanguage() == null || s.getLanguage().isEmpty()) {
+                        this.subject.remove(s);
+                        break;
+                    }
+                }
+                this.subject.add(0, new Text(subject));
+            }
+        } else {
+            this.subject.clear();
+        }
+    }
+
 
     /**
      * Gets the message type.
@@ -256,8 +307,18 @@ public class Message extends ExtensibleStanza {
      *
      * @return The message type.
      */
-    public final Type getType() {
+    public final synchronized Type getType() {
         return type;
+    }
+
+    /**
+     * Sets the message type.
+     *
+     * @param type The message type.
+     * @see #getType()
+     */
+    public final synchronized void setType(Type type) {
+        this.type = type;
     }
 
     /**
@@ -269,11 +330,21 @@ public class Message extends ExtensibleStanza {
      *
      * @return The thread.
      */
-    public final String getThread() {
+    public final synchronized String getThread() {
         if (thread != null) {
             return thread.value;
         }
         return null;
+    }
+
+    /**
+     * Sets the thread.
+     *
+     * @param thread The thread.
+     * @see #getThread()
+     */
+    public final synchronized void setThread(String thread) {
+        this.thread = thread != null ? new Thread(thread, null) : null;
     }
 
     /**
@@ -285,11 +356,21 @@ public class Message extends ExtensibleStanza {
      *
      * @return The parent thread.
      */
-    public final String getParentThread() {
+    public final synchronized String getParentThread() {
         if (thread != null) {
             return thread.parent;
         }
         return null;
+    }
+
+    /**
+     * Sets the parent thread.
+     *
+     * @param parent The parent thread.
+     * @see #getParentThread()
+     */
+    public final synchronized void setParentThread(String parent) {
+        this.thread = new Thread(thread != null ? thread.value : null, parent);
     }
 
     @Override
@@ -303,12 +384,7 @@ public class Message extends ExtensibleStanza {
     }
 
     @Override
-    public final Message withFrom(Jid from) {
-        return new Message(getTo(), getType(), getBodies(), getSubjects(), getThread(), getParentThread(), getId(), from, getLanguage(), getExtensions(), getError());
-    }
-
-    @Override
-    public final String toString() {
+    public final synchronized String toString() {
         StringBuilder sb = new StringBuilder();
         if (type != null) {
             String sType = type.name();

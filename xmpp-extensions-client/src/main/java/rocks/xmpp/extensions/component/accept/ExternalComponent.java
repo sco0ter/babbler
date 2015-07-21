@@ -202,7 +202,7 @@ public final class ExternalComponent extends XmppSession {
     public final StreamElement send(StreamElement element) {
 
         if (element instanceof Stanza && ((Stanza) element).getFrom() == null) {
-            element = ((Stanza) element).withFrom(connectedResource);
+            ((Stanza) element).setFrom(connectedResource);
         }
         if (element instanceof Message) {
             element = ComponentMessage.from((Message) element);

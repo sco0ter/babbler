@@ -89,6 +89,6 @@ public final class Replace {
 
     @Override
     public final String toString() {
-        return id;
+        return "Replacement for message with id: " + id;
     }
 }

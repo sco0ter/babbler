@@ -268,6 +268,15 @@ public abstract class Stanza implements StreamElement {
         if (to != null) {
             sb.append(" to '").append(to).append('\'');
         }
+        if (!extensions.isEmpty()) {
+            sb.append("\nExtension(s):\n");
+            for (Object o : extensions) {
+                sb.append(o).append('\n');
+            }
+        }
+        if (error != null) {
+            sb.append('\n').append("Error: ").append(error);
+        }
         return sb.toString();
     }
 }

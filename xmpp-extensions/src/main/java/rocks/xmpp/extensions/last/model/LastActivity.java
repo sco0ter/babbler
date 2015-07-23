@@ -91,6 +91,6 @@ public final class LastActivity {
 
     @Override
     public final String toString() {
-        return String.valueOf(seconds) + " seconds";
+        return "Last activity: " + String.valueOf(seconds) + " seconds ago";
     }
 }

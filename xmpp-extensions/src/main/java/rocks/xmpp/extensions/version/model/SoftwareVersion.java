@@ -29,7 +29,7 @@ import java.util.Objects;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:version} namespace.
- * <p>
+ * <p/>
  * This class is immutable.
  *
  * @author Christian Schudt
@@ -114,21 +114,10 @@ public final class SoftwareVersion {
 
     @Override
     public final String toString() {
-        StringBuilder sb = new StringBuilder();
-        if (name != null) {
-            sb.append(name);
-        }
-        if (version != null) {
-            if (!sb.toString().isEmpty()) {
-                sb.append(' ');
-            }
-            sb.append(version);
-        }
+        StringBuilder sb = new StringBuilder(name);
+        sb.append(' ').append(version);
         if (os != null) {
-            if (!sb.toString().isEmpty()) {
-                sb.append(", ");
-            }
-            sb.append(os);
+            sb.append(", ").append(os);
         }
         return sb.toString();
     }

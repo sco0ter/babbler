@@ -145,6 +145,6 @@ public final class DelayedDelivery {
 
     @Override
     public final String toString() {
-        return stamp.toString();
+        return "Send date: " + stamp;
     }
 }

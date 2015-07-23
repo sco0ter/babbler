@@ -87,7 +87,7 @@ public final class Rpc {
      * Creates a method response with a fault.
      *
      * @param fault The fault.
-     * @deprecated Use {@link #ofFaultResponse(MethodResponse.Fault)}
+     * @deprecated Use {@link #ofFaultResponse(int, String)}
      */
     @Deprecated
     public Rpc(MethodResponse.Fault fault) {
@@ -118,11 +118,12 @@ public final class Rpc {
     /**
      * Creates a method response with a fault.
      *
-     * @param fault The fault.
+     * @param faultCode   The fault code.
+     * @param faultString The fault string.
      * @return The RPC element.
      */
-    public static Rpc ofFaultResponse(MethodResponse.Fault fault) {
-        return new Rpc(fault);
+    public static Rpc ofFaultResponse(int faultCode, String faultString) {
+        return new Rpc(new MethodResponse.Fault(faultCode, faultString));
     }
 
     /**
@@ -268,6 +269,7 @@ public final class Rpc {
              * @param faultCode   The fault code.
              * @param faultString The fault string.
              */
+            @Deprecated
             public Fault(int faultCode, String faultString) {
                 Map<String, Value> faultMap = new LinkedHashMap<>();
                 faultMap.put("faultCode", Value.of(faultCode));

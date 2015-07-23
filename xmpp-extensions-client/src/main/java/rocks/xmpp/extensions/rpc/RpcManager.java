@@ -77,7 +77,7 @@ public final class RpcManager extends Manager {
                         Value value = rpcHandler1.process(iq.getFrom(), methodCall.getMethodName(), parameters);
                         return iq.createResult(Rpc.ofMethodResponse(value));
                     } catch (RpcException e1) {
-                        return iq.createResult(Rpc.ofFaultResponse(new Rpc.MethodResponse.Fault(e1.getFaultCode(), e1.getFaultString())));
+                        return iq.createResult(Rpc.ofFaultResponse(e1.getFaultCode(), e1.getFaultString()));
                     } catch (Throwable e1) {
                         logger.log(Level.WARNING, e1.getMessage(), e1);
                         return iq.createError(Condition.INTERNAL_SERVER_ERROR);

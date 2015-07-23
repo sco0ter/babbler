@@ -119,4 +119,9 @@ public final class Idle {
     public final OffsetDateTime getSince() {
         return since;
     }
+
+    @Override
+    public final String toString() {
+        return "Idle since " + since;
+    }
 }

@@ -42,4 +42,9 @@ final class Parameter {
     public final Value getValue() {
         return value;
     }
+
+    @Override
+    public final String toString() {
+        return value.toString();
+    }
 }

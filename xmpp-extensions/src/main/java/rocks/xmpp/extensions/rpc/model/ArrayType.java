@@ -38,4 +38,8 @@ final class ArrayType {
     @XmlElement(name = "value")
     final List<Value> values = new ArrayList<>();
 
+    @Override
+    public final String toString() {
+        return values.toString();
+    }
 }

@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.rpc.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Christian Schudt
@@ -48,5 +49,10 @@ final class StructType {
             this.name = name;
             this.value = value;
         }
+    }
+
+    @Override
+    public final String toString() {
+        return '{' + String.join(", ", member.stream().map(m -> '\'' + m.name + "': " + m.value).collect(Collectors.toList())) + '}';
     }
 }

@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -142,6 +143,17 @@ public final class Rpc {
         return methodResponse;
     }
 
+    @Override
+    public final String toString() {
+        if (this.methodCall != null) {
+            return methodCall.toString();
+        }
+        if (this.methodResponse != null) {
+            return methodResponse.toString();
+        }
+        return super.toString();
+    }
+
     /**
      * The implementation of a RPC method call.
      */
@@ -159,7 +171,7 @@ public final class Rpc {
         }
 
         MethodCall(String methodName, Value... parameters) {
-            this.methodName = methodName;
+            this.methodName = Objects.requireNonNull(methodName);
             for (Value value : parameters) {
                 this.parameters.add(new Parameter(value));
             }
@@ -183,6 +195,11 @@ public final class Rpc {
             List<Value> values = parameters.stream().map(Parameter::getValue).collect(Collectors.toList());
             return Collections.unmodifiableList(values);
         }
+
+        @Override
+        public final String toString() {
+            return methodName + '(' + String.join(", ", parameters.stream().map(Object::toString).collect(Collectors.toList())) + ')';
+        }
     }
 
     /**
@@ -193,16 +210,18 @@ public final class Rpc {
         @XmlElement(name = "param")
         private final List<Parameter> parameters = new ArrayList<>();
 
-        private Fault fault;
+        private final Fault fault;
 
         private MethodResponse() {
+            this.fault = null;
         }
 
-        MethodResponse(Value value) {
+        private MethodResponse(Value value) {
             this.parameters.add(new Parameter(value));
+            this.fault = null;
         }
 
-        MethodResponse(Fault fault) {
+        private MethodResponse(Fault fault) {
             this.fault = fault;
         }
 
@@ -225,6 +244,14 @@ public final class Rpc {
          */
         public final Fault getFault() {
             return fault;
+        }
+
+        @Override
+        public final String toString() {
+            if (fault != null) {
+                return fault.toString();
+            }
+            return "Response: " + parameters.get(0);
         }
 
         /**
@@ -285,6 +312,11 @@ public final class Rpc {
                     }
                 }
                 return null;
+            }
+
+            @Override
+            public final String toString() {
+                return "FaultCode: " + getFaultCode() + "; FaultString: " + getFaultString();
             }
         }
     }

@@ -48,4 +48,9 @@ final class NumericBoolean {
     final Boolean getAsBoolean() {
         return value != null ? value != 0 : null;
     }
+
+    @Override
+    public final String toString() {
+        return value == 1 ? Boolean.TRUE.toString() : Boolean.FALSE.toString();
+    }
 }

@@ -25,9 +25,6 @@
 package rocks.xmpp.extensions.amp.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * The implementation of the {@code <invalid-rules/>} element in the {@code http://jabber.org/protocol/amp} namespace.
@@ -40,16 +37,5 @@ import java.util.List;
  * @see <a href="http://xmpp.org/extensions/xep-0079.html#schemas">XML Schema</a>
  */
 @XmlRootElement(name = "invalid-rules")
-public final class InvalidRules {
-
-    private final List<Rule> rule = new ArrayList<>();
-
-    /**
-     * Gets the invalid rules.
-     *
-     * @return The invalid rules.
-     */
-    public final List<Rule> getRules() {
-        return Collections.unmodifiableList(rule);
-    }
+public final class InvalidRules extends AdvancedMessageProcessingError {
 }

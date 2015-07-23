@@ -22,23 +22,29 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.amp.model.errors;
+package rocks.xmpp.extensions.amp.model;
 
-import rocks.xmpp.extensions.amp.model.AdvancedMessageProcessingError;
-
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * The implementation of the {@code <failed-rules/>} element in the {@code http://jabber.org/protocol/amp#errors} namespace.
- * <p>
- * One or more rules triggered the "error" action. This condition contains the triggered rules.
- * </p>
- * This class is immutable.
+ * An abstract base class for all Advanced Message Processing Errors.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>
- * @see <a href="http://xmpp.org/extensions/xep-0079.html#schemas-err">XML Schema</a>
  */
-@XmlRootElement(name = "failed-rules")
-public final class FailedRules extends AdvancedMessageProcessingError {
+@XmlTransient
+public abstract class AdvancedMessageProcessingError {
+
+    private final List<Rule> rule = new ArrayList<>();
+
+    /**
+     * Gets the invalid rules.
+     *
+     * @return The invalid rules.
+     */
+    public final List<Rule> getRules() {
+        return Collections.unmodifiableList(rule);
+    }
 }

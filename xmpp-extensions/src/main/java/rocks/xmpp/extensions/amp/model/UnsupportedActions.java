@@ -25,9 +25,6 @@
 package rocks.xmpp.extensions.amp.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * The implementation of the {@code <unsupported-actions/>} element in the {@code http://jabber.org/protocol/amp} namespace.
@@ -41,16 +38,5 @@ import java.util.List;
  * @see <a href="http://xmpp.org/extensions/xep-0079.html#schemas">XML Schema</a>
  */
 @XmlRootElement(name = "unsupported-actions")
-public final class UnsupportedActions {
-
-    private final List<Rule> rule = new ArrayList<>();
-
-    /**
-     * Gets the rules, that specify the unsupported actions.
-     *
-     * @return The rules.
-     */
-    public final List<Rule> getRules() {
-        return Collections.unmodifiableList(rule);
-    }
+public final class UnsupportedActions extends AdvancedMessageProcessingError {
 }

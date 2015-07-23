@@ -32,12 +32,9 @@ import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.extensions.vcard.temp.VCardManager;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This manager implements <a href="http://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>.
@@ -50,19 +47,16 @@ import java.util.logging.Logger;
  */
 public final class SoftwareVersionManager extends Manager {
 
-    private static final Logger logger = Logger.getLogger(VCardManager.class.getName());
-
     private static final SoftwareVersion DEFAULT_VERSION;
 
     static {
         Properties properties = new Properties();
         SoftwareVersion version;
         try {
-            properties.load(SoftwareVersionManager.class.getResourceAsStream("version.properties"));
+            properties.load(SoftwareVersionManager.class.getResourceAsStream("/META-INF/maven/rocks.xmpp/xmpp-extensions-client/pom.properties"));
             version = new SoftwareVersion("Babbler", properties.getProperty("version"));
         } catch (Exception e) {
             version = null;
-            logger.log(Level.WARNING, "Couldn't load version information", e);
         }
         DEFAULT_VERSION = version;
     }

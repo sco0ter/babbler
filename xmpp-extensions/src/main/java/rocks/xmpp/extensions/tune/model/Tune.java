@@ -141,4 +141,31 @@ public final class Tune {
     public final URI getUri() {
         return uri;
     }
+
+    @Override
+    public final String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (artist != null) {
+            sb.append("Artist: ").append(artist).append("; ");
+        }
+        if (title != null) {
+            sb.append("Title: ").append(title).append("; ");
+        }
+        if (length != null) {
+            sb.append("Length: ").append(length).append("; ");
+        }
+        if (rating != null) {
+            sb.append("Rating: ").append(rating).append("; ");
+        }
+        if (source != null) {
+            sb.append("Source: ").append(source).append("; ");
+        }
+        if (track != null) {
+            sb.append("Track: ").append(track).append("; ");
+        }
+        if (uri != null) {
+            sb.append("URI: ").append(uri);
+        }
+        return sb.toString();
+    }
 }

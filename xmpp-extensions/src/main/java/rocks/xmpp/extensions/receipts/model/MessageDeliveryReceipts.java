@@ -100,6 +100,11 @@ public abstract class MessageDeliveryReceipts {
         public final String getId() {
             return id;
         }
+
+        @Override
+        public final String toString() {
+            return "Message Delivery Receipt for: " + id;
+        }
     }
 
     /**
@@ -116,6 +121,11 @@ public abstract class MessageDeliveryReceipts {
 
         private static Request create() {
             return MessageDeliveryReceipts.REQUEST;
+        }
+
+        @Override
+        public final String toString() {
+            return "Delivery Receipt Request";
         }
     }
 }

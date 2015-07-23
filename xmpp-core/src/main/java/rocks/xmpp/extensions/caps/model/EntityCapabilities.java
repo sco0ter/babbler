@@ -178,11 +178,9 @@ public final class EntityCapabilities extends StreamFeature {
         }
 
         // 8. Ensure that S is encoded according to the UTF-8 encoding
-        String plainString = sb.toString();
-
         // 9. Compute the verification string by hashing S using the algorithm specified in the 'hash' attribute.
         messageDigest.reset();
-        return DatatypeConverter.printBase64Binary(messageDigest.digest(plainString.getBytes(StandardCharsets.UTF_8)));
+        return DatatypeConverter.printBase64Binary(messageDigest.digest(sb.toString().getBytes(StandardCharsets.UTF_8)));
     }
 
     /**

@@ -145,58 +145,33 @@ public final class Occupant implements Comparable<Occupant> {
             int result;
             // First compare affiliations.
             if (affiliation != null) {
-                if (o.affiliation != null) {
-                    result = affiliation.compareTo(o.affiliation);
-                } else {
-                    result = -1;
-                }
+                result = o.affiliation != null ? affiliation.compareTo(o.affiliation) : -1;
             } else {
-                if (o.affiliation != null) {
-                    result = 1;
-                } else {
-                    result = 0;
-                }
+                result = o.affiliation != null ? 1 : 0;
             }
             // If the affiliations are equal, compare roles.
             if (result == 0) {
                 if (role != null) {
-                    if (o.role != null) {
-                        result = role.compareTo(o.role);
-                    } else {
-                        // If this role is not null, but the other is null, move this up (-1).
-                        result = -1;
-                    }
+                    // If this role is not null, but the other is null, move this up (-1).
+                    result = o.role != null ? role.compareTo(o.role) : -1;
                 } else {
                     // If this role is null, but the other is not, move this down (1).
-                    if (o.role != null) {
-                        result = 1;
-                    } else {
-                        result = 0;
-                    }
+                    result = o.role != null ? 1 : 0;
                 }
             }
             // If the roles are equal, compare nick names.
             if (result == 0) {
                 if (nick != null) {
-                    if (o.nick != null) {
-                        result = nick.compareTo(o.nick);
-                    } else {
-                        // If this nick is not null, but the other is null, move this up (-1).
-                        result = -1;
-                    }
+                    // If this nick is not null, but the other is null, move this up (-1).
+                    return o.nick != null ? nick.compareTo(o.nick) : -1;
                 } else {
                     // If this nick is null, but the other is not, move this down (1).
-                    if (o.nick != null) {
-                        result = 1;
-                    } else {
-                        result = 0;
-                    }
+                    return o.nick != null ? 1 : 0;
                 }
             }
             return result;
-        } else {
-            return -1;
         }
+        return -1;
     }
 
     @Override

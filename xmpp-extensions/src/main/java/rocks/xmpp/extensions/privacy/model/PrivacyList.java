@@ -263,9 +263,8 @@ public final class PrivacyList implements Comparable<PrivacyList> {
                     return name != null ? name.compareTo(o.name) : 1;
                 }
             }
-        } else {
-            return -1;
         }
+        return -1;
     }
 
     @Override

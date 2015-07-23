@@ -74,7 +74,7 @@ public abstract class StreamFeature implements Comparable<StreamFeature> {
         int result = Integer.compare(getPriority(), o.getPriority());
         // If this is equal, put volunteer-to-negotiate features before mandatory ones.
         if (result == 0) {
-            result = Boolean.compare(isMandatory(), o.isMandatory());
+            return Boolean.compare(isMandatory(), o.isMandatory());
         }
         return result;
     }

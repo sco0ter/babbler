@@ -639,18 +639,18 @@ public final class DataForm implements Comparable<DataForm> {
         @Override
         public final int compareTo(Field o) {
 
-            if (FORM_TYPE.equals(getVar()) && !FORM_TYPE.equals(o.getVar())) {
+            if (FORM_TYPE.equals(var) && !FORM_TYPE.equals(o.var)) {
                 return -1;
             }
 
-            if (getVar() == null && o.getVar() == null) {
+            if (var == null && o.var == null) {
                 return 0;
-            } else if (getVar() == null) {
+            } else if (var == null) {
                 return -1;
-            } else if (o.getVar() == null) {
+            } else if (o.var == null) {
                 return 1;
             } else {
-                return getVar().compareTo(o.getVar());
+                return var.compareTo(o.var);
             }
         }
 

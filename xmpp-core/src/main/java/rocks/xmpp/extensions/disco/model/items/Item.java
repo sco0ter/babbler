@@ -113,8 +113,7 @@ public final class Item implements ResultSetItem {
 
     @Override
     public final String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(jid);
+        StringBuilder sb = new StringBuilder(jid);
         if (node != null) {
             sb.append(" / ").append(node);
         }

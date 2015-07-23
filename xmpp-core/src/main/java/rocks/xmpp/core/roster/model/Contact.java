@@ -275,7 +275,7 @@ public final class Contact implements Comparable<Contact> {
                 }
             }
             if (result == 0) {
-                result = Boolean.compare(isPending(), o.isPending());
+                return Boolean.compare(isPending(), o.isPending());
             }
             return result;
         } else {

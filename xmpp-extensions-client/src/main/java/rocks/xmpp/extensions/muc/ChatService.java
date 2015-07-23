@@ -132,37 +132,20 @@ public final class ChatService implements Comparable<ChatService> {
             int result;
             // First compare name.
             if (name != null) {
-                if (o.name != null) {
-                    result = name.compareTo(o.name);
-                } else {
-                    result = -1;
-                }
+                result = o.name != null ? name.compareTo(o.name) : -1;
             } else {
-                if (o.name != null) {
-                    result = 1;
-                } else {
-                    result = 0;
-                }
+                result = o.name != null ? 1 : 0;
             }
             // If the names are equal, compare addresses.
             if (result == 0) {
                 if (serviceAddress != null) {
-                    if (o.serviceAddress != null) {
-                        result = serviceAddress.compareTo(o.serviceAddress);
-                    } else {
-                        result = -1;
-                    }
+                    return o.serviceAddress != null ? serviceAddress.compareTo(o.serviceAddress) : -1;
                 } else {
-                    if (o.serviceAddress != null) {
-                        result = 1;
-                    } else {
-                        result = 0;
-                    }
+                    return o.serviceAddress != null ? 1 : 0;
                 }
             }
             return result;
-        } else {
-            return -1;
         }
+        return -1;
     }
 }

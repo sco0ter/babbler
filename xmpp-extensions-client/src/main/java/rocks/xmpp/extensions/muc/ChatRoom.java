@@ -896,37 +896,20 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
             int result;
             // First compare name.
             if (name != null) {
-                if (o.name != null) {
-                    result = name.compareTo(o.name);
-                } else {
-                    result = -1;
-                }
+                result = o.name != null ? name.compareTo(o.name) : -1;
             } else {
-                if (o.name != null) {
-                    result = 1;
-                } else {
-                    result = 0;
-                }
+                result = o.name != null ? 1 : 0;
             }
             // If the names are equal, compare addresses.
             if (result == 0) {
                 if (roomJid != null) {
-                    if (o.roomJid != null) {
-                        result = roomJid.compareTo(o.roomJid);
-                    } else {
-                        result = -1;
-                    }
+                    return o.roomJid != null ? roomJid.compareTo(o.roomJid) : -1;
                 } else {
-                    if (o.roomJid != null) {
-                        result = 1;
-                    } else {
-                        result = 0;
-                    }
+                    return o.roomJid != null ? 1 : 0;
                 }
             }
             return result;
-        } else {
-            return -1;
         }
+        return -1;
     }
 }

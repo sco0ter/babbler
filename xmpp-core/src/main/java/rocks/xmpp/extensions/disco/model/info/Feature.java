@@ -99,19 +99,17 @@ final class Feature implements Comparable<Feature> {
      */
     @Override
     public final int compareTo(Feature o) {
-        int result;
         if (o == null) {
-            result = 1;
+            return 1;
         } else {
-            if (getVar() == null && o.getVar() == null) {
-                result = 0;
-            } else if (getVar() == null) {
-                result = -1;
+            if (var == null && o.var == null) {
+                return 0;
+            } else if (var == null) {
+                return -1;
             } else {
-                result = getVar().compareTo(o.getVar());
+                return var.compareTo(o.var);
             }
         }
-        return result;
     }
 
     @Override

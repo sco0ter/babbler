@@ -906,49 +906,50 @@ public final class Identity implements Comparable<Identity> {
         if (o == null) {
             result = 1;
         } else {
-            if (getCategory() == null && o.getCategory() == null) {
+
+            if (category == null && o.category == null) {
                 result = 0;
-            } else if (getCategory() == null) {
+            } else if (category == null) {
                 result = -1;
-            } else if (o.getCategory() == null) {
+            } else if (o.category == null) {
                 result = 1;
             } else {
-                result = getCategory().compareTo(o.getCategory());
+                result = category.compareTo(o.category);
             }
 
             if (result == 0) {
-                if (getType() == null && o.getType() == null) {
+                if (type == null && o.type== null) {
                     result = 0;
-                } else if (getType() == null) {
+                } else if (type == null) {
                     result = -1;
-                } else if (o.getType() == null) {
+                } else if (o.type == null) {
                     result = 1;
                 } else {
-                    result = getType().compareTo(o.getType());
+                    result = type.compareTo(o.type);
                 }
             }
 
             if (result == 0) {
-                if (getLanguage() == null && o.getLanguage() == null) {
+                if (lang == null && o.lang == null) {
                     result = 0;
-                } else if (getLanguage() == null) {
+                } else if (lang == null) {
                     result = -1;
-                } else if (o.getLanguage() == null) {
+                } else if (o.lang == null) {
                     result = 1;
                 } else {
-                    result = getLanguage().compareTo(o.getLanguage());
+                    result = lang.compareTo(o.lang);
                 }
             }
 
             if (result == 0) {
-                if (getName() == null && o.getName() == null) {
-                    result = 0;
-                } else if (getName() == null) {
-                    result = -1;
-                } else if (o.getName() == null) {
-                    result = 1;
+                if (name == null && o.name == null) {
+                    return  0;
+                } else if (name == null) {
+                    return -1;
+                } else if (o.name == null) {
+                    return 1;
                 } else {
-                    result = getName().compareTo(o.getName());
+                    return name.compareTo(o.name);
                 }
             }
         }

@@ -58,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.EventObject;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -74,6 +75,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,13 +84,15 @@ import java.util.logging.Logger;
  * The base class for different kinds of XMPP sessions.
  * <p>
  * To date there are three kinds of sessions:
+ * </p>
  * <ul>
  * <li>A normal client-to-server session. This is the default and most used XMPP session. It's concrete implementation is the {@link XmppClient}.</li>
  * <li>An external component session (<a href="http://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>).</li>
  * <li>A client-to-client session (<a href="http://xmpp.org/extensions/xep-0174.html">XEP-0174: Serverless Messaging</a>) (no implementation yet).</li>
  * </ul>
- * This class provides the common functionality and abstract methods for connection establishment, sending and receiving XML stanzas, closing the session, etc.
  * <p>
+ * This class provides the common functionality and abstract methods for connection establishment, sending and receiving XML stanzas, closing the session, etc.
+ * </p>
  * Concrete implementations may have different concepts for authentication, e.g. normal C2S sessions use SASL, while the Jabber Component Protocol uses a different kind of handshake for authenticating.
  *
  * @author Christian Schudt
@@ -483,44 +487,12 @@ public abstract class XmppSession implements AutoCloseable {
         if (!iq.isRequest()) {
             throw new IllegalArgumentException("IQ must be of type 'get' or 'set'");
         }
-
-        final IQ[] result = new IQ[1];
-        final Lock queryLock = new ReentrantLock();
-        final Condition resultReceived = queryLock.newCondition();
-
-        final Consumer<IQEvent> listener = e -> {
-            IQ responseIQ = e.getIQ();
-            if (responseIQ.isResponse() && responseIQ.getId() != null && responseIQ.getId().equals(iq.getId())) {
-                queryLock.lock();
-                try {
-                    result[0] = responseIQ;
-                } finally {
-                    resultReceived.signal();
-                    queryLock.unlock();
-                }
-            }
-        };
-
-        queryLock.lock();
-        try {
-            addInboundIQListener(listener);
-            send(iq);
-            // Wait for the stanza to arrive.
-            if (!resultReceived.await(timeout, TimeUnit.MILLISECONDS)) {
-                throw new NoResponseException("Timeout reached, while waiting on a response.");
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new XmppException("Thread is interrupted.", e);
-        } finally {
-            queryLock.unlock();
-            removeInboundIQListener(listener);
-        }
-        IQ response = result[0];
-        if (response.getType() == IQ.Type.ERROR) {
-            throw new StanzaException(response);
-        }
-        return result[0];
+        return sendAndAwait(iq,
+                IQEvent::getIQ,
+                responseIQ -> responseIQ.isResponse() && responseIQ.getId() != null && responseIQ.getId().equals(iq.getId()),
+                this::addInboundIQListener,
+                this::removeInboundIQListener,
+                timeout);
     }
 
     /**
@@ -533,43 +505,13 @@ public abstract class XmppSession implements AutoCloseable {
      * @throws NoResponseException If the entity did not respond.
      */
     public final Presence sendAndAwaitPresence(StreamElement stanza, final Predicate<Presence> filter) throws XmppException {
-        final Presence[] result = new Presence[1];
-        final Lock presenceLock = new ReentrantLock();
-        final Condition resultReceived = presenceLock.newCondition();
-
-        final Consumer<PresenceEvent> listener = e -> {
-            Presence presence = e.getPresence();
-            if (filter.test(presence)) {
-                presenceLock.lock();
-                try {
-                    result[0] = presence;
-                } finally {
-                    resultReceived.signal();
-                    presenceLock.unlock();
-                }
-            }
-        };
-
-        presenceLock.lock();
-        try {
-            addInboundPresenceListener(listener);
-            send(stanza);
-            // Wait for the stanza to arrive.
-            if (!resultReceived.await(configuration.getDefaultResponseTimeout(), TimeUnit.MILLISECONDS)) {
-                throw new NoResponseException("Timeout reached, while waiting on a response.");
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new XmppException("Thread is interrupted.", e);
-        } finally {
-            presenceLock.unlock();
-            removeInboundPresenceListener(listener);
-        }
-        Presence response = result[0];
-        if (response.getType() == Presence.Type.ERROR) {
-            throw new StanzaException(response);
-        }
-        return result[0];
+        return sendAndAwait(stanza,
+                PresenceEvent::getPresence,
+                filter,
+                this::addInboundPresenceListener,
+                this::removeInboundPresenceListener,
+                configuration.getDefaultResponseTimeout()
+        );
     }
 
     /**
@@ -582,44 +524,56 @@ public abstract class XmppSession implements AutoCloseable {
      * @throws NoResponseException If the entity did not respond.
      */
     public final Message sendAndAwaitMessage(StreamElement stanza, final Predicate<Message> filter) throws XmppException {
+        return sendAndAwait(stanza,
+                MessageEvent::getMessage,
+                filter,
+                this::addInboundMessageListener,
+                this::removeInboundMessageListener,
+                configuration.getDefaultResponseTimeout()
+        );
+    }
 
-        final Message[] result = new Message[1];
-        final Lock messageLock = new ReentrantLock();
-        final Condition resultReceived = messageLock.newCondition();
+    @SuppressWarnings("unchecked")
+    private <S extends Stanza, E extends EventObject> S sendAndAwait(StreamElement stanza, Function<E, S> stanzaMapper, final Predicate<S> filter, Consumer<Consumer<E>> addListener, Consumer<Consumer<E>> removeListener, long timeout) throws XmppException {
+        final Stanza[] result = new Stanza[1];
+        final Lock lock = new ReentrantLock();
+        final Condition resultReceived = lock.newCondition();
 
-        final Consumer<MessageEvent> listener = e -> {
-            Message message = e.getMessage();
-            if (filter.test(message)) {
-                messageLock.lock();
+        final Consumer<E> listener = e -> {
+            S st = stanzaMapper.apply(e);
+            if (filter.test(st)) {
+                lock.lock();
                 try {
-                    result[0] = message;
+                    result[0] = st;
                 } finally {
-                    resultReceived.signal();
-                    messageLock.unlock();
+                    resultReceived.signalAll();
+                    lock.unlock();
                 }
             }
         };
 
-        messageLock.lock();
+        lock.lock();
         try {
-            addInboundMessageListener(listener);
+            // Setup a listener, which waits
+            addListener.accept(listener);
             send(stanza);
             // Wait for the stanza to arrive.
-            if (!resultReceived.await(configuration.getDefaultResponseTimeout(), TimeUnit.MILLISECONDS)) {
+            if (!resultReceived.await(timeout, TimeUnit.MILLISECONDS)) {
                 throw new NoResponseException("Timeout reached, while waiting on a response.");
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new XmppException("Thread is interrupted.", e);
         } finally {
-            messageLock.unlock();
-            removeInboundMessageListener(listener);
+            lock.unlock();
+            // run();
+            removeListener.accept(listener);
         }
-        Message response = result[0];
-        if (response.getType() == Message.Type.ERROR) {
+        Stanza response = result[0];
+        if (response.getError() != null) {
             throw new StanzaException(response);
         }
-        return response;
+        return (S) response;
     }
 
     /**
@@ -727,6 +681,7 @@ public abstract class XmppSession implements AutoCloseable {
      * Creates a new unmarshaller, which can be used to unmarshal XML to objects.
      * <p>
      * Note that the returned unmarshaller is not thread-safe.
+     * </p>
      *
      * @return The unmarshaller.
      * @see #createMarshaller()
@@ -744,7 +699,7 @@ public abstract class XmppSession implements AutoCloseable {
      * <p>
      * The returned marshaller is configured with {@code Marshaller.JAXB_FRAGMENT = true}, so that no XML header is written
      * (which is usually what we want in XMPP when writing stanzas).
-     * <p>
+     * </p>
      * Note that the returned unmarshaller is not thread-safe.
      *
      * @return The marshaller.
@@ -769,7 +724,6 @@ public abstract class XmppSession implements AutoCloseable {
     public final boolean isConnected() {
         return IS_CONNECTED.contains(getStatus());
     }
-
 
     /**
      * Handles an XMPP element.
@@ -1029,6 +983,7 @@ public abstract class XmppSession implements AutoCloseable {
      * Represents the session status.
      * <p>
      * The following chart illustrates the valid status transitions:
+     * </p>
      * <pre>
      * &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500; INITIAL
      * &#x2502;          &#x2502;

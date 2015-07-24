@@ -49,9 +49,6 @@ final class SecurityManager extends StreamFeatureNegotiator {
 
     @Override
     public Status processNegotiation(Object element) throws StreamNegotiationException {
-
-        Status status = Status.INCOMPLETE;
-
         if (element instanceof StartTls) {
             StartTls startTls = (StartTls) element;
             if (startTls.isMandatory() && !isSecure) {
@@ -60,16 +57,16 @@ final class SecurityManager extends StreamFeatureNegotiator {
             if (isSecure) {
                 xmppSession.send(new StartTls());
             } else {
-                status = Status.IGNORE;
+                return Status.IGNORE;
             }
         } else if (element instanceof Proceed) {
             notifyFeatureNegotiated();
-            status = Status.SUCCESS;
+            return Status.SUCCESS;
         } else if (element instanceof Failure) {
             throw new StreamNegotiationException("Failure during TLS negotiation.");
         }
 
-        return status;
+        return Status.INCOMPLETE;
     }
 
     @Override

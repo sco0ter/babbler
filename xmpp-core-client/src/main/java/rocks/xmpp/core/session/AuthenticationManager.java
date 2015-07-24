@@ -134,7 +134,6 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
 
     @Override
     public final Status processNegotiation(Object element) throws StreamNegotiationException {
-        Status status = Status.INCOMPLETE;
         try {
             synchronized (this) {
                 if (element instanceof Mechanisms) {
@@ -151,14 +150,14 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
                     throw new AuthenticationException(failureText, authenticationFailure);
                 } else if (element instanceof Success) {
                     successData = ((Success) element).getAdditionalData();
-                    status = Status.SUCCESS;
+                    return Status.SUCCESS;
                 }
             }
         } catch (SaslException e) {
             throw new StreamNegotiationException(e);
         }
 
-        return status;
+        return Status.INCOMPLETE;
     }
 
     @Override

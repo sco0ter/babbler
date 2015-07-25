@@ -1067,26 +1067,56 @@ public final class DataForm implements Comparable<DataForm> {
             return self();
         }
 
+        /**
+         * Sets the title of the form.
+         *
+         * @param title The title.
+         * @return The builder.
+         */
         public final T title(String title) {
             this.title = title;
             return self();
         }
 
+        /**
+         * Sets the instructions of the form.
+         *
+         * @param instructions The instructions.
+         * @return The builder.
+         */
         public final T instructions(Collection<String> instructions) {
             this.instructions = instructions;
             return self();
         }
 
+        /**
+         * Sets the pages of the form.
+         *
+         * @param pages The pages.
+         * @return The builder.
+         */
         public final T pages(Collection<Page> pages) {
             this.pages = pages;
             return self();
         }
 
+        /**
+         * Sets the items of the form.
+         *
+         * @param items The items.
+         * @return The builder.
+         */
         public final T items(Collection<Item> items) {
             this.items = items;
             return self();
         }
 
+        /**
+         * Sets the reported fields of the form.
+         *
+         * @param reportedFields The reported fields.
+         * @return The builder.
+         */
         public final T reportedFields(Collection<Field> reportedFields) {
             this.reportedFields = reportedFields;
             return self();

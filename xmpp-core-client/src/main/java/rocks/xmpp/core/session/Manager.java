@@ -37,12 +37,7 @@ public abstract class Manager {
     }
 
     protected Manager(XmppSession xmppSession, boolean disposable) {
-        this(xmppSession, disposable, false);
-    }
-
-    protected Manager(XmppSession xmppSession, boolean disposable, boolean enabled) {
         this.xmppSession = xmppSession;
-        this.enabled = enabled;
         if (disposable) {
             xmppSession.addSessionStatusListener(e -> {
                 if (e.getStatus() == XmppSession.Status.CLOSING) {

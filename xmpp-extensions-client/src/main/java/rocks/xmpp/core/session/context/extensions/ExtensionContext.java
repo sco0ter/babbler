@@ -247,9 +247,6 @@ public class ExtensionContext extends CoreContext {
                 // XEP-0114: Jabber Component Protocol
                 Extension.of(Handshake.class, ComponentMessage.class, ComponentPresence.class, ComponentIQ.class),
 
-                // XEP-0115: Entity Capabilities
-                Extension.of(EntityCapabilities.NAMESPACE, EntityCapabilitiesManager.class, true, EntityCapabilities.class),
-
                 // XEP-0118: User Tune
                 Extension.of(Tune.NAMESPACE, null, true, false, Tune.class),
 

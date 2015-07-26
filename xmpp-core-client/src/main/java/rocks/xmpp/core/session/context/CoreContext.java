@@ -41,6 +41,8 @@ import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.subscription.PresenceManager;
 import rocks.xmpp.core.subscription.preapproval.model.SubscriptionPreApproval;
 import rocks.xmpp.core.tls.model.StartTls;
+import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
+import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
 import rocks.xmpp.extensions.data.layout.model.Page;
 import rocks.xmpp.extensions.data.mediaelement.model.Media;
@@ -57,9 +59,9 @@ import rocks.xmpp.extensions.privatedata.model.PrivateData;
 import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
-import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * The context provides XMPP classes as well as manager classes which are associated with an XMPP session.
@@ -70,7 +72,7 @@ import java.util.Collection;
  */
 public class CoreContext {
 
-    private final Collection<Extension> extensions = new ArrayDeque<>();
+    private final Collection<Extension> extensions = new HashSet<>();
 
     public CoreContext(Class<?>... extensions) {
         this(Arrays.stream(extensions).map(Extension::of).toArray(Extension[]::new));
@@ -88,7 +90,6 @@ public class CoreContext {
 
                 // XEP-0030: Service Discovery
                 Extension.of(InfoDiscovery.NAMESPACE, ServiceDiscoveryManager.class, true, InfoDiscovery.class),
-
                 Extension.of(ItemDiscovery.NAMESPACE, ServiceDiscoveryManager.class, true, ItemDiscovery.class),
 
                 // XEP-0059: Result Set Management
@@ -101,7 +102,10 @@ public class CoreContext {
                 Extension.of(RosterDelimiter.class),
 
                 // XEP-0106: JID Escaping
-                Extension.of(Jid.ESCAPING_FEATURE),
+                Extension.of(Jid.ESCAPING_FEATURE, true),
+
+                // XEP-0115: Entity Capabilities
+                Extension.of(EntityCapabilities.NAMESPACE, EntityCapabilitiesManager.class, true, EntityCapabilities.class),
 
                 // XEP-0122: Data Forms Validation
                 Extension.of(Validation.NAMESPACE, false, Validation.class),
@@ -122,10 +126,13 @@ public class CoreContext {
                 Extension.of(Media.class)
         ));
 
-        this.extensions.addAll(Arrays.asList(extensions));
-        this.extensions.add(Extension.of(PresenceManager.class));
-        this.extensions.add(Extension.of(ReconnectionManager.class));
-        this.extensions.add(Extension.of(RosterManager.class));
+        this.extensions.add(Extension.of(PresenceManager.class, true));
+        this.extensions.add(Extension.of(ReconnectionManager.class, true));
+        this.extensions.add(Extension.of(RosterManager.class, true));
+
+        Collection<Extension> customExtensions = Arrays.asList(extensions);
+        this.extensions.removeAll(customExtensions);
+        this.extensions.addAll(customExtensions);
     }
 
     /**

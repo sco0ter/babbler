@@ -50,6 +50,9 @@ import java.util.Set;
  * Extensions which have business logic (and hence a manager class), can be enabled or disabled.
  * <p>
  * In order to create an extension, use one of its static factory methods.
+ * <p>
+ * This class overrides {@link #equals(Object)} and {@link #hashCode()}, so that two extensions are considered equal if either their namespace are equal or their manager classes.
+ * This allows to disable certain extensions or managers by default.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>
@@ -86,28 +89,23 @@ public final class Extension {
         if (classes.length == 0) {
             throw new IllegalArgumentException("Classes cannot be empty.");
         }
+        for (Class<?> cl : classes) {
+            if (Manager.class.isAssignableFrom(cl)) {
+                throw new IllegalArgumentException("Manager classes are not allowed to use as JAXB class.");
+            }
+        }
         return new Extension(null, null, Collections.emptySet(), true, classes);
-    }
-
-    /**
-     * Creates an extension which is only used to be advertised as a feature in service discovery,
-     * e.g. to advertise "jid\20escaping" from XEP-0106, but otherwise requires no further logic or classes.
-     *
-     * @param namespace The protocol namespace.
-     * @return The extension.
-     */
-    public static Extension of(String namespace) {
-        return new Extension(Objects.requireNonNull(namespace), null, Collections.emptySet(), true);
     }
 
     /**
      * Creates an extension, which won't get advertised during service discovery and only has a manager class.
      *
      * @param manager The manager class.
+     * @param enabled If this manager is enabled.
      * @return The extension.
      */
-    public static Extension of(Class<? extends Manager> manager) {
-        return new Extension(null, Objects.requireNonNull(manager), Collections.emptySet(), true);
+    public static Extension of(Class<? extends Manager> manager, boolean enabled) {
+        return new Extension(null, Objects.requireNonNull(manager), Collections.emptySet(), enabled);
     }
 
     /**
@@ -209,5 +207,35 @@ public final class Extension {
      */
     public final boolean isEnabled() {
         return enabled;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Extension)) {
+            return false;
+        }
+        Extension other = (Extension) o;
+
+        if (namespace != null) {
+            return namespace.equals(other.namespace);
+        }
+        if (manager != null) {
+            return manager.equals(other.manager);
+        }
+        return classes.equals(other.classes);
+    }
+
+    @Override
+    public int hashCode() {
+        if (namespace != null) {
+            return Objects.hash(namespace);
+        }
+        if (manager != null) {
+            return Objects.hash(manager);
+        }
+        return Objects.hash(classes);
     }
 }

@@ -73,6 +73,7 @@
             <item href="xep/filetransfer.html" name="File Transfer"/>
             <item href="xep/avatar.html" name="Avatars"/>
             <item href="xep/httpbind.html" name="HTTP Binding / BOSH"/>
+            <item href="xep/externalcomponents.html" name="External Components"/>
             <item href="xep/rpc.html" name="XEP-0009: Jabber-RPC"/>
             <item href="xep/last.html" name="Last Activity and Idle Time"/>
             <item href="xep/privacy.html" name="XEP-0016: Privacy Lists"/>

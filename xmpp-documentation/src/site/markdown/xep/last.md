@@ -41,8 +41,7 @@ xmppClient.addInboundPresenceListener(e -> {
 The idle time can be set via a strategy pattern, which let's you define different strategies for determining idle time. E.g. you could track the last mouse movement or keyboard input. By default, the last sent message is used to determine your idle time.
 
 ```java
-IdleManager idleManager = xmppClient.getManager(IdleManager.class);
-idleManager.setIdleStrategy(() -> {
+lastActivityManager.setIdleStrategy(() -> {
     // Return whatever your idle time is.
     return Instant.now();
 });
@@ -51,14 +50,10 @@ idleManager.setIdleStrategy(() -> {
 This time will be returned if another entity asks you for your idle time and will also be included in outbound 'away' and 'extended away' presences,
 in order to inform your contacts automatically, so that they don't need to ask you.
             
-If you don't want to reveal your idle time, you have to disable both managers, otherwise keep it enabled.
+If you don't want to reveal your idle time, you have to disable the manager, otherwise keep it enabled.
 
 ```java
-// To not include XEP-0256 extension in outbound presences and to not respond to idle time queries.
 lastActivityManager.setEnabled(false);
-
-// To not include XEP-0319 extension in outbound presences. 
-idleManager.setEnabled(false);
 ```
 
 ## Getting the Server Uptime

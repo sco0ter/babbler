@@ -30,16 +30,21 @@ import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.extensions.idle.IdleManager;
+import rocks.xmpp.extensions.idle.model.Idle;
 import rocks.xmpp.extensions.last.model.LastActivity;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.EnumSet;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a> and <a href="http://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
@@ -52,9 +57,14 @@ import java.util.function.Consumer;
  * <p><cite><a href="http://xmpp.org/extensions/xep-0256.html#away">1.2 Away and Extended Away</a></cite></p>
  * <p>When a client automatically sets the user's {@code <show/>} value to "away" or "xa" (extended away), it can indicate when that particular was last active during the current presence session.</p>
  * </blockquote>
+ * This manager also automatically adds an {@code <idle/>} extension to outbound presences, if the presence is of type {@linkplain Presence.Show#AWAY away} or {@linkplain Presence.Show#XA xa}.
+ * However, sending such presences is still the responsibility of the application developer, i.e. no presences are sent automatically.
  * <p>
- * This manager has a dependency to {@link IdleManager}, i.e. it uses the same idle time as that one.
- * </p>
+ * By default, idle time is determined by outbound messages and non-away, non-xa presences. E.g. whenever a message is sent, the idle time is reset to the current time.
+ * Then, when a 'away' or 'xa' presence is sent, the {@code <idle/>} extension is added with the date of the last sent message.
+ * <p>
+ * The strategy for determining last user interaction can be changed by {@linkplain #setIdleStrategy(Supplier) setting a supplier} which returns the timestamp of last user interaction.
+ * Possible alternative strategies is to track mouse movement or keyboard interaction for which cases you would set a supplier which gets the date of the last mouse movement.
  * <p>
  * Automatic inclusion of last activity information in presence stanzas and support for this protocol can be {@linkplain #setEnabled(boolean)} enabled or disabled}.
  * </p>
@@ -67,26 +77,41 @@ import java.util.function.Consumer;
  * </pre>
  *
  * @author Christian Schudt
- * @see IdleManager
  */
 public final class LastActivityManager extends Manager {
-
-    private final IdleManager idleManager;
 
     private final Consumer<PresenceEvent> outboundPresenceListener;
 
     private final IQHandler iqHandler;
 
+    private Supplier<Instant> idleStrategy;
+
+    private Instant lastSentStanza = Instant.now();
+
+    private final Consumer<MessageEvent> outboundMessageListener;
+
     private LastActivityManager(final XmppSession xmppSession) {
         super(xmppSession);
-        this.idleManager = xmppSession.getManager(IdleManager.class);
+        this.idleStrategy = this::getLastSentStanzaTime;
         this.outboundPresenceListener = e -> {
             Presence presence = e.getPresence();
             if (presence.getTo() == null) {
-                synchronized (LastActivityManager.this) {
+                synchronized (this) {
                     // If an available presence with <show/> value 'away' or 'xa' is sent, append last activity information.
-                    if (idleManager.getIdleStrategy() != null && presence.isAvailable() && (presence.getShow() == Presence.Show.AWAY || presence.getShow() == Presence.Show.XA) && !presence.hasExtension(LastActivity.class)) {
-                        presence.addExtension(new LastActivity(getSecondsSince(idleManager.getIdleStrategy().get()), presence.getStatus()));
+                    if (idleStrategy != null && presence.isAvailable() && EnumSet.of(Presence.Show.AWAY, Presence.Show.XA).contains(presence.getShow())) {
+                        Instant idleSince = idleStrategy.get();
+                        if (idleSince != null) {
+                            // XEP-0319: Last User Interaction in Presence
+                            if (!presence.hasExtension(Idle.class)) {
+                                presence.addExtension(Idle.since(OffsetDateTime.ofInstant(idleSince, ZoneOffset.UTC)));
+                            }
+                            // XEP-0256: Last Activity in Presence
+                            if (!presence.hasExtension(LastActivity.class)) {
+                                presence.addExtension(new LastActivity(getSecondsSince(idleSince), presence.getStatus()));
+                            }
+                        }
+                    } else {
+                        lastSentStanza = Instant.now();
                     }
                 }
             }
@@ -95,8 +120,8 @@ public final class LastActivityManager extends Manager {
             @Override
             protected IQ processRequest(IQ iq) {
                 // If someone asks me to get my last activity, reply.
-                synchronized (idleManager) {
-                    Instant idleSince = idleManager.getIdleStrategy() != null ? idleManager.getIdleStrategy().get() : null;
+                synchronized (this) {
+                    Instant idleSince = idleStrategy != null ? idleStrategy.get() : null;
                     if (idleSince != null) {
                         return iq.createResult(new LastActivity(getSecondsSince(idleSince), null));
                     } else {
@@ -106,16 +131,53 @@ public final class LastActivityManager extends Manager {
                 }
             }
         };
+
+        this.outboundMessageListener = e -> {
+            synchronized (this) {
+                lastSentStanza = Instant.now();
+            }
+        };
     }
 
     static long getSecondsSince(Instant date) {
         return Math.max(0, Duration.between(date, Instant.now()).getSeconds());
     }
 
+    /**
+     * Gets the time of the last sent message or non-away, non-xa presence.
+     * <p>
+     * This is the default strategy for determining last user interaction.
+     *
+     * @return The time of the last sent stanza.
+     */
+    public synchronized Instant getLastSentStanzaTime() {
+        return lastSentStanza;
+    }
+
+    /**
+     * Sets an idle strategy, i.e. a supplier for last user interaction.
+     *
+     * @param idleStrategy The strategy.
+     * @see #getLastSentStanzaTime()
+     */
+    public synchronized void setIdleStrategy(Supplier<Instant> idleStrategy) {
+        this.idleStrategy = idleStrategy;
+    }
+
+    /**
+     * Gets the current idle strategy, i.e. a supplier for last user interaction.
+     *
+     * @return The strategy or null if no strategy is set.
+     */
+    public synchronized Supplier<Instant> getIdleStrategy() {
+        return idleStrategy;
+    }
+
     @Override
     protected void onEnable() {
         super.onEnable();
         xmppSession.addOutboundPresenceListener(outboundPresenceListener);
+        xmppSession.addOutboundMessageListener(outboundMessageListener);
         xmppSession.addIQHandler(LastActivity.class, iqHandler);
     }
 
@@ -123,6 +185,7 @@ public final class LastActivityManager extends Manager {
     protected void onDisable() {
         super.onDisable();
         xmppSession.removeOutboundPresenceListener(outboundPresenceListener);
+        xmppSession.removeOutboundMessageListener(outboundMessageListener);
         xmppSession.removeIQHandler(LastActivity.class);
     }
 

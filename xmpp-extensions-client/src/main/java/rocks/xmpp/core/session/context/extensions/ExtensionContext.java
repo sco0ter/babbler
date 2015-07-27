@@ -40,8 +40,6 @@ import rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.bytestreams.s5b.Socks5ByteStreamManager;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
-import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
-import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 import rocks.xmpp.extensions.carbons.MessageCarbonsManager;
 import rocks.xmpp.extensions.carbons.model.MessageCarbons;
 import rocks.xmpp.extensions.chatstates.ChatStateManager;
@@ -61,7 +59,6 @@ import rocks.xmpp.extensions.geoloc.model.GeoLocation;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.httpauth.HttpAuthenticationManager;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
-import rocks.xmpp.extensions.idle.IdleManager;
 import rocks.xmpp.extensions.idle.model.Idle;
 import rocks.xmpp.extensions.invisible.InvisibilityManager;
 import rocks.xmpp.extensions.invisible.model.InvisibleCommand;
@@ -335,7 +332,7 @@ public class ExtensionContext extends CoreContext {
                 Extension.of(Replace.NAMESPACE, false, Replace.class),
 
                 // XEP-0319: Last User Interaction in Presence
-                Extension.of(Idle.NAMESPACE, IdleManager.class, true, Idle.class),
+                Extension.of(Idle.NAMESPACE, true, Idle.class),
 
                 // XEP-0335: JSON Containers
                 Extension.of(Json.class)

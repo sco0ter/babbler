@@ -26,7 +26,6 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQHandler;
@@ -610,7 +609,8 @@ public abstract class XmppSession implements AutoCloseable {
             // If resource binding has not completed and it's tried to send a stanza which doesn't serve the purpose
             // of resource binding, throw an exception, because otherwise the server will terminate the connection with a stream error.
             // TODO: Consider queuing such stanzas and send them as soon as logged in instead of throwing exception.
-            if (!EnumSet.of(Status.AUTHENTICATED, Status.CLOSING).contains(getStatus()) && !stanza.hasExtension(Bind.class) && !(stanza instanceof IQ && ((IQ) stanza).isResponse())) {
+            if (!EnumSet.of(Status.AUTHENTICATED, Status.CLOSING).contains(getStatus())
+                    && !isSentToUserOrServer(stanza, getDomain(), getConnectedResource())) {
                 throw new IllegalStateException("Cannot send stanzas before resource binding has completed.");
             }
             if (stanza instanceof Message) {
@@ -627,6 +627,15 @@ public abstract class XmppSession implements AutoCloseable {
             throw new IllegalStateException("No connection established.");
         }
         return element;
+    }
+
+    static boolean isSentToUserOrServer(Stanza stanza, Jid domain, Jid connectedResource) {
+        if (stanza.getTo() == null) {
+            return true;
+        }
+        Jid toBare = stanza.getTo().asBareJid();
+        return connectedResource != null && toBare.equals(connectedResource.asBareJid())
+                || domain != null && (toBare.equals(domain) || toBare.toString().endsWith("." + domain.toEscapedString()));
     }
 
     /**

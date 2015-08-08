@@ -7,8 +7,26 @@ body {
     font-size: 16px;
     font-weight: 400;
     font-style: normal;
-    background-image: linear-gradient(#FAFAFA 0%, #FFFFFF 30%, #F6F6F6 100%);
+    background-image: linear-gradient(#FAF7F4 0%, #FFFFFF 25%, #FFFFFF 50%, #F5F2EF 100%);
     background-attachment: fixed;
+    color: #222222;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #333333;
+}
+
+.nav-list > .active > a, .nav-list > .active > a:hover, .nav-list > .active > a:focus {
+    background: linear-gradient(#0099E6 0%, #0088cc 100%) repeat scroll 0 0%, #0088cc none repeat scroll 0 0;
+}
+
+#bannerLeft, .nav-header {
+    font-variant: small-caps;
+    text-transform: none;
+}
+
+body.topBarDisabled {
+    padding-top: 0;
 }
 
 tt {
@@ -17,6 +35,22 @@ tt {
 
 pre.prettyprint {
     padding: 1em;
+}
+
+#breadcrumbs {
+    margin: 0 0 20px;
+}
+
+pre.prettyprint, .sidebar-nav, #breadcrumbs {
+    background-color: rgba(245, 242, 239, 0.5);
+    box-shadow: 1px 1px 2px 0 rgba(151, 151, 151, 0.5);
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+.breadcrumb {
+    margin: 0;
+    background-color: rgba(245, 242, 239, 0.5);
 }
 
 .source {

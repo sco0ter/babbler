@@ -22,6 +22,7 @@ In order to query a connected user for its idle time you must query for its full
 ```java
 LastActivityManager lastActivityManager = xmppClient.getManager(LastActivityManager.class);
 LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.of("juliet@im.example.com/resource"));
+Instant idleTime = Instant.now().minusSeconds(lastActivity.getSeconds());
 ```
 
 If supported by the client, it will respond with its idle time.
@@ -63,14 +64,12 @@ When querying a server or component the result is the uptime of it.
 ```java
 LastActivityManager lastActivityManager = xmppClient.getManager(LastActivityManager.class);
 LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.of("im.example.com"));
+Instant uptime = Instant.now().minusSeconds(lastActivity.getSeconds());
 ```
 
-or just pass `null`, if you want to query your connected server.
 
-```java
-LastActivity lastActivity = lastActivityManager.getLastActivity(null);
-```
-
+                
+                
 [Last Activity]: http://xmpp.org/extensions/xep-0012.html "XEP-0012: Last Activity"
 [Last Activity in Presence]: http://xmpp.org/extensions/xep-0256.html "XEP-0256: Last Activity in Presence"
 [Last User Interaction in Presence]: http://xmpp.org/extensions/xep-0319.html "XEP-0319: Last User Interaction in Presence"

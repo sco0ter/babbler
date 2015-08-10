@@ -35,7 +35,6 @@ import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
 
 import java.io.IOException;
-import java.net.Proxy;
 import java.util.function.Consumer;
 
 /**
@@ -59,11 +58,10 @@ public final class TestXmppSession extends XmppSession {
         super(null, configuration);
         connectedResource = jid;
 
-        activeConnection = new Connection("hostname", 5222, Proxy.NO_PROXY) {
+        activeConnection = new Connection(null, TcpConnectionConfiguration.builder().build()) {
 
             @Override
             protected void restartStream() {
-
             }
 
             @Override
@@ -72,7 +70,6 @@ public final class TestXmppSession extends XmppSession {
 
             @Override
             public void connect(Jid from, String namespace, Consumer<Jid> onConnected) throws IOException {
-
             }
 
             @Override

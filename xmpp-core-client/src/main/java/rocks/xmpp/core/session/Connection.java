@@ -64,19 +64,6 @@ public abstract class Connection implements AutoCloseable {
     }
 
     /**
-     * Creates a connection to the specified host and port through a proxy.
-     *
-     * @param hostname The host, which is used to establish the connection.
-     * @param port     The port, which is used to establish the connection.
-     * @param proxy    The proxy.
-     */
-    protected Connection(String hostname, int port, Proxy proxy) {
-        this.hostname = hostname;
-        this.port = port;
-        this.proxy = proxy;
-    }
-
-    /**
      * Gets the XMPP session which is associated with this connection. This method should only be called from the session itself.
      *
      * @return The XMPP session.

@@ -885,7 +885,7 @@ public abstract class XmppSession implements AutoCloseable {
      *
      * @param e The exception. If an unrecoverable XMPP stream error occurred, the exception is a {@link rocks.xmpp.core.stream.model.StreamError}.
      */
-    public void notifyException(Exception e) {
+    public void notifyException(Throwable e) {
         // If the exception occurred during stream negotiation, i.e. before the connect() method has finished, the exception will be thrown.
         exception = Objects.requireNonNull(e, "exception must not be null");
         // Release a potential waiting thread.

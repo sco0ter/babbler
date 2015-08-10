@@ -168,7 +168,7 @@ public final class ExternalComponent extends XmppSession {
     }
 
     @Override
-    public final void notifyException(Exception e) {
+    public final void notifyException(Throwable e) {
         super.notifyException(e);
         releaseLock();
     }

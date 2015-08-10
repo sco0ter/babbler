@@ -33,8 +33,8 @@
         <version>0.6.0-SNAPSHOT</version>
     </parent>
     <artifactId>xmpp-extensions-client</artifactId>
-    <name>Babbler - an XMPP Client Library (Extensions)</name>
-    <description>An XMPP client library for Java SE</description>
+    <name>XMPP.rocks - Extensions (Client)</name>
+    <description>Client side business logic for XMPP extensions</description>
     <build>
         <plugins>
             <!-- Generate a sources.jar, so that it can be used by JavaDoc plugin -->

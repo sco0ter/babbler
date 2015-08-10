@@ -33,9 +33,8 @@
         <version>0.6.0-SNAPSHOT</version>
     </parent>
     <artifactId>xmpp-core-client</artifactId>
-    <name>Babbler - an XMPP Client Library (Core)</name>
-    <description>An XMPP client library for Java SE</description>
-
+    <name>XMPP.rocks - Core (RFC 6120 / 6121) (Client)</name>
+    <description>Core XMPP client logic</description>
     <build>
         <plugins>
 

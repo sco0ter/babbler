@@ -70,6 +70,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -105,6 +106,14 @@ public abstract class XmppSession implements AutoCloseable {
 
     private static final EnumSet<Status> IS_CONNECTED = EnumSet.of(Status.CONNECTED, Status.AUTHENTICATED, Status.AUTHENTICATING);
 
+    protected final List<Connection> connections = new ArrayList<>();
+
+    protected final XmppSessionConfiguration configuration;
+
+    protected final ServiceDiscoveryManager serviceDiscoveryManager;
+
+    protected final StreamFeaturesManager streamFeaturesManager;
+
     private final Set<Consumer<MessageEvent>> inboundMessageListeners = new CopyOnWriteArraySet<>();
 
     private final Set<Consumer<MessageEvent>> outboundMessageListeners = new CopyOnWriteArraySet<>();
@@ -125,17 +134,10 @@ public abstract class XmppSession implements AutoCloseable {
 
     private final Map<Class<? extends Manager>, Manager> instances = new ConcurrentHashMap<>();
 
-    protected final List<Connection> connections = new ArrayList<>();
-
-    protected final XmppSessionConfiguration configuration;
-
-    protected final ServiceDiscoveryManager serviceDiscoveryManager;
-
-    protected final StreamFeaturesManager streamFeaturesManager;
-
-    ExecutorService iqHandlerExecutor;
-
-    ExecutorService stanzaListenerExecutor;
+    /**
+     * Holds the connection state.
+     */
+    private final AtomicReference<Status> status = new AtomicReference<>(Status.INITIAL);
 
     protected volatile Connection activeConnection;
 
@@ -145,15 +147,15 @@ public abstract class XmppSession implements AutoCloseable {
     protected volatile Jid xmppServiceDomain;
 
     /**
-     * Holds the connection state.
-     * Guarded by "this".
-     */
-    private Status status = Status.INITIAL;
-
-    /**
      * Any exception that occurred during stream negotiation ({@link #connect()}))
      */
     protected volatile Throwable exception;
+
+    protected volatile boolean wasLoggedIn;
+
+    ExecutorService iqHandlerExecutor;
+
+    ExecutorService stanzaListenerExecutor;
 
     /**
      * The shutdown hook for JVM shutdown, which will disconnect each open connection before the JVM is halted.
@@ -161,8 +163,6 @@ public abstract class XmppSession implements AutoCloseable {
     private volatile Thread shutdownHook;
 
     private volatile XmppDebugger debugger;
-
-    protected volatile boolean wasLoggedIn;
 
     protected XmppSession(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
         this.xmppServiceDomain = xmppServiceDomain != null ? Jid.of(xmppServiceDomain) : null;
@@ -204,6 +204,29 @@ public abstract class XmppSession implements AutoCloseable {
         }
 
         configuration.getExtensions().forEach(serviceDiscoveryManager::registerFeature);
+    }
+
+    static boolean isSentToUserOrServer(Stanza stanza, Jid domain, Jid connectedResource) {
+        if (stanza.getTo() == null) {
+            return true;
+        }
+        Jid toBare = stanza.getTo().asBareJid();
+        return connectedResource != null && toBare.equals(connectedResource.asBareJid())
+                || domain != null && (toBare.equals(domain) || toBare.toString().endsWith("." + domain.toEscapedString()));
+    }
+
+    protected static void throwAsXmppExceptionIfNotNull(Throwable e) throws XmppException {
+        if (e != null) {
+            if (e instanceof XmppException) {
+                throw (XmppException) e;
+            } else if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
+            } else if (e instanceof Error) {
+                throw (Error) e;
+            } else {
+                throw new XmppException(e);
+            }
+        }
     }
 
     /**
@@ -629,22 +652,13 @@ public abstract class XmppSession implements AutoCloseable {
         return element;
     }
 
-    static boolean isSentToUserOrServer(Stanza stanza, Jid domain, Jid connectedResource) {
-        if (stanza.getTo() == null) {
-            return true;
-        }
-        Jid toBare = stanza.getTo().asBareJid();
-        return connectedResource != null && toBare.equals(connectedResource.asBareJid())
-                || domain != null && (toBare.equals(domain) || toBare.toString().endsWith("." + domain.toEscapedString()));
-    }
-
     /**
      * Gets the status of the session.
      *
      * @return The status.
      */
-    public final synchronized Status getStatus() {
-        return status;
+    public final Status getStatus() {
+        return status.get();
     }
 
     /**
@@ -665,11 +679,7 @@ public abstract class XmppSession implements AutoCloseable {
      * @return True, if the status has changed; otherwise false.
      */
     protected final boolean updateStatus(Status status, Throwable e) {
-        Status oldStatus;
-        synchronized (this) {
-            oldStatus = this.status;
-            this.status = status;
-        }
+        Status oldStatus = this.status.getAndSet(status);
         if (status != oldStatus) {
             // Make sure to not call listeners from within synchronized region.
             XmppUtils.notifyEventListeners(sessionStatusListeners, new SessionStatusEvent(this, status, oldStatus, e));
@@ -864,20 +874,6 @@ public abstract class XmppSession implements AutoCloseable {
             }
             updateStatus(Status.CLOSED);
             sessionStatusListeners.clear();
-        }
-    }
-
-    protected static void throwAsXmppExceptionIfNotNull(Throwable e) throws XmppException {
-        if (e != null) {
-            if (e instanceof XmppException) {
-                throw (XmppException) e;
-            } else if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            } else if (e instanceof Error) {
-                throw (Error) e;
-            } else {
-                throw new XmppException(e);
-            }
         }
     }
 

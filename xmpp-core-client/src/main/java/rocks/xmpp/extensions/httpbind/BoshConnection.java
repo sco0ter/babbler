@@ -491,17 +491,11 @@ public final class BoshConnection extends Connection {
     public final void close() throws Exception {
         if (getSessionId() != null) {
             synchronized (this) {
-                sessionId = null;
-                authId = null;
-                requestContentEncoding = null;
-                keySequence.clear();
-                requestContentEncoding = null;
-
                 if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
                     // Terminate the BOSH session.
                     Body.Builder bodyBuilder = Body.builder()
                             .requestId(rid.getAndIncrement())
-                            .sessionId(getSessionId())
+                            .sessionId(sessionId)
                             .type(Body.Type.TERMINATE);
 
                     appendKey(bodyBuilder);
@@ -514,6 +508,11 @@ public final class BoshConnection extends Connection {
                     httpBindExecutor.awaitTermination(500, TimeUnit.MILLISECONDS);
                     httpBindExecutor = null;
                 }
+                sessionId = null;
+                authId = null;
+                requestContentEncoding = null;
+                keySequence.clear();
+                requestContentEncoding = null;
             }
         }
     }
@@ -740,11 +739,6 @@ public final class BoshConnection extends Connection {
                             sendNewRequest(bodyBuilder.build());
                         }
                     } catch (Exception e) {
-                        synchronized (this) {
-                            if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
-                                httpBindExecutor.shutdown();
-                            }
-                        }
                         getXmppSession().notifyException(e);
                     } finally {
                         if (httpConnection != null) {

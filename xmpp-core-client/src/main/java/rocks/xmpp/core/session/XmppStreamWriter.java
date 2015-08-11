@@ -230,6 +230,12 @@ final class XmppStreamWriter {
             // Send the closing stream tag.
             closeStream();
             executor.shutdown();
+            try {
+                // Wait for the closing stream element to be sent before we can close the socket.
+                executor.awaitTermination(50, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 }

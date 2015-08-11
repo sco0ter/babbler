@@ -26,14 +26,14 @@ package rocks.xmpp.extensions.reach;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.session.TestXmppSession;
-import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
 /**
  * @author Christian Schudt
  */
-public class ReachabilityManagerTest extends ExtensionTest {
+public class ReachabilityManagerTest extends BaseTest {
 
     @Test
     public void testServiceDiscoveryEntry() {

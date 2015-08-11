@@ -26,8 +26,8 @@ package rocks.xmpp.extensions.pubsub;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.session.TestXmppSession;
-import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
 
@@ -37,7 +37,7 @@ import java.util.Collection;
 /**
  * @author Christian Schudt
  */
-public class PubSubEntityUseCasesTest extends ExtensionTest {
+public class PubSubEntityUseCasesTest extends BaseTest {
 
     @Test
     public void testFeatures() {

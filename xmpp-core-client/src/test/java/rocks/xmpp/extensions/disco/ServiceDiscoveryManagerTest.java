@@ -35,7 +35,6 @@ import rocks.xmpp.core.session.ReconnectionManager;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.session.context.CoreContext;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 import rocks.xmpp.extensions.data.model.DataForm;
@@ -178,7 +177,6 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         Assert.assertEquals(page2.getItems().get(0).getNode(), "item40");
         Assert.assertEquals(page2.getResultSetManagement().getItemCount(), Integer.valueOf(100));
         Assert.assertEquals(page2.getResultSetManagement().getFirstItemIndex(), Integer.valueOf(40));
-
     }
 
     @Test
@@ -255,7 +253,6 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
     public void testExtensionReplace() {
 
         XmppSessionConfiguration configuration1 = XmppSessionConfiguration.builder()
-                .context(new CoreContext(new Extension[0]))
                 .build();
 
         XmppClient xmppClient1 = new XmppClient("domain", configuration1);
@@ -267,9 +264,9 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
 
         XmppSessionConfiguration configuration2 = XmppSessionConfiguration.builder()
                 // We override the default context with a disabled EntityCapabilitiesManager
-                .context(new CoreContext(
+                .extensions(
                         Extension.of(EntityCapabilities.NAMESPACE, EntityCapabilitiesManager.class, false, EntityCapabilities.class),
-                        Extension.of(ReconnectionManager.class, false)))
+                        Extension.of(ReconnectionManager.class, false))
                 .build();
 
         XmppClient xmppClient2 = new XmppClient("domain", configuration2);

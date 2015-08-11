@@ -132,6 +132,7 @@ import java.util.Set;
  * @author Christian Schudt
  * @see rocks.xmpp.core.session.XmppSessionConfiguration.Builder#context(rocks.xmpp.core.session.context.CoreContext)
  */
+@Deprecated
 public class ExtensionContext extends CoreContext {
 
     private static final String[] REGISTERED_HASH_ALGORITHMS = new String[]{"md5", "sha-1", "sha-224", "sha-256", "sha-384", "sha-512"};

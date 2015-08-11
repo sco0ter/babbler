@@ -26,11 +26,11 @@ package rocks.xmpp.extensions.time;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
-import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
 import java.time.OffsetDateTime;
@@ -38,7 +38,7 @@ import java.time.OffsetDateTime;
 /**
  * @author Christian Schudt
  */
-public class EntityTimeManagerTest extends ExtensionTest {
+public class EntityTimeManagerTest extends BaseTest {
 
     @Test
     public void testEntityTimeManager() throws XmppException {

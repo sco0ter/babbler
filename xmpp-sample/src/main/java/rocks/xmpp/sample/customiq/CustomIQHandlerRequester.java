@@ -24,10 +24,10 @@
 
 package rocks.xmpp.sample.customiq;
 
+import rocks.xmpp.core.session.Extension;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.session.context.extensions.ExtensionContext;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.IQ;
 
@@ -45,6 +45,7 @@ public class CustomIQHandlerRequester {
             try {
 
                 TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+                        .hostname("localhost")
                         .port(5222)
                         .secure(false)
                         .build();
@@ -52,7 +53,7 @@ public class CustomIQHandlerRequester {
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                         .debugger(ConsoleDebugger.class)
                                 // This registers the custom IQ payload to the JAXB context.
-                        .context(new ExtensionContext(Addition.class))
+                        .extensions(Extension.of(Addition.class))
                         .build();
 
                 XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);

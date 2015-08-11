@@ -26,18 +26,18 @@ package rocks.xmpp.extensions.rpc;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.rpc.model.Value;
 
 /**
  * @author Christian Schudt
  */
-public class RpcManagerTest extends ExtensionTest {
+public class RpcManagerTest extends BaseTest {
 
     @Test
     public void testServiceDiscoveryEntry() {

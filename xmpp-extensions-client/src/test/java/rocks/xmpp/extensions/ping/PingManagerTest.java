@@ -26,16 +26,16 @@ package rocks.xmpp.extensions.ping;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
-import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
 /**
  * @author Christian Schudt
  */
-public class PingManagerTest extends ExtensionTest {
+public class PingManagerTest extends BaseTest {
 
     @Test
     public void testPing() throws XmppException {

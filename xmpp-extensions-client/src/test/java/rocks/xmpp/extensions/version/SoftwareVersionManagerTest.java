@@ -26,18 +26,18 @@ package rocks.xmpp.extensions.version;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
-import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 
 /**
  * @author Christian Schudt
  */
-public class SoftwareVersionManagerTest extends ExtensionTest {
+public class SoftwareVersionManagerTest extends BaseTest {
 
     @Test
     public void testSoftwareVersionManager() throws XmppException {

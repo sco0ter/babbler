@@ -28,10 +28,10 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.roster.model.Contact;
 import rocks.xmpp.core.roster.model.Roster;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 
 import java.util.ArrayDeque;
@@ -43,7 +43,7 @@ import java.util.List;
 /**
  * @author Christian Schudt
  */
-public class ContactExchangeManagerTest extends ExtensionTest {
+public class ContactExchangeManagerTest extends BaseTest {
 
     @BeforeClass
     public void prepareRoster() throws Exception {

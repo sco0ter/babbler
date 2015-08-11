@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.last;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
@@ -33,7 +34,6 @@ import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
-import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.avatar.AvatarManager;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.last.model.LastActivity;
@@ -44,7 +44,7 @@ import java.util.function.Consumer;
 /**
  * @author Christian Schudt
  */
-public class LastActivityManagerTest extends ExtensionTest {
+public class LastActivityManagerTest extends BaseTest {
 
     @Test
     public void testGetLastActivity() throws XmppException {

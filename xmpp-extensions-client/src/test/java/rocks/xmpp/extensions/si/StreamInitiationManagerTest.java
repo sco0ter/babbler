@@ -26,13 +26,13 @@ package rocks.xmpp.extensions.si;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
@@ -45,7 +45,7 @@ import java.io.OutputStream;
 /**
  * @author Christian Schudt
  */
-public class StreamInitiationManagerTest extends ExtensionTest {
+public class StreamInitiationManagerTest extends BaseTest {
 
     //@Test
     public void testStreamInitiationWithAcceptance() throws XmppException, IOException {

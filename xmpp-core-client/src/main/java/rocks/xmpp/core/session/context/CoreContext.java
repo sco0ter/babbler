@@ -31,6 +31,7 @@ import rocks.xmpp.core.roster.model.Roster;
 import rocks.xmpp.core.roster.versioning.model.RosterVersioning;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.Extension;
+import rocks.xmpp.core.session.Module;
 import rocks.xmpp.core.session.ReconnectionManager;
 import rocks.xmpp.core.session.model.Session;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
@@ -70,9 +71,14 @@ import java.util.HashSet;
  * @author Christian Schudt
  * @see rocks.xmpp.core.session.XmppSessionConfiguration.Builder#context(rocks.xmpp.core.session.context.CoreContext)
  */
-public class CoreContext {
+@Deprecated
+public class CoreContext implements Module {
 
     private final Collection<Extension> extensions = new HashSet<>();
+
+    public CoreContext() {
+        this(new Extension[0]);
+    }
 
     public CoreContext(Class<?>... extensions) {
         this(Arrays.stream(extensions).map(Extension::of).toArray(Extension[]::new));

@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.chatstates;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.chat.Chat;
 import rocks.xmpp.core.chat.ChatManager;
@@ -33,7 +34,6 @@ import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
-import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
@@ -43,7 +43,7 @@ import java.util.Collection;
 /**
  * @author Christian Schudt
  */
-public class ChatStateManagerTest extends ExtensionTest {
+public class ChatStateManagerTest extends BaseTest {
 
     @Test
     public void testChatStateManager() {

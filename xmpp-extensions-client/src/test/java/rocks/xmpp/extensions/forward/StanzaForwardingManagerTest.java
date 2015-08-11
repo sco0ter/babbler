@@ -26,14 +26,14 @@ package rocks.xmpp.extensions.forward;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.session.TestXmppSession;
-import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
 /**
  * @author Christian Schudt
  */
-public class StanzaForwardingManagerTest extends ExtensionTest {
+public class StanzaForwardingManagerTest extends BaseTest {
 
     @Test
     public void testServiceDiscoveryEntry() {

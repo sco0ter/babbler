@@ -26,11 +26,11 @@ package rocks.xmpp.extensions.shim;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
-import rocks.xmpp.extensions.ExtensionTest;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 
@@ -39,7 +39,7 @@ import java.util.List;
 /**
  * @author Christian Schudt
  */
-public class HeadersManagerTest extends ExtensionTest {
+public class HeadersManagerTest extends BaseTest {
 
     @Test
     public void testServiceDiscoveryIfHeadersAreDisabled() throws XmppException {

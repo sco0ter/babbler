@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -52,9 +53,9 @@ import java.util.function.Supplier;
  * </p>
  * Since creating the JAXB context is quite expensive, this class allows you to create the context once and reuse it by multiple sessions.
  * You can also {@linkplain #setDefault(XmppSessionConfiguration) set} an application-wide default configuration (used by all XMPP sessions).
- * <p>
+ * <p/>
  * Use the {@link #builder()} to create instances of this class.
- * <p>
+ * <p/>
  * This class is immutable.
  *
  * @author Christian Schudt
@@ -63,6 +64,8 @@ import java.util.function.Supplier;
 public final class XmppSessionConfiguration {
 
     private static final Path DEFAULT_APPLICATION_DATA_PATH;
+
+    private static volatile XmppSessionConfiguration defaultConfiguration;
 
     static {
         Path path;
@@ -88,8 +91,6 @@ public final class XmppSessionConfiguration {
         }
         DEFAULT_APPLICATION_DATA_PATH = path;
     }
-
-    private static volatile XmppSessionConfiguration defaultConfiguration;
 
     private final JAXBContext jaxbContext;
 
@@ -123,20 +124,17 @@ public final class XmppSessionConfiguration {
         this.xmlInputFactory = XMLInputFactory.newFactory();
         this.xmlOutputFactory = XMLOutputFactory.newFactory();
 
-        CoreContext context = builder.context;
+        this.extensions = new HashSet<>(builder.context != null ? builder.context.getExtensions() : Collections.emptySet());
+        this.extensions.addAll(builder.extensions);
 
-        if (context == null) {
-            try {
-                Class<?> extensionContext = Class.forName(CoreContext.class.getPackage().getName() + ".extensions.ExtensionContext");
-                context = (CoreContext) extensionContext.newInstance();
-            } catch (ReflectiveOperationException e) {
-                context = new CoreContext(new Extension[0]);
-            }
+        // Find all modules, then add all extension from each module.
+        ServiceLoader<Module> loader = ServiceLoader.load(Module.class);
+        for (Module module : loader) {
+            extensions.addAll(module.getExtensions());
         }
 
-        this.extensions = new HashSet<>(context.getExtensions());
-
         Collection<Class<?>> classesToBeBound = new ArrayDeque<>();
+        // For each extension, get its classes in order to add them to the JAXBContext.
         for (Extension extension : extensions) {
             classesToBeBound.addAll(extension.getClasses());
         }
@@ -230,7 +228,7 @@ public final class XmppSessionConfiguration {
      * <li><a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a></li>
      * </ul>
      * By default this directory is called <code>xmpp.rocks</code> and is located in the operating system's application data folder:<br>
-     * <p>
+     * <p/>
      * For Windows it is <code>%APPDATA%</code>, which usually is <code>C:\Users\{USERNAME}\AppData\Roaming</code><br>
      * For Mac it is <code>~/Library/Application Support</code><br>
      * Else it is the user's home directory.
@@ -278,8 +276,11 @@ public final class XmppSessionConfiguration {
      */
     public static final class Builder {
 
+        private final Collection<Extension> extensions = new ArrayDeque<>();
+
         private Class<? extends XmppDebugger> xmppDebugger;
 
+        @Deprecated
         private CoreContext context;
 
         private int defaultResponseTimeout;
@@ -319,9 +320,22 @@ public final class XmppSessionConfiguration {
          *
          * @param context The context.
          * @return The builder.
+         * @deprecated Use {@link #extensions(Extension...)} in order to add custom extensions.
          */
+        @Deprecated
         public final Builder context(CoreContext context) {
             this.context = context;
+            return this;
+        }
+
+        /**
+         * Adds extensions to the session.
+         *
+         * @param extensions The extensions.
+         * @return The builder.
+         */
+        public final Builder extensions(Extension... extensions) {
+            this.extensions.addAll(Arrays.asList(extensions));
             return this;
         }
 

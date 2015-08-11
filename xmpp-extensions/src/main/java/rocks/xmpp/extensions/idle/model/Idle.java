@@ -41,7 +41,7 @@ import java.util.Objects;
  * The implementation of the {@code <idle/>} element in the {@code urn:xmpp:idle:1} namespace.
  * <p>
  * It also provides a {@linkplain #timeFromPresence(Presence) convenient method}, which gets the idle time from a presence with respect to <a href="http://xmpp.org/extensions/xep-0319.html">XEP-0319: Last User Interaction in Presence</a> and the superseded <a href="http://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
- * <p>
+ * </p>
  * <h3>Usage</h3>
  * <pre>
  * {@code

@@ -53,9 +53,9 @@ import java.util.function.Supplier;
  * </p>
  * Since creating the JAXB context is quite expensive, this class allows you to create the context once and reuse it by multiple sessions.
  * You can also {@linkplain #setDefault(XmppSessionConfiguration) set} an application-wide default configuration (used by all XMPP sessions).
- * <p/>
+ * <p>
  * Use the {@link #builder()} to create instances of this class.
- * <p/>
+ * </p>
  * This class is immutable.
  *
  * @author Christian Schudt
@@ -228,11 +228,11 @@ public final class XmppSessionConfiguration {
      * <li><a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a></li>
      * </ul>
      * By default this directory is called <code>xmpp.rocks</code> and is located in the operating system's application data folder:<br>
-     * <p/>
+     * <p>
      * For Windows it is <code>%APPDATA%</code>, which usually is <code>C:\Users\{USERNAME}\AppData\Roaming</code><br>
      * For Mac it is <code>~/Library/Application Support</code><br>
      * Else it is the user's home directory.
-     *
+     * </p>
      * @return The directory.
      */
     public final Path getCacheDirectory() {

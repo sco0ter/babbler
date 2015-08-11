@@ -34,7 +34,6 @@ import java.net.URL;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:register} namespace.
- * <p>
  * <h3>Usage</h3>
  * To request the registration form:
  * <pre>

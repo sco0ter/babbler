@@ -29,7 +29,7 @@ import java.util.Objects;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:version} namespace.
- * <p/>
+ * <p>
  * This class is immutable.
  *
  * @author Christian Schudt

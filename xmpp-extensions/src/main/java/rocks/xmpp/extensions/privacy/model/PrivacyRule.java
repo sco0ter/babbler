@@ -185,6 +185,7 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      *
      * @param action The action to perform, i.e. either allow or deny.
      * @param order  The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
+     * @return The privacy rule.
      */
     public static PrivacyRule of(Action action, long order) {
         return new PrivacyRule(action, order, null, null, false, false, false, false);
@@ -196,6 +197,7 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @param jid    The JID.
      * @param action The action to perform, i.e. either allow or deny.
      * @param order  The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
+     * @return The privacy rule.
      */
     public static PrivacyRule of(Jid jid, Action action, long order) {
         return new PrivacyRule(action, order, Type.JID, jid.toEscapedString(), false, false, false, false);
@@ -207,6 +209,7 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @param group  The roster group.
      * @param action The action to perform, i.e. either allow or deny.
      * @param order  The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
+     * @return The privacy rule.
      */
     public static PrivacyRule of(String group, Action action, long order) {
         return new PrivacyRule(action, order, Type.GROUP, group, false, false, false, false);
@@ -218,6 +221,7 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @param subscription The subscription type.
      * @param action       The action to perform, i.e. either allow or deny.
      * @param order        The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
+     * @return The privacy rule.
      */
     public static PrivacyRule of(Contact.Subscription subscription, Action action, long order) {
         if (Contact.Subscription.REMOVE.equals(subscription)) {

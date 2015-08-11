@@ -205,7 +205,10 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     /**
      * Returns a bare JID with a domain and resource part, e.g. <code>capulet.com/balcony</code>
      *
-     * @param domain The domain.
+     * @param local    The local part.
+     * @param domain   The domain.
+     * @param resource The resource part.
+     * @return The JID.
      */
     public static Jid of(String local, String domain, String resource) {
         return new Jid(local, domain, resource);
@@ -215,6 +218,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * Returns a bare JID with only the domain part, e.g. <code>capulet.com</code>
      *
      * @param domain The domain.
+     * @return The JID.
      */
     public static Jid ofDomain(String domain) {
         return new Jid(domain);
@@ -223,7 +227,9 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     /**
      * Returns a bare JID with a local and domain part, e.g. <code>juliet@capulet.com</code>
      *
+     * @param local  The local part.
      * @param domain The domain.
+     * @return The JID.
      */
     public static Jid ofLocalAndDomain(String local, String domain) {
         return new Jid(local, domain);
@@ -232,7 +238,9 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     /**
      * Returns a bare JID with a domain and resource part, e.g. <code>capulet.com/balcony</code>
      *
-     * @param domain The domain.
+     * @param domain   The domain.
+     * @param resource The resource part.
+     * @return The JID.
      */
     public static Jid ofDomainAndResource(String domain, String resource) {
         return new Jid(null, domain, resource);

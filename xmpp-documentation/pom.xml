@@ -34,7 +34,7 @@
     </parent>
     <artifactId>xmpp-documentation</artifactId>
     <name>XMPP.rocks - Documentation</name>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <reporting>
         <plugins>
@@ -95,28 +95,36 @@
 
     <build>
         <plugins>
-            <!-- Construct the assembly -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4.1</version>
                 <executions>
+                    <!-- Run shade goal on package phase -->
                     <execution>
-                        <id>Make assembly</id>
-                        <!-- Bind the assembly generation to the package phase -->
                         <phase>package</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <finalName>babbler-${project.version}</finalName>
+                            <artifactSet>
+                                <includes>
+                                    <include>rocks.xmpp:xmpp-addr</include>
+                                    <include>rocks.xmpp:xmpp-core</include>
+                                    <include>rocks.xmpp:xmpp-core-client</include>
+                                    <include>rocks.xmpp:xmpp-extensions</include>
+                                    <include>rocks.xmpp:xmpp-extensions-client</include>
+                                </includes>
+                            </artifactSet>
+                            <transformers>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer">
+                                </transformer>
+                            </transformers>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <finalName>babbler-${project.version}</finalName>
-                    <useProjectArtifact>false</useProjectArtifact>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <!-- http://jira.codehaus.org/browse/MASSEMBLY-352 -->
-                    <attach>true</attach>
-                    <descriptorId>jar-with-dependencies</descriptorId>
-                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -135,7 +135,7 @@ public final class CompressionManager extends StreamFeatureNegotiator {
 
     @Override
     public final Status processNegotiation(Object element) throws StreamNegotiationException {
-        if (!isEnabled() || compressionMethods.isEmpty()) {
+        if (compressionMethods.isEmpty()) {
             return Status.IGNORE;
         }
 

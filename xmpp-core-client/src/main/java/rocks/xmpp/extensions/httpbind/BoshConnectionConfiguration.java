@@ -55,7 +55,7 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
 
     private final int wait;
 
-    private final String file;
+    private final String path;
 
     private final String route;
 
@@ -64,7 +64,7 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
     private BoshConnectionConfiguration(Builder builder) {
         super(builder);
         this.wait = builder.wait;
-        this.file = builder.file;
+        this.path = builder.path;
         this.route = builder.route;
         this.useKeySequence = builder.useKeySequence;
     }
@@ -125,8 +125,18 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
      *
      * @return The file on the host.
      */
+    @Deprecated
     public final String getFile() {
-        return file;
+        return path;
+    }
+
+    /**
+     * Gets the path on the host, e.g. "/http-bind/".
+     *
+     * @return The path on the host.
+     */
+    public final String getPath() {
+        return path;
     }
 
     /**
@@ -154,7 +164,7 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
 
         private int wait;
 
-        private String file;
+        private String path;
 
         private String route;
 
@@ -163,7 +173,7 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
         private Builder() {
             // default values
             wait(60);
-            file("/http-bind/");
+            path("/http-bind/");
         }
 
         /**
@@ -171,9 +181,22 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
          *
          * @param file The file on the host.
          * @return The builder.
+         * @deprecated Use {@link #path(String)}
          */
+        @Deprecated
         public Builder file(String file) {
-            this.file = file;
+            this.path = file;
+            return this;
+        }
+
+        /**
+         * Sets the path on the host, e.g. "/http-bind/"
+         *
+         * @param path The path on the host.
+         * @return The builder.
+         */
+        public Builder path(String path) {
+            this.path = path;
             return this;
         }
 

@@ -299,7 +299,7 @@ public final class BoshConnection extends Connection {
             int targetPort = getPort() > 0 ? getPort() : (boshConnectionConfiguration.isSecure() ? 5281 : 5280);
             // If a hostname has been configured, use it to connect.
             if (getHostname() != null) {
-                url = new URL(protocol, getHostname(), targetPort, boshConnectionConfiguration.getFile());
+                url = new URL(protocol, getHostname(), targetPort, boshConnectionConfiguration.getPath());
             } else if (getXmppSession().getDomain() != null) {
                 // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
                 String resolvedUrl = findBoshUrl(getXmppSession().getDomain().toString(), boshConnectionConfiguration.getConnectTimeout());
@@ -308,7 +308,7 @@ public final class BoshConnection extends Connection {
                 } else {
                     // Fallback mechanism:
                     // If the URL could not be resolved, use the domain name and port 5280 as default.
-                    url = new URL(protocol, getXmppSession().getDomain().toString(), targetPort, boshConnectionConfiguration.getFile());
+                    url = new URL(protocol, getXmppSession().getDomain().toString(), targetPort, boshConnectionConfiguration.getPath());
                 }
                 this.port = url.getPort() > 0 ? url.getPort() : url.getDefaultPort();
                 this.hostname = url.getHost();

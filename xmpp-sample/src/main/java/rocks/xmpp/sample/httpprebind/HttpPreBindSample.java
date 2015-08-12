@@ -43,7 +43,7 @@ public class HttpPreBindSample {
             BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
                     .hostname("localhost")
                     .port(7070)
-                    .file("/http-bind/")
+                    .path("/http-bind/")
                     .build();
 
             try (XmppClient xmppClient = new XmppClient("localhost", boshConnectionConfiguration)) {

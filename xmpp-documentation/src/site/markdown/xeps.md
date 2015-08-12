@@ -56,7 +56,7 @@
 * ![supported][supported]           [XEP-0163: Personal Eventing Protocol](http://xmpp.org/extensions/xep-0163.html)
 * ![in development][in development] [XEP-0166: Jingle](http://xmpp.org/extensions/xep-0166.html)
 * ![not supported][not supported]   [XEP-0167: Jingle RTP Sessions](http://xmpp.org/extensions/xep-0167.html)
-* ![not supported][not supported]   [XEP-0171: Language Translation](http://xmpp.org/extensions/xep-0171.html)
+* ![supported][supported]           [XEP-0171: Language Translation](http://xmpp.org/extensions/xep-0171.html)
 * ![supported][supported]           [XEP-0172: User Nickname](http://xmpp.org/extensions/xep-0172.html)
 * ![not supported][not supported]   [XEP-0174: Serverless Messaging](http://xmpp.org/extensions/xep-0174.html)
 * ![not supported][not supported]   [XEP-0176: Jingle ICE-UDP Transport Method](http://xmpp.org/extensions/xep-0176.html)

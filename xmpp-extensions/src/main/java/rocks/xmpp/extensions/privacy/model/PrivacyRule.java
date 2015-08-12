@@ -120,67 +120,6 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
     }
 
     /**
-     * Creates a privacy rule of type 'subscription'.
-     *
-     * @param action       The action to perform, i.e. either allow or deny.
-     * @param order        The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
-     * @param subscription The subscription.
-     * @deprecated Use {@link #of(Contact.Subscription, Action, long)}
-     */
-    @Deprecated
-    public PrivacyRule(Action action, long order, Contact.Subscription subscription) {
-        if (Contact.Subscription.REMOVE.equals(subscription)) {
-            throw new IllegalArgumentException("subscription must not be 'remove'");
-        }
-        this.action = action;
-        this.order = order;
-        this.type = Type.SUBSCRIPTION;
-        this.value = subscription.name().toLowerCase();
-        this.message = null;
-        this.presenceIn = null;
-        this.presenceOut = null;
-        this.iq = null;
-    }
-
-    /**
-     * Creates a privacy list item, which allows or blocks everything.
-     *
-     * @param action The action to perform, i.e. either allow or deny.
-     * @param order  The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
-     * @deprecated Use {@link #of(Action, long)}
-     */
-    @Deprecated
-    public PrivacyRule(Action action, long order) {
-        this(action, order, null, null, false, false, false, false);
-    }
-
-    /**
-     * Creates a privacy rule of type 'jid'.
-     *
-     * @param action The action to perform, i.e. either allow or deny.
-     * @param order  The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
-     * @param jid    The JID.
-     * @deprecated Use {@link #of(Jid, Action, long)}
-     */
-    @Deprecated
-    public PrivacyRule(Action action, long order, Jid jid) {
-        this(action, order, Type.JID, jid.toEscapedString(), false, false, false, false);
-    }
-
-    /**
-     * Creates a privacy rule of type 'group'.
-     *
-     * @param action The action to perform, i.e. either allow or deny.
-     * @param order  The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
-     * @param group  The contact group.
-     * @deprecated Use {@link #of(String, Action, long)}
-     */
-    @Deprecated
-    public PrivacyRule(Action action, long order, String group) {
-        this(action, order, Type.GROUP, group, false, false, false, false);
-    }
-
-    /**
      * Creates a privacy list item, which allows or blocks everything.
      *
      * @param action The action to perform, i.e. either allow or deny.

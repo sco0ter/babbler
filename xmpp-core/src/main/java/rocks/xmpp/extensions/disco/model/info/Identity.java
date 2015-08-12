@@ -98,24 +98,9 @@ public final class Identity implements Comparable<Identity> {
      *
      * @param category The category.
      * @param type     The type.
-     * @deprecated Use {@link #ofCategoryAndType(String, String)}
      */
-    @Deprecated
-    public Identity(String category, String type) {
-        this(category, type, null);
-    }
-
-    /**
-     * Creates an identity with a category, type and name.
-     *
-     * @param category The category.
-     * @param type     The type.
-     * @param name     The name.
-     * @deprecated Use {@link #ofCategoryAndType(String, String)} and {@link #withName(String)}
-     */
-    @Deprecated
-    public Identity(String category, String type, String name) {
-        this(category, type, name, null);
+    private Identity(String category, String type) {
+        this(category, type, null, null);
     }
 
     /**
@@ -125,10 +110,8 @@ public final class Identity implements Comparable<Identity> {
      * @param type     The type.
      * @param name     The name.
      * @param language The language.
-     * @deprecated Use {@link #ofCategoryAndType(String, String)} and {@link #withName(String, String)}
      */
-    @Deprecated
-    public Identity(String category, String type, String name, String language) {
+    private Identity(String category, String type, String name, String language) {
         this.category = Objects.requireNonNull(category);
         this.type = Objects.requireNonNull(type);
         this.name = name;

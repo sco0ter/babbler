@@ -121,16 +121,6 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
     }
 
     /**
-     * Gets the file on the host, e.g. "/http-bind/".
-     *
-     * @return The file on the host.
-     */
-    @Deprecated
-    public final String getFile() {
-        return path;
-    }
-
-    /**
      * Gets the path on the host, e.g. "/http-bind/".
      *
      * @return The path on the host.
@@ -174,19 +164,6 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
             // default values
             wait(60);
             path("/http-bind/");
-        }
-
-        /**
-         * Sets the file on the host, e.g. "/http-bind/"
-         *
-         * @param file The file on the host.
-         * @return The builder.
-         * @deprecated Use {@link #path(String)}
-         */
-        @Deprecated
-        public Builder file(String file) {
-            this.path = file;
-            return this;
         }
 
         /**

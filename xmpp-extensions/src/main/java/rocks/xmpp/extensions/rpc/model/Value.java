@@ -62,43 +62,12 @@ public final class Value {
     }
 
     /**
-     * Creates an integer value.
+     * Creates an value.
      *
-     * @param integer The integer value.
+     * @param value The value.
      */
-    @Deprecated
-    public Value(Integer integer) {
-        this.value = integer;
-    }
-
-    /**
-     * Creates a string value.
-     *
-     * @param string The string value.
-     */
-    @Deprecated
-    public Value(String string) {
-        this.value = string;
-    }
-
-    /**
-     * Creates a double value.
-     *
-     * @param d The double value.
-     */
-    @Deprecated
-    public Value(Double d) {
-        this.value = d;
-    }
-
-    /**
-     * Creates a binary (base64) value.
-     *
-     * @param bytes The binary value.
-     */
-    @Deprecated
-    public Value(byte[] bytes) {
-        this.value = bytes;
+    private Value(Object value) {
+        this.value = value;
     }
 
     /**
@@ -106,8 +75,7 @@ public final class Value {
      *
      * @param b The boolean value.
      */
-    @Deprecated
-    public Value(Boolean b) {
+    private Value(Boolean b) {
         this.value = new NumericBoolean(b);
     }
 
@@ -116,8 +84,7 @@ public final class Value {
      *
      * @param date The date value.
      */
-    @Deprecated
-    public Value(OffsetDateTime date) {
+    private Value(OffsetDateTime date) {
         XMLGregorianCalendar xmlGregorianCalendar;
         try {
             xmlGregorianCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar();
@@ -137,8 +104,7 @@ public final class Value {
      *
      * @param list The array type value.
      */
-    @Deprecated
-    public Value(Collection<Value> list) {
+    private Value(Collection<Value> list) {
         if (list != null) {
             ArrayType arrayType = new ArrayType();
             arrayType.values.addAll(list.stream().collect(Collectors.toList()));
@@ -153,8 +119,7 @@ public final class Value {
      *
      * @param map The struct type value.
      */
-    @Deprecated
-    public Value(Map<String, Value> map) {
+    Value(Map<String, Value> map) {
         if (map != null) {
             StructType structType = new StructType();
             structType.member.addAll(map.entrySet().stream().map(entry -> new StructType.MemberType(entry.getKey(), entry.getValue())).collect(Collectors.toList()));

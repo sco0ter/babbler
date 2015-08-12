@@ -130,7 +130,6 @@ import java.util.Set;
  * Registers extensions and manager classes, (which should be initialized during the start of a session) to the {@link rocks.xmpp.core.session.XmppSession}.
  *
  * @author Christian Schudt
- * @see rocks.xmpp.core.session.XmppSessionConfiguration.Builder#context(rocks.xmpp.core.session.context.CoreContext)
  */
 @Deprecated
 public class ExtensionContext extends CoreContext {

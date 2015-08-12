@@ -69,7 +69,6 @@ import java.util.HashSet;
  * Registered classes are used to marshal and unmarshal XML to objects. Registered manager classes are initialized as soon as an XMPP session is created, in order to start listening for stanzas immediately e.g. to automatically respond to IQ requests.
  *
  * @author Christian Schudt
- * @see rocks.xmpp.core.session.XmppSessionConfiguration.Builder#context(rocks.xmpp.core.session.context.CoreContext)
  */
 @Deprecated
 public class CoreContext implements Module {

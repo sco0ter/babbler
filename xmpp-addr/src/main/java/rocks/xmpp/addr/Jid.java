@@ -115,38 +115,13 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     private final String resource;
 
     /**
-     * Creates a bare JID with only the domain part.
-     *
-     * @param domain The domain.
-     * @deprecated Use {@link #ofDomain(String)}
-     */
-    @Deprecated
-    public Jid(String domain) {
-        this(null, domain, null);
-    }
-
-    /**
-     * Creates a bare JID with only the local and domain part.
-     *
-     * @param local  The local part.
-     * @param domain The domain part.
-     * @deprecated Use {@link #ofLocalAndDomain(String, String)}
-     */
-    @Deprecated
-    public Jid(String local, String domain) {
-        this(local, domain, null);
-    }
-
-    /**
      * Creates a full JID with local, domain and resource part.
      *
      * @param local    The local part.
      * @param domain   The domain part.
      * @param resource The resource part.
-     * @deprecated Use {@link #of(String, String, String)}}
      */
-    @Deprecated
-    public Jid(String local, String domain, String resource) {
+    private Jid(String local, String domain, String resource) {
         this(local, domain, resource, false, true);
     }
 
@@ -173,36 +148,6 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     }
 
     /**
-     * Returns a JID from a string. The format must be
-     * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>.
-     * The input string will be escaped.
-     *
-     * @param jid The JID.
-     * @return The JID.
-     * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
-     * @deprecated Use {@link #of(String)}
-     */
-    @Deprecated
-    public static Jid valueOf(String jid) {
-        return of(jid);
-    }
-
-    /**
-     * Creates a JID from a string. The format must be
-     * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>
-     *
-     * @param jid        The JID.
-     * @param doUnescape If the jid parameter will be unescaped.
-     * @return The JID.
-     * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
-     * @deprecated Use {@link #of(String)} or {@link #ofEscaped(String)}}
-     */
-    @Deprecated
-    public static Jid valueOf(String jid, boolean doUnescape) {
-        return of(jid, doUnescape);
-    }
-
-    /**
      * Returns a bare JID with a domain and resource part, e.g. <code>capulet.com/balcony</code>
      *
      * @param local    The local part.
@@ -221,7 +166,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @return The JID.
      */
     public static Jid ofDomain(String domain) {
-        return new Jid(domain);
+        return new Jid(null, domain, null);
     }
 
     /**
@@ -232,7 +177,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @return The JID.
      */
     public static Jid ofLocalAndDomain(String local, String domain) {
-        return new Jid(local, domain);
+        return new Jid(local, domain, null);
     }
 
     /**

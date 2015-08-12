@@ -164,10 +164,8 @@ public final class ChatManager extends Manager {
      * Destroys the chat session.
      *
      * @param chatSession The chat session.
-     * @deprecated Use {@link ChatSession#close()}
      */
-    @Deprecated
-    public void destroyChatSession(ChatSession chatSession) {
+    void destroyChatSession(ChatSession chatSession) {
         Jid user = Objects.requireNonNull(chatSession, "chatSession must not be null.").getChatPartner().asBareJid();
         synchronized (chatSessions) {
             Map<String, ChatSession> chatSessionMap = chatSessions.get(user);

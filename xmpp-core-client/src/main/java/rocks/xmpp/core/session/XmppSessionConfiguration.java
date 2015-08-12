@@ -24,7 +24,6 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.core.session.context.CoreContext;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.model.Presence;
 
@@ -124,7 +123,7 @@ public final class XmppSessionConfiguration {
         this.xmlInputFactory = XMLInputFactory.newFactory();
         this.xmlOutputFactory = XMLOutputFactory.newFactory();
 
-        this.extensions = new HashSet<>(builder.context != null ? builder.context.getExtensions() : Collections.emptySet());
+        this.extensions = new HashSet<>();
         this.extensions.addAll(builder.extensions);
 
         // Find all modules, then add all extension from each module.
@@ -280,9 +279,6 @@ public final class XmppSessionConfiguration {
 
         private Class<? extends XmppDebugger> xmppDebugger;
 
-        @Deprecated
-        private CoreContext context;
-
         private int defaultResponseTimeout;
 
         private Path cacheDirectory;
@@ -312,19 +308,6 @@ public final class XmppSessionConfiguration {
          */
         public final Builder debugger(Class<? extends XmppDebugger> xmppDebugger) {
             this.xmppDebugger = xmppDebugger;
-            return this;
-        }
-
-        /**
-         * Sets XMPP context which is used to setup the JAXBContext and which defines the initial extension managers.
-         *
-         * @param context The context.
-         * @return The builder.
-         * @deprecated Use {@link #extensions(Extension...)} in order to add custom extensions.
-         */
-        @Deprecated
-        public final Builder context(CoreContext context) {
-            this.context = context;
             return this;
         }
 

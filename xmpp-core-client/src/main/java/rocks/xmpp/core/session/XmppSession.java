@@ -207,6 +207,9 @@ public abstract class XmppSession implements AutoCloseable {
     }
 
     static boolean isSentToUserOrServer(Stanza stanza, Jid domain, Jid connectedResource) {
+        if (stanza instanceof Presence) {
+            return false;
+        }
         if (stanza.getTo() == null) {
             return true;
         }

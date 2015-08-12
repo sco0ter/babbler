@@ -28,6 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
 
 /**
  * @author Christian Schudt
@@ -46,6 +47,9 @@ public class XmppSessionTest {
 
         // To itself
         Assert.assertTrue(XmppSession.isSentToUserOrServer(new Message(), domain, null));
+
+        // To others
+        Assert.assertFalse(XmppSession.isSentToUserOrServer(new Presence(), domain, null));
 
         // Other server
         Assert.assertFalse(XmppSession.isSentToUserOrServer(new Message(Jid.of("to@domain123")), domain, null));

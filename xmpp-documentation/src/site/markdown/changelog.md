@@ -1,7 +1,7 @@
 # Changelog
 ---
 
-## Version 0.6.0-SNAPSHOT
+## Version 0.6.0 (2015-08-12)
 
 * Add support for [XEP-0114: Jabber Component Protocol](http://www.xmpp.org/extensions/xep-0114.html)
 * Add support for [XEP-0171: Language Translation](http://xmpp.org/extensions/xep-0171.html)

@@ -15,6 +15,7 @@
 * `login` method now returns "additional data with success", i.e. the contents of the `<success/>` element.
 * Add a new `ReconnectionStrategy` implementation, which always tries to reconnect after fix time.
 * There's a new "xmpp-addr" project for [RFC 6122](http://xmpp.org/rfcs/rfc6122.html) which contains the `Jid` class, which has therefore also moved to a new package (`rocks.xmpp.addr`)
+* Likewise the Roster and Chat classes have been moved from the 'core' to 'im' package to better resemble the separation of RFC 6120 and 6121.
 * Use [Java 8's Functional Interfaces](https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html):
     * All event listeners have been replaced by `java.util.function.Consumer<T extends EventObject>` (if you used lambda expressions, nothing has changed for you)
 * Use [Java 8's Date-Time API](https://docs.oracle.com/javase/8/docs/api/java/time/package-summary.html):

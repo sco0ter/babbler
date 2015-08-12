@@ -22,32 +22,33 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.httpbind;
+package rocks.xmpp.im.roster.versioning.model;
 
-import org.testng.annotations.Test;
-import rocks.xmpp.core.IntegrationTest;
-import rocks.xmpp.core.XmppException;
-import rocks.xmpp.im.roster.RosterManager;
-import rocks.xmpp.core.session.XmppClient;
+import rocks.xmpp.core.stream.model.StreamFeature;
+
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
+ * The implementation of the roster versioning feature.
+ * <p>
+ * This class is immutable.
+ *
  * @author Christian Schudt
  */
-public class BoshIT extends IntegrationTest {
+@XmlRootElement(name = "ver")
+@XmlType(factoryMethod = "create")
+public final class RosterVersioning extends StreamFeature {
 
-    @Test
-    public void testBoshConnection() throws XmppException {
+    /**
+     * The {@code <ver/>} element.
+     */
+    public static final RosterVersioning INSTANCE = new RosterVersioning();
 
-        long start = System.currentTimeMillis();
+    private RosterVersioning() {
+    }
 
-        for (int i = 0; i < 10; i++) {
-            try (XmppClient xmppSession = new XmppClient(DOMAIN, BoshConnectionConfiguration.getDefault())) {
-                System.out.println(i);
-                xmppSession.connect();
-                xmppSession.login("admin", "admin", null);
-                xmppSession.getManager(RosterManager.class).requestRoster();
-            }
-        }
-        System.out.println(System.currentTimeMillis() - start);
+    private static RosterVersioning create() {
+        return INSTANCE;
     }
 }

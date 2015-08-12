@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.rtt;
 
-import rocks.xmpp.core.chat.Chat;
+import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
 import rocks.xmpp.util.XmppUtils;

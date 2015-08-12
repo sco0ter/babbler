@@ -22,32 +22,33 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.httpbind;
+package rocks.xmpp.im.subscription.preapproval.model;
 
-import org.testng.annotations.Test;
-import rocks.xmpp.core.IntegrationTest;
-import rocks.xmpp.core.XmppException;
-import rocks.xmpp.im.roster.RosterManager;
-import rocks.xmpp.core.session.XmppClient;
+import rocks.xmpp.core.stream.model.StreamFeature;
+
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
+ * The implementation of the subscription pre-approval feature.
+ * <p>
+ * This class is immutable.
+ *
  * @author Christian Schudt
  */
-public class BoshIT extends IntegrationTest {
+@XmlRootElement(name = "sub")
+@XmlType(factoryMethod = "create")
+public final class SubscriptionPreApproval extends StreamFeature {
 
-    @Test
-    public void testBoshConnection() throws XmppException {
+    /**
+     * The {@code <sub/>} element.
+     */
+    public static final SubscriptionPreApproval INSTANCE = new SubscriptionPreApproval();
 
-        long start = System.currentTimeMillis();
+    private SubscriptionPreApproval() {
+    }
 
-        for (int i = 0; i < 10; i++) {
-            try (XmppClient xmppSession = new XmppClient(DOMAIN, BoshConnectionConfiguration.getDefault())) {
-                System.out.println(i);
-                xmppSession.connect();
-                xmppSession.login("admin", "admin", null);
-                xmppSession.getManager(RosterManager.class).requestRoster();
-            }
-        }
-        System.out.println(System.currentTimeMillis() - start);
+    private static SubscriptionPreApproval create() {
+        return INSTANCE;
     }
 }

@@ -29,8 +29,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.BaseTest;
-import rocks.xmpp.core.roster.model.Contact;
-import rocks.xmpp.core.roster.model.Roster;
+import rocks.xmpp.im.roster.model.Contact;
+import rocks.xmpp.im.roster.model.Roster;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 

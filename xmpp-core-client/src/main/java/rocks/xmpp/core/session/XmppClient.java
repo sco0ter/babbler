@@ -27,7 +27,7 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.bind.model.Bind;
-import rocks.xmpp.core.roster.RosterManager;
+import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.model.Session;
@@ -42,7 +42,7 @@ import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.core.subscription.PresenceManager;
+import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 
 import javax.security.auth.callback.CallbackHandler;

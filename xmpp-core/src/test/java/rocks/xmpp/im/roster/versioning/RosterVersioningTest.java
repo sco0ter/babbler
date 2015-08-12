@@ -22,32 +22,28 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.httpbind;
+package rocks.xmpp.im.roster.versioning;
 
+import org.testng.Assert;
 import org.testng.annotations.Test;
-import rocks.xmpp.core.IntegrationTest;
-import rocks.xmpp.core.XmppException;
-import rocks.xmpp.im.roster.RosterManager;
-import rocks.xmpp.core.session.XmppClient;
+import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.im.roster.versioning.model.RosterVersioning;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt
  */
-public class BoshIT extends IntegrationTest {
+public class RosterVersioningTest extends XmlTest {
+    protected RosterVersioningTest() throws JAXBException, XMLStreamException {
+        super(RosterVersioning.class);
+    }
 
     @Test
-    public void testBoshConnection() throws XmppException {
-
-        long start = System.currentTimeMillis();
-
-        for (int i = 0; i < 10; i++) {
-            try (XmppClient xmppSession = new XmppClient(DOMAIN, BoshConnectionConfiguration.getDefault())) {
-                System.out.println(i);
-                xmppSession.connect();
-                xmppSession.login("admin", "admin", null);
-                xmppSession.getManager(RosterManager.class).requestRoster();
-            }
-        }
-        System.out.println(System.currentTimeMillis() - start);
+    public void unmarshalPreApproval() throws JAXBException, XMLStreamException {
+        String xml = "<ver xmlns='urn:xmpp:features:rosterver'/>";
+        RosterVersioning rosterVersioning = unmarshal(xml, RosterVersioning.class);
+        Assert.assertTrue(rosterVersioning == RosterVersioning.INSTANCE);
     }
 }

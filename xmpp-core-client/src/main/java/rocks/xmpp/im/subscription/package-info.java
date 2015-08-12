@@ -22,32 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.httpbind;
-
-import org.testng.annotations.Test;
-import rocks.xmpp.core.IntegrationTest;
-import rocks.xmpp.core.XmppException;
-import rocks.xmpp.im.roster.RosterManager;
-import rocks.xmpp.core.session.XmppClient;
-
 /**
- * @author Christian Schudt
+ * Provides classes for <a href="http://xmpp.org/rfcs/rfc6121.html#sub">Managing Presence Subscriptions</a>.
  */
-public class BoshIT extends IntegrationTest {
-
-    @Test
-    public void testBoshConnection() throws XmppException {
-
-        long start = System.currentTimeMillis();
-
-        for (int i = 0; i < 10; i++) {
-            try (XmppClient xmppSession = new XmppClient(DOMAIN, BoshConnectionConfiguration.getDefault())) {
-                System.out.println(i);
-                xmppSession.connect();
-                xmppSession.login("admin", "admin", null);
-                xmppSession.getManager(RosterManager.class).requestRoster();
-            }
-        }
-        System.out.println(System.currentTimeMillis() - start);
-    }
-}
+package rocks.xmpp.im.subscription;

@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.privacy.model;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.roster.model.Contact;
+import rocks.xmpp.im.roster.model.Contact;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;

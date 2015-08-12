@@ -28,7 +28,7 @@ package rocks.xmpp.extensions.httpbind;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.roster.model.Roster;
+import rocks.xmpp.im.roster.model.Roster;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;

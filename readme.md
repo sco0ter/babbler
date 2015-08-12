@@ -1,4 +1,4 @@
-**Babbler** is a young [XMPP](http://xmpp.org) client library for Java SE 7 based on [JAXB](http://docs.oracle.com/javase/tutorial/jaxb/intro/index.html) as XML processing technology.
+**Babbler** is a young [XMPP](http://xmpp.org) client library for Java SE 8 based on [JAXB](http://docs.oracle.com/javase/tutorial/jaxb/intro/index.html) as XML processing technology.
 
 It aims to provide good JavaDoc documentation, clean code, an easy to use API and a high level of software quality (which is currently ensured by 700+ unit tests).
 
@@ -23,12 +23,12 @@ Since this project is quite young, the API might change. Comments on the API are
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-core-client</artifactId>
-    <version>0.5.1</version>
+    <version>0.6.0</version>
 </dependency>
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-extensions-client</artifactId>
-    <version>0.5.1</version>
+    <version>0.6.0</version>
 </dependency>
 ```
 
@@ -56,12 +56,12 @@ Development snapshots are availble on OSS Sonatype nexus:
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-core-client</artifactId>
-    <version>0.6.0-SNAPSHOT</version>
+    <version>0.7.0-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-extensions-client</artifactId>
-    <version>0.6.0-SNAPSHOT</version>
+    <version>0.7.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -101,6 +101,7 @@ Development snapshots are availble on OSS Sonatype nexus:
 * ![supported][supported]           [XEP-0106: JID Escaping](http://xmpp.org/extensions/xep-0106.html)
 * ![supported][supported]           [XEP-0107: User Mood](http://xmpp.org/extensions/xep-0107.html)
 * ![supported][supported]           [XEP-0108: User Activity](http://xmpp.org/extensions/xep-0108.html)
+* ![supported][supported]           [XEP-0114: Jabber Component Protocol](http://xmpp.org/extensions/xep-0114.html)
 * ![supported][supported]           [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html)
 * ![supported][supported]           [XEP-0118: User Tune](http://xmpp.org/extensions/xep-0118.html)
 * ![supported][supported]           [XEP-0122: Data Forms Validation](http://xmpp.org/extensions/xep-0122.html)
@@ -120,7 +121,7 @@ Development snapshots are availble on OSS Sonatype nexus:
 * ![supported][supported]           [XEP-0163: Personal Eventing Protocol](http://xmpp.org/extensions/xep-0163.html)
 * ![in development][in development] [XEP-0166: Jingle](http://xmpp.org/extensions/xep-0166.html)
 * ![not supported][not supported]   [XEP-0167: Jingle RTP Sessions](http://xmpp.org/extensions/xep-0167.html)
-* ![not supported][not supported]   [XEP-0171: Language Translation](http://xmpp.org/extensions/xep-0171.html)
+* ![supported][supported]           [XEP-0171: Language Translation](http://xmpp.org/extensions/xep-0171.html)
 * ![supported][supported]           [XEP-0172: User Nickname](http://xmpp.org/extensions/xep-0172.html)
 * ![not supported][not supported]   [XEP-0174: Serverless Messaging](http://xmpp.org/extensions/xep-0174.html)
 * ![not supported][not supported]   [XEP-0176: Jingle ICE-UDP Transport Method](http://xmpp.org/extensions/xep-0176.html)
@@ -144,7 +145,7 @@ Development snapshots are availble on OSS Sonatype nexus:
 * ![not supported][not supported]   [XEP-0262: Use of ZRTP in Jingle RTP Sessions](http://xmpp.org/extensions/xep-0262.html)
 * ![not supported][not supported]   [XEP-0266: Codecs for Jingle Audio](http://xmpp.org/extensions/xep-0266.html)
 * ![supported][supported]           [XEP-0297: Stanza Forwarding](http://xmpp.org/extensions/xep-0297.html)
-* ![in development][in development] [XEP-0301: In-Band Real Time Text](http://xmpp.org/extensions/xep-0301.html)
+* ![supported][supported]           [XEP-0301: In-Band Real Time Text](http://xmpp.org/extensions/xep-0301.html)
 * ![supported][supported]           [XEP-0308: Last Message Correction](http://xmpp.org/extensions/xep-0308.html)
 * ![supported][supported]           [XEP-0319: Last User Interaction in Presence](http://xmpp.org/extensions/xep-0319.html)
 

@@ -22,25 +22,17 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.session.context;
+package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.bind.model.Bind;
-import rocks.xmpp.im.roster.RosterManager;
-import rocks.xmpp.im.roster.model.Roster;
-import rocks.xmpp.im.roster.versioning.model.RosterVersioning;
 import rocks.xmpp.core.sasl.model.Mechanisms;
-import rocks.xmpp.core.session.Extension;
-import rocks.xmpp.core.session.Module;
-import rocks.xmpp.core.session.ReconnectionManager;
 import rocks.xmpp.core.session.model.Session;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
-import rocks.xmpp.im.subscription.PresenceManager;
-import rocks.xmpp.im.subscription.preapproval.model.SubscriptionPreApproval;
 import rocks.xmpp.core.tls.model.StartTls;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
@@ -59,33 +51,26 @@ import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.extensions.privatedata.model.PrivateData;
 import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
+import rocks.xmpp.im.roster.RosterManager;
+import rocks.xmpp.im.roster.model.Roster;
+import rocks.xmpp.im.roster.versioning.model.RosterVersioning;
+import rocks.xmpp.im.subscription.PresenceManager;
+import rocks.xmpp.im.subscription.preapproval.model.SubscriptionPreApproval;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 
 /**
- * The context provides XMPP classes as well as manager classes which are associated with an XMPP session.
- * Registered classes are used to marshal and unmarshal XML to objects. Registered manager classes are initialized as soon as an XMPP session is created, in order to start listening for stanzas immediately e.g. to automatically respond to IQ requests.
+ * The core module provides XMPP classes as well as manager classes which are associated with an XMPP session.
+ * These are combined in an {@link Extension}. Although core classes are not extensions, they use the same concept as real extensions.
  *
  * @author Christian Schudt
  */
-@Deprecated
-public class CoreContext implements Module {
+public final class CoreModule implements Module {
 
-    private final Collection<Extension> extensions = new HashSet<>();
-
-    public CoreContext() {
-        this(new Extension[0]);
-    }
-
-    public CoreContext(Class<?>... extensions) {
-        this(Arrays.stream(extensions).map(Extension::of).toArray(Extension[]::new));
-    }
-
-    public CoreContext(Extension... extensions) {
-
-        this.extensions.addAll(Arrays.asList(
+    @Override
+    public final Collection<Extension> getExtensions() {
+        return Arrays.asList(
 
                 // Core
                 Extension.of(StreamFeatures.class, StreamError.class, ClientMessage.class, ClientPresence.class, ClientIQ.class, Session.class, Roster.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class),
@@ -128,24 +113,13 @@ public class CoreContext implements Module {
                 Extension.of(ResourceLimitExceeded.class, StanzaTooBig.class, TooManyStanzas.class),
 
                 // XEP-0221: Data Forms Media Element
-                Extension.of(Media.class)
-        ));
+                Extension.of(Media.class),
 
-        this.extensions.add(Extension.of(PresenceManager.class, true));
-        this.extensions.add(Extension.of(ReconnectionManager.class, true));
-        this.extensions.add(Extension.of(RosterManager.class, true));
+                Extension.of(PresenceManager.class, true),
 
-        Collection<Extension> customExtensions = Arrays.asList(extensions);
-        this.extensions.removeAll(customExtensions);
-        this.extensions.addAll(customExtensions);
-    }
+                Extension.of(ReconnectionManager.class, true),
 
-    /**
-     * Gets the class context.
-     *
-     * @return The context.
-     */
-    public final Collection<Extension> getExtensions() {
-        return extensions;
+                Extension.of(RosterManager.class, true)
+        );
     }
 }

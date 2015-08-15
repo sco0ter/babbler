@@ -65,7 +65,7 @@ public class SampleApplication {
                         .hostname("localhost") // The hostname.
                         .port(5222) // The XMPP default port.
                         .sslContext(getTrustAllSslContext()) // Use an SSL context, which trusts every server. Only use it for testing!
-                        .secure(true) // We want to negotiate a TLS connection.
+                        .secure(false) // We want to negotiate a TLS connection.
                         .build();
 
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()

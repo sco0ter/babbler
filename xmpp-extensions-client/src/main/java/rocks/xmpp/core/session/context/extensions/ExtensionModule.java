@@ -25,7 +25,7 @@
 package rocks.xmpp.core.session.context.extensions;
 
 import rocks.xmpp.core.session.Extension;
-import rocks.xmpp.core.session.context.CoreContext;
+import rocks.xmpp.core.session.Module;
 import rocks.xmpp.extensions.activity.model.Activity;
 import rocks.xmpp.extensions.address.model.Addresses;
 import rocks.xmpp.extensions.attention.model.Attention;
@@ -123,6 +123,7 @@ import rocks.xmpp.extensions.version.model.SoftwareVersion;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -131,8 +132,7 @@ import java.util.Set;
  *
  * @author Christian Schudt
  */
-@Deprecated
-public class ExtensionContext extends CoreContext {
+public final class ExtensionModule implements Module {
 
     private static final String[] REGISTERED_HASH_ALGORITHMS = new String[]{"md5", "sha-1", "sha-224", "sha-256", "sha-384", "sha-512"};
 
@@ -149,17 +149,9 @@ public class ExtensionContext extends CoreContext {
         }
     }
 
-    public ExtensionContext() {
-        // no-args-default constructor needed for implicit instantiation
-        this(new Extension[0]);
-    }
-
-    public ExtensionContext(Class<?>... extensions) {
-        this(Arrays.stream(extensions).map(Extension::of).toArray(Extension[]::new));
-    }
-
-    public ExtensionContext(Extension... extensions) {
-        super(concatenateArrays(extensions,
+    @Override
+    public final Collection<Extension> getExtensions() {
+        return Arrays.asList(
 
                 // XEP-0009: Jabber-RPC
                 Extension.of(Rpc.NAMESPACE, RpcManager.class, false, Rpc.class),
@@ -336,12 +328,6 @@ public class ExtensionContext extends CoreContext {
 
                 // XEP-0335: JSON Containers
                 Extension.of(Json.class)
-        ));
-    }
-
-    private static Extension[] concatenateArrays(Extension[] customExtensions, Extension... xmppExtensions) {
-        Extension[] combined = Arrays.copyOf(customExtensions, customExtensions.length + xmppExtensions.length);
-        System.arraycopy(xmppExtensions, 0, combined, customExtensions.length, xmppExtensions.length);
-        return combined;
+        );
     }
 }

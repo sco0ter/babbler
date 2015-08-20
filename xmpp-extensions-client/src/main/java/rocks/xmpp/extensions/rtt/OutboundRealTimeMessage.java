@@ -31,7 +31,9 @@ import rocks.xmpp.util.XmppUtils;
 
 import java.security.SecureRandom;
 import java.text.Normalizer;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -49,13 +51,11 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
 
     private static final Random RANDOM = new SecureRandom();
 
-    private final List<RealTimeText.Action> actions = new ArrayList<>();
+    private final Collection<RealTimeText.Action> actions = new ArrayDeque<>();
 
     private final Chat chat;
 
     private final ScheduledExecutorService transmissionExecutor;
-
-    private final ScheduledExecutorService refreshExecutor;
 
     private String text;
 
@@ -91,7 +91,6 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
 
         // Set up two executors, which periodically send RTT messages and "refresh messages".
         transmissionExecutor = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("Real-time Text Transmission Thread"));
-        refreshExecutor = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("Real-time Text Refresh Thread"));
 
         // This executor periodically sends RTT messages in the preferred transmission interval.
         nextTransmission = transmissionExecutor.schedule(new Runnable() {
@@ -104,7 +103,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
                             OutboundRealTimeMessage.this.sequence = generateSequenceNumber();
 
                             // This executor periodically sends "message refreshes" (4.7.3 Message Refresh)
-                            nextRefresh = refreshExecutor.schedule(new Runnable() {
+                            nextRefresh = transmissionExecutor.schedule(new Runnable() {
                                 @Override
                                 public void run() {
                                     synchronized (OutboundRealTimeMessage.this) {
@@ -113,7 +112,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
                                             reset();
                                         }
                                         // Reschedule
-                                        nextRefresh = refreshExecutor.schedule(this, refreshInterval, TimeUnit.MILLISECONDS);
+                                        nextRefresh = transmissionExecutor.schedule(this, refreshInterval, TimeUnit.MILLISECONDS);
                                     }
                                 }
                             }, refreshInterval, TimeUnit.MILLISECONDS);
@@ -281,7 +280,6 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
                 nextTransmission.cancel(false);
             }
         }
-        refreshExecutor.shutdown();
         transmissionExecutor.shutdown();
         return message;
     }

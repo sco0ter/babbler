@@ -94,6 +94,6 @@ public final class Roster {
 
     @Override
     public final String toString() {
-        return item.toString();
+        return "Roster: " + item.toString();
     }
 }

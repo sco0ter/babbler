@@ -68,6 +68,11 @@
                         <goals>
                             <goal>test-jar</goal>
                         </goals>
+                        <configuration>
+                            <includes>
+                                <include>rocks/xmpp/core/XmlTest.class</include>
+                            </includes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

@@ -60,6 +60,15 @@
                         <goals>
                             <goal>test-jar</goal>
                         </goals>
+                        <configuration>
+                            <includes>
+                                <include>rocks/xmpp/core/BaseTest.class</include>
+                                <include>rocks/xmpp/core/session/TestXmppSession*</include>
+                                <include>rocks/xmpp/core/SameThreadExecutorService.class</include>
+                                <include>rocks/xmpp/core/MockServer.class</include>
+                                <include>rocks/xmpp/core/IntegrationTest.class</include>
+                            </includes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

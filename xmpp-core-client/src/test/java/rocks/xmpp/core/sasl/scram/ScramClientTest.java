@@ -143,5 +143,7 @@ public class ScramClientTest {
 
         byte[] serverFinalMessage = scramServer.evaluateResponse(response);
         Assert.assertTrue(new String(serverFinalMessage).startsWith("v="));
+        // Client should verify the server response successfully, otherwise exception would be thrown.
+        saslClient.evaluateChallenge(serverFinalMessage);
     }
 }

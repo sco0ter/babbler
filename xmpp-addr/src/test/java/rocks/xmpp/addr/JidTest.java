@@ -354,6 +354,12 @@ public class JidTest {
         Jid withLocal = jid.withLocal("newLocal");
         Assert.assertEquals(withLocal, Jid.of("newLocal@domain/resource"));
     }
+    @Test
+    public void testAtSubdomain() {
+        Jid jid = Jid.of("test@domain/resource");
+        Jid atSubdomain = jid.atSubdomain("sub");
+        Assert.assertEquals(atSubdomain, Jid.of("test@sub.domain/resource"));
+    }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testWithIllegalChars() {

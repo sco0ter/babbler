@@ -371,7 +371,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
         return null;
     }
 
-    private void validateDomain(String domain) {
+    private static void validateDomain(String domain) {
         Objects.requireNonNull(domain, "domain must not be null.");
         if (domain.contains("@")) {
             // Prevent misuse of API.
@@ -386,7 +386,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @param value The value.
      * @param part  The part, only used to produce an exception message.
      */
-    private void validateLength(String value, String part) {
+    private static void validateLength(String value, String part) {
         if (value != null) {
             if (value.isEmpty()) {
                 throw new IllegalArgumentException(part + " must not be empty.");
@@ -405,7 +405,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      *
      * @return True, if the JID is a full JID; otherwise false.
      */
-    public boolean isFullJid() {
+    public final boolean isFullJid() {
         return resource != null;
     }
 
@@ -417,7 +417,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      *
      * @return True, if the JID is a bare JID; otherwise false.
      */
-    public boolean isBareJid() {
+    public final boolean isBareJid() {
         return resource == null;
     }
 
@@ -430,7 +430,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @return The bare JID.
      * @see #withResource(String)
      */
-    public Jid asBareJid() {
+    public final Jid asBareJid() {
         return new Jid(local, domain, null, false, false);
     }
 
@@ -440,7 +440,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @param local The local part.
      * @return The JID with a new local part.
      */
-    public Jid withLocal(String local) {
+    public final Jid withLocal(String local) {
         return new Jid(local, domain, resource, false, true);
     }
 
@@ -451,8 +451,19 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @return The full JID with a resource.
      * @see #asBareJid()
      */
-    public Jid withResource(String resource) {
+    public final Jid withResource(String resource) {
         return new Jid(local, domain, resource, false, true);
+    }
+
+    /**
+     * Returns a new full JID with a resource and the same local and domain part of the current JID.
+     *
+     * @param subdomain The subdomain.
+     * @return The full JID with a resource.
+     * @see #asBareJid()
+     */
+    public final Jid atSubdomain(String subdomain) {
+        return new Jid(local, Objects.requireNonNull(subdomain) + "." + domain, resource, false, true);
     }
 
     /**
@@ -464,7 +475,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      *
      * @return The local part.
      */
-    public String getLocal() {
+    public final String getLocal() {
         return local;
     }
 
@@ -477,7 +488,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      *
      * @return The domain part.
      */
-    public String getDomain() {
+    public final String getDomain() {
         return domain;
     }
 
@@ -490,7 +501,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      *
      * @return The resource part.
      */
-    public String getResource() {
+    public final String getResource() {
         return resource;
     }
 
@@ -500,22 +511,22 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @return The escaped JID.
      * @see #toString()
      */
-    public String toEscapedString() {
+    public final String toEscapedString() {
         return toString(escapedLocal, domain, resource);
     }
 
     @Override
-    public int length() {
+    public final int length() {
         return toString().length();
     }
 
     @Override
-    public char charAt(int index) {
+    public final char charAt(int index) {
         return toString().charAt(index);
     }
 
     @Override
-    public CharSequence subSequence(int start, int end) {
+    public final CharSequence subSequence(int start, int end) {
         return toString().subSequence(start, end);
     }
 
@@ -526,7 +537,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @see #toEscapedString()
      */
     @Override
-    public String toString() {
+    public final String toString() {
         return toString(local, domain, resource);
     }
 
@@ -543,7 +554,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -558,7 +569,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return Objects.hash(local, domain, resource);
     }
 
@@ -570,7 +581,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @return The comparison result.
      */
     @Override
-    public int compareTo(Jid o) {
+    public final int compareTo(Jid o) {
         if (this == o) {
             return 0;
         }

@@ -511,11 +511,10 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     }
 
     /**
-     * Returns a new full JID with a resource and the same local and domain part of the current JID.
+     * Returns a new JID at a subdomain and at the same domain as this JID.
      *
      * @param subdomain The subdomain.
-     * @return The full JID with a resource.
-     * @see #asBareJid()
+     * @return The JID at a subdomain.
      */
     public final Jid atSubdomain(String subdomain) {
         return new Jid(local, Objects.requireNonNull(subdomain) + "." + domain, resource, false, true);

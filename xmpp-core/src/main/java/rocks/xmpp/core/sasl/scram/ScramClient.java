@@ -34,8 +34,9 @@ import javax.security.sasl.SaslException;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
+import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -57,6 +58,8 @@ public final class ScramClient extends ScramBase implements SaslClient {
     private String authorizationId;
 
     private char[] passwd;
+
+    private byte[] serverSignature;
 
     public ScramClient(String hashAlgorithm, String authorizationId, CallbackHandler callbackHandler) {
         super(hashAlgorithm, callbackHandler);
@@ -99,7 +102,6 @@ public final class ScramClient extends ScramBase implements SaslClient {
                     new NameCallback("SCRAM username: ") :
                     new NameCallback("SCRAM username: ", authorizationId);
             PasswordCallback pcb = new PasswordCallback("SCRAM-SHA-1 password: ", false);
-
             try {
                 callbackHandler.handle(new Callback[]{ncb, pcb});
                 passwd = pcb.getPassword();
@@ -121,35 +123,59 @@ public final class ScramClient extends ScramBase implements SaslClient {
                     throw new SaslException("SCRAM: Username must not be empty.");
                 }
                 username = replaceUsername(username);
+                String cnonce = generateNonce();
+                clientFirstMessageBare = createClientFirstMessageBare(username, cnonce);
 
+                // First, the client sends the "client-first-message"
+                String clientFirstMessage = gs2Header + clientFirstMessageBare;
+                return clientFirstMessage.getBytes(StandardCharsets.UTF_8);
             } catch (IOException e) {
                 throw new SaslException("SCRAM: Error acquiring user name or password.", e);
             } catch (UnsupportedCallbackException e) {
                 throw new SaslException("SCRAM: Cannot perform callback to acquire username or password", e);
-            }
-
-            String cnonce;
-            try {
-                cnonce = generateNonce();
             } catch (NoSuchAlgorithmException e) {
                 throw new SaslException("SCRAM: Failed to generate nonce.", e);
             }
-            clientFirstMessageBare = createClientFirstMessageBare(username, cnonce);
-
-            // First, the client sends the "client-first-message"
-            String clientFirstMessage = gs2Header + clientFirstMessageBare;
-            return clientFirstMessage.getBytes(StandardCharsets.UTF_8);
         } else {
 
-            // The server sends the salt and the iteration count to the client, which then computes
-            // the following values and sends a ClientProof to the server
             try {
-                serverFirstMessage = new String(challenge);
-                Map<Character, String> attributes = getAttributes(serverFirstMessage);
+                // The server sends the salt and the iteration count to the client, which then computes
+                // the following values and sends a ClientProof to the server
+                String serverMessage = new String(challenge);
+                Map<Character, String> attributes = getAttributes(serverMessage);
+
+                // e: This attribute specifies an error that occurred during
+                // authentication exchange.  It is sent by the server in its final
+                // message and can help diagnose the reason for the authentication
+                // exchange failure.
+                String error = attributes.get('e');
+                if (error != null) {
+                    throw new SaslException(error);
+                }
+
+                // v: This attribute specifies a base64-encoded ServerSignature.  It
+                // is sent by the server in its final message, and is used by the
+                // client to verify that the server has access to the user's
+                // authentication information.
+                String verifier = attributes.get('v');
+                if (verifier != null) {
+                    // The client then authenticates the server by computing the
+                    // ServerSignature and comparing it to the value sent by the server.  If
+                    // the two are different, the client MUST consider the authentication
+                    // exchange to be unsuccessful, and it might have to drop the
+                    // connection.
+                    if (!Arrays.equals(serverSignature, DatatypeConverter.parseBase64Binary(verifier))) {
+                        throw new SaslException("SCRAM: Verification failed");
+                    }
+                    complete = true;
+                    return null;
+                }
+
+                serverFirstMessage = serverMessage;
                 nonce = attributes.get('r');
 
                 String saltBase64 = attributes.get('s');
-                Integer iterationCount;
+                int iterationCount;
                 try {
                     iterationCount = Integer.parseInt(attributes.get('i'));
                 } catch (NumberFormatException e) {
@@ -167,10 +193,14 @@ public final class ScramClient extends ScramBase implements SaslClient {
 
                 try {
                     channelBinding = DatatypeConverter.printBase64Binary(gs2Header.getBytes(StandardCharsets.UTF_8));
-                    byte[] clientKey = computeClientKey(computeSaltedPassword(passwd, salt, iterationCount));
+                    byte[] saltedPassword = computeSaltedPassword(passwd, salt, iterationCount);
+                    String authMessage = computeAuthMessage();
+                    byte[] clientKey = computeClientKey(saltedPassword);
                     byte[] clientSignature = computeClientSignature(clientKey, computeAuthMessage());
                     // ClientProof     := ClientKey XOR ClientSignature
                     byte[] clientProof = xor(clientKey, clientSignature);
+                    byte[] serverKey = computeServerKey(saltedPassword);
+                    serverSignature = hmac(serverKey, authMessage.getBytes(StandardCharsets.UTF_8));
                     String clientFinalMessageWithoutProof = "c=" + channelBinding + ",r=" + nonce;
                     // The client then responds by sending a "client-final-message" with the
                     // same nonce and a ClientProof computed using the selected hash
@@ -178,11 +208,12 @@ public final class ScramClient extends ScramBase implements SaslClient {
                     String clientFinalMessage = clientFinalMessageWithoutProof + ",p=" + DatatypeConverter.printBase64Binary(clientProof);
                     return clientFinalMessage.getBytes(StandardCharsets.UTF_8);
 
-                } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+                } catch (GeneralSecurityException e) {
                     throw new SaslException(e.getMessage(), e);
                 }
-            } finally {
-                isComplete = true;
+            } catch (SaslException e) {
+                complete = true;
+                throw e;
             }
         }
     }

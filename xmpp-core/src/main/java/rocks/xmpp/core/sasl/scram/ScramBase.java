@@ -49,6 +49,8 @@ abstract class ScramBase {
 
     private static final byte[] CLIENT_KEY = "Client Key".getBytes(StandardCharsets.UTF_8);
 
+    private static final byte[] SERVER_KEY = "Server Key".getBytes(StandardCharsets.UTF_8);
+
     final CallbackHandler callbackHandler;
 
     private final String hmacAlgorithm;
@@ -57,7 +59,7 @@ abstract class ScramBase {
 
     private final String mechanism;
 
-    boolean isComplete;
+    boolean complete;
 
     String clientFirstMessageBare;
 
@@ -208,6 +210,18 @@ abstract class ScramBase {
     }
 
     /**
+     * Computes the server key.
+     *
+     * @param saltedPassword The salted password.
+     * @return The stored key.
+     * @throws NoSuchAlgorithmException If the hash algorithm does not exist.
+     */
+    final byte[] computeServerKey(byte[] saltedPassword) throws InvalidKeyException, NoSuchAlgorithmException {
+        // ServerKey       := HMAC(SaltedPassword, "Server Key")
+        return hmac(saltedPassword, SERVER_KEY);
+    }
+
+    /**
      * Apply the cryptographic hash function to the octet string
      * "str", producing an octet string as a result.  The size of the
      * result depends on the hash result size for the hash function in
@@ -289,7 +303,7 @@ abstract class ScramBase {
     }
 
     public final boolean isComplete() {
-        return isComplete;
+        return complete;
     }
 
     public final byte[] unwrap(byte[] incoming, int offset, int len) throws SaslException {

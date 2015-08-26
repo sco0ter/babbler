@@ -157,7 +157,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
                 }
             }
         } catch (SaslException e) {
-            throw new StreamNegotiationException(e);
+            throw new AuthenticationException(e.getMessage());
         }
 
         return Status.INCOMPLETE;

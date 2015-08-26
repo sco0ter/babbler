@@ -185,7 +185,7 @@ final class ScramServer extends ScramBase implements SaslServer {
                 byte[] clientProof = DatatypeConverter.parseBase64Binary(clientProofBase64);
                 byte[] recoveredClientKey = xor(clientSignature, clientProof);
                 if (Arrays.equals(h(recoveredClientKey), computeStoredKey(clientKey))) {
-                    isComplete = true;
+                    complete = true;
                     byte[] serverKey = hmac(saltedPassword, "Server Key".getBytes(StandardCharsets.UTF_8));
                     // return ServerSignature
                     String serverFinalMessage = "v=" + DatatypeConverter.printBase64Binary(hmac(serverKey, authMessage.getBytes(StandardCharsets.UTF_8)));

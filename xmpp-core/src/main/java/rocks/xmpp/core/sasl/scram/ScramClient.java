@@ -143,43 +143,46 @@ public final class ScramClient extends ScramBase implements SaslClient {
 
             // The server sends the salt and the iteration count to the client, which then computes
             // the following values and sends a ClientProof to the server
-
-            serverFirstMessage = new String(challenge);
-            Map<Character, String> attributes = getAttributes(serverFirstMessage);
-            nonce = attributes.get('r');
-
-            String saltBase64 = attributes.get('s');
-            Integer iterationCount;
             try {
-                iterationCount = Integer.parseInt(attributes.get('i'));
-            } catch (NumberFormatException e) {
-                throw new SaslException("iterationCount could not be parsed.");
-            }
+                serverFirstMessage = new String(challenge);
+                Map<Character, String> attributes = getAttributes(serverFirstMessage);
+                nonce = attributes.get('r');
 
-            if (nonce == null) {
-                throw new SaslException("SCRAM: nonce was null in the server response.");
-            }
-            if (saltBase64 == null) {
-                throw new SaslException("SCRAM: salt was null in the server response.");
-            }
+                String saltBase64 = attributes.get('s');
+                Integer iterationCount;
+                try {
+                    iterationCount = Integer.parseInt(attributes.get('i'));
+                } catch (NumberFormatException e) {
+                    throw new SaslException("iterationCount could not be parsed.");
+                }
 
-            byte[] salt = DatatypeConverter.parseBase64Binary(saltBase64);
+                if (nonce == null) {
+                    throw new SaslException("SCRAM: nonce was null in the server response.");
+                }
+                if (saltBase64 == null) {
+                    throw new SaslException("SCRAM: salt was null in the server response.");
+                }
 
-            try {
-                channelBinding = DatatypeConverter.printBase64Binary(gs2Header.getBytes(StandardCharsets.UTF_8));
-                byte[] clientKey = computeClientKey(computeSaltedPassword(passwd, salt, iterationCount));
-                byte[] clientSignature = computeClientSignature(clientKey, computeAuthMessage());
-                // ClientProof     := ClientKey XOR ClientSignature
-                byte[] clientProof = xor(clientKey, clientSignature);
-                String clientFinalMessageWithoutProof = "c=" + channelBinding + ",r=" + nonce;
-                // The client then responds by sending a "client-final-message" with the
-                // same nonce and a ClientProof computed using the selected hash
-                // function as explained earlier.
-                String clientFinalMessage = clientFinalMessageWithoutProof + ",p=" + DatatypeConverter.printBase64Binary(clientProof);
-                return clientFinalMessage.getBytes(StandardCharsets.UTF_8);
+                byte[] salt = DatatypeConverter.parseBase64Binary(saltBase64);
 
-            } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-                throw new SaslException(e.getMessage(), e);
+                try {
+                    channelBinding = DatatypeConverter.printBase64Binary(gs2Header.getBytes(StandardCharsets.UTF_8));
+                    byte[] clientKey = computeClientKey(computeSaltedPassword(passwd, salt, iterationCount));
+                    byte[] clientSignature = computeClientSignature(clientKey, computeAuthMessage());
+                    // ClientProof     := ClientKey XOR ClientSignature
+                    byte[] clientProof = xor(clientKey, clientSignature);
+                    String clientFinalMessageWithoutProof = "c=" + channelBinding + ",r=" + nonce;
+                    // The client then responds by sending a "client-final-message" with the
+                    // same nonce and a ClientProof computed using the selected hash
+                    // function as explained earlier.
+                    String clientFinalMessage = clientFinalMessageWithoutProof + ",p=" + DatatypeConverter.printBase64Binary(clientProof);
+                    return clientFinalMessage.getBytes(StandardCharsets.UTF_8);
+
+                } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+                    throw new SaslException(e.getMessage(), e);
+                }
+            } finally {
+                isComplete = true;
             }
         }
     }

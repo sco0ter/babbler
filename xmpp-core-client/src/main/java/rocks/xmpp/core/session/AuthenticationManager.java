@@ -150,6 +150,9 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
                     throw new AuthenticationException(failureText, authenticationFailure);
                 } else if (element instanceof Success) {
                     successData = ((Success) element).getAdditionalData();
+                    if (!saslClient.isComplete()) {
+                        saslClient.evaluateChallenge(successData);
+                    }
                     return Status.SUCCESS;
                 }
             }

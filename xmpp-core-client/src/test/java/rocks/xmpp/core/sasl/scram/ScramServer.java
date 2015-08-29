@@ -68,18 +68,15 @@ final class ScramServer extends ScramBase implements SaslServer {
     }
 
     static String validateAndGetUsername(String userAttribute) throws SaslException {
-        if (userAttribute != null) {
-            // If the server receives a username that
-            // contains '=' not followed by either '2C' or '3D', then the
-            // server MUST fail the authentication.
+        // If the server receives a username that
+        // contains '=' not followed by either '2C' or '3D', then the
+        // server MUST fail the authentication.
 
-            Matcher matcher = USER_VALIDATION.matcher(userAttribute);
-            if (matcher.find()) {
-                throw new SaslException("Username must not contain '=' not followed by '2C' or '3D'.");
-            }
-            return userAttribute.replaceAll("=3D", "=").replaceAll("=2C", ",");
+        Matcher matcher = USER_VALIDATION.matcher(userAttribute);
+        if (matcher.find()) {
+            throw new SaslException("Username must not contain '=' not followed by '2C' or '3D'.");
         }
-        return null;
+        return userAttribute.replaceAll("=3D", "=").replaceAll("=2C", ",");
     }
 
     @Override
@@ -116,7 +113,7 @@ final class ScramServer extends ScramBase implements SaslServer {
             // index lookups.  If the preparation of the username fails or
             // results in an empty string, the server SHOULD abort the authentication exchange.
 
-            user = validateAndGetUsername(SaslPrep.prepare(attributes.get('n')));
+            user = validateAndGetUsername(SaslPrep.prepare(user));
 
             // The syntax of this field is the same as that of the "n" field
             // with respect to quoting of '=' and ','.

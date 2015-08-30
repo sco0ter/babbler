@@ -78,7 +78,7 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
             xsw.writeStartElement(prefix, localName, namespaceURI);
         } else {
             // If the writer wants to write a prefix, instead don't write it.
-            xsw.writeStartElement(namespaceURI, localName);
+            xsw.writeStartElement("", localName, namespaceURI);
             writeDefaultNamespaceIfNecessary(namespaceURI);
         }
     }

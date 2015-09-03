@@ -148,7 +148,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     }
 
     /**
-     * Returns a bare JID with a domain and resource part, e.g. <code>capulet.com/balcony</code>
+     * Returns a full JID with a domain and resource part, e.g. <code>capulet.com/balcony</code>
      *
      * @param local    The local part.
      * @param domain   The domain.
@@ -181,7 +181,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     }
 
     /**
-     * Returns a bare JID with a domain and resource part, e.g. <code>capulet.com/balcony</code>
+     * Returns a full JID with a domain and resource part, e.g. <code>capulet.com/balcony</code>
      *
      * @param domain   The domain.
      * @param resource The resource part.

@@ -540,7 +540,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
         return toString(local, domain, resource);
     }
 
-    private String toString(String local, String domain, String resource) {
+    private static String toString(String local, String domain, String resource) {
         StringBuilder sb = new StringBuilder();
         if (local != null) {
             sb.append(local).append('@');

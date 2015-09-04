@@ -150,7 +150,7 @@ public final class PingManager extends Manager {
             // If we pinged a bare JID, the server will respond. If it returned a <service-unavailable/> error, it just means it doesn't understand the ping protocol.
             // Nonetheless an error response is still a valid pong, hence always return true in this case.
             // If any other error is returned, most likely <remote-server-not-found/>, <remote-server-timeout/>, <gone/> return false.
-            return (jid == null || jid.isBareJid()) && e.getStanza().getError().getCondition() == Condition.SERVICE_UNAVAILABLE;
+            return (jid == null || jid.isBareJid()) && e.getCondition() == Condition.SERVICE_UNAVAILABLE;
         } catch (XmppException e) {
             return false;
         }

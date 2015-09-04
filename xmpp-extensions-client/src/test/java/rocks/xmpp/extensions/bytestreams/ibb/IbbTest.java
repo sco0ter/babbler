@@ -32,6 +32,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
@@ -70,7 +71,7 @@ public class IbbTest extends BaseTest {
             inBandBytestreamManager1.initiateSession(JULIET, UUID.randomUUID().toString(), 4096);
         } catch (XmppException e) {
             if (e instanceof StanzaException) {
-                if (((StanzaException) e).getStanza().getError().getCondition() == rocks.xmpp.core.stanza.model.errors.Condition.NOT_ACCEPTABLE) {
+                if (((StanzaException) e).getCondition() == Condition.NOT_ACCEPTABLE) {
                     rejected = true;
                 }
             }

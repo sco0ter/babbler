@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
  * <p>
  * [ localpart "@" ] domainpart [ "/" resourcepart ]
  * </p>
- * The easiest way to create a JID is to use the {@link #of(String)} method:
+ * The easiest way to create a JID is to use the {@link #of(CharSequence)} method:
  * <pre><code>
  * Jid jid = Jid.of("juliet@capulet.lit/balcony");
  * </code></pre>
@@ -118,7 +118,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * Creates a bare JID with only the domain part.
      *
      * @param domain The domain.
-     * @deprecated Use {@link #ofDomain(String)}
+     * @deprecated Use {@link #ofDomain(CharSequence)}
      */
     @Deprecated
     public Jid(String domain) {
@@ -130,7 +130,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      *
      * @param local  The local part.
      * @param domain The domain part.
-     * @deprecated Use {@link #ofLocalAndDomain(String, String)}
+     * @deprecated Use {@link #ofLocalAndDomain(CharSequence, CharSequence)}
      */
     @Deprecated
     public Jid(String local, String domain) {
@@ -143,23 +143,25 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @param local    The local part.
      * @param domain   The domain part.
      * @param resource The resource part.
-     * @deprecated Use {@link #of(String, String, String)}}
+     * @deprecated Use {@link #of(CharSequence, CharSequence, CharSequence)}}
      */
     @Deprecated
-    public Jid(String local, String domain, String resource) {
+    public Jid(CharSequence local, CharSequence domain, CharSequence resource) {
         this(local, domain, resource, false, true);
     }
 
-    private Jid(String local, String domain, String resource, boolean doUnescape, boolean prepareAndValidate) {
+    private Jid(CharSequence local, CharSequence domain, CharSequence resource, boolean doUnescape, boolean prepareAndValidate) {
         String preparedNode;
+        String strLocal = local != null ? local.toString() : null;
+        String strDomain = domain.toString();
         if (prepareAndValidate) {
-            preparedNode = prepare(local, true);
-            validateDomain(domain);
+            preparedNode = prepare(strLocal, true);
+            validateDomain(strDomain);
             validateLength(preparedNode, "local");
         } else {
-            preparedNode = local;
+            preparedNode = strLocal;
         }
-        String preparedResource = prepare(resource, false);
+        String preparedResource = prepare(resource != null ? resource.toString() : null, false);
         validateLength(preparedResource, "resource");
 
         if (doUnescape) {
@@ -168,7 +170,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
             this.local = preparedNode;
         }
         this.escapedLocal = escape(this.local);
-        this.domain = domain.toLowerCase();
+        this.domain = strDomain.toLowerCase();
         this.resource = preparedResource;
     }
 
@@ -180,7 +182,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @param jid The JID.
      * @return The JID.
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
-     * @deprecated Use {@link #of(String)}
+     * @deprecated Use {@link #of(CharSequence)}
      */
     @Deprecated
     public static Jid valueOf(String jid) {
@@ -195,7 +197,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @param doUnescape If the jid parameter will be unescaped.
      * @return The JID.
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
-     * @deprecated Use {@link #of(String)} or {@link #ofEscaped(String)}}
+     * @deprecated Use {@link #of(CharSequence)} or {@link #ofEscaped(CharSequence)}}
      */
     @Deprecated
     public static Jid valueOf(String jid, boolean doUnescape) {
@@ -210,7 +212,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @param resource The resource part.
      * @return The JID.
      */
-    public static Jid of(String local, String domain, String resource) {
+    public static Jid of(CharSequence local, CharSequence domain, CharSequence resource) {
         return new Jid(local, domain, resource);
     }
 
@@ -220,8 +222,8 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @param domain The domain.
      * @return The JID.
      */
-    public static Jid ofDomain(String domain) {
-        return new Jid(domain);
+    public static Jid ofDomain(CharSequence domain) {
+        return new Jid(null, domain, null);
     }
 
     /**
@@ -231,8 +233,8 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @param domain The domain.
      * @return The JID.
      */
-    public static Jid ofLocalAndDomain(String local, String domain) {
-        return new Jid(local, domain);
+    public static Jid ofLocalAndDomain(CharSequence local, CharSequence domain) {
+        return new Jid(local, domain, null);
     }
 
     /**
@@ -242,7 +244,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @param resource The resource part.
      * @return The JID.
      */
-    public static Jid ofDomainAndResource(String domain, String resource) {
+    public static Jid ofDomainAndResource(CharSequence domain, CharSequence resource) {
         return new Jid(null, domain, resource);
     }
 
@@ -255,8 +257,8 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @return The JID.
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
-    public static Jid of(String jid) {
-        return of(jid, false);
+    public static Jid of(CharSequence jid) {
+        return of(jid.toString(), false);
     }
 
     /**
@@ -267,8 +269,8 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @return The JID.
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
-    public static Jid ofEscaped(String jid) {
-        return of(jid, true);
+    public static Jid ofEscaped(CharSequence jid) {
+        return of(jid.toString(), true);
     }
 
     /**

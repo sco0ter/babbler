@@ -78,6 +78,9 @@ public class JidTest {
     public void testJidNodeAndDomain() {
         Jid jid = Jid.ofLocalAndDomain("node", "domain");
         Assert.assertEquals("node@domain", jid.toString());
+
+        Jid jid2 = Jid.ofLocalAndDomain("node", Jid.ofDomain("domain"));
+        Assert.assertEquals("node@domain", jid2.toString());
     }
 
     @Test

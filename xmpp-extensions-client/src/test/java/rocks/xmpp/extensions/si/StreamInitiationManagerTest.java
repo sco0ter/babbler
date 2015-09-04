@@ -93,7 +93,7 @@ public class StreamInitiationManagerTest extends BaseTest {
         try {
             streamInitiationManager1.initiateStream(JULIET, new SIFileTransferOffer("Filename", 123), "image/type", 2000);
         } catch (StanzaException e) {
-            if (!(e.getStanza().getError().getCondition() == Condition.FORBIDDEN)) {
+            if (!(e.getCondition() == Condition.FORBIDDEN)) {
                 Assert.fail();
             } else {
                 return;

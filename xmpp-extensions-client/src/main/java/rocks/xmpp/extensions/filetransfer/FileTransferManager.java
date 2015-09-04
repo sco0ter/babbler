@@ -92,7 +92,7 @@ public final class FileTransferManager extends Manager {
         try {
             xmppSession.query(IQ.set(recipient, new OobIQ(url, description)), timeout);
         } catch (StanzaException e) {
-            if (e.getStanza().getError().getCondition() == Condition.NOT_ACCEPTABLE) {
+            if (e.getCondition() == Condition.NOT_ACCEPTABLE) {
                 throw new FileTransferRejectedException();
             } else {
                 throw e;
@@ -173,7 +173,7 @@ public final class FileTransferManager extends Manager {
             final OutputStream outputStream = this.streamInitiationManager.initiateStream(recipient, fileTransfer, mimeType, timeout);
             return new FileTransfer(source, outputStream, fileSize);
         } catch (final StanzaException e) {
-            if (e.getStanza().getError().getCondition() == Condition.FORBIDDEN) {
+            if (e.getCondition() == Condition.FORBIDDEN) {
                 throw new FileTransferRejectedException();
             } else {
                 throw e;

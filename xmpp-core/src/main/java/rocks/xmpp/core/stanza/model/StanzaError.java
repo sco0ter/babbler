@@ -214,13 +214,20 @@ public final class StanzaError {
     }
 
     /**
-     * Gets the defined error condition.
+     * Gets the defined error condition or {@link Condition#UNDEFINED_CONDITION} if the condition is unknown.
      *
      * @return The error condition.
      * @see <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions">8.3.3.  Defined Conditions</a>
      */
     public final Condition getCondition() {
-        return condition;
+        if (condition != null) {
+            return condition;
+        }
+        // The "defined-condition" MUST correspond to one of the stanza error conditions defined under Section 8.3.3.
+        // However, because additional error conditions might be defined in the future,
+        // if an entity receives a stanza error condition that it does not understand
+        // then it MUST treat the unknown condition as equivalent to <undefined-condition/>
+        return Condition.UNDEFINED_CONDITION;
     }
 
     @Override

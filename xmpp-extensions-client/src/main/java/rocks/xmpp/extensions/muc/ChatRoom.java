@@ -26,7 +26,6 @@ package rocks.xmpp.extensions.muc;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
@@ -57,6 +56,7 @@ import rocks.xmpp.extensions.muc.model.user.Invite;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
 import rocks.xmpp.extensions.muc.model.user.Status;
 import rocks.xmpp.extensions.register.model.Registration;
+import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.util.XmppUtils;
 
 import java.util.ArrayList;
@@ -564,6 +564,17 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         multiUserChatManager.roomExited(this);
         entered = false;
         occupantMap.clear();
+    }
+
+    /**
+     * Indicates, if you have entered the room. When you exit the room, this method returns false.
+     *
+     * @return If you entered the room.
+     * @see #enter(String)
+     * @see #exit()
+     */
+    public final synchronized boolean hasEntered() {
+        return entered;
     }
 
     /**

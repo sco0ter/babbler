@@ -105,6 +105,12 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     private volatile boolean entered;
 
     ChatRoom(final Jid roomJid, String name, XmppSession xmppSession, ServiceDiscoveryManager serviceDiscoveryManager, MultiUserChatManager multiUserChatManager) {
+        if (Objects.requireNonNull(roomJid).getLocal() == null) {
+            throw new IllegalArgumentException("roomJid must have a local part.");
+        }
+        if (roomJid.getResource() != null) {
+            throw new IllegalArgumentException("roomJid must not have a resource part: " + roomJid.getResource());
+        }
         this.name = name;
         this.roomJid = roomJid;
         this.xmppSession = xmppSession;

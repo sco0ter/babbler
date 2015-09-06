@@ -26,10 +26,11 @@ package rocks.xmpp.core.stream;
 
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.errors.Condition;
 
 /**
  * Represents a stream error.
- * This is exception is thrown if client receives a stream error.
+ * This exception is thrown if client receives a stream error.
  * <p>
  * This class is immutable.
  *
@@ -57,5 +58,16 @@ public final class StreamErrorException extends XmppException {
      */
     public final StreamError getStreamError() {
         return streamError;
+    }
+
+    /**
+     * Gets the defined error condition. If the condition is unknown, {@link Condition#UNDEFINED_CONDITION} is returned.
+     * This is a shortcut for {@link #getStreamError()#getCondition()}.
+     *
+     * @return The error condition.
+     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions">4.9.3.  Defined Stream Error Conditions</a>
+     */
+    public final Condition getCondition() {
+        return streamError.getCondition();
     }
 }

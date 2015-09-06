@@ -108,13 +108,20 @@ public final class StreamError implements StreamElement {
     }
 
     /**
-     * Gets the defined stream error condition.
+     * Gets the defined stream error condition or {@link Condition#UNDEFINED_CONDITION} if the condition is unknown.
      *
      * @return The error condition.
      * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions">4.9.3.  Defined Stream Error Conditions</a>
      */
     public final Condition getCondition() {
-        return condition;
+        // The "defined-condition" MUST correspond to one of the stream error conditions defined under Section 4.9.3.
+        // However, because additional error conditions might be defined in the future,
+        // if an entity receives a stream error condition that it does not understand
+        // then it MUST treat the unknown condition as equivalent to <undefined-condition/>.
+        if (condition != null) {
+            return condition;
+        }
+        return Condition.UNDEFINED_CONDITION;
     }
 
     @Override

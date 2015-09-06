@@ -56,13 +56,23 @@ public final class StreamErrorException extends XmppException {
      *
      * @return The stream error.
      */
+    @Deprecated
     public final StreamError getStreamError() {
         return streamError;
     }
 
     /**
+     * Gets the stream error.
+     *
+     * @return The stream error.
+     */
+    public final StreamError getError() {
+        return streamError;
+    }
+
+    /**
      * Gets the defined error condition. If the condition is unknown, {@link Condition#UNDEFINED_CONDITION} is returned.
-     * This is a shortcut for {@link #getStreamError()#getCondition()}.
+     * This is a shortcut for {@code getError().getCondition()}.
      *
      * @return The error condition.
      * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions">4.9.3.  Defined Stream Error Conditions</a>

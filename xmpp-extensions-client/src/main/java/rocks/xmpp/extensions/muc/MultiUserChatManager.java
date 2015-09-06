@@ -161,6 +161,16 @@ public final class MultiUserChatManager extends Manager {
         return new ChatService(chatService, null, xmppSession, serviceDiscoveryManager, this);
     }
 
+    /**
+     * Creates a chat room for the specified room address.
+     *
+     * @param roomAddress The chat room address.
+     * @return The chat room.
+     */
+    public ChatRoom createChatRoom(Jid roomAddress) {
+        return new ChatRoom(roomAddress, null, xmppSession, serviceDiscoveryManager, this);
+    }
+
     void roomEntered(ChatRoom chatRoom, String nick) {
         enteredRoomsMap.put(chatRoom.getAddress(), new Item(chatRoom.getAddress(), null, nick));
     }

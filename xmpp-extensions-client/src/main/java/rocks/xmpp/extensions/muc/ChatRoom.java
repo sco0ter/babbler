@@ -151,15 +151,19 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                         if (presence.isAvailable()) {
                             Occupant occupant = new Occupant(presence, isSelfPresence);
                             Occupant previousOccupant = occupantMap.put(nick, occupant);
+                            OccupantEvent.Type type;
                             // A new occupant entered the room.
                             if (previousOccupant == null) {
                                 // Only notify about "joins", if it's not our own join and we are already in the room.
                                 if (!isSelfPresence && entered) {
-                                    XmppUtils.notifyEventListeners(occupantListeners, new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.ENTERED, null, null, null));
+                                    type = OccupantEvent.Type.ENTERED;
+                                } else {
+                                    type = OccupantEvent.Type.STATUS_CHANGED;
                                 }
                             } else {
-                                XmppUtils.notifyEventListeners(occupantListeners, new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.STATUS_CHANGED, null, null, null));
+                                type = OccupantEvent.Type.STATUS_CHANGED;
                             }
+                            XmppUtils.notifyEventListeners(occupantListeners, new OccupantEvent(ChatRoom.this, occupant, type, null, null, null));
                         } else if (presence.getType() == Presence.Type.UNAVAILABLE) {
                             // Occupant has exited the room.
                             Occupant occupant = occupantMap.remove(nick);
@@ -688,6 +692,42 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     /**
+     * Gets the owners of the room.
+     *
+     * @return The owners.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
+     */
+    public List<? extends rocks.xmpp.extensions.muc.model.Item> getOwners() throws XmppException {
+        return getByAffiliation(Affiliation.OWNER);
+    }
+
+    /**
+     * Gets the outcasts of the room.
+     *
+     * @return The outcasts.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
+     */
+    public List<? extends rocks.xmpp.extensions.muc.model.Item> getOutcasts() throws XmppException {
+        return getByAffiliation(Affiliation.OUTCAST);
+    }
+
+    /**
+     * Gets the admins of the room.
+     *
+     * @return The admins.
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
+     */
+    public List<? extends rocks.xmpp.extensions.muc.model.Item> getAdmins() throws XmppException {
+        return getByAffiliation(Affiliation.ADMIN);
+    }
+
+    /**
      * Gets the members of the room.
      * <p>
      * In the context of a members-only room, the member list is essentially a "whitelist" of people who are allowed to enter the room.
@@ -702,7 +742,11 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
     public List<? extends rocks.xmpp.extensions.muc.model.Item> getMembers() throws XmppException {
-        IQ result = xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Affiliation.MEMBER, null, null)));
+        return getByAffiliation(Affiliation.MEMBER);
+    }
+
+    private List<? extends rocks.xmpp.extensions.muc.model.Item> getByAffiliation(Affiliation affiliation) throws XmppException {
+        IQ result = xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(affiliation, null, null)));
         MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
         return mucAdmin.getItems();
     }

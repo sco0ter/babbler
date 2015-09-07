@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.muc;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.extensions.muc.model.user.Decline;
+import rocks.xmpp.extensions.muc.model.user.MucUser;
 
 import java.util.EventObject;
 import java.util.function.Consumer;
@@ -80,7 +80,7 @@ public final class InvitationEvent extends EventObject {
         // Therefore only decline mediated invitations.
         if (mediated) {
             Message message = new Message(room);
-            message.addExtension(new Decline(inviter, reason));
+            message.addExtension(MucUser.withDecline(inviter, reason));
             xmppSession.send(message);
         }
     }

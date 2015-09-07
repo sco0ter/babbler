@@ -54,7 +54,7 @@ public final class Decline {
      * @param to     The inviter, who will receive the declination.
      * @param reason The reason.
      */
-    public Decline(Jid to, String reason) {
+    Decline(Jid to, String reason) {
         this.to = to;
         this.reason = reason;
         this.from = null;

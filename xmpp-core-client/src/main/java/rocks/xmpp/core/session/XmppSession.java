@@ -800,7 +800,7 @@ public abstract class XmppSession implements AutoCloseable {
                     }
                 }
             }
-            stanzaListenerExecutor.execute(() -> XmppUtils.notifyEventListeners(inboundIQListeners, new IQEvent(this, iq, true)));
+            iqHandlerExecutor.execute(() -> XmppUtils.notifyEventListeners(inboundIQListeners, new IQEvent(this, iq, true)));
         } else if (element instanceof Message) {
             stanzaListenerExecutor.execute(() -> XmppUtils.notifyEventListeners(inboundMessageListeners, new MessageEvent(this, (Message) element, true)));
         } else if (element instanceof Presence) {

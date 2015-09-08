@@ -33,7 +33,6 @@ import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
-import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.extensions.address.model.Address;
 import rocks.xmpp.extensions.address.model.Addresses;
 import rocks.xmpp.extensions.avatar.model.data.AvatarData;
@@ -46,6 +45,7 @@ import rocks.xmpp.extensions.pubsub.model.event.Event;
 import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
 import rocks.xmpp.extensions.vcard.temp.VCardManager;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
+import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.cache.DirectoryCache;
 
@@ -64,9 +64,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -102,8 +99,6 @@ public final class AvatarManager extends Manager {
 
     private final Set<Consumer<AvatarChangeEvent>> avatarChangeListeners = new CopyOnWriteArraySet<>();
 
-    private final ExecutorService avatarRequester;
-
     private final VCardManager vCardManager;
 
     private final Set<String> nonConformingResources = Collections.synchronizedSet(new HashSet<>());
@@ -121,8 +116,6 @@ public final class AvatarManager extends Manager {
 
         vCardManager = xmppSession.getManager(VCardManager.class);
         avatarCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("avatars")) : null;
-
-        avatarRequester = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Avatar Request Thread"));
 
         inboundPresenceListener = e -> {
             final Presence presence = e.getPresence();
@@ -179,18 +172,11 @@ public final class AvatarManager extends Manager {
                     if (avatar != null) {
                         notifyListeners(contact, avatar);
                     } else {
-                        synchronized (avatarRequester) {
-                            if (!avatarRequester.isShutdown()) {
-                                // If not, it retrieves the sender's full vCard
-                                avatarRequester.execute(() -> {
-                                    // If the avatar was either known before or could be successfully retrieved from the vCard.
-                                    try {
-                                        notifyListeners(contact, getAvatarByVCard(contact));
-                                    } catch (XmppException e1) {
-                                        logger.log(Level.WARNING, "Failed to retrieve vCard based avatar for user: {0}", contact);
-                                    }
-                                });
-                            }
+                        // If the avatar was either known before or could be successfully retrieved from the vCard.
+                        try {
+                            notifyListeners(contact, getAvatarByVCard(contact));
+                        } catch (XmppException e1) {
+                            logger.log(Level.WARNING, "Failed to retrieve vCard based avatar for user: {0}", contact);
                         }
                     }
                 }
@@ -209,28 +195,22 @@ public final class AvatarManager extends Manager {
                     // 2. If a client is not yet ready to advertise an image, it MUST send an empty update child element:
                     presence.addExtension(new AvatarUpdate());
 
-                    synchronized (avatarRequester) {
-                        if (avatarRequester.isShutdown()) {
-                            // Load my own avatar in order to advertise an image.
-                            avatarRequester.execute(() -> {
-                                try {
-                                    getAvatarByVCard(xmppSession.getConnectedResource().asBareJid());
+                    // Load my own avatar in order to advertise an image.
+                    try {
+                        getAvatarByVCard(xmppSession.getConnectedResource().asBareJid());
 
-                                    // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
-                                    Presence lastPresence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
-                                    Presence presence1;
-                                    if (lastPresence != null) {
-                                        presence1 = new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null);
-                                    } else {
-                                        presence1 = new Presence();
-                                    }
-                                    // Send out a presence, which will be filled with the extension later, because we now know or own avatar and have the hash for it.
-                                    xmppSession.send(presence1);
-                                } catch (XmppException e1) {
-                                    logger.warning("Failed to retrieve own vCard based avatar.");
-                                }
-                            });
+                        // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
+                        Presence lastPresence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
+                        Presence presence1;
+                        if (lastPresence != null) {
+                            presence1 = new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null);
+                        } else {
+                            presence1 = new Presence();
                         }
+                        // Send out a presence, which will be filled with the extension later, because we now know or own avatar and have the hash for it.
+                        xmppSession.send(presence1);
+                    } catch (XmppException e1) {
+                        logger.warning("Failed to retrieve own vCard based avatar.");
                     }
 
                 } else if (!presence.hasExtension(AvatarUpdate.class)) {
@@ -307,25 +287,19 @@ public final class AvatarManager extends Manager {
                                         logger.log(Level.WARNING, "Failed to download avatar from advertised URL: {0}.", chosenInfo.getUrl());
                                     }
                                 } else {
-                                    synchronized (avatarRequester) {
-                                        if (!avatarRequester.isShutdown()) {
-                                            avatarRequester.execute(() -> {
-                                                try {
-                                                    PubSubService pubSubService = xmppSession.getManager(PubSubManager.class).createPubSubService(message.getFrom());
-                                                    List<Item> items = pubSubService.node(AvatarData.NAMESPACE).getItems(item.getId());
-                                                    if (!items.isEmpty()) {
-                                                        Item i = items.get(0);
-                                                        if (i.getPayload() instanceof AvatarData) {
-                                                            AvatarData avatarData = (AvatarData) i.getPayload();
-                                                            storeToCache(item.getId(), avatarData.getData());
-                                                            notifyListeners(message.getFrom().asBareJid(), avatarData.getData());
-                                                        }
-                                                    }
-                                                } catch (XmppException e1) {
-                                                    logger.log(Level.WARNING, () -> "Failed to retrieve avatar '" + item.getId() + "' from PEP service for user '" + message.getFrom() + "'");
-                                                }
-                                            });
+                                    try {
+                                        PubSubService pubSubService = xmppSession.getManager(PubSubManager.class).createPubSubService(message.getFrom());
+                                        List<Item> items = pubSubService.node(AvatarData.NAMESPACE).getItems(item.getId());
+                                        if (!items.isEmpty()) {
+                                            Item i = items.get(0);
+                                            if (i.getPayload() instanceof AvatarData) {
+                                                AvatarData avatarData = (AvatarData) i.getPayload();
+                                                storeToCache(item.getId(), avatarData.getData());
+                                                notifyListeners(message.getFrom().asBareJid(), avatarData.getData());
+                                            }
                                         }
+                                    } catch (XmppException e1) {
+                                        logger.log(Level.WARNING, () -> "Failed to retrieve avatar '" + item.getId() + "' from PEP service for user '" + message.getFrom() + "'");
                                     }
                                 }
                             }
@@ -665,13 +639,5 @@ public final class AvatarManager extends Manager {
         requestingAvatarLocks.clear();
         nonConformingResources.clear();
         userHashes.clear();
-        synchronized (avatarRequester) {
-            avatarRequester.shutdown();
-            try {
-                avatarRequester.awaitTermination(50, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
     }
 }

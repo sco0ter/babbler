@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -54,8 +55,8 @@ public final class Headers {
     private Headers() {
     }
 
-    private Headers(Header... headers) {
-        this.header.addAll(Arrays.asList(headers));
+    private Headers(Collection<Header> headers) {
+        this.header.addAll(headers);
     }
 
     /**
@@ -65,6 +66,16 @@ public final class Headers {
      * @return The header.
      */
     public static Headers of(Header... headers) {
+        return of(Arrays.asList(headers));
+    }
+
+    /**
+     * Creates a headers element.
+     *
+     * @param headers The headers.
+     * @return The header.
+     */
+    public static Headers of(Collection<Header> headers) {
         return new Headers(headers);
     }
 

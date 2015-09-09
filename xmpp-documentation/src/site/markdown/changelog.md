@@ -1,6 +1,18 @@
 # Changelog
 ---
 
+### Version 0.6.1-SNAPSHOT
+
+* Verify SCRAM-SHA-1 server response during login.
+* Add `Jid.atSubdomain()` method and use `CharSequence` in static `Jid` factory methods.
+* Fix bug with [FasterXML/Aalto's](http://wiki.fasterxml.com/AaltoHome) `XMLStreamWriter` implementation.
+* Add shortcuts to retrieve the error condition from StanzaException and StreamErrorException. 
+* Validate MUC room JID, when creating a chat room.
+* Add API to retrieve owners, admins and outcasts in a chat room.
+* Fix bug when declining a MUC invitation.
+* Minor bug fixes in VisualDebugger.
+* Process inbound IQs on another thread as messages and presences. This allows to query IQs from within a Message listener without using extra threads/executors, which seems to be a common use case.
+
 ## Version 0.6.0 (2015-08-12)
 
 * Add support for [XEP-0114: Jabber Component Protocol](http://www.xmpp.org/extensions/xep-0114.html)
@@ -29,7 +41,7 @@
     * There are new `addExtension()` / `removeExtension()` / `hasExtension()` methods.
 * `XmppSession.getDomain()` returns a `Jid` instead of a `String`.    
 
-## Version 0.5.1 (2015-06-18)
+### Version 0.5.1 (2015-06-18)
 
 * Fix cross-compilation issue.
 * Fix IllegalStateException caused from AvatarManager.

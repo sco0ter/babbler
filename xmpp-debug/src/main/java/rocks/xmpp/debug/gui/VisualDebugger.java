@@ -46,7 +46,7 @@ import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.util.XmppUtils;
 
-import javax.swing.*;
+import javax.swing.SwingUtilities;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -130,10 +130,12 @@ public final class VisualDebugger implements XmppDebugger {
     private static void waitForPlatform() {
         if (!platformInitialized) {
             synchronized (VisualDebugger.class) {
-                try {
-                    VisualDebugger.class.wait();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+                if (!platformInitialized) {
+                    try {
+                        VisualDebugger.class.wait();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
                 }
             }
         }
@@ -150,6 +152,14 @@ public final class VisualDebugger implements XmppDebugger {
 
     @Override
     public void initialize(final XmppSession xmppSession) {
+
+        SwingUtilities.invokeLater(() -> {
+            new JFXPanel(); // this will prepare JavaFX toolkit and environment
+            platformInitialized = true;
+            synchronized (VisualDebugger.class) {
+                VisualDebugger.class.notifyAll();
+            }
+        });
 
         final Consumer<SessionStatusEvent> connectionListener = e -> {
             waitForPlatform();
@@ -178,84 +188,76 @@ public final class VisualDebugger implements XmppDebugger {
         };
         xmppSession.addOutboundPresenceListener(presenceListener);
 
-        SwingUtilities.invokeLater(() -> {
-            new JFXPanel(); // this will prepare JavaFX toolkit and environment
-            Platform.runLater(() -> {
+        waitForPlatform();
+        Platform.runLater(() -> {
+            try {
+                Font.loadFont(getClass().getResource("Inconsolata.ttf").toExternalForm(), 12);
+                if (stage == null) {
+                    root = new SplitPane();
+                    root.setDividerPositions(0.8);
+                    root.setOrientation(Orientation.VERTICAL);
+                    tabPane = new TabPane();
+                    textArea = new TextArea();
+                    textArea.setEditable(false);
+                    root.getItems().addAll(tabPane, textArea);
+                    updateTextArea();
+                    Scene scene = new Scene(root, 800, 600);
+                    scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+                    stage = new Stage();
+                    stage.setTitle("XMPP Viewer");
+                    stage.getIcons().addAll(new Image(getClass().getResource("xmpp.png").toExternalForm()));
+                    stage.setOnHidden(event -> {
+                        for (Tab tab : tabPane.getTabs()) {
+                            xmppSession.removeSessionStatusListener(CONNECTION_LISTENER_MAP.remove(tab));
+                        }
 
-                try {
-                    Font.loadFont(getClass().getResource("Inconsolata.ttf").toExternalForm(), 12);
-                    if (stage == null) {
-                        root = new SplitPane();
-                        root.setDividerPositions(0.8);
-                        root.setOrientation(Orientation.VERTICAL);
-                        tabPane = new TabPane();
-                        textArea = new TextArea();
-                        textArea.setEditable(false);
-                        root.getItems().addAll(tabPane, textArea);
-                        updateTextArea();
-                        Scene scene = new Scene(root, 800, 600);
-                        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
-                        stage = new Stage();
-                        stage.setTitle("XMPP Viewer");
-                        stage.getIcons().addAll(new Image(getClass().getResource("xmpp.png").toExternalForm()));
-                        stage.setOnHidden(event -> {
-                            for (Tab tab : tabPane.getTabs()) {
-                                xmppSession.removeSessionStatusListener(CONNECTION_LISTENER_MAP.remove(tab));
-                            }
+                        tabPane.getTabs().clear();
+                        stage = null;
+                        tabPane = null;
+                    });
+                    stage.setScene(scene);
+                }
 
-                            tabPane.getTabs().clear();
-                            stage = null;
-                            tabPane = null;
-                        });
-                        stage.setScene(scene);
-                    }
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("DebugView.fxml"));
+                TabPane debugView = fxmlLoader.load();
+                debugController = fxmlLoader.getController();
+                final Tab tab = new Tab(xmppSession.getDomain() != null ? xmppSession.getDomain().toString() : "...");
+                tab.setContent(debugView);
+                tab.textProperty().bind(title);
+                CONNECTION_LISTENER_MAP.put(tab, connectionListener);
 
-                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("DebugView.fxml"));
-                    TabPane debugView = fxmlLoader.load();
-                    debugController = fxmlLoader.getController();
-                    final Tab tab = new Tab(xmppSession.getDomain() != null ? xmppSession.getDomain().toString() : "...");
-                    tab.setContent(debugView);
-                    tab.textProperty().bind(title);
-                    CONNECTION_LISTENER_MAP.put(tab, connectionListener);
-
-                    final AnimationTimer animationTimer = new AnimationTimer() {
-                        @Override
-                        public void handle(long now) {
-                            if (outputStreamInbound != null) {
-                                String inbound = outputStreamInbound.toString();
-                                if (!inbound.isEmpty()) {
-                                    debugController.appendTextInbound(inbound);
-                                    outputStreamInbound.reset();
-                                }
-                            }
-                            if (outputStreamOutbound != null) {
-                                String outbound = outputStreamOutbound.toString();
-                                if (!outbound.isEmpty()) {
-                                    debugController.appendTextOutbound(outbound);
-                                    outputStreamOutbound.reset();
-                                }
+                final AnimationTimer animationTimer = new AnimationTimer() {
+                    @Override
+                    public void handle(long now) {
+                        if (outputStreamInbound != null) {
+                            String inbound = outputStreamInbound.toString();
+                            if (!inbound.isEmpty()) {
+                                debugController.appendTextInbound(inbound);
+                                outputStreamInbound.reset();
                             }
                         }
-                    };
-                    animationTimer.start();
+                        if (outputStreamOutbound != null) {
+                            String outbound = outputStreamOutbound.toString();
+                            if (!outbound.isEmpty()) {
+                                debugController.appendTextOutbound(outbound);
+                                outputStreamOutbound.reset();
+                            }
+                        }
+                    }
+                };
+                animationTimer.start();
 
-                    tab.setOnClosed(event -> {
-                        xmppSession.removeSessionStatusListener(CONNECTION_LISTENER_MAP.remove(tab));
-                        xmppSession.removeOutboundPresenceListener(presenceListener);
-                        animationTimer.stop();
-                    });
+                tab.setOnClosed(event -> {
+                    xmppSession.removeSessionStatusListener(CONNECTION_LISTENER_MAP.remove(tab));
+                    xmppSession.removeOutboundPresenceListener(presenceListener);
+                    animationTimer.stop();
+                });
 
-                    tabPane.getTabs().add(tab);
-                    stage.show();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                platformInitialized = true;
-                synchronized (VisualDebugger.class) {
-                    VisualDebugger.class.notifyAll();
-                }
-            });
+                tabPane.getTabs().add(tab);
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
     }
 

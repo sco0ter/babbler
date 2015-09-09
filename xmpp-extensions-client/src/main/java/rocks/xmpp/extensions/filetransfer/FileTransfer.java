@@ -54,7 +54,7 @@ public final class FileTransfer {
 
     private final ExecutorService executorService;
 
-    private volatile Status status;
+    private volatile Status status = Status.INITIAL;
 
     private volatile Exception exception;
 
@@ -189,7 +189,7 @@ public final class FileTransfer {
         );
     }
 
-    public final void cancel() {
+    public void cancel() {
         updateStatus(Status.CANCELED);
     }
 
@@ -203,9 +203,11 @@ public final class FileTransfer {
     }
 
     public enum Status {
+        INITIAL,
         CANCELED,
         COMPLETED,
         FAILED,
-        IN_PROGRESS
+        IN_PROGRESS,
+        REJECTED
     }
 }

@@ -39,23 +39,23 @@ public class BoshConnectionTest {
 
         BoshConnection boshConnection = new BoshConnection(new TestXmppSession(), BoshConnectionConfiguration.getDefault());
 
-        Body body1 = Body.builder().build();
+        Body.Builder body1 = Body.builder();
         boshConnection.unacknowledgedRequests.put(1L, body1);
 
-        Body body2 = Body.builder().build();
+        Body.Builder body2 = Body.builder();
         boshConnection.unacknowledgedRequests.put(2L, body2);
 
-        Body body3 = Body.builder().build();
+        Body.Builder body3 = Body.builder();
         boshConnection.unacknowledgedRequests.put(3L, body3);
 
-        Body body4 = Body.builder().build();
+        Body.Builder body4 = Body.builder();
         boshConnection.unacknowledgedRequests.put(4L, body4);
 
-        Body body5 = Body.builder().build();
+        Body.Builder body5 = Body.builder();
         boshConnection.unacknowledgedRequests.put(5L, body5);
 
         int i = 0;
-        for (Body body : boshConnection.unacknowledgedRequests.values()) {
+        for (Body.Builder body : boshConnection.unacknowledgedRequests.values()) {
             switch (i) {
                 case 0:
                     Assert.assertEquals(body, body1);

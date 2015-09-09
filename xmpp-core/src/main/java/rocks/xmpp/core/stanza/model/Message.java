@@ -297,15 +297,15 @@ public class Message extends ExtensibleStanza {
         }
     }
 
-
     /**
-     * Gets the message type.
+     * Gets the message type. This may also return null. If you want to check for a 'normal' message, you should prefer {@link #isNormal()}.
      * <blockquote>
      * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#message-syntax-type">5.2.2.  Type Attribute</a></cite></p>
      * <p>Common uses of the message stanza in instant messaging applications include: single messages; messages sent in the context of a one-to-one chat session; messages sent in the context of a multi-user chat room; alerts, notifications, or other information to which no reply is expected; and errors. These uses are differentiated via the 'type' attribute.</p>
      * </blockquote>
      *
      * @return The message type.
+     * @see #isNormal()
      */
     public final synchronized Type getType() {
         return type;
@@ -319,6 +319,20 @@ public class Message extends ExtensibleStanza {
      */
     public final synchronized void setType(Type type) {
         this.type = type;
+    }
+
+    /**
+     * Indicates, whether this message is a normal message, i.e. if the type or the message is either {@link Type#NORMAL}, null or otherwise unknown, this method returns true.
+     * <blockquote>
+     * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#message-syntax-type">5.2.2.  Type Attribute</a></cite></p>
+     * <p>If an application receives a message with no 'type' attribute or the application does not understand the value of the 'type' attribute provided, it MUST consider the message to be of type "normal" (i.e., "normal" is the default).</p>
+     * </blockquote>
+     *
+     * @return True, if this message's type is normal or unspecified.
+     * @see #getType()
+     */
+    public final synchronized boolean isNormal() {
+        return type == Type.NORMAL || type == null;
     }
 
     /**

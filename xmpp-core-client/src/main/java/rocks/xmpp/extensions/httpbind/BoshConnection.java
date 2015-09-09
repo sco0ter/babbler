@@ -59,7 +59,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayDeque;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -85,7 +85,7 @@ public final class BoshConnection extends Connection {
     /**
      * Use ConcurrentSkipListMap to maintain insertion order.
      */
-    final Map<Long, Body> unacknowledgedRequests = new ConcurrentSkipListMap<>();
+    final Map<Long, Body.Builder> unacknowledgedRequests = new ConcurrentSkipListMap<>();
 
     /**
      * The request id. A large number which will get incremented with every request.
@@ -107,6 +107,12 @@ public final class BoshConnection extends Connection {
      * Our supported compression methods.
      */
     private final Map<String, CompressionMethod> compressionMethods;
+
+    /**
+     * When sending, elements are put ("collected") into this collection first. Later, when the HTTP request is sent, they are all put to the request.
+     * This allows to send multiple elements with one request.
+     */
+    private final Collection<Object> elementsToSend = new ArrayDeque<>();
 
     /**
      * The encoding we can support. This is added as "Accept-Encoding" header in a request.
@@ -331,7 +337,6 @@ public final class BoshConnection extends Connection {
 
         // Create initial request.
         Body.Builder body = Body.builder()
-                .requestId(rid.getAndIncrement())
                 .language(Locale.getDefault().getLanguage())
                 .version("1.11")
                 .wait(boshConnectionConfiguration.getWait())
@@ -370,7 +375,7 @@ public final class BoshConnection extends Connection {
         httpBindExecutor = Executors.newFixedThreadPool(2, XmppUtils.createNamedThreadFactory("XMPP BOSH Request Thread"));
 
         // Send the initial request.
-        sendNewRequest(body.build());
+        sendNewRequest(body, false);
     }
 
     @Override
@@ -428,7 +433,9 @@ public final class BoshConnection extends Connection {
         } else if (responseBody.getType() == Body.Type.ERROR) {
             // In any response it sends to the client, the connection manager MAY return a recoverable error by setting a 'type' attribute of the <body/> element to "error". These errors do not imply that the HTTP session is terminated.
             // If it decides to recover from the error, then the client MUST repeat the HTTP request that resulted in the error, as well as all the preceding HTTP requests that have not received responses. The content of these requests MUST be identical to the <body/> elements of the original requests. This enables the connection manager to recover a session after the previous request was lost due to a communication failure.
-            unacknowledgedRequests.values().forEach(this::sendNewRequest);
+            unacknowledgedRequests.entrySet().forEach(bodyBuilder -> {
+                sendNewRequest(bodyBuilder.getValue(), true);
+            });
         }
 
         for (Object wrappedObject : responseBody.getWrappedObjects()) {
@@ -459,19 +466,9 @@ public final class BoshConnection extends Connection {
                     .restart(true)
                     .to(getXmppSession().getDomain().toString())
                     .language(Locale.getDefault().getLanguage())
-                    .sessionId(getSessionId())
-                    .from(from)
-                    .requestId(rid.getAndIncrement());
-
-            appendKey(bodyBuilder);
-
-            // Acknowledge the highest received rid.
-            // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
-            if (!unacknowledgedRequests.isEmpty()) {
-                bodyBuilder.ack(highestReceivedRid);
-            }
+                    .from(from);
         }
-        sendNewRequest(bodyBuilder.build());
+        sendNewRequest(bodyBuilder, false);
     }
 
     /**
@@ -494,13 +491,9 @@ public final class BoshConnection extends Connection {
                 if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
                     // Terminate the BOSH session.
                     Body.Builder bodyBuilder = Body.builder()
-                            .requestId(rid.getAndIncrement())
-                            .sessionId(sessionId)
                             .type(Body.Type.TERMINATE);
 
-                    appendKey(bodyBuilder);
-
-                    sendNewRequest(bodyBuilder.build());
+                    sendNewRequest(bodyBuilder, false);
 
                     // and then shut it down.
                     httpBindExecutor.shutdown();
@@ -537,21 +530,11 @@ public final class BoshConnection extends Connection {
     @Override
     public final void send(StreamElement element) {
         // Only put content in the body element, if it is allowed (e.g. it does not contain restart='true' and an unacknowledged body isn't resent).
-        Body.Builder bodyBuilder = Body.builder()
-                .wrappedObjects(Collections.singleton(element))
-                .requestId(rid.getAndIncrement())
-                .sessionId(getSessionId());
-
-        appendKey(bodyBuilder);
-
-        // Acknowledge the highest received rid.
-        // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
-        if (!unacknowledgedRequests.isEmpty()) {
-            synchronized (this) {
-                bodyBuilder.ack(highestReceivedRid);
-            }
+        Body.Builder bodyBuilder = Body.builder();
+        synchronized (elementsToSend) {
+            elementsToSend.add(element);
         }
-        sendNewRequest(bodyBuilder.build());
+        sendNewRequest(bodyBuilder, false);
     }
 
     /**
@@ -596,9 +579,10 @@ public final class BoshConnection extends Connection {
      * If there are currently more requests than allowed by the server, the waiting elements will be send as soon one of the requests return.
      * </p>
      *
-     * @param body The wrapper body element.
+     * @param bodyBuilder      The body builder.
+     * @param resendAfterError If the body is resent after an error has occurred. In this case the RID is not incremented.
      */
-    private void sendNewRequest(final Body body) {
+    private void sendNewRequest(final Body.Builder bodyBuilder, boolean resendAfterError) {
 
         // Make sure, no two threads access this block, in order to ensure that requestCount and httpBindExecutor.isShutdown() don't return inconsistent values.
         synchronized (this) {
@@ -608,12 +592,32 @@ public final class BoshConnection extends Connection {
                     // Open a HTTP connection.
                     HttpURLConnection httpConnection = null;
                     try {
+                        Body body;
                         // Synchronize the requests, so that nearly parallel requests are still sent in the same order (to prevent <item-not-found/> errors).
                         synchronized (BoshConnection.this) {
+                            appendKey(bodyBuilder);
+                            // Acknowledge the highest received rid.
+                            // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
+                            if (!unacknowledgedRequests.isEmpty()) {
+                                bodyBuilder.ack(highestReceivedRid);
+                            }
+
+                            if (!resendAfterError) {
+                                synchronized (elementsToSend) {
+                                    body = bodyBuilder
+                                            .wrappedObjects(elementsToSend)
+                                            .sessionId(getSessionId())
+                                            .requestId(rid.getAndIncrement()).build();
+                                    // Clear everything after the elements have been sent.
+                                    elementsToSend.clear();
+                                }
+                            } else {
+                                body = bodyBuilder.build();
+                            }
                             requestCount.getAndIncrement();
 
                             if (usingAcknowledgments) {
-                                unacknowledgedRequests.put(body.getRid(), body);
+                                unacknowledgedRequests.put(body.getRid(), bodyBuilder);
                             }
 
                             httpConnection = getConnection();
@@ -674,34 +678,35 @@ public final class BoshConnection extends Connection {
                             String contentEncoding = httpConnection.getHeaderField("Content-Encoding");
                             try (InputStream responseStream = contentEncoding != null ? compressionMethods.get(contentEncoding).decompress(httpConnection.getInputStream()) : httpConnection.getInputStream()) {
                                 // This is for logging only.
-                                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                                // Branch the stream so that its input can be logged.
-                                try (InputStream inputStream = XmppUtils.createBranchedInputStream(responseStream, byteArrayOutputStream)) {
-                                    try (InputStream xmppInputStream = debugger != null ? debugger.createInputStream(inputStream) : inputStream) {
-                                        XMLEventReader xmlEventReader = null;
-                                        try {
-                                            // Read the response.
-                                            xmlEventReader = getXmppSession().getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
-                                            while (xmlEventReader.hasNext()) {
-                                                XMLEvent xmlEvent = xmlEventReader.peek();
+                                try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+                                    // Branch the stream so that its input can be logged.
+                                    try (InputStream inputStream = XmppUtils.createBranchedInputStream(responseStream, byteArrayOutputStream)) {
+                                        try (InputStream xmppInputStream = debugger != null ? debugger.createInputStream(inputStream) : inputStream) {
+                                            XMLEventReader xmlEventReader = null;
+                                            try {
+                                                // Read the response.
+                                                xmlEventReader = getXmppSession().getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
+                                                while (xmlEventReader.hasNext()) {
+                                                    XMLEvent xmlEvent = xmlEventReader.peek();
 
-                                                // Parse the <body/> element.
-                                                if (xmlEvent.isStartElement()) {
-                                                    JAXBElement<Body> element = getXmppSession().createUnmarshaller().unmarshal(xmlEventReader, Body.class);
+                                                    // Parse the <body/> element.
+                                                    if (xmlEvent.isStartElement()) {
+                                                        JAXBElement<Body> element = getXmppSession().createUnmarshaller().unmarshal(xmlEventReader, Body.class);
 
-                                                    if (debugger != null) {
-                                                        debugger.readStanza(byteArrayOutputStream.toString(), element.getValue());
+                                                        if (debugger != null) {
+                                                            debugger.readStanza(byteArrayOutputStream.toString(), element.getValue());
+                                                        }
+                                                        unpackBody(element.getValue());
+                                                    } else {
+                                                        xmlEventReader.next();
                                                     }
-                                                    unpackBody(element.getValue());
-                                                } else {
-                                                    xmlEventReader.next();
                                                 }
-                                            }
-                                        } finally {
-                                            // The response itself acknowledges the request, so we can remove the request.
-                                            ackReceived(body.getRid());
-                                            if (xmlEventReader != null) {
-                                                xmlEventReader.close();
+                                            } finally {
+                                                // The response itself acknowledges the request, so we can remove the request.
+                                                ackReceived(body.getRid());
+                                                if (xmlEventReader != null) {
+                                                    xmlEventReader.close();
+                                                }
                                             }
                                         }
                                     }
@@ -719,24 +724,11 @@ public final class BoshConnection extends Connection {
 
                         // Wait shortly before sending the long polling request.
                         // This allows the send method to chime in and send a <body/> with actual payload instead of an empty body just to "hold the line".
-                        Thread.sleep(100);
+                        Thread.sleep(50);
 
                         // As soon as the client receives a response from the connection manager it sends another request, thereby ensuring that the connection manager is (almost) always holding a request that it can use to "push" data to the client.
                         if (requestCount.decrementAndGet() == 0) {
-                            Body.Builder bodyBuilder = Body.builder()
-                                    .requestId(rid.getAndIncrement())
-                                    .sessionId(getSessionId());
-
-                            appendKey(bodyBuilder);
-
-                            // Acknowledge the highest received rid.
-                            // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
-                            if (!unacknowledgedRequests.isEmpty()) {
-                                synchronized (BoshConnection.this) {
-                                    bodyBuilder.ack(highestReceivedRid);
-                                }
-                            }
-                            sendNewRequest(bodyBuilder.build());
+                            sendNewRequest(Body.builder(), false);
                         }
                     } catch (Exception e) {
                         getXmppSession().notifyException(e);
@@ -751,10 +743,10 @@ public final class BoshConnection extends Connection {
     }
 
     private void ackReceived(Long rid) {
-        Body body = unacknowledgedRequests.remove(rid);
+        Body.Builder body = unacknowledgedRequests.remove(rid);
         if (body != null) {
-            // TODO trigger some listener
-            body.getWrappedObjects().stream().filter(object -> object instanceof Stanza).forEach(object -> {
+            body.build().getWrappedObjects().stream().filter(object -> object instanceof Stanza).forEach(object -> {
+                // System.out.println("ACK "+ object);
                 // TODO trigger some listener
             });
         }

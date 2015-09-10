@@ -35,7 +35,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
-import java.util.Iterator;
 
 /**
  * Writes XML in a prefix-free canonicalization form.
@@ -49,51 +48,62 @@ import java.util.Iterator;
  */
 final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
 
+    private static final Collection<String> PREFIXED_NAMESPACES = Arrays.asList(SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE, SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE);
+
+    /**
+     * This is the default content namespace.
+     * See also <a href="http://xmpp.org/rfcs/rfc6120.html#streams-ns-content">http://xmpp.org/rfcs/rfc6120.html#streams-ns-content</a>
+     */
+    private final String contentNamespace;
+
+    private final Collection<String> currentNamespaceUris = new HashSet<>();
+
+    private final Deque<String> namespaces = new ArrayDeque<>();
+
     private final XMLStreamWriter xsw;
 
-    private final ContentNamespaceContext nc;
+    private String defaultNS;
 
     PrefixFreeCanonicalizationWriter(final XMLStreamWriter xsw, final String contentNamespace) throws XMLStreamException {
         this.xsw = xsw;
-        nc = new ContentNamespaceContext(contentNamespace);
-        xsw.setNamespaceContext(nc);
+        this.defaultNS = this.contentNamespace = contentNamespace;
     }
 
     @Override
     public final void writeStartElement(final String localName) throws XMLStreamException {
-        nc.pushNamespaceUri(XMLConstants.NULL_NS_URI);
+        pushNamespaceUri(XMLConstants.NULL_NS_URI);
         xsw.writeStartElement(localName);
     }
 
     @Override
     public void writeStartElement(String namespaceURI, String localName) throws XMLStreamException {
-        nc.pushNamespaceUri(namespaceURI);
+        pushNamespaceUri(namespaceURI);
         xsw.writeStartElement(namespaceURI, localName);
     }
 
     @Override
     public final void writeStartElement(final String prefix, final String localName, final String namespaceURI) throws XMLStreamException {
-        nc.pushNamespaceUri(namespaceURI);
-        if (nc.shouldWriteNamespacePrefix()) {
+        pushNamespaceUri(namespaceURI);
+        if (shouldWriteNamespacePrefix()) {
             xsw.writeStartElement(prefix, localName, namespaceURI);
         } else {
             // If the writer wants to write a prefix, instead don't write it.
-            xsw.writeStartElement("", localName, namespaceURI);
+            xsw.writeStartElement(XMLConstants.DEFAULT_NS_PREFIX, localName, namespaceURI);
             writeDefaultNamespaceIfNecessary(namespaceURI);
         }
     }
 
     @Override
     public final void writeEmptyElement(final String namespaceURI, final String localName) throws XMLStreamException {
-        nc.pushNamespaceUri(namespaceURI);
-        nc.currentNamespaceUris.clear();
+        pushNamespaceUri(namespaceURI);
+        currentNamespaceUris.clear();
         xsw.writeEmptyElement(namespaceURI, localName);
     }
 
     @Override
     public final void writeEmptyElement(final String prefix, final String localName, final String namespaceURI) throws XMLStreamException {
-        nc.pushNamespaceUri(namespaceURI);
-        if (nc.shouldWriteNamespacePrefix()) {
+        pushNamespaceUri(namespaceURI);
+        if (shouldWriteNamespacePrefix()) {
             xsw.writeEmptyElement(prefix, localName, namespaceURI);
         } else {
             // If the writer wants to write a prefix, instead don't write it.
@@ -104,11 +114,10 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
 
     private void writeDefaultNamespaceIfNecessary(final String namespaceURI) throws XMLStreamException {
         if (namespaceURI != null && namespaceURI.length() > 0) {
-            final String currentDefaultNS = nc.getNamespaceURI(XMLConstants.DEFAULT_NS_PREFIX);
             // If the namespace is not the current namespace, write it.
-            if (!namespaceURI.equals(currentDefaultNS)) {
+            if (!namespaceURI.equals(defaultNS)) {
                 writeDefaultNamespace(namespaceURI);
-                nc.defaultNS = namespaceURI;
+                defaultNS = namespaceURI;
             }
         }
     }
@@ -121,7 +130,7 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
     @Override
     public final void writeEndElement() throws XMLStreamException {
         xsw.writeEndElement();
-        nc.popNamespaceUri();
+        popNamespaceUri();
     }
 
     @Override
@@ -148,7 +157,7 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
     public final void writeAttribute(final String prefix, final String namespaceURI, final String localName, final String value) throws XMLStreamException {
         // If an attribute has an extra namespace, we need to write that namespace to the element.
         // Do it only once for each element.
-        if (nc.currentNamespaceUris.add(namespaceURI)) {
+        if (currentNamespaceUris.add(namespaceURI)) {
             xsw.writeNamespace(prefix, namespaceURI);
         }
         xsw.writeAttribute(prefix, namespaceURI, localName, value);
@@ -162,7 +171,7 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
     @Override
     public final void writeNamespace(final String prefix, final String namespaceURI) throws XMLStreamException {
         // do not write a namespace with a prefix, except it's allowed.
-        if (nc.shouldWriteNamespacePrefix()) {
+        if (shouldWriteNamespacePrefix()) {
             xsw.writeNamespace(prefix, namespaceURI);
         }
     }
@@ -257,64 +266,21 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
         return xsw.getProperty(name);
     }
 
-    /**
-     * Manages the current namespace, which is used for an element.
-     */
-    private static final class ContentNamespaceContext implements NamespaceContext {
+    private void pushNamespaceUri(final String namespaceUri) {
+        namespaces.addFirst(namespaceUri);
+        currentNamespaceUris.clear();
+    }
 
-        private static final Collection<String> PREFIXED_NAMESPACES = Arrays.asList(SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE, SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE);
-
-        /**
-         * This is the default content namespace.
-         * See also <a href="http://xmpp.org/rfcs/rfc6120.html#streams-ns-content">http://xmpp.org/rfcs/rfc6120.html#streams-ns-content</a>
-         */
-        private final String contentNamespace;
-
-        private final Collection<String> currentNamespaceUris = new HashSet<>();
-
-        private final Deque<String> namespaces = new ArrayDeque<>();
-
-        private String defaultNS;
-
-        private ContentNamespaceContext(final String contentNamespace) {
-            this.defaultNS = contentNamespace;
-            this.contentNamespace = contentNamespace;
+    private void popNamespaceUri() {
+        namespaces.removeFirst();
+        if (!namespaces.isEmpty()) {
+            defaultNS = namespaces.peekFirst();
+        } else {
+            defaultNS = contentNamespace;
         }
+    }
 
-        private void pushNamespaceUri(final String namespaceUri) {
-            namespaces.addFirst(namespaceUri);
-            currentNamespaceUris.clear();
-        }
-
-        private void popNamespaceUri() {
-            namespaces.removeFirst();
-            if (!namespaces.isEmpty()) {
-                defaultNS = namespaces.peekFirst();
-            } else {
-                defaultNS = contentNamespace;
-            }
-        }
-
-        private boolean shouldWriteNamespacePrefix() {
-            return !Collections.disjoint(namespaces, PREFIXED_NAMESPACES);
-        }
-
-        @Override
-        public final String getNamespaceURI(final String prefix) {
-            if (XMLConstants.DEFAULT_NS_PREFIX.equals(prefix)) {
-                return defaultNS;
-            }
-            return XMLConstants.NULL_NS_URI;
-        }
-
-        @Override
-        public final String getPrefix(final String namespaceURI) {
-            return XMLConstants.DEFAULT_NS_PREFIX;
-        }
-
-        @Override
-        public final Iterator getPrefixes(final String namespaceURI) {
-            return null;
-        }
+    private boolean shouldWriteNamespacePrefix() {
+        return !Collections.disjoint(namespaces, PREFIXED_NAMESPACES);
     }
 }

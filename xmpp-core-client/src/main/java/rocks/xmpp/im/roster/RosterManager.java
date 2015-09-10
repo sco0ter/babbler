@@ -298,8 +298,8 @@ public final class RosterManager extends Manager {
                 XMLStreamWriter xmppStreamWriter = null;
                 try {
                     xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(outputStream));
-                    xmppStreamWriter.flush();
                     xmppSession.createMarshaller().marshal(roster, xmppStreamWriter);
+                    xmppStreamWriter.flush();
                 } finally {
                     if (xmppStreamWriter != null) {
                         xmppStreamWriter.close();

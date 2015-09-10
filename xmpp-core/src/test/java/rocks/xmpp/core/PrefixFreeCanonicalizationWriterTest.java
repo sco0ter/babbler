@@ -42,6 +42,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayDeque;
@@ -72,6 +73,7 @@ public class PrefixFreeCanonicalizationWriterTest {
         IQ iq = ClientIQ.from(new IQ(IQ.Type.GET, roster, "1"));
 
         marshaller.marshal(iq, prefixFreeWriter);
+        prefixFreeWriter.flush();
         Assert.assertEquals(writer.toString(), "<iq id=\"1\" type=\"get\"><query xmlns=\"jabber:iq:roster\"><item jid=\"domain\"></item></query></iq>");
     }
 
@@ -89,18 +91,18 @@ public class PrefixFreeCanonicalizationWriterTest {
         Body body = Body.builder().xmppVersion("1.0").restart(true).requestId(1L).build();
 
         marshaller.marshal(body, xmppStreamWriter);
-
+        xmppStreamWriter.flush();
         Assert.assertEquals(writer.toString(), "<body xmlns=\"http://jabber.org/protocol/httpbind\" rid=\"1\" xmlns:xmpp=\"urn:xmpp:xbosh\" xmpp:version=\"1.0\" xmpp:restart=\"true\"></body>");
     }
 
     @Test
-    public void testTwoElementsWithSameNamespace() throws XMLStreamException, JAXBException {
+    public void testTwoElementsWithSameNamespace() throws XMLStreamException, JAXBException, IOException {
 
         Writer writer = new StringWriter();
 
         XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
         XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter);
-
+        xmppStreamWriter.writeStartElement("stream");
         JAXBContext jaxbContext = JAXBContext.newInstance(Auth.class, Response.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
@@ -110,7 +112,7 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         Response response = new Response(null);
         marshaller.marshal(response, xmppStreamWriter);
-
-        Assert.assertEquals(writer.toString(), "<auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\"></auth><response xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\"></response>");
+        xmppStreamWriter.flush();
+        Assert.assertEquals(writer.toString(), "<stream><auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\"></auth><response xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\"></response>");
     }
 }

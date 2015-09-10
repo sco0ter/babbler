@@ -69,7 +69,7 @@ public final class XmppUtils {
      * message.addExtension(new Sent(new Forwarded(forwardedMessage)));
      *
      * marshaller.marshal(message, xmppStreamWriter);
-     *
+     * xmppStreamWriter.flush();
      * System.out.println(writer.toString());
      * }
      * </pre>

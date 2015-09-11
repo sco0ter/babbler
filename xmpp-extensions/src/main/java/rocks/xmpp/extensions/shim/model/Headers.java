@@ -26,15 +26,18 @@ package rocks.xmpp.extensions.shim.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.OffsetDateTime;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * The implementation of the {@code <headers/>} element in the {@code http://jabber.org/protocol/shim} namespace.
- * <p/>
+ * <p>
  * This class is immutable.
  *
  * @author Christian Schudt
@@ -80,6 +83,16 @@ public final class Headers {
     }
 
     /**
+     * Creates a headers element from a map.
+     *
+     * @param headers The headers.
+     * @return The header.
+     */
+    public static Headers of(Map<String, String> headers) {
+        return of(headers.entrySet().stream().map(entry -> Header.of(entry.getKey(), entry.getValue())).collect(Collectors.toList()));
+    }
+
+    /**
      * Creates a headers element with a time period.
      *
      * @param start The start date.
@@ -119,8 +132,44 @@ public final class Headers {
         return Collections.unmodifiableList(header);
     }
 
+    /**
+     * Creates a new headers extension with an additional header. If the header already exists (by their name), it is replaced; otherwise it's added.
+     *
+     * @param name  The header name.
+     * @param value The header value.
+     * @return The headers.
+     */
+    public final Headers withHeader(String name, String value) {
+        return withHeader(Header.of(name, value));
+    }
+
+    /**
+     * Creates a new headers extension with an additional header. If the header already exists (by their name), it is replaced; otherwise it's added.
+     *
+     * @param header The header.
+     * @return The headers.
+     */
+    public final Headers withHeader(Header header) {
+        Collection<Header> headers = new ArrayDeque<>(this.header);
+        headers.removeIf(h -> h.getName().equals(header.getName()));
+        headers.add(header);
+        return of(headers);
+    }
+
+    /**
+     * Removes a header from this collection.
+     *
+     * @param name The header name.
+     * @return The headers.
+     */
+    public final Headers withoutHeader(String name) {
+        Collection<Header> headers = new ArrayDeque<>(this.header);
+        headers.removeIf(h -> h.getName().equals(name));
+        return of(headers);
+    }
+
     @Override
     public final String toString() {
-        return header.toString();
+        return "Headers: " + header.toString();
     }
 }

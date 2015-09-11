@@ -27,7 +27,6 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.bind.model.Bind;
-import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.model.Session;
@@ -42,13 +41,16 @@ import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
+import rocks.xmpp.im.roster.RosterManager;
+import rocks.xmpp.im.subscription.PresenceManager;
+import rocks.xmpp.util.XmppUtils;
 
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.sasl.RealmCallback;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -216,6 +218,7 @@ public final class XmppClient extends XmppSession {
             if (wasLoggedIn) {
                 logger.fine("Was already logged in. Re-login automatically with known credentials.");
                 login(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
+                XmppUtils.notifyEventListeners(connectionListeners, new ConnectionEvent(this, ConnectionEvent.Type.RECONNECTION_SUCCEEDED, null, Duration.ZERO));
             }
         } catch (Throwable e) {
             onConnectionFailed(previousStatus, e);
@@ -470,7 +473,7 @@ public final class XmppClient extends XmppSession {
      * <p>
      * Note that if you want to determine support of another client, you have to provide that client's full JID (user@domain/resource).
      * If you want to determine the server's capabilities provide only the domain JID of the server.
-     * <p>
+     * </p>
      * This method uses cached information and the presence based entity capabilities (XEP-0115) to determine support. Only if no information is available an explicit service discovery request is made.
      *
      * @param feature The feature, usually defined by an XMPP Extension Protocol, e.g. "urn:xmpp:ping".

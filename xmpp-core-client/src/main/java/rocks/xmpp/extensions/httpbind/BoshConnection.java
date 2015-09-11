@@ -598,19 +598,37 @@ public final class BoshConnection extends Connection {
                                 return;
                             }
 
-                            appendKey(bodyBuilder);
-                            // Acknowledge the highest received rid.
-                            // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
-                            if (!unacknowledgedRequests.isEmpty()) {
-                                bodyBuilder.ack(highestReceivedRid);
-                            }
-
                             if (!resendAfterError) {
                                 synchronized (elementsToSend) {
+                                    appendKey(bodyBuilder);
+
+                                    // Acknowledge the highest received rid.
+                                    // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
+                                    if (!unacknowledgedRequests.isEmpty()) {
+                                        bodyBuilder.ack(highestReceivedRid);
+                                    }
                                     body = bodyBuilder
                                             .wrappedObjects(elementsToSend)
                                             .sessionId(sessionId)
-                                            .requestId(rid.getAndIncrement()).build();
+                                            .requestId(rid.get()).build();
+                                    // Prevent that the session is terminated with policy-violation due to this:
+                                    //
+                                    // If during any period the client sends a sequence of new requests equal in length to the number specified by the 'requests' attribute,
+                                    // and if the connection manager has not yet responded to any of the requests,
+                                    // and if the last request was empty
+                                    // and did not include either a 'pause' attribute or a 'type' attribute set to "terminate",
+                                    // and if the last two requests arrived within a period shorter than the number of seconds specified by the 'polling' attribute in the session creation response,
+                                    // then the connection manager SHOULD consider that the client is making requests more frequently than it was permitted
+                                    // and terminate the HTTP session and return a 'policy-violation' terminal binding error to the client.
+                                    //
+                                    // In short: If we would send a second empty request, don't do that!
+                                    if (requestCount.get() > 0
+                                            && body.getPause() == null
+                                            && body.getType() != Body.Type.TERMINATE
+                                            && (body.getRestart() == null || !body.getRestart()) && sessionId != null && elementsToSend.isEmpty()) {
+                                        return;
+                                    }
+                                    rid.getAndIncrement();
                                     // Clear everything after the elements have been sent.
                                     elementsToSend.clear();
                                 }
@@ -728,7 +746,6 @@ public final class BoshConnection extends Connection {
                         // Wait shortly before sending the long polling request.
                         // This allows the send method to chime in and send a <body/> with actual payload instead of an empty body just to "hold the line".
                         Thread.sleep(50);
-
                         // As soon as the client receives a response from the connection manager it sends another request, thereby ensuring that the connection manager is (almost) always holding a request that it can use to "push" data to the client.
                         if (requestCount.decrementAndGet() == 0) {
                             sendNewRequest(Body.builder(), false);

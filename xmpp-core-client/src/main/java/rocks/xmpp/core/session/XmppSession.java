@@ -132,6 +132,8 @@ public abstract class XmppSession implements AutoCloseable {
 
     private final Set<Consumer<SessionStatusEvent>> sessionStatusListeners = new CopyOnWriteArraySet<>();
 
+    final Set<Consumer<ConnectionEvent>> connectionListeners = new CopyOnWriteArraySet<>();
+
     private final Map<Class<? extends Manager>, Manager> instances = new ConcurrentHashMap<>();
 
     /**
@@ -479,6 +481,26 @@ public abstract class XmppSession implements AutoCloseable {
      */
     public final void removeSessionStatusListener(Consumer<SessionStatusEvent> sessionStatusListener) {
         sessionStatusListeners.remove(sessionStatusListener);
+    }
+
+    /**
+     * Adds a connection listener, which is triggered, when the connection is disconnected or reconnected.
+     *
+     * @param connectionListener The connection listener.
+     * @see #removeConnectionListener(Consumer)
+     */
+    public final void addConnectionListener(Consumer<ConnectionEvent> connectionListener) {
+        connectionListeners.add(connectionListener);
+    }
+
+    /**
+     * Removes a previously added connection listener.
+     *
+     * @param connectionListener The connection listener.
+     * @see #addConnectionListener(Consumer)
+     */
+    public final void removeConnectionListener(Consumer<ConnectionEvent> connectionListener) {
+        connectionListeners.remove(connectionListener);
     }
 
     /**

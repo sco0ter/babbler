@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * The implementation of the {@code <headers/>} element in the {@code http://jabber.org/protocol/shim} namespace.
- * <p>
+ * <p/>
  * This class is immutable.
  *
  * @author Christian Schudt
@@ -93,6 +93,21 @@ public final class Headers {
             throw new IllegalArgumentException("start date must not be after the start date.");
         }
         return of(Header.ofStartDate(start), Header.ofStopDate(stop));
+    }
+
+    /**
+     * Tries to find a value among the headers associated with header name.
+     *
+     * @param name The name of the header.
+     * @return The found value or null if none could be found.
+     */
+    public final String findValue(String name) {
+        for (Header header : this.header) {
+            if (header.getName().equals(name)) {
+                return header.getValue();
+            }
+        }
+        return null;
     }
 
     /**

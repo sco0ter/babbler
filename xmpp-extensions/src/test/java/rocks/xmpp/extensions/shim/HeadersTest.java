@@ -36,6 +36,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author Christian Schudt
@@ -79,5 +81,19 @@ public class HeadersTest extends XmlTest {
         String xmlPeriod = marshal(Headers.ofTimePeriod(OffsetDateTime.now(), OffsetDateTime.now()));
         Assert.assertTrue(xmlPeriod.startsWith("<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Start\">"));
         Assert.assertTrue(xmlPeriod.contains("<header name=\"Stop\">"));
+    }
+
+    @Test
+    public void marshalMap() throws XMLStreamException, JAXBException {
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("Header1", "Value1");
+        map.put("Header2", "Value2");
+        map.put("Header3", "Value3");
+        map.put("Header4", "Value4");
+        Headers headers = Headers.of(map);
+        Assert.assertEquals(marshal(headers), "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Header1\">Value1</header><header name=\"Header2\">Value2</header><header name=\"Header3\">Value3</header><header name=\"Header4\">Value4</header></headers>");
+        Assert.assertEquals(marshal(headers.withHeader("Header2", "newValue")), "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Header1\">Value1</header><header name=\"Header3\">Value3</header><header name=\"Header4\">Value4</header><header name=\"Header2\">newValue</header></headers>");
+        Assert.assertEquals(marshal(headers.withHeader("Header5", "Value5")), "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Header1\">Value1</header><header name=\"Header2\">Value2</header><header name=\"Header3\">Value3</header><header name=\"Header4\">Value4</header><header name=\"Header5\">Value5</header></headers>");
+        Assert.assertEquals(marshal(headers.withoutHeader("Header3")), "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Header1\">Value1</header><header name=\"Header2\">Value2</header><header name=\"Header4\">Value4</header></headers>");
     }
 }

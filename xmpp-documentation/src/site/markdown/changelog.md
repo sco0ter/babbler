@@ -1,7 +1,7 @@
 # Changelog
 ---
 
-### Version 0.6.1 (2015-11-13)
+### Version 0.6.1 (2015-09-13)
 
 * Verify SCRAM-SHA-1 server response during login.
 * Add `Jid.atSubdomain()` method and use `CharSequence` in static `Jid` factory methods.

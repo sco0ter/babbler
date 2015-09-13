@@ -1,7 +1,7 @@
 # Changelog
 ---
 
-### Version 0.6.1-SNAPSHOT
+### Version 0.6.1 (2015-11-13)
 
 * Verify SCRAM-SHA-1 server response during login.
 * Add `Jid.atSubdomain()` method and use `CharSequence` in static `Jid` factory methods.
@@ -11,6 +11,9 @@
 * Add API to retrieve owners, admins and outcasts in a chat room.
 * Fix bug when declining a MUC invitation.
 * Minor bug fixes in VisualDebugger.
+* Add factory method to create XEP-131 headers from a `Map`.
+* Improve BoshConnection class by queuing up stanzas and send multiple stanzas in the same request.
+* Add API to better listen for disconnects and reconnects.
 * Process inbound IQs on another thread as messages and presences. This allows to query IQs from within a Message listener without using extra threads/executors, which seems to be a common use case.
 
 ## Version 0.6.0 (2015-08-12)

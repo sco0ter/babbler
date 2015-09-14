@@ -47,7 +47,6 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Socket;
@@ -166,11 +165,11 @@ public final class TcpConnection extends Connection {
         }
 
         if (getHostname() != null && !getHostname().isEmpty()) {
-            connectToSocket(InetAddress.getByName(getHostname()), getPort(), getProxy());
+            connectToSocket(InetSocketAddress.createUnresolved(getHostname(), getPort()), getProxy());
         } else if (getXmppSession().getDomain() != null) {
             if (!connectWithXmppServiceDomain(getXmppSession().getDomain())) {
                 // 9. If the initiating entity does not receive a response to its SRV query, it SHOULD attempt the fallback process described in the next section.
-                connectToSocket(InetAddress.getByName(getXmppSession().getDomain().toString()), getPort(), getProxy());
+                connectToSocket(InetSocketAddress.createUnresolved(getXmppSession().getDomain().toString(), getPort()), getProxy());
             }
         } else {
             throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
@@ -194,7 +193,7 @@ public final class TcpConnection extends Connection {
         return socket instanceof SSLSocket;
     }
 
-    private void connectToSocket(InetAddress inetAddress, int port, Proxy proxy) throws IOException {
+    private void connectToSocket(InetSocketAddress unresolvedAddress, Proxy proxy) throws IOException {
         if (tcpConnectionConfiguration.getSocketFactory() == null) {
             if (proxy != null) {
                 socket = new Socket(proxy);
@@ -204,9 +203,9 @@ public final class TcpConnection extends Connection {
         } else {
             socket = tcpConnectionConfiguration.getSocketFactory().createSocket();
         }
-        socket.connect(new InetSocketAddress(inetAddress, port), tcpConnectionConfiguration.getConnectTimeout());
-        this.port = port;
-        this.hostname = inetAddress.getHostName();
+        socket.connect(new InetSocketAddress(unresolvedAddress.getHostName(), unresolvedAddress.getPort()), tcpConnectionConfiguration.getConnectTimeout());
+        this.port = unresolvedAddress.getPort();
+        this.hostname = unresolvedAddress.getHostName();
     }
 
     /**
@@ -367,10 +366,9 @@ public final class TcpConnection extends Connection {
                 for (DnsResourceRecord dnsResourceRecord : dnsSrvRecords) {
                     try {
                         // 4. The initiating entity chooses at least one of the returned FQDNs to resolve (following the rules in [DNS-SRV]), which it does by performing DNS "A" or "AAAA" lookups on the FDQN; this will result in an IPv4 or IPv6 address.
-                        InetAddress inetAddress = InetAddress.getByName(dnsResourceRecord.target);
                         // 5. The initiating entity uses the IP address(es) from the successfully resolved FDQN (with the corresponding port number returned by the SRV lookup) as the connection address for the receiving entity.
                         // 6. If the initiating entity fails to connect using that IP address but the "A" or "AAAA" lookups returned more than one IP address, then the initiating entity uses the next resolved IP address for that FDQN as the connection address.
-                        connectToSocket(inetAddress, dnsResourceRecord.port, getProxy());
+                        connectToSocket(InetSocketAddress.createUnresolved(dnsResourceRecord.target, dnsResourceRecord.port), getProxy());
                         return true;
                     } catch (IOException e) {
                         // 7. If the initiating entity fails to connect using all resolved IP addresses for a given FDQN, then it repeats the process of resolution and connection for the next FQDN returned by the SRV lookup based on the priority and weight as defined in [DNS-SRV].

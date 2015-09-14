@@ -461,6 +461,7 @@ public final class BoshConnection extends Connection {
         Body.Builder bodyBuilder;
         synchronized (this) {
             bodyBuilder = Body.builder()
+                    .sessionId(sessionId)
                     .restart(true)
                     .to(getXmppSession().getDomain().toString())
                     .language(Locale.getDefault().getLanguage())
@@ -489,6 +490,7 @@ public final class BoshConnection extends Connection {
                 if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
                     // Terminate the BOSH session.
                     Body.Builder bodyBuilder = Body.builder()
+                            .sessionId(sessionId)
                             .type(Body.Type.TERMINATE);
 
                     sendNewRequest(bodyBuilder, false);
@@ -528,7 +530,7 @@ public final class BoshConnection extends Connection {
     @Override
     public final void send(StreamElement element) {
         // Only put content in the body element, if it is allowed (e.g. it does not contain restart='true' and an unacknowledged body isn't resent).
-        Body.Builder bodyBuilder = Body.builder();
+        Body.Builder bodyBuilder = Body.builder().sessionId(getSessionId());
         synchronized (elementsToSend) {
             elementsToSend.add(element);
         }
@@ -591,74 +593,70 @@ public final class BoshConnection extends Connection {
                     HttpURLConnection httpConnection = null;
                     try {
                         Body body;
-                        // Synchronize the requests, so that nearly parallel requests are still sent in the same order (to prevent <item-not-found/> errors).
-                        synchronized (BoshConnection.this) {
-                            // Session is closed, don't send another request.
-                            if (httpBindExecutor == null || httpBindExecutor.isShutdown()) {
-                                return;
-                            }
 
-                            if (!resendAfterError) {
-                                synchronized (elementsToSend) {
-                                    appendKey(bodyBuilder);
+                        if (!resendAfterError) {
+                            synchronized (elementsToSend) {
+                                appendKey(bodyBuilder);
 
-                                    // Acknowledge the highest received rid.
-                                    // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
-                                    if (!unacknowledgedRequests.isEmpty()) {
-                                        bodyBuilder.ack(highestReceivedRid);
-                                    }
-                                    body = bodyBuilder
-                                            .wrappedObjects(elementsToSend)
-                                            .sessionId(sessionId)
-                                            .requestId(rid.get()).build();
-                                    // Prevent that the session is terminated with policy-violation due to this:
-                                    //
-                                    // If during any period the client sends a sequence of new requests equal in length to the number specified by the 'requests' attribute,
-                                    // and if the connection manager has not yet responded to any of the requests,
-                                    // and if the last request was empty
-                                    // and did not include either a 'pause' attribute or a 'type' attribute set to "terminate",
-                                    // and if the last two requests arrived within a period shorter than the number of seconds specified by the 'polling' attribute in the session creation response,
-                                    // then the connection manager SHOULD consider that the client is making requests more frequently than it was permitted
-                                    // and terminate the HTTP session and return a 'policy-violation' terminal binding error to the client.
-                                    //
-                                    // In short: If we would send a second empty request, don't do that!
-                                    if (requestCount.get() > 0
-                                            && body.getPause() == null
-                                            && body.getType() != Body.Type.TERMINATE
-                                            && (body.getRestart() == null || !body.getRestart()) && sessionId != null && elementsToSend.isEmpty()) {
-                                        return;
-                                    }
-                                    rid.getAndIncrement();
-                                    // Clear everything after the elements have been sent.
-                                    elementsToSend.clear();
+                                // Acknowledge the highest received rid.
+                                // The only exception is that, after its session creation request, the client SHOULD NOT include an 'ack' attribute in any request if it has received responses to all its previous requests.
+                                if (!unacknowledgedRequests.isEmpty()) {
+                                    bodyBuilder.ack(highestReceivedRid);
                                 }
-                            } else {
-                                body = bodyBuilder.build();
+                                body = bodyBuilder
+                                        .wrappedObjects(elementsToSend)
+                                        .requestId(rid.get()).build();
+                                // Prevent that the session is terminated with policy-violation due to this:
+                                //
+                                // If during any period the client sends a sequence of new requests equal in length to the number specified by the 'requests' attribute,
+                                // and if the connection manager has not yet responded to any of the requests,
+                                // and if the last request was empty
+                                // and did not include either a 'pause' attribute or a 'type' attribute set to "terminate",
+                                // and if the last two requests arrived within a period shorter than the number of seconds specified by the 'polling' attribute in the session creation response,
+                                // then the connection manager SHOULD consider that the client is making requests more frequently than it was permitted
+                                // and terminate the HTTP session and return a 'policy-violation' terminal binding error to the client.
+                                //
+                                // In short: If we would send a second empty request, don't do that!
+                                // Also don't send a new request, if the executors are shutdown.
+                                if (body.getType() != Body.Type.TERMINATE &&
+                                        ((httpBindExecutor == null || httpBindExecutor.isShutdown())
+                                                || (requestCount.get() > 0
+                                                && body.getPause() == null
+                                                && (body.getRestart() == null || !body.getRestart()) && sessionId != null && elementsToSend.isEmpty()))) {
+                                    return;
+                                }
+                                rid.getAndIncrement();
+                                // Clear everything after the elements have been sent.
+                                elementsToSend.clear();
                             }
-                            requestCount.getAndIncrement();
+                        } else {
+                            body = bodyBuilder.build();
+                        }
 
-                            if (usingAcknowledgments) {
-                                unacknowledgedRequests.put(body.getRid(), bodyBuilder);
-                            }
+                        if (usingAcknowledgments) {
+                            unacknowledgedRequests.put(body.getRid(), bodyBuilder);
+                        }
 
-                            httpConnection = getConnection();
-                            httpConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
+                        httpConnection = getConnection();
+                        httpConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
 
-                            // We can decompress server responses, so tell the server about it.
-                            if (clientAcceptEncoding != null) {
-                                httpConnection.setRequestProperty("Accept-Encoding", clientAcceptEncoding);
-                            }
+                        // We can decompress server responses, so tell the server about it.
+                        if (clientAcceptEncoding != null) {
+                            httpConnection.setRequestProperty("Accept-Encoding", clientAcceptEncoding);
+                        }
 
-                            // If we can compress, tell the server about it.
-                            if (requestCompressionMethod != null && requestContentEncoding != null) {
-                                httpConnection.setRequestProperty("Content-Encoding", requestContentEncoding);
-                            }
+                        // If we can compress, tell the server about it.
+                        if (requestCompressionMethod != null && requestContentEncoding != null) {
+                            httpConnection.setRequestProperty("Content-Encoding", requestContentEncoding);
+                        }
 
-                            httpConnection.setDoOutput(true);
-                            httpConnection.setRequestMethod("POST");
-                            // If the connection manager does not respond in time, throw a SocketTimeoutException, which terminates the connection.
-                            httpConnection.setReadTimeout((boshConnectionConfiguration.getWait() + 5) * 1000);
+                        httpConnection.setDoOutput(true);
+                        httpConnection.setRequestMethod("POST");
+                        // If the connection manager does not respond in time, throw a SocketTimeoutException, which terminates the connection.
+                        httpConnection.setReadTimeout((boshConnectionConfiguration.getWait() + 5) * 1000);
 
+                        requestCount.getAndIncrement();
+                        try {
                             try (OutputStream requestStream = requestCompressionMethod != null ? requestCompressionMethod.compress(httpConnection.getOutputStream()) : httpConnection.getOutputStream()) {
                                 // This is for logging only.
                                 ByteArrayOutputStream byteArrayOutputStreamRequest = new ByteArrayOutputStream();
@@ -686,69 +684,70 @@ public final class BoshConnection extends Connection {
                                     }
                                 }
                             }
-                        }
 
-                        // Wait for the response
-                        if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                            // Wait for the response
+                            if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
 
-                            // We received a response for the request. Store the RID, so that we can inform the connection manager with our next request, that we received a response.
-                            synchronized (BoshConnection.this) {
-                                highestReceivedRid = body.getRid();
-                            }
+                                // We received a response for the request. Store the RID, so that we can inform the connection manager with our next request, that we received a response.
+                                synchronized (BoshConnection.this) {
+                                    highestReceivedRid = body.getRid();
+                                }
 
-                            String contentEncoding = httpConnection.getHeaderField("Content-Encoding");
-                            try (InputStream responseStream = contentEncoding != null ? compressionMethods.get(contentEncoding).decompress(httpConnection.getInputStream()) : httpConnection.getInputStream()) {
-                                // This is for logging only.
-                                try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-                                    // Branch the stream so that its input can be logged.
-                                    try (InputStream inputStream = XmppUtils.createBranchedInputStream(responseStream, byteArrayOutputStream)) {
-                                        try (InputStream xmppInputStream = debugger != null ? debugger.createInputStream(inputStream) : inputStream) {
-                                            XMLEventReader xmlEventReader = null;
-                                            try {
-                                                // Read the response.
-                                                xmlEventReader = getXmppSession().getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
-                                                while (xmlEventReader.hasNext()) {
-                                                    XMLEvent xmlEvent = xmlEventReader.peek();
+                                String contentEncoding = httpConnection.getHeaderField("Content-Encoding");
+                                try (InputStream responseStream = contentEncoding != null ? compressionMethods.get(contentEncoding).decompress(httpConnection.getInputStream()) : httpConnection.getInputStream()) {
+                                    // This is for logging only.
+                                    try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+                                        // Branch the stream so that its input can be logged.
+                                        try (InputStream inputStream = XmppUtils.createBranchedInputStream(responseStream, byteArrayOutputStream)) {
+                                            try (InputStream xmppInputStream = debugger != null ? debugger.createInputStream(inputStream) : inputStream) {
+                                                XMLEventReader xmlEventReader = null;
+                                                try {
+                                                    // Read the response.
+                                                    xmlEventReader = getXmppSession().getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
+                                                    while (xmlEventReader.hasNext()) {
+                                                        XMLEvent xmlEvent = xmlEventReader.peek();
 
-                                                    // Parse the <body/> element.
-                                                    if (xmlEvent.isStartElement()) {
-                                                        JAXBElement<Body> element = getXmppSession().createUnmarshaller().unmarshal(xmlEventReader, Body.class);
+                                                        // Parse the <body/> element.
+                                                        if (xmlEvent.isStartElement()) {
+                                                            JAXBElement<Body> element = getXmppSession().createUnmarshaller().unmarshal(xmlEventReader, Body.class);
 
-                                                        if (debugger != null) {
-                                                            debugger.readStanza(byteArrayOutputStream.toString(), element.getValue());
+                                                            if (debugger != null) {
+                                                                debugger.readStanza(byteArrayOutputStream.toString(), element.getValue());
+                                                            }
+                                                            unpackBody(element.getValue());
+                                                        } else {
+                                                            xmlEventReader.next();
                                                         }
-                                                        unpackBody(element.getValue());
-                                                    } else {
-                                                        xmlEventReader.next();
                                                     }
-                                                }
-                                            } finally {
-                                                // The response itself acknowledges the request, so we can remove the request.
-                                                ackReceived(body.getRid());
-                                                if (xmlEventReader != null) {
-                                                    xmlEventReader.close();
+                                                } finally {
+                                                    // The response itself acknowledges the request, so we can remove the request.
+                                                    ackReceived(body.getRid());
+                                                    if (xmlEventReader != null) {
+                                                        xmlEventReader.close();
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
-                            }
-                        } else {
-                            handleCode(httpConnection.getResponseCode());
-                            try (InputStream errorStream = httpConnection.getErrorStream()) {
-                                while (errorStream.read() > -1) {
-                                    // Just read the error stream, so that the connection can be reused.
-                                    // http://docs.oracle.com/javase/8/docs/technotes/guides/net/http-keepalive.html
+                            } else {
+                                handleCode(httpConnection.getResponseCode());
+                                try (InputStream errorStream = httpConnection.getErrorStream()) {
+                                    while (errorStream.read() > -1) {
+                                        // Just read the error stream, so that the connection can be reused.
+                                        // http://docs.oracle.com/javase/8/docs/technotes/guides/net/http-keepalive.html
+                                    }
                                 }
                             }
-                        }
 
-                        // Wait shortly before sending the long polling request.
-                        // This allows the send method to chime in and send a <body/> with actual payload instead of an empty body just to "hold the line".
-                        Thread.sleep(50);
-                        // As soon as the client receives a response from the connection manager it sends another request, thereby ensuring that the connection manager is (almost) always holding a request that it can use to "push" data to the client.
-                        if (requestCount.decrementAndGet() == 0) {
-                            sendNewRequest(Body.builder(), false);
+                            // Wait shortly before sending the long polling request.
+                            // This allows the send method to chime in and send a <body/> with actual payload instead of an empty body just to "hold the line".
+                            Thread.sleep(50);
+                        } finally {
+                            // As soon as the client receives a response from the connection manager it sends another request, thereby ensuring that the connection manager is (almost) always holding a request that it can use to "push" data to the client.
+                            if (requestCount.decrementAndGet() == 0) {
+                                sendNewRequest(Body.builder().sessionId(sessionId), false);
+                            }
                         }
                     } catch (Exception e) {
                         getXmppSession().notifyException(e);

@@ -290,7 +290,7 @@ public abstract class XmppSession implements AutoCloseable {
             throw new IllegalStateException("You are already logged in.");
         }
         if (previousStatus != Status.CONNECTED) {
-            throw new IllegalStateException("You must be connected to the server before trying to login.");
+            throw new IllegalStateException("You must be connected to the server before trying to login. Status is " + previousStatus);
         }
         if (getDomain() == null) {
             throw new IllegalStateException("The XMPP domain must not be null.");
@@ -934,7 +934,7 @@ public abstract class XmppSession implements AutoCloseable {
      *
      * @return The XMPP domain.
      */
-    public final Jid getDomain() {
+    public Jid getDomain() {
         return xmppServiceDomain;
     }
 

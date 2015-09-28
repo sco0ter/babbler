@@ -27,8 +27,8 @@ package rocks.xmpp.extensions.muc.model;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Collection;
 
 /**
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#request}, which can be used to request voice in a MUC room.
@@ -219,7 +219,7 @@ public final class RequestVoice {
          * @return The request voice form.
          */
         public RequestVoice build() {
-            List<DataForm.Field> fields = new ArrayList<>();
+            Collection<DataForm.Field> fields = new ArrayDeque<>();
             if (role != null) {
                 fields.add(DataForm.Field.builder().var(ROLE).value(role.name().toLowerCase()).build());
             }

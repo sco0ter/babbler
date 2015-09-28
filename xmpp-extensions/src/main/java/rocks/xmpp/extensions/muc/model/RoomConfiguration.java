@@ -28,12 +28,11 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.net.URI;
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -677,7 +676,7 @@ public final class RoomConfiguration {
          * @return The room configuration.
          */
         public RoomConfiguration build() {
-            List<DataForm.Field> fields = new ArrayList<>();
+            Collection<DataForm.Field> fields = new ArrayDeque<>();
             if (maxHistoryFetch != null) {
                 fields.add(DataForm.Field.builder().var(MAX_HISTORY_FETCH).value(maxHistoryFetch).build());
             }

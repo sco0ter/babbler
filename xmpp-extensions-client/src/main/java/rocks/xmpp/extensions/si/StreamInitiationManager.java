@@ -50,10 +50,10 @@ import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -206,7 +206,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
         final Condition byteStreamOpened = lock.newCondition();
         final ByteStreamSession[] byteStreamSessions = new ByteStreamSession[1];
 
-        final List<Exception> negotiationExceptions = new ArrayList<>();
+        final Deque<Exception> negotiationExceptions = new ArrayDeque<>();
         // Before we reply with the chosen stream method, we
         // register a byte stream listener, because we expect the initiator to open a byte stream with us.
         Consumer<ByteStreamEvent> byteStreamListener = e -> {
@@ -236,7 +236,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
             lock.lock();
             try {
                 if (!byteStreamOpened.await(xmppSession.getConfiguration().getDefaultResponseTimeout(), TimeUnit.MILLISECONDS)) {
-                    throw new IOException("No byte stream could be negotiated in time.", negotiationExceptions.isEmpty() ? null : negotiationExceptions.get(0));
+                    throw new IOException("No byte stream could be negotiated in time.", negotiationExceptions.isEmpty() ? null : negotiationExceptions.getFirst());
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

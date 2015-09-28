@@ -26,13 +26,13 @@ package rocks.xmpp.extensions.rtt;
 
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.messagecorrect.model.Replace;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
+import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.util.XmppUtils;
 
 import java.util.Collections;
@@ -135,7 +135,7 @@ public final class RealTimeTextManager extends Manager {
      * This method is intended for creating a new message, when editing an existing message, when used in concert with <a href="http://www.xmpp.org/extensions/xep-0308.html">XEP-0308: Last Message Correction</a>.
      *
      * @param chat The chat to send real-time text with.
-     * @param id   The id, of the
+     * @param id   The id of the message, which is edited with a real-time message.
      * @return The real-time message.
      * @see rocks.xmpp.extensions.messagecorrect.model.Replace
      */

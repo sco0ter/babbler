@@ -28,8 +28,8 @@ import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Collection;
 
 /**
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#register}, which can be used to register with a MUC room.
@@ -297,7 +297,7 @@ public final class RoomRegistration {
          * @return The registration form.
          */
         public RoomRegistration build() {
-            List<DataForm.Field> fields = new ArrayList<>();
+            Collection<DataForm.Field> fields = new ArrayDeque<>();
             if (allowRegister != null) {
                 fields.add(DataForm.Field.builder().var(REGISTER_ALLOW).value(allowRegister).build());
             }

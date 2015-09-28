@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.pubsub.model;
 
 import rocks.xmpp.extensions.data.model.DataForm;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.List;
 
@@ -214,7 +214,7 @@ public final class PublishOptions {
          * @return The publish options.
          */
         public PublishOptions build() {
-            List<DataForm.Field> fields = new ArrayList<>();
+            Collection<DataForm.Field> fields = new ArrayDeque<>();
 
             if (accessModel != null) {
                 fields.add(DataForm.Field.builder().var(ACCESS_MODEL).value(accessModel.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());

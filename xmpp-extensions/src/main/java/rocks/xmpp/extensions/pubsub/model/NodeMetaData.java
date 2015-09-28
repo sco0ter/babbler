@@ -28,7 +28,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.time.Instant;
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.List;
 
@@ -384,7 +384,7 @@ public final class NodeMetaData {
          * @return The meta data form.
          */
         public final NodeMetaData build() {
-            List<DataForm.Field> fields = new ArrayList<>();
+            Collection<DataForm.Field> fields = new ArrayDeque<>();
 
             if (contacts != null && !contacts.isEmpty()) {
                 fields.add(DataForm.Field.builder().var(CONTACT).valuesJid(contacts).build());

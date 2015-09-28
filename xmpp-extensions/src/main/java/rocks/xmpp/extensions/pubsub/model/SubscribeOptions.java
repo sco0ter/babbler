@@ -28,6 +28,7 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.time.Instant;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -399,7 +400,7 @@ public final class SubscribeOptions {
          * @return The subscribe options.
          */
         public final SubscribeOptions build() {
-            List<DataForm.Field> fields = new ArrayList<>();
+            Collection<DataForm.Field> fields = new ArrayDeque<>();
             if (deliver != null) {
                 fields.add(DataForm.Field.builder().var(DELIVER).value(deliver).build());
             }
@@ -420,7 +421,7 @@ public final class SubscribeOptions {
             }
             if (showValues != null && !showValues.isEmpty()) {
                 DataForm.Field.Builder fieldBuilder = DataForm.Field.builder().var(SHOW_VALUES);
-                List<String> values = new ArrayList<>();
+                Collection<String> values = new ArrayDeque<>();
                 for (Presence.Show show : showValues) {
                     if (show != null) {
                         values.add(show.name().toLowerCase());

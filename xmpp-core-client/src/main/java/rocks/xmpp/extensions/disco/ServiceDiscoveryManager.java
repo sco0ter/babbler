@@ -45,6 +45,7 @@ import rocks.xmpp.extensions.rsm.ResultSetProvider;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.util.XmppUtils;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -465,7 +466,7 @@ public final class ServiceDiscoveryManager extends Manager {
 
     private Collection<Item> discoverServices(Predicate<InfoNode> predicate) throws XmppException {
         ItemNode itemDiscovery = discoverItems(xmppSession.getDomain());
-        Collection<Item> services = new ArrayList<>();
+        Collection<Item> services = new ArrayDeque<>();
         XmppException exception = null;
         for (Item item : itemDiscovery.getItems()) {
             try {

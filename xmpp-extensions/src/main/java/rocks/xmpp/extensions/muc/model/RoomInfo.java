@@ -29,7 +29,7 @@ import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.List;
 
@@ -370,7 +370,7 @@ public final class RoomInfo {
          * @return The room info.
          */
         public RoomInfo build() {
-            List<DataForm.Field> fields = new ArrayList<>();
+            Collection<DataForm.Field> fields = new ArrayDeque<>();
             if (maxHistoryMessages != null) {
                 fields.add(DataForm.Field.builder().var(MAX_HISTORY_FETCH).value(maxHistoryMessages).build());
             }

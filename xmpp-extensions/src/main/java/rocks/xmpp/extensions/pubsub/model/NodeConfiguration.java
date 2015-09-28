@@ -30,7 +30,7 @@ import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.List;
 
@@ -982,7 +982,7 @@ public final class NodeConfiguration {
          */
         public final NodeConfiguration build() {
 
-            List<DataForm.Field> fields = new ArrayList<>();
+            Collection<DataForm.Field> fields = new ArrayDeque<>();
             if (accessModel != null) {
                 fields.add(DataForm.Field.builder().var(ACCESS_MODEL).value(accessModel.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }

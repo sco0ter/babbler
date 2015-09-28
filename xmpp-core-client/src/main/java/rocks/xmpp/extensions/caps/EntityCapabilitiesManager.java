@@ -50,8 +50,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -154,8 +154,8 @@ public final class EntityCapabilitiesManager extends Manager {
                     }
                     // a client SHOULD include entity capabilities with every presence notification it sends.
                     // Get the last generated verification string here.
-                    List<Verification> verifications = new ArrayList<>(publishedNodes.values());
-                    Verification verification = verifications.get(verifications.size() - 1);
+                    Deque<Verification> verifications = new ArrayDeque<>(publishedNodes.values());
+                    Verification verification = verifications.getLast();
                     presence.addExtension(new EntityCapabilities(getNode(), verification.hashAlgorithm, verification.verificationString));
                     capsSent = true;
                 }

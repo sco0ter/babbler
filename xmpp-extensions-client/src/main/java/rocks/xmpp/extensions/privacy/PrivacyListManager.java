@@ -35,6 +35,7 @@ import rocks.xmpp.extensions.privacy.model.Privacy;
 import rocks.xmpp.extensions.privacy.model.PrivacyList;
 import rocks.xmpp.util.XmppUtils;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -133,7 +134,7 @@ public final class PrivacyListManager extends Manager {
         IQ result = xmppSession.query(IQ.get(new Privacy()));
         Privacy privacy = result.getExtension(Privacy.class);
 
-        List<PrivacyList> privacyLists = new ArrayList<>();
+        Collection<PrivacyList> privacyLists = new ArrayDeque<>();
         for (PrivacyList privacyList : privacy.getPrivacyLists()) {
             if (privacyList.getName() != null && privacyList.getName().equals(privacy.getDefaultName())) {
                 privacyLists.add(privacyList.asDefault());

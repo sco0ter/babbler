@@ -27,13 +27,17 @@ package rocks.xmpp.extensions.jingle.apps.filetransfer.model;
 import rocks.xmpp.extensions.filetransfer.FileTransferOffer;
 import rocks.xmpp.extensions.filetransfer.Range;
 import rocks.xmpp.extensions.hashes.model.Hash;
+import rocks.xmpp.extensions.jingle.apps.filetransfer.model.errors.FileTransferError;
 import rocks.xmpp.extensions.jingle.apps.model.ApplicationFormat;
+import rocks.xmpp.extensions.jingle.model.Jingle;
 import rocks.xmpp.util.adapters.InstantAdapter;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -44,7 +48,7 @@ import java.util.List;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "description")
-@XmlSeeAlso({JingleFileTransfer.Checksum.class})
+@XmlSeeAlso({JingleFileTransfer.Received.class, JingleFileTransfer.Checksum.class, FileTransferError.class})
 public final class JingleFileTransfer extends ApplicationFormat {
 
     /**
@@ -61,11 +65,11 @@ public final class JingleFileTransfer extends ApplicationFormat {
         this.file = file;
     }
 
-    public File getFile() {
+    public final File getFile() {
         return file;
     }
 
-    public static class File implements FileTransferOffer {
+    public static final class File implements FileTransferOffer {
 
         @XmlElementRef
         private final List<Hash> hashes = new ArrayList<>();
@@ -133,14 +137,29 @@ public final class JingleFileTransfer extends ApplicationFormat {
     }
 
     @XmlRootElement
-    public static final class Checksum {
+    public static final class Received extends InformationalMessage {
+
+        private Received() {
+            super(null, null);
+        }
+
+        public Received(Jingle.Content.Creator creator, String name) {
+            super(creator, name);
+        }
+    }
+
+    @XmlRootElement
+    public static final class Checksum extends InformationalMessage {
 
         private File file;
 
         private Checksum() {
+            super(null, null);
+            this.file = null;
         }
 
-        public Checksum(File file) {
+        public Checksum(Jingle.Content.Creator creator, String name, File file) {
+            super(creator, name);
             this.file = file;
         }
 
@@ -149,8 +168,41 @@ public final class JingleFileTransfer extends ApplicationFormat {
          *
          * @return The file.
          */
-        public File getFile() {
+        public final File getFile() {
             return file;
+        }
+    }
+
+    @XmlTransient
+    private static abstract class InformationalMessage {
+
+        @XmlAttribute
+        private final Jingle.Content.Creator creator;
+
+        @XmlAttribute
+        private final String name;
+
+        private InformationalMessage(Jingle.Content.Creator creator, String name) {
+            this.creator = creator;
+            this.name = name;
+        }
+
+        /**
+         * Gets the creator.
+         *
+         * @return The creator.
+         */
+        public final Jingle.Content.Creator getCreator() {
+            return creator;
+        }
+
+        /**
+         * Gets the name.
+         *
+         * @return The name.
+         */
+        public final String getName() {
+            return name;
         }
     }
 }

@@ -36,10 +36,6 @@ This is a list of various issues which have occurred while reading through and i
 6. Example 18.: `pubsub#creation_date`: 2003-07-29T22:56Z does not adhere to the dateTime profile of XEP-0082 (seconds missing)
 7. Example 219. + 220 + 221: `pubsub#expire`: 2006-03-31T23:59Z does not adhere to the dateTime profile of XEP-0082 (seconds missing)
 
-## XEP-0065: SOCKS5 Bytestreams
-
-1. `<activate/>` element has wrong description ( *is always empty*, while it isn't) [See mailing list](http://mail.jabber.org/pipermail/standards/2015-March/029663.html)
-
 ## XEP-0084: User Avatar
 
 1. Should probably make use of persistent storage ([XEP-0222](http://www.xmpp.org/extensions/xep-0222.html))?
@@ -57,11 +53,6 @@ This is a list of various issues which have occurred while reading through and i
 
 1. *When receiving an <r/> or <a/> element with an 'h' attribute* => The <r/> element has no 'h' attribute.
 
-## XEP-0163: Personal Eventing Protocol
-
-1. One node per namespace dead link (#approach-onenode) in 1.2
-2. Typo: "there there"
-
 ## XEP-0171: Language Translation
 
 1.
@@ -75,4 +66,10 @@ This is a list of various issues which have occurred while reading through and i
 ==> This is not required as per the text and examples.
 
 a error
+
+## XEP-0234: Jingle File Transfer
+
+1. XML Schema is missing <received/> element.
+2. "The <checksum/> element SHOULD contain 'creator'", but XML Schema defines it as required
+3. Example 17 and 18 is missing </content> end tag (or empty closing tag)
 

@@ -27,8 +27,11 @@ package rocks.xmpp.extensions.jingle.apps.filetransfer;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
+import rocks.xmpp.extensions.jingle.apps.filetransfer.model.errors.FileTransferError;
 import rocks.xmpp.extensions.jingle.model.Jingle;
 import rocks.xmpp.extensions.jingle.transports.s5b.model.S5bTransportMethod;
 
@@ -40,7 +43,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class JingleFileTransferTest extends XmlTest {
     protected JingleFileTransferTest() throws JAXBException, XMLStreamException {
-        super(Hash.class, Jingle.class, JingleFileTransfer.class, S5bTransportMethod.class);
+        super(Hash.class, Jingle.class, JingleFileTransfer.class, S5bTransportMethod.class, ClientIQ.class);
     }
 
     @Test
@@ -71,15 +74,81 @@ public class JingleFileTransferTest extends XmlTest {
                 "          action='session-info'\n" +
                 "          initiator='romeo@montague.lit/orchard'\n" +
                 "          sid='a73sjjvkla37jfea'>\n" +
-                "    <checksum xmlns='urn:xmpp:jingle:apps:file-transfer:4'>\n" +
+                "    <checksum xmlns='urn:xmpp:jingle:apps:file-transfer:4' \n" +
+                "              creator='initiator' \n" +
+                "              name='a-file-offer'>\n" +
                 "      <file>\n" +
-                "        <hash xmlns='urn:xmpp:hashes:1' algo='sha-1'>552da749930852c69ae5d2141d3766b1</hash>\n" +
+                "        <hash xmlns='urn:xmpp:hashes:1' \n" +
+                "              algo='sha-1'>552da749930852c69ae5d2141d3766b1</hash>\n" +
                 "      </file>\n" +
-                "    </checksum>\n" +
+                "    </checksum>\n\n" +
                 "  </jingle>\n";
 
         Jingle jingle = unmarshal(xml, Jingle.class);
         Assert.assertTrue(jingle.getPayload() instanceof JingleFileTransfer.Checksum);
+        Assert.assertEquals(((JingleFileTransfer.Checksum) jingle.getPayload()).getCreator(), Jingle.Content.Creator.INITIATOR);
+        Assert.assertEquals(((JingleFileTransfer.Checksum) jingle.getPayload()).getName(), "a-file-offer");
         Assert.assertEquals(((JingleFileTransfer.Checksum) jingle.getPayload()).getFile().getHashes().size(), 1);
+    }
+
+    @Test
+    public void unmarshalJingleFileTransferReceived() throws XMLStreamException, JAXBException {
+        String xml = "<jingle xmlns='urn:xmpp:jingle:1'\n" +
+                "          action='session-info'\n" +
+                "          initiator='romeo@montague.example/dr4hcr0st3lup4c'\n" +
+                "          sid='a73sjjvkla37jfea'>\n" +
+                "    <received xmlns='urn:xmpp:jingle:apps:file-transfer:4' \n" +
+                "              creator='responder' \n" +
+                "              name='a-file-offer' />\n" +
+                "  </jingle>\n";
+
+        Jingle jingle = unmarshal(xml, Jingle.class);
+        Assert.assertTrue(jingle.getPayload() instanceof JingleFileTransfer.Received);
+        Assert.assertEquals(((JingleFileTransfer.Received) jingle.getPayload()).getCreator(), Jingle.Content.Creator.RESPONDER);
+        Assert.assertEquals(((JingleFileTransfer.Received) jingle.getPayload()).getName(), "a-file-offer");
+    }
+
+    @Test
+    public void unmarshalFileNotAvailable() throws XMLStreamException, JAXBException {
+        String xml = "<iq from='romeo@montague.example/dr4hcr0st3lup4c'\n" +
+                "    id='wsn361c9'\n" +
+                "    to='juliet@capulet.example/yn0cl4bnw0yr3vym'\n" +
+                "    type='set'>\n" +
+                "  <jingle xmlns='urn:xmpp:jingle:1'\n" +
+                "          action='content-reject'\n" +
+                "          sid='uj3b2'>\n" +
+                "    <content creator='initiator' name='requesting-file' senders='initiator'/>\n" +
+                "    <reason>\n" +
+                "      <failed-application />\n" +
+                "      <file-not-available xmlns='urn:xmpp:jingle:apps:file-transfer:errors:0' />\n" +
+                "    </reason>\n" +
+                "  </jingle>\n" +
+                "</iq>";
+
+        IQ iq = unmarshal(xml, IQ.class);
+        Jingle jingle = iq.getExtension(Jingle.class);
+        Assert.assertEquals(jingle.getReason().getExtension(), FileTransferError.FILE_NOT_AVAILABLE);
+    }
+
+    @Test
+    public void unmarshalFileTooLarge() throws XMLStreamException, JAXBException {
+        String xml = "<iq from='romeo@montague.example/dr4hcr0st3lup4c'\n" +
+                "    id='wsn361c9'\n" +
+                "    to='juliet@capulet.example/yn0cl4bnw0yr3vym'\n" +
+                "    type='set'>\n" +
+                "  <jingle xmlns='urn:xmpp:jingle:1'\n" +
+                "          action='content-remove'\n" +
+                "          sid='uj3b2'>\n" +
+                "    <content creator='initiator' name='big-file' senders='initiator'/>\n" +
+                "    <reason>\n" +
+                "      <media-error />\n" +
+                "      <file-too-large xmlns='urn:xmpp:jingle:apps:file-transfer:errors:0' />\n" +
+                "    </reason>\n" +
+                "  </jingle>\n" +
+                "</iq>";
+
+        IQ iq = unmarshal(xml, IQ.class);
+        Jingle jingle = iq.getExtension(Jingle.class);
+        Assert.assertEquals(jingle.getReason().getExtension(), FileTransferError.FILE_TOO_LARGE);
     }
 }

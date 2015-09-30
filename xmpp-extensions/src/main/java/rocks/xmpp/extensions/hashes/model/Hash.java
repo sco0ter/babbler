@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.hashes.model;
 
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
@@ -84,5 +85,10 @@ public final class Hash {
      */
     public final byte[] getValue() {
         return value;
+    }
+
+    @Override
+    public final String toString() {
+        return "Hash (" + algo + "): " + DatatypeConverter.printBase64Binary(value);
     }
 }

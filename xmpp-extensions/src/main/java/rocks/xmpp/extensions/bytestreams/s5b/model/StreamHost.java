@@ -90,4 +90,9 @@ public final class StreamHost {
     public final int getPort() {
         return port;
     }
+
+    @Override
+    public final String toString() {
+        return jid + " (" + host + ":" + port + ')';
+    }
 }

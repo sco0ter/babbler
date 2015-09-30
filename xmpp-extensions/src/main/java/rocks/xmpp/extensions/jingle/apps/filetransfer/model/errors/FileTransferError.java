@@ -40,7 +40,12 @@ public abstract class FileTransferError {
     public static final FileTooLarge FILE_TOO_LARGE = new FileTooLarge();
 
     /**
-     * The {@code <file-too-large/>} error.
+     * The {@code <file-not-available/>} error.
      */
     public static final FileNotAvailable FILE_NOT_AVAILABLE = new FileNotAvailable();
+
+    @Override
+    public final String toString() {
+        return "File transfer error: " + getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase();
+    }
 }

@@ -75,23 +75,31 @@ public final class JingleFileTransfer extends ApplicationFormat {
         private final List<Hash> hashes = new ArrayList<>();
 
         @XmlJavaTypeAdapter(InstantAdapter.class)
-        private Instant date;
+        private final Instant date;
 
-        private String desc;
+        private final String desc;
 
         @XmlElement(name = "media-type")
-        private String mediaType;
+        private final String mediaType;
 
-        private String name;
+        private final String name;
 
-        private long size;
+        private final long size;
 
         private File() {
+            this.name = null;
+            this.size = 0;
+            this.date = null;
+            this.desc = null;
+            this.mediaType = null;
         }
 
         public File(String name, long size) {
             this.name = name;
             this.size = size;
+            this.date = null;
+            this.desc = null;
+            this.mediaType = null;
         }
 
         public File(String name, long size, Instant lastModified, String hash, String description) {
@@ -99,40 +107,62 @@ public final class JingleFileTransfer extends ApplicationFormat {
             this.size = size;
             this.date = lastModified;
             this.desc = description;
+            this.mediaType = null;
         }
 
         @Override
-        public long getSize() {
+        public final long getSize() {
             return size;
         }
 
         @Override
-        public String getName() {
+        public final String getName() {
             return name;
         }
 
         @Override
-        public Instant getDate() {
+        public final Instant getDate() {
             return date;
         }
 
         @Override
-        public List<Hash> getHashes() {
+        public final List<Hash> getHashes() {
             return Collections.unmodifiableList(hashes);
         }
 
         @Override
-        public String getDescription() {
+        public final String getDescription() {
             return desc;
         }
 
         @Override
-        public Range getRange() {
+        public final Range getRange() {
             return null;
         }
 
-        public String getMediaType() {
+        public final String getMediaType() {
             return mediaType;
+        }
+
+        @Override
+        public final String toString() {
+            StringBuilder sb = new StringBuilder();
+            if (name != null) {
+                sb.append("Filename: ").append(name).append("; ");
+            }
+            if (size > 0) {
+                sb.append(size).append(" B; ");
+            }
+            if (desc != null) {
+                sb.append("Description: ").append(desc).append("; ");
+            }
+            if (date != null) {
+                sb.append("Last modified: ").append(date).append("; ");
+            }
+            if (!hashes.isEmpty()) {
+                sb.append(hashes).append("; ");
+            }
+            return sb.toString();
         }
     }
 
@@ -145,6 +175,11 @@ public final class JingleFileTransfer extends ApplicationFormat {
 
         public Received(Jingle.Content.Creator creator, String name) {
             super(creator, name);
+        }
+
+        @Override
+        public final String toString() {
+            return "File transfer received: " + getName();
         }
     }
 
@@ -170,6 +205,11 @@ public final class JingleFileTransfer extends ApplicationFormat {
          */
         public final File getFile() {
             return file;
+        }
+
+        @Override
+        public final String toString() {
+            return "File transfer checksum: " + getName() + "; " + file;
         }
     }
 

@@ -60,7 +60,7 @@ public final class JingleSession {
     // Therefore it is the responsibility of the recipient to maintain a local copy of the current content definition(s).
     private final List<Jingle.Content> contents;
 
-    private State state = State.INITIAL;
+    private State state = State.PENDING;
 
     JingleSession(String sessionId, Jid peer, boolean createdLocally, XmppSession xmppSession, JingleManager jingleManager, Jingle.Content... contents) {
         this(sessionId, peer, createdLocally, xmppSession, jingleManager, Arrays.asList(contents));
@@ -92,9 +92,6 @@ public final class JingleSession {
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-session-initiate">7.2.10 session-initiate</a>
      */
     public AsyncResult<Void> initiate() {
-        if (state != State.INITIAL) {
-            throw new IllegalStateException("Session has already been initiated.");
-        }
         if (!createdLocally) {
             throw new UnsupportedOperationException("You are not the initiator.");
         }
@@ -144,9 +141,6 @@ public final class JingleSession {
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#session-terminate">6.7 Termination</a>
      */
     public AsyncResult<IQ> terminate(Jingle.Reason reason) {
-        if (state == State.INITIAL) {
-            throw new IllegalStateException("The session has not yet been initialized.");
-        }
         // As soon as an entity sends a session-terminate action, it MUST consider the session to be in the ENDED state
         // (even before receiving acknowledgement from the other party).
         state = State.ENDED;
@@ -178,6 +172,10 @@ public final class JingleSession {
         return xmppSession.query(IQ.set(peer, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REJECT, Collections.singletonList(content))));
     }
 
+    public List<Jingle.Content> getContents() {
+        return Collections.unmodifiableList(contents);
+    }
+
     /**
      * Sends a session info.
      *
@@ -186,9 +184,6 @@ public final class JingleSession {
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-session-info">7.2.9 session-info</a>
      */
     public AsyncResult<IQ> sendSessionInfo(Object object) {
-        if (state == State.INITIAL) {
-            throw new IllegalStateException("The session has not yet been initialized.");
-        }
         return xmppSession.query(IQ.set(peer, new Jingle(sessionId, Jingle.Action.SESSION_INFO, object)));
     }
 
@@ -218,10 +213,6 @@ public final class JingleSession {
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#concepts-session">5.1 Overall Session Management</a>
      */
     public enum State {
-        /**
-         * The session has not yet been initiated.
-         */
-        INITIAL,
         /**
          * The session has been initiated, but not yet accepted.
          */

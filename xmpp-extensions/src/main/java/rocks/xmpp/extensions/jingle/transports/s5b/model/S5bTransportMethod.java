@@ -25,159 +25,334 @@
 package rocks.xmpp.extensions.jingle.transports.s5b.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
+ * The implementation of the {@code <transport/>} element in the {@code urn:xmpp:jingle:transports:s5b:1} namespace.
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0260.html">XEP-0260: Jingle SOCKS5 Bytestreams Transport Method</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0260.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "transport")
-public class S5bTransportMethod extends TransportMethod {
+public final class S5bTransportMethod extends TransportMethod {
 
     /**
      * urn:xmpp:jingle:transports:s5b:1
      */
     public static final String NAMESPACE = "urn:xmpp:jingle:transports:s5b:1";
 
+    @XmlAttribute
+    private final String sid;
+
+    @XmlAttribute
+    private final String dstaddr;
+
+    @XmlAttribute
+    private final Socks5ByteStream.Mode mode;
+
     private final List<Candidate> candidate = new ArrayList<>();
 
-    @XmlAttribute
-    private String dstaddr;
+    @XmlElement(name = "candidate-used")
+    private final CandidateUsed candidateUsed;
 
-    @XmlAttribute
-    private Mode mode = Mode.TCP;
+    private final Activated activated;
 
-    @XmlAttribute
-    private String sid;
+    @XmlElement(name = "candidate-error")
+    private final String candidateError;
 
-    public String getDstAddr() {
+    @XmlElement(name = "proxy-error")
+    private final String proxyError;
+
+    private S5bTransportMethod() {
+        this(null, null, null, Collections.emptyList());
+    }
+
+    public S5bTransportMethod(String sessionId, String dstaddr, Socks5ByteStream.Mode mode, Collection<Candidate> candidates) {
+        this(sessionId, dstaddr, mode, candidates, null, null, false, false);
+    }
+
+    private S5bTransportMethod(String sessionId, String dstaddr, Socks5ByteStream.Mode mode, Collection<Candidate> candidates, CandidateUsed candidateUsed, Activated activated, boolean candidateError, boolean proxyError) {
+        this.sid = sessionId;
+        this.dstaddr = dstaddr;
+        this.mode = mode;
+        this.candidate.addAll(candidates);
+        this.candidateUsed = candidateUsed;
+        this.activated = activated;
+        this.candidateError = candidateError ? "" : null;
+        this.proxyError = proxyError ? "" : null;
+    }
+
+    /**
+     * Creates a transport method with a {@code <candidate-used/>} element.
+     *
+     * @param sid The session id.
+     * @param cid The candidate id.
+     * @return The transport method.
+     */
+    public static S5bTransportMethod candidateUsed(String sid, String cid) {
+        return new S5bTransportMethod(sid, null, null, Collections.emptyList(), new CandidateUsed(cid), null, false, false);
+    }
+
+    /**
+     * Creates a transport method with a {@code <candidate-error/>} element.
+     *
+     * @param sid The session id.
+     * @return The transport method.
+     */
+    public static S5bTransportMethod candidateError(String sid) {
+        return new S5bTransportMethod(sid, null, null, Collections.emptyList(), null, null, true, false);
+    }
+
+    /**
+     * Creates a transport method with a {@code <proxy-error/>} element.
+     *
+     * @param sid The session id.
+     * @return The transport method.
+     */
+    public static S5bTransportMethod proxyError(String sid) {
+        return new S5bTransportMethod(sid, null, null, Collections.emptyList(), null, null, false, true);
+    }
+
+    /**
+     * Creates a transport method with a {@code <activated/>} element.
+     *
+     * @param sid The session id.
+     * @param cid The id of the activated candidate.
+     * @return The transport method.
+     */
+    public static S5bTransportMethod activated(String sid, String cid) {
+        return new S5bTransportMethod(sid, null, null, Collections.emptyList(), null, new Activated(cid), false, false);
+    }
+
+    /**
+     * Gets the preferred priority. Note that the calculated priority is only a recommendation.
+     *
+     * @param type            The type.
+     * @param localPreference The local preference, should be between 0 and 65535.
+     * @return The calculated preferred priority.
+     */
+    public static int calculatePriority(S5bTransportMethod.Candidate.Type type, int localPreference) {
+        // (2^16)*(type preference) + (local preference)
+        return 0xFFFF * (type == null ? Candidate.Type.DIRECT.getPreferenceValue() : type.getPreferenceValue()) + localPreference;
+    }
+
+    /**
+     * Gets the DST.ADDR field for the SOCKS5 protocol.
+     * In XMPP this is SHA-1 hash of <i>session id</i> + <i>requester JID</i> + <i>receiver JID</i>
+     *
+     * @return The DST.ADDR field.
+     */
+    public final String getDstAddr() {
         return dstaddr;
     }
 
-    public String getSessionId() {
+    /**
+     * Gets the session id.
+     *
+     * @return The session id.
+     */
+    public final String getSessionId() {
         return sid;
     }
 
-    public Mode getMode() {
+    /**
+     * Gets the mode.
+     *
+     * @return The mode.
+     */
+    public final Socks5ByteStream.Mode getMode() {
         return mode;
     }
 
-    public List<Candidate> getCandidates() {
-        return candidate;
+    /**
+     * Gets the candidates, i.e. stream hosts for the transport.
+     *
+     * @return The candidates.
+     */
+    public final List<Candidate> getCandidates() {
+        return Collections.unmodifiableList(candidate);
     }
 
-    public enum Mode {
-        @XmlEnumValue("tcp")
-        TCP,
-        @XmlEnumValue("udp")
-        UDP
+    /**
+     * Gets the id of the used candidate.
+     *
+     * @return The id or null.
+     */
+    public final String getCandidateUsed() {
+        return candidateUsed != null ? candidateUsed.cid : null;
     }
 
+    /**
+     * Gets the id of the activated candidate.
+     *
+     * @return The id or null.
+     */
+    public final String getActivated() {
+        return activated != null ? activated.cid : null;
+    }
+
+    /**
+     * Indicates, if it's a candidate error.
+     *
+     * @return If it's a candidate error.
+     */
+    public final boolean isCandidateError() {
+        return candidateError != null;
+    }
+
+    /**
+     * Indicates, if it's a proxy error.
+     *
+     * @return If it's a proxy error.
+     */
+    public final boolean isProxyError() {
+        return proxyError != null;
+    }
+
+    /**
+     * The implementation of the {@code <candidate/>} element in the {@code urn:xmpp:jingle:transports:s5b:1} namespace.
+     * <p>
+     * Candidates are possible stream hosts for the transport.
+     * <p>
+     * The best (preferred) candidate is the one, with the highest priority.
+     * Multiple candidates are naturally sorted by their priority (highest first).
+     */
     public static final class Candidate implements Comparable<Candidate> {
 
         @XmlAttribute
-        private String cid;
+        private final String cid;
 
         @XmlAttribute
-        private String host;
+        private final String host;
 
         @XmlAttribute
-        private Jid jid;
+        private final Jid jid;
 
         @XmlAttribute
-        private int port;
+        private final int port;
 
         @XmlAttribute
-        private int priority;
+        private final int priority;
 
         @XmlAttribute
-        private Type type = Type.DIRECT;
+        private final Type type;
 
         private Candidate() {
-        }
-
-        public Candidate(String cid, String host, Jid jid, int localPriority) {
-            this.cid = cid;
-            this.host = host;
-            this.jid = jid;
-            this.priority = calculatePriority(localPriority);
-        }
-
-        public Candidate(String cid, String host, Jid jid, int localPriority, Type type, int port) {
-            this.cid = cid;
-            this.host = host;
-            this.jid = jid;
-            this.type = type;
-            this.port = port;
-            this.priority = calculatePriority(localPriority);
+            this(null, null, 0, null, null, 0);
         }
 
         /**
-         * Calculates the priority.
-         *
-         * @param localPreference The local priority.
-         * @return The priority.
+         * @param cid      The candidate id.
+         * @param hostname The hostname.
+         * @param port     The port.
+         * @param jid      The JID.
+         * @param type     The type.
+         * @param priority The priority, see {@link #calculatePriority(Type, int)}.
          */
-        private int calculatePriority(int localPreference) {
-            return 65536 * (type == null ? Type.DIRECT.getPreferenceValue() : type.getPreferenceValue()) + localPreference;
+        public Candidate(String cid, String hostname, int port, Jid jid, Type type, int priority) {
+            this.cid = cid;
+            this.host = hostname;
+            this.jid = jid;
+            this.type = type;
+            this.port = port;
+            this.priority = priority;
         }
 
-        public String getCid() {
+        /**
+         * Gets the candidate id.
+         *
+         * @return The candidate id.
+         */
+        public final String getCid() {
             return cid;
         }
 
-        public String getHost() {
+        /**
+         * Gets the candidate's hostname.
+         *
+         * @return The candidate's hostname.
+         */
+        public final String getHostname() {
             return host;
         }
 
-        public Jid getJid() {
+        /**
+         * Gets the candidate's JID.
+         *
+         * @return The candidate's JID.
+         */
+        public final Jid getJid() {
             return jid;
         }
 
-        public int getPort() {
+        /**
+         * Gets the port.
+         *
+         * @return The port.
+         */
+        public final int getPort() {
             return port;
         }
 
-        public int getPriority() {
+        /**
+         * Gets the priority of this candidate.
+         *
+         * @return The priority.
+         */
+        public final int getPriority() {
             return priority;
         }
 
-        public Type getType() {
+        /**
+         * Gets the transport type.
+         *
+         * @return The transport type.
+         */
+        public final Type getType() {
             return type;
         }
 
         @Override
-        public int compareTo(Candidate o) {
+        public final int compareTo(Candidate o) {
             return Integer.compare(o.priority, priority);
         }
 
-
+        /**
+         * The transport type.
+         */
         public enum Type {
-            /**
-             * Direct connection using the given interface.
-             */
-            @XmlEnumValue("assisted")
-            ASSISTED(120),
             /**
              * Direct connection using the given interface.
              */
             @XmlEnumValue("direct")
             DIRECT(126),
             /**
-             * SOCKS5 Relay.
+             * Direct connection using the given interface.
              */
-            @XmlEnumValue("proxy")
-            PROXY(10),
+            @XmlEnumValue("assisted")
+            ASSISTED(120),
             /**
              * Tunnel protocols such as Teredo.
              */
             @XmlEnumValue("tunnel")
-            TUNNEL(110);
+            TUNNEL(110),
+            /**
+             * SOCKS5 Relay.
+             */
+            @XmlEnumValue("proxy")
+            PROXY(10);
 
             private final int preferenceValue;
 
@@ -190,7 +365,7 @@ public class S5bTransportMethod extends TransportMethod {
              *
              * @return The preference value.
              */
-            public int getPreferenceValue() {
+            public final int getPreferenceValue() {
                 return preferenceValue;
             }
         }
@@ -198,11 +373,27 @@ public class S5bTransportMethod extends TransportMethod {
 
     private static final class CandidateUsed {
         @XmlAttribute
-        private String cid;
+        private final String cid;
+
+        private CandidateUsed() {
+            this.cid = null;
+        }
+
+        public CandidateUsed(String cid) {
+            this.cid = Objects.requireNonNull(cid);
+        }
     }
 
     private static final class Activated {
         @XmlAttribute
-        private String cid;
+        private final String cid;
+
+        private Activated() {
+            this.cid = null;
+        }
+
+        public Activated(String cid) {
+            this.cid = Objects.requireNonNull(cid);
+        }
     }
 }

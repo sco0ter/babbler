@@ -37,7 +37,7 @@ import java.util.Objects;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "transport")
-public final class InBandBytestreamsTransportMethod extends TransportMethod {
+public final class InBandByteStreamsTransportMethod extends TransportMethod {
 
     /**
      * urn:xmpp:jingle:transports:ibb:1
@@ -53,17 +53,17 @@ public final class InBandBytestreamsTransportMethod extends TransportMethod {
     @XmlAttribute
     private final InBandByteStream.Open.StanzaType stanza;
 
-    private InBandBytestreamsTransportMethod() {
+    private InBandByteStreamsTransportMethod() {
         this.blockSize = 0;
         this.sid = null;
         this.stanza = null;
     }
 
-    public InBandBytestreamsTransportMethod(int blockSize, String sessionId) {
+    public InBandByteStreamsTransportMethod(int blockSize, String sessionId) {
         this(blockSize, sessionId, null);
     }
 
-    public InBandBytestreamsTransportMethod(int blockSize, String sessionId, InBandByteStream.Open.StanzaType stanzaType) {
+    public InBandByteStreamsTransportMethod(int blockSize, String sessionId, InBandByteStream.Open.StanzaType stanzaType) {
         this.sid = Objects.requireNonNull(sessionId);
         this.blockSize = blockSize;
         this.stanza = stanzaType;

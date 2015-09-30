@@ -42,6 +42,8 @@ import java.util.Objects;
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/bytestreams} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0065.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class Socks5ByteStream {
@@ -183,9 +185,20 @@ public final class Socks5ByteStream {
         return sb.toString();
     }
 
+    /**
+     * The transport mode.
+     */
     public enum Mode {
+        /**
+         * TCP transport (default).
+         */
         @XmlEnumValue("tcp")
         TCP,
+        /**
+         * UDP transport.
+         *
+         * @see <a href="http://xmpp.org/extensions/xep-0065.html#udp">Optional UDP Support</a>
+         */
         @XmlEnumValue("udp")
         UDP
     }

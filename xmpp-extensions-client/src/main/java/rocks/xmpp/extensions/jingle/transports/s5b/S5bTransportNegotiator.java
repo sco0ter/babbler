@@ -24,11 +24,19 @@
 
 package rocks.xmpp.extensions.jingle.transports.s5b;
 
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.bytestreams.s5b.Socks5ByteStreamManager;
+import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
+import rocks.xmpp.extensions.bytestreams.s5b.model.StreamHost;
 import rocks.xmpp.extensions.jingle.JingleSession;
 import rocks.xmpp.extensions.jingle.transports.TransportNegotiator;
 import rocks.xmpp.extensions.jingle.transports.s5b.model.S5bTransportMethod;
+import rocks.xmpp.util.concurrent.AsyncResult;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Christian Schudt
@@ -46,13 +54,22 @@ public final class S5bTransportNegotiator extends TransportNegotiator<S5bTranspo
     }
 
 
-//    private S5bTransportMethod createTransport() throws IOException {
-//        S5bTransportMethod s5bTransportMethod = new S5bTransportMethod();
-//        List<StreamHost> streamHosts = socks5ByteStreamManager.getAvailableStreamHosts();
-//
-//        for (StreamHost streamHost : streamHosts) {
-//            s5bTransportMethod.getCandidates().add(new S5bTransportMethod.Candidate(UUID.randomUUID().toString(), streamHost.getHost(), streamHost.getJid(), 0, streamHost.getJid().equals(xmppSession.getConnectedResource()) ? S5bTransportMethod.Candidate.Type.DIRECT : S5bTransportMethod.Candidate.Type.PROXY, streamHost.getPort()));
-//        }
-//        return s5bTransportMethod;
-//    }
+    private AsyncResult<S5bTransportMethod> createTransport(Jid requester, Jid target) {
+
+        return socks5ByteStreamManager.getAvailableStreamHosts().thenApply(streamHosts -> {
+            String sessionId = UUID.randomUUID().toString();
+            // Create the hash, which will identify the socket connection.
+            final String hash = Socks5ByteStream.hash(sessionId, requester, target);
+            List<S5bTransportMethod.Candidate> candidateList = new ArrayList<>();
+
+            int localPriority = 0;
+            for (StreamHost streamHost : streamHosts) {
+                S5bTransportMethod.Candidate.Type type = streamHost.getJid().equals(xmppSession.getConnectedResource()) ? S5bTransportMethod.Candidate.Type.DIRECT : S5bTransportMethod.Candidate.Type.PROXY;
+                candidateList.add(new S5bTransportMethod.Candidate(UUID.randomUUID().toString(), streamHost.getHost(), streamHost.getPort(), streamHost.getJid(), type, S5bTransportMethod.calculatePriority(type, localPriority++)));
+            }
+            return new S5bTransportMethod(sessionId, hash, Socks5ByteStream.Mode.TCP, candidateList);
+        });
+    }
+
+
 }

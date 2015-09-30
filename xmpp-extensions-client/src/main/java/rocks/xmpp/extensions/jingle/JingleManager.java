@@ -31,19 +31,17 @@ import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.apps.model.ApplicationFormat;
 import rocks.xmpp.extensions.jingle.model.Jingle;
 import rocks.xmpp.extensions.jingle.model.errors.UnknownSession;
 import rocks.xmpp.util.XmppUtils;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
 
 /**
@@ -51,16 +49,14 @@ import java.util.function.Consumer;
  */
 public final class JingleManager extends Manager {
 
-    private final Set<Class<? extends ApplicationFormat>> supportedApplicationFormats = new HashSet<>();
-
     private final Set<Consumer<JingleEvent>> jingleListeners = new CopyOnWriteArraySet<>();
 
     private final Map<String, JingleSession> jingleSessionMap = new ConcurrentHashMap<>();
 
+    private final Map<Class<? extends ApplicationFormat>, Consumer<JingleSession>> registeredApplicationFormats = new ConcurrentHashMap<>();
+
     private JingleManager(final XmppSession xmppSession) {
         super(xmppSession, true);
-
-        supportedApplicationFormats.add(JingleFileTransfer.class);
     }
 
     @Override
@@ -128,6 +124,10 @@ public final class JingleManager extends Manager {
                                 // Everything is fine, create the session and notify the listeners.
                                 JingleSession jingleSession = new JingleSession(jingle.getSessionId(), iq.getFrom(), false, xmppSession, JingleManager.this, jingle.getContents());
                                 jingleSessionMap.put(jingle.getSessionId(), jingleSession);
+                                Consumer<JingleSession> consumer = registeredApplicationFormats.get(jingle.getContents().get(0).getApplicationFormat().getClass());
+                                if (consumer != null) {
+                                    consumer.accept(jingleSession);
+                                }
                                 XmppUtils.notifyEventListeners(jingleListeners, new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
                             }
                             // If the request was ok, immediately acknowledge the initiation request.
@@ -146,7 +146,10 @@ public final class JingleManager extends Manager {
                         // return <item-not-found/> and <unknown-session/>
                         return iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND, new UnknownSession()));
                     } else {
-                        XmppUtils.notifyEventListeners(jingleSession.jingleListeners, new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
+                        ForkJoinPool.commonPool().execute(() -> {
+                            XmppUtils.notifyEventListeners(jingleSession.jingleListeners, new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
+                        });
+                        // Immediately return a result, before sending a session-accept.
                         return iq.createResult();
                     }
                 }
@@ -154,12 +157,11 @@ public final class JingleManager extends Manager {
         });
     }
 
-    public JingleSession createSession(Jid responder, Jingle.Content... contents) {
+    public JingleSession createSession(Jid responder, String sessionId, Jingle.Content... contents) {
         Objects.requireNonNull(responder, "responder must not be null.");
         if (contents.length == 0) {
             throw new IllegalArgumentException("no content provided.");
         }
-        String sessionId = UUID.randomUUID().toString();
         JingleSession jingleSession = new JingleSession(sessionId, responder, true, xmppSession, this, contents);
 
         // Register the session. It is now in pending state until it has been accepted or terminated.
@@ -190,6 +192,14 @@ public final class JingleManager extends Manager {
      */
     public final void removeJingleListener(Consumer<JingleEvent> jingleListener) {
         jingleListeners.remove(jingleListener);
+    }
+
+    public final void registerApplicationFormat(Class<? extends ApplicationFormat> applicationFormat, Consumer<JingleSession> consumer) {
+        registeredApplicationFormats.put(applicationFormat, consumer);
+    }
+
+    public final void unregisterApplicationFormat(Class<? extends ApplicationFormat> applicationFormat) {
+        registeredApplicationFormats.remove(applicationFormat);
     }
 
     @Override

@@ -63,6 +63,7 @@ import rocks.xmpp.extensions.idle.model.Idle;
 import rocks.xmpp.extensions.invisible.InvisibilityManager;
 import rocks.xmpp.extensions.invisible.model.InvisibleCommand;
 import rocks.xmpp.extensions.jingle.JingleManager;
+import rocks.xmpp.extensions.jingle.apps.filetransfer.JingleFileTransferManager;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
 import rocks.xmpp.extensions.jingle.model.Jingle;
@@ -298,7 +299,7 @@ public final class ExtensionModule implements Module {
                 Extension.of(Data.NAMESPACE, null, false, Data.class),
 
                 // XEP-0234: Jingle File Transfer
-                Extension.of(JingleFileTransfer.NAMESPACE, FileTransferManager.class, false, JingleFileTransfer.class),
+                Extension.of(JingleFileTransfer.NAMESPACE, JingleFileTransferManager.class, false, JingleFileTransfer.class),
 
                 // XEP-0249: Direct MUC Invitations
                 Extension.of(DirectInvitation.NAMESPACE, MultiUserChatManager.class, true, DirectInvitation.class),

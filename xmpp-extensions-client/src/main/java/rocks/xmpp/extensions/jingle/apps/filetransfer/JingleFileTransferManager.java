@@ -37,14 +37,14 @@ import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.model.Jingle;
 import rocks.xmpp.extensions.jingle.transports.ibb.model.InBandByteStreamsTransportMethod;
 
-import java.io.File;
 import java.io.IOException;
-import java.time.Instant;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -58,54 +58,64 @@ public final class JingleFileTransferManager extends Manager {
         jingleManager = xmppSession.getManager(JingleManager.class);
     }
 
-    public JingleFileTransferSession initiateFileTransferSession(final Jid responder, File file, String description, long timeout) throws XmppException, IOException {
-        JingleFileTransfer.File jingleFile = new JingleFileTransfer.File(file.getName(), file.length(), Instant.ofEpochMilli(file.lastModified()), null, description);
+    @Override
+    protected void onEnable() {
+        super.onEnable();
+        jingleManager.registerApplicationFormat(JingleFileTransfer.class, this::onFileTransferRequest);
+    }
+
+    @Override
+    protected void onDisable() {
+        super.onDisable();
+        jingleManager.unregisterApplicationFormat(JingleFileTransfer.class);
+    }
+
+    private void onFileTransferRequest(JingleSession jingleSession) {
+        jingleSession.accept(jingleSession.getContents().get(0));
+    }
+
+    public JingleFileTransferSession initiateFileTransferSession(final Jid responder, Path file, String description, long timeout) throws XmppException, IOException {
+
+        // Create the jingle file transfer description element with a file element.
+        JingleFileTransfer.File jingleFile = new JingleFileTransfer.File(file.getFileName().toString(), Files.size(file), Files.getLastModifiedTime(file).toInstant(), null, description);
         JingleFileTransfer jingleFileTransfer = new JingleFileTransfer(jingleFile);
 
+        // Create an IBB transport.
+        String sessionId = UUID.randomUUID().toString();
+        InBandByteStreamsTransportMethod ibbTransportMethod = new InBandByteStreamsTransportMethod(4096, sessionId);
 
-        String ibbSessionId = UUID.randomUUID().toString();
-        InBandByteStreamsTransportMethod ibbTransportMethod = new InBandByteStreamsTransportMethod(4096, ibbSessionId);
+        // Create the content element with the application format and transport method.
+        Jingle.Content content = new Jingle.Content("a-file-offer", Jingle.Content.Creator.INITIATOR, jingleFileTransfer, ibbTransportMethod, null, Jingle.Content.Senders.INITIATOR);
+        final JingleSession jingleSession = jingleManager.createSession(responder, sessionId, content);
 
-        Jingle.Content content = new Jingle.Content("a-file-offer", Jingle.Content.Creator.INITIATOR, jingleFileTransfer, ibbTransportMethod);
-        final JingleSession jingleSession = jingleManager.createSession(responder, content);
-
-        final Lock lock = new ReentrantLock();
-        final Condition condition = lock.newCondition();
-        final Jingle[] response = new Jingle[1];
-
+        CompletableFuture<Jingle> jingleResponseFuture = new CompletableFuture<>();
         jingleSession.addJingleListener(e -> {
             if (e.getJingle().getAction() == Jingle.Action.SESSION_ACCEPT || e.getJingle().getAction() == Jingle.Action.SESSION_TERMINATE) {
-                lock.lock();
-                try {
-                    response[0] = e.getJingle();
-                    condition.signalAll();
-                } finally {
-                    lock.unlock();
-                }
+                jingleResponseFuture.complete(e.getJingle());
             }
         });
         jingleSession.initiate();
 
-        // Wait until the session is either accepted or declined (terminated).
-        lock.lock();
         try {
-            if (!condition.await(timeout, TimeUnit.MILLISECONDS)) {
-                throw new NoResponseException("The receiver did not respond in time.");
+            // Wait until the session is either accepted or declined (terminated).
+            Jingle jingle = jingleResponseFuture.get(timeout, TimeUnit.MILLISECONDS);
+
+            if (jingle.getAction() == Jingle.Action.SESSION_TERMINATE) {
+                throw new FileTransferRejectedException();
             }
+            if (jingle.getAction() == Jingle.Action.SESSION_ACCEPT) {
+                // TODO respect responders transport method.
+                InBandByteStreamManager inBandByteStreamManager = xmppSession.getManager(InBandByteStreamManager.class);
+                inBandByteStreamManager.initiateSession(responder, sessionId, 4096);
+            }
+            return new JingleFileTransferSession(jingleSession);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        } finally {
-            lock.unlock();
+            throw new XmppException(e);
+        } catch (ExecutionException e) {
+            throw new XmppException(e);
+        } catch (TimeoutException e) {
+            throw new NoResponseException("The receiver did not respond in time.");
         }
-        Jingle jingle = response[0];
-        if (jingle.getAction() == Jingle.Action.SESSION_TERMINATE) {
-            throw new FileTransferRejectedException();
-        }
-        if (jingle.getAction() == Jingle.Action.SESSION_ACCEPT) {
-            // TODO respect responders transport method.
-            InBandByteStreamManager inBandByteStreamManager = xmppSession.getManager(InBandByteStreamManager.class);
-            inBandByteStreamManager.initiateSession(responder, ibbSessionId, 4096);
-        }
-        return new JingleFileTransferSession(jingleSession);
     }
 }

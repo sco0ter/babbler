@@ -64,7 +64,7 @@ public final class JingleFileTransferManager extends Manager {
 
 
         String ibbSessionId = UUID.randomUUID().toString();
-        InBandBytestreamsTransportMethod ibbTransportMethod = new InBandBytestreamsTransportMethod(ibbSessionId, 4096);
+        InBandBytestreamsTransportMethod ibbTransportMethod = new InBandBytestreamsTransportMethod(4096, ibbSessionId);
 
         Jingle.Content content = new Jingle.Content("a-file-offer", Jingle.Content.Creator.INITIATOR, jingleFileTransfer, ibbTransportMethod);
         final JingleSession jingleSession = jingleManager.createSession(responder, content);

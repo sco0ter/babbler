@@ -24,13 +24,16 @@
 
 package rocks.xmpp.extensions.jingle.transports.ibb.model;
 
+import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 /**
+ * The implementation of the {@code <transport/>} element in the {@code urn:xmpp:jingle:transports:ibb:1} namespace.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "transport")
@@ -39,41 +42,62 @@ public final class InBandBytestreamsTransportMethod extends TransportMethod {
     /**
      * urn:xmpp:jingle:transports:ibb:1
      */
-    public static final String NAMESPACE="urn:xmpp:jingle:transports:ibb:1";
+    public static final String NAMESPACE = "urn:xmpp:jingle:transports:ibb:1";
 
     @XmlAttribute(name = "block-size")
-    private Integer blockSize;
+    private final int blockSize;
 
     @XmlAttribute
-    private String sid;
+    private final String sid;
 
     @XmlAttribute
-    private StanzaType stanza;
+    private final InBandByteStream.Open.StanzaType stanza;
 
     private InBandBytestreamsTransportMethod() {
+        this.blockSize = 0;
+        this.sid = null;
+        this.stanza = null;
     }
 
-    public InBandBytestreamsTransportMethod(String sid, int blockSize) {
-        this.sid = sid;
+    public InBandBytestreamsTransportMethod(int blockSize, String sessionId) {
+        this(blockSize, sessionId, null);
+    }
+
+    public InBandBytestreamsTransportMethod(int blockSize, String sessionId, InBandByteStream.Open.StanzaType stanzaType) {
+        this.sid = Objects.requireNonNull(sessionId);
         this.blockSize = blockSize;
+        this.stanza = stanzaType;
     }
 
-    public Integer getBlockSize() {
+    /**
+     * Gets the block size of a data chunk.
+     *
+     * @return The block size.
+     */
+    public final int getBlockSize() {
         return blockSize;
     }
 
-    public String getSessionId() {
+    /**
+     * Gets the IBB session id.
+     *
+     * @return The session id.
+     */
+    public final String getSessionId() {
         return sid;
     }
 
-    public StanzaType getStanzaType() {
+    /**
+     * Gets the stanza type used to transfer data.
+     *
+     * @return The stanza type or null (which means IQ stanzas are used).
+     */
+    public final InBandByteStream.Open.StanzaType getStanzaType() {
         return stanza;
     }
 
-    public enum StanzaType {
-        @XmlEnumValue("iq")
-        IQ,
-        @XmlEnumValue("message")
-        MESSAGE
+    @Override
+    public final String toString() {
+        return "IBB Transport (" + sid + "), block-size: " + blockSize;
     }
 }

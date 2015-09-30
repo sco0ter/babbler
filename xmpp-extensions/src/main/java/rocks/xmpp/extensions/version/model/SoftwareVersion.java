@@ -114,8 +114,8 @@ public final class SoftwareVersion {
 
     @Override
     public final String toString() {
-        StringBuilder sb = new StringBuilder(name);
-        sb.append(' ').append(version);
+        StringBuilder sb = new StringBuilder("Software Version: ");
+        sb.append(name).append(' ').append(version);
         if (os != null) {
             sb.append(", ").append(os);
         }

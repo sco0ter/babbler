@@ -82,6 +82,6 @@ public final class Nickname {
 
     @Override
     public final String toString() {
-        return value;
+        return "Nickname: " + value;
     }
 }

@@ -145,7 +145,7 @@ public final class Privacy {
 
     @Override
     public final String toString() {
-        return list.toString();
+        return "Privacy lists: " + list;
     }
 
     private static final class Active {

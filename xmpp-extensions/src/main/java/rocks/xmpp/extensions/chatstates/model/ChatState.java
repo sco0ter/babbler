@@ -75,7 +75,7 @@ public abstract class ChatState {
 
     @Override
     public final String toString() {
-        return getClass().getSimpleName().toLowerCase();
+        return "Chat state: " + getClass().getSimpleName().toLowerCase();
     }
 
     /**

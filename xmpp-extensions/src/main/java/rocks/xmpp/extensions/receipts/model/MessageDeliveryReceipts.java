@@ -125,7 +125,7 @@ public abstract class MessageDeliveryReceipts {
 
         @Override
         public final String toString() {
-            return "Delivery Receipt Request";
+            return "Message Delivery Receipt Request";
         }
     }
 }

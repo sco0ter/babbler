@@ -170,6 +170,6 @@ public final class Headers {
 
     @Override
     public final String toString() {
-        return "Headers: " + header.toString();
+        return "Headers: " + header;
     }
 }

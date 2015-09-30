@@ -165,7 +165,7 @@ public final class Annotation {
 
         @Override
         public final String toString() {
-            return value;
+            return "Annotation:" + value;
         }
     }
 }

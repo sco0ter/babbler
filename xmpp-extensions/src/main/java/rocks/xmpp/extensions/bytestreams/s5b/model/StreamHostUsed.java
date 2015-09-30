@@ -44,4 +44,9 @@ final class StreamHostUsed {
     StreamHostUsed(Jid jid) {
         this.jid = Objects.requireNonNull(jid);
     }
+
+    @Override
+    public final String toString() {
+        return "Stream host used: " + jid;
+    }
 }

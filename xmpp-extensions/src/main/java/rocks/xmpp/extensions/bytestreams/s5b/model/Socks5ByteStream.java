@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -79,7 +80,7 @@ public final class Socks5ByteStream {
      * @param streamHosts The stream hosts.
      * @param dstaddr     The destination address (i.e. the hash).
      */
-    public Socks5ByteStream(String sessionId, List<StreamHost> streamHosts, String dstaddr) {
+    public Socks5ByteStream(String sessionId, Collection<StreamHost> streamHosts, String dstaddr) {
         this.sid = Objects.requireNonNull(sessionId);
         this.streamhost.addAll(streamHosts);
         this.dstaddr = dstaddr;
@@ -102,9 +103,24 @@ public final class Socks5ByteStream {
     /**
      * Creates a {@code <query/>} element with an {@code <streamhost-used/>} child element.
      *
+     * @param sessionId session id.
+     * @param jid       The JID.
+     * @return The query element.
+     */
+    public static Socks5ByteStream streamHostUsed(String sessionId, Jid jid) {
+        Socks5ByteStream socks5ByteStream = new Socks5ByteStream();
+        socks5ByteStream.sid = Objects.requireNonNull(sessionId);
+        socks5ByteStream.streamHostUsed = new StreamHostUsed(jid);
+        return socks5ByteStream;
+    }
+
+    /**
+     * Creates a {@code <query/>} element with an {@code <streamhost-used/>} child element.
+     *
      * @param jid The JID.
      * @return The query element.
      */
+    @Deprecated
     public static Socks5ByteStream streamHostUsed(Jid jid) {
         Socks5ByteStream socks5ByteStream = new Socks5ByteStream();
         socks5ByteStream.streamHostUsed = new StreamHostUsed(jid);
@@ -149,6 +165,22 @@ public final class Socks5ByteStream {
      */
     public final Jid getStreamHostUsed() {
         return streamHostUsed != null ? streamHostUsed.jid : null;
+    }
+
+    @Override
+    public final String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (streamHostUsed != null) {
+            sb.append(streamHostUsed);
+        } else if (activate != null) {
+            sb.append("Activate ").append(activate);
+        } else {
+            sb.append("Stream hosts: ").append(streamhost);
+        }
+        if (sid != null) {
+            sb.append(" (").append(sid).append(')');
+        }
+        return sb.toString();
     }
 
     public enum Mode {

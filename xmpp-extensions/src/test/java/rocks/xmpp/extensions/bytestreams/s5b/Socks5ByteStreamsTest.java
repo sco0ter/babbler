@@ -61,7 +61,7 @@ public class Socks5ByteStreamsTest extends XmlTest {
 
     @Test
     public void marshalStreamHostUsed() throws XMLStreamException, JAXBException {
-        String xml = marshal(Socks5ByteStream.streamHostUsed(Jid.of("test")));
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/bytestreams\"><streamhost-used jid=\"test\"></streamhost-used></query>");
+        String xml = marshal(Socks5ByteStream.streamHostUsed("123", Jid.of("test")));
+        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/bytestreams\" sid=\"123\"><streamhost-used jid=\"test\"></streamhost-used></query>");
     }
 }

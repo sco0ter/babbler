@@ -32,6 +32,7 @@ import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager;
@@ -57,11 +58,10 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -196,31 +196,28 @@ public final class StreamInitiationManager extends Manager implements FileTransf
     public FileTransfer accept(IQ iq, final String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) throws IOException {
         StreamInitiation streamInitiation = (StreamInitiation) protocol;
         DataForm.Field field = streamInitiation.getFeatureNegotiation().getDataForm().findField(STREAM_METHOD);
+        // These are the offered stream methods by the initiator of the file transfer.
         final List<String> offeredStreamMethods = field.getOptions().stream().map(DataForm.Option::getValue).collect(Collectors.toList());
+        // In the SI response, only include stream methods, which we actually support.
         offeredStreamMethods.retainAll(getSupportedStreamMethods());
+        if (offeredStreamMethods.isEmpty()) {
+            throw new IOException("No stream methods could be negotiated.");
+        }
         DataForm.Field fieldReply = DataForm.Field.builder().var(STREAM_METHOD).values(offeredStreamMethods).type(DataForm.Field.Type.LIST_SINGLE).build();
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(fieldReply));
         StreamInitiation siResponse = new StreamInitiation(new FeatureNegotiation(dataForm));
 
-        final Lock lock = new ReentrantLock();
-        final Condition byteStreamOpened = lock.newCondition();
-        final ByteStreamSession[] byteStreamSessions = new ByteStreamSession[1];
-
-        final Deque<Exception> negotiationExceptions = new ArrayDeque<>();
+        Deque<Throwable> negotiationExceptions = new ArrayDeque<>();
+        BlockingQueue<ByteStreamSession> byteStreamSessions = new ArrayBlockingQueue<>(2);
         // Before we reply with the chosen stream method, we
         // register a byte stream listener, because we expect the initiator to open a byte stream with us.
         Consumer<ByteStreamEvent> byteStreamListener = e -> {
             if (sessionId.equals(e.getSessionId())) {
-                lock.lock();
                 try {
                     // Auto-accept the inbound stream
-                    byteStreamSessions[0] = e.accept();
-                    // If no exception occurred during stream method negotiation, notify the waiting thread.
-                    byteStreamOpened.signal();
+                    byteStreamSessions.add(e.accept());
                 } catch (Exception e1) {
                     negotiationExceptions.add(e1);
-                } finally {
-                    lock.unlock();
                 }
             }
         };
@@ -233,18 +230,19 @@ public final class StreamInitiationManager extends Manager implements FileTransf
             xmppSession.send(iq.createResult(siResponse));
 
             // And then wait until the peer opens the stream.
-            lock.lock();
+
+            ByteStreamSession byteStreamSession = null;
             try {
-                if (!byteStreamOpened.await(xmppSession.getConfiguration().getDefaultResponseTimeout(), TimeUnit.MILLISECONDS)) {
-                    throw new IOException("No byte stream could be negotiated in time.", negotiationExceptions.isEmpty() ? null : negotiationExceptions.getFirst());
-                }
+                // Poll the first offered byte stream session. This might be S5B or IBB, whichever comes first.
+                byteStreamSession = byteStreamSessions.poll(10, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-            } finally {
-                lock.unlock();
             }
-            byteStreamSessions[0].setReadTimeout(xmppSession.getConfiguration().getDefaultResponseTimeout());
-            return new FileTransfer(byteStreamSessions[0].getInputStream(), outputStream, fileTransferOffer.getSize());
+            if (byteStreamSession == null) {
+                throw new IOException("No byte stream could be negotiated in time.", negotiationExceptions.getFirst());
+            }
+            byteStreamSession.setReadTimeout(xmppSession.getConfiguration().getDefaultResponseTimeout());
+            return new FileTransfer(byteStreamSession.getInputStream(), outputStream, fileTransferOffer.getSize());
         } finally {
             inBandByteStreamManager.removeByteStreamListener(byteStreamListener);
             socks5ByteStreamManager.removeByteStreamListener(byteStreamListener);
@@ -253,7 +251,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
 
     @Override
     public void reject(IQ iq) {
-        xmppSession.send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.FORBIDDEN));
+        xmppSession.send(iq.createError(Condition.FORBIDDEN));
     }
 
     Collection<String> getSupportedStreamMethods() {

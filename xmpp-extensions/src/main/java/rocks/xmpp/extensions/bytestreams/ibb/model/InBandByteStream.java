@@ -95,9 +95,20 @@ public abstract class InBandByteStream {
          * @param sessionId The session id.
          */
         public Open(int blockSize, String sessionId) {
+            this(blockSize, sessionId, null);
+        }
+
+        /**
+         * Creates the {@code <open/>} element.
+         *
+         * @param blockSize  The block size.
+         * @param sessionId  The session id.
+         * @param stanzaType The stanza type.
+         */
+        public Open(int blockSize, String sessionId, StanzaType stanzaType) {
             super(sessionId);
             this.blockSize = blockSize;
-            this.stanza = null;
+            this.stanza = stanzaType;
         }
 
         /**
@@ -116,6 +127,11 @@ public abstract class InBandByteStream {
          */
         public final StanzaType getStanzaType() {
             return stanza;
+        }
+
+        @Override
+        public final String toString() {
+            return "IBB open (" + getSessionId() + "), block-size: " + blockSize;
         }
 
         /**
@@ -190,6 +206,11 @@ public abstract class InBandByteStream {
         public final byte[] getBytes() {
             return bytes;
         }
+
+        @Override
+        public final String toString() {
+            return "IBB data (" + getSessionId() + "), " + bytes.length + " bytes, seq: " + seq;
+        }
     }
 
     /**
@@ -213,6 +234,11 @@ public abstract class InBandByteStream {
          */
         public Close(String sessionId) {
             super(sessionId);
+        }
+
+        @Override
+        public final String toString() {
+            return "IBB close (" + getSessionId() + ')';
         }
     }
 }

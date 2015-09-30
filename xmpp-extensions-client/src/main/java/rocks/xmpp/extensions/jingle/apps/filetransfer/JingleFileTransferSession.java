@@ -47,7 +47,7 @@ public final class JingleFileTransferSession {
     }
 
     public void communicateHash() throws XmppException {
-        jingleSession.sendSessionInfo(new JingleFileTransfer.Checksum(null));
+        jingleSession.sendSessionInfo(new JingleFileTransfer.Checksum(null, null, null));
     }
 
     public void offer(File file, String description) throws XmppException {

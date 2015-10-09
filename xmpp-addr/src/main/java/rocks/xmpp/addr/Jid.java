@@ -97,12 +97,12 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     /**
      * Caches the escaped JIDs.
      */
-    private static final LruCache<String, Jid> ESCAPED_CACHE = new LruCache<>(5000);
+    private static final LruCache<CharSequence, Jid> ESCAPED_CACHE = new LruCache<>(5000);
 
     /**
      * Caches the unescaped JIDs.
      */
-    private static final LruCache<String, Jid> UNESCAPED_CACHE = new LruCache<>(5000);
+    private static final LruCache<CharSequence, Jid> UNESCAPED_CACHE = new LruCache<>(5000);
 
     private static final long serialVersionUID = -3824234106101731424L;
 
@@ -268,7 +268,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @return The escaped JID.
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
-    private static String escape(String jid) {
+    private static String escape(CharSequence jid) {
         if (jid != null) {
             Matcher matcher = ESCAPE_PATTERN.matcher(jid);
             StringBuffer sb = new StringBuffer();
@@ -282,7 +282,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
         return null;
     }
 
-    private static String unescape(String jid) {
+    private static String unescape(CharSequence jid) {
         if (jid != null) {
             Matcher matcher = UNESCAPE_PATTERN.matcher(jid);
             StringBuffer sb = new StringBuffer();
@@ -430,7 +430,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * </blockquote>
      *
      * @return The bare JID.
-     * @see #withResource(String)
+     * @see #withResource(CharSequence)
      */
     public final Jid asBareJid() {
         return new Jid(local, domain, null, false, false);
@@ -442,7 +442,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @param local The local part.
      * @return The JID with a new local part.
      */
-    public final Jid withLocal(String local) {
+    public final Jid withLocal(CharSequence local) {
         return new Jid(local, domain, resource, false, true);
     }
 
@@ -453,7 +453,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @return The full JID with a resource.
      * @see #asBareJid()
      */
-    public final Jid withResource(String resource) {
+    public final Jid withResource(CharSequence resource) {
         return new Jid(local, domain, resource, false, true);
     }
 
@@ -463,7 +463,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @param subdomain The subdomain.
      * @return The JID at a subdomain.
      */
-    public final Jid atSubdomain(String subdomain) {
+    public final Jid atSubdomain(CharSequence subdomain) {
         return new Jid(local, Objects.requireNonNull(subdomain) + "." + domain, resource, false, true);
     }
 

@@ -54,6 +54,13 @@ public final class ContactExchange {
 
     private final List<Item> item = new ArrayList<>();
 
+    private ContactExchange() {
+    }
+
+    public ContactExchange(Collection<Item> items) {
+        this.item.addAll(items);
+    }
+
     /**
      * Gets the contact exchange items.
      *

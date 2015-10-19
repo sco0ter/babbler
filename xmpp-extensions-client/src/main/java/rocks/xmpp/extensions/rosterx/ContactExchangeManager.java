@@ -185,7 +185,7 @@ public final class ContactExchangeManager extends Manager {
      * @return The trusted entities.
      * @see <a href="http://xmpp.org/extensions/xep-0144.html#security-trust">8.1 Trusted Entities</a>
      */
-    public Collection<Jid> getTrustedEntities() {
+    public final Collection<Jid> getTrustedEntities() {
         return trustedEntities;
     }
 
@@ -197,21 +197,22 @@ public final class ContactExchangeManager extends Manager {
      * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public void suggestContactAddition(Jid jid, Contact... contacts) throws XmppException {
+    public final void suggestContactAddition(Jid jid, Contact... contacts) throws XmppException {
 
         // Only support adding contacts for now:
         // However, if the sender is a human user and/or the sending application has a primary Service Discovery category of "client" (e.g., a bot) [10], the sending application SHOULD NOT specify an 'action' attribute other than "add"
 
         if (contacts.length > 0) {
-            ContactExchange contactExchange = new ContactExchange();
+            Collection<ContactExchange.Item> rosterItems = new ArrayDeque<>();
             for (Contact contact : contacts) {
                 if (contact.getJid() == null) {
                     // ... MUST possess a 'jid' attribute that specifies the JabberID of the item to be added
                     throw new IllegalArgumentException("Contact contains no JID.");
                 }
-                ContactExchange.Item rosterItem = new ContactExchange.Item(contact.getJid(), contact.getName(), contact.getGroups(), ContactExchange.Item.Action.ADD);
-                contactExchange.getItems().add(rosterItem);
+                rosterItems.add(new ContactExchange.Item(contact.getJid(), contact.getName(), contact.getGroups(), ContactExchange.Item.Action.ADD));
             }
+            ContactExchange contactExchange = new ContactExchange(rosterItems);
+
             // http://xmpp.org/extensions/xep-0144.html#stanza
             Presence presence = xmppSession.getManager(PresenceManager.class).getPresence(jid);
             if (presence.isAvailable()) {

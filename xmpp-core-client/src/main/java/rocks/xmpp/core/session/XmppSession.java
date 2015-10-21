@@ -47,6 +47,7 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 import rocks.xmpp.util.XmppUtils;
 
+import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -734,7 +735,7 @@ public abstract class XmppSession implements AutoCloseable {
         try {
             return configuration.getJAXBContext().createUnmarshaller();
         } catch (JAXBException e) {
-            throw new RuntimeException(e);
+            throw new DataBindingException(e);
         }
     }
 
@@ -755,7 +756,7 @@ public abstract class XmppSession implements AutoCloseable {
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
             return marshaller;
         } catch (JAXBException e) {
-            throw new RuntimeException(e);
+            throw new DataBindingException(e);
         }
     }
 

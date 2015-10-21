@@ -54,6 +54,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Presence;
 
+import javax.xml.bind.DataBindingException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -206,7 +207,7 @@ public final class DebugController implements Initializable {
                 }
             });
         } catch (TransformerConfigurationException | ParserConfigurationException | SAXException e) {
-            throw new RuntimeException(e);
+            throw new DataBindingException(e);
         }
     }
 

@@ -206,7 +206,7 @@ public final class NodeConfiguration {
         try {
             return value != null ? new URL(value) : null;
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
@@ -282,7 +282,7 @@ public final class NodeConfiguration {
         try {
             return value != null ? new URL(value) : null;
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            return null;
         }
     }
 

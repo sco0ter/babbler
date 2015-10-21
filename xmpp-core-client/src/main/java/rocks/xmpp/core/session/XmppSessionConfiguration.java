@@ -27,6 +27,7 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.model.Presence;
 
+import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLInputFactory;
@@ -141,7 +142,7 @@ public final class XmppSessionConfiguration {
         try {
             jaxbContext = JAXBContext.newInstance(classesToBeBound.toArray(new Class<?>[classesToBeBound.size()]));
         } catch (JAXBException e) {
-            throw new RuntimeException(e);
+            throw new DataBindingException(e);
         }
     }
 

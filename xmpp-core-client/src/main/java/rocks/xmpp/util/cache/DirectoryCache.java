@@ -25,6 +25,7 @@
 package rocks.xmpp.util.cache;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -62,7 +63,7 @@ public final class DirectoryCache implements Map<String, byte[]> {
                 }
             });
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
         return size[0];
     }
@@ -90,7 +91,7 @@ public final class DirectoryCache implements Map<String, byte[]> {
                 try {
                     return Files.readAllBytes(file);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new UncheckedIOException(e);
                 }
             }
         }
@@ -108,7 +109,7 @@ public final class DirectoryCache implements Map<String, byte[]> {
             Path file = cacheDirectory.resolve(key);
             Files.write(file, value);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
         return data;
     }
@@ -119,7 +120,7 @@ public final class DirectoryCache implements Map<String, byte[]> {
         try {
             Files.deleteIfExists(cacheDirectory.resolve(key.toString()));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
         return data;
     }
@@ -151,7 +152,7 @@ public final class DirectoryCache implements Map<String, byte[]> {
                 }
             });
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -163,7 +164,7 @@ public final class DirectoryCache implements Map<String, byte[]> {
                 fileNames.add(path.getFileName().toString());
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
         return Collections.unmodifiableSet(fileNames);
     }

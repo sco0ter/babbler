@@ -40,7 +40,25 @@ public final class Open extends Frame {
         this(null, null);
     }
 
+    /**
+     * Creates an {@code <open/>} element with a 'to' and 'lang' attribute.
+     *
+     * @param to       The 'to' attribute.
+     * @param language The 'lang' attribute.
+     */
     public Open(Jid to, String language) {
         super(to, null, null, language);
+    }
+
+    /**
+     * Creates an {@code <open/>} element with a 'to', 'from', 'id' and 'lang' attribute.
+     *
+     * @param to       The 'to' attribute.
+     * @param from     The 'from' attribute.
+     * @param id       The 'id' attribute.
+     * @param language The 'lang' attribute.
+     */
+    public Open(Jid to, Jid from, String id, String language) {
+        super(to, from, id, language);
     }
 }

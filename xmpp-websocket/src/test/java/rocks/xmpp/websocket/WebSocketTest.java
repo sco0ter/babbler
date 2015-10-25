@@ -22,61 +22,37 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.websocket.model;
+package rocks.xmpp.websocket;
 
+import org.testng.Assert;
+import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.websocket.model.Close;
+import rocks.xmpp.websocket.model.Open;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+import java.net.URI;
 
 /**
  * @author Christian Schudt
  */
-@XmlTransient
-abstract class Frame implements StreamElement {
+public class WebSocketTest extends XmlTest {
 
-    @XmlAttribute
-    private final String version;
-
-    @XmlAttribute
-    private final Jid to;
-
-    @XmlAttribute
-    private final Jid from;
-
-    @XmlAttribute
-    private final String id;
-
-    @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-    private final String lang;
-
-    Frame(Jid to, Jid from, String id, String language, String version) {
-        this.to = to;
-        this.from = from;
-        this.id = id;
-        this.lang = language;
-        this.version = version;
+    protected WebSocketTest() throws JAXBException, XMLStreamException {
+        super(Open.class, Close.class);
     }
 
-    public final Jid getTo() {
-        return to;
+    @Test
+    public void marshalOpen() throws XMLStreamException, JAXBException {
+        Open open = new Open(Jid.of("test"), "en");
+        Assert.assertEquals(marshal(open), "<open xmlns=\"urn:ietf:params:xml:ns:xmpp-framing\" version=\"1.0\" to=\"test\" xml:lang=\"en\"></open>");
     }
 
-    public final Jid getFrom() {
-        return from;
-    }
-
-    public final String getVersion() {
-        return version;
-    }
-
-    public final String getId() {
-        return id;
-    }
-
-    public final String getLanguage() {
-        return lang;
+    @Test
+    public void marshalClose() throws XMLStreamException, JAXBException {
+        Close close = new Close(URI.create("wss://otherendpoint.example/xmpp-bind"));
+        Assert.assertEquals(marshal(close), "<close xmlns=\"urn:ietf:params:xml:ns:xmpp-framing\" version=\"1.0\" see-other-uri=\"wss://otherendpoint.example/xmpp-bind\"></close>");
     }
 }

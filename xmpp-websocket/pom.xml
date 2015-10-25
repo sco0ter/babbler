@@ -84,6 +84,13 @@
     <dependencies>
         <dependency>
             <groupId>rocks.xmpp</groupId>
+            <artifactId>xmpp-core</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>rocks.xmpp</groupId>
             <artifactId>xmpp-core-client</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -24,8 +24,11 @@
 
 package rocks.xmpp.websocket.model;
 
+import rocks.xmpp.addr.Jid;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.net.URI;
 
 /**
  * The implementation of the {@code <close/>} element in the {@code urn:ietf:params:xml:ns:xmpp-framing} namespace.
@@ -36,10 +39,46 @@ import javax.xml.bind.annotation.XmlRootElement;
 public final class Close extends Frame {
 
     @XmlAttribute(name = "see-other-uri")
-    private final String uri;
+    private final URI uri;
 
+    /**
+     * Creates an empty {@code <close/>}.
+     */
     public Close() {
-        super(null, null, null, null);
-        this.uri = null;
+        this(null);
+    }
+
+    /**
+     * Creates an {@code <close/>} with an "see-other-uri" attribute.
+     *
+     * @param uri The 'see-other-uri' attribute.
+     */
+    public Close(URI uri) {
+        this(null, null, null, null, "1.0", uri);
+    }
+
+    /**
+     * Creates an {@code <close/>} element with a 'to', 'from', 'id', 'lang' and 'see-other-uri' attribute.
+     *
+     * @param to       The 'to' attribute.
+     * @param from     The 'from' attribute.
+     * @param id       The 'id' attribute.
+     * @param language The 'lang' attribute.
+     * @param version  The 'version' attribute.
+     * @param uri      The 'see-other-uri' attribute.
+     */
+    public Close(Jid to, Jid from, String id, String language, String version, URI uri) {
+        super(to, from, id, language, version);
+        this.uri = uri;
+    }
+
+    /**
+     * The "see-other-uri" attribute.
+     *
+     * @return The URI.
+     * @see <a href="https://tools.ietf.org/html/rfc7395#section-3.6.1">3.6.1.  see-other-uri</a>
+     */
+    public final URI getUri() {
+        return uri;
     }
 }

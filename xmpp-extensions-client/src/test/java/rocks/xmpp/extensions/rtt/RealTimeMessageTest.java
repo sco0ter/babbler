@@ -137,12 +137,40 @@ public class RealTimeMessageTest {
         Assert.assertEquals((int) ((RealTimeText.EraseText) actionList2.get(0)).getPosition(), 8);
         Assert.assertNull(((RealTimeText.EraseText) actionList2.get(0)).getNumberOfCharacters());
 
-
         InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, 0, null);
         realTimeMessage.applyActionElement(new RealTimeText.InsertText("abbbbbbbaaaaaaaaaaaa"));
         applyActionElements(realTimeMessage, actionList2);
         Assert.assertEquals(realTimeMessage.getText(), "abbbbbbaaaaaaaaaaaa");
     }
+
+    @Test
+    public void shouldComputeInsertionHighSurrogate() {
+        List<RealTimeText.Action> actionList = OutboundRealTimeMessage.computeActionElements("1\uDBFF\uDFFC23\uDBFF\uDFFCa", "1\uDBFF\uDFFC23\uDBFF\uDFFCba");
+        Assert.assertEquals(actionList.size(), 1);
+        Assert.assertTrue(actionList.get(0) instanceof RealTimeText.InsertText);
+        Assert.assertEquals((int) ((RealTimeText.InsertText) actionList.get(0)).getPosition(), 5);
+        Assert.assertEquals(((RealTimeText.InsertText) actionList.get(0)).getText(), "b");
+
+        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, 0, null);
+        realTimeMessage.applyActionElement(new RealTimeText.InsertText("1\uDBFF\uDFFC23\uDBFF\uDFFCa"));
+        applyActionElements(realTimeMessage, actionList);
+        Assert.assertEquals(realTimeMessage.getText(), "1\uDBFF\uDFFC23\uDBFF\uDFFCba");
+    }
+
+    @Test
+    public void shouldComputeErasureHighSurrogate() {
+        List<RealTimeText.Action> actionList = OutboundRealTimeMessage.computeActionElements("a\uDBFF\uDFFCb\uDBFF\uDFFCc\uDBFF\uDFFCd", "ad");
+        Assert.assertEquals(actionList.size(), 1);
+        Assert.assertTrue(actionList.get(0) instanceof RealTimeText.EraseText);
+        Assert.assertEquals((int) ((RealTimeText.EraseText) actionList.get(0)).getPosition(), 6);
+        Assert.assertEquals(((RealTimeText.EraseText) actionList.get(0)).getNumberOfCharacters(), Integer.valueOf(5));
+
+        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, 0, null);
+        realTimeMessage.applyActionElement(new RealTimeText.InsertText("a\uDBFF\uDFFCb\uDBFF\uDFFCc\uDBFF\uDFFCd"));
+        applyActionElements(realTimeMessage, actionList);
+        Assert.assertEquals(realTimeMessage.getText(), "ad");
+    }
+
 
     @Test
     public void testBoundaries() {

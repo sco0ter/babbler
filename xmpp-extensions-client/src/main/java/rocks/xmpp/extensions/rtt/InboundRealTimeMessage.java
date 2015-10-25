@@ -120,11 +120,18 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
             if (action instanceof RealTimeText.InsertText) {
                 RealTimeText.InsertText insertText = (RealTimeText.InsertText) action;
                 if (insertText.getText() != null) {
-                    sb.insert(normalizePosition(insertText.getPosition()), insertText.getText());
+                    int i = 0, charCount = 0;
+                    int pos = normalizePosition(insertText.getPosition());
+                    // Iterate over the code points and sum up the char count, which is used by StringBuilder.insert()
+                    // RTT counts with code points, while Java APIs counts with character indexes.
+                    while (i < sb.codePointCount(0, sb.length()) && i < pos) {
+                        charCount += Character.charCount(sb.codePointAt(charCount));
+                        i++;
+                    }
+                    sb.insert(charCount, insertText.getText());
                 }
             } else if (action instanceof RealTimeText.EraseText) {
                 RealTimeText.EraseText eraseText = (RealTimeText.EraseText) action;
-                Integer pos = normalizePosition(eraseText.getPosition());
                 Integer n = eraseText.getNumberOfCharacters();
                 // If 'n' is omitted, the default value of 'n' MUST be “1”.
                 if (n == null) {
@@ -133,9 +140,19 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
                 if (n < 0) {
                     n = 0;
                 }
+                int i = 0, endIndex = 0, startIndex = 0;
+                int pos = normalizePosition(eraseText.getPosition());
+                // Iterate over the code points and sum up the char count, which is used by StringBuilder.delete()
+                // RTT counts with code points, while Java APIs counts with character indexes.
+                while (i < sb.codePointCount(0, sb.length()) && i < pos) {
+                    if (i++ < pos - n) {
+                        startIndex += Character.charCount(sb.codePointAt(startIndex));
+                    }
+                    endIndex += Character.charCount(sb.codePointAt(endIndex));
+                }
                 // Protect against faulty <e/> elements.
-                if (pos >= n && pos - n <= sb.length()) {
-                    sb.delete(pos - n, pos);
+                if (startIndex <= endIndex && startIndex <= sb.length()) {
+                    sb.delete(startIndex, endIndex);
                 }
             }
             s = sb.toString();

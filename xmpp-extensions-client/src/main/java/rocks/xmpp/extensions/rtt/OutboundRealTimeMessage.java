@@ -162,13 +162,13 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
             int[] bounds = determineBounds(oldText, newText);
             int firstChangedCharacter = bounds[0];
             int lastChangedCharacter = bounds[1];
-            int n = lastChangedCharacter - firstChangedCharacter;
+            int n = oldText.codePointCount(firstChangedCharacter, lastChangedCharacter);
             if (n > 0) {
-                actions.add(new RealTimeText.EraseText(n == 1 ? null : n, lastChangedCharacter == oldText.length() ? null : lastChangedCharacter));
+                actions.add(new RealTimeText.EraseText(n == 1 ? null : n, lastChangedCharacter == oldText.length() ? null : oldText.codePointCount(0, lastChangedCharacter)));
             }
             int endIndex = newText.length() - oldText.length() + lastChangedCharacter;
             if (endIndex > firstChangedCharacter) {
-                actions.add(new RealTimeText.InsertText(newText.substring(firstChangedCharacter, endIndex), firstChangedCharacter == oldText.length() ? null : firstChangedCharacter));
+                actions.add(new RealTimeText.InsertText(newText.substring(firstChangedCharacter, endIndex), firstChangedCharacter == oldText.length() ? null : oldText.codePointCount(0, firstChangedCharacter)));
             }
         }
         return actions;

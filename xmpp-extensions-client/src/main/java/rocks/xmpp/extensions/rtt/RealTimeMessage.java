@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.rtt;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * The base class for real-time messages. Derived classes are {@link InboundRealTimeMessage} and {@link OutboundRealTimeMessage}.
  *
@@ -35,7 +37,7 @@ abstract class RealTimeMessage {
 
     volatile boolean active = true;
 
-    int sequence;
+    final AtomicInteger sequence = new AtomicInteger();
 
     protected String id;
 
@@ -69,8 +71,8 @@ abstract class RealTimeMessage {
      *
      * @return The sequence number.
      */
-    public synchronized final int getSequence() {
-        return sequence;
+    public final int getSequence() {
+        return sequence.get();
     }
 
     public synchronized final String getId() {

@@ -24,22 +24,21 @@
 
 package rocks.xmpp.extensions.rtt;
 
-import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
+import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.util.XmppUtils;
 
-import java.security.SecureRandom;
 import java.text.Normalizer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -49,15 +48,13 @@ import java.util.concurrent.TimeUnit;
  */
 public final class OutboundRealTimeMessage extends RealTimeMessage {
 
-    private static final Random RANDOM = new SecureRandom();
-
     private final Collection<RealTimeText.Action> actions = new ArrayDeque<>();
 
     private final Chat chat;
 
     private final ScheduledExecutorService transmissionExecutor;
 
-    private String text;
+    private CharSequence text;
 
     private ScheduledFuture<?> nextRefresh;
 
@@ -100,7 +97,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
                     if (!actions.isEmpty()) {
                         // If these are the first actions being sent, schedule a refresh message.
                         if (isNew) {
-                            OutboundRealTimeMessage.this.sequence = generateSequenceNumber();
+                            OutboundRealTimeMessage.this.sequence.set(generateSequenceNumber());
 
                             // This executor periodically sends "message refreshes" (4.7.3 Message Refresh)
                             nextRefresh = transmissionExecutor.schedule(new Runnable() {
@@ -137,7 +134,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
      * @return The sequence number.
      */
     static int generateSequenceNumber() {
-        return RANDOM.nextInt(100000);
+        return ThreadLocalRandom.current().nextInt(100000);
     }
 
     /**
@@ -147,8 +144,8 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
      * @param newText The new text.
      * @return The actions.
      */
-    static List<RealTimeText.Action> computeActionElements(String oldText, String newText) {
-        if (oldText == null && newText == null || oldText != null && oldText.equals(newText) || oldText == null && newText.isEmpty() || newText == null && oldText.isEmpty()) {
+    static List<RealTimeText.Action> computeActionElements(CharSequence oldText, CharSequence newText) {
+        if (oldText == null && newText == null || oldText != null && oldText.equals(newText) || oldText == null && newText.length() == 0 || newText == null && oldText.length() == 0) {
             return Collections.emptyList();
         }
         List<RealTimeText.Action> actions = new ArrayList<>();
@@ -162,13 +159,13 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
             int[] bounds = determineBounds(oldText, newText);
             int firstChangedCharacter = bounds[0];
             int lastChangedCharacter = bounds[1];
-            int n = oldText.codePointCount(firstChangedCharacter, lastChangedCharacter);
+            int n = Character.codePointCount(oldText, firstChangedCharacter, lastChangedCharacter);
             if (n > 0) {
-                actions.add(new RealTimeText.EraseText(n == 1 ? null : n, lastChangedCharacter == oldText.length() ? null : oldText.codePointCount(0, lastChangedCharacter)));
+                actions.add(new RealTimeText.EraseText(n == 1 ? null : n, lastChangedCharacter == oldText.length() ? null : Character.codePointCount(oldText, 0, lastChangedCharacter)));
             }
             int endIndex = newText.length() - oldText.length() + lastChangedCharacter;
             if (endIndex > firstChangedCharacter) {
-                actions.add(new RealTimeText.InsertText(newText.substring(firstChangedCharacter, endIndex), firstChangedCharacter == oldText.length() ? null : oldText.codePointCount(0, firstChangedCharacter)));
+                actions.add(new RealTimeText.InsertText(newText.subSequence(firstChangedCharacter, endIndex), firstChangedCharacter == oldText.length() ? null : Character.codePointCount(oldText, 0, firstChangedCharacter)));
             }
         }
         return actions;
@@ -181,7 +178,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
      * @param newText The new text.
      * @return An array with two values containing the first and last changed character.
      */
-    static int[] determineBounds(String oldText, String newText) {
+    static int[] determineBounds(CharSequence oldText, CharSequence newText) {
         // In order to calculate what text changes took place, the first changed character and the last changed character are determined.
         int firstChangedCharacter = 0;
         while (firstChangedCharacter < oldText.length() && firstChangedCharacter < newText.length() && oldText.charAt(firstChangedCharacter) == newText.charAt(firstChangedCharacter)) {
@@ -206,7 +203,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
      *
      * @param text The text.
      */
-    public synchronized final void update(String text) {
+    public synchronized final void update(CharSequence text) {
         if (complete) {
             throw new IllegalStateException("Real-time message is already completed.");
         }
@@ -244,12 +241,12 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
      * @param text The text to reset this message to.
      * @see <a href="http://www.xmpp.org/extensions/xep-0301.html#usage_with_last_message_correction">7.5.3 Usage with Last Message Correction</a>
      */
-    public synchronized final void reset(String id, String text) {
+    public synchronized final void reset(String id, CharSequence text) {
         // Senders clients need to transmit a Message Refresh when transmitting <rtt/> for a different message than the previously transmitted <rtt/> (i.e., the value of the 'id' attribute changes, 'id' becomes included, or 'id' becomes not included). This keeps real-time text synchronized when beginning to edit a previously delivered message versus continuing to compose a new message.
         this.id = id;
         this.text = text;
         // Generate a new sequence number for every message refresh.
-        this.sequence = generateSequenceNumber();
+        this.sequence.set(generateSequenceNumber());
         // Drop every outgoing actions, which are scheduled for the next transmission interval, because we reset the whole text.
         actions.clear();
         actions.add(new RealTimeText.InsertText(text));
@@ -258,7 +255,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
 
     @Override
     public synchronized final String getText() {
-        return text != null ? text : "";
+        return text != null ? text.toString() : "";
     }
 
     /**
@@ -291,7 +288,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
      */
     private void sendRttMessage(RealTimeText.Event event) {
         Message message = new Message();
-        RealTimeText realTimeText = new RealTimeText(event, actions, this.sequence++, id);
+        RealTimeText realTimeText = new RealTimeText(event, actions, this.sequence.getAndIncrement(), id);
         message.addExtension(realTimeText);
         chat.sendMessage(message);
         actions.clear();

@@ -59,15 +59,18 @@ public final class RealTimeText {
     private final List<Action> actions = new ArrayList<>();
 
     @XmlAttribute(name = "seq")
-    private Integer sequence;
+    private final Integer sequence;
 
     @XmlAttribute(name = "event")
-    private Event event;
+    private final Event event;
 
     @XmlAttribute(name = "id")
-    private String id;
+    private final String id;
 
     private RealTimeText() {
+        this.event = null;
+        this.sequence = null;
+        this.id = null;
     }
 
     /**
@@ -94,7 +97,7 @@ public final class RealTimeText {
      * @return The event.
      * @see <a href="http://xmpp.org/extensions/xep-0301.html#event">4.2.2 event</a>
      */
-    public Event getEvent() {
+    public final Event getEvent() {
         return event;
     }
 
@@ -104,7 +107,7 @@ public final class RealTimeText {
      * @return The sequence.
      * @see <a href="http://xmpp.org/extensions/xep-0301.html#seq">4.2.1 seq</a>
      */
-    public Integer getSequence() {
+    public final Integer getSequence() {
         return sequence;
     }
 
@@ -114,7 +117,7 @@ public final class RealTimeText {
      * @return The actions.
      * @see <a href="http://xmpp.org/extensions/xep-0301.html#realtime_text_actions">4.6 Real-Time Text Actions</a>
      */
-    public List<Action> getActions() {
+    public final List<Action> getActions() {
         return Collections.unmodifiableList(actions);
     }
 
@@ -124,7 +127,7 @@ public final class RealTimeText {
      * @return The id.
      * @see <a href="http://xmpp.org/extensions/xep-0301.html#id">4.2.3 id</a>
      */
-    public String getId() {
+    public final String getId() {
         return id;
     }
 
@@ -179,30 +182,33 @@ public final class RealTimeText {
     public static final class InsertText extends Action {
 
         @XmlValue
-        private String text;
+        private final String text;
 
         @XmlAttribute(name = "p")
-        private Integer position;
+        private final Integer position;
 
         private InsertText() {
+            this.text = null;
+            this.position = null;
         }
 
         /**
          * @param text The text.
          */
-        public InsertText(String text) {
-            this.text = text;
+        public InsertText(CharSequence text) {
+            this.text = text.toString();
+            this.position = null;
         }
 
         /**
          * @param text     The text.
          * @param position The position, where the text is inserted.
          */
-        public InsertText(String text, Integer position) {
+        public InsertText(CharSequence text, Integer position) {
             if (position != null && position < 0) {
                 throw new IllegalArgumentException("position must not be < 0");
             }
-            this.text = text;
+            this.text = text.toString();
             this.position = position;
         }
 
@@ -211,7 +217,7 @@ public final class RealTimeText {
          *
          * @return The text.
          */
-        public String getText() {
+        public final String getText() {
             return text;
         }
 
@@ -220,12 +226,12 @@ public final class RealTimeText {
          *
          * @return The position.
          */
-        public Integer getPosition() {
+        public final Integer getPosition() {
             return position;
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return "Insert '" + (text != null ? text : "") + "'" + (position != null ? " at position " + position : "");
         }
     }
@@ -239,12 +245,17 @@ public final class RealTimeText {
      */
     public static final class EraseText extends Action {
         @XmlAttribute(name = "p")
-        private Integer position;
+        private final Integer position;
 
         @XmlAttribute(name = "n")
-        private Integer numberOfCharacters;
+        private final Integer numberOfCharacters;
 
+        /**
+         * Erases one character from the end of the text.
+         */
         public EraseText() {
+            this.position = null;
+            this.numberOfCharacters = null;
         }
 
         /**
@@ -254,6 +265,7 @@ public final class RealTimeText {
             if (n != null && n < 0) {
                 throw new IllegalArgumentException("n must not be < 0");
             }
+            this.position = null;
             this.numberOfCharacters = n;
         }
 
@@ -268,8 +280,8 @@ public final class RealTimeText {
             if (p != null && p < 0) {
                 throw new IllegalArgumentException("p must not be < 0");
             }
-            this.numberOfCharacters = n;
             this.position = p;
+            this.numberOfCharacters = n;
         }
 
         /**
@@ -277,7 +289,7 @@ public final class RealTimeText {
          *
          * @return The position.
          */
-        public Integer getPosition() {
+        public final Integer getPosition() {
             return position;
         }
 
@@ -287,12 +299,12 @@ public final class RealTimeText {
          * @return The number of characters to be removed.
          * @see #getPosition()
          */
-        public Integer getNumberOfCharacters() {
+        public final Integer getNumberOfCharacters() {
             return numberOfCharacters;
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return "Erase " + (numberOfCharacters != null ? numberOfCharacters : 1) + " character(s) at " + (position != null ? "position " + position : "last position");
         }
     }
@@ -306,9 +318,10 @@ public final class RealTimeText {
      */
     public static final class WaitInterval extends Action {
         @XmlAttribute(name = "n")
-        private Long milliSeconds;
+        private final Long milliSeconds;
 
         private WaitInterval() {
+            this.milliSeconds = null;
         }
 
         public WaitInterval(long milliSeconds) {
@@ -320,12 +333,12 @@ public final class RealTimeText {
          *
          * @return The milliseconds.
          */
-        public Long getMilliSeconds() {
+        public final Long getMilliSeconds() {
             return milliSeconds;
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return "Wait " + milliSeconds + " ms";
         }
     }

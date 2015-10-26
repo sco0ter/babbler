@@ -1,12 +1,23 @@
 # Changelog
 ---
 
+### Version 0.6.2-SNAPSHOT
+
+* Fix bug when closing a BOSH connection.
+* Prevent long DNS resolution of `InetAddress.getHostname()` when using an IP address in TCP connection as hostname.
+* Make the acceptance of file transfer requests more stable.
+* Real-time Text (XEP-0301) should count Unicode code points instead of characters (e.g. a surrogate pair counts as 1, not as 2)
+* Prevent high CPU usage when receiving and processing real-time text.
+* Include session id in `<streamhost-used/>` SOCKS5 query.
+* Prevent `UnsupportedOperationException` when suggesting a contact addition (XEP-0144 Roster Item Exchange).
+* Prefer `CharSequence` over `String` in some APIs.
+
 ### Version 0.6.1 (2015-09-13)
 
 * Verify SCRAM-SHA-1 server response during login.
 * Add `Jid.atSubdomain()` method and use `CharSequence` in static `Jid` factory methods.
 * Fix bug with [FasterXML/Aalto's](http://wiki.fasterxml.com/AaltoHome) `XMLStreamWriter` implementation.
-* Add shortcuts to retrieve the error condition from StanzaException and StreamErrorException. 
+* Add shortcuts to retrieve the error condition from `StanzaException` and `StreamErrorException`. 
 * Validate MUC room JID, when creating a chat room.
 * Add API to retrieve owners, admins and outcasts in a chat room.
 * Fix bug when declining a MUC invitation.

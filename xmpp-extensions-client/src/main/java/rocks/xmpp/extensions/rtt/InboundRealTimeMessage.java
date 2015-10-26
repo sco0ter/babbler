@@ -67,11 +67,15 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
                     try {
                         RealTimeText.Action action;
                         // Periodically poll for new action elements until the message is complete.
-                        while ((action = actions.poll(1, TimeUnit.SECONDS)) != null || !complete) {
+                        while ((action = actions.poll(700, TimeUnit.MILLISECONDS)) != null || !complete) {
                             if (action != null) {
                                 if (action instanceof RealTimeText.WaitInterval) {
                                     Long ms = ((RealTimeText.WaitInterval) action).getMilliSeconds();
                                     if (ms != null) {
+                                        if (ms == Integer.MIN_VALUE) {
+                                            // "Poison" element to break the blocking queue immediately.
+                                            break;
+                                        }
                                         // Wait the amount of ms, until it's waken up by new incoming RTT actions.
                                         // See 7.4 Receiving Real-Time Text
                                         synchronized (actions) {
@@ -196,6 +200,8 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
     synchronized void complete() {
         if (!complete) {
             complete = true;
+            // Add a "poison" element to break the blocking queue immediately.
+            actions.offer(new RealTimeText.WaitInterval(Integer.MIN_VALUE));
             processActionsExecutor.shutdown();
             textChangeListeners.clear();
         }

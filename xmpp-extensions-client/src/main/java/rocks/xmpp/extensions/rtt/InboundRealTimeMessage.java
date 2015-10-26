@@ -29,13 +29,14 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
 import rocks.xmpp.util.XmppUtils;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
@@ -49,7 +50,7 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
 
     private final ExecutorService processActionsExecutor;
 
-    private final Queue<RealTimeText.Action> actions = new LinkedList<>();
+    private final BlockingQueue<RealTimeText.Action> actions = new LinkedBlockingQueue<>();
 
     private final Jid from;
 
@@ -57,35 +58,36 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
 
     InboundRealTimeMessage(Jid contact, int sequence, String id) {
         this.from = contact;
-        this.sequence = sequence;
+        this.sequence.set(sequence);
         this.sb = new StringBuilder();
         this.id = id;
 
         processActionsExecutor = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Real-time Text Processing Thread"));
         processActionsExecutor.execute(() -> {
-            while (!complete) {
-                try {
-                    synchronized (actions) {
+                    try {
+                        RealTimeText.Action action;
                         // Periodically poll for new action elements until the message is complete.
-                        while (!actions.isEmpty()) {
-                            RealTimeText.Action action = actions.poll();
-                            if (action instanceof RealTimeText.WaitInterval) {
-                                Long ms = ((RealTimeText.WaitInterval) action).getMilliSeconds();
-                                if (ms != null) {
-                                    // Wait the amount of ms, until it's waken up by new incoming RTT actions.
-                                    // See 7.4 Receiving Real-Time Text
-                                    actions.wait(ms);
+                        while ((action = actions.poll(1, TimeUnit.SECONDS)) != null || !complete) {
+                            if (action != null) {
+                                if (action instanceof RealTimeText.WaitInterval) {
+                                    Long ms = ((RealTimeText.WaitInterval) action).getMilliSeconds();
+                                    if (ms != null) {
+                                        // Wait the amount of ms, until it's waken up by new incoming RTT actions.
+                                        // See 7.4 Receiving Real-Time Text
+                                        synchronized (actions) {
+                                            actions.wait(ms);
+                                        }
+                                    }
+                                } else {
+                                    applyActionElement(action);
                                 }
-                            } else {
-                                applyActionElement(action);
                             }
                         }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                     }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
                 }
-            }
-        });
+        );
     }
 
     /**
@@ -94,15 +96,16 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
      * @param actions           The actions.
      * @param incrementSequence Whether to increment the current sequence.
      */
-    synchronized void processActions(List<RealTimeText.Action> actions, boolean incrementSequence) {
+
+    void processActions(Collection<RealTimeText.Action> actions, boolean incrementSequence) {
         if (isComplete()) {
             throw new IllegalStateException("Real-time message is already completed.");
         }
         if (incrementSequence) {
-            sequence++;
+            sequence.getAndIncrement();
         }
+        this.actions.addAll(actions);
         synchronized (this.actions) {
-            this.actions.addAll(actions);
             // Wake up the waiting thread, which processes the queue.
             // This is to ensure that new actions are processed immediately, in case if there's still a wait from a previous waiting element.
             this.actions.notifyAll();
@@ -181,7 +184,7 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
      * @param sequence The sequence.
      */
     synchronized void reset(int sequence, String id) {
-        this.sequence = sequence;
+        this.sequence.set(sequence);
         this.sb.setLength(0);
         this.id = id;
         this.actions.clear();

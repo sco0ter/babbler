@@ -24,11 +24,11 @@
 
 package rocks.xmpp.util;
 
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.EventObject;
@@ -158,7 +158,7 @@ public final class XmppUtils {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
             messageDigest.reset();
-            return String.format("%040x", new BigInteger(1, messageDigest.digest(bytes)));
+            return DatatypeConverter.printHexBinary(messageDigest.digest(bytes)).toLowerCase();
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }

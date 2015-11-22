@@ -1,9 +1,13 @@
 # Changelog
 ---
 
+## Version 0.7.0-SNAPSHOT
+
+* `Stanza`'s `xml:lang` attribute is represented as `java.util.Locale`, not as `String`. 
+
 ### Version 0.6.2-SNAPSHOT
 
-* Fix bug when closing a BOSH connection.
+* Fix bug when closing a BOSH connection and when using key sequences.
 * Prevent long DNS resolution of `InetAddress.getHostname()` when using an IP address in TCP connection as hostname.
 * Make the acceptance of file transfer requests more stable.
 * Real-time Text (XEP-0301) should count Unicode code points instead of characters (e.g. a surrogate pair counts as 1, not as 2)

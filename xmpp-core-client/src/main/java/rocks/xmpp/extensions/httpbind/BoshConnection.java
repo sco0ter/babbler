@@ -753,6 +753,8 @@ public final class BoshConnection extends Connection {
                         }
                     }
                 });
+            } else {
+                throw new IllegalStateException("Connection already shutdown via close() or detach()");
             }
         }
     }

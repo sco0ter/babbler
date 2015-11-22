@@ -42,6 +42,7 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.net.ssl.HttpsURLConnection;
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBElement;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -66,7 +67,6 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -271,9 +271,11 @@ public final class BoshConnection extends Connection {
             // Generate a high random value "n"
             int n = 256 + random.nextInt(32768 - 256);
             // Generate a random seed value.
-            String kn = UUID.randomUUID().toString();
+            byte[] seed = new byte[1024];
+            random.nextBytes(seed);
+            String kn = DatatypeConverter.printHexBinary(seed).toLowerCase();
             for (int i = 0; i < n; i++) {
-                kn = String.format("%040x", new BigInteger(1, digest.digest(kn.getBytes(StandardCharsets.UTF_8))));
+                kn = DatatypeConverter.printHexBinary(digest.digest(kn.getBytes(StandardCharsets.UTF_8))).toLowerCase();
                 keySequence.add(kn);
             }
         } catch (NoSuchAlgorithmException e) {
@@ -345,13 +347,6 @@ public final class BoshConnection extends Connection {
                 .ack(1L)
                 .from(from)
                 .xmppVersion("1.0");
-
-        if (boshConnectionConfiguration.isUseKeySequence()) {
-            synchronized (keySequence) {
-                generateKeySequence();
-                body.newKey(keySequence.removeLast());
-            }
-        }
 
         if (getXmppSession().getDomain() != null) {
             body.to(getXmppSession().getDomain().toString());
@@ -546,8 +541,14 @@ public final class BoshConnection extends Connection {
     private void appendKey(Body.Builder bodyBuilder) {
         if (boshConnectionConfiguration.isUseKeySequence()) {
             synchronized (keySequence) {
-                if (!keySequence.isEmpty()) {
+                // For the initial request generate the sequence and set the new key.
+                if (keySequence.isEmpty()) {
+                    generateKeySequence();
+                    bodyBuilder.newKey(keySequence.removeLast());
+                } else {
+                    // For every other request, set the key
                     bodyBuilder.key(keySequence.removeLast());
+                    // and switch to a new sequence, if the sequence is empty.
                     if (keySequence.isEmpty()) {
                         generateKeySequence();
                         bodyBuilder.newKey(keySequence.removeLast());

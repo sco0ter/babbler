@@ -27,13 +27,16 @@ package rocks.xmpp.core.stanza.model;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.util.adapters.LocaleAdapter;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -58,7 +61,8 @@ public abstract class Stanza implements StreamElement {
     private Jid to;
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-    private String lang;
+    @XmlJavaTypeAdapter(LocaleAdapter.class)
+    private Locale lang;
 
     @XmlAnyElement(lax = true)
     final List<Object> extensions = new CopyOnWriteArrayList<>();
@@ -73,7 +77,7 @@ public abstract class Stanza implements StreamElement {
         this.error = null;
     }
 
-    Stanza(Jid to, Jid from, String id, String language, Collection<?> extensions, StanzaError error) {
+    Stanza(Jid to, Jid from, String id, Locale language, Collection<?> extensions, StanzaError error) {
         this.to = to;
         this.from = from;
         this.id = id;
@@ -165,7 +169,7 @@ public abstract class Stanza implements StreamElement {
      *
      * @return The language.
      */
-    public final synchronized String getLanguage() {
+    public final synchronized Locale getLanguage() {
         return lang;
     }
 
@@ -175,7 +179,7 @@ public abstract class Stanza implements StreamElement {
      * @param language The language.
      * @see #getLanguage()
      */
-    public final synchronized void setLanguage(String language) {
+    public final synchronized void setLanguage(Locale language) {
         this.lang = language;
     }
 

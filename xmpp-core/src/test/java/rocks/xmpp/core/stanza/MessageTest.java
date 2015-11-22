@@ -39,6 +39,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
@@ -64,7 +65,7 @@ public class MessageTest extends XmlTest {
         Assert.assertEquals(message.getTo().toString(), "romeo@example.net");
         Assert.assertEquals(message.getType(), Message.Type.CHAT);
         Assert.assertEquals(message.getId(), "b4vs9km4");
-        Assert.assertEquals(message.getLanguage(), "en");
+        Assert.assertEquals(message.getLanguage(), Locale.ENGLISH);
         Assert.assertEquals(message.getBody(), "Wherefore art thou, Romeo?");
     }
 
@@ -84,7 +85,7 @@ public class MessageTest extends XmlTest {
         Assert.assertEquals(message.getTo().toString(), "romeo@example.net");
         Assert.assertEquals(message.getType(), Message.Type.CHAT);
         Assert.assertEquals(message.getId(), "z94nb37h");
-        Assert.assertEquals(message.getLanguage(), "en");
+        Assert.assertEquals(message.getLanguage(), Locale.ENGLISH);
         Assert.assertEquals(message.getBody(), "Wherefore art thou, Romeo?");
         Assert.assertEquals(message.getBodies().get(1).getText(), "Wo bist du, Romeo?");
 
@@ -108,7 +109,7 @@ public class MessageTest extends XmlTest {
         Assert.assertEquals(message.getTo().toString(), "romeo@example.net");
         Assert.assertEquals(message.getType(), Message.Type.CHAT);
         Assert.assertEquals(message.getId(), "c8xg3nf8");
-        Assert.assertEquals(message.getLanguage(), "en");
+        Assert.assertEquals(message.getLanguage(), Locale.ENGLISH);
         Assert.assertEquals(message.getSubject(), "I implore you!");
         Assert.assertEquals(message.getBody(), "Wherefore art thou, Romeo?");
     }
@@ -131,7 +132,7 @@ public class MessageTest extends XmlTest {
         Assert.assertEquals(message.getTo().toString(), "romeo@example.net");
         Assert.assertEquals(message.getType(), Message.Type.CHAT);
         Assert.assertEquals(message.getId(), "jk3v47gw");
-        Assert.assertEquals(message.getLanguage(), "en");
+        Assert.assertEquals(message.getLanguage(), Locale.ENGLISH);
         Assert.assertEquals(message.getSubject(), "I implore you!");
         Assert.assertEquals(message.getSubjects().get(1).getText(), "Ich flehe dich an!");
         Assert.assertEquals(message.getBody(), "Wherefore art thou, Romeo?");
@@ -144,7 +145,7 @@ public class MessageTest extends XmlTest {
                 "    from='juliet@example.com/balcony'\n" +
                 "    to='romeo@example.net'\n" +
                 "    type='chat'\n" +
-                "    xml:lang='en'>\n" +
+                "    xml:lang='de'>\n" +
                 "  <thread parent='e0ffe42b28561960c6b12b944a092794b9683a38'>0e3141cd80894871a68e6fe6b1ec56fa</thread>\n" +
                 "</message>";
         Message message = unmarshal(xml, Message.class);
@@ -152,7 +153,7 @@ public class MessageTest extends XmlTest {
         Assert.assertEquals(message.getTo().toString(), "romeo@example.net");
         Assert.assertEquals(message.getType(), Message.Type.CHAT);
         Assert.assertNull(message.getId());
-        Assert.assertEquals(message.getLanguage(), "en");
+        Assert.assertEquals(message.getLanguage(), Locale.GERMAN);
         Assert.assertEquals(message.getThread(), "0e3141cd80894871a68e6fe6b1ec56fa");
         Assert.assertEquals(message.getParentThread(), "e0ffe42b28561960c6b12b944a092794b9683a38");
     }

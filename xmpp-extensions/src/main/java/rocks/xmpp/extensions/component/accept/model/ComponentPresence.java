@@ -32,6 +32,7 @@ import rocks.xmpp.core.stanza.model.Text;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Collection;
+import java.util.Locale;
 
 /**
  * The implementation of the {@code <presence/>} element in the {@code jabber:component:accept} namespace.
@@ -60,7 +61,7 @@ public final class ComponentPresence extends Presence {
      * @param extensions The extensions.
      * @param error      The stanza error.
      */
-    private ComponentPresence(Jid to, Type type, Show show, Collection<Text> status, Byte priority, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
+    private ComponentPresence(Jid to, Type type, Show show, Collection<Text> status, Byte priority, String id, Jid from, Locale language, Collection<?> extensions, StanzaError error) {
         super(to, type, show, status, priority, id, from, language, extensions, error);
     }
 

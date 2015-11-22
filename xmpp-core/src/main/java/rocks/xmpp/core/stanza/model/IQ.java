@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -137,7 +138,7 @@ public class IQ extends Stanza {
      * @param language  The language.
      * @param error     The error.
      */
-    public IQ(Jid to, Type type, Object extension, String id, Jid from, String language, StanzaError error) {
+    public IQ(Jid to, Type type, Object extension, String id, Jid from, Locale language, StanzaError error) {
         super(to, from, id == null ? UUID.randomUUID().toString() : id, language, extension != null ? Collections.singleton(extension) : Collections.emptyList(), error);
         this.type = Objects.requireNonNull(type, "type must not be null.");
     }

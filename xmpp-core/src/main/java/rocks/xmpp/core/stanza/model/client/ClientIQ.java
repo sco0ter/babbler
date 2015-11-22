@@ -30,6 +30,7 @@ import rocks.xmpp.core.stanza.model.StanzaError;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.Locale;
 
 /**
  * The implementation of the {@code <iq/>} element in the {@code jabber:client} namespace.
@@ -58,7 +59,7 @@ public final class ClientIQ extends IQ {
      * @param language  The language.
      * @param error     The error.
      */
-    private ClientIQ(Jid to, Type type, Object extension, String id, Jid from, String language, StanzaError error) {
+    private ClientIQ(Jid to, Type type, Object extension, String id, Jid from, Locale language, StanzaError error) {
         super(to, type, extension, id, from, language, error);
     }
 

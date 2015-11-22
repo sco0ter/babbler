@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlValue;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -134,7 +135,7 @@ public class Message extends ExtensibleStanza {
      * @param extensions   The extensions.
      * @param error        The error.
      */
-    public Message(Jid to, Type type, String body, String subject, String thread, String parentThread, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
+    public Message(Jid to, Type type, String body, String subject, String thread, String parentThread, String id, Jid from, Locale language, Collection<?> extensions, StanzaError error) {
         this(to, type, body != null ? Collections.singleton(new Text(body)) : Collections.emptyList(), subject != null ? Collections.singleton(new Text(subject)) : Collections.emptyList(), thread, parentThread, id, from, language, extensions, error);
     }
 
@@ -153,7 +154,7 @@ public class Message extends ExtensibleStanza {
      * @param extensions   The extensions.
      * @param error        The error.
      */
-    public Message(Jid to, Type type, Collection<Text> bodies, Collection<Text> subjects, String thread, String parentThread, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
+    public Message(Jid to, Type type, Collection<Text> bodies, Collection<Text> subjects, String thread, String parentThread, String id, Jid from, Locale language, Collection<?> extensions, StanzaError error) {
         super(to, from, id, language, extensions, error);
         this.type = type;
         if (bodies != null) {

@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -176,7 +177,7 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      * @param extensions The extensions.
      * @param error      The stanza error.
      */
-    public Presence(Jid to, Type type, Show show, Collection<Text> status, Byte priority, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
+    public Presence(Jid to, Type type, Show show, Collection<Text> status, Byte priority, String id, Jid from, Locale language, Collection<?> extensions, StanzaError error) {
         super(to, from, id, language, extensions, error);
         this.show = show;
         this.type = type;

@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
@@ -148,7 +149,7 @@ public class PresenceTest extends XmlTest {
         Presence presence = unmarshal(xml, Presence.class);
         Assert.assertEquals(presence.getFrom().toString(), "romeo@example.net/orchard");
         Assert.assertEquals(presence.getShow(), Presence.Show.DND);
-        Assert.assertEquals(presence.getLanguage(), "en");
+        Assert.assertEquals(presence.getLanguage(), Locale.ENGLISH);
         Assert.assertEquals(presence.getStatus(), "Wooing Juliet");
     }
 
@@ -164,7 +165,7 @@ public class PresenceTest extends XmlTest {
         Presence presence = unmarshal(xml, Presence.class);
         Assert.assertEquals(presence.getFrom().toString(), "romeo@example.net/orchard");
         Assert.assertEquals(presence.getShow(), Presence.Show.DND);
-        Assert.assertEquals(presence.getLanguage(), "en");
+        Assert.assertEquals(presence.getLanguage(), Locale.ENGLISH);
         Assert.assertEquals(presence.getStatus(), "Wooing Juliet");
     }
 

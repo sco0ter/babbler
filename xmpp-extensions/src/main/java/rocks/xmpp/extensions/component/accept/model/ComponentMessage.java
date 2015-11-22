@@ -32,6 +32,7 @@ import rocks.xmpp.core.stanza.model.Text;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Collection;
+import java.util.Locale;
 
 /**
  * The implementation of the {@code <message/>} element in the {@code jabber:component:accept} namespace.
@@ -61,7 +62,7 @@ public final class ComponentMessage extends rocks.xmpp.core.stanza.model.Message
      * @param extensions   The extensions.
      * @param error        The error.
      */
-    private ComponentMessage(Jid to, Type type, Collection<Text> bodies, Collection<Text> subjects, String thread, String parentThread, String id, Jid from, String language, Collection<?> extensions, StanzaError error) {
+    private ComponentMessage(Jid to, Type type, Collection<Text> bodies, Collection<Text> subjects, String thread, String parentThread, String id, Jid from, Locale language, Collection<?> extensions, StanzaError error) {
         super(to, type, bodies, subjects, thread, parentThread, id, from, language, extensions, error);
     }
 

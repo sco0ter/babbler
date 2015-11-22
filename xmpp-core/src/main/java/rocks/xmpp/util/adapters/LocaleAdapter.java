@@ -22,51 +22,24 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.stanza.model;
+package rocks.xmpp.util.adapters;
 
-import rocks.xmpp.addr.Jid;
-
-import javax.xml.bind.annotation.XmlTransient;
-import java.util.Collection;
-import java.util.List;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.util.Locale;
 
 /**
+ * Converts an {@link Locale} to a string representation using {@link Locale#toLanguageTag()} and vice versa, using {@link Locale#forLanguageTag(String)}}.
+ *
  * @author Christian Schudt
  */
-@XmlTransient
-abstract class ExtensibleStanza extends Stanza {
-
-    ExtensibleStanza(Jid to, Jid from, String id, Locale language, Collection<?> extensions, StanzaError error) {
-        super(to, from, id, language, extensions, error);
+public final class LocaleAdapter extends XmlAdapter<String, Locale> {
+    @Override
+    public final Locale unmarshal(String v) throws Exception {
+        return v != null ? Locale.forLanguageTag(v) : null;
     }
 
-    /**
-     * Adds an extension.
-     *
-     * @param extension The extension.
-     * @return If the extension was added.
-     */
-    public final boolean addExtension(Object extension) {
-        return getExtensions().add(extension);
-    }
-
-    /**
-     * Removes all extensions of the given type.
-     *
-     * @param clazz The extension class.
-     * @return If the extension could be removed.
-     */
-    public final boolean removeExtension(Class<?> clazz) {
-        return getExtensions().removeIf(extension -> clazz.isAssignableFrom(extension.getClass()));
-    }
-
-    /**
-     * Gets all extensions.
-     *
-     * @return The extensions.
-     */
-    public final List<Object> getExtensions() {
-        return extensions;
+    @Override
+    public final String marshal(Locale v) throws Exception {
+        return v != null ? v.toLanguageTag() : null;
     }
 }

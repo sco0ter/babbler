@@ -64,7 +64,6 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -339,7 +338,7 @@ public final class BoshConnection extends Connection {
 
         // Create initial request.
         Body.Builder body = Body.builder()
-                .language(Locale.getDefault().getLanguage())
+                .language(getXmppSession().getConfiguration().getLanguage())
                 .version("1.11")
                 .wait(boshConnectionConfiguration.getWait())
                 .hold((byte) 1)
@@ -464,7 +463,7 @@ public final class BoshConnection extends Connection {
                     .sessionId(sessionId)
                     .restart(true)
                     .to(getXmppSession().getDomain().toString())
-                    .language(Locale.getDefault().getLanguage())
+                    .language(getXmppSession().getConfiguration().getLanguage())
                     .from(from);
         }
         sendNewRequest(bodyBuilder, false);

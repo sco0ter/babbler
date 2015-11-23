@@ -61,7 +61,6 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -147,7 +146,7 @@ public final class WebSocketConnection extends Connection {
 
     @Override
     protected final void restartStream() {
-        send(new Open(getXmppSession().getDomain(), Locale.getDefault().getLanguage()));
+        send(new Open(getXmppSession().getDomain(), getXmppSession().getConfiguration().getLanguage()));
     }
 
     @Override

@@ -37,7 +37,6 @@ import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.EnumSet;
-import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -148,7 +147,7 @@ final class XmppStreamWriter {
 
                     xmlStreamWriter.writeStartDocument("UTF-8", "1.0");
                     xmlStreamWriter.writeStartElement("stream", "stream", StreamFeatures.NAMESPACE);
-                    xmlStreamWriter.writeAttribute(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI, "lang", Locale.getDefault().getLanguage());
+                    xmlStreamWriter.writeAttribute(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI, "lang", xmppSession.getConfiguration().getLanguage().toLanguageTag());
                     if (xmppSession.getDomain() != null) {
                         xmlStreamWriter.writeAttribute("to", xmppSession.getDomain().toString());
                     }

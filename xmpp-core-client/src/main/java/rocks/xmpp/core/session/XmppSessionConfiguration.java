@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -110,6 +111,8 @@ public final class XmppSessionConfiguration {
 
     private final Set<Extension> extensions;
 
+    private final Locale language;
+
     /**
      * Creates a configuration for an {@link XmppSession}. If you want to add custom classes to the {@link JAXBContext}, you can pass them as parameters.
      *
@@ -123,7 +126,7 @@ public final class XmppSessionConfiguration {
         this.initialPresence = builder.initialPresence;
         this.xmlInputFactory = XMLInputFactory.newFactory();
         this.xmlOutputFactory = XMLOutputFactory.newFactory();
-
+        this.language = builder.language != null ? builder.language : Locale.getDefault();
         this.extensions = new HashSet<>();
         this.extensions.addAll(builder.extensions);
 
@@ -233,6 +236,7 @@ public final class XmppSessionConfiguration {
      * For Mac it is <code>~/Library/Application Support</code><br>
      * Else it is the user's home directory.
      * </p>
+     *
      * @return The directory.
      */
     public final Path getCacheDirectory() {
@@ -247,6 +251,16 @@ public final class XmppSessionConfiguration {
      */
     public final Supplier<Presence> getInitialPresence() {
         return initialPresence;
+    }
+
+    /**
+     * Gets the preferred or default language for any human-readable XML character data to be sent over the stream.
+     *
+     * @return The language.
+     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-attr-xmllang">4.7.4.  xml:lang</a>
+     */
+    public final Locale getLanguage() {
+        return language;
     }
 
     final Collection<Extension> getExtensions() {
@@ -285,6 +299,8 @@ public final class XmppSessionConfiguration {
         private Path cacheDirectory;
 
         private Supplier<Presence> initialPresence;
+
+        private Locale language;
 
         /**
          * The default preferred SASL mechanisms.
@@ -389,6 +405,19 @@ public final class XmppSessionConfiguration {
             this.initialPresence = presenceSupplier;
             return this;
         }
+
+        /**
+         * Sets the preferred or default language for any human-readable XML character data to be sent over the stream.
+         *
+         * @param language The language.
+         * @return The builder.
+         * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-attr-xmllang">4.7.4.  xml:lang</a>
+         */
+        public final Builder language(Locale language) {
+            this.language = language;
+            return this;
+        }
+
 
         /**
          * Builds the configuration.

@@ -3,7 +3,7 @@
 
 ## Version 0.7.0-SNAPSHOT
 
-* `Stanza`'s `xml:lang` attribute is represented as `java.util.Locale`, not as `String`. 
+* Represent `xml:lang` attributes as `java.util.Locale`, not as `String`. 
 
 ### Version 0.6.2-SNAPSHOT
 

@@ -34,6 +34,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.net.URI;
 import java.util.Collections;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
@@ -60,17 +61,17 @@ public class ReachabilityTest extends XmlTest {
         Assert.assertEquals(reachability.getAddresses().get(0).getUri(), URI.create("tel:+1-303-555-1212"));
         Assert.assertEquals(reachability.getAddresses().get(0).getDescriptions().size(), 1);
         Assert.assertEquals(reachability.getAddresses().get(0).getDescriptions().get(0).getValue(), "Conference room phone");
-        Assert.assertEquals(reachability.getAddresses().get(0).getDescriptions().get(0).getLanguage(), "en");
+        Assert.assertEquals(reachability.getAddresses().get(0).getDescriptions().get(0).getLanguage(), Locale.ENGLISH);
         Assert.assertEquals(reachability.getAddresses().get(1).getUri(), URI.create("sip:room123@example.com"));
         Assert.assertEquals(reachability.getAddresses().get(1).getDescriptions().get(0).getValue(), "In-room video system");
-        Assert.assertEquals(reachability.getAddresses().get(1).getDescriptions().get(0).getLanguage(), "en");
+        Assert.assertEquals(reachability.getAddresses().get(1).getDescriptions().get(0).getLanguage(), Locale.ENGLISH);
     }
 
     @Test
     public void testReachabilityEquality() {
 
-        Reachability reachability1 = new Reachability(Collections.singleton(new Address(URI.create("sip:room123@example.com"), new Address.Description("In-room video system", "en"))));
-        Reachability reachability2 = new Reachability(Collections.singleton(new Address(URI.create("sip:room123@example.com"), new Address.Description("In-room video system", "en"))));
+        Reachability reachability1 = new Reachability(Collections.singleton(new Address(URI.create("sip:room123@example.com"), new Address.Description("In-room video system", Locale.ENGLISH))));
+        Reachability reachability2 = new Reachability(Collections.singleton(new Address(URI.create("sip:room123@example.com"), new Address.Description("In-room video system", Locale.ENGLISH))));
 
         Assert.assertEquals(reachability1, reachability2);
     }

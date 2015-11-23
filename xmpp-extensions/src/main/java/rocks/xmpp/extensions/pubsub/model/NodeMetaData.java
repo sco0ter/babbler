@@ -31,6 +31,7 @@ import java.time.Instant;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/pubsub#meta-data}, which can be used to retrieve node meta data.
@@ -187,8 +188,9 @@ public final class NodeMetaData {
      *
      * @return The language.
      */
-    public final String getLanguage() {
-        return dataForm.findValue(LANGUAGE);
+    public final Locale getLanguage() {
+        String lang = dataForm.findValue(LANGUAGE);
+        return lang != null ? Locale.forLanguageTag(lang) : null;
     }
 
     /**
@@ -248,7 +250,7 @@ public final class NodeMetaData {
 
         private String description;
 
-        private String language;
+        private Locale language;
 
         private Integer numberOfSubscribers;
 
@@ -313,7 +315,7 @@ public final class NodeMetaData {
          * @param language The language.
          * @return The builder.
          */
-        public final Builder language(String language) {
+        public final Builder language(Locale language) {
             this.language = language;
             return this;
         }
@@ -399,7 +401,7 @@ public final class NodeMetaData {
                 fields.add(DataForm.Field.builder().var(DESCRIPTION).value(description).build());
             }
             if (language != null) {
-                fields.add(DataForm.Field.builder().var(LANGUAGE).value(language).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().var(LANGUAGE).value(language.toLanguageTag()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (numberOfSubscribers != null) {
                 fields.add(DataForm.Field.builder().var(NUM_SUBSCRIBERS).value(numberOfSubscribers).build());

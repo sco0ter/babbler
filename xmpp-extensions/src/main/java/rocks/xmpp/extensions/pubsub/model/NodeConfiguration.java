@@ -33,6 +33,7 @@ import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/pubsub#node_config}, which can be used to configure a pubsub node.
@@ -556,7 +557,7 @@ public final class NodeConfiguration {
 
         private ItemReply itemReply;
 
-        private String language;
+        private Locale language;
 
         private Integer maxItems;
 
@@ -763,7 +764,7 @@ public final class NodeConfiguration {
          * @param language The default language of the node.
          * @return The builder.
          */
-        public final Builder language(String language) {
+        public final Builder language(Locale language) {
             this.language = language;
             return this;
         }
@@ -1026,7 +1027,7 @@ public final class NodeConfiguration {
                 fields.add(DataForm.Field.builder().var(ITEM_REPLY).value(itemReply.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (language != null) {
-                fields.add(DataForm.Field.builder().var(LANGUAGE).value(language).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().var(LANGUAGE).value(language.toLanguageTag()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (maxItems != null) {
                 fields.add(DataForm.Field.builder().var(MAX_ITEMS).value(maxItems.toString()).build());

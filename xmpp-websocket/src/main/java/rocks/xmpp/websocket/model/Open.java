@@ -27,6 +27,7 @@ package rocks.xmpp.websocket.model;
 import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Locale;
 
 /**
  * The implementation of the {@code <open/>} element in the {@code urn:ietf:params:xml:ns:xmpp-framing} namespace.
@@ -46,7 +47,7 @@ public final class Open extends Frame {
      * @param to       The 'to' attribute.
      * @param language The 'lang' attribute.
      */
-    public Open(Jid to, String language) {
+    public Open(Jid to, Locale language) {
         this(to, null, null, language);
     }
 
@@ -58,7 +59,7 @@ public final class Open extends Frame {
      * @param id       The 'id' attribute.
      * @param language The 'lang' attribute.
      */
-    public Open(Jid to, Jid from, String id, String language) {
+    public Open(Jid to, Jid from, String id, Locale language) {
         this(to, from, id, language, "1.0");
     }
 
@@ -71,7 +72,7 @@ public final class Open extends Frame {
      * @param language The 'lang' attribute.
      * @param version  The 'version' attribute.
      */
-    public Open(Jid to, Jid from, String id, String language, String version) {
+    public Open(Jid to, Jid from, String id, Locale language, String version) {
         super(to, from, id, language, version);
     }
 }

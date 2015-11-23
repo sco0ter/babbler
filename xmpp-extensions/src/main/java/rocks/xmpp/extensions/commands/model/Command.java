@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.commands.model;
 
+import rocks.xmpp.util.adapters.LocaleAdapter;
+
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -31,10 +33,12 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -65,7 +69,8 @@ public final class Command {
     private final String sessionid;
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-    private final String lang;
+    @XmlJavaTypeAdapter(LocaleAdapter.class)
+    private final Locale lang;
 
     @XmlAttribute
     private final Status status;
@@ -118,7 +123,7 @@ public final class Command {
      * @param language  The language.
      * @param notes     The notes.
      */
-    public Command(String node, String sessionId, Action action, List<Object> payloads, String language, List<Note> notes) {
+    public Command(String node, String sessionId, Action action, List<Object> payloads, Locale language, List<Note> notes) {
         this(node, sessionId, action, null, null, null, payloads, language, notes);
     }
 
@@ -148,7 +153,7 @@ public final class Command {
      * @param language      The language.
      * @param notes         The notes.
      */
-    public Command(String node, String sessionId, Status status, Collection<Action> actions, Action defaultAction, List<Object> payloads, String language, List<Note> notes) {
+    public Command(String node, String sessionId, Status status, Collection<Action> actions, Action defaultAction, List<Object> payloads, Locale language, List<Note> notes) {
         this(node, sessionId, null, status, actions, defaultAction, payloads, language, notes);
     }
 
@@ -160,7 +165,7 @@ public final class Command {
      * @param sessionId The session id.
      * @param payloads  The payloads.
      */
-    private Command(String node, String sessionId, Action action, Status status, Collection<Action> actions, Action defaultAction, List<Object> payloads, String language, List<Note> notes) {
+    private Command(String node, String sessionId, Action action, Status status, Collection<Action> actions, Action defaultAction, List<Object> payloads, Locale language, List<Note> notes) {
         this.node = Objects.requireNonNull(node);
         this.sessionid = sessionId;
         this.action = action;
@@ -292,7 +297,7 @@ public final class Command {
      *
      * @return The language.
      */
-    public final String getLanguage() {
+    public final Locale getLanguage() {
         return lang;
     }
 

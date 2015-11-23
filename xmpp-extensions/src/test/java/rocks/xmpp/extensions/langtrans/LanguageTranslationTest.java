@@ -37,6 +37,7 @@ import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
@@ -48,7 +49,7 @@ public class LanguageTranslationTest extends XmlTest {
 
     @Test
     public void marshalLanguageTranslation() throws JAXBException, XMLStreamException {
-        LanguageTranslation.Translation translation = LanguageTranslation.Translation.ofDestinationLanguage("en").withSourceLanguage("fr").withEngine("engine").withTranslatedText("text");
+        LanguageTranslation.Translation translation = LanguageTranslation.Translation.ofDestinationLanguage(Locale.ENGLISH).withSourceLanguage(Locale.FRENCH).withEngine("engine").withTranslatedText("text");
         LanguageTranslation translations = new LanguageTranslation(translation);
 
         String xml = marshal(translations);
@@ -74,8 +75,8 @@ public class LanguageTranslationTest extends XmlTest {
         LanguageTranslation languageTranslation = message.getExtension(LanguageTranslation.class);
         Assert.assertNotNull(languageTranslation);
         Assert.assertEquals(languageTranslation.getTranslations().size(), 2);
-        Assert.assertEquals(languageTranslation.getTranslations().get(0).getSourceLanguage(), "fr");
-        Assert.assertEquals(languageTranslation.getTranslations().get(0).getDestinationLanguage(), "en");
+        Assert.assertEquals(languageTranslation.getTranslations().get(0).getSourceLanguage(), Locale.FRENCH);
+        Assert.assertEquals(languageTranslation.getTranslations().get(0).getDestinationLanguage(), Locale.ENGLISH);
         Assert.assertEquals(languageTranslation.getTranslations().get(0).getEngine(), "SYSTRANS");
     }
 
@@ -104,9 +105,9 @@ public class LanguageTranslationTest extends XmlTest {
         Assert.assertNotNull(languageSupport);
         Assert.assertEquals(languageSupport.getItems().size(), 7);
         LanguageSupport.Item item = languageSupport.getItems().get(0);
-        Assert.assertEquals(item.getSourceLanguage(), "en");
+        Assert.assertEquals(item.getSourceLanguage(), Locale.ENGLISH);
         Assert.assertEquals(item.getJid(), Jid.of("translation.shakespeare.lit"));
-        Assert.assertEquals(item.getDestinationLanguage(), "fr");
+        Assert.assertEquals(item.getDestinationLanguage(), Locale.FRENCH);
         Assert.assertEquals(item.getEngine(), "SYSTRANS 2005 Release 2");
         Assert.assertTrue(item.isPivotable());
         Assert.assertEquals(item.getDictionary(), "medical");
@@ -125,10 +126,10 @@ public class LanguageTranslationTest extends XmlTest {
         LanguageTranslation languageTranslation = iq.getExtension(LanguageTranslation.class);
         Assert.assertNotNull(languageTranslation);
         Assert.assertEquals(languageTranslation.getSourceText(), "How are you?");
-        Assert.assertEquals(languageTranslation.getSourceLanguage(), "en");
+        Assert.assertEquals(languageTranslation.getSourceLanguage(), Locale.ENGLISH);
         Assert.assertEquals(languageTranslation.getTranslations().size(), 2);
-        Assert.assertEquals(languageTranslation.getTranslations().get(0).getSourceLanguage(), "en");
-        Assert.assertEquals(languageTranslation.getTranslations().get(0).getDestinationLanguage(), "it");
+        Assert.assertEquals(languageTranslation.getTranslations().get(0).getSourceLanguage(), Locale.ENGLISH);
+        Assert.assertEquals(languageTranslation.getTranslations().get(0).getDestinationLanguage(), Locale.ITALIAN);
         Assert.assertEquals(languageTranslation.getTranslations().get(0).getEngine(), "default");
         Assert.assertEquals(languageTranslation.getTranslations().get(0).getTranslatedText(), "Come siete?");
         Assert.assertEquals(languageTranslation.getTranslations().get(0).getDictionary(), "medical");

@@ -24,9 +24,13 @@
 
 package rocks.xmpp.core.stanza.model;
 
+import rocks.xmpp.util.adapters.LocaleAdapter;
+
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.Locale;
 
 /**
  * A common "text" element which is used for a message's body or subject, a presence's status or a stanza error's text element.
@@ -38,7 +42,8 @@ import javax.xml.bind.annotation.XmlValue;
  */
 public final class Text {
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-    private final String lang;
+    @XmlJavaTypeAdapter(LocaleAdapter.class)
+    private final Locale lang;
 
     @XmlValue
     private final String text;
@@ -67,7 +72,7 @@ public final class Text {
      * @param text     The text
      * @param language The language.
      */
-    public Text(String text, String language) {
+    public Text(String text, Locale language) {
         this.text = text;
         this.lang = language;
     }
@@ -77,7 +82,7 @@ public final class Text {
      *
      * @return The language.
      */
-    public final String getLanguage() {
+    public final Locale getLanguage() {
         return lang;
     }
 

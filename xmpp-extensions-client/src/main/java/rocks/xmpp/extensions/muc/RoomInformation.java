@@ -32,6 +32,7 @@ import rocks.xmpp.extensions.muc.model.RoomInfo;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -108,7 +109,7 @@ public final class RoomInformation {
      *
      * @return The language.
      */
-    public String getLanguage() {
+    public Locale getLanguage() {
         if (roomInfo != null) {
             return roomInfo.getLanguage();
         }

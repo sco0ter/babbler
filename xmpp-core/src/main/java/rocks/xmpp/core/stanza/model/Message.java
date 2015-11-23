@@ -201,7 +201,7 @@ public class Message extends ExtensibleStanza {
      */
     public final String getBody() {
         for (Text body : this.body) {
-            if (body.getLanguage() == null || body.getLanguage().isEmpty()) {
+            if (body.getLanguage() == null) {
                 return body.getText();
             }
         }
@@ -223,7 +223,7 @@ public class Message extends ExtensibleStanza {
         if (body != null) {
             synchronized (this) {
                 for (Text b : this.body) {
-                    if (b.getLanguage() == null || b.getLanguage().isEmpty()) {
+                    if (b.getLanguage() == null) {
                         this.body.remove(b);
                         break;
                     }
@@ -264,7 +264,7 @@ public class Message extends ExtensibleStanza {
      */
     public final String getSubject() {
         for (Text subject : this.subject) {
-            if (subject.getLanguage() == null || subject.getLanguage().isEmpty()) {
+            if (subject.getLanguage() == null) {
                 return subject.getText();
             }
         }
@@ -286,7 +286,7 @@ public class Message extends ExtensibleStanza {
         if (subject != null) {
             synchronized (this) {
                 for (Text s : this.subject) {
-                    if (s.getLanguage() == null || s.getLanguage().isEmpty()) {
+                    if (s.getLanguage() == null) {
                         this.subject.remove(s);
                         break;
                     }

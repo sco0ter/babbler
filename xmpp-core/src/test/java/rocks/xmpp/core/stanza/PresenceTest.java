@@ -223,7 +223,7 @@ public class PresenceTest extends XmlTest {
 
     @Test
     public void marshalPresenceMultipleStatus() throws JAXBException, XMLStreamException {
-        Presence presence = new Presence(Jid.ofLocalAndDomain("to", "domain"), Presence.Type.SUBSCRIBE, null, Arrays.asList(new Text("status", "de"), new Text("status2", "en")), null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
+        Presence presence = new Presence(Jid.ofLocalAndDomain("to", "domain"), Presence.Type.SUBSCRIBE, null, Arrays.asList(new Text("status", Locale.GERMAN), new Text("status2", Locale.ENGLISH)), null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"subscribe\"><status xml:lang=\"de\">status</status><status xml:lang=\"en\">status2</status></presence>");
     }

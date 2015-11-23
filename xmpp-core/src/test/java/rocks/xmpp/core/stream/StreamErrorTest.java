@@ -33,6 +33,7 @@ import rocks.xmpp.core.stream.model.errors.SeeOtherHost;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
@@ -304,7 +305,7 @@ public class StreamErrorTest extends XmlTest {
                 "   </stream:error>";
         StreamError streamError = unmarshal(xml, StreamError.class);
         Assert.assertEquals(streamError.getText(), "OPTIONAL descriptive text");
-        Assert.assertEquals(streamError.getLanguage(), "en");
+        Assert.assertEquals(streamError.getLanguage(), Locale.ENGLISH);
         Assert.assertTrue(streamError.getCondition() == Condition.HOST_UNKNOWN);
     }
 }

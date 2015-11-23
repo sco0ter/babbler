@@ -24,14 +24,18 @@
 
 package rocks.xmpp.extensions.reach.model;
 
+import rocks.xmpp.util.adapters.LocaleAdapter;
+
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -104,7 +108,8 @@ public final class Address {
         private final String value;
 
         @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-        private final String lang;
+        @XmlJavaTypeAdapter(LocaleAdapter.class)
+        private final Locale lang;
 
         private Description() {
             this(null, null);
@@ -114,7 +119,7 @@ public final class Address {
          * @param value    The actual description.
          * @param language The language of the description.
          */
-        public Description(String value, String language) {
+        public Description(String value, Locale language) {
             this.value = value;
             this.lang = language;
         }
@@ -133,7 +138,7 @@ public final class Address {
          *
          * @return The language.
          */
-        public final String getLanguage() {
+        public final Locale getLanguage() {
             return lang;
         }
 

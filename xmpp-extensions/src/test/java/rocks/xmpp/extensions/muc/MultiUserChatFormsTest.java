@@ -43,6 +43,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
@@ -90,7 +91,7 @@ public class MultiUserChatFormsTest extends XmlTest {
                 .changeSubjectAllowed(true)
                 .loggingEnabled(true)
                 .rolesThatMayRetrieveMemberList(EnumSet.of(Role.PARTICIPANT))
-                .language("en")
+                .language(Locale.ENGLISH)
                 .pubSubNode(URI.create("xmpp:pubsub.shakespeare.lit?;node=princely_musings"))
                 .maxUsers(30)
                 .membersOnly(true)
@@ -145,7 +146,7 @@ public class MultiUserChatFormsTest extends XmlTest {
         Assert.assertTrue(roomConfiguration1.isChangeSubjectAllowed());
         Assert.assertTrue(roomConfiguration1.isLoggingEnabled());
         Assert.assertEquals(roomConfiguration1.getRolesThatMayRetrieveMemberList(), Collections.singleton(Role.PARTICIPANT));
-        Assert.assertEquals(roomConfiguration1.getLanguage(), "en");
+        Assert.assertEquals(roomConfiguration1.getLanguage(), Locale.ENGLISH);
         Assert.assertEquals(roomConfiguration1.getPubSubNode(), URI.create("xmpp:pubsub.shakespeare.lit?;node=princely_musings"));
         Assert.assertEquals(roomConfiguration1.getMaxUsers(), Integer.valueOf(30));
         Assert.assertTrue(roomConfiguration1.isMembersOnly());
@@ -207,7 +208,7 @@ public class MultiUserChatFormsTest extends XmlTest {
                 .maxHistoryMessages(50)
                 .contacts(Arrays.asList(Jid.of("contact1"), Jid.of("contact2")))
                 .description("The place for all good witches!")
-                .language("en")
+                .language(Locale.ENGLISH)
                 .ldapGroup("cn=witches,dc=shakespeare,dc=lit")
                 .logs(new URL("http://www.shakespeare.lit/chatlogs/coven/"))
                 .currentNumberOfOccupants(45)
@@ -240,7 +241,7 @@ public class MultiUserChatFormsTest extends XmlTest {
         Assert.assertEquals(roomInfo2.getSubject(), "Spells");
         Assert.assertEquals(roomInfo2.getCurrentNumberOfOccupants(), Integer.valueOf(45));
         Assert.assertEquals(roomInfo2.getLdapGroup(), "cn=witches,dc=shakespeare,dc=lit");
-        Assert.assertEquals(roomInfo2.getLanguage(), "en");
+        Assert.assertEquals(roomInfo2.getLanguage(), Locale.ENGLISH);
         Assert.assertEquals(roomInfo2.getLogs(), new URL("http://www.shakespeare.lit/chatlogs/coven/"));
         Assert.assertEquals(roomInfo2.getMaxHistoryMessages(), Integer.valueOf(50));
     }

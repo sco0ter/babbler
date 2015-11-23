@@ -33,6 +33,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.net.URI;
 import java.time.ZoneOffset;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
@@ -55,7 +56,7 @@ public class GeoLocationTest extends XmlTest {
                 "        </geoloc>\n";
         GeoLocation geoLocation = unmarshal(xml, GeoLocation.class);
         Assert.assertNotNull(geoLocation);
-        Assert.assertEquals(geoLocation.getLanguage(), "en");
+        Assert.assertEquals(geoLocation.getLanguage(), Locale.ENGLISH);
         Assert.assertEquals(geoLocation.getAccuracy(), 20.0);
         Assert.assertEquals(geoLocation.getCountry(), "Italy");
         Assert.assertEquals(geoLocation.getLatitude(), 45.44);
@@ -77,7 +78,7 @@ public class GeoLocationTest extends XmlTest {
                 .datum("datum")
                 .description("description")
                 .floor("floor")
-                .language("language")
+                .language(Locale.FRENCH)
                 .latitude(4.0)
                 .locality("locality")
                 .longitude(5.0)
@@ -92,7 +93,7 @@ public class GeoLocationTest extends XmlTest {
                 .build();
 
         String xml = marshal(geoLocation);
-        Assert.assertEquals(xml, "<geoloc xmlns=\"http://jabber.org/protocol/geoloc\" xml:lang=\"language\">" +
+        Assert.assertEquals(xml, "<geoloc xmlns=\"http://jabber.org/protocol/geoloc\" xml:lang=\"fr\">" +
                 "<accuracy>1.0</accuracy>" +
                 "<altitude>2.0</altitude>" +
                 "<area>area</area>" +

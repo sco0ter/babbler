@@ -15,6 +15,7 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Manages XMPP language translation protocol.
@@ -70,9 +71,9 @@ public final class LanguageTranslationManager extends Manager {
      * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0171.html#request">4.3 Requesting a Translation from a Service</a>
      */
-    public List<LanguageTranslation.Translation> translate(Jid translationProvider, String text, String sourceLanguage, String... destinationLanguage) throws XmppException {
+    public List<LanguageTranslation.Translation> translate(Jid translationProvider, String text, Locale sourceLanguage, Locale... destinationLanguage) throws XmppException {
         Collection<LanguageTranslation.Translation> translations = new ArrayDeque<>();
-        for (String dl : destinationLanguage) {
+        for (Locale dl : destinationLanguage) {
             translations.add(LanguageTranslation.Translation.ofDestinationLanguage(dl));
         }
         IQ result = xmppSession.query(IQ.get(translationProvider, new LanguageTranslation(text, sourceLanguage, translations)));

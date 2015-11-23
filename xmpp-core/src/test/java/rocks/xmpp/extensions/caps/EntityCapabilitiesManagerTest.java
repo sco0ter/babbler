@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
@@ -66,12 +67,12 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
     @Test
     public void testSortIdentities() throws XMLStreamException, JAXBException {
 
-        Identity identity1 = Identity.ofCategoryAndType("AAA", "aaa").withName("name1", "en");
-        Identity identity2 = Identity.ofCategoryAndType("AAA", "aaa").withName("name2", "de");
-        Identity identity3 = Identity.ofCategoryAndType("AAA", "bbb").withName("name2", "de");
-        Identity identity4 = Identity.ofCategoryAndType("BBB", "bbb").withName("name2", "de");
-        Identity identity5 = Identity.ofCategoryAndType("BBB", "aaa").withName("name1", "en");
-        Identity identity6 = Identity.ofCategoryAndType("CCC", "aaa").withName("name2", "de");
+        Identity identity1 = Identity.ofCategoryAndType("AAA", "aaa").withName("name1", Locale.ENGLISH);
+        Identity identity2 = Identity.ofCategoryAndType("AAA", "aaa").withName("name2", Locale.GERMAN);
+        Identity identity3 = Identity.ofCategoryAndType("AAA", "bbb").withName("name2", Locale.GERMAN);
+        Identity identity4 = Identity.ofCategoryAndType("BBB", "bbb").withName("name2", Locale.GERMAN);
+        Identity identity5 = Identity.ofCategoryAndType("BBB", "aaa").withName("name1", Locale.ENGLISH);
+        Identity identity6 = Identity.ofCategoryAndType("CCC", "aaa").withName("name2", Locale.GERMAN);
 
         List<Identity> identities = new ArrayList<>();
         identities.add(identity1);
@@ -171,8 +172,8 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
     @Test
     public void testVerificationStringComplex() throws NoSuchAlgorithmException {
         List<Identity> identities = new ArrayList<>();
-        identities.add(Identity.clientPc().withName("Psi 0.11", "en"));
-        identities.add(Identity.clientPc().withName("P 0.11", "el"));
+        identities.add(Identity.clientPc().withName("Psi 0.11", Locale.ENGLISH));
+        identities.add(Identity.clientPc().withName("P 0.11", Locale.forLanguageTag("el")));
 
         List<String> features = new ArrayList<>();
         features.add("http://jabber.org/protocol/caps");

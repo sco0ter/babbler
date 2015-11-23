@@ -41,6 +41,7 @@ import rocks.xmpp.core.stanza.model.errors.Redirect;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
@@ -468,7 +469,7 @@ public class StanzaErrorTest extends XmlTest {
         Assert.assertNotNull(message.getError());
         Assert.assertEquals(message.getError().getType(), StanzaError.Type.MODIFY);
         Assert.assertEquals(message.getError().getText(), "[ ... application-specific information ... ]");
-        Assert.assertEquals(message.getError().getLanguage(), "en");
+        Assert.assertEquals(message.getError().getLanguage(), Locale.ENGLISH);
         Assert.assertEquals(message.getError().getBy().toString(), "romeo@example.net/foo");
         Assert.assertTrue(message.getError().getExtension() instanceof Element);
         Assert.assertEquals(((Element) message.getError().getExtension()).getTagName(), "too-many-parameters");

@@ -36,6 +36,7 @@ import rocks.xmpp.core.sasl.model.Success;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
@@ -91,7 +92,7 @@ public class SaslTest extends XmlTest {
         Failure failure = unmarshal(xml, Failure.class);
         Assert.assertNotNull(failure);
         Assert.assertTrue(failure.getCondition() == Failure.Condition.ACCOUNT_DISABLED);
-        Assert.assertEquals(failure.getLanguage(), "en");
+        Assert.assertEquals(failure.getLanguage(), Locale.ENGLISH);
         Assert.assertEquals(failure.getText(), "Call 212-555-1212 for assistance.");
     }
 

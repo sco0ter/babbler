@@ -24,8 +24,12 @@
 
 package rocks.xmpp.extensions.disco.model.info;
 
+import rocks.xmpp.util.adapters.LocaleAdapter;
+
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -81,7 +85,8 @@ public final class Identity implements Comparable<Identity> {
     private final String name;
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-    private final String lang;
+    @XmlJavaTypeAdapter(LocaleAdapter.class)
+    private final Locale lang;
 
     /**
      * Private default constructor for unmarshalling.
@@ -111,7 +116,7 @@ public final class Identity implements Comparable<Identity> {
      * @param name     The name.
      * @param language The language.
      */
-    private Identity(String category, String type, String name, String language) {
+    private Identity(String category, String type, String name, Locale language) {
         this.category = Objects.requireNonNull(category);
         this.type = Objects.requireNonNull(type);
         this.name = name;
@@ -847,7 +852,7 @@ public final class Identity implements Comparable<Identity> {
      *
      * @return The language.
      */
-    public final String getLanguage() {
+    public final Locale getLanguage() {
         return lang;
     }
 
@@ -920,7 +925,7 @@ public final class Identity implements Comparable<Identity> {
                 } else if (o.lang == null) {
                     result = 1;
                 } else {
-                    result = lang.compareTo(o.lang);
+                    result = lang.toLanguageTag().compareTo(o.lang.toLanguageTag());
                 }
             }
 
@@ -961,7 +966,7 @@ public final class Identity implements Comparable<Identity> {
      * @param language The language.
      * @return The identity.
      */
-    public Identity withName(String name, String language) {
+    public Identity withName(String name, Locale language) {
         return new Identity(category, type, name, language);
     }
 }

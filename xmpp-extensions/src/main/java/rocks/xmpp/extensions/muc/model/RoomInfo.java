@@ -32,6 +32,7 @@ import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#roominfo}, which can be used to retrieve MUC room info.
@@ -159,8 +160,9 @@ public final class RoomInfo {
      *
      * @return The language.
      */
-    public String getLanguage() {
-        return dataForm.findValue(LANGUAGE);
+    public Locale getLanguage() {
+        String lang = dataForm.findValue(LANGUAGE);
+        return lang != null ? Locale.forLanguageTag(lang) : null;
     }
 
     /**
@@ -240,7 +242,7 @@ public final class RoomInfo {
 
         private String description;
 
-        private String language;
+        private Locale language;
 
         private String ldapGroup;
 
@@ -294,7 +296,7 @@ public final class RoomInfo {
          * @param language The language.
          * @return The builder.
          */
-        public Builder language(String language) {
+        public Builder language(Locale language) {
             this.language = language;
             return this;
         }
@@ -381,7 +383,7 @@ public final class RoomInfo {
                 fields.add(DataForm.Field.builder().var(DESCRIPTION).value(description).build());
             }
             if (language != null) {
-                fields.add(DataForm.Field.builder().var(LANGUAGE).value(language).build());
+                fields.add(DataForm.Field.builder().var(LANGUAGE).value(language.toLanguageTag()).build());
             }
             if (ldapGroup != null) {
                 fields.add(DataForm.Field.builder().var(LDAP_GROUP).value(ldapGroup).build());

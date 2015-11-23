@@ -40,6 +40,7 @@ import rocks.xmpp.extensions.muc.model.Muc;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
@@ -74,7 +75,7 @@ public class ExternalComponentSample {
                     @Override
                     protected IQ processRequest(IQ iq) {
                         Collection<LanguageSupport.Item> items = new ArrayDeque<>();
-                        items.add(new LanguageSupport.Item("en", myComponent.getDomain(), "de", "testEngine", true, null));
+                        items.add(new LanguageSupport.Item(Locale.ENGLISH, myComponent.getDomain(), Locale.GERMAN, "testEngine", true, null));
                         return iq.createResult(new LanguageSupport(items));
                     }
                 });

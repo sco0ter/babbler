@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.httpbind.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.util.adapters.LocaleAdapter;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAnyElement;
@@ -32,11 +33,13 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * The implementation of the {@code <body/>} element in the {@code http://jabber.org/protocol/httpbind} namespace.
@@ -169,7 +172,8 @@ public final class Body {
     private final Integer wait;
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-    private final String lang;
+    @XmlJavaTypeAdapter(LocaleAdapter.class)
+    private final Locale lang;
 
     @XmlAttribute(namespace = XBOSH_NAMESPACE)
     private final String version;
@@ -474,7 +478,7 @@ public final class Body {
         return wait;
     }
 
-    public final String getLanguage() {
+    public final Locale getLanguage() {
         return lang;
     }
 
@@ -621,7 +625,7 @@ public final class Body {
 
         private String to;
 
-        private String language;
+        private Locale language;
 
         private String version;
 
@@ -676,7 +680,7 @@ public final class Body {
          * @param language The 'lang' attribute.
          * @return The builder.
          */
-        public final Builder language(String language) {
+        public final Builder language(Locale language) {
             this.language = language;
             return this;
         }

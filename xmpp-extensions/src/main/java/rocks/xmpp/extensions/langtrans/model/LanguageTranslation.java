@@ -1,6 +1,7 @@
 package rocks.xmpp.extensions.langtrans.model;
 
 import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
+import rocks.xmpp.util.adapters.LocaleAdapter;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -8,11 +9,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -48,7 +51,7 @@ public final class LanguageTranslation {
         this.translations.addAll(translations);
     }
 
-    public LanguageTranslation(String sourceText, String sourceLanguage, Collection<Translation> translations) {
+    public LanguageTranslation(String sourceText, Locale sourceLanguage, Collection<Translation> translations) {
         this.source = new Source(sourceText, sourceLanguage);
         this.translations.addAll(translations);
     }
@@ -76,7 +79,7 @@ public final class LanguageTranslation {
      *
      * @return The source language.
      */
-    public final String getSourceLanguage() {
+    public final Locale getSourceLanguage() {
         return source != null ? source.getLanguage() : null;
     }
 
@@ -86,7 +89,8 @@ public final class LanguageTranslation {
     private static final class Source {
 
         @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-        private final String language;
+        @XmlJavaTypeAdapter(LocaleAdapter.class)
+        private final Locale language;
 
         @XmlValue
         private final String text;
@@ -96,7 +100,7 @@ public final class LanguageTranslation {
             this.language = null;
         }
 
-        private Source(String text, String language) {
+        private Source(String text, Locale language) {
             this.text = Objects.requireNonNull(text);
             this.language = Objects.requireNonNull(language);
         }
@@ -106,7 +110,7 @@ public final class LanguageTranslation {
          *
          * @return The source language.
          */
-        private String getLanguage() {
+        private Locale getLanguage() {
             return language;
         }
 
@@ -129,10 +133,12 @@ public final class LanguageTranslation {
         private final String text;
 
         @XmlAttribute(name = "destination_lang")
-        private final String destinationLanguage;
+        @XmlJavaTypeAdapter(LocaleAdapter.class)
+        private final Locale destinationLanguage;
 
         @XmlAttribute(name = "source_lang")
-        private final String sourceLanguage;
+        @XmlJavaTypeAdapter(LocaleAdapter.class)
+        private final Locale sourceLanguage;
 
         @XmlAttribute(name = "engine")
         private final String engine;
@@ -152,7 +158,7 @@ public final class LanguageTranslation {
             this.text = null;
         }
 
-        private Translation(String destinationLanguage, String sourceLanguage, String engine, String dictionary, Boolean reviewed, String text) {
+        private Translation(Locale destinationLanguage, Locale sourceLanguage, String engine, String dictionary, Boolean reviewed, String text) {
             this.destinationLanguage = Objects.requireNonNull(destinationLanguage);
             this.sourceLanguage = sourceLanguage;
             this.engine = engine;
@@ -167,7 +173,7 @@ public final class LanguageTranslation {
          * @param destinationLanguage The destination language.
          * @return The translation element.
          */
-        public static Translation ofDestinationLanguage(String destinationLanguage) {
+        public static Translation ofDestinationLanguage(Locale destinationLanguage) {
             return new Translation(destinationLanguage, null, null, null, null, null);
         }
 
@@ -177,7 +183,7 @@ public final class LanguageTranslation {
          * @param sourceLanguage The source language.
          * @return A new translation.
          */
-        public Translation withSourceLanguage(String sourceLanguage) {
+        public Translation withSourceLanguage(Locale sourceLanguage) {
             return new Translation(destinationLanguage, sourceLanguage, engine, dictionary, reviewed, text);
         }
 
@@ -226,7 +232,7 @@ public final class LanguageTranslation {
          *
          * @return The destination language.
          */
-        public final String getDestinationLanguage() {
+        public final Locale getDestinationLanguage() {
             return destinationLanguage;
         }
 
@@ -235,7 +241,7 @@ public final class LanguageTranslation {
          *
          * @return The source language.
          */
-        public final String getSourceLanguage() {
+        public final Locale getSourceLanguage() {
             return sourceLanguage;
         }
 

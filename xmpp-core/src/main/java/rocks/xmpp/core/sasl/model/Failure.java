@@ -25,6 +25,7 @@
 package rocks.xmpp.core.sasl.model;
 
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.util.adapters.LocaleAdapter;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -34,6 +35,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.Locale;
 
 /**
  * The implementation of the {@code <failure/>} element, which indicates a SASL failure.
@@ -99,7 +102,7 @@ public final class Failure implements StreamElement {
      *
      * @return The language.
      */
-    public final String getLanguage() {
+    public final Locale getLanguage() {
         if (text != null) {
             return text.lang;
         }
@@ -421,7 +424,8 @@ public final class Failure implements StreamElement {
         private final String text;
 
         @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-        private final String lang;
+        @XmlJavaTypeAdapter(LocaleAdapter.class)
+        private final Locale lang;
 
         private Text() {
             this.text = null;

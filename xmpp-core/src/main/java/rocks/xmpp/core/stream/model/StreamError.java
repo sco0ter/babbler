@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -67,7 +68,7 @@ public final class StreamError implements StreamElement {
         this(condition, null, null, null);
     }
 
-    public StreamError(Condition condition, String text, String language, Object extension) {
+    public StreamError(Condition condition, String text, Locale language, Object extension) {
         this.condition = Objects.requireNonNull(condition);
         this.text = text != null ? new Text(text, language) : null;
         this.extension = extension;
@@ -78,7 +79,7 @@ public final class StreamError implements StreamElement {
      *
      * @return The language.
      */
-    public final String getLanguage() {
+    public final Locale getLanguage() {
         if (text != null) {
             return text.getLanguage();
         }

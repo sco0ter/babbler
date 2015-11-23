@@ -26,10 +26,13 @@ package rocks.xmpp.websocket.model;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.util.adapters.LocaleAdapter;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
@@ -50,9 +53,10 @@ abstract class Frame implements StreamElement {
     private final String id;
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-    private final String lang;
+    @XmlJavaTypeAdapter(LocaleAdapter.class)
+    private final Locale lang;
 
-    Frame(Jid to, Jid from, String id, String language, String version) {
+    Frame(Jid to, Jid from, String id, Locale language, String version) {
         this.to = to;
         this.from = from;
         this.id = id;
@@ -76,7 +80,7 @@ abstract class Frame implements StreamElement {
         return id;
     }
 
-    public final String getLanguage() {
+    public final Locale getLanguage() {
         return lang;
     }
 }

@@ -44,6 +44,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -165,7 +166,7 @@ final class XmppStreamReader {
                     if (!doRestart && xmppSession.getStatus() != XmppSession.Status.CLOSING) {
                         // The server initiated a graceful disconnect by sending <stream:stream/> without an stream error.
                         // In this case we want to reconnect, therefore throw an exception as if a stream error has occurred.
-                        throw new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, "Stream closed by server", "en", null));
+                        throw new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, "Stream closed by server", Locale.ENGLISH, null));
                     }
                 } catch (Exception e) {
                     synchronized (XmppStreamReader.this) {

@@ -34,6 +34,7 @@ import rocks.xmpp.websocket.model.Open;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.net.URI;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
@@ -46,7 +47,7 @@ public class WebSocketTest extends XmlTest {
 
     @Test
     public void marshalOpen() throws XMLStreamException, JAXBException {
-        Open open = new Open(Jid.of("test"), "en");
+        Open open = new Open(Jid.of("test"), Locale.ENGLISH);
         Assert.assertEquals(marshal(open), "<open xmlns=\"urn:ietf:params:xml:ns:xmpp-framing\" version=\"1.0\" to=\"test\" xml:lang=\"en\"></open>");
     }
 

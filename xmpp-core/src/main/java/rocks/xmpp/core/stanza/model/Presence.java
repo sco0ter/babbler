@@ -292,7 +292,7 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      */
     public final String getStatus() {
         for (Text status : this.status) {
-            if (status.getLanguage() == null || status.getLanguage().isEmpty()) {
+            if (status.getLanguage() == null) {
                 return status.getText();
             }
         }
@@ -314,7 +314,7 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
         if (text != null) {
             synchronized (this) {
                 for (Text s : status) {
-                    if (s.getLanguage() == null || s.getLanguage().isEmpty()) {
+                    if (s.getLanguage() == null) {
                         status.remove(s);
                         break;
                     }

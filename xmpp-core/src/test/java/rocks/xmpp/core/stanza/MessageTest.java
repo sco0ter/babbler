@@ -223,14 +223,14 @@ public class MessageTest extends XmlTest {
 
     @Test
     public void marshalMessageBody() throws JAXBException, XMLStreamException {
-        Message message = new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT, Arrays.asList(new Text("body", "de"), new Text("body2", "fr")), null, null, null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
+        Message message = new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT, Arrays.asList(new Text("body", Locale.GERMAN), new Text("body2", Locale.FRENCH)), null, null, null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
         String xml = marshal(message);
         Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><body xml:lang=\"de\">body</body><body xml:lang=\"fr\">body2</body></message>");
     }
 
     @Test
     public void marshalMessageSubject() throws JAXBException, XMLStreamException {
-        Message message = new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT, null, Arrays.asList(new Text("subject1", "de"), new Text("subject2", "fr")), null, null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
+        Message message = new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT, null, Arrays.asList(new Text("subject1", Locale.GERMAN), new Text("subject2", Locale.FRENCH)), null, null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
         String xml = marshal(message);
         Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><subject xml:lang=\"de\">subject1</subject><subject xml:lang=\"fr\">subject2</subject></message>");
     }

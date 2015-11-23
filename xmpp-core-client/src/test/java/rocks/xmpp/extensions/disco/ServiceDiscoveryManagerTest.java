@@ -47,6 +47,7 @@ import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
@@ -65,8 +66,8 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         // Tests if two Identities are equal although their name is different. That is because there must not be multiple identities with the same category+type+xml:lang but different names.
         // From XEP-0030: the <query/> element MAY include multiple <identity/> elements with the same category+type but with different 'xml:lang' values, however the <query/> element MUST NOT include multiple <identity/> elements with the same category+type+xml:lang but with different 'name' values
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-        serviceDiscoveryManager.addIdentity(Identity.ofCategoryAndType("conference", "text").withName("name1", "en"));
-        Assert.assertTrue(serviceDiscoveryManager.getIdentities().contains(Identity.ofCategoryAndType("conference", "text").withName("name2", "en")));
+        serviceDiscoveryManager.addIdentity(Identity.ofCategoryAndType("conference", "text").withName("name1", Locale.ENGLISH));
+        Assert.assertTrue(serviceDiscoveryManager.getIdentities().contains(Identity.ofCategoryAndType("conference", "text").withName("name2", Locale.ENGLISH)));
     }
 
     @Test

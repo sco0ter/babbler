@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -142,7 +143,7 @@ public final class StanzaError {
      * @param extension The application specific condition.
      * @param by        The entity which returns the error.
      */
-    public StanzaError(Type type, Condition condition, String text, String language, Object extension, Jid by) {
+    public StanzaError(Type type, Condition condition, String text, Locale language, Object extension, Jid by) {
         this.condition = Objects.requireNonNull(condition);
         if (type == null) {
             this.type = Condition.getErrorTypeByCondition(condition);
@@ -193,7 +194,7 @@ public final class StanzaError {
      *
      * @return The language.
      */
-    public final String getLanguage() {
+    public final Locale getLanguage() {
         if (text != null) {
             return text.getLanguage();
         }

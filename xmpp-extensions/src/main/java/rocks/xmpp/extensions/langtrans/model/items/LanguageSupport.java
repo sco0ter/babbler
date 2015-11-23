@@ -1,14 +1,17 @@
 package rocks.xmpp.extensions.langtrans.model.items;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.util.adapters.LocaleAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -52,10 +55,12 @@ public final class LanguageSupport {
     public static final class Item {
 
         @XmlAttribute(name = "source_lang")
-        private final String sourceLanguage;
+        @XmlJavaTypeAdapter(LocaleAdapter.class)
+        private final Locale sourceLanguage;
 
         @XmlAttribute(name = "destination_lang")
-        private final String destinationLanguage;
+        @XmlJavaTypeAdapter(LocaleAdapter.class)
+        private final Locale destinationLanguage;
 
         @XmlAttribute
         private final Jid jid;
@@ -78,11 +83,11 @@ public final class LanguageSupport {
             this.dictionary = null;
         }
 
-        public Item(String sourceLanguage, Jid jid) {
+        public Item(Locale sourceLanguage, Jid jid) {
             this(sourceLanguage, jid, null, null, null, null);
         }
 
-        public Item(String sourceLanguage, Jid jid, String destinationLanguage, String engine, Boolean pivotable, String dictionary) {
+        public Item(Locale sourceLanguage, Jid jid, Locale destinationLanguage, String engine, Boolean pivotable, String dictionary) {
             this.sourceLanguage = Objects.requireNonNull(sourceLanguage);
             this.jid = Objects.requireNonNull(jid);
             this.destinationLanguage = destinationLanguage;
@@ -96,7 +101,7 @@ public final class LanguageSupport {
          *
          * @return The source language.
          */
-        public final String getSourceLanguage() {
+        public final Locale getSourceLanguage() {
             return sourceLanguage;
         }
 
@@ -114,7 +119,7 @@ public final class LanguageSupport {
          *
          * @return The destination language.
          */
-        public final String getDestinationLanguage() {
+        public final Locale getDestinationLanguage() {
             return destinationLanguage;
         }
 

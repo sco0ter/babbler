@@ -49,6 +49,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
@@ -67,7 +68,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
                 .creationDate(now)
                 .creator(Jid.of("creator"))
                 .description("desc")
-                .language("de")
+                .language(Locale.GERMAN)
                 .numberOfSubscribers(2)
                 .owners(Collections.singleton(Jid.of("owner")))
                 .publishers(Collections.singleton(Jid.of("publisher")))
@@ -94,7 +95,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertEquals(pubSubMetaDataForm1.getCreationDate(), now);
         Assert.assertEquals(pubSubMetaDataForm1.getCreator(), Jid.of("creator"));
         Assert.assertEquals(pubSubMetaDataForm1.getDescription(), "desc");
-        Assert.assertEquals(pubSubMetaDataForm1.getLanguage(), "de");
+        Assert.assertEquals(pubSubMetaDataForm1.getLanguage(), Locale.GERMAN);
         Assert.assertEquals(pubSubMetaDataForm1.getNumberOfSubscribers(), new Integer(2));
         Assert.assertEquals(pubSubMetaDataForm1.getOwners(), Collections.singleton(Jid.of("owner")));
         Assert.assertEquals(pubSubMetaDataForm1.getPublishers(), Collections.singleton(Jid.of("publisher")));
@@ -144,7 +145,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
                 .description("description")
                 .itemExpire(2)
                 .itemReply(ItemReply.OWNER)
-                .language("de")
+                .language(Locale.GERMAN)
                 .maxItems(4)
                 .maxPayloadSize(54)
                 .nodeType(NodeType.LEAF)

@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -238,8 +239,9 @@ public final class RoomConfiguration {
      *
      * @return The language.
      */
-    public String getLanguage() {
-        return dataForm.findValue(LANGUAGE);
+    public Locale getLanguage() {
+        String lang = dataForm.findValue(LANGUAGE);
+        return lang != null ? Locale.forLanguageTag(lang) : null;
     }
 
     /**
@@ -401,7 +403,7 @@ public final class RoomConfiguration {
 
         private Collection<Role> rolesThatMayRetrieveMemberList;
 
-        private String language;
+        private Locale language;
 
         private URI pubsubNode;
 
@@ -506,7 +508,7 @@ public final class RoomConfiguration {
          * @param language The language.
          * @return The builder.
          */
-        public Builder language(String language) {
+        public Builder language(Locale language) {
             this.language = language;
             return this;
         }
@@ -696,7 +698,7 @@ public final class RoomConfiguration {
                 fields.add(DataForm.Field.builder().var(GET_MEMBER_LIST).valuesEnum(rolesThatMayRetrieveMemberList).type(DataForm.Field.Type.LIST_MULTI).build());
             }
             if (language != null) {
-                fields.add(DataForm.Field.builder().var(LANGUAGE).value(language).build());
+                fields.add(DataForm.Field.builder().var(LANGUAGE).value(language.toLanguageTag()).build());
             }
             if (pubsubNode != null) {
                 fields.add(DataForm.Field.builder().var(PUBSUB).value(pubsubNode.toString()).build());

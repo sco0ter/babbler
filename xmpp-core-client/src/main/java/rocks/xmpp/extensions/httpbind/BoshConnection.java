@@ -605,7 +605,8 @@ public final class BoshConnection extends Connection {
                                 }
                                 body = bodyBuilder
                                         .wrappedObjects(elementsToSend)
-                                        .requestId(rid.get()).build();
+                                        .requestId(rid.get())
+                                        .build();
                                 // Prevent that the session is terminated with policy-violation due to this:
                                 //
                                 // If during any period the client sends a sequence of new requests equal in length to the number specified by the 'requests' attribute,
@@ -689,7 +690,7 @@ public final class BoshConnection extends Connection {
 
                             // We received a response for the request. Store the RID, so that we can inform the connection manager with our next request, that we received a response.
                             synchronized (BoshConnection.this) {
-                                highestReceivedRid = body.getRid();
+                                highestReceivedRid = body.getRid() != null ? body.getRid() : 0;
                             }
 
                             String contentEncoding = httpConnection.getHeaderField("Content-Encoding");
@@ -761,12 +762,14 @@ public final class BoshConnection extends Connection {
     }
 
     private void ackReceived(Long rid) {
-        Body.Builder body = unacknowledgedRequests.remove(rid);
-        if (body != null) {
-            body.build().getWrappedObjects().stream().filter(object -> object instanceof Stanza).forEach(object -> {
-                // System.out.println("ACK "+ object);
-                // TODO trigger some listener
-            });
+        if (rid != null) {
+            Body.Builder body = unacknowledgedRequests.remove(rid);
+            if (body != null) {
+                body.build().getWrappedObjects().stream().filter(object -> object instanceof Stanza).forEach(object -> {
+                    // System.out.println("ACK "+ object);
+                    // TODO trigger some listener
+                });
+            }
         }
     }
 

@@ -38,7 +38,7 @@ import rocks.xmpp.core.session.XmppSession;
  * BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
  *     .hostname("localhost")
  *     .port(5280)
- *     .file("/http-bind/")
+ *     .path("/http-bind/")
  *     .build();
  * }
  * </pre>

@@ -424,6 +424,11 @@ public final class BoshConnection extends Connection {
 
         // If the body contains an error condition, which is not a stream error, terminate the connection by throwing an exception.
         if (responseBody.getType() == Body.Type.TERMINATE && responseBody.getCondition() != null && responseBody.getCondition() != Body.Condition.REMOTE_STREAM_ERROR) {
+            // Shutdown the executor, we don't want to send further requests from now on.
+            synchronized (this) {
+                httpBindExecutor.shutdown();
+                httpBindExecutor = null;
+            }
             throw new BoshException(responseBody.getCondition(), responseBody.getUri());
         } else if (responseBody.getType() == Body.Type.ERROR) {
             // In any response it sends to the client, the connection manager MAY return a recoverable error by setting a 'type' attribute of the <body/> element to "error". These errors do not imply that the HTTP session is terminated.

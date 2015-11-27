@@ -69,7 +69,6 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
@@ -424,10 +423,7 @@ public final class BoshConnection extends Connection {
         // If the body contains an error condition, which is not a stream error, terminate the connection by throwing an exception.
         if (responseBody.getType() == Body.Type.TERMINATE && responseBody.getCondition() != null && responseBody.getCondition() != Body.Condition.REMOTE_STREAM_ERROR) {
             // Shutdown the executor, we don't want to send further requests from now on.
-            synchronized (this) {
-                httpBindExecutor.shutdown();
-                httpBindExecutor = null;
-            }
+            shutdown();
             throw new BoshException(responseBody.getCondition(), responseBody.getUri());
         } else if (responseBody.getType() == Body.Type.ERROR) {
             // In any response it sends to the client, the connection manager MAY return a recoverable error by setting a 'type' attribute of the <body/> element to "error". These errors do not imply that the HTTP session is terminated.
@@ -495,10 +491,7 @@ public final class BoshConnection extends Connection {
                     sendNewRequest(bodyBuilder, false);
                 }
                 // and then shut it down.
-                httpBindExecutor.shutdown();
-                // Wait shortly, until the "terminate" body has been sent.
-                httpBindExecutor.awaitTermination(500, TimeUnit.MILLISECONDS);
-                httpBindExecutor = null;
+                shutdown();
             }
             sessionId = null;
             authId = null;
@@ -506,6 +499,11 @@ public final class BoshConnection extends Connection {
             keySequence.clear();
             requestContentEncoding = null;
         }
+    }
+
+    private synchronized void shutdown() {
+        httpBindExecutor.shutdown();
+        httpBindExecutor = null;
     }
 
     /**
@@ -735,6 +733,8 @@ public final class BoshConnection extends Connection {
                                 }
                             }
                         } else {
+                            // Shutdown the executor, we don't want to send further requests from now on.
+                            shutdown();
                             handleCode(httpConnection.getResponseCode());
                             try (InputStream errorStream = httpConnection.getErrorStream()) {
                                 while (errorStream.read() > -1) {

@@ -28,7 +28,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.IntegrationTest;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.debug.ConsoleDebugger;
 
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -199,5 +201,108 @@ public class MultiThreadingIT extends IntegrationTest {
         Assert.assertEquals(authenticating.get(), 1);
         Assert.assertEquals(authenticated.get(), 1);
         Assert.assertEquals(exceptions.get(), 99);
+    }
+
+    /**
+     * Tests, that the behavior when calling connect() from multiple threads.
+     * After connect(), it should always be in the correct status {@link rocks.xmpp.core.session.XmppSession.Status#CONNECTED}.
+     * Listeners should only be notified once for status changes.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testConnectedStatusAfterConnect() throws Exception {
+
+        final XmppClient xmppSession = new XmppClient(DOMAIN, XmppSessionConfiguration.builder().debugger(ConsoleDebugger.class).build(), TcpConnectionConfiguration.getDefault());
+        final AtomicInteger exceptions = new AtomicInteger();
+        final AtomicInteger connecting = new AtomicInteger();
+        final AtomicInteger connected = new AtomicInteger();
+
+        xmppSession.addSessionStatusListener(e -> {
+            System.out.println(e.getStatus());
+            if (e.getStatus() == XmppSession.Status.CONNECTING) {
+                connecting.incrementAndGet();
+            }
+            if (e.getStatus() == XmppSession.Status.CONNECTED) {
+                connected.incrementAndGet();
+            }
+        });
+
+        Executor executor = Executors.newCachedThreadPool();
+        int n = 100;
+        final CountDownLatch countDownLatch = new CountDownLatch(n);
+        // Multiple threads try to connect the session concurrently, although already connected.
+        for (int i = 0; i < n; i++) {
+            executor.execute(() -> {
+                try {
+                    xmppSession.connect();
+                    Assert.assertEquals(xmppSession.getStatus(), XmppSession.Status.CONNECTED);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    exceptions.incrementAndGet();
+                } finally {
+                    countDownLatch.countDown();
+                }
+            });
+        }
+        countDownLatch.await();
+        Assert.assertEquals(exceptions.get(), 0);
+        // Should only connect once
+        Assert.assertEquals(connecting.get(), 1);
+        Assert.assertEquals(connected.get(), 1);
+    }
+
+    @Test
+    public void testLoginStatusAfterConnect() throws Exception {
+
+        final XmppClient xmppSession = new XmppClient(DOMAIN, XmppSessionConfiguration.builder().debugger(ConsoleDebugger.class).build(), TcpConnectionConfiguration.getDefault());
+        final AtomicInteger exceptions = new AtomicInteger();
+        final AtomicInteger connecting = new AtomicInteger();
+        final AtomicInteger connected = new AtomicInteger();
+        final AtomicInteger authenticating = new AtomicInteger();
+        final AtomicInteger authenticated = new AtomicInteger();
+
+        xmppSession.addSessionStatusListener(e -> {
+            System.out.println(e.getStatus());
+            if (e.getStatus() == XmppSession.Status.CONNECTING) {
+                connecting.incrementAndGet();
+            }
+            if (e.getStatus() == XmppSession.Status.CONNECTED) {
+                connected.incrementAndGet();
+            }
+            if (e.getStatus() == XmppSession.Status.AUTHENTICATING) {
+                authenticating.incrementAndGet();
+            }
+            if (e.getStatus() == XmppSession.Status.AUTHENTICATED) {
+                authenticated.incrementAndGet();
+            }
+        });
+
+        xmppSession.connect();
+
+        Executor executor = Executors.newCachedThreadPool();
+        int n = 100;
+        final CountDownLatch countDownLatch = new CountDownLatch(n);
+        // Multiple threads try to connect the session concurrently, although already connected.
+        for (int i = 0; i < n; i++) {
+            executor.execute(() -> {
+                try {
+                    xmppSession.login("admin", "admin");
+                    Assert.assertEquals(xmppSession.getStatus(), XmppSession.Status.AUTHENTICATED);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    exceptions.incrementAndGet();
+                } finally {
+                    countDownLatch.countDown();
+                }
+            });
+        }
+        countDownLatch.await();
+        Assert.assertEquals(exceptions.get(), 0);
+        // Should only connect once
+        Assert.assertEquals(connecting.get(), 1);
+        Assert.assertEquals(connected.get(), 1);
+        Assert.assertEquals(authenticating.get(), 1);
+        Assert.assertEquals(authenticated.get(), 1);
     }
 }

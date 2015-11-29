@@ -185,38 +185,43 @@ public final class XmppClient extends XmppSession {
     @Override
     public final void connect(Jid from) throws XmppException {
 
-        Status previousStatus = getStatus();
+        Status previousStatus = preConnect();
 
-        if (previousStatus == Status.CLOSED) {
-            throw new IllegalStateException("Session is already closed. Create a new one.");
-        }
-
-        if (isConnected() || !updateStatus(Status.CONNECTING)) {
+        if (checkConnected()) {
             // Silently return, when we are already connected or connecting.
-            logger.fine("Already connected. Return silently.");
             return;
         }
-        // Reset
-        exception = null;
-
         try {
-            tryConnect(from, "jabber:client", this::setXmppServiceDomain);
+            // Don't call listeners from within synchronized blocks to avoid possible deadlocks.
+            updateStatus(Status.CONNECTING);
 
-            logger.fine("Negotiating stream, waiting until SASL is ready to be negotiated.");
+            synchronized (this) {
+                // Double-checked locking: Recheck connected status. In a multi-threaded environment multiple threads could have passed the first check.
+                if (checkConnected()) {
+                    return;
+                }
+                // Reset
+                exception = null;
 
-            // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
-            try {
-                streamFeaturesManager.awaitNegotiation(Mechanisms.class, 10000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw e;
+                tryConnect(from, "jabber:client", this::setXmppServiceDomain);
+
+                logger.fine("Negotiating stream, waiting until SASL is ready to be negotiated.");
+
+                // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
+                try {
+                    streamFeaturesManager.awaitNegotiation(Mechanisms.class, 10000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw e;
+                }
+
+                // Check if stream negotiation threw any exception.
+                throwAsXmppExceptionIfNotNull(exception);
+
+                logger.fine("Stream negotiated until SASL, now ready to login.");
             }
-
-            // Check if stream negotiation threw any exception.
-            throwAsXmppExceptionIfNotNull(exception);
-
-            logger.fine("Stream negotiated until SASL, now ready to login.");
-            updateStatus(Status.CONNECTED);
+            // Don't call listeners from within synchronized blocks to avoid possible deadlocks.
+            updateStatus(Status.CONNECTING, Status.CONNECTED);
 
             // This is for reconnection.
             if (wasLoggedIn) {
@@ -224,6 +229,7 @@ public final class XmppClient extends XmppSession {
                 login(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
                 XmppUtils.notifyEventListeners(connectionListeners, new ConnectionEvent(this, ConnectionEvent.Type.RECONNECTION_SUCCEEDED, null, Duration.ZERO));
             }
+
         } catch (Throwable e) {
             onConnectionFailed(previousStatus, e);
         }
@@ -334,87 +340,98 @@ public final class XmppClient extends XmppSession {
 
     private byte[] login(Collection<String> mechanisms, String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
 
+        if (checkAuthenticated()) {
+            // Silently return, when we are already authenticated.
+            return authenticationManager.getSuccessData();
+        }
         Status previousStatus = preLogin();
+        updateStatus(Status.AUTHENTICATING);
 
-        lastMechanisms = mechanisms;
-        lastAuthorizationId = authorizationId;
-        lastCallbackHandler = callbackHandler;
-        try {
-
-            logger.fine("Starting SASL negotiation (authentication).");
-            if (callbackHandler == null) {
-                authenticationManager.startAuthentication(mechanisms, null, null);
-            } else {
-                authenticationManager.startAuthentication(mechanisms, authorizationId, callbackHandler);
-            }
-
-            // Negotiate all pending features until <bind/> would be negotiated.
-            streamFeaturesManager.awaitNegotiation(Bind.class, configuration.getDefaultResponseTimeout());
-
-            // Check if stream feature negotiation failed with an exception.
-            throwAsXmppExceptionIfNotNull(exception);
-
-            // Stream resumption.
-            StreamManager streamManager = getManager(StreamManager.class);
-            if (streamManager.resume()) {
-                updateStatus(Status.AUTHENTICATED);
-                // Copy the unacknowledged stanzas.
-                Queue<Stanza> toBeResent = new ArrayDeque<>(getUnacknowledgedStanzas());
-                // Then clear the queue.
-                getUnacknowledgedStanzas().clear();
-
-                // Then resend everything, which the server didn't acknowledge.
-                for (Stanza stanza : toBeResent) {
-                    send(stanza);
-                    System.out.println("Resending " + stanza);
-                }
+        synchronized (this) {
+            if (checkAuthenticated()) {
+                // Silently return, when we are already authenticated.
                 return authenticationManager.getSuccessData();
             }
+            lastMechanisms = mechanisms;
+            lastAuthorizationId = authorizationId;
+            lastCallbackHandler = callbackHandler;
+            try {
 
-            // Then negotiate resource binding manually.
-            bindResource(resource);
-
-            // Proceed with any outstanding stream features which are negotiated after resource binding, e.g. XEP-0198
-            // and wait until all features have been negotiated.
-            streamFeaturesManager.completeNegotiation(configuration.getDefaultResponseTimeout());
-
-            // Check again, if stream feature negotiation failed with an exception.
-            throwAsXmppExceptionIfNotNull(exception);
-
-            logger.fine("Stream negotiation completed successfully.");
-
-            // Retrieve roster.
-            RosterManager rosterManager = getManager(RosterManager.class);
-            if (callbackHandler != null && rosterManager.isRetrieveRosterOnLogin()) {
-                logger.fine("Retrieving roster on login (as per configuration).");
-                rosterManager.requestRoster();
-            }
-            PresenceManager presenceManager = getManager(PresenceManager.class);
-            if (presenceManager.getLastSentPresence() != null) {
-                // After retrieving the roster, resend the last presence, if any (in reconnection case).
-                presenceManager.getLastSentPresences().forEach(presence -> {
-                    presence.getExtensions().clear();
-                    send(presence);
-                });
-            } else if (configuration.getInitialPresence() != null) {
-                // Or send initial presence
-                Presence initialPresence = configuration.getInitialPresence().get();
-                if (initialPresence != null) {
-                    send(initialPresence);
+                logger.fine("Starting SASL negotiation (authentication).");
+                if (callbackHandler == null) {
+                    authenticationManager.startAuthentication(mechanisms, null, null);
+                } else {
+                    authenticationManager.startAuthentication(mechanisms, authorizationId, callbackHandler);
                 }
+
+                // Negotiate all pending features until <bind/> would be negotiated.
+                streamFeaturesManager.awaitNegotiation(Bind.class, configuration.getDefaultResponseTimeout());
+
+                // Check if stream feature negotiation failed with an exception.
+                throwAsXmppExceptionIfNotNull(exception);
+
+                // Stream resumption.
+                StreamManager streamManager = getManager(StreamManager.class);
+                if (streamManager.resume()) {
+                    updateStatus(Status.AUTHENTICATED);
+                    // Copy the unacknowledged stanzas.
+                    Queue<Stanza> toBeResent = new ArrayDeque<>(getUnacknowledgedStanzas());
+                    // Then clear the queue.
+                    getUnacknowledgedStanzas().clear();
+
+                    // Then resend everything, which the server didn't acknowledge.
+                    for (Stanza stanza : toBeResent) {
+                        send(stanza);
+                        System.out.println("Resending " + stanza);
+                    }
+                    return authenticationManager.getSuccessData();
+                }
+
+                // Then negotiate resource binding manually.
+                bindResource(resource);
+
+                // Proceed with any outstanding stream features which are negotiated after resource binding, e.g. XEP-0198
+                // and wait until all features have been negotiated.
+                streamFeaturesManager.completeNegotiation(configuration.getDefaultResponseTimeout());
+
+                // Check again, if stream feature negotiation failed with an exception.
+                throwAsXmppExceptionIfNotNull(exception);
+
+                logger.fine("Stream negotiation completed successfully.");
+
+                // Retrieve roster.
+                RosterManager rosterManager = getManager(RosterManager.class);
+                if (callbackHandler != null && rosterManager.isRetrieveRosterOnLogin()) {
+                    logger.fine("Retrieving roster on login (as per configuration).");
+                    rosterManager.requestRoster();
+                }
+                PresenceManager presenceManager = getManager(PresenceManager.class);
+                if (presenceManager.getLastSentPresence() != null) {
+                    // After retrieving the roster, resend the last presence, if any (in reconnection case).
+                    presenceManager.getLastSentPresences().forEach(presence -> {
+                        presence.getExtensions().clear();
+                        send(presence);
+                    });
+                } else if (configuration.getInitialPresence() != null) {
+                    // Or send initial presence
+                    Presence initialPresence = configuration.getInitialPresence().get();
+                    if (initialPresence != null) {
+                        send(initialPresence);
+                    }
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                // Revert status
+                updateStatus(previousStatus, e);
+                throwAsXmppExceptionIfNotNull(e);
+            } catch (Throwable e) {
+                // Revert status
+                updateStatus(previousStatus, e);
+                throwAsXmppExceptionIfNotNull(e);
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            // Revert status
-            updateStatus(previousStatus, e);
-            throwAsXmppExceptionIfNotNull(e);
-        } catch (Throwable e) {
-            // Revert status
-            updateStatus(previousStatus, e);
-            throwAsXmppExceptionIfNotNull(e);
+            logger.fine("Login successful.");
+            return authenticationManager.getSuccessData();
         }
-        logger.fine("Login successful.");
-        return authenticationManager.getSuccessData();
     }
 
     /**

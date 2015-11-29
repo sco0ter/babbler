@@ -79,44 +79,46 @@ public final class ExternalComponent extends XmppSession {
 
     @Override
     public final void connect(Jid from) throws XmppException {
-        Status previousStatus = getStatus();
-
-        if (previousStatus == Status.CLOSED) {
-            throw new IllegalStateException("Session is already closed. Create a new one.");
-        }
-
-        if (isConnected() || !updateStatus(Status.CONNECTING)) {
-            // Silently return, when we are already connected or connecting.
-            logger.fine("Already connected. Return silently.");
-            return;
-        }
-        // Reset
-        exception = null;
-        streamHeaderReceived = false;
+        Status previousStatus = preConnect();
 
         try {
-            tryConnect(from, "jabber:component:accept", this::onStreamOpened);
+            if (!checkConnected()) {
+                // Don't call listeners from within synchronized blocks to avoid possible deadlocks.
 
-            logger.fine("Negotiating stream, waiting until handshake is ready to be negotiated.");
+                updateStatus(Status.CONNECTING);
+                synchronized (this) {
 
-            lock.lock();
-            try {
-                if (!streamHeaderReceived) {
-                    streamOpened.await(configuration.getDefaultResponseTimeout(), TimeUnit.MILLISECONDS);
+                    // Double-checked locking: Recheck connected status. In a multi-threaded environment multiple threads could have passed the first check.
+                    if (!checkConnected()) {
+                        // Reset
+                        exception = null;
+                        streamHeaderReceived = false;
+
+                        tryConnect(from, "jabber:component:accept", this::onStreamOpened);
+                        logger.fine("Negotiating stream, waiting until handshake is ready to be negotiated.");
+
+                        lock.lock();
+                        try {
+                            if (!streamHeaderReceived) {
+                                streamOpened.await(configuration.getDefaultResponseTimeout(), TimeUnit.MILLISECONDS);
+                            }
+                        } finally {
+                            lock.unlock();
+                        }
+
+                        // Wait shortly to see if the server will respond with a <conflict/>, <host-unknown/> or other stream error.
+                        Thread.sleep(20);
+
+                        // Check if the server returned a stream error, e.g. conflict.
+                        throwAsXmppExceptionIfNotNull(exception);
+
+                        connectedResource = getDomain();
+                    }
                 }
-            } finally {
-                lock.unlock();
             }
 
-            // Wait shortly to see if the server will respond with a <conflict/>, <host-unknown/> or other stream error.
-            Thread.sleep(20);
-
-            // Check if the server returned a stream error, e.g. conflict.
-            throwAsXmppExceptionIfNotNull(exception);
-
-            connectedResource = getDomain();
-            updateStatus(Status.CONNECTED);
-
+            // Don't call listeners from within synchronized blocks to avoid possible deadlocks.
+            updateStatus(Status.CONNECTING, Status.CONNECTED);
             login(sharedSecret);
         } catch (Throwable e) {
             onConnectionFailed(previousStatus, e);
@@ -133,15 +135,28 @@ public final class ExternalComponent extends XmppSession {
         Status previousStatus = preLogin();
 
         try {
-            // Send the <handshake/> element.
-            send(Handshake.create(activeConnection.getStreamId(), sharedSecret));
-            lock.lock();
-            try {
-                // Wait for the <handshake/> element to be received from the server.
-                handshakeReceived.await(configuration.getDefaultResponseTimeout(), TimeUnit.MILLISECONDS);
-            } finally {
-                lock.unlock();
+            if (checkAuthenticated()) {
+                // Silently return, when we are already authenticated.
+                return;
             }
+            updateStatus(Status.AUTHENTICATING);
+            synchronized (this) {
+                if (checkAuthenticated()) {
+                    // Silently return, when we are already authenticated.
+                    return;
+                }
+                // Send the <handshake/> element.
+                send(Handshake.create(activeConnection.getStreamId(), sharedSecret));
+                lock.lock();
+                try {
+                    // Wait for the <handshake/> element to be received from the server.
+                    handshakeReceived.await(configuration.getDefaultResponseTimeout(), TimeUnit.MILLISECONDS);
+                } finally {
+                    lock.unlock();
+                }
+            }
+            // Authentication succeeded, update the status.
+            updateStatus(Status.AUTHENTICATED);
             // Check if the server returned a stream error, e.g. not-authorized and throw it.
             throwAsXmppExceptionIfNotNull(exception);
         } catch (InterruptedException e) {
@@ -154,8 +169,7 @@ public final class ExternalComponent extends XmppSession {
             updateStatus(previousStatus, e);
             throwAsXmppExceptionIfNotNull(e);
         }
-        // Authentication succeeded, update the status.
-        updateStatus(Status.AUTHENTICATED);
+
     }
 
     @Override

@@ -282,6 +282,40 @@ public abstract class XmppSession implements AutoCloseable {
         logger.log(Level.FINE, "Connected via {0}", activeConnection);
     }
 
+    /**
+     * Checks, if the session is already connected and if so, logs it.
+     *
+     * @return True, if the session is already connected.
+     */
+    protected boolean checkConnected() {
+        if (isConnected()) {
+            // Silently return, when we are already connected.
+            logger.fine("Already connected. Return silently.");
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks, if the session is closed and throws an {@link IllegalStateException} if so.
+     *
+     * @return The current status of session (which will never be {@link Status#CLOSED}.
+     */
+    protected Status preConnect() {
+        Status previousStatus = getStatus();
+        if (previousStatus == Status.CLOSED) {
+            throw new IllegalStateException("Session is already closed. Create a new one.");
+        }
+        return previousStatus;
+    }
+
+    /**
+     * Called, when the connection has failed. It closes the connection and reverts the session status to the previous status.
+     *
+     * @param previousStatus The previous status.
+     * @param e              The exception. Any exception during closing the connection will be added as suppressed exception to this one.
+     * @throws XmppException The exception, which will be rethrown.
+     */
     protected final void onConnectionFailed(Status previousStatus, Throwable e) throws XmppException {
         try {
             if (activeConnection != null) {
@@ -295,13 +329,14 @@ public abstract class XmppSession implements AutoCloseable {
         throwAsXmppExceptionIfNotNull(e);
     }
 
+    /**
+     * Checks several preconditions before login.
+     *
+     * @return The previous status.
+     */
     protected final Status preLogin() {
         Status previousStatus = getStatus();
-
-        if (previousStatus == Status.AUTHENTICATED || !updateStatus(Status.AUTHENTICATING)) {
-            throw new IllegalStateException("You are already logged in.");
-        }
-        if (previousStatus != Status.CONNECTED) {
+        if (!IS_CONNECTED.contains(previousStatus)) {
             throw new IllegalStateException("You must be connected to the server before trying to login. Status is " + previousStatus);
         }
         if (getDomain() == null) {
@@ -309,6 +344,20 @@ public abstract class XmppSession implements AutoCloseable {
         }
         exception = null;
         return previousStatus;
+    }
+
+    /**
+     * Checks, if the session is already authenticated and if so, logs it.
+     *
+     * @return True, if the session is already authenticated.
+     */
+    protected boolean checkAuthenticated() {
+        if (getStatus() == Status.AUTHENTICATED) {
+            // Silently return, when we are already logged in.
+            logger.fine("Already logged in. Return silently.");
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -753,7 +802,7 @@ public abstract class XmppSession implements AutoCloseable {
      * @return True, if the status has changed; otherwise false.
      */
     protected final boolean updateStatus(Status status) {
-        return updateStatus(status, null);
+        return updateStatus(status, (Throwable) null);
     }
 
     /**
@@ -770,6 +819,22 @@ public abstract class XmppSession implements AutoCloseable {
             XmppUtils.notifyEventListeners(sessionStatusListeners, new SessionStatusEvent(this, status, oldStatus, e));
         }
         return status != oldStatus;
+    }
+
+    /**
+     * Updates the status and notifies the session listeners.
+     *
+     * @param expected The expected status.
+     * @param status   The new status.
+     * @return True, if the status has changed; otherwise false.
+     */
+    protected final boolean updateStatus(Status expected, Status status) {
+        boolean hasChanged = this.status.compareAndSet(expected, status);
+        if (hasChanged) {
+            // Make sure to not call listeners from within synchronized region.
+            XmppUtils.notifyEventListeners(sessionStatusListeners, new SessionStatusEvent(this, status, expected, null));
+        }
+        return hasChanged;
     }
 
     /**

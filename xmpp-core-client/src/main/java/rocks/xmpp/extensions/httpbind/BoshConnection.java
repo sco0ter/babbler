@@ -44,6 +44,7 @@ import javax.naming.directory.InitialDirContext;
 import javax.net.ssl.HttpsURLConnection;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.XMLEvent;
@@ -72,6 +73,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The implementation of <a href="http://xmpp.org/extensions/xep-0124.html">XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)</a> and <a href="http://xmpp.org/extensions/xep-0206.html">XEP-0206: XMPP Over BOSH</a>.
@@ -79,6 +82,8 @@ import java.util.function.Consumer;
  * @author Christian Schudt
  */
 public final class BoshConnection extends Connection {
+
+    private static final Logger logger = Logger.getLogger(BoshConnection.class.getName());
 
     /**
      * Use ConcurrentSkipListMap to maintain insertion order.
@@ -721,6 +726,8 @@ public final class BoshConnection extends Connection {
                                                         xmlEventReader.next();
                                                     }
                                                 }
+                                            } catch (JAXBException e) {
+                                                logger.log(Level.WARNING, "Server responded with malformed XML.", e);
                                             } finally {
                                                 // The response itself acknowledges the request, so we can remove the request.
                                                 ackReceived(body.getRid());

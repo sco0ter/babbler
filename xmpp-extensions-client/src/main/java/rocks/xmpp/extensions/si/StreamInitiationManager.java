@@ -239,7 +239,11 @@ public final class StreamInitiationManager extends Manager implements FileTransf
                 Thread.currentThread().interrupt();
             }
             if (byteStreamSession == null) {
-                throw new IOException("No byte stream could be negotiated in time.", negotiationExceptions.getFirst());
+                if (!negotiationExceptions.isEmpty()) {
+                    throw new IOException("Error while negotiating byte stream.", negotiationExceptions.getFirst());
+                } else {
+                    throw new IOException("No byte stream could be negotiated in time.");
+                }
             }
             byteStreamSession.setReadTimeout(xmppSession.getConfiguration().getDefaultResponseTimeout());
             return new FileTransfer(byteStreamSession.getInputStream(), outputStream, fileTransferOffer.getSize());

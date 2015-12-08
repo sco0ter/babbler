@@ -1,7 +1,7 @@
 # Changelog
 ---
 
-### Version 0.6.2-SNAPSHOT
+### Version 0.6.2 (2015-12-08)
 
 * Fix bug when closing a BOSH connection.
 * Prevent long DNS resolution of `InetAddress.getHostname()` when using an IP address in TCP connection as hostname.

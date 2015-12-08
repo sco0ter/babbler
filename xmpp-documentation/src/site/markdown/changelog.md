@@ -5,7 +5,8 @@
 
 * Represent `xml:lang` attributes as `java.util.Locale`, not as `String`. 
 
-### Version 0.6.2-SNAPSHOT
+
+### Version 0.6.2 (2015-12-08)
 
 * Fix bug when closing a BOSH connection and when using key sequences.
 * Prevent long DNS resolution of `InetAddress.getHostname()` when using an IP address in TCP connection as hostname.

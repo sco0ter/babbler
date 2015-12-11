@@ -92,7 +92,6 @@ public final class MessageDeliveryReceiptsManager extends Manager {
             Message message = e.getMessage();
             // If a client requests a receipt, send an ack message.
             if (message.hasExtension(MessageDeliveryReceipts.Request.class) && message.getId() != null) {
-                // Add an empty body. Otherwise some servers, won't store it in offline storage.
                 Message receiptMessage = new Message(message.getFrom(), Message.Type.NORMAL);
                 receiptMessage.addExtension(new MessageDeliveryReceipts.Received(message.getId()));
                 xmppSession.send(receiptMessage);

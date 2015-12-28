@@ -39,7 +39,7 @@ import java.util.Locale;
  *
  * @author Christian Schudt
  */
-@XmlRootElement
+@XmlRootElement(name = "message")
 @XmlType(propOrder = {"from", "id", "to", "type", "lang", "subject", "body", "thread", "extensions", "error"})
 public final class ComponentMessage extends rocks.xmpp.core.stanza.model.Message {
 

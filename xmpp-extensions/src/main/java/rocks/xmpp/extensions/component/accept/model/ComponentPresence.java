@@ -39,7 +39,7 @@ import java.util.Locale;
  *
  * @author Christian Schudt
  */
-@XmlRootElement
+@XmlRootElement(name = "presence")
 @XmlType(propOrder = {"from", "id", "to", "type", "lang", "show", "status", "priority", "extensions", "error"})
 public final class ComponentPresence extends Presence {
 

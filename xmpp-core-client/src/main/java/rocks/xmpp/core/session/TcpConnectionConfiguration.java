@@ -101,7 +101,9 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
 
     @Override
     public final Connection createConnection(XmppSession xmppSession) {
-        return new TcpConnection(xmppSession, this);
+        TcpConnection connection = new TcpConnection(xmppSession, this);
+        connection.initialize();
+        return connection;
     }
 
     /**

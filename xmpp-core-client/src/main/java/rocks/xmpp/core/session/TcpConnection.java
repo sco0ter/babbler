@@ -105,17 +105,20 @@ public final class TcpConnection extends Connection {
     TcpConnection(XmppSession xmppSession, TcpConnectionConfiguration configuration) {
         super(xmppSession, configuration);
         this.tcpConnectionConfiguration = configuration;
-        StreamFeaturesManager streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
-        streamFeaturesManager.addFeatureNegotiator(new SecurityManager(xmppSession, () -> {
+    }
+
+    void initialize() {
+        StreamFeaturesManager streamFeaturesManager = getXmppSession().getManager(StreamFeaturesManager.class);
+        streamFeaturesManager.addFeatureNegotiator(new SecurityManager(getXmppSession(), () -> {
             try {
                 secureConnection();
             } catch (Exception e) {
                 throw new StreamNegotiationException(e);
             }
-        }, configuration.isSecure()));
+        }, tcpConnectionConfiguration.isSecure()));
 
-        final CompressionManager compressionManager = xmppSession.getManager(CompressionManager.class);
-        compressionManager.getConfiguredCompressionMethods().addAll(configuration.getCompressionMethods());
+        final CompressionManager compressionManager = getXmppSession().getManager(CompressionManager.class);
+        compressionManager.getConfiguredCompressionMethods().addAll(tcpConnectionConfiguration.getCompressionMethods());
         compressionManager.addFeatureListener(() -> {
             CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
             // We are in the reader thread here. Make sure it sees the streams assigned by the application thread in the connect() method by using synchronized.

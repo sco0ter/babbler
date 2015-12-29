@@ -107,7 +107,7 @@ public final class WebSocketConnection extends Connection {
      */
     private IOException exception;
 
-    protected WebSocketConnection(XmppSession xmppSession, WebSocketConnectionConfiguration connectionConfiguration) {
+    WebSocketConnection(XmppSession xmppSession, WebSocketConnectionConfiguration connectionConfiguration) {
         super(xmppSession, connectionConfiguration);
         this.connectionConfiguration = connectionConfiguration;
         this.debugger = xmppSession.getDebugger();

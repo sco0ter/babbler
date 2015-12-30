@@ -770,6 +770,17 @@ public abstract class XmppSession implements AutoCloseable {
         return IS_CONNECTED.contains(getStatus());
     }
 
+
+    /**
+     * Returns true, if the session is authenticated. For a normal client-to-server session this means, when the user has logged in (successfully completed SASL negotiation and resource binding).
+     *
+     * @return True, if authenticated.
+     * @since 0.7.0
+     */
+    public final boolean isAuthenticated() {
+        return getStatus() == Status.AUTHENTICATED;
+    }
+
     /**
      * Handles an XMPP element.
      * <p>

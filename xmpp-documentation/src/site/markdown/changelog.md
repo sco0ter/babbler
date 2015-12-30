@@ -3,8 +3,8 @@
 
 ## Version 0.7.0-SNAPSHOT
 
-* Represent `xml:lang` attributes as `java.util.Locale`, not as `String`. 
-
+* Represent `xml:lang` attributes as `java.util.Locale`, not as `String`.
+* Add `XmppSession#isAuthenticated()` method.
 
 ### Version 0.6.2 (2015-12-08)
 

@@ -33,10 +33,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * The formula for doing this, is: <code>(2<sup>n</sup> - 1) * s</code>, where <code>n</code> is the number of reconnection attempt and <code>s</code> is the slot time, which is 60 seconds by default.
  * <p>
  * In practice this means, the first reconnection attempt occurs after a random period of time between 0 and 60 seconds.<br>
- * The second attempt chooses a random number between 0 and 180 seconds.<br>
- * The third attempt chooses a random number between 0 and 420 seconds.<br>
- * The fourth attempt chooses a random number between 0 and 900 seconds.<br>
- * The fifth attempt chooses a random number between 0 and 1860 seconds (= 31 minutes)<br>
+ * The second attempt chooses a random number &gt;= 0 and &lt; 180 seconds.<br>
+ * The third attempt chooses a random number &gt;= 0 and &lt; 420 seconds.<br>
+ * The fourth attempt chooses a random number &gt;= 0 and &lt; 900 seconds.<br>
+ * The fifth attempt chooses a random number &gt;= 0 and &lt; 1860 seconds (= 31 minutes)<br>
  * <p>
  * The strategy is called "truncated", because it won't increase the time span after the nth iteration, which means in the example above, the sixth and any further attempt
  * behaves equally to the fifth attempt.

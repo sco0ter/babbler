@@ -26,9 +26,14 @@
  * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a> (#info).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = InfoDiscovery.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.disco.model.info;
+@XmlSchema(namespace = InfoDiscovery.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
+@XmlJavaTypeAdapter(value = LocaleAdapter.class, type = Locale.class)  package rocks.xmpp.extensions.disco.model.info;
+
+import rocks.xmpp.util.adapters.LocaleAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.Locale;

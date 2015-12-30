@@ -33,10 +33,15 @@
  */
 // Some server BOSH implementations require the prefix to be "xmpp" for namespace "urn:xmpp:xbosh"
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = Body.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED, xmlns = {@XmlNs(prefix = "xmpp", namespaceURI = Body.XBOSH_NAMESPACE)}) package rocks.xmpp.extensions.httpbind.model;
+@XmlSchema(namespace = Body.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED, xmlns = {@XmlNs(prefix = "xmpp", namespaceURI = Body.XBOSH_NAMESPACE)})
+@XmlJavaTypeAdapter(value = LocaleAdapter.class, type = Locale.class) package rocks.xmpp.extensions.httpbind.model;
+
+import rocks.xmpp.util.adapters.LocaleAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.Locale;

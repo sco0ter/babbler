@@ -24,11 +24,8 @@
 
 package rocks.xmpp.extensions.disco.model.info;
 
-import rocks.xmpp.util.adapters.LocaleAdapter;
-
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -85,7 +82,6 @@ public final class Identity implements Comparable<Identity> {
     private final String name;
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-    @XmlJavaTypeAdapter(LocaleAdapter.class)
     private final Locale lang;
 
     /**
@@ -906,7 +902,7 @@ public final class Identity implements Comparable<Identity> {
             }
 
             if (result == 0) {
-                if (type == null && o.type== null) {
+                if (type == null && o.type == null) {
                     result = 0;
                 } else if (type == null) {
                     result = -1;
@@ -931,7 +927,7 @@ public final class Identity implements Comparable<Identity> {
 
             if (result == 0) {
                 if (name == null && o.name == null) {
-                    return  0;
+                    return 0;
                 } else if (name == null) {
                     return -1;
                 } else if (o.name == null) {

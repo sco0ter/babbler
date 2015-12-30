@@ -26,9 +26,14 @@
  * Provides XML schema implementations of the <a href="http://xmpp.org/rfcs/rfc6120.html#schemas-sasl">SASL Namespace</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-sasl", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.core.sasl.model;
+@XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-sasl", elementFormDefault = XmlNsForm.QUALIFIED)
+@XmlJavaTypeAdapter(value = LocaleAdapter.class, type = Locale.class) package rocks.xmpp.core.sasl.model;
+
+import rocks.xmpp.util.adapters.LocaleAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.Locale;

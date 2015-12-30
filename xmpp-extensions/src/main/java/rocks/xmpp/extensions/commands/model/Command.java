@@ -24,8 +24,6 @@
 
 package rocks.xmpp.extensions.commands.model;
 
-import rocks.xmpp.util.adapters.LocaleAdapter;
-
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -33,7 +31,6 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -69,7 +66,6 @@ public final class Command {
     private final String sessionid;
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-    @XmlJavaTypeAdapter(LocaleAdapter.class)
     private final Locale lang;
 
     @XmlAttribute

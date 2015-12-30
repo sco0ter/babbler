@@ -23,12 +23,17 @@
  */
 
 /**
- *  Provides XML schema implementations of <a href="https://tools.ietf.org/html/rfc7395">XMPP Subprotocol for WebSocket</a.
+ * Provides XML schema implementations of <a href="https://tools.ietf.org/html/rfc7395">XMPP Subprotocol for WebSocket</a.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-framing", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.websocket.model;
+@XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-framing", elementFormDefault = XmlNsForm.QUALIFIED)
+@XmlJavaTypeAdapter(value = LocaleAdapter.class, type = Locale.class) package rocks.xmpp.websocket.model;
+
+import rocks.xmpp.util.adapters.LocaleAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.Locale;

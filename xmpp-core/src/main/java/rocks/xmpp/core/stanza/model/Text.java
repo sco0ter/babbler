@@ -24,12 +24,9 @@
 
 package rocks.xmpp.core.stanza.model;
 
-import rocks.xmpp.util.adapters.LocaleAdapter;
-
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Locale;
 
 /**
@@ -42,7 +39,6 @@ import java.util.Locale;
  */
 public final class Text {
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-    @XmlJavaTypeAdapter(LocaleAdapter.class)
     private final Locale lang;
 
     @XmlValue

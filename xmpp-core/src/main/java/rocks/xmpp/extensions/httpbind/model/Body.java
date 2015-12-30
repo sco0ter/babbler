@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.httpbind.model;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.util.adapters.LocaleAdapter;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAnyElement;
@@ -33,7 +32,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -172,7 +170,6 @@ public final class Body {
     private final Integer wait;
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-    @XmlJavaTypeAdapter(LocaleAdapter.class)
     private final Locale lang;
 
     @XmlAttribute(namespace = XBOSH_NAMESPACE)

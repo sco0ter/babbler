@@ -24,12 +24,9 @@
 
 package rocks.xmpp.extensions.reach.model;
 
-import rocks.xmpp.util.adapters.LocaleAdapter;
-
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -108,7 +105,6 @@ public final class Address {
         private final String value;
 
         @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-        @XmlJavaTypeAdapter(LocaleAdapter.class)
         private final Locale lang;
 
         private Description() {

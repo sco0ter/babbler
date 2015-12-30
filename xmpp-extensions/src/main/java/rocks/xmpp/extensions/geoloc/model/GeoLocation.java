@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.geoloc.model;
 
-import rocks.xmpp.util.adapters.LocaleAdapter;
 import rocks.xmpp.util.adapters.ZoneOffsetAdapter;
 
 import javax.xml.XMLConstants;
@@ -72,7 +71,6 @@ public final class GeoLocation {
     public static final String NAMESPACE = "http://jabber.org/protocol/geoloc";
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-    @XmlJavaTypeAdapter(LocaleAdapter.class)
     private final Locale lang;
 
     private final Double accuracy;

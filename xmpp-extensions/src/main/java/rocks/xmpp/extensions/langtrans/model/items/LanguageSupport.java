@@ -1,12 +1,10 @@
 package rocks.xmpp.extensions.langtrans.model.items;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.util.adapters.LocaleAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,11 +53,9 @@ public final class LanguageSupport {
     public static final class Item {
 
         @XmlAttribute(name = "source_lang")
-        @XmlJavaTypeAdapter(LocaleAdapter.class)
         private final Locale sourceLanguage;
 
         @XmlAttribute(name = "destination_lang")
-        @XmlJavaTypeAdapter(LocaleAdapter.class)
         private final Locale destinationLanguage;
 
         @XmlAttribute

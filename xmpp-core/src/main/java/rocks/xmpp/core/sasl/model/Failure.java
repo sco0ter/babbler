@@ -35,7 +35,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Locale;
 
 /**
@@ -424,7 +423,6 @@ public final class Failure implements StreamElement {
         private final String text;
 
         @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-        @XmlJavaTypeAdapter(LocaleAdapter.class)
         private final Locale lang;
 
         private Text() {

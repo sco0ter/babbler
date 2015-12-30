@@ -53,7 +53,6 @@ abstract class Frame implements StreamElement {
     private final String id;
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-    @XmlJavaTypeAdapter(LocaleAdapter.class)
     private final Locale lang;
 
     Frame(Jid to, Jid from, String id, Locale language, String version) {

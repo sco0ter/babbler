@@ -1,7 +1,6 @@
 package rocks.xmpp.extensions.langtrans.model;
 
 import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
-import rocks.xmpp.util.adapters.LocaleAdapter;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -9,7 +8,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -89,7 +87,6 @@ public final class LanguageTranslation {
     private static final class Source {
 
         @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-        @XmlJavaTypeAdapter(LocaleAdapter.class)
         private final Locale language;
 
         @XmlValue
@@ -133,11 +130,9 @@ public final class LanguageTranslation {
         private final String text;
 
         @XmlAttribute(name = "destination_lang")
-        @XmlJavaTypeAdapter(LocaleAdapter.class)
         private final Locale destinationLanguage;
 
         @XmlAttribute(name = "source_lang")
-        @XmlJavaTypeAdapter(LocaleAdapter.class)
         private final Locale sourceLanguage;
 
         @XmlAttribute(name = "engine")

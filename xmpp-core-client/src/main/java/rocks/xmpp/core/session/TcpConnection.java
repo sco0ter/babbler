@@ -206,7 +206,12 @@ public final class TcpConnection extends Connection {
         } else {
             socket = tcpConnectionConfiguration.getSocketFactory().createSocket();
         }
-        socket.connect(new InetSocketAddress(unresolvedAddress.getHostName(), unresolvedAddress.getPort()), tcpConnectionConfiguration.getConnectTimeout());
+        try {
+            socket.connect(new InetSocketAddress(unresolvedAddress.getHostName(), unresolvedAddress.getPort()), tcpConnectionConfiguration.getConnectTimeout());
+        } catch (IOException e) {
+            socket = null;
+            throw e;
+        }
         this.port = unresolvedAddress.getPort();
         this.hostname = unresolvedAddress.getHostName();
     }

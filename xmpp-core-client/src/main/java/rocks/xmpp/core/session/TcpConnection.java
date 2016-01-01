@@ -158,7 +158,7 @@ public final class TcpConnection extends Connection {
     @Override
     public final synchronized void connect(Jid from, String namespace, Consumer<Jid> onStreamOpened) throws IOException {
 
-        if (socket != null) {
+        if (socket != null && !socket.isClosed()) {
             // Already connected.
             return;
         }
@@ -168,11 +168,11 @@ public final class TcpConnection extends Connection {
         }
 
         if (getHostname() != null && !getHostname().isEmpty()) {
-            connectToSocket(InetSocketAddress.createUnresolved(getHostname(), getPort()), getProxy());
+            this.socket = createAndConnectSocket(InetSocketAddress.createUnresolved(getHostname(), getPort()), getProxy());
         } else if (getXmppSession().getDomain() != null) {
             if (!connectWithXmppServiceDomain(getXmppSession().getDomain())) {
                 // 9. If the initiating entity does not receive a response to its SRV query, it SHOULD attempt the fallback process described in the next section.
-                connectToSocket(InetSocketAddress.createUnresolved(getXmppSession().getDomain().toString(), getPort()), getProxy());
+                this.socket = createAndConnectSocket(InetSocketAddress.createUnresolved(getXmppSession().getDomain().toString(), getPort()), getProxy());
             }
         } else {
             throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
@@ -196,7 +196,8 @@ public final class TcpConnection extends Connection {
         return socket instanceof SSLSocket;
     }
 
-    private void connectToSocket(InetSocketAddress unresolvedAddress, Proxy proxy) throws IOException {
+    private Socket createAndConnectSocket(InetSocketAddress unresolvedAddress, Proxy proxy) throws IOException {
+        Socket socket;
         if (tcpConnectionConfiguration.getSocketFactory() == null) {
             if (proxy != null) {
                 socket = new Socket(proxy);
@@ -206,14 +207,10 @@ public final class TcpConnection extends Connection {
         } else {
             socket = tcpConnectionConfiguration.getSocketFactory().createSocket();
         }
-        try {
-            socket.connect(new InetSocketAddress(unresolvedAddress.getHostName(), unresolvedAddress.getPort()), tcpConnectionConfiguration.getConnectTimeout());
-        } catch (IOException e) {
-            socket = null;
-            throw e;
-        }
+        socket.connect(new InetSocketAddress(unresolvedAddress.getHostName(), unresolvedAddress.getPort()), tcpConnectionConfiguration.getConnectTimeout());
         this.port = unresolvedAddress.getPort();
         this.hostname = unresolvedAddress.getHostName();
+        return socket;
     }
 
     /**
@@ -376,7 +373,7 @@ public final class TcpConnection extends Connection {
                         // 4. The initiating entity chooses at least one of the returned FQDNs to resolve (following the rules in [DNS-SRV]), which it does by performing DNS "A" or "AAAA" lookups on the FDQN; this will result in an IPv4 or IPv6 address.
                         // 5. The initiating entity uses the IP address(es) from the successfully resolved FDQN (with the corresponding port number returned by the SRV lookup) as the connection address for the receiving entity.
                         // 6. If the initiating entity fails to connect using that IP address but the "A" or "AAAA" lookups returned more than one IP address, then the initiating entity uses the next resolved IP address for that FDQN as the connection address.
-                        connectToSocket(InetSocketAddress.createUnresolved(dnsResourceRecord.target, dnsResourceRecord.port), getProxy());
+                        this.socket = createAndConnectSocket(InetSocketAddress.createUnresolved(dnsResourceRecord.target, dnsResourceRecord.port), getProxy());
                         return true;
                     } catch (IOException e) {
                         // 7. If the initiating entity fails to connect using all resolved IP addresses for a given FDQN, then it repeats the process of resolution and connection for the next FQDN returned by the SRV lookup based on the priority and weight as defined in [DNS-SRV].

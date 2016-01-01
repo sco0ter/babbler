@@ -25,14 +25,13 @@
 package rocks.xmpp.sample.sm;
 
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.StanzaTracking;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.session.Trackable;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.debug.gui.VisualDebugger;
-import rocks.xmpp.extensions.sm.StreamManager;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 
 import java.util.concurrent.Executors;
@@ -67,9 +66,14 @@ public class StreamManagementSample {
                         System.out.println("Received by server!!!");
                     });
                     // Send a message to myself, which is caught by the listener above.
-                    StanzaTracking stanzaTracking = xmppSession.send(new Message(xmppSession.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
-                    stanzaTracking.onAcknowledged(() -> {
-                        System.out.println("Received by server.");
+                    Trackable<Message> trackableMessage = xmppSession.send(new Message(xmppSession.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
+                    trackableMessage.onAcknowledged(message -> {
+                        System.out.println("Received by server: " + message);
+                    });
+
+                    Trackable<Presence> trackablePresence = xmppSession.send(new Presence(Presence.Show.AWAY));
+                    trackablePresence.onAcknowledged(presence -> {
+                        System.out.println("Received by server: " + presence);
                     });
 
                 } catch (XmppException e) {

@@ -29,46 +29,16 @@ import rocks.xmpp.core.stanza.model.Stanza;
 import java.util.function.Consumer;
 
 /**
+ * Keeps track of a stanza by notifying a consumer, when the stanza gets acknowledged.
+ *
  * @author Christian Schudt
  */
-final class StanzaTracking<S extends Stanza> implements Trackable<S> {
-
-    private final S stanza;
+public interface Trackable<S extends Stanza> {
 
     /**
-     * Guarded by this.
+     * Adds a consumer, which gets notified when the stanza has been received (acknowledged) by the server.
+     *
+     * @param onAcknowledged The consumer, which gets notified on acknowledgement.
      */
-    private Consumer<S> onAcknowledged;
-
-    /**
-     * Guarded by this.
-     */
-    private boolean receivedByServer;
-
-    StanzaTracking(S stanza) {
-        this.stanza = stanza;
-    }
-
-    @Override
-    public void onAcknowledged(Consumer<S> onAcknowledged) {
-        boolean received;
-        synchronized (this) {
-            received = receivedByServer;
-            this.onAcknowledged = onAcknowledged;
-        }
-        if (received) {
-            onAcknowledged.accept(stanza);
-        }
-    }
-
-    void receivedByServer() {
-        Consumer<S> consumer;
-        synchronized (this) {
-            receivedByServer = true;
-            consumer = onAcknowledged;
-        }
-        if (consumer != null) {
-            consumer.accept(stanza);
-        }
-    }
+    void onAcknowledged(Consumer<S> onAcknowledged);
 }

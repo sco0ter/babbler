@@ -490,16 +490,12 @@ public final class XmppClient extends XmppSession {
         return e;
     }
 
-    public final StanzaTracking send(final Stanza stanza) {
-        Stanza e = stanza;
-        if (stanza instanceof Message) {
-            e = ClientMessage.from((Message) stanza);
-        } else if (stanza instanceof Presence) {
-            e = ClientPresence.from((Presence) stanza);
-        } else if (stanza instanceof IQ) {
-            e = ClientIQ.from((IQ) stanza);
-        }
-        return super.send(e);
+    public final Trackable<Message> send(final Message message) {
+        return super.send(ClientMessage.from(message));
+    }
+
+    public final Trackable<Presence> send(final Presence presence) {
+        return super.send(ClientPresence.from(presence));
     }
 
     /**

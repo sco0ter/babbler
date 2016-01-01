@@ -146,7 +146,7 @@ public abstract class XmppSession implements AutoCloseable {
      */
     private final Queue<Stanza> unacknowledgedStanzas = new ConcurrentLinkedQueue<>();
 
-    private final Map<Stanza, StanzaTracking> stanzaTrackingMap = new ConcurrentHashMap<>();
+    private final Map<Stanza, StanzaTracking<? extends Stanza>> stanzaTrackingMap = new ConcurrentHashMap<>();
 
     /**
      * Holds the connection state.
@@ -696,8 +696,8 @@ public abstract class XmppSession implements AutoCloseable {
         return element;
     }
 
-    public StanzaTracking send(final Stanza stanza) {
-        StanzaTracking stanzaTracking = new StanzaTracking(stanza);
+    protected <S extends Stanza> Trackable<S> send(final S stanza) {
+        StanzaTracking<S> stanzaTracking = new StanzaTracking<>(stanza);
         stanzaTrackingMap.putIfAbsent(stanza, stanzaTracking);
         send((StreamElement) stanza);
         return stanzaTracking;

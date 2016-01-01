@@ -25,11 +25,14 @@
 package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.extensions.compress.CompressionManager;
 import rocks.xmpp.extensions.compress.CompressionMethod;
+import rocks.xmpp.extensions.sm.StreamManager;
+import rocks.xmpp.extensions.sm.model.StreamManagement;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -69,6 +72,8 @@ import java.util.function.Consumer;
  */
 public final class TcpConnection extends Connection {
 
+    final StreamManager streamManager;
+
     private final TcpConnectionConfiguration tcpConnectionConfiguration;
 
     /**
@@ -105,6 +110,7 @@ public final class TcpConnection extends Connection {
     TcpConnection(XmppSession xmppSession, TcpConnectionConfiguration configuration) {
         super(xmppSession, configuration);
         this.tcpConnectionConfiguration = configuration;
+        streamManager = getXmppSession().getManager(StreamManager.class);
     }
 
     void initialize() {
@@ -141,6 +147,7 @@ public final class TcpConnection extends Connection {
             }
         });
         streamFeaturesManager.addFeatureNegotiator(compressionManager);
+        streamFeaturesManager.addFeatureNegotiator(streamManager);
     }
 
     /**
@@ -182,7 +189,7 @@ public final class TcpConnection extends Connection {
         outputStream = new BufferedOutputStream(socket.getOutputStream());
         inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
-        xmppStreamWriter = new XmppStreamWriter(namespace, this.getXmppSession());
+        xmppStreamWriter = new XmppStreamWriter(namespace, this, this.getXmppSession());
         xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
         xmppStreamWriter.openStream(outputStream, from);
 
@@ -265,6 +272,9 @@ public final class TcpConnection extends Connection {
     public final synchronized void send(StreamElement element) {
         if (xmppStreamWriter != null) {
             xmppStreamWriter.send(element);
+            if (element instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) element)) {
+                xmppStreamWriter.send(StreamManagement.REQUEST);
+            }
         }
     }
 
@@ -394,6 +404,11 @@ public final class TcpConnection extends Connection {
     @Override
     public final synchronized String getStreamId() {
         return streamId;
+    }
+
+    @Override
+    public final boolean isUsingAcknowledgements() {
+        return streamManager.isActive();
     }
 
     @Override

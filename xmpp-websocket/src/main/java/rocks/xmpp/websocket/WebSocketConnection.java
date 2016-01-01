@@ -32,7 +32,9 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
+import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.websocket.model.Close;
 import rocks.xmpp.websocket.model.Open;
@@ -77,6 +79,8 @@ import java.util.function.Consumer;
  */
 public final class WebSocketConnection extends Connection {
 
+    final StreamManager streamManager;
+
     private final XmppDebugger debugger;
 
     private final WebSocketConnectionConfiguration connectionConfiguration;
@@ -111,6 +115,12 @@ public final class WebSocketConnection extends Connection {
         super(xmppSession, connectionConfiguration);
         this.connectionConfiguration = connectionConfiguration;
         this.debugger = xmppSession.getDebugger();
+        this.streamManager = getXmppSession().getManager(StreamManager.class);
+    }
+
+    void initialize() {
+        StreamFeaturesManager streamFeaturesManager = getXmppSession().getManager(StreamFeaturesManager.class);
+        streamFeaturesManager.addFeatureNegotiator(streamManager);
     }
 
     private static String findWebSocketEndpoint(String xmppServiceDomain) {
@@ -319,6 +329,11 @@ public final class WebSocketConnection extends Connection {
     @Override
     public final synchronized String getStreamId() {
         return streamId;
+    }
+
+    @Override
+    public final boolean isUsingAcknowledgements() {
+        return streamManager.isActive();
     }
 
     @Override

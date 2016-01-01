@@ -110,6 +110,7 @@ import rocks.xmpp.extensions.shim.model.Headers;
 import rocks.xmpp.extensions.si.StreamInitiationManager;
 import rocks.xmpp.extensions.si.model.StreamInitiation;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
+import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.extensions.time.EntityTimeManager;
 import rocks.xmpp.extensions.time.model.EntityTime;
@@ -279,7 +280,7 @@ public final class ExtensionModule implements Module {
                 Extension.of(BlockList.NAMESPACE, BlockingManager.class, false, BlockList.class),
 
                 // XEP-0198: Stream Management
-                Extension.of(StreamManagement.class),
+                Extension.of(StreamManagement.NAMESPACE, StreamManager.class, false, StreamManagement.class),
 
                 // XEP-0199: XMPP Ping
                 Extension.of(Ping.NAMESPACE, PingManager.class, true, Ping.class),

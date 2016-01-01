@@ -34,6 +34,7 @@ import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.core.stanza.model.client.ClientPresence;
@@ -42,6 +43,7 @@ import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
+import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.util.XmppUtils;
@@ -51,10 +53,12 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.sasl.RealmCallback;
 import java.time.Duration;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -336,6 +340,7 @@ public final class XmppClient extends XmppSession {
         lastAuthorizationId = authorizationId;
         lastCallbackHandler = callbackHandler;
         try {
+
             logger.fine("Starting SASL negotiation (authentication).");
             if (callbackHandler == null) {
                 authenticationManager.startAuthentication(mechanisms, null, null);
@@ -348,6 +353,23 @@ public final class XmppClient extends XmppSession {
 
             // Check if stream feature negotiation failed with an exception.
             throwAsXmppExceptionIfNotNull(exception);
+
+            // Stream resumption.
+            StreamManager streamManager = getManager(StreamManager.class);
+            if (streamManager.resume()) {
+                updateStatus(Status.AUTHENTICATED);
+                // Copy the unacknowledged stanzas.
+                Queue<Stanza> toBeResent = new ArrayDeque<>(getUnacknowledgedStanzas());
+                // Then clear the queue.
+                getUnacknowledgedStanzas().clear();
+
+                // Then resend everything, which the server didn't acknowledge.
+                for (Stanza stanza : toBeResent) {
+                    send(stanza);
+                    System.out.println("Resending " + stanza);
+                }
+                return authenticationManager.getSuccessData();
+            }
 
             // Then negotiate resource binding manually.
             bindResource(resource);
@@ -466,6 +488,18 @@ public final class XmppClient extends XmppSession {
         }
         super.send(e);
         return e;
+    }
+
+    public final StanzaTracking send(final Stanza stanza) {
+        Stanza e = stanza;
+        if (stanza instanceof Message) {
+            e = ClientMessage.from((Message) stanza);
+        } else if (stanza instanceof Presence) {
+            e = ClientPresence.from((Presence) stanza);
+        } else if (stanza instanceof IQ) {
+            e = ClientIQ.from((IQ) stanza);
+        }
+        return super.send(e);
     }
 
     /**

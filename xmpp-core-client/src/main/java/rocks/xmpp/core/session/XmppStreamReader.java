@@ -26,6 +26,7 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.debug.XmppDebugger;
+import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
@@ -140,13 +141,16 @@ final class XmppStreamReader {
                                 xmlEventReader.nextEvent();
                             } else {
                                 Object object = unmarshaller.unmarshal(xmlEventReader);
-
                                 if (debugger != null) {
                                     // Marshal the inbound stanza. The byteArrayOutputStream cannot be used for that, even if we reset() it, because it could already contain the next stanza.
                                     XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(stringWriter), namespace);
                                     marshaller.marshal(object, xmlStreamWriter);
                                     xmlStreamWriter.flush();
                                     debugger.readStanza(stringWriter.toString(), object);
+                                }
+
+                                if (object instanceof Stanza) {
+                                    connection.streamManager.incrementInboundStanzaCount();
                                 }
                                 doRestart = xmppSession.handleElement(object);
                             }

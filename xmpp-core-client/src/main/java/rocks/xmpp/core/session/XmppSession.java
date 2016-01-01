@@ -64,8 +64,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -115,6 +117,8 @@ public abstract class XmppSession implements AutoCloseable {
 
     protected final StreamFeaturesManager streamFeaturesManager;
 
+    final Set<Consumer<ConnectionEvent>> connectionListeners = new CopyOnWriteArraySet<>();
+
     private final Set<Consumer<MessageEvent>> inboundMessageListeners = new CopyOnWriteArraySet<>();
 
     private final Set<Consumer<MessageEvent>> outboundMessageListeners = new CopyOnWriteArraySet<>();
@@ -133,9 +137,16 @@ public abstract class XmppSession implements AutoCloseable {
 
     private final Set<Consumer<SessionStatusEvent>> sessionStatusListeners = new CopyOnWriteArraySet<>();
 
-    final Set<Consumer<ConnectionEvent>> connectionListeners = new CopyOnWriteArraySet<>();
-
     private final Map<Class<? extends Manager>, Manager> instances = new ConcurrentHashMap<>();
+
+    private final Set<Consumer<MessageEvent>> messageAcknowledgedListeners = new CopyOnWriteArraySet<>();
+
+    /**
+     * The unacknowledged stanzas.
+     */
+    private final Queue<Stanza> unacknowledgedStanzas = new ConcurrentLinkedQueue<>();
+
+    private final Map<Stanza, StanzaTracking> stanzaTrackingMap = new ConcurrentHashMap<>();
 
     /**
      * Holds the connection state.
@@ -421,6 +432,13 @@ public abstract class XmppSession implements AutoCloseable {
     }
 
     /**
+     * @param messageListener The message listener.
+     */
+    public final void addMessageAcknowledgedListener(Consumer<MessageEvent> messageListener) {
+        messageAcknowledgedListeners.add(messageListener);
+    }
+
+    /**
      * Adds an IQ handler for a given payload type. The handler will be processed asynchronously, which means it won't block the inbound stanza processing queue.
      *
      * @param type      The payload type.
@@ -676,6 +694,13 @@ public abstract class XmppSession implements AutoCloseable {
             throw new IllegalStateException("No connection established.");
         }
         return element;
+    }
+
+    public StanzaTracking send(final Stanza stanza) {
+        StanzaTracking stanzaTracking = new StanzaTracking(stanza);
+        stanzaTrackingMap.putIfAbsent(stanza, stanzaTracking);
+        send((StreamElement) stanza);
+        return stanzaTracking;
     }
 
     /**
@@ -1020,6 +1045,22 @@ public abstract class XmppSession implements AutoCloseable {
      * @return The connected resource.
      */
     public abstract Jid getConnectedResource();
+
+    public final Queue<Stanza> getUnacknowledgedStanzas() {
+        return unacknowledgedStanzas;
+    }
+
+    public final void markAcknowledged(Stanza acknowledgedStanza) {
+        if (acknowledgedStanza != null) {
+            if (acknowledgedStanza instanceof Message) {
+                XmppUtils.notifyEventListeners(messageAcknowledgedListeners, new MessageEvent(this, (Message) acknowledgedStanza, false));
+            }
+            StanzaTracking stanzaTracking = stanzaTrackingMap.remove(acknowledgedStanza);
+            if (stanzaTracking != null) {
+                stanzaTracking.receivedByServer();
+            }
+        }
+    }
 
     /**
      * Represents the session status.

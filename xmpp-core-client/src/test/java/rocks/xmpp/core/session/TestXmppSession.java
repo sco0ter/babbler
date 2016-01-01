@@ -83,6 +83,11 @@ public final class TestXmppSession extends XmppSession {
             }
 
             @Override
+            public boolean isUsingAcknowledgements() {
+                return false;
+            }
+
+            @Override
             public void close() throws IOException {
             }
         };

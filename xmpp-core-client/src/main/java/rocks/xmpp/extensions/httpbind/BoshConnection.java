@@ -580,6 +580,11 @@ public final class BoshConnection extends Connection {
         return authId;
     }
 
+    @Override
+    public final synchronized boolean isUsingAcknowledgements() {
+        return usingAcknowledgments;
+    }
+
     /**
      * Sends all elements waiting in the queue to the server.
      * <p>
@@ -641,7 +646,7 @@ public final class BoshConnection extends Connection {
                             body = bodyBuilder.build();
                         }
 
-                        if (usingAcknowledgments) {
+                        if (isUsingAcknowledgements()) {
                             unacknowledgedRequests.put(body.getRid(), bodyBuilder);
                         }
 
@@ -777,8 +782,9 @@ public final class BoshConnection extends Connection {
             Body.Builder body = unacknowledgedRequests.remove(rid);
             if (body != null) {
                 body.build().getWrappedObjects().stream().filter(object -> object instanceof Stanza).forEach(object -> {
-                    // System.out.println("ACK "+ object);
-                    // TODO trigger some listener
+                    Stanza stanza = (Stanza) object;
+                    getXmppSession().getUnacknowledgedStanzas().remove(stanza);
+                    getXmppSession().markAcknowledged(stanza);
                 });
             }
         }

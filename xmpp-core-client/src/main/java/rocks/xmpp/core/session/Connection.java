@@ -134,4 +134,6 @@ public abstract class Connection implements AutoCloseable {
      * @return The stream id.
      */
     public abstract String getStreamId();
+
+    public abstract boolean isUsingAcknowledgements();
 }

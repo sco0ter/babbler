@@ -61,6 +61,8 @@ final class XmppStreamWriter {
 
     private final String namespace;
 
+    private final TcpConnection connection;
+
     /**
      * Will be accessed only by the writer thread.
      */
@@ -81,12 +83,13 @@ final class XmppStreamWriter {
      */
     private boolean streamOpened;
 
-    XmppStreamWriter(String namespace, final XmppSession xmppSession) {
+    XmppStreamWriter(String namespace, TcpConnection tcpConnection, final XmppSession xmppSession) {
         this.namespace = namespace;
         this.xmppSession = xmppSession;
         this.marshaller = xmppSession.createMarshaller();
         this.debugger = xmppSession.getDebugger();
         this.executor = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Writer Thread"));
+        this.connection = tcpConnection;
     }
 
     void initialize(int keepAliveInterval) {
@@ -111,10 +114,13 @@ final class XmppStreamWriter {
                     marshaller.marshal(clientStreamElement, prefixFreeCanonicalizationWriter);
                     prefixFreeCanonicalizationWriter.flush();
 
-                    // Workaround: Simulate keep-alive packet to convince client to process the already transmitted packet.
                     if (clientStreamElement instanceof Stanza) {
+                        // Workaround: Simulate keep-alive packet to convince client to process the already transmitted packet.
                         prefixFreeCanonicalizationWriter.writeCharacters(" ");
                         prefixFreeCanonicalizationWriter.flush();
+
+                        // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowleged" queue.
+                        connection.streamManager.markUnacknowledged((Stanza) clientStreamElement);
                     }
 
                     if (debugger != null) {

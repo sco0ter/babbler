@@ -204,7 +204,7 @@ public final class TcpConnection extends Connection {
     }
 
     private Socket createAndConnectSocket(InetSocketAddress unresolvedAddress, Proxy proxy) throws IOException {
-        Socket socket;
+        final Socket socket;
         if (tcpConnectionConfiguration.getSocketFactory() == null) {
             if (proxy != null) {
                 socket = new Socket(proxy);

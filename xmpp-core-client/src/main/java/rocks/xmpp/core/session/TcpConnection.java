@@ -165,7 +165,7 @@ public final class TcpConnection extends Connection {
     @Override
     public final synchronized void connect(Jid from, String namespace, Consumer<Jid> onStreamOpened) throws IOException {
 
-        if (socket != null && !socket.isClosed()) {
+        if (socket != null && !socket.isClosed() && socket.isConnected()) {
             // Already connected.
             return;
         }

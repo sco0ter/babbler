@@ -172,11 +172,9 @@ public final class TcpConnection extends Connection {
             }
 
             try {
-                socket.close();
-            } catch (final IOException e) {
+                close();
+            } catch (final Exception e) {
             	// ignored
-            } finally {
-                socket = null;
             }
         }
 

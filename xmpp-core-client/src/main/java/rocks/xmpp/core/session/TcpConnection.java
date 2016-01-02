@@ -165,9 +165,19 @@ public final class TcpConnection extends Connection {
     @Override
     public final synchronized void connect(Jid from, String namespace, Consumer<Jid> onStreamOpened) throws IOException {
 
-        if (socket != null && !socket.isClosed() && socket.isConnected()) {
-            // Already connected.
-            return;
+        if (socket != null) {
+            if (!socket.isClosed() && socket.isConnected()) {
+                // Already connected.
+                return;
+            }
+
+            try {
+                socket.close();
+            } catch (final IOException e) {
+            	// ignored
+            } finally {
+                socket = null;
+            }
         }
 
         if (getXmppSession() == null) {

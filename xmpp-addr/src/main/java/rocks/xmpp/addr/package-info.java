@@ -23,9 +23,9 @@
  */
 
 /**
- * Provides classes for the <a href="http://xmpp.org/rfcs/rfc6122.html">XMPP Address Format</a> (JID).
+ * Provides classes for the <a href="https://tools.ietf.org/html/rfc7622">XMPP Address Format</a> (JID).
  *
- * @see <a href="http://xmpp.org/rfcs/rfc6122.html">Extensible Messaging and Presence Protocol (XMPP): Address Format</a>
+ * @see <a href="https://tools.ietf.org/html/rfc7622">Extensible Messaging and Presence Protocol (XMPP): Address Format</a>
  */
 package rocks.xmpp.addr;
 

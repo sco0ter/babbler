@@ -13,7 +13,7 @@ On this site you learn about some general design considerations, a brief user gu
 
 ## Features
 
-* **XMPP core specifications** ([RFC 6120][RFC 6120], [RFC 6121][RFC 6121], [RFC 6122][RFC 6122])
+* **XMPP core specifications** ([RFC 6120][RFC 6120], [RFC 6121][RFC 6121], [RFC 7622][RFC 7622])
 * Various authentication methods: SCRAM-SHA-1, DIGEST-MD5, CRAM-MD5, PLAIN, ANONYMOUS
 * Security: TLS with Hostname Verification
 * **Modern API**, leveraging many of new Java 8 features like:
@@ -38,4 +38,4 @@ On this site you learn about some general design considerations, a brief user gu
 [XMPP]: http://xmpp.org "eXtensible Messaging and Presence Protocol"
 [RFC 6120]: http://xmpp.org/rfcs/rfc6120.html "Extensible Messaging and Presence Protocol (XMPP): Core"
 [RFC 6121]: http://xmpp.org/rfcs/rfc6121.html "Extensible Messaging and Presence Protocol (XMPP): Instant Messaging and Presence"
-[RFC 6122]: http://xmpp.org/rfcs/rfc6122.html "Extensible Messaging and Presence Protocol (XMPP): Address Format"
+[RFC 7622]: https://tools.ietf.org/html/rfc7622 "Extensible Messaging and Presence Protocol (XMPP): Address Format"

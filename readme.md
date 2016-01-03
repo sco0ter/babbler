@@ -2,7 +2,7 @@
 
 It aims to provide good JavaDoc documentation, clean code, an easy to use API and a high level of software quality (which is currently ensured by 700+ unit tests).
 
-It supports the core specifications [RFC 6120](http://xmpp.org/rfcs/rfc6120.html), [RFC 6121](http://xmpp.org/rfcs/rfc6121.html), [RFC 6122](http://xmpp.org/rfcs/rfc6122.html), as well as many [extensions](http://xmpp.org/xmpp-protocols/xmpp-extensions/).
+It supports the core specifications [RFC 6120](http://xmpp.org/rfcs/rfc6120.html), [RFC 6121](http://xmpp.org/rfcs/rfc6121.html), [RFC 7622](https://tools.ietf.org/html/rfc7622), as well as many [extensions](http://xmpp.org/xmpp-protocols/xmpp-extensions/).
 
 Since this project is quite young, the API might change. Comments on the API are appreciated.
 

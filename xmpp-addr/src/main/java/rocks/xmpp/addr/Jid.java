@@ -24,12 +24,11 @@
 
 package rocks.xmpp.addr;
 
+import rocks.xmpp.precis.PrecisProfiles;
+
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import java.text.Bidi;
-import java.text.Normalizer;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -37,7 +36,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * The implementation of the JID as described in <a href="http://xmpp.org/rfcs/rfc6122.html">Extensible Messaging and Presence Protocol (XMPP): Address Format</a>.
+ * The implementation of the JID as described in <a href="https://tools.ietf.org/html/rfc7622">Extensible Messaging and Presence Protocol (XMPP): Address Format</a>.
  * <p>
  * A JID consists of three parts:
  * <p>
@@ -80,19 +79,9 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
 
     private static final Pattern UNESCAPE_PATTERN = Pattern.compile("\\\\(20|22|26|27|2f|3a|3c|3e|40|5c)");
 
-    /**
-     * Every character, which is not a letter, number, punctuation, symbol character, marker character or space, as well as 0340 and 0341 (
-     */
-    private static final Pattern PROHIBITED_CHARACTERS = Pattern.compile("[^\\p{L}\\p{N}\\p{P}\\p{S}\\p{M}\\s]|[\u0340\u0341]");
-
     private static final String DOMAIN_PART = "((?:(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]))+)";
 
     private static final Pattern JID = Pattern.compile("^((.*?)@)?" + DOMAIN_PART + "(/(.*))?$");
-
-    /**
-     * B.1 Commonly mapped to nothing
-     */
-    private static final Pattern MAP_TO_NOTHING = Pattern.compile("([\u00AD\u034F\u1806\u180B-\u180D\u200B-\u200D\u2060\uFE00-\uFE0F\uFEFF])");
 
     /**
      * Caches the escaped JIDs.
@@ -125,28 +114,35 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
         this(local, domain, resource, false, true);
     }
 
-    private Jid(CharSequence local, CharSequence domain, CharSequence resource, boolean doUnescape, boolean prepareAndValidate) {
-        String preparedNode;
-        String strLocal = local != null ? local.toString() : null;
-        String strDomain = domain.toString();
-        if (prepareAndValidate) {
-            preparedNode = prepare(strLocal, true);
-            validateDomain(strDomain);
-            validateLength(preparedNode, "local");
-        } else {
-            preparedNode = strLocal;
-        }
-        String preparedResource = prepare(resource != null ? resource.toString() : null, false);
-        validateLength(preparedResource, "resource");
+    private Jid(final CharSequence local, final CharSequence domain, final CharSequence resource, final boolean doUnescape, final boolean enforceAndValidate) {
+        final String enforcedLocalPart;
+        final String enforcedResource;
+        final String strDomain = domain.toString();
+        final String unescapedLocalPart;
 
         if (doUnescape) {
-            this.local = unescape(preparedNode);
+            unescapedLocalPart = unescape(local);
         } else {
-            this.local = preparedNode;
+            unescapedLocalPart = local != null ? local.toString() : null;
         }
-        this.escapedLocal = escape(this.local);
+
+        // Escape the local part, so that disallowed characters like the space characters pass the UsernameCaseMapped profile.
+        final String escapedLocalPart = escape(unescapedLocalPart);
+        if (enforceAndValidate) {
+            enforcedLocalPart = escapedLocalPart != null ? PrecisProfiles.USERNAME_CASE_MAPPED.enforce(escapedLocalPart) : null;
+            enforcedResource = resource != null ? PrecisProfiles.OPAQUE_STRING.enforce(resource) : null;
+            validateLength(enforcedLocalPart, "local");
+            validateLength(enforcedResource, "resource");
+            validateDomain(strDomain);
+        } else {
+            enforcedLocalPart = escapedLocalPart != null ? escapedLocalPart : null;
+            enforcedResource = resource != null ? resource.toString() : null;
+        }
+
+        this.local = unescape(enforcedLocalPart);
+        this.escapedLocal = enforcedLocalPart;
         this.domain = strDomain.toLowerCase();
-        this.resource = preparedResource;
+        this.resource = enforcedResource;
     }
 
     /**
@@ -262,15 +258,15 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     }
 
     /**
-     * Escapes a JID. The characters {@code "&'/:<>@} (+ whitespace) are replaced with their respective escape characters.
+     * Escapes a local part. The characters {@code "&'/:<>@} (+ whitespace) are replaced with their respective escape characters.
      *
-     * @param jid The JID.
-     * @return The escaped JID.
+     * @param localPart The local part.
+     * @return The escaped local part.
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
-    private static String escape(CharSequence jid) {
-        if (jid != null) {
-            Matcher matcher = ESCAPE_PATTERN.matcher(jid);
+    private static String escape(CharSequence localPart) {
+        if (localPart != null) {
+            Matcher matcher = ESCAPE_PATTERN.matcher(localPart);
             StringBuffer sb = new StringBuffer();
             while (matcher.find()) {
                 String match = matcher.group();
@@ -282,9 +278,9 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
         return null;
     }
 
-    private static String unescape(CharSequence jid) {
-        if (jid != null) {
-            Matcher matcher = UNESCAPE_PATTERN.matcher(jid);
+    private static String unescape(CharSequence localPart) {
+        if (localPart != null) {
+            Matcher matcher = UNESCAPE_PATTERN.matcher(localPart);
             StringBuffer sb = new StringBuffer();
             while (matcher.find()) {
                 String match = matcher.group(1);
@@ -298,77 +294,6 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
             }
             matcher.appendTail(sb);
             return sb.toString();
-        }
-        return null;
-    }
-
-    /**
-     * Prepares a string for the local part ("Nodeprep") or the resource part ("Resourceprep").
-     *
-     * @param input       The input string.
-     * @param isLocalPart True, if the string should be case folded (for "Nodeprep"); false for "Resourceprep".
-     * @return The prepared string.
-     * @see <a href="http://xmpp.org/rfcs/rfc6122.html#nodeprep">Appendix A.  Nodeprep</a>
-     * @see <a href="http://xmpp.org/rfcs/rfc6122.html#resourceprep">Appendix B.  Resourceprep</a>
-     */
-    static String prepare(String input, boolean isLocalPart) {
-        if (input != null) {
-            // 2. Preparation Overview
-            //    The steps for preparing strings are:
-
-            // 1) Map -- For each character in the input, check if it has a mapping
-            //    and, if so, replace it with its mapping.  This is described in
-            //    section 3.
-
-            // http://tools.ietf.org/search/rfc3454#appendix-B.1
-            String prepared = MAP_TO_NOTHING.matcher(input).replaceAll("");
-            if (isLocalPart) {
-                // http://tools.ietf.org/search/rfc3454#appendix-B.2
-                prepared = prepared.toUpperCase(Locale.ENGLISH).toLowerCase(Locale.ENGLISH);
-            }
-
-            // 2) Normalize -- Possibly normalize the result of step 1 using Unicode
-            //    normalization.  This is described in section 4.
-            // This profile specifies the use of Unicode Normalization Form KC
-            prepared = Normalizer.normalize(prepared, Normalizer.Form.NFKC);
-
-            if (isLocalPart) {
-                // For certain characters the normalization returns uppercase characters.
-                // These are the characters which are marked with "Additional folding" in RFC 3454.
-                // Therefore put them to lower case.
-                prepared = prepared.toLowerCase(Locale.ENGLISH);
-            }
-
-            // 3) Prohibit -- Check for any characters that are not allowed in the
-            //    output.  If any are found, return an error.  This is described in
-            //    section 5.
-            Matcher matcher = PROHIBITED_CHARACTERS.matcher(prepared);
-            if (matcher.find()) {
-                throw new IllegalArgumentException("Local or resource part contains prohibited characters.");
-            }
-
-            // 4) Check bidi -- Possibly check for right-to-left characters, and if
-            //    any are found, make sure that the whole string satisfies the
-            //    requirements for bidirectional strings.  If the string does not
-            //    satisfy the requirements for bidirectional strings, return an
-            //    error.  This is described in section 6.
-            if (Bidi.requiresBidi(prepared.toCharArray(), 0, prepared.length())) {
-                Bidi bidi = new Bidi(input, Bidi.DIRECTION_LEFT_TO_RIGHT);
-
-                //  2) If a string contains any RandALCat character, the string MUST NOT
-                //     contain any LCat character.
-                if (bidi.isMixed()) {
-                    // except...
-                    // 3) If a string contains any RandALCat character, a RandALCat
-                    //    character MUST be the first character of the string, and a
-                    //    RandALCat character MUST be the last character of the string.
-                    if (!(bidi.getLevelAt(0) == Bidi.DIRECTION_RIGHT_TO_LEFT && bidi.getLevelAt(0) == bidi.getLevelAt(input.length() - 1))) {
-                        throw new IllegalArgumentException("Local or resource part contains mixed bidirectional characters.");
-                    }
-                }
-            }
-
-            return prepared;
         }
         return null;
     }
@@ -388,9 +313,9 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @param value The value.
      * @param part  The part, only used to produce an exception message.
      */
-    private static void validateLength(String value, String part) {
+    private static void validateLength(CharSequence value, CharSequence part) {
         if (value != null) {
-            if (value.isEmpty()) {
+            if (value.length() == 0) {
                 throw new IllegalArgumentException(part + " must not be empty.");
             }
             if (value.length() > 1023) {
@@ -470,8 +395,15 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     /**
      * Gets the local part of the JID, also known as the name or node.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6122.html#addressing-localpart">2.3.  Localpart</a></cite></p>
-     * <p>The localpart of a JID is an optional identifier placed before the domainpart and separated from the latter by the '@' character. Typically a localpart uniquely identifies the entity requesting and using network access provided by a server (i.e., a local account), although it can also represent other kinds of entities (e.g., a chat room associated with a multi-user chat service). The entity represented by an XMPP localpart is addressed within the context of a specific domain (i.e., {@code <localpart@domainpart>}).</p>
+     * <p><cite><a href="https://tools.ietf.org/html/rfc7622#section-3.3">3.3.  Localpart</a></cite></p>
+     * <p>The localpart of a JID is an optional identifier placed before the
+     * domainpart and separated from the latter by the '@' character.
+     * Typically, a localpart uniquely identifies the entity requesting and
+     * using network access provided by a server (i.e., a local account),
+     * although it can also represent other kinds of entities (e.g., a
+     * chatroom associated with a multi-user chat service [XEP-0045]).  The
+     * entity represented by an XMPP localpart is addressed within the
+     * context of a specific domain (i.e., &lt;localpart@domainpart&gt;).</p>
      * </blockquote>
      *
      * @return The local part.
@@ -483,8 +415,11 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     /**
      * Gets the domain part.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6122.html#addressing-domain">2.2.  Domainpart</a></cite></p>
-     * <p>The domainpart of a JID is that portion after the '@' character (if any) and before the '/' character (if any); it is the primary identifier and is the only REQUIRED element of a JID (a mere domainpart is a valid JID).</p>
+     * <p><cite><a href="https://tools.ietf.org/html/rfc7622#section-3.2">3.2.  Domainpart</a></cite></p>
+     * <p>The domainpart is the primary identifier and is the only REQUIRED
+     * element of a JID (a mere domainpart is a valid JID).  Typically,
+     * a domainpart identifies the "home" server to which clients connect
+     * for XML routing and data management functionality.</p>
      * </blockquote>
      *
      * @return The domain part.
@@ -496,8 +431,15 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     /**
      * Gets the resource part.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6122.html#addressing-resource">2.4.  Resourcepart</a></cite></p>
-     * <p>The resourcepart of a JID is an optional identifier placed after the domainpart and separated from the latter by the '/' character. A resourcepart can modify either a {@code <localpart@domainpart>} address or a mere {@code <domainpart>} address. Typically a resourcepart uniquely identifies a specific connection (e.g., a device or location) or object (e.g., an occupant in a multi-user chat room) belonging to the entity associated with an XMPP localpart at a domain (i.e., {@code <localpart@domainpart/resourcepart>}).</p>
+     * <p><cite><a href="https://tools.ietf.org/html/rfc7622#section-3.4">3.4.  Resourcepart</a></cite></p>
+     * <p>The resourcepart of a JID is an optional identifier placed after the
+     * domainpart and separated from the latter by the '/' character.  A
+     * resourcepart can modify either a &lt;localpart@domainpart&gt; address or a
+     * mere &lt;domainpart&gt; address.  Typically, a resourcepart uniquely
+     * identifies a specific connection (e.g., a device or location) or
+     * object (e.g., an occupant in a multi-user chatroom [XEP-0045])
+     * belonging to the entity associated with an XMPP localpart at a domain
+     * (i.e., &lt;localpart@domainpart/resourcepart&gt;).</p>
      * </blockquote>
      *
      * @return The resource part.

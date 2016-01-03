@@ -24,10 +24,9 @@
 
 package rocks.xmpp.addr;
 
-import gnu.inet.encoding.Stringprep;
-import gnu.inet.encoding.StringprepException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import rocks.xmpp.precis.PrecisProfiles;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -357,6 +356,7 @@ public class JidTest {
         Jid withLocal = jid.withLocal("newLocal");
         Assert.assertEquals(withLocal, Jid.of("newLocal@domain/resource"));
     }
+
     @Test
     public void testAtSubdomain() {
         Jid jid = Jid.of("test@domain/resource");
@@ -369,79 +369,9 @@ public class JidTest {
         Jid.of("test\u001Ftest@domain");
     }
 
-    @Test
-    public void testAsciiControlCharacters() {
-        String[] chars = new String[]{"\u0000", "\u001F", "\u007F", "\uD83F\uDFFE"};
-        int failed = 0;
-        for (String aChar : chars) {
-            try {
-                Jid.prepare(aChar, true);
-            } catch (IllegalArgumentException e) {
-                failed++;
-            }
-        }
-        Assert.assertEquals(failed, chars.length);
-    }
 
     @Test
-    public void testSurrogateCodes() {
-        String[] chars = new String[]{"\uD800", "\uDFFF"};
-        int failed = 0;
-        for (String aChar : chars) {
-            try {
-                Jid.prepare(aChar, true);
-            } catch (IllegalArgumentException e) {
-                failed++;
-            }
-        }
-        Assert.assertEquals(failed, chars.length);
-    }
-
-    @Test
-    public void testNonAsciiControlCharacters() {
-        String[] chars = new String[]{"\u0080", "\u06DD", "\u070F", "\u180E", "\u2028", "\u2029", "\u2061", "\u2062", "\u2063", "\u206A", "\u206B", "\u206C", "\u206D", "\u206E", "\u206F", "\uFFF9", "\uFFFA", "\uFFFB", "\uD834\uDD73", "\uD834\uDD7A"};
-        int failed = 0;
-        for (String aChar : chars) {
-
-            try {
-                Jid.prepare(aChar, true);
-            } catch (IllegalArgumentException e) {
-                failed++;
-            }
-        }
-        Assert.assertEquals(failed, chars.length);
-    }
-
-    @Test
-    public void testPrivateUseCharacters() {
-        String[] chars = new String[]{"\uE000", "\uF8FF", "\uDB80\uDC00", "\uDBC0\uDC00"};
-        int failed = 0;
-        for (String aChar : chars) {
-            try {
-                Jid.prepare(aChar, true);
-            } catch (IllegalArgumentException e) {
-                failed++;
-            }
-        }
-        Assert.assertEquals(failed, chars.length);
-    }
-
-    @Test
-    public void testNonCharacterCodePoints() {
-        String[] chars = new String[]{"\uFDD0", "\uFDEF"};
-        int failed = 0;
-        for (String aChar : chars) {
-            try {
-                Jid.prepare(aChar, true);
-            } catch (IllegalArgumentException e) {
-                failed++;
-            }
-        }
-        Assert.assertEquals(failed, chars.length);
-    }
-
-    @Test
-    public void testNodePrep() throws StringprepException {
+    public void testLocalPart() {
         // Some examples from http://tools.ietf.org/html/rfc3454#appendix-B.2
         String s = "\u0149@domain";
         Assert.assertEquals(Jid.of(s).getLocal(), "\u02BC\u006E");
@@ -450,16 +380,13 @@ public class JidTest {
         Assert.assertEquals(Jid.of(s1).getLocal(), "ss");
 
         String s2 = "\u03B0@domain";
-        Assert.assertEquals(Jid.of(s2).getLocal(), Stringprep.nodeprep("\u03B0"));
+        Assert.assertEquals(Jid.of(s2).getLocal(), PrecisProfiles.USERNAME_CASE_MAPPED.enforce("\u03B0"));
 
         String s3 = "\u01E0@domain";
         Assert.assertEquals(Jid.of(s3).getLocal(), "\u01E1");
 
         String s4 = "\u0226@domain";
         Assert.assertEquals(Jid.of(s4).getLocal(), "\u0227");
-
-        String s5 = "\u3394@domain";
-        Assert.assertEquals(Jid.of(s5).getLocal(), Stringprep.nodeprep("\u3394"));
 
         String s6 = "\u0480@domain";
         Assert.assertEquals(Jid.of(s6).getLocal(), "\u0481");
@@ -468,25 +395,16 @@ public class JidTest {
         Assert.assertEquals(Jid.of(s7).getLocal(), "\u0565\u0582");
 
         String s8 = "\u1F52@domain";
-        Assert.assertEquals(Jid.of(s8).getLocal(), Stringprep.nodeprep("\u1F52"));
+        Assert.assertEquals(Jid.of(s8).getLocal(), PrecisProfiles.USERNAME_CASE_MAPPED.enforce("\u1F52"));
 
         String s9 = "UPPERCASE@domain";
         Assert.assertEquals(Jid.of(s9).getLocal(), "uppercase");
-
-        String s10 = "\u212D@domain";
-        Assert.assertEquals(Jid.of(s10).getLocal(), Stringprep.nodeprep("\u212D"));
     }
 
     @Test
     public void testResourcePrep() {
         String s1 = "test@domain/resource with space";
         Assert.assertEquals(Jid.of(s1).getResource(), "resource with space");
-    }
-
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void testInvalidBidiString() {
-        String s = "\u0627\u0031@domain";
-        Jid.of(s);
     }
 
     @Test
@@ -510,43 +428,6 @@ public class JidTest {
         }
 
         Assert.assertEquals(fails, 13);
-    }
-
-    @Test
-    public void shouldMapToNothing() {
-        String s = "s\u00AD\u034F\u1806\u180B\u180C\u180D\u200B\u200C\u200D\u2060\uFE00\uFE01\uFE02\uFE03\uFE04\uFE05\uFE06\uFE07\uFE08\uFE09\uFE0A\uFE0B\uFE0C\uFE0D\uFE0E\uFE0F\uFEFFs";
-        Assert.assertEquals(Jid.prepare(s, true), "ss");
-    }
-
-    @Test
-    public void shouldCaseFold() {
-        // Some examples from http://tools.ietf.org/html/rfc3454#appendix-B.2
-        String s = "\u0149";
-        Assert.assertEquals(Jid.prepare(s, true), "\u02BC\u006E");
-
-        String s1 = "ß";
-        Assert.assertEquals(Jid.prepare(s1, true), "ss");
-
-        //String s2 = "\u03B0";
-        //Assert.assertEquals(Jid.prepare(s2, true), "\u03C5\u0308\u0301");
-
-        String s3 = "\u01E0";
-        Assert.assertEquals(Jid.prepare(s3, true), "\u01E1");
-
-        String s4 = "\u0226";
-        Assert.assertEquals(Jid.prepare(s4, true), "\u0227");
-
-        //String s5 = "\u03D2";
-        //Assert.assertEquals(Jid.prepare(s5, true), "\u03C5");
-
-        String s6 = "\u0480";
-        Assert.assertEquals(Jid.prepare(s6, true), "\u0481");
-
-        String s7 = "\u0587";
-        Assert.assertEquals(Jid.prepare(s7, true), "\u0565\u0582");
-
-        //String s8 = "\u1F52";
-        //Assert.assertEquals(Jid.prepare(s8, true), "\u03C5\u0313\u0300");
     }
 
     //@Test

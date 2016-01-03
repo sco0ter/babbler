@@ -3,6 +3,7 @@
 
 ## Version 0.7.0-SNAPSHOT
 
+* Update `Jid` class to the new XMPP Address Format ([RFC 7622](https://tools.ietf.org/html/rfc7622))
 * Represent `xml:lang` attributes as `java.util.Locale`, not as `String`.
 * Add `XmppSession#isAuthenticated()` method.
 

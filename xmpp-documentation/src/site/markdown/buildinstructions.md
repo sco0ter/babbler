@@ -8,7 +8,7 @@ Babbler uses [Maven](http://maven.apache.org/) as build tool and is separated in
 Let's start with a short overview over the build structure.
 The project is structured into the following Maven modules:
 
-* **xmpp-addr**: This is module for the XMPP Address Format (RFC 6122) and contains only the `Jid` class. Nonetheless it's a separate module, because a) it's a separate RFC as well and b) one could use the `Jid` class as standalone in other projects. 
+* **xmpp-addr**: This is module for the XMPP Address Format (RFC 7622) and contains only the `Jid` class. Nonetheless it's a separate module, because a) it's a separate RFC as well and b) one could use the `Jid` class as standalone in other projects. 
 * **xmpp-core**: This is the core module and resembles mainly the XMPP Core specification (RFC 6120). It contains mainly only XML schema implementations, e.g. for Message, Presence, IQ and extensions. There's not much logic involved here, its main purpose is to map between XML and Java objects.<br/>The idea behind separating this module is, that it could theoretically be used by a client as well as a server implementation.
 * **xmpp-core-client**: This contains the core business logic used by a client, e.g. roster management, event handling, client authentication logic, etc.
 * **xmpp-extensions**: This contains XML schema implementations of XEPs.

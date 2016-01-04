@@ -556,6 +556,7 @@ public abstract class XmppSession implements AutoCloseable {
         return sendAndAwait(iq,
                 IQEvent::getIQ,
                 responseIQ -> responseIQ.isResponse() && responseIQ.getId() != null && responseIQ.getId().equals(iq.getId()),
+                this::sendIQ,
                 this::addInboundIQListener,
                 this::removeInboundIQListener,
                 timeout);
@@ -570,10 +571,11 @@ public abstract class XmppSession implements AutoCloseable {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public final Presence sendAndAwaitPresence(StreamElement stanza, final Predicate<Presence> filter) throws XmppException {
+    public final Presence sendAndAwaitPresence(Presence stanza, final Predicate<Presence> filter) throws XmppException {
         return sendAndAwait(stanza,
                 PresenceEvent::getPresence,
                 filter,
+                this::sendPresence,
                 this::addInboundPresenceListener,
                 this::removeInboundPresenceListener,
                 configuration.getDefaultResponseTimeout()
@@ -589,10 +591,11 @@ public abstract class XmppSession implements AutoCloseable {
      * @throws StanzaException     If the entity returned a stanza error.
      * @throws NoResponseException If the entity did not respond.
      */
-    public final Message sendAndAwaitMessage(StreamElement stanza, final Predicate<Message> filter) throws XmppException {
+    public final Message sendAndAwaitMessage(Message stanza, final Predicate<Message> filter) throws XmppException {
         return sendAndAwait(stanza,
                 MessageEvent::getMessage,
                 filter,
+                this::sendMessage,
                 this::addInboundMessageListener,
                 this::removeInboundMessageListener,
                 configuration.getDefaultResponseTimeout()
@@ -600,7 +603,7 @@ public abstract class XmppSession implements AutoCloseable {
     }
 
     @SuppressWarnings("unchecked")
-    private <S extends Stanza, E extends EventObject> S sendAndAwait(StreamElement stanza, Function<E, S> stanzaMapper, final Predicate<S> filter, Consumer<Consumer<E>> addListener, Consumer<Consumer<E>> removeListener, long timeout) throws XmppException {
+    private <S extends Stanza, E extends EventObject> S sendAndAwait(S stanza, Function<E, S> stanzaMapper, final Predicate<S> filter, Function<S, Trackable<S>> sendFunction, Consumer<Consumer<E>> addListener, Consumer<Consumer<E>> removeListener, long timeout) throws XmppException {
         final Stanza[] result = new Stanza[1];
         final Lock lock = new ReentrantLock();
         final Condition resultReceived = lock.newCondition();
@@ -622,7 +625,7 @@ public abstract class XmppSession implements AutoCloseable {
         try {
             // Setup a listener, which waits
             addListener.accept(listener);
-            send(stanza);
+            sendFunction.apply(stanza);
             // Wait for the stanza to arrive.
             if (!resultReceived.await(timeout, TimeUnit.MILLISECONDS)) {
                 throw new NoResponseException("Timeout reached, while waiting on a response.");
@@ -667,6 +670,10 @@ public abstract class XmppSession implements AutoCloseable {
      * @return The sent stream element, which is usually the same as the parameter, but may differ in case a stanza is sent, e.g. a {@link Message} is translated to a {@link rocks.xmpp.core.stanza.model.client.ClientMessage}.
      */
     public StreamElement send(StreamElement element) {
+        return sendInternal(element);
+    }
+
+    private StreamElement sendInternal(StreamElement element) {
 
         if (!isConnected() && !EnumSet.of(Status.CLOSING, Status.CONNECTING).contains(getStatus())) {
             throw new IllegalStateException("Session is not connected to server");
@@ -696,10 +703,37 @@ public abstract class XmppSession implements AutoCloseable {
         return element;
     }
 
-    protected <S extends Stanza> Trackable<S> send(final S stanza) {
+    /**
+     * Sends an IQ.
+     *
+     * @param iq The IQ.
+     * @return The trackable, which allows to track the stanza.
+     */
+    public abstract Trackable<IQ> sendIQ(final IQ iq);
+
+    /**
+     * Sends a message.
+     *
+     * @param message The message.
+     * @return The trackable, which allows to track the stanza.
+     */
+    public abstract Trackable<Message> sendMessage(final Message message);
+
+    /**
+     * Sends a presence.
+     *
+     * @param presence The presence.
+     * @return The trackable, which allows to track the stanza.
+     */
+    public abstract Trackable<Presence> sendPresence(final Presence presence);
+
+    protected final <S extends Stanza> Trackable<S> trackAndSend(S stanza) {
         StanzaTracking<S> stanzaTracking = new StanzaTracking<>(stanza);
-        stanzaTrackingMap.putIfAbsent(stanza, stanzaTracking);
-        send((StreamElement) stanza);
+        // Only track stanzas, if the connection allows it.
+        if (activeConnection.isUsingAcknowledgements()) {
+            stanzaTrackingMap.putIfAbsent(stanza, stanzaTracking);
+        }
+        sendInternal(stanza);
         return stanzaTracking;
     }
 

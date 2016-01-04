@@ -79,7 +79,7 @@ import java.util.logging.Logger;
  * Once connected, you can send messages:
  * <pre>
  * {@code
- * xmppClient.send(new Message(Jid.of("juliet@example.net"), Message.Type.CHAT));
+ * xmppClient.sendMessage(new Message(Jid.of("juliet@example.net"), Message.Type.CHAT));
  * }
  * </pre>
  * <h3>Closing the Session</h3>
@@ -490,12 +490,19 @@ public final class XmppClient extends XmppSession {
         return e;
     }
 
-    public final Trackable<Message> send(final Message message) {
-        return super.send(ClientMessage.from(message));
+    @Override
+    public final Trackable<IQ> sendIQ(final IQ iq) {
+        return trackAndSend(ClientIQ.from(iq));
     }
 
-    public final Trackable<Presence> send(final Presence presence) {
-        return super.send(ClientPresence.from(presence));
+    @Override
+    public final Trackable<Message> sendMessage(final Message message) {
+        return trackAndSend(ClientMessage.from(message));
+    }
+
+    @Override
+    public final Trackable<Presence> sendPresence(final Presence presence) {
+        return trackAndSend(ClientPresence.from(presence));
     }
 
     /**

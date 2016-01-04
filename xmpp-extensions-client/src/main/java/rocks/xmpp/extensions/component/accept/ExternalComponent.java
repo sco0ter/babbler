@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.component.accept;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.session.Trackable;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -214,5 +215,20 @@ public final class ExternalComponent extends XmppSession {
 
         super.send(element);
         return element;
+    }
+
+    @Override
+    public final Trackable<IQ> sendIQ(final IQ iq) {
+        return trackAndSend(ComponentIQ.from(iq));
+    }
+
+    @Override
+    public final Trackable<Message> sendMessage(final Message message) {
+        return trackAndSend(ComponentMessage.from(message));
+    }
+
+    @Override
+    public final Trackable<Presence> sendPresence(final Presence presence) {
+        return trackAndSend(ComponentPresence.from(presence));
     }
 }

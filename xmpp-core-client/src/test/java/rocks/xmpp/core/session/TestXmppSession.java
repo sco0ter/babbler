@@ -31,6 +31,8 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
 
@@ -138,6 +140,21 @@ public final class TestXmppSession extends XmppSession {
     public IQ query(final IQ iq, long timeout) throws XmppException {
         // Ignore timeout for tests.
         return query(iq);
+    }
+
+    @Override
+    public final Trackable<IQ> sendIQ(final IQ stanza) {
+        return trackAndSend(stanza);
+    }
+
+    @Override
+    public final Trackable<Message> sendMessage(final Message stanza) {
+        return trackAndSend(stanza);
+    }
+
+    @Override
+    public final Trackable<Presence> sendPresence(final Presence stanza) {
+        return trackAndSend(stanza);
     }
 
     @Override

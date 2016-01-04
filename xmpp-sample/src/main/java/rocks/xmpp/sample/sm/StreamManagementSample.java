@@ -66,12 +66,12 @@ public class StreamManagementSample {
                         System.out.println("Received by server!!!");
                     });
                     // Send a message to myself, which is caught by the listener above.
-                    Trackable<Message> trackableMessage = xmppSession.send(new Message(xmppSession.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
+                    Trackable<Message> trackableMessage = xmppSession.sendMessage(new Message(xmppSession.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
                     trackableMessage.onAcknowledged(message -> {
                         System.out.println("Received by server: " + message);
                     });
 
-                    Trackable<Presence> trackablePresence = xmppSession.send(new Presence(Presence.Show.AWAY));
+                    Trackable<Presence> trackablePresence = xmppSession.sendPresence(new Presence(Presence.Show.AWAY));
                     trackablePresence.onAcknowledged(presence -> {
                         System.out.println("Received by server: " + presence);
                     });

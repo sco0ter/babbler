@@ -32,6 +32,7 @@ import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 
 import java.util.concurrent.Executors;
@@ -49,6 +50,13 @@ public class StreamManagementSample {
                             .hostname("localhost")
                             .port(5222)
                             .secure(false) // Disable TLS only for simpler example here.
+                            .build();
+
+                    BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()
+                            .hostname("localhost")
+                            .port(7070)
+                                    //.sslContext(getTrustAllSslContext())
+                            .secure(false)
                             .build();
 
                     XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()

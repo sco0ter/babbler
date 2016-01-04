@@ -30,6 +30,7 @@ import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -68,11 +69,18 @@ public class SampleApplication {
                         .secure(false) // We want to negotiate a TLS connection.
                         .build();
 
+                BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()
+                        .hostname("localhost")
+                        .port(7070)
+                        //.sslContext(getTrustAllSslContext())
+                        .secure(false)
+                        .build();
+
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                         .debugger(ConsoleDebugger.class)
                         .build();
 
-                XmppClient xmppClient = new XmppClient("localhost", configuration, tcpConfiguration);
+                XmppClient xmppClient = new XmppClient("localhost", configuration, boshConfiguration);
 
                 // Listen for inbound messages.
                 xmppClient.addInboundMessageListener(e -> logger.info("Received: " + e.getMessage()));

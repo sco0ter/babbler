@@ -382,7 +382,6 @@ public final class XmppClient extends XmppSession {
                     // Then resend everything, which the server didn't acknowledge.
                     for (Stanza stanza : toBeResent) {
                         send(stanza);
-                        System.out.println("Resending " + stanza);
                     }
                     return authenticationManager.getSuccessData();
                 }

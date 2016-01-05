@@ -67,8 +67,6 @@ public final class ReconnectionManager extends Manager {
 
     private ReconnectionStrategy reconnectionStrategy;
 
-    private ScheduledFuture<?> scheduledReconnection;
-
     private ScheduledFuture<?> scheduledReconnectingInterval;
 
     private Instant nextReconnectionAttempt;
@@ -107,11 +105,7 @@ public final class ReconnectionManager extends Manager {
      * Cancels the next reconnection attempt.
      */
     private synchronized void cancel() {
-        if (scheduledReconnection != null) {
-            // Cancel / unschedule any scheduled reconnection task, if the connection is established (e.g. manually) before the next reconnection attempt.
-            scheduledReconnection.cancel(false);
-            nextReconnectionAttempt = null;
-        }
+        nextReconnectionAttempt = null;
         if (scheduledReconnectingInterval != null) {
             // Cancel the scheduled timer.
             scheduledReconnectingInterval.cancel(false);
@@ -137,19 +131,16 @@ public final class ReconnectionManager extends Manager {
                     synchronized (this) {
                         scheduledReconnectingInterval.cancel(false);
                     }
+                    try {
+                        xmppSession.connect();
+                        logger.log(Level.FINE, "Reconnection successful.");
+                    } catch (XmppException e) {
+                        logger.log(Level.FINE, "Reconnection failed.", e);
+                        XmppUtils.notifyEventListeners(xmppSession.connectionListeners, new ConnectionEvent(xmppSession, ConnectionEvent.Type.RECONNECTION_FAILED, e, Duration.ZERO));
+                        scheduleReconnection(attempt + 1, e);
+                    }
                 }
             }, 0, 1, TimeUnit.SECONDS);
-
-            scheduledReconnection = scheduledExecutorService.schedule(() -> {
-                try {
-                    xmppSession.connect();
-                    logger.log(Level.FINE, "Reconnection successful.");
-                } catch (XmppException e) {
-                    logger.log(Level.FINE, "Reconnection failed.", e);
-                    XmppUtils.notifyEventListeners(xmppSession.connectionListeners, new ConnectionEvent(xmppSession, ConnectionEvent.Type.RECONNECTION_FAILED, e, Duration.ZERO));
-                    scheduleReconnection(attempt + 1, e);
-                }
-            }, seconds, TimeUnit.SECONDS);
         }
     }
 

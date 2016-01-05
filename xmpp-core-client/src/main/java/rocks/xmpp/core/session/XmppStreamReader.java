@@ -135,8 +135,9 @@ final class XmppStreamReader {
                                     writer.add(startDocument);
                                     writer.add(xmlEvent);
                                     writer.flush();
+                                    debugger.readStanza(stringWriter.append('>').toString(), null);
+                                    // Close the writer after the string has been created, otherwise some XMLEventWriters write the closing tag (</stream:stream>)
                                     writer.close();
-                                    debugger.readStanza(stringWriter.toString(), null);
                                 }
                                 xmlEventReader.nextEvent();
                             } else {

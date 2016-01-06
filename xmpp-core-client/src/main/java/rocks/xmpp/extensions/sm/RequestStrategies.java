@@ -30,7 +30,12 @@ import rocks.xmpp.core.stanza.model.Stanza;
 import java.util.function.Predicate;
 
 /**
+ * A set of request strategies which are used for requesting acknowledgements from the server.
+ * <p>
+ * Requests could be sent after every message or after X stanzas.
+ *
  * @author Christian Schudt
+ * @see StreamManager#setRequestStrategy(Predicate)
  */
 public final class RequestStrategies {
     private static final Predicate<Stanza> FOR_EVERY_MESSAGE = stanza -> stanza instanceof Message;

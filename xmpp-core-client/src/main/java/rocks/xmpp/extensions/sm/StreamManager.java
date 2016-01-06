@@ -38,7 +38,17 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 
 /**
+ * Manages the stream as described in <a href="http://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>.
+ * <p>
+ * This class enables stream management during stream negotiation, if the stream management feature has been enabled before login:
+ * <pre>
+ * {@code
+ * xmppSession.enableFeature(StreamManagement.NAMESPACE);
+ * }
+ * </pre>
+ *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>
  */
 public final class StreamManager extends StreamFeatureNegotiator {
 
@@ -84,11 +94,6 @@ public final class StreamManager extends StreamFeatureNegotiator {
      * Guarded by "this".
      */
     private boolean couldResume;
-
-    /**
-     * Guarded by "this".
-     */
-    private int preferredMaximumResumptionTime;
 
     private StreamManager(XmppSession xmppSession) {
         super(xmppSession, StreamManagement.class);
@@ -163,6 +168,7 @@ public final class StreamManager extends StreamFeatureNegotiator {
                 acknowledgedStanzaCount = h;
             }
             for (long i = 0; i < x; i++) {
+                // Remove X stanzas from the head of the queue and mark them as acknowledged.
                 xmppSession.markAcknowledged(xmppSession.getUnacknowledgedStanzas().poll());
             }
         }
@@ -191,14 +197,31 @@ public final class StreamManager extends StreamFeatureNegotiator {
         }
     }
 
+    /**
+     * Gets the request strategy.
+     *
+     * @return The request strategy.
+     * @see RequestStrategies
+     */
     public final synchronized Predicate<Stanza> getRequestStrategy() {
         return requestStrategy;
     }
 
+    /**
+     * Sets the request strategy.
+     *
+     * @param requestStrategy The request strategy.
+     * @see RequestStrategies
+     */
     public final synchronized void setRequestStrategy(Predicate<Stanza> requestStrategy) {
         this.requestStrategy = requestStrategy;
     }
 
+    /**
+     * Returns true, as soon as the server has enabled stream management, i.e. if both client and server are using stream management.
+     *
+     * @return True, as soon as the server has enabled stream management.
+     */
     public final synchronized boolean isActive() {
         return enabled != null;
     }

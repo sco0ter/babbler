@@ -197,7 +197,7 @@ public final class TcpConnection extends Connection {
         outputStream = new BufferedOutputStream(socket.getOutputStream());
         inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
-        xmppStreamWriter = new XmppStreamWriter(namespace, this, this.getXmppSession());
+        xmppStreamWriter = new XmppStreamWriter(namespace, streamManager, this.getXmppSession());
         xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
         xmppStreamWriter.openStream(outputStream, from);
 

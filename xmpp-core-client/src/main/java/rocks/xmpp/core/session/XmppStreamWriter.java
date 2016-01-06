@@ -29,6 +29,7 @@ import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamFeatures;
+import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.XMLConstants;
@@ -61,7 +62,7 @@ final class XmppStreamWriter {
 
     private final String namespace;
 
-    private final TcpConnection connection;
+    private final StreamManager streamManager;
 
     /**
      * Will be accessed only by the writer thread.
@@ -83,13 +84,13 @@ final class XmppStreamWriter {
      */
     private boolean streamOpened;
 
-    XmppStreamWriter(String namespace, TcpConnection tcpConnection, final XmppSession xmppSession) {
+    XmppStreamWriter(String namespace, StreamManager streamManager, final XmppSession xmppSession) {
         this.namespace = namespace;
         this.xmppSession = xmppSession;
         this.marshaller = xmppSession.createMarshaller();
         this.debugger = xmppSession.getDebugger();
         this.executor = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Writer Thread"));
-        this.connection = tcpConnection;
+        this.streamManager = streamManager;
     }
 
     void initialize(int keepAliveInterval) {
@@ -120,7 +121,7 @@ final class XmppStreamWriter {
                         prefixFreeCanonicalizationWriter.flush();
 
                         // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowleged" queue.
-                        connection.streamManager.markUnacknowledged((Stanza) clientStreamElement);
+                        streamManager.markUnacknowledged((Stanza) clientStreamElement);
                     }
 
                     if (debugger != null) {

@@ -112,6 +112,11 @@ final class XmppStreamWriter {
         if (!executor.isShutdown() && clientStreamElement != null) {
             executor.execute(() -> {
                 try {
+                    // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowleged" queue.
+                    if (clientStreamElement instanceof Stanza) {
+                        streamManager.markUnacknowledged((Stanza) clientStreamElement);
+                    }
+
                     marshaller.marshal(clientStreamElement, prefixFreeCanonicalizationWriter);
                     prefixFreeCanonicalizationWriter.flush();
 
@@ -119,9 +124,6 @@ final class XmppStreamWriter {
                         // Workaround: Simulate keep-alive packet to convince client to process the already transmitted packet.
                         prefixFreeCanonicalizationWriter.writeCharacters(" ");
                         prefixFreeCanonicalizationWriter.flush();
-
-                        // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowleged" queue.
-                        streamManager.markUnacknowledged((Stanza) clientStreamElement);
                     }
 
                     if (debugger != null) {

@@ -38,7 +38,7 @@ import java.util.function.Predicate;
  * @see StreamManager#setRequestStrategy(Predicate)
  */
 public final class RequestStrategies {
-    private static final Predicate<Stanza> FOR_EVERY_MESSAGE = stanza -> stanza instanceof Message;
+    private static final Predicate<Stanza> FOR_EACH_MESSAGE = stanza -> stanza instanceof Message;
 
     private RequestStrategies() {
     }
@@ -46,32 +46,63 @@ public final class RequestStrategies {
     /**
      * Requests an ack for every X stanzas. In other words, if X stanzas have been sent and acknowledgement is requested for them.
      *
-     * @param stanzaCount The stanza count.
+     * @param x The stanza count.
      * @return The request strategy.
      */
-    public static Predicate<Stanza> forEveryXStanzas(final int stanzaCount) {
-        return new Predicate<Stanza>() {
+    public static Predicate<Stanza> forEveryXStanzas(final int x) {
+        return new ForEveryXStanzas(x);
+    }
 
-            private int sentStanzas;
+    private static final class ForEveryXStanzas implements Predicate<Stanza> {
 
-            @Override
-            public boolean test(Stanza stanza) {
-                sentStanzas++;
-                if (sentStanzas == stanzaCount) {
-                    sentStanzas = 0;
-                    return true;
-                }
-                return false;
+        private final int x;
+
+        private int sentStanzas;
+
+        private ForEveryXStanzas(final int x) {
+            this.x = x;
+        }
+
+        @Override
+        public final boolean test(final Stanza stanza) {
+            if (++sentStanzas == x) {
+                sentStanzas = 0;
+                return true;
             }
-        };
+            return false;
+        }
     }
 
     /**
-     * Requests an ack for every message.
+     * Requests an ack for each message.
      *
      * @return The request strategy.
      */
-    public static Predicate<Stanza> forEveryMessage() {
-        return FOR_EVERY_MESSAGE;
+    public static Predicate<Stanza> forEachMessage() {
+        return FOR_EACH_MESSAGE;
+    }
+
+    /**
+     * Requests an acknowledgement for each message and at the latest after X non-message stanzas (presence or IQ).
+     * E.g. if x = 5 and five presences are sent, a request is sent afterwards.
+     * If a message is sent in between, no request is sent after the fifth presence, because the counter will be reset to 0 after each message.
+     *
+     * @param x The stanza count.
+     * @return The request strategy.
+     */
+    public static Predicate<Stanza> forEachMessageOrEveryXStanzas(final int x) {
+        return new Predicate<Stanza>() {
+
+            private final ForEveryXStanzas forEveryStanza = new ForEveryXStanzas(x);
+
+            @Override
+            public final boolean test(final Stanza stanza) {
+                if (FOR_EACH_MESSAGE.test(stanza)) {
+                    forEveryStanza.sentStanzas = 0;
+                    return true;
+                }
+                return forEveryStanza.test(stanza);
+            }
+        };
     }
 }

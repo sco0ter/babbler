@@ -88,7 +88,7 @@ public final class StreamManager extends StreamFeatureNegotiator {
     /**
      * Guarded by "this".
      */
-    private Predicate<Stanza> requestStrategy = RequestStrategies.forEveryXStanzas(1);
+    private Predicate<Stanza> requestStrategy = RequestStrategies.forEachMessageOrEveryXStanzas(3);
 
     /**
      * Guarded by "this".

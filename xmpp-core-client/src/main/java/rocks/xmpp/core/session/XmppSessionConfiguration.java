@@ -49,14 +49,22 @@ import java.util.function.Supplier;
 /**
  * A configuration for an {@link XmppSession}.
  * <p>
- * Most importantly it allows you to introduce custom extensions to your {@link XmppSession}, simply by passing your JAXB annotated classes to the constructor of this class
+ * Most importantly it allows you to introduce custom extensions to your {@link XmppSession}, simply by passing your JAXB annotated classes to the builder of this class
  * and then {@linkplain XmppSession#XmppSession(String, XmppSessionConfiguration, ConnectionConfiguration...) use this configuration for the session}.
  * </p>
  * Since creating the JAXB context is quite expensive, this class allows you to create the context once and reuse it by multiple sessions.
  * You can also {@linkplain #setDefault(XmppSessionConfiguration) set} an application-wide default configuration (used by all XMPP sessions).
  * <p>
- * Use the {@link #builder()} to create instances of this class.
+ * Use the {@link #builder()} to create instances of this class:
  * </p>
+ * <pre>
+ * {@code
+ * XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
+ * .extensions(MyClass1.class, MyClass2.class)
+ * .debugger(ConsoleDebugger.class)
+ * .build();
+ * }
+ * </pre>
  * This class is immutable.
  *
  * @author Christian Schudt

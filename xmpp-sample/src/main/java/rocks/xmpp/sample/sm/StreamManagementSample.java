@@ -34,6 +34,7 @@ import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
+import rocks.xmpp.websocket.WebSocketConnectionConfiguration;
 
 import java.util.concurrent.Executors;
 
@@ -59,11 +60,17 @@ public class StreamManagementSample {
                             .secure(false)
                             .build();
 
+                    WebSocketConnectionConfiguration webSocketConnectionConfiguration = WebSocketConnectionConfiguration.builder()
+                            .hostname("localhost")
+                            .port(80)
+                            .secure(false) // Disable TLS only for simpler example here.
+                            .build();
+
                     XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                             .debugger(ConsoleDebugger.class)
                             .build();
 
-                    XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConnectionConfiguration);
+                    XmppClient xmppSession = new XmppClient("localhost", configuration, webSocketConnectionConfiguration);
                     xmppSession.enableFeature(StreamManagement.NAMESPACE);
                     // Connect
                     xmppSession.connect();

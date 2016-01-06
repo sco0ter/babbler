@@ -63,5 +63,10 @@
             <artifactId>xmpp-debug</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>rocks.xmpp</groupId>
+            <artifactId>xmpp-websocket</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

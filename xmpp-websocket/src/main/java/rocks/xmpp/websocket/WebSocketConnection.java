@@ -32,9 +32,11 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
+import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.extensions.sm.StreamManager;
+import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.websocket.model.Close;
 import rocks.xmpp.websocket.model.Open;
@@ -168,11 +170,19 @@ public final class WebSocketConnection extends Connection {
                 getXmppSession().createMarshaller().marshal(streamElement, xmlStreamWriter);
                 xmlStreamWriter.flush();
                 String xml = writer.toString();
+                if (streamElement instanceof Stanza) {
+                    // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowleged" queue.
+                    this.streamManager.markUnacknowledged((Stanza) streamElement);
+                }
                 session.getAsyncRemote().sendText(xml, result -> {
+                    if (streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement)) {
+                        send(StreamManagement.REQUEST);
+                    }
                     if (result.getException() != null) {
                         getXmppSession().notifyException(result.getException());
                     }
                 });
+
                 if (debugger != null) {
                     debugger.writeStanza(xml, streamElement);
                 }

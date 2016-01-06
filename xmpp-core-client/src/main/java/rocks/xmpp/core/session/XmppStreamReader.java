@@ -150,9 +150,6 @@ final class XmppStreamReader {
                                     debugger.readStanza(stringWriter.toString(), object);
                                 }
 
-                                if (object instanceof Stanza) {
-                                    connection.streamManager.incrementInboundStanzaCount();
-                                }
                                 doRestart = xmppSession.handleElement(object);
                             }
                         } else {

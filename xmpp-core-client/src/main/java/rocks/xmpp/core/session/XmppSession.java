@@ -45,6 +45,7 @@ import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
+import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.bind.DataBindingException;
@@ -919,6 +920,8 @@ public abstract class XmppSession implements AutoCloseable {
      */
     public boolean handleElement(final Object element) throws XmppException {
 
+        StreamManager streamManager = getManager(StreamManager.class);
+
         if (element instanceof IQ) {
             final IQ iq = (IQ) element;
 
@@ -958,11 +961,20 @@ public abstract class XmppSession implements AutoCloseable {
                     }
                 }
             }
-            iqHandlerExecutor.execute(() -> XmppUtils.notifyEventListeners(inboundIQListeners, new IQEvent(this, iq, true)));
+            iqHandlerExecutor.execute(() -> {
+                XmppUtils.notifyEventListeners(inboundIQListeners, new IQEvent(this, iq, true));
+                streamManager.incrementInboundStanzaCount();
+            });
         } else if (element instanceof Message) {
-            stanzaListenerExecutor.execute(() -> XmppUtils.notifyEventListeners(inboundMessageListeners, new MessageEvent(this, (Message) element, true)));
+            stanzaListenerExecutor.execute(() -> {
+                XmppUtils.notifyEventListeners(inboundMessageListeners, new MessageEvent(this, (Message) element, true));
+                streamManager.incrementInboundStanzaCount();
+            });
         } else if (element instanceof Presence) {
-            stanzaListenerExecutor.execute(() -> XmppUtils.notifyEventListeners(inboundPresenceListeners, new PresenceEvent(this, (Presence) element, true)));
+            stanzaListenerExecutor.execute(() -> {
+                XmppUtils.notifyEventListeners(inboundPresenceListeners, new PresenceEvent(this, (Presence) element, true));
+                streamManager.incrementInboundStanzaCount();
+            });
         } else if (element instanceof StreamFeatures) {
             streamFeaturesManager.processFeatures((StreamFeatures) element);
         } else if (element instanceof StreamError) {

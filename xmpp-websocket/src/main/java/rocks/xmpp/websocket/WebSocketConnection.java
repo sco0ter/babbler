@@ -58,6 +58,7 @@ import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -247,6 +248,10 @@ public final class WebSocketConnection extends Connection {
                 SslEngineConfigurator sslEngineConfigurator = new SslEngineConfigurator(connectionConfiguration.getSSLContext());
                 client.getProperties().put(ClientProperties.SSL_ENGINE_CONFIGURATOR, sslEngineConfigurator);
                 sslEngineConfigurator.setHostnameVerifier(connectionConfiguration.getHostnameVerifier());
+            }
+            Proxy proxy = connectionConfiguration.getProxy();
+            if (proxy != null && proxy.type() == Proxy.Type.HTTP) {
+                client.getProperties().put(ClientProperties.PROXY_URI, "http://" + proxy.address().toString());
             }
             client.connectToServer(new Endpoint() {
                 @Override

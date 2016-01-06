@@ -157,21 +157,21 @@ public abstract class ConnectionConfiguration {
      */
     public abstract static class Builder<T extends Builder<T>> {
 
-        private String hostname;
+        protected String hostname;
 
-        private int port;
+        protected int port;
 
-        private Proxy proxy;
+        protected Proxy proxy;
 
-        private boolean secure;
+        protected boolean secure;
 
-        private SSLContext sslContext;
+        protected SSLContext sslContext;
 
-        private HostnameVerifier hostnameVerifier;
+        protected HostnameVerifier hostnameVerifier;
 
-        private int connectTimeout;
+        protected int connectTimeout;
 
-        private List<CompressionMethod> compressionMethods = Collections.emptyList();
+        protected List<CompressionMethod> compressionMethods = Collections.emptyList();
 
         protected Builder() {
         }

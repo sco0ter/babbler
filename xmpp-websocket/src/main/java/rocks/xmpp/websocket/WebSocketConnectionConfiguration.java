@@ -28,6 +28,8 @@ import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 
+import java.net.Proxy;
+
 /**
  * A configuration for a WebSocket connection.
  * It allows you to configure basic connection settings like hostname and port, as well as the path in the WebSocket URI.
@@ -143,6 +145,9 @@ public final class WebSocketConnectionConfiguration extends ConnectionConfigurat
 
         @Override
         public final WebSocketConnectionConfiguration build() {
+            if (proxy != null && proxy.type() != Proxy.Type.HTTP && proxy.type() != Proxy.Type.DIRECT) {
+                throw new UnsupportedOperationException("Non-HTTP proxies are not supported by WebSockets.");
+            }
             return new WebSocketConnectionConfiguration(this);
         }
     }

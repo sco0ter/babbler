@@ -162,9 +162,8 @@ public final class WebSocketConnection extends Connection {
     @Override
     public final synchronized void send(StreamElement streamElement) {
         if (session != null && session.isOpen()) {
-            try {
-                StringWriter writer = new StringWriter();
-                XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(getXmppSession().getConfiguration().getXmlOutputFactory().createXMLStreamWriter(writer));
+            try (StringWriter writer = new StringWriter()) {
+                XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(getXmppSession().getConfiguration().getXmlOutputFactory().createXMLStreamWriter(writer), null);
                 getXmppSession().createMarshaller().marshal(streamElement, xmlStreamWriter);
                 xmlStreamWriter.flush();
                 String xml = writer.toString();

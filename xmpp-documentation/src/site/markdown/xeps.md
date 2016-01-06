@@ -63,7 +63,7 @@
 * ![not supported][not supported]   [XEP-0177: Jingle Raw UDP Transport Method](http://xmpp.org/extensions/xep-0177.html)
 * ![supported][supported]           [XEP-0184: Message Delivery Receipts](http://xmpp.org/extensions/xep-0184.html)
 * ![supported][supported]           [XEP-0191: Blocking Command](http://xmpp.org/extensions/xep-0191.html)
-* ![not supported][not supported]   [XEP-0198: Stream Management](http://xmpp.org/extensions/xep-0198.html)
+* ![supported][supported]           [XEP-0198: Stream Management](http://xmpp.org/extensions/xep-0198.html)
 * ![supported][supported]           [XEP-0199: XMPP Ping](http://xmpp.org/extensions/xep-0199.html)
 * ![supported][supported]           [XEP-0202: Entity Time](http://xmpp.org/extensions/xep-0202.html)
 * ![supported][supported]           [XEP-0203: Delayed Delivery](http://xmpp.org/extensions/xep-0203.html)

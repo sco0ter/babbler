@@ -3,9 +3,12 @@
 
 ## Version 0.7.0-SNAPSHOT
 
+* Add support for [XEP-0198: Stream Management](http://www.xmpp.org/extensions/xep-0198.html)
+* Add support for WebSocket connection method ([RFC 7395](https://tools.ietf.org/html/rfc7395)).
 * Update `Jid` class to the new XMPP Address Format ([RFC 7622](https://tools.ietf.org/html/rfc7622))
 * Represent `xml:lang` attributes as `java.util.Locale`, not as `String`.
 * Add `XmppSession#isAuthenticated()` method.
+
 
 ### Version 0.6.2 (2015-12-08)
 

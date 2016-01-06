@@ -88,7 +88,7 @@ public class ExternalComponentSample {
                         LanguageTranslation translation = iq.getExtension(LanguageTranslation.class);
 
                         translations.addAll(translation.getTranslations().stream()
-                                .map(t -> LanguageTranslation.Translation.ofDestinationLanguage(t.getDestinationLanguage())
+                                .map(t -> LanguageTranslation.Translation.forDestinationLanguage(t.getDestinationLanguage())
                                         .withSourceLanguage(translation.getSourceLanguage())
                                         .withTranslatedText("HALLO"))
                                 .collect(Collectors.toList()));

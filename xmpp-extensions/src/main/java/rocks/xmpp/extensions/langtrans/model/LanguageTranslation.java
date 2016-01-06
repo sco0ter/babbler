@@ -187,12 +187,12 @@ public final class LanguageTranslation {
         }
 
         /**
-         * Creates a translation element of a destination language.
+         * Creates a translation element for a destination language.
          *
          * @param destinationLanguage The destination language.
          * @return The translation element.
          */
-        public static Translation ofDestinationLanguage(Locale destinationLanguage) {
+        public static Translation forDestinationLanguage(Locale destinationLanguage) {
             return new Translation(destinationLanguage, null, null, null, null, null);
         }
 

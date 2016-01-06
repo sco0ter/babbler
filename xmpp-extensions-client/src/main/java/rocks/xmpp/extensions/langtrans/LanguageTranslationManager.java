@@ -98,7 +98,7 @@ public final class LanguageTranslationManager extends Manager {
     public List<LanguageTranslation.Translation> translate(Jid translationProvider, String text, Locale sourceLanguage, Locale... destinationLanguage) throws XmppException {
         Collection<LanguageTranslation.Translation> translations = new ArrayDeque<>();
         for (Locale dl : destinationLanguage) {
-            translations.add(LanguageTranslation.Translation.ofDestinationLanguage(dl));
+            translations.add(LanguageTranslation.Translation.forDestinationLanguage(dl));
         }
         IQ result = xmppSession.query(IQ.get(translationProvider, new LanguageTranslation(text, sourceLanguage, translations)));
         LanguageTranslation languageTranslation = result.getExtension(LanguageTranslation.class);

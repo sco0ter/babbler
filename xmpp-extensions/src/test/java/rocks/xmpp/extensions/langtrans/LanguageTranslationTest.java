@@ -49,7 +49,7 @@ public class LanguageTranslationTest extends XmlTest {
 
     @Test
     public void marshalLanguageTranslation() throws JAXBException, XMLStreamException {
-        LanguageTranslation.Translation translation = LanguageTranslation.Translation.ofDestinationLanguage(Locale.ENGLISH).withSourceLanguage(Locale.FRENCH).withEngine("engine").withTranslatedText("text");
+        LanguageTranslation.Translation translation = LanguageTranslation.Translation.forDestinationLanguage(Locale.ENGLISH).withSourceLanguage(Locale.FRENCH).withEngine("engine").withTranslatedText("text");
         LanguageTranslation translations = new LanguageTranslation(translation);
 
         String xml = marshal(translations);

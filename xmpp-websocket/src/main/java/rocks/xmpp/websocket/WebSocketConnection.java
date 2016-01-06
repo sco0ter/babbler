@@ -175,7 +175,7 @@ public final class WebSocketConnection extends Connection {
                     this.streamManager.markUnacknowledged((Stanza) streamElement);
                 }
                 session.getAsyncRemote().sendText(xml, result -> {
-                    if (streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement)) {
+                    if (result.isOK() && streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement)) {
                         send(StreamManagement.REQUEST);
                     }
                     if (result.getException() != null) {

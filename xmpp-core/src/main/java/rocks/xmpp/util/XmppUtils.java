@@ -101,7 +101,8 @@ public final class XmppUtils {
     /**
      * Creates a {@link XMLStreamWriter} instance, which writes XML without namespace prefixes.
      *
-     * @param xmlStreamWriter The underlying XML stream writer.
+     * @param xmlStreamWriter  The underlying XML stream writer.
+     * @param contentNamespace The content namspace, e.g. "jabber:client".
      * @return The prefix-free canonicalization writer.
      * @throws XMLStreamException Thrown by {@link javax.xml.stream.XMLStreamWriter}.
      * @see #createXmppStreamWriter(XMLStreamWriter, String, boolean)

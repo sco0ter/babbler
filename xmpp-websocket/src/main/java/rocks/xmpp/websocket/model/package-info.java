@@ -23,7 +23,10 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://tools.ietf.org/html/rfc7395">XMPP Subprotocol for WebSocket</a.
+ * Provides XML schema implementations of <a href="https://tools.ietf.org/html/rfc7395">XMPP Subprotocol for WebSocket</a>.
+ *
+ * @see rocks.xmpp.websocket
+ * @since 0.7.0
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-framing", elementFormDefault = XmlNsForm.QUALIFIED)

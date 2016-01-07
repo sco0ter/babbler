@@ -78,11 +78,13 @@ import java.util.function.Consumer;
  * An XMPP WebSocket connection method.
  *
  * @author Christian Schudt
+ * @see WebSocketConnectionConfiguration
  * @see <a href="https://tools.ietf.org/html/rfc7395">XMPP Subprotocol for WebSocket</a>
+ * @since 0.7.0
  */
 public final class WebSocketConnection extends Connection {
 
-    final StreamManager streamManager;
+    private final StreamManager streamManager;
 
     private final XmppDebugger debugger;
 

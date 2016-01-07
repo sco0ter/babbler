@@ -35,6 +35,7 @@ import java.util.Locale;
  * The implementation of the {@code <close/>} element in the {@code urn:ietf:params:xml:ns:xmpp-framing} namespace.
  *
  * @author Christian Schudt
+ * @since 0.7.0
  */
 @XmlRootElement
 public final class Close extends Frame {
@@ -81,5 +82,10 @@ public final class Close extends Frame {
      */
     public final URI getUri() {
         return uri;
+    }
+
+    @Override
+    public final String toString() {
+        return "WebSocket Stream Close";
     }
 }

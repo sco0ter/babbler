@@ -46,6 +46,19 @@ public class WebSocketTest extends XmlTest {
     }
 
     @Test
+    public void unmarshalOpen() throws XMLStreamException, JAXBException {
+        Open open = unmarshal("<open xmlns=\"urn:ietf:params:xml:ns:xmpp-framing\" version=\"1.0\" to=\"test\" xml:lang=\"en\"></open>", Open.class);
+        Assert.assertEquals(open.getLanguage(), Locale.ENGLISH);
+        Assert.assertEquals(open.getTo(), Jid.ofDomain("test"));
+    }
+
+    @Test
+    public void unmarshalClose() throws XMLStreamException, JAXBException {
+        Close close = unmarshal("<close xmlns=\"urn:ietf:params:xml:ns:xmpp-framing\" version=\"1.0\" see-other-uri=\"wss://otherendpoint.example/xmpp-bind\"></close>", Close.class);
+        Assert.assertEquals(close.getUri(), URI.create("wss://otherendpoint.example/xmpp-bind"));
+    }
+
+    @Test
     public void marshalOpen() throws XMLStreamException, JAXBException {
         Open open = new Open(Jid.of("test"), Locale.ENGLISH);
         Assert.assertEquals(marshal(open), "<open xmlns=\"urn:ietf:params:xml:ns:xmpp-framing\" version=\"1.0\" to=\"test\" xml:lang=\"en\"></open>");

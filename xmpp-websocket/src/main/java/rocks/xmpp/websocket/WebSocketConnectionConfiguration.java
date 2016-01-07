@@ -28,6 +28,7 @@ import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 
+import javax.net.ssl.SSLContext;
 import java.net.Proxy;
 
 /**
@@ -40,24 +41,27 @@ import java.net.Proxy;
  * WebSocketConnectionConfiguration connectionConfiguration = WebSocketConnectionConfiguration.builder()
  *     .hostname("localhost")
  *     .port(7443)
- *     .file("/ws/")
+ *     .path("/ws/")
  *     .sslContext(sslContext)
  *     .secure(true)
  *     .build();
  * }
  * </pre>
- * The above sample configuration will connect to <code>wss://localhost:7443/ws/</code> using SSL with a custom SSLContext.
+ * The above sample configuration will connect to <code>wss://localhost:7443/ws/</code> using SSL with a custom {@link SSLContext}.
  * <p>
  * This class is immutable.
  *
  * @see WebSocketConnection
+ * @see <a href="https://tools.ietf.org/html/rfc7395">XMPP Subprotocol for WebSocket</a>
+ * @since 0.7.0
  */
 public final class WebSocketConnectionConfiguration extends ConnectionConfiguration {
+
     private static volatile WebSocketConnectionConfiguration defaultConfiguration;
 
     private final String path;
 
-    protected WebSocketConnectionConfiguration(Builder builder) {
+    private WebSocketConnectionConfiguration(Builder builder) {
         super(builder);
         this.path = builder.path;
     }
@@ -109,7 +113,7 @@ public final class WebSocketConnectionConfiguration extends ConnectionConfigurat
     }
 
     @Override
-    public final Connection createConnection(XmppSession xmppSession) {
+    public final Connection createConnection(final XmppSession xmppSession) {
         WebSocketConnection connection = new WebSocketConnection(xmppSession, this);
         connection.initialize();
         return connection;

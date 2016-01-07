@@ -36,10 +36,12 @@ import java.util.Collections;
  * The WebSocket module, which is used to make the framing elements {@code <open/>} and {@code <close/>} known to the session.
  *
  * @author Christian Schudt
+ * @since 0.7.0
  */
 public final class WebSocketModule implements Module {
+
     @Override
-    public Collection<Extension> getExtensions() {
+    public final Collection<Extension> getExtensions() {
         return Collections.singleton(Extension.of(Open.class, Close.class));
     }
 }

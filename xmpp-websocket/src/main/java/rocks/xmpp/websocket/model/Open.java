@@ -33,10 +33,12 @@ import java.util.Locale;
  * The implementation of the {@code <open/>} element in the {@code urn:ietf:params:xml:ns:xmpp-framing} namespace.
  *
  * @author Christian Schudt
+ * @since 0.7.0
  */
 @XmlRootElement
 public final class Open extends Frame {
 
+    @SuppressWarnings("unused")
     private Open() {
         this(null, null);
     }
@@ -74,5 +76,10 @@ public final class Open extends Frame {
      */
     public Open(Jid to, Jid from, String id, Locale language, String version) {
         super(to, from, id, language, version);
+    }
+
+    @Override
+    public final String toString() {
+        return "WebSocket Stream Open";
     }
 }

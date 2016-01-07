@@ -26,16 +26,17 @@ package rocks.xmpp.websocket.model;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.util.adapters.LocaleAdapter;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Locale;
 
 /**
+ * Abstract base class for {@link Open} and {@link Close}.
+ *
  * @author Christian Schudt
+ * @since 0.7.0
  */
 @XmlTransient
 abstract class Frame implements StreamElement {
@@ -63,22 +64,47 @@ abstract class Frame implements StreamElement {
         this.version = version;
     }
 
+    /**
+     * Gets the 'to' attribute.
+     *
+     * @return The 'to' attribute.
+     */
     public final Jid getTo() {
         return to;
     }
 
+    /**
+     * Gets the 'from' attribute.
+     *
+     * @return The 'from' attribute.
+     */
     public final Jid getFrom() {
         return from;
     }
 
+    /**
+     * Gets the 'version' attribute.
+     *
+     * @return The 'version' attribute.
+     */
     public final String getVersion() {
         return version;
     }
 
+    /**
+     * Gets the 'id' attribute.
+     *
+     * @return The 'id' attribute.
+     */
     public final String getId() {
         return id;
     }
 
+    /**
+     * Gets the 'xml:lang' attribute.
+     *
+     * @return The 'xml:lang' attribute.
+     */
     public final Locale getLanguage() {
         return lang;
     }

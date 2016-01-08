@@ -219,7 +219,7 @@ final class Socks5Protocol {
          */
 
         byte[] request = readRequestOrReply(inputStream);
-        String dstAddr = new String(request, 5, request[4]);  // request[4] has the length of the address.
+        String dstAddr = new String(request, 5, request[4], StandardCharsets.UTF_8);  // request[4] has the length of the address.
 
         /*
             The server evaluates the request, and
@@ -243,7 +243,7 @@ final class Socks5Protocol {
         outputStream.write(request);
         outputStream.flush();
 
-        return new String(request, 5, request[4]);
+        return new String(request, 5, request[4], StandardCharsets.UTF_8);
     }
 
     /**

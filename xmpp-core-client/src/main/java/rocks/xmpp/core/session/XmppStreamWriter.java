@@ -37,6 +37,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -127,7 +128,7 @@ final class XmppStreamWriter {
                     }
 
                     if (debugger != null) {
-                        debugger.writeStanza(new String(byteArrayOutputStream.toByteArray()).trim(), clientStreamElement);
+                        debugger.writeStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8).trim(), clientStreamElement);
                         byteArrayOutputStream.reset();
                     }
                 } catch (Exception e) {
@@ -169,7 +170,7 @@ final class XmppStreamWriter {
                     xmlStreamWriter.writeCharacters("");
                     xmlStreamWriter.flush();
                     if (debugger != null) {
-                        debugger.writeStanza(new String(byteArrayOutputStream.toByteArray()).trim(), null);
+                        debugger.writeStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8).trim(), null);
                         byteArrayOutputStream.reset();
                     }
                     streamOpened = true;
@@ -188,7 +189,7 @@ final class XmppStreamWriter {
                     xmlStreamWriter.writeEndElement();
                     xmlStreamWriter.flush();
                     if (debugger != null) {
-                        debugger.writeStanza(new String(byteArrayOutputStream.toByteArray()).trim(), null);
+                        debugger.writeStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8).trim(), null);
                         byteArrayOutputStream.reset();
                     }
                     xmlStreamWriter.close();

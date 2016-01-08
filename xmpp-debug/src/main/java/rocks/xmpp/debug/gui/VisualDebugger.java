@@ -51,6 +51,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
@@ -230,14 +231,14 @@ public final class VisualDebugger implements XmppDebugger {
                     @Override
                     public void handle(long now) {
                         if (outputStreamInbound != null) {
-                            String inbound = outputStreamInbound.toString();
+                            String inbound = new String(outputStreamInbound.toByteArray(), StandardCharsets.UTF_8);
                             if (!inbound.isEmpty()) {
                                 debugController.appendTextInbound(inbound);
                                 outputStreamInbound.reset();
                             }
                         }
                         if (outputStreamOutbound != null) {
-                            String outbound = outputStreamOutbound.toString();
+                            String outbound = new String(outputStreamOutbound.toByteArray(), StandardCharsets.UTF_8);;
                             if (!outbound.isEmpty()) {
                                 debugController.appendTextOutbound(outbound);
                                 outputStreamOutbound.reset();
@@ -266,7 +267,7 @@ public final class VisualDebugger implements XmppDebugger {
         final String outbound;
         if (outputStreamOutbound != null) {
             outputStreamOutbound.write((int) '\n');
-            outbound = outputStreamOutbound.toString();
+            outbound = new String(outputStreamOutbound.toByteArray(), StandardCharsets.UTF_8);
             outputStreamOutbound.reset();
         } else {
             outbound = "";
@@ -286,7 +287,7 @@ public final class VisualDebugger implements XmppDebugger {
         final String inbound;
         if (outputStreamInbound != null) {
             outputStreamInbound.write((int) '\n');
-            inbound = outputStreamInbound.toString();
+            inbound = new String(outputStreamInbound.toByteArray(), StandardCharsets.UTF_8);
             outputStreamInbound.reset();
         } else {
             inbound = "";

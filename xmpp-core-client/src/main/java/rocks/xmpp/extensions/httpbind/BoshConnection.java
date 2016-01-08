@@ -687,7 +687,7 @@ public final class BoshConnection extends Connection {
                                     xmlStreamWriter.flush();
 
                                     if (debugger != null) {
-                                        debugger.writeStanza(byteArrayOutputStreamRequest.toString(), body);
+                                        debugger.writeStanza(new String(byteArrayOutputStreamRequest.toByteArray(), StandardCharsets.UTF_8), body);
                                     }
                                 } finally {
                                     if (xmlStreamWriter != null) {
@@ -724,7 +724,7 @@ public final class BoshConnection extends Connection {
                                                         JAXBElement<Body> element = getXmppSession().createUnmarshaller().unmarshal(xmlEventReader, Body.class);
 
                                                         if (debugger != null) {
-                                                            debugger.readStanza(byteArrayOutputStream.toString(), element.getValue());
+                                                            debugger.readStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), element.getValue());
                                                         }
                                                         unpackBody(element.getValue());
                                                     } else {

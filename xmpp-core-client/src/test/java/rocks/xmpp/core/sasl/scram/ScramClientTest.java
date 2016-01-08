@@ -102,7 +102,7 @@ public class ScramClientTest {
 
         scramSha1SaslClient.evaluateChallenge(new byte[0]);
         byte[] result = scramSha1SaslClient.evaluateChallenge(serverResponse.getBytes(StandardCharsets.UTF_8));
-        Assert.assertTrue(new String(result).startsWith("c=biws,r=fyko+d2lbbFgONRv9qkxdawL3rfcNHYJY1ZVvWVs7j,p="));
+        Assert.assertTrue(new String(result, StandardCharsets.UTF_8).startsWith("c=biws,r=fyko+d2lbbFgONRv9qkxdawL3rfcNHYJY1ZVvWVs7j,p="));
     }
 
     @Test
@@ -142,7 +142,7 @@ public class ScramClientTest {
         byte[] response = saslClient.evaluateChallenge(challenge);
 
         byte[] serverFinalMessage = scramServer.evaluateResponse(response);
-        Assert.assertTrue(new String(serverFinalMessage).startsWith("v="));
+        Assert.assertTrue(new String(serverFinalMessage, StandardCharsets.UTF_8).startsWith("v="));
         // Client should verify the server response successfully, otherwise exception would be thrown.
         saslClient.evaluateChallenge(serverFinalMessage);
     }

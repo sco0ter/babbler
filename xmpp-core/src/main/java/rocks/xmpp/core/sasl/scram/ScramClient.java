@@ -141,7 +141,7 @@ public final class ScramClient extends ScramBase implements SaslClient {
             try {
                 // The server sends the salt and the iteration count to the client, which then computes
                 // the following values and sends a ClientProof to the server
-                String serverMessage = new String(challenge);
+                String serverMessage = new String(challenge, StandardCharsets.UTF_8);
                 Map<Character, String> attributes = getAttributes(serverMessage);
 
                 // e: This attribute specifies an error that occurred during

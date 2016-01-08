@@ -114,7 +114,7 @@ public final class WebSocketConnection extends Connection {
     /**
      * Guarded by "this".
      */
-    private IOException exception;
+    private Throwable exception;
 
     WebSocketConnection(XmppSession xmppSession, WebSocketConnectionConfiguration connectionConfiguration) {
         super(xmppSession, connectionConfiguration);
@@ -265,7 +265,7 @@ public final class WebSocketConnection extends Connection {
             if (proxy != null && proxy.type() == Proxy.Type.HTTP) {
                 client.getProperties().put(ClientProperties.PROXY_URI, "http://" + proxy.address().toString());
             }
-            client.connectToServer(new Endpoint() {
+            Session session = client.connectToServer(new Endpoint() {
                 @Override
                 public void onOpen(Session session, EndpointConfig config) {
                     synchronized (WebSocketConnection.this) {
@@ -273,12 +273,14 @@ public final class WebSocketConnection extends Connection {
                     }
 
                     if (!handshakeSucceeded.get()) {
-                        try {
-                            session.close(new CloseReason(CloseReason.CloseCodes.PROTOCOL_ERROR, "Server response did not include 'Sec-WebSocket-Protocol' header with value 'xmpp'."));
-                            return;
-                        } catch (IOException e) {
-                            synchronized (WebSocketConnection.this) {
-                                exception = e;
+                        synchronized (this) {
+                            try {
+                                String msg = "Server response did not include 'Sec-WebSocket-Protocol' header with value 'xmpp'.";
+                                exception = new IOException(msg);
+                                session.close(new CloseReason(CloseReason.CloseCodes.PROTOCOL_ERROR, msg));
+                                return;
+                            } catch (IOException e) {
+                                exception.addSuppressed(e);
                             }
                         }
                     }
@@ -322,15 +324,20 @@ public final class WebSocketConnection extends Connection {
 
                 @Override
                 public void onError(Session session, Throwable t) {
-                    getXmppSession().notifyException(t);
+                    synchronized (this) {
+                        exception = t;
+                    }
                 }
 
             }, clientEndpointConfig, path);
 
             synchronized (WebSocketConnection.this) {
                 if (exception != null) {
-                    throw exception;
+                    throw exception instanceof IOException ? (IOException) exception : new IOException(exception);
                 }
+            }
+            if (!session.isOpen()) {
+                throw new IOException("Session could not be opened.");
             }
         } catch (DeploymentException | URISyntaxException e) {
             throw new IOException(e);

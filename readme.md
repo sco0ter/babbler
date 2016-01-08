@@ -189,10 +189,11 @@ XmppClient xmppClient = new XmppClient("domain");
 
 The `XmppClient` instance is the central object. Every other action you will do revolves around this instance (e.g. sending and receiving messages).
 
-A session to an XMPP server can be established in at least two ways:
+A session to an XMPP server can be established in three ways (connection methods):
 
 1. By a [normal TCP socket connection](http://xmpp.org/rfcs/rfc6120.html#tcp)
 2. By a [BOSH connection (XEP-0124)](http://xmpp.org/extensions/xep-0124.html)
+3. By a [WebSocket connection (RFC 7395)](https://tools.ietf.org/html/rfc7395)
 
 By default, the `XmppClient` will try to establish a connection via TCP first during the connection process.
 If the connection fails, it will try to discover alternative connection methods and try to connect with one of them (usually BOSH).
@@ -222,6 +223,18 @@ BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.buil
     .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("hostname", 3128)))
     .file("/http-bind/")
     .wait(60)  // BOSH connection manager should wait maximal 60 seconds before responding to a request.
+    .build();
+```
+
+And this is how you would configure a WebSocket connection to `wss://host:7443/ws` (requires `xmpp-websocket` dependency):
+
+```java
+WebSocketConnectionConfiguration webSocketConfiguration = WebSocketConnectionConfiguration.builder()
+    .hostname("host")
+    .port(7443)
+    .path("/ws/")
+    .sslContext(sslContext)
+    .secure(true)
     .build();
 ```
 

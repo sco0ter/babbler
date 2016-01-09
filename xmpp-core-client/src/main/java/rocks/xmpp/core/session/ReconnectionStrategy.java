@@ -28,6 +28,7 @@ import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.model.errors.Condition;
 
 import java.time.Duration;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiPredicate;
 
@@ -110,7 +111,18 @@ public interface ReconnectionStrategy {
     }
 
     /**
-     * Always reconnects after a duration, unless the server has been shut down.
+     * Reconnects always after a random duration which lies between the given min and max duration, e.g. after 10-20 seconds.
+     *
+     * @param min The min duration after which a reconnection is attempted.
+     * @param max The max duration.
+     * @return The reconnection strategy.
+     */
+    static ReconnectionStrategy alwaysRandomlyAfter(Duration min, Duration max) {
+        return (attempt, cause) -> Duration.ofSeconds(ThreadLocalRandom.current().nextLong(min.getSeconds(), max.getSeconds()));
+    }
+
+    /**
+     * Always reconnects after a fix duration, unless the server has been shut down.
      * In that case it uses a "truncated binary exponential backoff" strategy, which should start between 0 and 60 seconds.
      *
      * @param duration The duration for the

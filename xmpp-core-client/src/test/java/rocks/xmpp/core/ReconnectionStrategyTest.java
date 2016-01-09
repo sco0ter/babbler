@@ -33,10 +33,10 @@ import java.time.Duration;
 /**
  * @author Christian Schudt
  */
-public class TruncatedBinaryExponentialBackoffStrategyTest {
+public class ReconnectionStrategyTest {
 
     @Test
-    public void test() {
+    public void testTruncatedBinaryExponentialBackoff() {
         ReconnectionStrategy truncatedBinaryExponentialBackoffStrategy = ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy(60, 4);
         Duration first = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(0, null);
 

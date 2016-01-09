@@ -74,7 +74,7 @@ public final class ReconnectionManager extends Manager {
 
     private ReconnectionManager(final XmppSession xmppSession) {
         super(xmppSession, false);
-        this.reconnectionStrategy = ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy(60, 5);
+        this.reconnectionStrategy = ReconnectionStrategy.afterDurationUnlessSystemShutdown(10, TimeUnit.SECONDS, 60, 5);
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Reconnection Thread"));
     }
 

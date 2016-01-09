@@ -28,6 +28,7 @@ import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.model.errors.Condition;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiPredicate;
 
 /**
  * A strategy for reconnection logic, i.e. when and in which interval reconnection attempts will happen. You can provide your own strategy by implementing this interface.
@@ -92,5 +93,36 @@ public interface ReconnectionStrategy {
      */
     static ReconnectionStrategy after(long duration, TimeUnit timeUnit) {
         return (attempt, cause) -> timeUnit.toSeconds(duration);
+    }
+
+    /**
+     * Always reconnects after a duration, unless the server has been shut down.
+     * In that case it uses a "truncated binary exponential backoff" strategy, which should start between 0 and 60 seconds.
+     *
+     * @param duration The duration for the
+     * @param timeUnit The time unit for the fix amount of time.
+     * @param slotTime The slot time used for the truncated binary backoff. Should be 60.
+     * @param ceiling  The ceiling, i.e. the max backoffs used for the truncated binary backoff.
+     * @return The reconnection strategy.
+     */
+    static ReconnectionStrategy afterDurationUnlessSystemShutdown(long duration, TimeUnit timeUnit, int slotTime, int ceiling) {
+        return new HybridReconnectionStrategy(
+                // The primary strategy (if the predicate returns true)
+                ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy(slotTime, ceiling),
+                // Alternatively use a fix duration.
+                ReconnectionStrategy.after(duration, timeUnit),
+                // Returns true, once there has been a <system-shutdown/> stream error.
+                new BiPredicate<Integer, Throwable>() {
+
+                    private boolean systemShutdown;
+
+                    @Override
+                    public boolean test(Integer integer, Throwable cause) {
+                        if (!systemShutdown) {
+                            systemShutdown = cause instanceof StreamErrorException && ((StreamErrorException) cause).getCondition() == Condition.SYSTEM_SHUTDOWN;
+                        }
+                        return systemShutdown;
+                    }
+                });
     }
 }

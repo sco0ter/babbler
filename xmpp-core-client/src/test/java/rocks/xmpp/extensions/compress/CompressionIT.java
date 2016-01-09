@@ -40,7 +40,7 @@ public class CompressionIT extends IntegrationTest {
     public void testConnectingWithCompression() throws XmppException {
         TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
                 .hostname(HOSTNAME)
-                .compressionMethods(CompressionManager.ZLIB)
+                .compressionMethods(CompressionMethod.ZLIB)
                 .secure(false)
                 .build();
 
@@ -48,7 +48,7 @@ public class CompressionIT extends IntegrationTest {
             xmppSession.connect();
             xmppSession.loginAnonymously();
             CompressionManager compressionManager = xmppSession.getManager(CompressionManager.class);
-            Assert.assertEquals(compressionManager.getNegotiatedCompressionMethod(), CompressionManager.ZLIB);
+            Assert.assertEquals(compressionManager.getNegotiatedCompressionMethod(), CompressionMethod.ZLIB);
         }
     }
 }

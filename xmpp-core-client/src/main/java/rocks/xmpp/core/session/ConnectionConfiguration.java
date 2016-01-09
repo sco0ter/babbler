@@ -281,9 +281,9 @@ public abstract class ConnectionConfiguration {
          *
          * @param compressionMethods The compression methods.
          * @return The builder.
-         * @see rocks.xmpp.extensions.compress.CompressionManager#ZLIB
-         * @see rocks.xmpp.extensions.compress.CompressionManager#GZIP
-         * @see rocks.xmpp.extensions.compress.CompressionManager#DEFLATE
+         * @see CompressionMethod#ZLIB
+         * @see CompressionMethod#GZIP
+         * @see CompressionMethod#DEFLATE
          */
         public final T compressionMethods(CompressionMethod... compressionMethods) {
             this.compressionMethods = Arrays.asList(compressionMethods);

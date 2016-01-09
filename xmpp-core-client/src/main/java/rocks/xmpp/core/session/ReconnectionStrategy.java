@@ -27,6 +27,7 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.model.errors.Condition;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiPredicate;
 
@@ -49,13 +50,13 @@ public interface ReconnectionStrategy {
     }
 
     /**
-     * Gets the time (in seconds) until the next reconnection is attempted.
+     * Gets the duration after which the next reconnection is attempted.
      *
      * @param attempt The current reconnection attempt. The first attempt is 0, the second attempt is 1, etc...
      * @param cause   The cause for the disconnection.
-     * @return The number of seconds before the next reconnection is attempted.
+     * @return The the duration after which the next reconnection is attempted.
      */
-    long getNextReconnectionAttempt(int attempt, Throwable cause);
+    Duration getNextReconnectionAttempt(int attempt, Throwable cause);
 
     /**
      * This is the default reconnection strategy used by the {@link rocks.xmpp.core.session.ReconnectionManager}.
@@ -85,14 +86,27 @@ public interface ReconnectionStrategy {
     }
 
     /**
-     * Reconnects always after a fix amount of time, e.g. after 10 seconds.
+     * Reconnects always after a fix duration, e.g. after 10 seconds.
      *
      * @param duration The fix duration after which a reconnection is attempted.
      * @param timeUnit The time unit.
      * @return The reconnection strategy.
+     * @deprecated Use {@link #alwaysAfter(Duration)}
      */
+    @Deprecated
     static ReconnectionStrategy after(long duration, TimeUnit timeUnit) {
-        return (attempt, cause) -> timeUnit.toSeconds(duration);
+        return (attempt, cause) -> Duration.ofSeconds(timeUnit.toSeconds(duration));
+    }
+
+    /**
+     * Reconnects always after a fix duration, e.g. after 10 seconds. When a disconnection is detected the first reconnection attempt is started after the given duration.
+     * If the attempt fails, the second one is started again after the same duration and so on.
+     *
+     * @param duration The fix duration after which a reconnection is attempted.
+     * @return The reconnection strategy.
+     */
+    static ReconnectionStrategy alwaysAfter(Duration duration) {
+        return (attempt, cause) -> duration;
     }
 
     /**
@@ -100,17 +114,16 @@ public interface ReconnectionStrategy {
      * In that case it uses a "truncated binary exponential backoff" strategy, which should start between 0 and 60 seconds.
      *
      * @param duration The duration for the
-     * @param timeUnit The time unit for the fix amount of time.
      * @param slotTime The slot time used for the truncated binary backoff. Should be 60.
      * @param ceiling  The ceiling, i.e. the max backoffs used for the truncated binary backoff.
      * @return The reconnection strategy.
      */
-    static ReconnectionStrategy afterDurationUnlessSystemShutdown(long duration, TimeUnit timeUnit, int slotTime, int ceiling) {
+    static ReconnectionStrategy alwaysAfterDurationUnlessSystemShutdown(Duration duration, int slotTime, int ceiling) {
         return new HybridReconnectionStrategy(
                 // The primary strategy (if the predicate returns true)
                 ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy(slotTime, ceiling),
                 // Alternatively use a fix duration.
-                ReconnectionStrategy.after(duration, timeUnit),
+                ReconnectionStrategy.alwaysAfter(duration),
                 // Returns true, once there has been a <system-shutdown/> stream error.
                 new BiPredicate<Integer, Throwable>() {
 

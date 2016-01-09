@@ -28,6 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.session.ReconnectionStrategy;
 
+import java.time.Duration;
+
 /**
  * @author Christian Schudt
  */
@@ -36,20 +38,20 @@ public class TruncatedBinaryExponentialBackoffStrategyTest {
     @Test
     public void test() {
         ReconnectionStrategy truncatedBinaryExponentialBackoffStrategy = ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy(60, 4);
-        long first = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(0, null);
+        Duration first = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(0, null);
 
-        Assert.assertTrue(first >= 0 && first < 60);
-        long second = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(1, null);
-        Assert.assertTrue(second >= 0 && second < 180);
-        long third = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(2, null);
-        Assert.assertTrue(third >= 0 && third < 420);
-        long fourth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(3, null);
-        Assert.assertTrue(fourth >= 0 && fourth < 900);
-        long fifth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(4, null);
-        Assert.assertTrue(fifth >= 0 && fifth < 1860);
-        long sixth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(5, null);
-        Assert.assertTrue(sixth >= 0 && sixth < 1860);
-        long seventh = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(6, null);
-        Assert.assertTrue(seventh >= 0 && seventh < 1860);
+        Assert.assertTrue(first.getSeconds() >= 0 && first.getSeconds() < 60);
+        Duration second = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(1, null);
+        Assert.assertTrue(second.getSeconds() >= 0 && second.getSeconds() < 180);
+        Duration third = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(2, null);
+        Assert.assertTrue(third.getSeconds() >= 0 && third.getSeconds() < 420);
+        Duration fourth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(3, null);
+        Assert.assertTrue(fourth.getSeconds() >= 0 && fourth.getSeconds() < 900);
+        Duration fifth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(4, null);
+        Assert.assertTrue(fifth.getSeconds() >= 0 && fifth.getSeconds() < 1860);
+        Duration sixth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(5, null);
+        Assert.assertTrue(sixth.getSeconds() >= 0 && sixth.getSeconds() < 1860);
+        Duration seventh = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(6, null);
+        Assert.assertTrue(seventh.getSeconds() >= 0 && seventh.getSeconds() < 1860);
     }
 }

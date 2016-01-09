@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.session;
 
+import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -64,13 +65,13 @@ final class TruncatedBinaryExponentialBackoffStrategy implements ReconnectionStr
     }
 
     @Override
-    public long getNextReconnectionAttempt(int attempt, Throwable throwable) {
+    public Duration getNextReconnectionAttempt(int attempt, Throwable throwable) {
         // For the first attempt choose a random number between 0 and 60.
         // For the second attempt choose a random number between 0 and 180.
         // For the third attempt choose a random number between 0 and 420.
         // For the fourth attempt choose a random number between 0 and 900.
         // For the fifth attempt choose a random number between 0 and 1860.
         // ==> max wait time: 1860 seconds = 31 minutes. (if ceiling == 4)
-        return ThreadLocalRandom.current().nextInt((int) (Math.pow(2, Math.min(attempt, ceiling) + 1) - 1) * slotTime);
+        return Duration.ofSeconds(ThreadLocalRandom.current().nextInt((int) (Math.pow(2, Math.min(attempt, ceiling) + 1) - 1) * slotTime));
     }
 }

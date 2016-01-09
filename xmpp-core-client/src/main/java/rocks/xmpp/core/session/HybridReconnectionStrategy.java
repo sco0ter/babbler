@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.session;
 
+import java.time.Duration;
 import java.util.function.BiPredicate;
 
 /**
@@ -46,7 +47,7 @@ final class HybridReconnectionStrategy implements ReconnectionStrategy {
     }
 
     @Override
-    public final long getNextReconnectionAttempt(final int attempt, final Throwable cause) {
+    public final Duration getNextReconnectionAttempt(final int attempt, final Throwable cause) {
         if (predicate.test(attempt, cause)) {
             return primaryStrategy.getNextReconnectionAttempt(attempt, cause);
         }

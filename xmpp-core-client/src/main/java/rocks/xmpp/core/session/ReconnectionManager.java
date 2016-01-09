@@ -74,7 +74,7 @@ public final class ReconnectionManager extends Manager {
 
     private ReconnectionManager(final XmppSession xmppSession) {
         super(xmppSession, false);
-        this.reconnectionStrategy = ReconnectionStrategy.afterDurationUnlessSystemShutdown(10, TimeUnit.SECONDS, 60, 5);
+        this.reconnectionStrategy = ReconnectionStrategy.alwaysAfterDurationUnlessSystemShutdown(Duration.ofSeconds(10), 60, 5);
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Reconnection Thread"));
     }
 
@@ -115,19 +115,19 @@ public final class ReconnectionManager extends Manager {
 
     private synchronized void scheduleReconnection(final int attempt, Throwable throwable) {
         if (isEnabled()) {
-            long seconds = reconnectionStrategy.getNextReconnectionAttempt(attempt, throwable);
+            Duration duration = reconnectionStrategy.getNextReconnectionAttempt(attempt, throwable);
             if (attempt == 0) {
-                logger.log(Level.FINE, "Disconnect detected. Next reconnection attempt in {0} seconds.", seconds);
+                logger.log(Level.FINE, "Disconnect detected. Next reconnection attempt in {0} seconds.", duration.getSeconds());
             } else {
-                logger.log(Level.FINE, "Still disconnected after {0} retries. Next reconnection attempt in {1} seconds.", new Object[]{attempt, seconds});
+                logger.log(Level.FINE, "Still disconnected after {0} retries. Next reconnection attempt in {1} seconds.", new Object[]{attempt, duration.getSeconds()});
             }
 
-            nextReconnectionAttempt = Instant.now().plusSeconds(seconds);
+            nextReconnectionAttempt = Instant.now().plus(duration);
 
             scheduledReconnectingInterval = scheduledExecutorService.scheduleAtFixedRate(() -> {
-                Duration duration = Duration.between(Instant.now(), nextReconnectionAttempt);
-                if (!duration.isNegative()) {
-                    XmppUtils.notifyEventListeners(xmppSession.connectionListeners, new ConnectionEvent(xmppSession, ConnectionEvent.Type.RECONNECTION_PENDING, throwable, duration));
+                Duration remainingDuration = Duration.between(Instant.now(), nextReconnectionAttempt);
+                if (!remainingDuration.isNegative()) {
+                    XmppUtils.notifyEventListeners(xmppSession.connectionListeners, new ConnectionEvent(xmppSession, ConnectionEvent.Type.RECONNECTION_PENDING, throwable, remainingDuration));
                 } else {
                     synchronized (this) {
                         scheduledReconnectingInterval.cancel(false);

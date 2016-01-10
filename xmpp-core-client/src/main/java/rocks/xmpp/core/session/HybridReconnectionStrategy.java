@@ -44,9 +44,6 @@ final class HybridReconnectionStrategy implements ReconnectionStrategy {
 
     @Override
     public final Duration getNextReconnectionAttempt(final int attempt, final Throwable cause) {
-        if (primaryStrategy.mayReconnect(attempt, cause)) {
-            return primaryStrategy.getNextReconnectionAttempt(attempt, cause);
-        }
-        return secondaryStrategy.getNextReconnectionAttempt(attempt, cause);
+        return (primaryStrategy.mayReconnect(attempt, cause) ? primaryStrategy : secondaryStrategy).getNextReconnectionAttempt(attempt, cause);
     }
 }

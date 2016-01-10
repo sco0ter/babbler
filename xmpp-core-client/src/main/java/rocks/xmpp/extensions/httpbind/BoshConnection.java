@@ -759,15 +759,18 @@ public final class BoshConnection extends Connection {
                         // Wait shortly before sending the long polling request.
                         // This allows the send method to chime in and send a <body/> with actual payload instead of an empty body just to "hold the line".
                         Thread.sleep(50);
-                        // As soon as the client receives a response from the connection manager it sends another request, thereby ensuring that the connection manager is (almost) always holding a request that it can use to "push" data to the client.
-                        if (requestCount.decrementAndGet() == 0) {
-                            sendNewRequest(Body.builder().sessionId(sessionId), false);
-                        }
+
                     } catch (Exception e) {
                         getXmppSession().notifyException(e);
                     } finally {
                         if (httpConnection != null) {
                             httpConnection.disconnect();
+                        }
+                        // As soon as the client receives a response from the connection manager it sends another request, thereby ensuring that the connection manager is (almost) always holding a request that it can use to "push" data to the client.
+                        if (requestCount.decrementAndGet() == 0) {
+                            synchronized (this) {
+                                sendNewRequest(Body.builder().sessionId(sessionId), false);
+                            }
                         }
                     }
                 });

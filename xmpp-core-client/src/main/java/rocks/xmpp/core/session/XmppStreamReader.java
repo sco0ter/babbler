@@ -25,6 +25,7 @@
 package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamError;
@@ -148,8 +149,12 @@ final class XmppStreamReader {
                                     xmlStreamWriter.flush();
                                     debugger.readStanza(stringWriter.toString(), object);
                                 }
-
-                                doRestart = xmppSession.handleElement(object);
+                                // Keep the reader open and only delegate the exception to the session and let it decide what to do with it.
+                                try {
+                                    doRestart = xmppSession.handleElement(object);
+                                } catch (XmppException e) {
+                                    xmppSession.notifyException(e);
+                                }
                             }
                         } else {
                             xmlEventReader.nextEvent();

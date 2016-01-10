@@ -26,6 +26,7 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQHandler;
@@ -264,6 +265,16 @@ public abstract class XmppSession implements AutoCloseable {
     public abstract void connect(Jid from) throws XmppException;
 
     protected final void tryConnect(Jid from, String namespace, Consumer<Jid> onStreamOpened) throws XmppException {
+
+        // Close any previous connection, which might still be open.
+        try {
+            if (activeConnection != null) {
+                activeConnection.close();
+            }
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Failure during closing previous connection.", e);
+        }
+
         Iterator<Connection> connectionIterator = getConnections().iterator();
         while (connectionIterator.hasNext()) {
             Connection connection = connectionIterator.next();
@@ -1063,17 +1074,14 @@ public abstract class XmppSession implements AutoCloseable {
         exception = Objects.requireNonNull(e, "exception must not be null");
         // Release a potential waiting thread.
         streamFeaturesManager.cancelNegotiation();
-
-        if (EnumSet.of(Status.AUTHENTICATED, Status.AUTHENTICATING, Status.CONNECTED, Status.CONNECTING).contains(getStatus())) {
+        if (EnumSet.of(Status.AUTHENTICATED, Status.AUTHENTICATING, Status.CONNECTED, Status.CONNECTING).contains(getStatus()) && !(e instanceof AuthenticationException)) {
 
             try {
                 activeConnection.close();
             } catch (Exception e1) {
                 e.addSuppressed(e1);
             }
-            if (updateStatus(Status.DISCONNECTED, e)) {
-                logger.log(Level.FINE, "Session disconnected due to exception: ", e);
-            }
+            updateStatus(Status.DISCONNECTED, e);
         }
     }
 

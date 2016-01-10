@@ -74,7 +74,7 @@ public final class ReconnectionManager extends Manager {
 
     private ReconnectionManager(final XmppSession xmppSession) {
         super(xmppSession, false);
-        this.reconnectionStrategy = ReconnectionStrategy.alwaysAfterDurationUnlessSystemShutdown(Duration.ofSeconds(10), 60, 5);
+        this.reconnectionStrategy = ReconnectionStrategy.alwaysAfterDurationUnlessSystemShutdown(Duration.ofSeconds(10), 60, 4);
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Reconnection Thread"));
     }
 
@@ -86,7 +86,7 @@ public final class ReconnectionManager extends Manager {
                     // Reconnect if we were connected or logged in and an exception has occurred, that is not a <conflict/> stream error.
                     if (e.getOldStatus() == XmppSession.Status.AUTHENTICATED) {
                         XmppUtils.notifyEventListeners(xmppSession.connectionListeners, new ConnectionEvent(xmppSession, ConnectionEvent.Type.DISCONNECTED, e.getThrowable(), Duration.ZERO));
-                        if (reconnectionStrategy.mayReconnect(e.getThrowable())) {
+                        if (reconnectionStrategy.mayReconnect(0, e.getThrowable())) {
                             scheduleReconnection(0, e.getThrowable());
                         }
                     }

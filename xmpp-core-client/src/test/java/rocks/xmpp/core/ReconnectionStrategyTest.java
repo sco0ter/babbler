@@ -27,6 +27,9 @@ package rocks.xmpp.core;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.session.ReconnectionStrategy;
+import rocks.xmpp.core.stream.StreamErrorException;
+import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.errors.Condition;
 
 import java.time.Duration;
 
@@ -38,20 +41,53 @@ public class ReconnectionStrategyTest {
     @Test
     public void testTruncatedBinaryExponentialBackoff() {
         ReconnectionStrategy truncatedBinaryExponentialBackoffStrategy = ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy(60, 4);
-        Duration first = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(0, null);
+        shouldBackoffBinaryExponentially(truncatedBinaryExponentialBackoffStrategy, null);
+    }
 
+    @Test
+    public void testAlwaysAfter() {
+        ReconnectionStrategy alwaysAfter = ReconnectionStrategy.alwaysAfter(Duration.ofSeconds(15));
+        Duration first = alwaysAfter.getNextReconnectionAttempt(0, null);
+
+        Assert.assertEquals(first.getSeconds(), 15);
+        Duration second = alwaysAfter.getNextReconnectionAttempt(1, null);
+        Assert.assertEquals(second.getSeconds(), 15);
+    }
+
+    @Test
+    public void testAlwaysAfterRandom() {
+        ReconnectionStrategy alwaysRandomlyAfter = ReconnectionStrategy.alwaysRandomlyAfter(Duration.ofSeconds(5), Duration.ofSeconds(7));
+        Duration first = alwaysRandomlyAfter.getNextReconnectionAttempt(0, null);
+
+        Assert.assertTrue(first.getSeconds() >= 5 && first.getSeconds() < 7);
+        Duration second = alwaysRandomlyAfter.getNextReconnectionAttempt(1, null);
+        Assert.assertTrue(second.getSeconds() >= 5 && second.getSeconds() < 7);
+    }
+
+    @Test
+    public void testAlwaysAfterDurationUnlessSystemShutdown() {
+        Throwable cause = new StreamErrorException(new StreamError(Condition.SYSTEM_SHUTDOWN));
+        ReconnectionStrategy strategy = ReconnectionStrategy.alwaysAfterDurationUnlessSystemShutdown(Duration.ofSeconds(5), 60, 4);
+        shouldBackoffBinaryExponentially(strategy, cause);
+
+        Assert.assertEquals(strategy.getNextReconnectionAttempt(0, null), Duration.ofSeconds(5));
+        Assert.assertEquals(strategy.getNextReconnectionAttempt(1, null), Duration.ofSeconds(5));
+    }
+
+    private void shouldBackoffBinaryExponentially(ReconnectionStrategy strategy, Throwable cause) {
+        Duration first = strategy.getNextReconnectionAttempt(0, cause);
         Assert.assertTrue(first.getSeconds() >= 0 && first.getSeconds() < 60);
-        Duration second = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(1, null);
+        Duration second = strategy.getNextReconnectionAttempt(1, null);
         Assert.assertTrue(second.getSeconds() >= 0 && second.getSeconds() < 180);
-        Duration third = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(2, null);
+        Duration third = strategy.getNextReconnectionAttempt(2, null);
         Assert.assertTrue(third.getSeconds() >= 0 && third.getSeconds() < 420);
-        Duration fourth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(3, null);
+        Duration fourth = strategy.getNextReconnectionAttempt(3, null);
         Assert.assertTrue(fourth.getSeconds() >= 0 && fourth.getSeconds() < 900);
-        Duration fifth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(4, null);
+        Duration fifth = strategy.getNextReconnectionAttempt(4, null);
         Assert.assertTrue(fifth.getSeconds() >= 0 && fifth.getSeconds() < 1860);
-        Duration sixth = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(5, null);
+        Duration sixth = strategy.getNextReconnectionAttempt(5, null);
         Assert.assertTrue(sixth.getSeconds() >= 0 && sixth.getSeconds() < 1860);
-        Duration seventh = truncatedBinaryExponentialBackoffStrategy.getNextReconnectionAttempt(6, null);
+        Duration seventh = strategy.getNextReconnectionAttempt(6, null);
         Assert.assertTrue(seventh.getSeconds() >= 0 && seventh.getSeconds() < 1860);
     }
 }

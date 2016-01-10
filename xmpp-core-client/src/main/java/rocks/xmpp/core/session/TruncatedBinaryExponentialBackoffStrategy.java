@@ -49,7 +49,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Christian Schudt
  * @see rocks.xmpp.core.session.ReconnectionManager#setReconnectionStrategy(ReconnectionStrategy)
  */
-final class TruncatedBinaryExponentialBackoffStrategy implements ReconnectionStrategy {
+class TruncatedBinaryExponentialBackoffStrategy implements ReconnectionStrategy {
 
     private final int slotTime;
 

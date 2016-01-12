@@ -75,7 +75,7 @@ public final class GeoLocation {
 
     private final Double accuracy;
 
-    private final Double altitude;
+    private final Double alt;
 
     private final String area;
 
@@ -123,7 +123,7 @@ public final class GeoLocation {
      */
     private GeoLocation() {
         this.accuracy = null;
-        this.altitude = null;
+        this.alt = null;
         this.area = null;
         this.bearing = null;
         this.building = null;
@@ -149,7 +149,7 @@ public final class GeoLocation {
 
     private GeoLocation(Builder builder) {
         this.accuracy = builder.accuracy;
-        this.altitude = builder.altitude;
+        this.alt = builder.alt;
         this.area = builder.area;
         this.bearing = builder.bearing;
         this.building = builder.building;
@@ -197,7 +197,7 @@ public final class GeoLocation {
      * @return The altitude.
      */
     public final Double getAltitude() {
-        return altitude;
+        return alt;
     }
 
     /**
@@ -395,8 +395,8 @@ public final class GeoLocation {
         if (accuracy != null) {
             sb.append("Accuracy: ").append(accuracy).append("; ");
         }
-        if (altitude != null) {
-            sb.append("Altitude: ").append(altitude).append("; ");
+        if (alt != null) {
+            sb.append("Altitude: ").append(alt).append("; ");
         }
         if (area != null) {
             sb.append("Area: ").append(area).append("; ");
@@ -470,7 +470,7 @@ public final class GeoLocation {
 
         private Double accuracy;
 
-        private Double altitude;
+        private Double alt;
 
         private String area;
 
@@ -544,7 +544,7 @@ public final class GeoLocation {
          * @return The builder.
          */
         public Builder altitude(Double altitude) {
-            this.altitude = altitude;
+            this.alt = altitude;
             return this;
         }
 

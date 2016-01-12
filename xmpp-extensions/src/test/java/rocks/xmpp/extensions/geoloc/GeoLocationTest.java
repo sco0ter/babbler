@@ -95,7 +95,7 @@ public class GeoLocationTest extends XmlTest {
         String xml = marshal(geoLocation);
         Assert.assertEquals(xml, "<geoloc xmlns=\"http://jabber.org/protocol/geoloc\" xml:lang=\"fr\">" +
                 "<accuracy>1.0</accuracy>" +
-                "<altitude>2.0</altitude>" +
+                "<alt>2.0</alt>" +
                 "<area>area</area>" +
                 "<bearing>3.0</bearing>" +
                 "<building>building</building>" +

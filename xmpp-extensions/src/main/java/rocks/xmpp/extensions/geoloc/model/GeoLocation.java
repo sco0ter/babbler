@@ -406,19 +406,19 @@ public final class GeoLocation {
     public final String toString() {
         StringBuilder sb = new StringBuilder("Geolocation: ");
         if (accuracy != null) {
-            sb.append("Accuracy: ").append(accuracy).append("; ");
+            sb.append("Accuracy: ").append(accuracy).append("m; ");
         }
         if (alt != null) {
-            sb.append("Altitude: ").append(alt).append("; ");
+            sb.append("Altitude: ").append(alt).append("m; ");
         }
         if (altaccuracy != null) {
-            sb.append("Altitude Accuracy: ").append(altaccuracy).append("; ");
+            sb.append("Altitude Accuracy: ").append(altaccuracy).append("m; ");
         }
         if (area != null) {
             sb.append("Area: ").append(area).append("; ");
         }
         if (bearing != null) {
-            sb.append("Bearing: ").append(bearing).append("; ");
+            sb.append("Bearing: ").append(bearing).append("°; ");
         }
         if (building != null) {
             sb.append("Building: ").append(building).append("; ");
@@ -439,13 +439,13 @@ public final class GeoLocation {
             sb.append("Floor: ").append(floor).append("; ");
         }
         if (lat != null) {
-            sb.append("Latitude: ").append(lat).append("; ");
+            sb.append("Latitude: ").append(lat).append("°; ");
         }
         if (locality != null) {
             sb.append("Locality: ").append(locality).append("; ");
         }
         if (lon != null) {
-            sb.append("Longitude: ").append(lon).append("; ");
+            sb.append("Longitude: ").append(lon).append("°; ");
         }
         if (postalcode != null) {
             sb.append("Postal Code: ").append(postalcode).append("; ");
@@ -457,7 +457,7 @@ public final class GeoLocation {
             sb.append("Room: ").append(room).append("; ");
         }
         if (speed != null) {
-            sb.append("Speed: ").append(speed).append("; ");
+            sb.append("Speed: ").append(speed).append("m/s; ");
         }
         if (street != null) {
             sb.append("Street: ").append(street).append("; ");

@@ -25,6 +25,7 @@
 package rocks.xmpp.core.session;
 
 import java.time.Duration;
+import java.util.function.BiPredicate;
 
 /**
  * Combines two reconnection strategies. The primary strategy is used, if {@link ReconnectionStrategy#mayReconnect(int, Throwable)} returns true, otherwise the secondary reconnection strategy is used.
@@ -37,13 +38,16 @@ final class HybridReconnectionStrategy implements ReconnectionStrategy {
 
     private final ReconnectionStrategy secondaryStrategy;
 
-    public HybridReconnectionStrategy(ReconnectionStrategy primaryStrategy, ReconnectionStrategy secondaryStrategy) {
+    private final BiPredicate<Integer, Throwable> predicate;
+
+    public HybridReconnectionStrategy(ReconnectionStrategy primaryStrategy, ReconnectionStrategy secondaryStrategy, BiPredicate<Integer, Throwable> predicate) {
         this.primaryStrategy = primaryStrategy;
         this.secondaryStrategy = secondaryStrategy;
+        this.predicate = predicate;
     }
 
     @Override
     public final Duration getNextReconnectionAttempt(final int attempt, final Throwable cause) {
-        return (primaryStrategy.mayReconnect(attempt, cause) ? primaryStrategy : secondaryStrategy).getNextReconnectionAttempt(attempt, cause);
+        return (predicate.test(attempt, cause) ? primaryStrategy : secondaryStrategy).getNextReconnectionAttempt(attempt, cause);
     }
 }

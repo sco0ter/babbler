@@ -25,6 +25,8 @@
 package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.stream.StreamErrorException;
+import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.util.XmppUtils;
 
 import java.time.Duration;
@@ -33,8 +35,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiPredicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static rocks.xmpp.core.session.ReconnectionStrategy.*;
 
 /**
  * If the connection goes down, this class automatically reconnects, if the user was authenticated.
@@ -74,7 +79,21 @@ public final class ReconnectionManager extends Manager {
 
     private ReconnectionManager(final XmppSession xmppSession) {
         super(xmppSession, false);
-        this.reconnectionStrategy = ReconnectionStrategy.alwaysAfterDurationUnlessSystemShutdown(Duration.ofSeconds(10), 60, 4);
+        this.reconnectionStrategy = onSystemShutdownFirstOrElseSecond(
+                // on first attempt: 0-60 seconds    (2^1-1 * 60)
+                // on second attempt: 0-180 seconds  (2^2-1 * 60)
+                // on third attempt: 0-420 seconds   (2^3-1 * 60)
+                // on fourth attempt: 0-900 seconds  (2^4-1 * 60)
+                // -> max. 15 minutes
+                truncatedBinaryExponentialBackoffStrategy(60, 4),
+
+                // on first attempt: 0-10 seconds   (2^1-1 * 10)
+                // on second attempt: 0-30 seconds  (2^2-1 * 10)
+                // on third attempt: 0-70 seconds   (2^3-1 * 10)
+                // on fourth attempt: 0-150 seconds (2^4-1 * 10)
+                // on fifth attempt: 0-310 seconds  (2^5-1 * 10)
+                // -> max. ~ 5 minutes
+                truncatedBinaryExponentialBackoffStrategy(10, 5));
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Reconnection Thread"));
     }
 
@@ -176,5 +195,17 @@ public final class ReconnectionManager extends Manager {
     protected final void onDisable() {
         super.onDisable();
         cancel();
+    }
+
+    static final class SystemShutdownPredicate implements BiPredicate<Integer, Throwable> {
+        private boolean systemShutdown;
+
+        @Override
+        public final boolean test(Integer attempt, Throwable cause) {
+            if (!systemShutdown || attempt == 0) {
+                systemShutdown = cause instanceof StreamErrorException && ((StreamErrorException) cause).getCondition() == Condition.SYSTEM_SHUTDOWN;
+            }
+            return systemShutdown;
+        }
     }
 }

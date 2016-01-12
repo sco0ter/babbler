@@ -121,29 +121,13 @@ public interface ReconnectionStrategy {
     }
 
     /**
-     * Always reconnects after a fix duration, unless the server has been shut down.
-     * In that case it uses a "truncated binary exponential backoff" strategy, which should start between 0 and 60 seconds.
+     * Uses a hybrid reconnection strategy, which uses the first one on system shutdown and the second one on every other disconnection cause.
      *
-     * @param duration The duration for the
-     * @param slotTime The slot time used for the truncated binary backoff. Should be 60.
-     * @param ceiling  The ceiling, i.e. the max backoffs used for the truncated binary backoff.
+     * @param first  The first strategy.
+     * @param second The second strategy.
      * @return The reconnection strategy.
      */
-    static ReconnectionStrategy alwaysAfterDurationUnlessSystemShutdown(Duration duration, int slotTime, int ceiling) {
-        return new HybridReconnectionStrategy(
-                // The primary strategy
-                new TruncatedBinaryExponentialBackoffStrategy(slotTime, ceiling) {
-                    private boolean systemShutdown;
-
-                    @Override
-                    public boolean mayReconnect(int attempt, Throwable cause) {
-                        if (!systemShutdown || attempt == 0) {
-                            systemShutdown = cause instanceof StreamErrorException && ((StreamErrorException) cause).getCondition() == Condition.SYSTEM_SHUTDOWN;
-                        }
-                        return systemShutdown && super.mayReconnect(attempt, cause);
-                    }
-                },
-                // Alternatively use a fix duration.
-                alwaysAfter(duration));
+    static ReconnectionStrategy onSystemShutdownFirstOrElseSecond(ReconnectionStrategy first, ReconnectionStrategy second) {
+        return new HybridReconnectionStrategy(first, second, new ReconnectionManager.SystemShutdownPredicate());
     }
 }

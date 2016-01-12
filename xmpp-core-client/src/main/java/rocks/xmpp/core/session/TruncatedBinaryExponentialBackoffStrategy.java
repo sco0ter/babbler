@@ -71,7 +71,7 @@ class TruncatedBinaryExponentialBackoffStrategy implements ReconnectionStrategy 
         // For the third attempt choose a random number between 0 and 420.
         // For the fourth attempt choose a random number between 0 and 900.
         // For the fifth attempt choose a random number between 0 and 1860.
-        // ==> max wait time: 1860 seconds = 31 minutes. (if ceiling == 4)
+        // ==> max wait time: 1860 seconds = 31 minutes. (if ceiling == 5)
         return Duration.ofSeconds(ThreadLocalRandom.current().nextInt((int) (Math.pow(2, Math.min(attempt, ceiling) + 1) - 1) * slotTime));
     }
 }

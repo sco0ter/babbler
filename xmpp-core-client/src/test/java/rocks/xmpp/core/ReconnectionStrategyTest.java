@@ -67,7 +67,9 @@ public class ReconnectionStrategyTest {
     @Test
     public void testAlwaysAfterDurationUnlessSystemShutdown() {
         Throwable cause = new StreamErrorException(new StreamError(Condition.SYSTEM_SHUTDOWN));
-        ReconnectionStrategy strategy = ReconnectionStrategy.alwaysAfterDurationUnlessSystemShutdown(Duration.ofSeconds(5), 60, 4);
+        ReconnectionStrategy strategy = ReconnectionStrategy.onSystemShutdownFirstOrElseSecond(
+                ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy(60, 4),
+                ReconnectionStrategy.alwaysAfter(Duration.ofSeconds(5)));
         shouldBackoffBinaryExponentially(strategy, cause);
 
         Assert.assertEquals(strategy.getNextReconnectionAttempt(0, null), Duration.ofSeconds(5));

@@ -70,6 +70,7 @@ public class GeoLocationTest extends XmlTest {
         GeoLocation geoLocation = GeoLocation.builder()
                 .accuracy(1.0)
                 .altitude(2.0)
+                .altitudeAccuracy(10.3)
                 .area("area")
                 .bearing(3.0)
                 .building("building")
@@ -96,6 +97,7 @@ public class GeoLocationTest extends XmlTest {
         Assert.assertEquals(xml, "<geoloc xmlns=\"http://jabber.org/protocol/geoloc\" xml:lang=\"fr\">" +
                 "<accuracy>1.0</accuracy>" +
                 "<alt>2.0</alt>" +
+                "<altaccuracy>10.3</altaccuracy>" +
                 "<area>area</area>" +
                 "<bearing>3.0</bearing>" +
                 "<building>building</building>" +

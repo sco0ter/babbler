@@ -77,6 +77,8 @@ public final class GeoLocation {
 
     private final Double alt;
 
+    private final Double altaccuracy;
+
     private final String area;
 
     private final Double bearing;
@@ -124,6 +126,7 @@ public final class GeoLocation {
     private GeoLocation() {
         this.accuracy = null;
         this.alt = null;
+        this.altaccuracy = null;
         this.area = null;
         this.bearing = null;
         this.building = null;
@@ -150,6 +153,7 @@ public final class GeoLocation {
     private GeoLocation(Builder builder) {
         this.accuracy = builder.accuracy;
         this.alt = builder.alt;
+        this.altaccuracy = builder.altaccuracy;
         this.area = builder.area;
         this.bearing = builder.bearing;
         this.building = builder.building;
@@ -198,6 +202,15 @@ public final class GeoLocation {
      */
     public final Double getAltitude() {
         return alt;
+    }
+
+    /**
+     * Gets the vertical GPS error in meters.
+     *
+     * @return The altitude accuracy.
+     */
+    public final Double getAltitudeAccuracy() {
+        return altaccuracy;
     }
 
     /**
@@ -398,6 +411,9 @@ public final class GeoLocation {
         if (alt != null) {
             sb.append("Altitude: ").append(alt).append("; ");
         }
+        if (altaccuracy != null) {
+            sb.append("Altitude Accuracy: ").append(altaccuracy).append("; ");
+        }
         if (area != null) {
             sb.append("Area: ").append(area).append("; ");
         }
@@ -472,6 +488,8 @@ public final class GeoLocation {
 
         private Double alt;
 
+        private Double altaccuracy;
+
         private String area;
 
         private Double bearing;
@@ -545,6 +563,17 @@ public final class GeoLocation {
          */
         public Builder altitude(Double altitude) {
             this.alt = altitude;
+            return this;
+        }
+
+        /**
+         * Sets the vertical GPS error in meters.
+         *
+         * @param altitudeAccuracy The vertical GPS error in meters.
+         * @return The builder.
+         */
+        public Builder altitudeAccuracy(Double altitudeAccuracy) {
+            this.altaccuracy = altitudeAccuracy;
             return this;
         }
 

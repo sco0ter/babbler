@@ -538,6 +538,10 @@ public final class DebugController implements Initializable {
 
     void addStanza(StanzaEntry stanzaEntry) {
         viewModel.stanzas.add(stanzaEntry);
+        // Select the first item. This should actually happen automatically by TableView, but there's some displaying glitch.
+        if (viewModel.stanzas.size() == 1) {
+            stanzaTableView.getSelectionModel().select(0);
+        }
     }
 
     private boolean isVisible(StanzaEntry stanzaEntry) {

@@ -523,6 +523,8 @@ public final class DebugController implements Initializable {
         });
 
         txtInbound.setText("");
+
+        Platform.runLater(()-> stanzaTableView.scrollTo(Integer.MAX_VALUE));
     }
 
     @FXML

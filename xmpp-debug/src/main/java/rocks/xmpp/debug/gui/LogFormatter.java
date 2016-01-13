@@ -37,7 +37,7 @@ import java.util.logging.SimpleFormatter;
 /**
  * @author Christian Schudt
  */
-public class LogFormatter extends SimpleFormatter {
+final class LogFormatter extends SimpleFormatter {
     @Override
     public String format(LogRecord record) {
         StringBuilder sb = new StringBuilder();

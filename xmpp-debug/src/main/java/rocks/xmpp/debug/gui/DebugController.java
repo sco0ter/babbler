@@ -75,7 +75,6 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.ResourceBundle;
 
 /**
@@ -447,10 +446,10 @@ public final class DebugController implements Initializable {
                         setTooltip(null);
 
                         if (!empty) {
-
-                            DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
-                            setText(formatter.format(item));
-                            setTooltip(new Tooltip(formatter.format(item)));
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
+                            String formatted = formatter.format(item);
+                            setText(formatted);
+                            setTooltip(new Tooltip(formatted));
                         }
                     }
                 };
@@ -524,7 +523,7 @@ public final class DebugController implements Initializable {
 
         txtInbound.setText("");
 
-        Platform.runLater(()-> stanzaTableView.scrollTo(Integer.MAX_VALUE));
+        Platform.runLater(() -> stanzaTableView.scrollTo(Integer.MAX_VALUE));
     }
 
     @FXML

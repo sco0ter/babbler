@@ -99,7 +99,7 @@
                             <TableColumn fx:id="columnTo" text="To" minWidth="50">
 
                             </TableColumn>
-                            <TableColumn fx:id="columnDate" text="Date" minWidth="50">
+                            <TableColumn fx:id="columnDate" text="Time" minWidth="70">
 
                             </TableColumn>
                         </columns>

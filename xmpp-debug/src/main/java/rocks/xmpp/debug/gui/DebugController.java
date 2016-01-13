@@ -542,6 +542,8 @@ public final class DebugController implements Initializable {
         if (viewModel.stanzas.size() == 1) {
             stanzaTableView.getSelectionModel().select(0);
         }
+        // Limit the size of stanzas to 200
+        viewModel.stanzas.remove(0, viewModel.stanzas.size() - 200);
     }
 
     private boolean isVisible(StanzaEntry stanzaEntry) {

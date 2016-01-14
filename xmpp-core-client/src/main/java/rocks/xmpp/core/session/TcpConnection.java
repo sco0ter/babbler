@@ -222,7 +222,10 @@ public final class TcpConnection extends Connection {
         } else {
             socket = tcpConnectionConfiguration.getSocketFactory().createSocket();
         }
-        socket.connect(new InetSocketAddress(unresolvedAddress.getHostName(), unresolvedAddress.getPort()), tcpConnectionConfiguration.getConnectTimeout());
+        // SocketFactory may return an already connected socket, so check the connected state to prevent SocketException.
+        if (!socket.isConnected()) {
+            socket.connect(new InetSocketAddress(unresolvedAddress.getHostName(), unresolvedAddress.getPort()), tcpConnectionConfiguration.getConnectTimeout());
+        }
         this.port = unresolvedAddress.getPort();
         this.hostname = unresolvedAddress.getHostName();
         return socket;

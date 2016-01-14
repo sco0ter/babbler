@@ -480,11 +480,9 @@ public final class BoshConnection extends Connection {
      * <li>The reader thread, which closes the BOSH session after seeing an error from the connection manager.</li>
      * <li>The writer thread.</li>
      * </ol>
-     *
-     * @throws java.lang.InterruptedException If the current thread is interrupted.
      */
     @Override
-    public final void close() throws Exception {
+    public final void close() {
         synchronized (this) {
             if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
                 if (getSessionId() != null) {
@@ -603,6 +601,7 @@ public final class BoshConnection extends Connection {
 
                     // Open a HTTP connection.
                     HttpURLConnection httpConnection = null;
+                    boolean responseReceived = false;
                     try {
                         Body body;
 
@@ -669,15 +668,17 @@ public final class BoshConnection extends Connection {
                         httpConnection.setReadTimeout((boshConnectionConfiguration.getWait() + 5) * 1000);
 
                         requestCount.getAndIncrement();
-                        try (OutputStream requestStream = requestCompressionMethod != null ? requestCompressionMethod.compress(httpConnection.getOutputStream()) : httpConnection.getOutputStream()) {
-                            // This is for logging only.
-                            ByteArrayOutputStream byteArrayOutputStreamRequest = new ByteArrayOutputStream();
+                        try {
+                            try (OutputStream requestStream = requestCompressionMethod != null ? requestCompressionMethod.compress(httpConnection.getOutputStream()) : httpConnection.getOutputStream();
+                                 // This is for logging only.
+                                 ByteArrayOutputStream byteArrayOutputStreamRequest = new ByteArrayOutputStream();
 
-                            // Branch the stream, so that its output can also be logged.
-                            try (OutputStream branchedOutputStream = XmppUtils.createBranchedOutputStream(requestStream, byteArrayOutputStreamRequest)) {
+                                 // Branch the stream, so that its output can also be logged.
+                                 OutputStream branchedOutputStream = XmppUtils.createBranchedOutputStream(requestStream, byteArrayOutputStreamRequest);
+                                 OutputStream xmppOutputStream = debugger != null ? debugger.createOutputStream(branchedOutputStream) : branchedOutputStream) {
 
                                 XMLStreamWriter xmlStreamWriter = null;
-                                try (OutputStream xmppOutputStream = debugger != null ? debugger.createOutputStream(branchedOutputStream) : branchedOutputStream) {
+                                try {
                                     // Create the writer for this connection.
                                     xmlStreamWriter = XmppUtils.createXmppStreamWriter(getXmppSession().getConfiguration().getXmlOutputFactory().createXMLStreamWriter(xmppOutputStream, "UTF-8"));
 
@@ -695,82 +696,80 @@ public final class BoshConnection extends Connection {
                                     }
                                 }
                             }
-                        }
 
-                        // Wait for the response
-                        if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                            // Wait for the response
+                            if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
 
-                            // We received a response for the request. Store the RID, so that we can inform the connection manager with our next request, that we received a response.
-                            synchronized (BoshConnection.this) {
-                                highestReceivedRid = body.getRid() != null ? body.getRid() : 0;
-                            }
+                                responseReceived = true;
 
-                            String contentEncoding = httpConnection.getHeaderField("Content-Encoding");
-                            try (InputStream responseStream = contentEncoding != null ? compressionMethods.get(contentEncoding).decompress(httpConnection.getInputStream()) : httpConnection.getInputStream()) {
-                                // This is for logging only.
-                                try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-                                    // Branch the stream so that its input can be logged.
-                                    try (InputStream inputStream = XmppUtils.createBranchedInputStream(responseStream, byteArrayOutputStream)) {
-                                        try (InputStream xmppInputStream = debugger != null ? debugger.createInputStream(inputStream) : inputStream) {
-                                            XMLEventReader xmlEventReader = null;
-                                            try {
-                                                // Read the response.
-                                                xmlEventReader = getXmppSession().getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
-                                                while (xmlEventReader.hasNext()) {
-                                                    XMLEvent xmlEvent = xmlEventReader.peek();
+                                // The response itself acknowledges the request, so we can remove the request.
+                                ackReceived(body.getRid());
 
-                                                    // Parse the <body/> element.
-                                                    if (xmlEvent.isStartElement()) {
-                                                        JAXBElement<Body> element = getXmppSession().createUnmarshaller().unmarshal(xmlEventReader, Body.class);
+                                // We received a response for the request. Store the RID, so that we can inform the connection manager with our next request, that we received a response.
+                                synchronized (BoshConnection.this) {
+                                    highestReceivedRid = body.getRid() != null ? body.getRid() : 0;
+                                }
 
-                                                        if (debugger != null) {
-                                                            debugger.readStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), element.getValue());
-                                                        }
-                                                        unpackBody(element.getValue());
-                                                    } else {
-                                                        xmlEventReader.next();
-                                                    }
+                                String contentEncoding = httpConnection.getHeaderField("Content-Encoding");
+                                try (InputStream responseStream = contentEncoding != null ? compressionMethods.get(contentEncoding).decompress(httpConnection.getInputStream()) : httpConnection.getInputStream();
+                                     // This is for logging only.
+                                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                                     // Branch the stream so that its input can be logged.
+                                     InputStream inputStream = XmppUtils.createBranchedInputStream(responseStream, byteArrayOutputStream);
+                                     InputStream xmppInputStream = debugger != null ? debugger.createInputStream(inputStream) : inputStream) {
+
+                                    XMLEventReader xmlEventReader = null;
+                                    try {
+                                        // Read the response.
+                                        xmlEventReader = getXmppSession().getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
+                                        while (xmlEventReader.hasNext()) {
+                                            XMLEvent xmlEvent = xmlEventReader.peek();
+
+                                            // Parse the <body/> element.
+                                            if (xmlEvent.isStartElement()) {
+                                                JAXBElement<Body> element = getXmppSession().createUnmarshaller().unmarshal(xmlEventReader, Body.class);
+
+                                                if (debugger != null) {
+                                                    debugger.readStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), element.getValue());
                                                 }
-                                            } catch (JAXBException e) {
-                                                logger.log(Level.WARNING, "Server responded with malformed XML.", e);
-                                            } finally {
-                                                // The response itself acknowledges the request, so we can remove the request.
-                                                ackReceived(body.getRid());
-                                                if (xmlEventReader != null) {
-                                                    xmlEventReader.close();
-                                                }
+                                                unpackBody(element.getValue());
+                                            } else {
+                                                xmlEventReader.next();
                                             }
+                                        }
+                                    } catch (JAXBException e) {
+                                        logger.log(Level.WARNING, "Server responded with malformed XML.", e);
+                                    } finally {
+                                        if (xmlEventReader != null) {
+                                            xmlEventReader.close();
                                         }
                                     }
                                 }
-                            }
-                        } else {
-                            // Shutdown the executor, we don't want to send further requests from now on.
-                            shutdown();
-                            handleCode(httpConnection.getResponseCode());
-                            try (InputStream errorStream = httpConnection.getErrorStream()) {
-                                while (errorStream.read() > -1) {
-                                    // Just read the error stream, so that the connection can be reused.
-                                    // http://docs.oracle.com/javase/8/docs/technotes/guides/net/http-keepalive.html
+                                // Wait shortly before sending the long polling request.
+                                // This allows the send method to chime in and send a <body/> with actual payload instead of an empty body just to "hold the line".
+                                Thread.sleep(50);
+                            } else {
+                                // Shutdown the executor, we don't want to send further requests from now on.
+                                shutdown();
+                                handleCode(httpConnection.getResponseCode());
+                                try (InputStream errorStream = httpConnection.getErrorStream()) {
+                                    while (errorStream.read() > -1) {
+                                        // Just read the error stream, so that the connection can be reused.
+                                        // http://docs.oracle.com/javase/8/docs/technotes/guides/net/http-keepalive.html
+                                    }
                                 }
                             }
+                        } finally {
+                            // As soon as the client receives a response from the connection manager it sends another request, thereby ensuring that the connection manager is (almost) always holding a request that it can use to "push" data to the client.
+                            if (requestCount.decrementAndGet() == 0 && responseReceived) {
+                                sendNewRequest(Body.builder().sessionId(sessionId), false);
+                            }
                         }
-
-                        // Wait shortly before sending the long polling request.
-                        // This allows the send method to chime in and send a <body/> with actual payload instead of an empty body just to "hold the line".
-                        Thread.sleep(50);
-
                     } catch (Exception e) {
                         getXmppSession().notifyException(e);
                     } finally {
                         if (httpConnection != null) {
                             httpConnection.disconnect();
-                        }
-                        // As soon as the client receives a response from the connection manager it sends another request, thereby ensuring that the connection manager is (almost) always holding a request that it can use to "push" data to the client.
-                        if (requestCount.decrementAndGet() == 0) {
-                            synchronized (this) {
-                                sendNewRequest(Body.builder().sessionId(sessionId), false);
-                            }
                         }
                     }
                 });

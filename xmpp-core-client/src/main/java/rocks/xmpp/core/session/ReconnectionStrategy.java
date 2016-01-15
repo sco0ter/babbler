@@ -130,4 +130,24 @@ public interface ReconnectionStrategy {
     static ReconnectionStrategy onSystemShutdownFirstOrElseSecond(ReconnectionStrategy first, ReconnectionStrategy second) {
         return new HybridReconnectionStrategy(first, second, new ReconnectionManager.SystemShutdownPredicate());
     }
+
+    /**
+     * Reconnection won't happen automatically, i.e. it's disabled.
+     *
+     * @return The reconnection strategy.
+     */
+    static ReconnectionStrategy none() {
+        return new ReconnectionStrategy() {
+
+            @Override
+            public boolean mayReconnect(int attempt, Throwable cause) {
+                return false;
+            }
+
+            @Override
+            public Duration getNextReconnectionAttempt(int attempt, Throwable cause) {
+                return Duration.ZERO;
+            }
+        };
+    }
 }

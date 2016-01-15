@@ -121,6 +121,8 @@ public final class XmppSessionConfiguration {
 
     private final Locale language;
 
+    private final ReconnectionStrategy reconnectionStrategy;
+
     /**
      * Creates a configuration for an {@link XmppSession}. If you want to add custom classes to the {@link JAXBContext}, you can pass them as parameters.
      *
@@ -135,6 +137,7 @@ public final class XmppSessionConfiguration {
         this.xmlInputFactory = XMLInputFactory.newFactory();
         this.xmlOutputFactory = XMLOutputFactory.newFactory();
         this.language = builder.language != null ? builder.language : Locale.getDefault();
+        this.reconnectionStrategy = builder.reconnectionStrategy;
         this.extensions = new HashSet<>();
         this.extensions.addAll(builder.extensions);
 
@@ -271,6 +274,15 @@ public final class XmppSessionConfiguration {
         return language;
     }
 
+    /**
+     * Gets the reconnection strategy.
+     *
+     * @return The reconnection strategy.
+     */
+    public final ReconnectionStrategy getReconnectionStrategy() {
+        return reconnectionStrategy;
+    }
+
     final Collection<Extension> getExtensions() {
         return extensions;
     }
@@ -309,6 +321,8 @@ public final class XmppSessionConfiguration {
         private Supplier<Presence> initialPresence;
 
         private Locale language;
+
+        private ReconnectionStrategy reconnectionStrategy;
 
         /**
          * The default preferred SASL mechanisms.
@@ -426,6 +440,17 @@ public final class XmppSessionConfiguration {
             return this;
         }
 
+        /**
+         * Sets the reconnection strategy, which determined when to reconnect after a disconnection.
+         *
+         * @param reconnectionStrategy The reconnection strategy.
+         * @return The builder.
+         * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">3.3.  Reconnection</a>
+         */
+        public final Builder reconnectionStrategy(ReconnectionStrategy reconnectionStrategy) {
+            this.reconnectionStrategy = reconnectionStrategy;
+            return this;
+        }
 
         /**
          * Builds the configuration.

@@ -61,10 +61,11 @@ import static rocks.xmpp.core.session.ReconnectionStrategy.*;
  * Use {@link #getNextReconnectionAttempt()} if you want to find out, when the next reconnection attempt will happen.
  * </p>
  * This class is unconditionally thread-safe.
- *
+ * @deprecated The only useful API here was {@link #setReconnectionStrategy(ReconnectionStrategy)}, use {@link rocks.xmpp.core.session.XmppSessionConfiguration.Builder#reconnectionStrategy(ReconnectionStrategy)} instead.
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">3.3.  Reconnection</a>
  */
+@Deprecated
 public final class ReconnectionManager extends Manager {
 
     private static final Logger logger = Logger.getLogger(ReconnectionManager.class.getName());
@@ -79,21 +80,26 @@ public final class ReconnectionManager extends Manager {
 
     private ReconnectionManager(final XmppSession xmppSession) {
         super(xmppSession, false);
-        this.reconnectionStrategy = onSystemShutdownFirstOrElseSecond(
-                // on first attempt: 0-60 seconds    (2^1-1 * 60)
-                // on second attempt: 0-180 seconds  (2^2-1 * 60)
-                // on third attempt: 0-420 seconds   (2^3-1 * 60)
-                // on fourth attempt: 0-900 seconds  (2^4-1 * 60)
-                // -> max. 15 minutes
-                truncatedBinaryExponentialBackoffStrategy(60, 4),
+        ReconnectionStrategy configuredStrategy = xmppSession.getConfiguration().getReconnectionStrategy();
+        if (configuredStrategy != null) {
+            this.reconnectionStrategy = configuredStrategy;
+        } else {
+            this.reconnectionStrategy = onSystemShutdownFirstOrElseSecond(
+                    // on first attempt: 0-60 seconds    (2^1-1 * 60)
+                    // on second attempt: 0-180 seconds  (2^2-1 * 60)
+                    // on third attempt: 0-420 seconds   (2^3-1 * 60)
+                    // on fourth attempt: 0-900 seconds  (2^4-1 * 60)
+                    // -> max. 15 minutes
+                    truncatedBinaryExponentialBackoffStrategy(60, 4),
 
-                // on first attempt: 0-10 seconds   (2^1-1 * 10)
-                // on second attempt: 0-30 seconds  (2^2-1 * 10)
-                // on third attempt: 0-70 seconds   (2^3-1 * 10)
-                // on fourth attempt: 0-150 seconds (2^4-1 * 10)
-                // on fifth attempt: 0-310 seconds  (2^5-1 * 10)
-                // -> max. ~ 5 minutes
-                truncatedBinaryExponentialBackoffStrategy(10, 5));
+                    // on first attempt: 0-10 seconds   (2^1-1 * 10)
+                    // on second attempt: 0-30 seconds  (2^2-1 * 10)
+                    // on third attempt: 0-70 seconds   (2^3-1 * 10)
+                    // on fourth attempt: 0-150 seconds (2^4-1 * 10)
+                    // on fifth attempt: 0-310 seconds  (2^5-1 * 10)
+                    // -> max. ~ 5 minutes
+                    truncatedBinaryExponentialBackoffStrategy(10, 5));
+        }
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Reconnection Thread"));
     }
 
@@ -177,7 +183,9 @@ public final class ReconnectionManager extends Manager {
      * Sets the reconnection strategy.
      *
      * @param reconnectionStrategy The reconnection strategy.
+     * @deprecated Use {@link rocks.xmpp.core.session.XmppSessionConfiguration.Builder#reconnectionStrategy(ReconnectionStrategy)}
      */
+    @Deprecated
     public final synchronized void setReconnectionStrategy(ReconnectionStrategy reconnectionStrategy) {
         this.reconnectionStrategy = reconnectionStrategy;
     }
@@ -197,6 +205,9 @@ public final class ReconnectionManager extends Manager {
         cancel();
     }
 
+    /**
+     * A predicate which returns true as soon a system-shutdown stream error has occurred.
+     */
     static final class SystemShutdownPredicate implements BiPredicate<Integer, Throwable> {
         private boolean systemShutdown;
 

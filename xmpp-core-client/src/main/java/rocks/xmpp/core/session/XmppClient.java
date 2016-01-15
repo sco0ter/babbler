@@ -171,6 +171,16 @@ public final class XmppClient extends XmppSession {
         });
     }
 
+    public static XmppClient create(String xmppServiceDomain, ConnectionConfiguration... connectionConfigurations) {
+        return create(xmppServiceDomain, XmppSessionConfiguration.getDefault(), connectionConfigurations);
+    }
+
+    public static XmppClient create(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
+        XmppClient xmppClient = new XmppClient(xmppServiceDomain, configuration, connectionConfigurations);
+        notifyCreationListeners(xmppClient);
+        return xmppClient;
+    }
+
     /**
      * Connects to the XMPP server.
      *

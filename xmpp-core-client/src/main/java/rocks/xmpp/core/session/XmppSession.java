@@ -58,6 +58,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.EventObject;
@@ -106,6 +107,8 @@ import java.util.logging.Logger;
  * @see <a href="http://xmpp.org/extensions/xep-0174.html">XEP-0174: Serverless Messaging</a>
  */
 public abstract class XmppSession implements AutoCloseable {
+
+    protected static final Collection<Consumer<XmppSession>> creationListeners = new CopyOnWriteArraySet<>();
 
     private static final Logger logger = Logger.getLogger(XmppSession.class.getName());
 
@@ -246,6 +249,36 @@ public abstract class XmppSession implements AutoCloseable {
                 throw new XmppException(e);
             }
         }
+    }
+
+    /**
+     * Adds a listener, which is triggered, whenever a new session is created.
+     *
+     * @param listener The listener.
+     * @see #removeCreationListener(Consumer)
+     */
+    public static void addCreationListener(Consumer<XmppSession> listener) {
+        creationListeners.add(listener);
+    }
+
+    /**
+     * Removes a previously added creation listener.
+     *
+     * @param listener The listener.
+     * @see #addCreationListener(Consumer)
+     */
+    public static void removeCreationListener(Consumer<XmppSession> listener) {
+        creationListeners.remove(listener);
+    }
+
+    protected static void notifyCreationListeners(XmppSession xmppSession) {
+        creationListeners.forEach(xmppSessionConsumer -> {
+            try {
+                xmppSessionConsumer.accept(xmppSession);
+            } catch (Exception e) {
+                logger.log(Level.WARNING, e.getMessage(), e);
+            }
+        });
     }
 
     /**
@@ -905,7 +938,6 @@ public abstract class XmppSession implements AutoCloseable {
     public final boolean isConnected() {
         return IS_CONNECTED.contains(getStatus());
     }
-
 
     /**
      * Returns true, if the session is authenticated. For a normal client-to-server session this means, when the user has logged in (successfully completed SASL negotiation and resource binding).

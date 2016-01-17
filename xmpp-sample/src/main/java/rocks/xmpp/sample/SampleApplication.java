@@ -31,6 +31,8 @@ import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
+import rocks.xmpp.websocket.WebSocketConnection;
+import rocks.xmpp.websocket.WebSocketConnectionConfiguration;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -75,12 +77,17 @@ public class SampleApplication {
                         //.sslContext(getTrustAllSslContext())
                         .secure(false)
                         .build();
-
+                WebSocketConnectionConfiguration webSocketConfiguration = WebSocketConnectionConfiguration.builder()
+                        .hostname("localhost")
+                        .port(7070)
+                                //.sslContext(getTrustAllSslContext())
+                        .secure(false)
+                        .build();
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                         .debugger(ConsoleDebugger.class)
                         .build();
 
-                XmppClient xmppClient = new XmppClient("localhost", configuration, boshConfiguration);
+                XmppClient xmppClient = new XmppClient("localhost", configuration, webSocketConfiguration);
 
                 // Listen for inbound messages.
                 xmppClient.addInboundMessageListener(e -> logger.info("Received: " + e.getMessage()));

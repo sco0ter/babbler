@@ -168,25 +168,32 @@ public final class WebSocketConnection extends Connection {
     public final synchronized void send(StreamElement streamElement) {
         if (session != null && session.isOpen()) {
             try (StringWriter writer = new StringWriter()) {
-                XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(getXmppSession().getConfiguration().getXmlOutputFactory().createXMLStreamWriter(writer), null);
-                getXmppSession().createMarshaller().marshal(streamElement, xmlStreamWriter);
-                xmlStreamWriter.flush();
-                String xml = writer.toString();
-                if (streamElement instanceof Stanza) {
-                    // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowleged" queue.
-                    this.streamManager.markUnacknowledged((Stanza) streamElement);
-                }
-                session.getAsyncRemote().sendText(xml, result -> {
-                    if (result.isOK() && streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement)) {
-                        send(StreamManagement.REQUEST);
+                XMLStreamWriter xmlStreamWriter = null;
+                try {
+                    xmlStreamWriter = XmppUtils.createXmppStreamWriter(getXmppSession().getConfiguration().getXmlOutputFactory().createXMLStreamWriter(writer), null);
+                    getXmppSession().createMarshaller().marshal(streamElement, xmlStreamWriter);
+                    xmlStreamWriter.flush();
+                    String xml = writer.toString();
+                    if (streamElement instanceof Stanza) {
+                        // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowleged" queue.
+                        this.streamManager.markUnacknowledged((Stanza) streamElement);
                     }
-                    if (result.getException() != null) {
-                        getXmppSession().notifyException(result.getException());
-                    }
-                });
+                    session.getAsyncRemote().sendText(xml, result -> {
+                        if (result.isOK() && streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement)) {
+                            send(StreamManagement.REQUEST);
+                        }
+                        if (result.getException() != null) {
+                            getXmppSession().notifyException(result.getException());
+                        }
+                    });
 
-                if (debugger != null) {
-                    debugger.writeStanza(xml, streamElement);
+                    if (debugger != null) {
+                        debugger.writeStanza(xml, streamElement);
+                    }
+                } finally {
+                    if (xmlStreamWriter != null) {
+                        xmlStreamWriter.close();
+                    }
                 }
             } catch (Exception e) {
                 getXmppSession().notifyException(e);

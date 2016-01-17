@@ -94,6 +94,9 @@ public final class WebSocketConnection extends Connection {
 
     private final Condition closeReceived = lock.newCondition();
 
+    /**
+     * Guarded by "this".
+     */
     private boolean closedByServer;
 
     /**
@@ -202,12 +205,12 @@ public final class WebSocketConnection extends Connection {
     }
 
     @Override
-    public final void connect(Jid from, String namespace, Consumer<Jid> onStreamOpened) throws IOException {
+    public final void connect(final Jid from, final String namespace, final Consumer<Jid> onStreamOpened) throws IOException {
 
         try {
-            URI path;
+            final URI path;
             synchronized (this) {
-                if (session != null) {
+                if (session != null && session.isOpen()) {
                     // Already connected.
                     return;
                 }
@@ -239,8 +242,8 @@ public final class WebSocketConnection extends Connection {
                 }
                 path = uri;
             }
-            AtomicBoolean handshakeSucceeded = new AtomicBoolean();
-            ClientEndpointConfig clientEndpointConfig = ClientEndpointConfig.Builder.create().configurator(new ClientEndpointConfig.Configurator() {
+            final AtomicBoolean handshakeSucceeded = new AtomicBoolean();
+            final ClientEndpointConfig clientEndpointConfig = ClientEndpointConfig.Builder.create().configurator(new ClientEndpointConfig.Configurator() {
                 @Override
                 public void beforeRequest(Map<String, List<String>> headers) {
                     // During the WebSocket handshake, the client MUST include the value
@@ -262,25 +265,26 @@ public final class WebSocketConnection extends Connection {
                 }
             }).build();
 
-            ClientManager client = ClientManager.createClient(JdkClientContainer.class.getName());
+            final ClientManager client = ClientManager.createClient(JdkClientContainer.class.getName());
             if (connectionConfiguration.getSSLContext() != null) {
                 SslEngineConfigurator sslEngineConfigurator = new SslEngineConfigurator(connectionConfiguration.getSSLContext());
                 client.getProperties().put(ClientProperties.SSL_ENGINE_CONFIGURATOR, sslEngineConfigurator);
                 sslEngineConfigurator.setHostnameVerifier(connectionConfiguration.getHostnameVerifier());
             }
-            Proxy proxy = connectionConfiguration.getProxy();
+
+            final Proxy proxy = connectionConfiguration.getProxy();
             if (proxy != null && proxy.type() == Proxy.Type.HTTP) {
                 client.getProperties().put(ClientProperties.PROXY_URI, "http://" + proxy.address().toString());
             }
-            Session session = client.connectToServer(new Endpoint() {
+
+            final Session session = client.connectToServer(new Endpoint() {
                 @Override
                 public void onOpen(Session session, EndpointConfig config) {
                     synchronized (WebSocketConnection.this) {
                         WebSocketConnection.this.session = session;
-                    }
 
-                    if (!handshakeSucceeded.get()) {
-                        synchronized (this) {
+                        if (!handshakeSucceeded.get()) {
+
                             try {
                                 String msg = "Server response did not include 'Sec-WebSocket-Protocol' header with value 'xmpp'.";
                                 exception = new IOException(msg);
@@ -307,7 +311,9 @@ public final class WebSocketConnection extends Connection {
                                         streamId = open.getId();
                                     }
                                 } else if (element instanceof Close) {
-                                    closedByServer = true;
+                                    synchronized (WebSocketConnection.this) {
+                                        closedByServer = true;
+                                    }
                                     close();
                                     lock.lock();
                                     try {
@@ -331,20 +337,20 @@ public final class WebSocketConnection extends Connection {
 
                 @Override
                 public void onError(Session session, Throwable t) {
-                    synchronized (this) {
+                    synchronized (WebSocketConnection.this) {
                         exception = t;
                     }
                 }
 
             }, clientEndpointConfig, path);
 
-            synchronized (WebSocketConnection.this) {
+            if (!session.isOpen()) {
+                throw new IOException("Session could not be opened.");
+            }
+            synchronized (this) {
                 if (exception != null) {
                     throw exception instanceof IOException ? (IOException) exception : new IOException(exception);
                 }
-            }
-            if (!session.isOpen()) {
-                throw new IOException("Session could not be opened.");
             }
         } catch (DeploymentException | URISyntaxException e) {
             throw new IOException(e);

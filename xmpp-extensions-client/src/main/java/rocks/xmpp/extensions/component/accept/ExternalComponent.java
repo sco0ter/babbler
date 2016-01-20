@@ -40,6 +40,7 @@ import rocks.xmpp.extensions.component.accept.model.ComponentMessage;
 import rocks.xmpp.extensions.component.accept.model.ComponentPresence;
 import rocks.xmpp.extensions.component.accept.model.Handshake;
 
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -214,7 +215,7 @@ public final class ExternalComponent extends XmppSession {
     }
 
     @Override
-    public final StreamElement send(StreamElement element) {
+    public final Future<?> send(StreamElement element) {
 
         if (element instanceof Stanza && ((Stanza) element).getFrom() == null) {
             ((Stanza) element).setFrom(connectedResource);
@@ -227,8 +228,7 @@ public final class ExternalComponent extends XmppSession {
             element = ComponentIQ.from((IQ) element);
         }
 
-        super.send(element);
-        return element;
+        return super.send(element);
     }
 
     @Override

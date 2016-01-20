@@ -37,6 +37,8 @@ import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 /**
@@ -67,7 +69,8 @@ public final class TestXmppSession extends XmppSession {
             }
 
             @Override
-            public void send(StreamElement clientStreamElement) {
+            public Future<?> send(StreamElement clientStreamElement) {
+                return CompletableFuture.completedFuture(null);
             }
 
             @Override
@@ -102,13 +105,13 @@ public final class TestXmppSession extends XmppSession {
     }
 
     @Override
-    public StreamElement send(StreamElement element) {
-        StreamElement sent = super.send(element);
-        if (mockServer != null && sent instanceof Stanza) {
-            ((Stanza) sent).setFrom(connectedResource);
-            mockServer.receive((Stanza) sent);
+    public Future<?> send(StreamElement element) {
+        Future<?> future = super.send(element);
+        if (mockServer != null && element instanceof Stanza) {
+            ((Stanza) element).setFrom(connectedResource);
+            mockServer.receive((Stanza) element);
         }
-        return element;
+        return future;
     }
 
     @Override

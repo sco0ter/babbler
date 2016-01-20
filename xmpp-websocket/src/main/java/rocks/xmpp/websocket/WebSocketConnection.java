@@ -67,6 +67,9 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
@@ -119,6 +122,8 @@ public final class WebSocketConnection extends Connection {
      */
     private Throwable exception;
 
+    private ExecutorService executorService;
+
     WebSocketConnection(XmppSession xmppSession, WebSocketConnectionConfiguration connectionConfiguration) {
         super(xmppSession, connectionConfiguration);
         this.connectionConfiguration = connectionConfiguration;
@@ -168,8 +173,10 @@ public final class WebSocketConnection extends Connection {
     }
 
     @Override
-    public final synchronized void send(StreamElement streamElement) {
-        if (session != null && session.isOpen()) {
+    public final synchronized Future<?> send(StreamElement streamElement) {
+        // Note: The TyrusFuture returned by session.getAsyncRemote().sendText() is not cancellable.
+        // Therefore use our own future with the BasicRemote.
+        return executorService.submit(() -> {
             try (StringWriter writer = new StringWriter()) {
                 XMLStreamWriter xmlStreamWriter = null;
                 try {
@@ -181,18 +188,19 @@ public final class WebSocketConnection extends Connection {
                         // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowleged" queue.
                         this.streamManager.markUnacknowledged((Stanza) streamElement);
                     }
-                    session.getAsyncRemote().sendText(xml, result -> {
-                        if (result.isOK() && streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement)) {
+
+                    try {
+                        session.getBasicRemote().sendText(xml);
+                        if (streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement)) {
                             send(StreamManagement.REQUEST);
                         }
-                        if (result.getException() != null) {
-                            getXmppSession().notifyException(result.getException());
+                        if (debugger != null) {
+                            debugger.writeStanza(xml, streamElement);
                         }
-                    });
-
-                    if (debugger != null) {
-                        debugger.writeStanza(xml, streamElement);
+                    } catch (IOException e) {
+                        getXmppSession().notifyException(e);
                     }
+
                 } finally {
                     if (xmlStreamWriter != null) {
                         xmlStreamWriter.close();
@@ -201,7 +209,8 @@ public final class WebSocketConnection extends Connection {
             } catch (Exception e) {
                 getXmppSession().notifyException(e);
             }
-        }
+            return null;
+        });
     }
 
     @Override
@@ -214,8 +223,9 @@ public final class WebSocketConnection extends Connection {
                     // Already connected.
                     return;
                 }
-                exception = null;
-                closedByServer = false;
+                this.exception = null;
+                this.closedByServer = false;
+                this.executorService = Executors.newSingleThreadExecutor();
 
                 if (uri == null) {
                     String protocol = connectionConfiguration.isSecure() ? "wss" : "ws";
@@ -385,6 +395,8 @@ public final class WebSocketConnection extends Connection {
             } finally {
                 lock.unlock();
             }
+            executorService.shutdown();
+            executorService = null;
             session.close();
         }
     }

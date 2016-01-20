@@ -59,6 +59,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -501,7 +502,7 @@ public final class XmppClient extends XmppSession {
     }
 
     @Override
-    public final StreamElement send(StreamElement element) {
+    public final Future<?> send(StreamElement element) {
         StreamElement e;
         if (element instanceof Message) {
             e = ClientMessage.from((Message) element);
@@ -512,8 +513,7 @@ public final class XmppClient extends XmppSession {
         } else {
             e = element;
         }
-        super.send(e);
-        return e;
+        return super.send(e);
     }
 
     @Override

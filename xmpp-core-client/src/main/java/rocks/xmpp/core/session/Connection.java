@@ -29,6 +29,7 @@ import rocks.xmpp.core.stream.model.StreamElement;
 
 import java.io.IOException;
 import java.net.Proxy;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 /**
@@ -108,8 +109,9 @@ public abstract class Connection implements AutoCloseable {
      * Sends an element.
      *
      * @param streamElement The element.
+     * @return The future representing the sent process and which allows to cancel it.
      */
-    public abstract void send(StreamElement streamElement);
+    public abstract Future<?> send(StreamElement streamElement);
 
     /**
      * Connects to the server and provides an optional 'from' attribute.

@@ -68,8 +68,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
@@ -527,13 +531,45 @@ public final class BoshConnection extends Connection {
     }
 
     @Override
-    public final void send(StreamElement element) {
+    public final Future<?> send(StreamElement element) {
         // Only put content in the body element, if it is allowed (e.g. it does not contain restart='true' and an unacknowledged body isn't resent).
         Body.Builder bodyBuilder = Body.builder().sessionId(getSessionId());
         synchronized (elementsToSend) {
             elementsToSend.add(element);
         }
-        sendNewRequest(bodyBuilder, false);
+        final Future<?> future = sendNewRequest(bodyBuilder, false);
+        return new Future<Void>() {
+            @Override
+            public boolean cancel(boolean mayInterruptIfRunning) {
+                // When cancelled, don't send the element.
+                synchronized (elementsToSend) {
+                    elementsToSend.remove(element);
+                }
+                return future.cancel(mayInterruptIfRunning);
+            }
+
+            @Override
+            public boolean isCancelled() {
+                return future.isCancelled();
+            }
+
+            @Override
+            public boolean isDone() {
+                return future.isDone();
+            }
+
+            @Override
+            public Void get() throws InterruptedException, ExecutionException {
+                future.get();
+                return null;
+            }
+
+            @Override
+            public Void get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+                future.get(timeout, unit);
+                return null;
+            }
+        };
     }
 
     /**
@@ -592,12 +628,12 @@ public final class BoshConnection extends Connection {
      * @param bodyBuilder      The body builder.
      * @param resendAfterError If the body is resent after an error has occurred. In this case the RID is not incremented.
      */
-    private void sendNewRequest(final Body.Builder bodyBuilder, boolean resendAfterError) {
+    private Future<?> sendNewRequest(final Body.Builder bodyBuilder, boolean resendAfterError) {
 
         // Make sure, no two threads access this block, in order to ensure that requestCount and httpBindExecutor.isShutdown() don't return inconsistent values.
         synchronized (this) {
             if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
-                httpBindExecutor.execute(() -> {
+                return httpBindExecutor.submit(() -> {
 
                     // Open a HTTP connection.
                     HttpURLConnection httpConnection = null;

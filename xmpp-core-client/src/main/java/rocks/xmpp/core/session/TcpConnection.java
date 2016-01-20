@@ -58,6 +58,7 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 /**
@@ -174,7 +175,7 @@ public final class TcpConnection extends Connection {
             try {
                 close();
             } catch (final Exception e) {
-            	// ignored
+                // ignored
             }
         }
 
@@ -280,13 +281,12 @@ public final class TcpConnection extends Connection {
     }
 
     @Override
-    public final synchronized void send(StreamElement element) {
-        if (xmppStreamWriter != null) {
-            xmppStreamWriter.send(element);
+    public final synchronized Future<?> send(StreamElement element) {
+        return xmppStreamWriter.send(element, () -> {
             if (element instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) element)) {
-                xmppStreamWriter.send(StreamManagement.REQUEST);
+                xmppStreamWriter.send(StreamManagement.REQUEST, null);
             }
-        }
+        });
     }
 
     @Override

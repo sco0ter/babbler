@@ -39,7 +39,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -109,33 +111,36 @@ final class XmppStreamWriter {
         }
     }
 
-    synchronized void send(final StreamElement clientStreamElement) {
-        if (!executor.isShutdown() && clientStreamElement != null) {
-            executor.execute(() -> {
-                try {
-                    // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowleged" queue.
-                    if (clientStreamElement instanceof Stanza) {
-                        streamManager.markUnacknowledged((Stanza) clientStreamElement);
-                    }
-
-                    marshaller.marshal(clientStreamElement, prefixFreeCanonicalizationWriter);
-                    prefixFreeCanonicalizationWriter.flush();
-
-                    if (clientStreamElement instanceof Stanza) {
-                        // Workaround: Simulate keep-alive packet to convince client to process the already transmitted packet.
-                        prefixFreeCanonicalizationWriter.writeCharacters(" ");
-                        prefixFreeCanonicalizationWriter.flush();
-                    }
-
-                    if (debugger != null) {
-                        debugger.writeStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8).trim(), clientStreamElement);
-                        byteArrayOutputStream.reset();
-                    }
-                } catch (Exception e) {
-                    notifyException(e);
+    synchronized Future<?> send(final StreamElement clientStreamElement, final Runnable afterSend) {
+        Objects.requireNonNull(clientStreamElement);
+        return executor.submit(() -> {
+            try {
+                // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowleged" queue.
+                if (clientStreamElement instanceof Stanza) {
+                    streamManager.markUnacknowledged((Stanza) clientStreamElement);
                 }
-            });
-        }
+
+                marshaller.marshal(clientStreamElement, prefixFreeCanonicalizationWriter);
+                prefixFreeCanonicalizationWriter.flush();
+
+                if (clientStreamElement instanceof Stanza) {
+                    // Workaround: Simulate keep-alive packet to convince client to process the already transmitted packet.
+                    prefixFreeCanonicalizationWriter.writeCharacters(" ");
+                    prefixFreeCanonicalizationWriter.flush();
+                }
+
+                if (afterSend != null) {
+                    afterSend.run();
+                }
+
+                if (debugger != null) {
+                    debugger.writeStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8).trim(), clientStreamElement);
+                    byteArrayOutputStream.reset();
+                }
+            } catch (Exception e) {
+                notifyException(e);
+            }
+        });
     }
 
     synchronized void openStream(final OutputStream outputStream, final Jid from) {

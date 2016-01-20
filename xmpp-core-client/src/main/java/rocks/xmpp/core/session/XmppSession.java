@@ -75,6 +75,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
@@ -763,11 +764,11 @@ public abstract class XmppSession implements AutoCloseable {
      * @param element The XML element.
      * @return The sent stream element, which is usually the same as the parameter, but may differ in case a stanza is sent, e.g. a {@link Message} is translated to a {@link rocks.xmpp.core.stanza.model.client.ClientMessage}.
      */
-    public StreamElement send(StreamElement element) {
+    public Future<?> send(StreamElement element) {
         return sendInternal(element);
     }
 
-    private StreamElement sendInternal(StreamElement element) {
+    private Future<?> sendInternal(StreamElement element) {
 
         if (!isConnected() && !EnumSet.of(Status.CLOSING, Status.CONNECTING).contains(getStatus())) {
             throw new IllegalStateException("Session is not connected to server");
@@ -790,11 +791,10 @@ public abstract class XmppSession implements AutoCloseable {
             }
         }
         if (activeConnection != null) {
-            activeConnection.send(element);
+            return activeConnection.send(element);
         } else {
             throw new IllegalStateException("No connection established.");
         }
-        return element;
     }
 
     /**

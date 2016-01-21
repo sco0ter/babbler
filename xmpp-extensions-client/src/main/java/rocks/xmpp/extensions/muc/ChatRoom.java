@@ -221,6 +221,12 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     private void userHasExited() {
         xmppSession.removeInboundMessageListener(messageListener);
         xmppSession.removeInboundPresenceListener(presenceListener);
+        synchronized (this) {
+            entered = false;
+            nick = null;
+            multiUserChatManager.roomExited(this);
+            occupantMap.clear();
+        }
     }
 
     private boolean isSelfPresence(Presence presence) {
@@ -562,18 +568,16 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     public synchronized void exit(String message) throws XmppException {
 
         if (!entered) {
-            throw new IllegalStateException("You can't exit a room, when you didn't enter it.");
+            return;
         }
-        xmppSession.sendAndAwaitPresence(new Presence(roomJid.withResource(nick), Presence.Type.UNAVAILABLE, message), presence -> {
-            Jid room = presence.getFrom().asBareJid();
-            return !presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence);
-        });
-        userHasExited();
-
-        nick = null;
-        multiUserChatManager.roomExited(this);
-        entered = false;
-        occupantMap.clear();
+        try {
+            xmppSession.sendAndAwaitPresence(new Presence(roomJid.withResource(nick), Presence.Type.UNAVAILABLE, message), presence -> {
+                Jid room = presence.getFrom().asBareJid();
+                return !presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence);
+            });
+        } finally {
+            userHasExited();
+        }
     }
 
     /**

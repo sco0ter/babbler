@@ -216,6 +216,6 @@ public final class EntityCapabilities extends StreamFeature {
 
     @Override
     public final String toString() {
-        return ver;
+        return "Caps: " + ver;
     }
 }

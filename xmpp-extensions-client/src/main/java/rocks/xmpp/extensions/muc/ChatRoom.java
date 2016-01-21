@@ -917,6 +917,17 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     /**
+     * Destroys the room.
+     *
+     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
+     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#destroyroom">10.9 Destroying a Room</a>
+     */
+    public final void destroy() throws XmppException {
+        destroy(null);
+    }
+
+    /**
      * Gets the room address.
      *
      * @return The room address.

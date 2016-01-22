@@ -113,4 +113,13 @@ public final class Muc {
     public static Muc withPasswordAndHistory(String password, DiscussionHistory discussionHistory) {
         return new Muc(password, discussionHistory);
     }
+
+    @Override
+    public final String toString() {
+        final StringBuilder sb = new StringBuilder("Multi-User Chat (entering a room).");
+        if (history != null) {
+            sb.append(' ').append(history);
+        }
+        return sb.toString();
+    }
 }

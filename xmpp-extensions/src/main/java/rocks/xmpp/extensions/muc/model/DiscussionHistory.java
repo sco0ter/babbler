@@ -127,4 +127,38 @@ public final class DiscussionHistory {
     public static DiscussionHistory none() {
         return new DiscussionHistory(0, null, null, null);
     }
+
+    @Override
+    public final String toString() {
+        if (maxchars != null && maxchars == 0) {
+            return "No discussion history";
+        }
+        final StringBuilder sb = new StringBuilder("Discussion history ");
+        boolean appended = false;
+        if (maxchars != null) {
+            sb.append("limited to ").append(maxchars).append(" characters");
+            appended = true;
+        }
+        if (maxstanzas != null) {
+            if (appended) {
+                sb.append(", ");
+            }
+            sb.append("limited to ").append(maxstanzas).append(" messages");
+            appended = true;
+        }
+        if (seconds != null) {
+            if (appended) {
+                sb.append(", ");
+            }
+            sb.append("for the last ").append(seconds).append(" seconds");
+            appended = true;
+        }
+        if (since != null) {
+            if (appended) {
+                sb.append(", ");
+            }
+            sb.append("since ").append(since);
+        }
+        return sb.toString();
+    }
 }

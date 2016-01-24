@@ -35,6 +35,8 @@ import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.dns.DnsResolver;
+import rocks.xmpp.dns.TxtRecord;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.util.XmppUtils;
@@ -136,32 +138,18 @@ public final class WebSocketConnection extends Connection {
         streamFeaturesManager.addFeatureNegotiator(streamManager);
     }
 
-    private static String findWebSocketEndpoint(String xmppServiceDomain) {
+    private static String findWebSocketEndpoint(String xmppServiceDomain, long timeout) {
 
         try {
-            String query = "_xmppconnect." + xmppServiceDomain;
-
-            Hashtable<String, String> env = new Hashtable<>();
-            env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
-
-            DirContext ctx = new InitialDirContext(env);
-
-            Attributes attributes = ctx.getAttributes(query, new String[]{"TXT"});
-            Attribute srvAttribute = attributes.get("TXT");
-
-            if (srvAttribute != null) {
-                NamingEnumeration<?> enumeration = srvAttribute.getAll();
-                while (enumeration.hasMore()) {
-                    String txtRecord = (String) enumeration.next();
-                    String[] txtRecordParts = txtRecord.split("=");
-                    String key = txtRecordParts[0];
-                    String value = txtRecordParts[1];
-                    if ("_xmpp-client-websocket".equals(key)) {
-                        return value;
-                    }
+            List<TxtRecord> txtRecords = DnsResolver.resolveTXT(xmppServiceDomain, timeout);
+            for (TxtRecord txtRecord : txtRecords) {
+                Map<String, String> attributes = txtRecord.asAttributes();
+                String url = attributes.get("_xmpp-client-websocket");
+                if (url != null) {
+                    return url;
                 }
             }
-        } catch (NamingException e) {
+        } catch (IOException e) {
             return null;
         }
         return null;
@@ -236,7 +224,7 @@ public final class WebSocketConnection extends Connection {
                         uri = new URI(protocol, null, getHostname(), targetPort, connectionConfiguration.getPath(), null, null);
                     } else if (getXmppSession().getDomain() != null) {
                         // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
-                        String resolvedUrl = findWebSocketEndpoint(getXmppSession().getDomain().toString());
+                        String resolvedUrl = findWebSocketEndpoint(getXmppSession().getDomain().toString(), connectionConfiguration.getConnectTimeout());
                         if (resolvedUrl != null) {
                             uri = new URI(resolvedUrl);
                         } else {

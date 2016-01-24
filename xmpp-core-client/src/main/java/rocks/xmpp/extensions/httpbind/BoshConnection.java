@@ -30,17 +30,12 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.dns.DnsResolver;
+import rocks.xmpp.dns.TxtRecord;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.util.XmppUtils;
 
-import javax.naming.Context;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
 import javax.net.ssl.HttpsURLConnection;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBElement;
@@ -63,8 +58,8 @@ import java.security.SecureRandom;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -223,38 +218,18 @@ public final class BoshConnection extends Connection {
      * @param timeout           The lookup timeout.
      * @return The BOSH URL, if it could be found or null.
      */
-    private static String findBoshUrl(String xmppServiceDomain, long timeout) {
+    public static String findBoshUrl(String xmppServiceDomain, long timeout) {
 
         try {
-            String query = "_xmppconnect." + xmppServiceDomain;
-
-            Hashtable<String, String> env = new Hashtable<>();
-            env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
-            // 0 seems to mean "infinite", which is a bad idea.
-            if (timeout > 0) {
-                // http://docs.oracle.com/javase/7/docs/technotes/guides/jndi/jndi-dns.html
-                // If this property has not been set, the default initial timeout is 1000 milliseconds.
-                env.put("com.sun.jndi.dns.timeout.initial", String.valueOf(timeout));
-            }
-
-            DirContext ctx = new InitialDirContext(env);
-
-            Attributes attributes = ctx.getAttributes(query, new String[]{"TXT"});
-            Attribute srvAttribute = attributes.get("TXT");
-
-            if (srvAttribute != null) {
-                NamingEnumeration<?> enumeration = srvAttribute.getAll();
-                while (enumeration.hasMore()) {
-                    String txtRecord = (String) enumeration.next();
-                    String[] txtRecordParts = txtRecord.split("=");
-                    String key = txtRecordParts[0];
-                    String value = txtRecordParts[1];
-                    if ("_xmpp-client-xbosh".equals(key)) {
-                        return value;
-                    }
+            List<TxtRecord> txtRecords = DnsResolver.resolveTXT(xmppServiceDomain, timeout);
+            for (TxtRecord txtRecord : txtRecords) {
+                Map<String, String> attributes = txtRecord.asAttributes();
+                String url = attributes.get("_xmpp-client-xbosh");
+                if (url != null) {
+                    return url;
                 }
             }
-        } catch (NamingException e) {
+        } catch (IOException e) {
             return null;
         }
         return null;

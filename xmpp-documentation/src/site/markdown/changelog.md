@@ -7,8 +7,18 @@
 * Add support for WebSocket connection method ([RFC 7395](https://tools.ietf.org/html/rfc7395)).
 * Update `Jid` class to the new XMPP Address Format ([RFC 7622](https://tools.ietf.org/html/rfc7622))
 * Represent `xml:lang` attributes as `java.util.Locale`, not as `String`.
+* Add a very minimalistic DNS resolver for resolving SRV and TXT records in order to remove the dependency to `com.sun.*` classes.
+* Add more `ReconnectionStrategy` implementations.
+* Check connected state of socket before connecting (to prevent `SocketException` when a `SocketFactory` provides a connected socket)
 * Add `XmppSession#isAuthenticated()` method.
 * Update XEP-0080 to version 1.9 (add `altaccuracy` element).
+* Add API to destroy a MUC room without a reason.
+* More documentation, e.g. clarify the use of ConnectionConfiguration#secure()
+* Don't include an empty body in Message Delivery Receipts.
+* Add correct XML names to component namespace stanzas.
+* Eagerly releases unused port to prevent ports-leaks due delayed GC
+* Improve thread-safety during connect() and login()
+* Fix encoding issues, caused by missing UTF-8 encoding, mainly in the debugger.
 
 
 ### Version 0.6.2 (2015-12-08)

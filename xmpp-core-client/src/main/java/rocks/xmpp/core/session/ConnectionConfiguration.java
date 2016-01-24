@@ -26,6 +26,7 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.extensions.compress.CompressionMethod;
 
+import javax.net.SocketFactory;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import java.net.Proxy;
@@ -109,6 +110,7 @@ public abstract class ConnectionConfiguration {
      * Indicates whether the connection is secured by SSL.
      *
      * @return If the connection is to be secured.
+     * @see Builder#secure(boolean)
      */
     public final boolean isSecure() {
         return secure;
@@ -218,9 +220,25 @@ public abstract class ConnectionConfiguration {
 
         /**
          * Sets whether the connection is secured via SSL.
+         * <p>
+         * A standard TCP connection starts with a plain socket and negotiates a secure SSL connection during stream negotiation via 'StartTLS'.
+         * Hence, setting {@code secure(true)} means, you start with a plain socket and upgrade it to a secure socket during XMPP negotiation.
+         * <p>
+         * Setting {@code secure(false)} means, you start with plain socket and won't upgrade to a secure socket.
+         * However, some servers require that the client secures the connection, in which case an exception is thrown during connecting.
+         * <p>
+         * If your server expects the connection to be secured immediately (often on port 5223), you should {@linkplain rocks.xmpp.core.session.TcpConnectionConfiguration.Builder#socketFactory(SocketFactory) set a custom SSL socket factory}.
+         * <p>
+         * See <a href="http://xmpp.org/rfcs/rfc6120.html#tls">RFC 6120 § 5.  STARTTLS Negotiation</a> for further information.
+         * <p>
+         * HTTP (BOSH) and WebSocket connections provide TLS outside of the XMPP layer, i.e. it's not negotiated in XMPP.
+         * Setting {@code secure(true)} for these connection methods means the connection connects via {@code https} or {@code wss} respectively.
+         * <p>
+         * If you set this to {@code true}, you should also {@linkplain #sslContext(SSLContext) set} an {@link SSLContext}. Otherwise {@code SSLContext.getDefault()} is used.
          *
          * @param secure If the connection is secured via SSL.
          * @return The builder.
+         * @see #sslContext(SSLContext)
          */
         public final T secure(boolean secure) {
             this.secure = secure;
@@ -229,9 +247,11 @@ public abstract class ConnectionConfiguration {
 
         /**
          * Sets a custom SSL context, used to secure the connection.
+         * This SSL context only takes effect, when setting {@code secure(true)}.
          *
          * @param sslContext The SSL context.
          * @return The builder.
+         * @see #secure(boolean)
          */
         public final T sslContext(SSLContext sslContext) {
             this.sslContext = sslContext;

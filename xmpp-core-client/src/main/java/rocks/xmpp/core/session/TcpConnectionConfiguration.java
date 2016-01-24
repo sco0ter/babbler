@@ -153,9 +153,12 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
         /**
          * Sets a socket factory which creates the socket.
          * This can be useful if you want connect to the legacy SSL port (usually 5223) and the connection is encrypted right from the beginning.
+         * <p>
+         * However, usually, there's no need to set a custom socket factory.
          *
          * @param socketFactory The socket factory.
          * @return The builder.
+         * @see #secure(boolean)
          */
         public Builder socketFactory(SocketFactory socketFactory) {
             this.socketFactory = socketFactory;

@@ -209,9 +209,6 @@ In order to create immutable and reusable configuration objects (which could be 
 TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
     .hostname("localhost")
     .port(5222)
-    .proxy(Proxy.NO_PROXY)        // Proxy for the TCP connection
-    .keepAliveInterval(20)        // Whitespace keep-alive interval
-    .socketFactory(socketFactory) // Custom socket factory
     .build();
 ```
 Here's another example how to configure a BOSH connection (which would connect to the URL `http://domain:5280/http-bind/` over a HTTP proxy server):
@@ -221,8 +218,7 @@ BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.buil
     .hostname("domain")
     .port(5280)
     .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("hostname", 3128)))
-    .file("/http-bind/")
-    .wait(60)  // BOSH connection manager should wait maximal 60 seconds before responding to a request.
+    .path("/http-bind/")
     .build();
 ```
 
@@ -249,7 +245,7 @@ During connecting, the session will try all configured connections in order, unt
 
 #### Securing the Connection
 
-You can set a custom `SSLContext` or disable the use of SSL altogether by configuring it like this:
+You can set a custom `SSLContext` by configuring it like this:
 
 ```java
 TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()

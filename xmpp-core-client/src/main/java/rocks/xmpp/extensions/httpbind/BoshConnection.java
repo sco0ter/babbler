@@ -218,7 +218,7 @@ public final class BoshConnection extends Connection {
      * @param timeout           The lookup timeout.
      * @return The BOSH URL, if it could be found or null.
      */
-    public static String findBoshUrl(String xmppServiceDomain, long timeout) {
+    private static String findBoshUrl(String xmppServiceDomain, long timeout) {
 
         try {
             List<TxtRecord> txtRecords = DnsResolver.resolveTXT(xmppServiceDomain, timeout);

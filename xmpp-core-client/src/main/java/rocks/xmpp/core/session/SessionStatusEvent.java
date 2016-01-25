@@ -60,7 +60,7 @@ public final class SessionStatusEvent extends EventObject {
      *
      * @return The session status.
      */
-    public XmppSession.Status getStatus() {
+    public final XmppSession.Status getStatus() {
         return status;
     }
 
@@ -69,7 +69,7 @@ public final class SessionStatusEvent extends EventObject {
      *
      * @return The throwable, which caused a disconnection or null.
      */
-    public Throwable getThrowable() {
+    public final Throwable getThrowable() {
         return throwable;
     }
 
@@ -78,7 +78,20 @@ public final class SessionStatusEvent extends EventObject {
      *
      * @return The old session status.
      */
-    public XmppSession.Status getOldStatus() {
+    public final XmppSession.Status getOldStatus() {
         return oldStatus;
+    }
+
+    @Override
+    public final String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(status).append(" (old status: ")
+                .append(oldStatus)
+                .append(')');
+        if (throwable != null) {
+            sb.append("\nStatus change caused by:\n")
+                    .append(throwable);
+        }
+        return sb.toString();
     }
 }

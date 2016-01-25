@@ -24,11 +24,14 @@
 
 package rocks.xmpp.addr;
 
+import rocks.xmpp.precis.PrecisProfile;
 import rocks.xmpp.precis.PrecisProfiles;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
+import java.net.IDN;
 import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -83,6 +86,13 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
 
     private static final Pattern JID = Pattern.compile("^((.*?)@)?" + DOMAIN_PART + "(/(.*))?$");
 
+    private static final IDNProfile IDN_PROFILE = new IDNProfile(false);
+
+    /**
+     * Label separators for domain labels, which should be mapped to "." (dot): IDEOGRAPHIC FULL STOP character (U+3002)
+     */
+    private static final Pattern LABEL_SEPARATOR = Pattern.compile("\u3002");
+
     /**
      * Caches the escaped JIDs.
      */
@@ -116,8 +126,17 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
 
     private Jid(final CharSequence local, final CharSequence domain, final CharSequence resource, final boolean doUnescape, final boolean enforceAndValidate) {
         final String enforcedLocalPart;
+        final String enforcedDomainPart;
         final String enforcedResource;
-        final String strDomain = domain.toString();
+
+        // If the domainpart includes a final character considered to be a label
+        // separator (dot) by [RFC1034], this character MUST be stripped from
+        // the domainpart before the JID of which it is a part is used for the
+        // purpose of routing an XML stanza, comparing against another JID, or
+        // constructing an XMPP URI or IRI [RFC5122].  In particular, such a
+        // character MUST be stripped before any other canonicalization steps
+        // are taken.
+        final String strDomain = domain.toString().replaceAll("\\.$", "");
         final String unescapedLocalPart;
 
         if (doUnescape) {
@@ -131,17 +150,21 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
         if (enforceAndValidate) {
             enforcedLocalPart = escapedLocalPart != null ? PrecisProfiles.USERNAME_CASE_MAPPED.enforce(escapedLocalPart) : null;
             enforcedResource = resource != null ? PrecisProfiles.OPAQUE_STRING.enforce(resource) : null;
+            // See https://tools.ietf.org/html/rfc5895#section-2
+            enforcedDomainPart = IDN_PROFILE.enforce(strDomain);
+
             validateLength(enforcedLocalPart, "local");
             validateLength(enforcedResource, "resource");
             validateDomain(strDomain);
         } else {
             enforcedLocalPart = escapedLocalPart != null ? escapedLocalPart : null;
             enforcedResource = resource != null ? resource.toString() : null;
+            enforcedDomainPart = strDomain;
         }
 
         this.local = unescape(enforcedLocalPart);
         this.escapedLocal = enforcedLocalPart;
-        this.domain = strDomain.toLowerCase();
+        this.domain = enforcedDomainPart;
         this.resource = enforcedResource;
     }
 
@@ -560,6 +583,62 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
             return result;
         } else {
             return -1;
+        }
+    }
+
+    /**
+     * A profile for applying the rules for IDN as in RFC 5895. Although IDN doesn't use Precis, it's still very similar so that we can use the base class.
+     *
+     * @see <a href="https://tools.ietf.org/html/rfc5895#section-2">RFC 5895</a>
+     */
+    private static final class IDNProfile extends PrecisProfile {
+
+        private IDNProfile(boolean identifierClass) {
+            super(identifierClass);
+        }
+
+        @Override
+        public String prepare(CharSequence input) {
+            return IDN.toUnicode(input.toString(), IDN.USE_STD3_ASCII_RULES);
+        }
+
+        @Override
+        public String enforce(CharSequence input) {
+            // 4. Map IDEOGRAPHIC FULL STOP character (U+3002) to dot.
+            return applyAdditionalMappingRule(
+                    // 3.  All characters are mapped using Unicode Normalization Form C (NFC).
+                    applyNormalizationRule(
+                            // 2. Fullwidth and halfwidth characters (those defined with
+                            // Decomposition Types <wide> and <narrow>) are mapped to their
+                            // decomposition mappings
+                            applyWidthMappingRule(
+                                    // 1. Uppercase characters are mapped to their lowercase equivalents
+                                    applyCaseMappingRule(prepare(input))))).toString();
+        }
+
+        @Override
+        protected CharSequence applyWidthMappingRule(CharSequence charSequence) {
+            return widthMap(charSequence);
+        }
+
+        @Override
+        protected CharSequence applyAdditionalMappingRule(CharSequence charSequence) {
+            return LABEL_SEPARATOR.matcher(charSequence).replaceAll(".");
+        }
+
+        @Override
+        protected CharSequence applyCaseMappingRule(CharSequence charSequence) {
+            return charSequence.toString().toLowerCase();
+        }
+
+        @Override
+        protected CharSequence applyNormalizationRule(CharSequence charSequence) {
+            return Normalizer.normalize(charSequence, Normalizer.Form.NFC);
+        }
+
+        @Override
+        protected CharSequence applyDirectionalityRule(CharSequence charSequence) {
+            return charSequence;
         }
     }
 

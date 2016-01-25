@@ -33,6 +33,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.IDN;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -497,5 +499,29 @@ public class JidTest {
         Jid readJid = (Jid) in.readObject();
         Assert.assertNotNull(readJid);
         Assert.assertEquals(readJid, jid);
+    }
+
+    @Test
+    public void testAsciiDomain() throws IOException, ClassNotFoundException {
+        Jid jid = Jid.ofDomain("xn--dmin-moa0i");
+        Assert.assertEquals(jid.getDomain(), "dömäin");
+    }
+
+    @Test
+    public void testTrailingDot() throws IOException, ClassNotFoundException {
+        Jid jid = Jid.ofDomain("domain.");
+        Assert.assertEquals(jid.getDomain(), "domain");
+    }
+
+    @Test
+    public void testDomain() throws IOException, ClassNotFoundException {
+        Jid jid = Jid.ofDomain("DOMAIN");
+        Assert.assertEquals(jid.getDomain(), "domain");
+    }
+
+    @Test
+    public void testIdeographicFullStop() throws IOException, ClassNotFoundException {
+        Jid jid = Jid.ofDomain("sub\u3002domain");
+        Assert.assertEquals(jid.getDomain(), "sub.domain");
     }
 }

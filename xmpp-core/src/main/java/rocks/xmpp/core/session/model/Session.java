@@ -64,4 +64,13 @@ public final class Session extends StreamFeature {
     public final int getPriority() {
         return 4;
     }
+
+    @Override
+    public final String toString() {
+        StringBuilder sb = new StringBuilder("Session establishment");
+        if (optional != null) {
+            sb.append(" (optional)");
+        }
+        return sb.toString();
+    }
 }

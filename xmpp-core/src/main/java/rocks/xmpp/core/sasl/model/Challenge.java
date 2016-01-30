@@ -62,4 +62,9 @@ public final class Challenge implements StreamElement {
     public final byte[] getValue() {
         return value;
     }
+
+    @Override
+    public final String toString() {
+        return "SASL challenge";
+    }
 }

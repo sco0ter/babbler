@@ -81,4 +81,9 @@ public final class Mechanisms extends StreamFeature implements StreamElement {
     public final int getPriority() {
         return 1;
     }
+
+    @Override
+    public final String toString() {
+        return "SASL mechanisms: " + mechanism;
+    }
 }

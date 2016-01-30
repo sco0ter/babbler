@@ -279,6 +279,6 @@ public abstract class Condition {
 
     @Override
     public final String toString() {
-        return '<' + getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase() + "/>";
+        return getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase();
     }
 }

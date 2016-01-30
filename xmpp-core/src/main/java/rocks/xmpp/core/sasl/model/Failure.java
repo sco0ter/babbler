@@ -25,7 +25,6 @@
 package rocks.xmpp.core.sasl.model;
 
 import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.util.adapters.LocaleAdapter;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -111,7 +110,7 @@ public final class Failure implements StreamElement {
     @Override
     public final String toString() {
         String text = getText();
-        return condition != null ? condition.toString() : "" + (text != null ? " (" + text + ')' : "");
+        return "SASL failure:" + (condition != null ? condition.toString() : "") + (text != null ? " (" + text + ')' : "");
     }
 
     /**
@@ -411,7 +410,7 @@ public final class Failure implements StreamElement {
 
         @Override
         public final String toString() {
-            return '<' + getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase() + "/>";
+            return getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase();
         }
     }
 

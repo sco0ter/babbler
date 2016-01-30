@@ -71,4 +71,13 @@ public final class StartTls extends StreamFeature implements StreamElement {
     public final int getPriority() {
         return 0;
     }
+
+    @Override
+    public final String toString() {
+        StringBuilder sb = new StringBuilder("StartTLS");
+        if (isMandatory()) {
+            sb.append(" (required)");
+        }
+        return sb.toString();
+    }
 }

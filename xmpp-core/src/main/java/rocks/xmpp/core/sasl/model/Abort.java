@@ -56,4 +56,9 @@ public final class Abort implements StreamElement {
     private static Abort create() {
         return INSTANCE;
     }
+
+    @Override
+    public final String toString() {
+        return "SASL abort";
+    }
 }

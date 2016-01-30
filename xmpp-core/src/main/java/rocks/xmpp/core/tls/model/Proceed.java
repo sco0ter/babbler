@@ -51,4 +51,9 @@ public final class Proceed implements StreamElement {
     private static Proceed create() {
         return INSTANCE;
     }
+
+    @Override
+    public final String toString() {
+        return "StartTLS proceed";
+    }
 }

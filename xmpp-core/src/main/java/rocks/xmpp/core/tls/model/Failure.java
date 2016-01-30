@@ -51,4 +51,9 @@ public final class Failure implements StreamElement {
     private static Failure create() {
         return INSTANCE;
     }
+
+    @Override
+    public final String toString() {
+        return "StartTLS failure";
+    }
 }

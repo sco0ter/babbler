@@ -84,4 +84,9 @@ public final class Auth implements StreamElement {
     public final byte[] getInitialResponse() {
         return initialResponse;
     }
+
+    @Override
+    public final String toString() {
+        return "SASL auth mechanism: " + mechanism;
+    }
 }

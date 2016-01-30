@@ -63,4 +63,9 @@ public final class Success implements StreamElement {
     public final byte[] getAdditionalData() {
         return additionalData;
     }
+
+    @Override
+    public final String toString() {
+        return "SASL success";
+    }
 }

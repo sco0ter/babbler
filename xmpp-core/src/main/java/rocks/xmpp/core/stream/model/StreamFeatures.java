@@ -65,4 +65,9 @@ public final class StreamFeatures implements StreamElement {
     public final List<Object> getFeatures() {
         return Collections.unmodifiableList(features);
     }
+
+    @Override
+    public final String toString() {
+        return "Stream features: " + features;
+    }
 }

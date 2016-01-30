@@ -320,5 +320,10 @@ abstract class ScramBase {
 
     public final void dispose() {
     }
+
+    @Override
+    public final String toString() {
+        return getMechanismName();
+    }
 }
 

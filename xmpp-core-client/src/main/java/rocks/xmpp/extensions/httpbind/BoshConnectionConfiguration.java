@@ -147,6 +147,11 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
         return useKeySequence;
     }
 
+    @Override
+    public final String toString() {
+        return "BOSH connection configuration: " + (isSecure() ? "https" : "http") + "://" + super.toString() + path;
+    }
+
     /**
      * A builder to create a {@link rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration} instance.
      */

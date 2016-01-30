@@ -119,6 +119,11 @@ public final class WebSocketConnectionConfiguration extends ConnectionConfigurat
         return connection;
     }
 
+    @Override
+    public final String toString() {
+        return "WebSocket connection configuration: " + (isSecure() ? "wss" : "ws") + "://" + super.toString() + path;
+    }
+
     /**
      * A builder to create a {@link WebSocketConnectionConfiguration} instance.
      */

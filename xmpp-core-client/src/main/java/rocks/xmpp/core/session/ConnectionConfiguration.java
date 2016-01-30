@@ -152,6 +152,11 @@ public abstract class ConnectionConfiguration {
         return compressionMethods;
     }
 
+    @Override
+    public String toString() {
+        return hostname + ':' + port;
+    }
+
     /**
      * An abstract builder class for building immutable configuration objects.
      *
@@ -286,11 +291,12 @@ public abstract class ConnectionConfiguration {
          *
          * @param connectTimeout The timeout in milliseconds.
          * @return The builder.
+         * @throws IllegalArgumentException If the timeout is negative.
          * @see XmppSession#connect()
          */
         public final T connectTimeout(int connectTimeout) {
             if (connectTimeout < 0) {
-                throw new IllegalStateException("connectionTimeout cannot be negative.");
+                throw new IllegalArgumentException("connectionTimeout cannot be negative.");
             }
             this.connectTimeout = connectTimeout;
             return self();

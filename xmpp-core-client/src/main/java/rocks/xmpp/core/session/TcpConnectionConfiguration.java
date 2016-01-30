@@ -124,6 +124,11 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
         return socketFactory;
     }
 
+    @Override
+    public final String toString() {
+        return "TCP connection configuration: " + super.toString();
+    }
+
     /**
      * A builder to create a {@link TcpConnectionConfiguration} instance.
      */

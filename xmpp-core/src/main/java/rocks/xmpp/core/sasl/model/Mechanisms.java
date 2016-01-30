@@ -64,6 +64,7 @@ public final class Mechanisms extends StreamFeature implements StreamElement {
     }
 
     /**
+     * Returns always true, because SASL is mandatory to negotiate.
      * <blockquote>
      * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-rules-mtn">6.3.1.  Mandatory-to-Negotiate</a></cite></p>
      * <p>The parties to a stream MUST consider SASL as mandatory-to-negotiate.</p>

@@ -64,8 +64,11 @@ import java.util.regex.Pattern;
  * Jid.of("d'artagnan@musketeers.lit")
  * </code></pre>
  * is escaped as <code>d\\27artagnan@musketeers.lit</code>.
+ * <p>
+ * This class is thread-safe and immutable.
  *
  * @author Christian Schudt
+ * @see <a href="https://tools.ietf.org/html/rfc7622">RFC 7622 - Extensible Messaging and Presence Protocol (XMPP): Address Format</a>
  */
 @XmlJavaTypeAdapter(JidAdapter.class)
 public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
@@ -136,7 +139,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
         // constructing an XMPP URI or IRI [RFC5122].  In particular, such a
         // character MUST be stripped before any other canonicalization steps
         // are taken.
-        final String strDomain = domain.toString().replaceAll("\\.$", "");
+        final String strDomain = Objects.requireNonNull(domain).toString().replaceAll("\\.$", "");
         final String unescapedLocalPart;
 
         if (doUnescape) {
@@ -175,50 +178,60 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @param domain   The domain.
      * @param resource The resource part.
      * @return The JID.
+     * @throws NullPointerException     If the domain is null.
+     * @throws IllegalArgumentException If the domain, local or resource part are not valid.
      */
     public static Jid of(CharSequence local, CharSequence domain, CharSequence resource) {
         return new Jid(local, domain, resource);
     }
 
     /**
-     * Returns a bare JID with only the domain part, e.g. <code>capulet.com</code>
+     * Creates a bare JID with only the domain part, e.g. <code>capulet.com</code>
      *
      * @param domain The domain.
      * @return The JID.
+     * @throws NullPointerException     If the domain is null.
+     * @throws IllegalArgumentException If the domain or local part are not valid.
      */
     public static Jid ofDomain(CharSequence domain) {
         return new Jid(null, domain, null);
     }
 
     /**
-     * Returns a bare JID with a local and domain part, e.g. <code>juliet@capulet.com</code>
+     * Creates a bare JID with a local and domain part, e.g. <code>juliet@capulet.com</code>
      *
      * @param local  The local part.
      * @param domain The domain.
      * @return The JID.
+     * @throws NullPointerException     If the domain is null.
+     * @throws IllegalArgumentException If the domain or local part are not valid.
      */
     public static Jid ofLocalAndDomain(CharSequence local, CharSequence domain) {
         return new Jid(local, domain, null);
     }
 
     /**
-     * Returns a full JID with a domain and resource part, e.g. <code>capulet.com/balcony</code>
+     * Creates a full JID with a domain and resource part, e.g. <code>capulet.com/balcony</code>
      *
      * @param domain   The domain.
      * @param resource The resource part.
      * @return The JID.
+     * @throws NullPointerException     If the domain is null.
+     * @throws IllegalArgumentException If the domain or resource are not valid.
      */
     public static Jid ofDomainAndResource(CharSequence domain, CharSequence resource) {
         return new Jid(null, domain, resource);
     }
 
     /**
-     * Returns a JID from a string. The format must be
-     * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>.
+     * Creates a JID from an unescaped string. The format must be
+     * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>
      * The input string will be escaped.
      *
      * @param jid The JID.
      * @return The JID.
+     * @throws NullPointerException     If the jid is null.
+     * @throws IllegalArgumentException If the jid could not be parsed or is not valid.
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
     public static Jid of(CharSequence jid) {
@@ -231,6 +244,8 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      *
      * @param jid The JID.
      * @return The JID.
+     * @throws NullPointerException     If the jid is null.
+     * @throws IllegalArgumentException If the jid could not be parsed or is not valid.
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
     public static Jid ofEscaped(CharSequence jid) {
@@ -244,9 +259,11 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @param jid        The JID.
      * @param doUnescape If the jid parameter will be unescaped.
      * @return The JID.
+     * @throws NullPointerException     If the jid is null.
+     * @throws IllegalArgumentException If the jid could not be parsed or is not valid.
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
-    private static Jid of(String jid, boolean doUnescape) {
+    private static Jid of(String jid, final boolean doUnescape) {
         Objects.requireNonNull(jid, "jid must not be null.");
 
         jid = jid.trim();
@@ -284,7 +301,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * Escapes a local part. The characters {@code "&'/:<>@} (+ whitespace) are replaced with their respective escape characters.
      *
      * @param localPart The local part.
-     * @return The escaped local part.
+     * @return The escaped local part or null.
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
     private static String escape(CharSequence localPart) {
@@ -372,7 +389,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     }
 
     /**
-     * Converts this JID into a bare JID, i.e. removes the resource.
+     * Converts this JID into a bare JID, i.e. removes the resource part.
      * <blockquote>
      * <p>The term "bare JID" refers to an XMPP address of the form &lt;localpart@domainpart&gt; (for an account at a server) or of the form &lt;domainpart&gt; (for a server).</p>
      * </blockquote>
@@ -385,31 +402,37 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     }
 
     /**
-     * Returns a new JID with a new local part and the same domain and resource part of the current JID.
+     * Creates a new JID with a new local part and the same domain and resource part of the current JID.
      *
      * @param local The local part.
      * @return The JID with a new local part.
+     * @throws IllegalArgumentException If the local is not a valid local part.
+     * @see #withResource(CharSequence)
      */
     public final Jid withLocal(CharSequence local) {
         return new Jid(local, domain, resource, false, true);
     }
 
     /**
-     * Returns a new full JID with a resource and the same local and domain part of the current JID.
+     * Creates a new full JID with a resource and the same local and domain part of the current JID.
      *
      * @param resource The resource.
      * @return The full JID with a resource.
+     * @throws IllegalArgumentException If the resource is not a valid resource part.
      * @see #asBareJid()
+     * @see #withLocal(CharSequence)
      */
     public final Jid withResource(CharSequence resource) {
         return new Jid(local, domain, resource, false, true);
     }
 
     /**
-     * Returns a new JID at a subdomain and at the same domain as this JID.
+     * Creates a new JID at a subdomain and at the same domain as this JID.
      *
      * @param subdomain The subdomain.
      * @return The JID at a subdomain.
+     * @throws NullPointerException     If subdomain is null.
+     * @throws IllegalArgumentException If subdomain is not a valid subdomain name.
      */
     public final Jid atSubdomain(CharSequence subdomain) {
         return new Jid(local, Objects.requireNonNull(subdomain) + "." + domain, resource, false, true);
@@ -429,7 +452,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * context of a specific domain (i.e., &lt;localpart@domainpart&gt;).</p>
      * </blockquote>
      *
-     * @return The local part.
+     * @return The local part or null.
      */
     public final String getLocal() {
         return local;
@@ -465,14 +488,14 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * (i.e., &lt;localpart@domainpart/resourcepart&gt;).</p>
      * </blockquote>
      *
-     * @return The resource part.
+     * @return The resource part or null.
      */
     public final String getResource() {
         return resource;
     }
 
     /**
-     * Gets the JID in escaped form as described in <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>.
+     * Returns the JID in escaped form as described in <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>.
      *
      * @return The escaped JID.
      * @see #toString()
@@ -497,7 +520,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     }
 
     /**
-     * Converts the JID into its string representation, i.e. [ localpart "@" ] domainpart [ "/" resourcepart ].
+     * Returns the JID in its string representation, i.e. [ localpart "@" ] domainpart [ "/" resourcepart ].
      *
      * @return The JID.
      * @see #toEscapedString()

@@ -30,6 +30,9 @@ import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
+import rocks.xmpp.util.concurrent.AsyncResult;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Christian Schudt
@@ -50,9 +53,9 @@ final class IbbEvent extends ByteStreamEvent {
     }
 
     @Override
-    public final ByteStreamSession accept() {
+    public final AsyncResult<ByteStreamSession> accept() {
         xmppSession.send(iq.createResult());
-        return xmppSession.getManager(InBandByteStreamManager.class).createSession(iq.getFrom(), getSessionId(), blockSize);
+        return new AsyncResult<>(CompletableFuture.completedFuture(xmppSession.getManager(InBandByteStreamManager.class).createSession(iq.getFrom(), getSessionId(), blockSize)));
     }
 
     @Override

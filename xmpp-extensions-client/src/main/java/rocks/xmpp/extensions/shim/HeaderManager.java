@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.shim;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.data.model.DataForm;
@@ -33,6 +32,7 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.shim.model.Headers;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.List;
 import java.util.Set;
@@ -81,13 +81,14 @@ public final class HeaderManager extends Manager implements InfoNode {
      * Discovers the supported headers of another entity.
      *
      * @param jid The JID.
-     * @return The list of supported headers.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the list of supported headers.
      */
-    public List<String> discoverSupportedHeaders(Jid jid) throws XmppException {
-        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(jid, Headers.NAMESPACE);
-        return infoNode.getFeatures().stream().map(feature -> feature.substring(feature.indexOf('#') + 1)).collect(Collectors.toList());
+    public AsyncResult<List<String>> discoverSupportedHeaders(Jid jid) {
+        return serviceDiscoveryManager.discoverInformation(jid, Headers.NAMESPACE).thenApply(infoNode ->
+                infoNode.getFeatures()
+                        .stream()
+                        .map(feature -> feature.substring(feature.indexOf('#') + 1))
+                        .collect(Collectors.toList()));
     }
 
     @Override

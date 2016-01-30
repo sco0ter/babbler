@@ -25,11 +25,10 @@
 package rocks.xmpp.extensions.muc;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.items.Item;
-import rocks.xmpp.extensions.disco.model.items.ItemNode;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,20 +65,19 @@ public final class ChatService implements Comparable<ChatService> {
     /**
      * Discovers the list of chat rooms hosted by this chat service.
      *
-     * @return The public rooms.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @return The async result with the list of public rooms.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-rooms">6.3 Discovering Rooms</a>
      */
-    public List<ChatRoom> discoverRooms() throws XmppException {
-        List<ChatRoom> chatRooms = new ArrayList<>();
-        ItemNode itemNode = serviceDiscoveryManager.discoverItems(serviceAddress);
-        for (Item item : itemNode.getItems()) {
-            ChatRoom chatRoom = new ChatRoom(item.getJid(), item.getName(), xmppSession, serviceDiscoveryManager, multiUserChatManager);
-            chatRoom.initialize();
-            chatRooms.add(chatRoom);
-        }
-        return chatRooms;
+    public AsyncResult<List<ChatRoom>> discoverRooms() {
+        return serviceDiscoveryManager.discoverItems(serviceAddress).thenApply(itemNode -> {
+            List<ChatRoom> chatRooms = new ArrayList<>();
+            for (Item item : itemNode.getItems()) {
+                ChatRoom chatRoom = new ChatRoom(item.getJid(), item.getName(), xmppSession, serviceDiscoveryManager, multiUserChatManager);
+                chatRoom.initialize();
+                chatRooms.add(chatRoom);
+            }
+            return chatRooms;
+        });
     }
 
     /**

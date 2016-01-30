@@ -27,10 +27,10 @@ package rocks.xmpp.extensions.caps;
 import org.testng.Assert;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -59,8 +59,8 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
             for (int i = 0; i < 100; i++) {
                 executorService.execute(() -> {
                     try {
-                        Assert.assertNotNull(entityCapabilitiesManager.discoverCapabilities(BaseTest.JULIET));
-                    } catch (XmppException e) {
+                        Assert.assertNotNull(entityCapabilitiesManager.discoverCapabilities(JULIET).get());
+                    } catch (InterruptedException | ExecutionException e) {
                         e.printStackTrace();
                     }
                 });

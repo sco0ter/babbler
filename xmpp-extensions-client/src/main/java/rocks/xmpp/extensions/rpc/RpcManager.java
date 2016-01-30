@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.rpc;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -34,8 +33,10 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rpc.model.Value;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.List;
+import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -106,26 +107,25 @@ public final class RpcManager extends Manager {
      * @param jid        The JID, which will receive the RPC.
      * @param methodName The method name.
      * @param parameters The parameters.
-     * @return The result.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the RPC returned with an XMPP stanza error.
-     * @throws RpcException                                If the RPC returned with an application-level error ({@code <fault/>} element).
+     * @return The async result with the returned value.
      */
-    public Value call(Jid jid, String methodName, Value... parameters) throws XmppException, RpcException {
-        IQ result = xmppSession.query(IQ.set(jid, Rpc.ofMethodCall(methodName, parameters)));
-        if (result != null) {
-            Rpc rpc = result.getExtension(Rpc.class);
-            if (rpc != null) {
-                Rpc.MethodResponse methodResponse = rpc.getMethodResponse();
-                if (methodResponse != null) {
-                    if (methodResponse.getFault() != null) {
-                        throw new RpcException(methodResponse.getFault().getFaultCode(), methodResponse.getFault().getFaultString());
+    public AsyncResult<Value> call(Jid jid, String methodName, Value... parameters) {
+        AsyncResult<IQ> query = xmppSession.query(IQ.set(jid, Rpc.ofMethodCall(methodName, parameters)));
+        return query.thenApply(result -> {
+            if (result != null) {
+                Rpc rpc = result.getExtension(Rpc.class);
+                if (rpc != null) {
+                    Rpc.MethodResponse methodResponse = rpc.getMethodResponse();
+                    if (methodResponse != null) {
+                        if (methodResponse.getFault() != null) {
+                            throw new CompletionException(new RpcException(methodResponse.getFault().getFaultCode(), methodResponse.getFault().getFaultString()));
+                        }
+                        return methodResponse.getResponse();
                     }
-                    return methodResponse.getResponse();
                 }
             }
-        }
-        return null;
+            return null;
+        });
     }
 
     /**

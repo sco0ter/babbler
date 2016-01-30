@@ -36,6 +36,7 @@ import rocks.xmpp.core.stanza.MessageEvent;
 
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -51,7 +52,7 @@ public class MultiUserChatIT extends IntegrationTest {
     private MultiUserChatManager[] multiUserChatManager = new MultiUserChatManager[2];
 
     @BeforeClass
-    public void before() throws XmppException {
+    public void before() throws XmppException, ExecutionException, InterruptedException {
         XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                 //.debugger(ConsoleDebugger.class)
                 .build();
@@ -65,8 +66,8 @@ public class MultiUserChatIT extends IntegrationTest {
 
         multiUserChatManager[0] = xmppSession[0].getManager(MultiUserChatManager.class);
         multiUserChatManager[1] = xmppSession[1].getManager(MultiUserChatManager.class);
-        Collection<ChatService> chatServices0 = multiUserChatManager[0].discoverChatServices();
-        Collection<ChatService> chatServices1 = multiUserChatManager[1].discoverChatServices();
+        Collection<ChatService> chatServices0 = multiUserChatManager[0].discoverChatServices().get();
+        Collection<ChatService> chatServices1 = multiUserChatManager[1].discoverChatServices().get();
         Assert.assertFalse(chatServices0.isEmpty());
 
         ChatService chatService0 = chatServices0.iterator().next();
@@ -78,7 +79,7 @@ public class MultiUserChatIT extends IntegrationTest {
     }
 
     @Test
-    public void testMessageListener() throws XmppException, InterruptedException {
+    public void testMessageListener() throws InterruptedException, ExecutionException {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         Consumer<MessageEvent> messageListener = e -> {
@@ -96,12 +97,12 @@ public class MultiUserChatIT extends IntegrationTest {
             }
         } finally {
             chatRoom[0].removeInboundMessageListener(messageListener);
-            chatRoom[0].exit();
+            chatRoom[0].exit().get();
         }
     }
 
     @Test(dependsOnMethods = "testMessageListener")
-    public void testInvitation() throws XmppException, InterruptedException {
+    public void testInvitation() throws InterruptedException, ExecutionException {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         multiUserChatManager[1].addInvitationListener(e -> {
@@ -112,18 +113,18 @@ public class MultiUserChatIT extends IntegrationTest {
             }
         });
         try {
-            chatRoom[0].enter("test");
+            chatRoom[0].enter("test").get();
             chatRoom[0].invite(xmppSession[1].getConnectedResource().asBareJid(), "join!");
             if (!countDownLatch.await(3, TimeUnit.SECONDS)) {
                 Assert.fail("Timeout reached while waiting on invitation.");
             }
         } finally {
-            chatRoom[0].exit();
+            chatRoom[0].exit().get();
         }
     }
 
     @Test
-    public void testUserEnters() throws XmppException, InterruptedException {
+    public void testUserEnters() throws InterruptedException, ExecutionException {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         chatRoom[0].addOccupantListener(e -> {
@@ -132,14 +133,14 @@ public class MultiUserChatIT extends IntegrationTest {
             }
         });
         try {
-            chatRoom[0].enter("test");
-            chatRoom[1].enter("nick");
+            chatRoom[0].enter("test").get();
+            chatRoom[1].enter("nick").get();
             if (!countDownLatch.await(6, TimeUnit.SECONDS)) {
                 Assert.fail("Timeout reached while waiting on user entering.");
             }
         } finally {
-            chatRoom[0].exit();
-            chatRoom[1].exit();
+            chatRoom[0].exit().get();
+            chatRoom[1].exit().get();
         }
     }
 }

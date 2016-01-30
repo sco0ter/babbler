@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.last;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
+import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -198,12 +198,9 @@ public final class LastActivityManager extends Manager {
      * </blockquote>
      *
      * @param jid The JID for which the last activity is requested.
-     * @return The last activity of the requested JID or null if the feature is not implemented or a time out has occurred.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the last activity of the requested JID or null if the feature is not implemented or a time out has occurred.
      */
-    public LastActivity getLastActivity(Jid jid) throws XmppException {
-        IQ result = xmppSession.query(IQ.get(jid, new LastActivity()));
-        return result.getExtension(LastActivity.class);
+    public AsyncResult<LastActivity> getLastActivity(Jid jid) {
+        return xmppSession.query(IQ.get(jid, new LastActivity()), LastActivity.class);
     }
 }

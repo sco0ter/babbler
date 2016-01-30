@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.version;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -33,6 +32,7 @@ import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.Properties;
 
@@ -99,13 +99,10 @@ public final class SoftwareVersionManager extends Manager {
      * Gets the software version of another entity.
      *
      * @param jid The JID of the entity you want get the software version from. You can also pass null, if you want to get the server's software version.
-     * @return The software version or null, if this protocol is not supported.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the software version or null, if this protocol is not supported.
      */
-    public SoftwareVersion getSoftwareVersion(Jid jid) throws XmppException {
-        IQ result = xmppSession.query(IQ.get(jid, new SoftwareVersion()));
-        return result.getExtension(SoftwareVersion.class);
+    public AsyncResult<SoftwareVersion> getSoftwareVersion(Jid jid) {
+        return xmppSession.query(IQ.get(jid, new SoftwareVersion()), SoftwareVersion.class);
     }
 
     /**

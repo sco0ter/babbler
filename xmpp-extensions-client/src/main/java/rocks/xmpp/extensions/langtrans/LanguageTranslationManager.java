@@ -34,6 +34,7 @@ import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.langtrans.model.LanguageTranslation;
 import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -61,12 +62,10 @@ public final class LanguageTranslationManager extends Manager {
     /**
      * Discovers the language provider on the connected server.
      *
-     * @return The list of translation providers.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result containing the list of translation providers.
      * @see <a href="http://xmpp.org/extensions/xep-0171.html#disco">4.2 Discovering Translation Providers</a>
      */
-    public Collection<Item> discoverTranslationProviders() throws XmppException {
+    public AsyncResult<List<Item>> discoverTranslationProviders() {
         return serviceDiscoveryManager.discoverServices(Identity.automationTranslation());
     }
 
@@ -75,12 +74,10 @@ public final class LanguageTranslationManager extends Manager {
      *
      * @param translationProvider The translation provider.
      * @return The list of supported languages with details.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0171.html#disco-lang">4.2.3 Discovering Language Support</a>
      */
-    public List<LanguageSupport.Item> discoverLanguageSupport(Jid translationProvider) throws XmppException {
-        return xmppSession.query(IQ.get(translationProvider, new LanguageSupport())).getExtension(LanguageSupport.class).getItems();
+    public AsyncResult<List<LanguageSupport.Item>> discoverLanguageSupport(Jid translationProvider) {
+        return xmppSession.query(IQ.get(translationProvider, new LanguageSupport()), LanguageSupport.class).thenApply(LanguageSupport::getItems);
     }
 
     /**
@@ -91,17 +88,13 @@ public final class LanguageTranslationManager extends Manager {
      * @param sourceLanguage      The source language.
      * @param destinationLanguage The destination language.
      * @return The translations.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      * @see <a href="http://xmpp.org/extensions/xep-0171.html#request">4.3 Requesting a Translation from a Service</a>
      */
-    public List<LanguageTranslation.Translation> translate(Jid translationProvider, String text, Locale sourceLanguage, Locale... destinationLanguage) throws XmppException {
+    public AsyncResult<List<LanguageTranslation.Translation>> translate(Jid translationProvider, String text, Locale sourceLanguage, Locale... destinationLanguage) {
         Collection<LanguageTranslation.Translation> translations = new ArrayDeque<>();
         for (Locale dl : destinationLanguage) {
             translations.add(LanguageTranslation.Translation.forDestinationLanguage(dl));
         }
-        IQ result = xmppSession.query(IQ.get(translationProvider, new LanguageTranslation(text, sourceLanguage, translations)));
-        LanguageTranslation languageTranslation = result.getExtension(LanguageTranslation.class);
-        return languageTranslation != null ? languageTranslation.getTranslations() : Collections.emptyList();
+        return xmppSession.query(IQ.get(translationProvider, new LanguageTranslation(text, sourceLanguage, translations)), LanguageTranslation.class).thenApply(languageTranslation -> languageTranslation != null ? languageTranslation.getTranslations() : Collections.emptyList());
     }
 }

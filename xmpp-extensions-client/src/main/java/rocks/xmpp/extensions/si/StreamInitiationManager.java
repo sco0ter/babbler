@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.si;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -47,6 +46,8 @@ import rocks.xmpp.extensions.filetransfer.FileTransferNegotiator;
 import rocks.xmpp.extensions.filetransfer.FileTransferOffer;
 import rocks.xmpp.extensions.si.model.StreamInitiation;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
+import rocks.xmpp.util.concurrent.AsyncResult;
+import rocks.xmpp.util.concurrent.CompletionStages;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -54,21 +55,26 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
  * @author Christian Schudt
  */
 public final class StreamInitiationManager extends Manager implements FileTransferNegotiator {
+
+    private static final Logger logger = Logger.getLogger(StreamInitiationManager.class.getName());
 
     private static final String STREAM_METHOD = "stream-method";
 
@@ -148,12 +154,9 @@ public final class StreamInitiationManager extends Manager implements FileTransf
      * @param profile  The profile. Currently there's only the {@link rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer} profile.
      * @param mimeType The mime type of the stream.
      * @param timeout  The timeout, which wait until the stream has been negotiated.
-     * @return The byte stream session which has been negotiated.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
-     * @throws java.io.IOException                         If an I/O error occurred during byte session establishment.
+     * @return The async result with the output stream which has been negotiated.
      */
-    public OutputStream initiateStream(Jid receiver, SIFileTransferOffer profile, String mimeType, long timeout) throws XmppException, IOException {
+    public AsyncResult<OutputStream> initiateStream(Jid receiver, SIFileTransferOffer profile, String mimeType, long timeout) {
 
         // Create a random id for the stream session.
         String sessionId = UUID.randomUUID().toString();
@@ -163,94 +166,103 @@ public final class StreamInitiationManager extends Manager implements FileTransf
         DataForm.Field field = DataForm.Field.builder().var(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).options(options).build();
         DataForm dataForm = new DataForm(DataForm.Type.FORM, Collections.singleton(field));
         // Offer the file to the recipient and wait until it's accepted.
-        IQ result = xmppSession.query(IQ.set(receiver, new StreamInitiation(sessionId, SIFileTransferOffer.NAMESPACE, mimeType, profile, new FeatureNegotiation(dataForm))), timeout);
+        return xmppSession.query(IQ.set(receiver, new StreamInitiation(sessionId, SIFileTransferOffer.NAMESPACE, mimeType, profile, new FeatureNegotiation(dataForm))), timeout).thenCompose(result -> {
 
-        // The recipient must response with a stream initiation.
-        StreamInitiation streamInitiation = result.getExtension(StreamInitiation.class);
+            // The recipient must response with a stream initiation.
+            StreamInitiation streamInitiation = result.getExtension(StreamInitiation.class);
 
-        FeatureNegotiation featureNegotiation = streamInitiation.getFeatureNegotiation();
-        // Get the stream method which has been chosen by the recipient.
-        String streamMethod = featureNegotiation.getDataForm().findField(STREAM_METHOD).getValues().get(0);
+            FeatureNegotiation featureNegotiation = streamInitiation.getFeatureNegotiation();
+            // Get the stream method which has been chosen by the recipient.
+            String streamMethod = featureNegotiation.getDataForm().findField(STREAM_METHOD).getValues().get(0);
 
-        ByteStreamSession byteStreamSession;
-        // Choose the stream method to be used based on the recipient's choice.
-        switch (streamMethod) {
-            case Socks5ByteStream.NAMESPACE:
+            CompletionStage<ByteStreamSession> byteStreamSessionStage;
+            // Choose the stream method to be used based on the recipient's choice.
+            switch (streamMethod) {
+                case Socks5ByteStream.NAMESPACE:
+                    byteStreamSessionStage = CompletionStages.withFallback(socks5ByteStreamManager.initiateSession(receiver, sessionId), (future, throwable) -> {
+                                // As fallback, if SOCKS5 negotiation failed, try IBB.
+                                logger.log(Level.FINE, "SOCKS5 file transfer failed, falling back to IBB", throwable);
+                                return inBandByteStreamManager.initiateSession(receiver, sessionId, 4096);
+                            }
+                    );
+                    break;
+                case InBandByteStream.NAMESPACE:
+                    byteStreamSessionStage = inBandByteStreamManager.initiateSession(receiver, sessionId, 4096);
+                    break;
+                default:
+                    throw new CompletionException(new IOException("Receiver returned unsupported stream method."));
+            }
+            return byteStreamSessionStage.thenApply(byteStreamSession -> {
                 try {
-                    byteStreamSession = socks5ByteStreamManager.initiateSession(receiver, sessionId);
-                } catch (Exception e) {
-                    // As fallback, if SOCKS5 negotiation failed, try IBB.
-                    byteStreamSession = inBandByteStreamManager.initiateSession(receiver, sessionId, 4096);
+                    return byteStreamSession.getOutputStream();
+                } catch (IOException e) {
+                    throw new CompletionException(e);
                 }
-                break;
-            case InBandByteStream.NAMESPACE:
-                byteStreamSession = inBandByteStreamManager.initiateSession(receiver, sessionId, 4096);
-                break;
-            default:
-                throw new IOException("Receiver returned unsupported stream method.");
-        }
-        return byteStreamSession.getOutputStream();
+            });
+        });
     }
 
     @Override
-    public FileTransfer accept(IQ iq, final String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) throws IOException {
+    public AsyncResult<FileTransfer> accept(IQ iq, final String sessionId, FileTransferOffer fileTransferOffer, Object
+            protocol, OutputStream outputStream) {
         StreamInitiation streamInitiation = (StreamInitiation) protocol;
         DataForm.Field field = streamInitiation.getFeatureNegotiation().getDataForm().findField(STREAM_METHOD);
         // These are the offered stream methods by the initiator of the file transfer.
         final List<String> offeredStreamMethods = field.getOptions().stream().map(DataForm.Option::getValue).collect(Collectors.toList());
         // In the SI response, only include stream methods, which we actually support.
         offeredStreamMethods.retainAll(getSupportedStreamMethods());
-        if (offeredStreamMethods.isEmpty()) {
-            throw new IOException("No stream methods could be negotiated.");
-        }
+
         DataForm.Field fieldReply = DataForm.Field.builder().var(STREAM_METHOD).values(offeredStreamMethods).type(DataForm.Field.Type.LIST_SINGLE).build();
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(fieldReply));
         StreamInitiation siResponse = new StreamInitiation(new FeatureNegotiation(dataForm));
 
-        Deque<Throwable> negotiationExceptions = new ArrayDeque<>();
-        BlockingQueue<ByteStreamSession> byteStreamSessions = new ArrayBlockingQueue<>(2);
+        CompletableFuture<ByteStreamSession> completableFutureS5b = new CompletableFuture<>();
+        CompletableFuture<ByteStreamSession> completableFutureIbb = new CompletableFuture<>();
+
         // Before we reply with the chosen stream method, we
         // register a byte stream listener, because we expect the initiator to open a byte stream with us.
-        Consumer<ByteStreamEvent> byteStreamListener = e -> {
-            if (sessionId.equals(e.getSessionId())) {
-                try {
-                    // Auto-accept the inbound stream
-                    byteStreamSessions.add(e.accept());
-                } catch (Exception e1) {
-                    negotiationExceptions.add(e1);
+        Consumer<ByteStreamEvent> byteStreamListenerS5b = createSessionListener(sessionId, completableFutureS5b);
+        Consumer<ByteStreamEvent> byteStreamListenerIbb = createSessionListener(sessionId, completableFutureIbb);
+
+        socks5ByteStreamManager.addByteStreamListener(byteStreamListenerS5b);
+        inBandByteStreamManager.addByteStreamListener(byteStreamListenerIbb);
+
+        // Send the stream initiation result.
+        xmppSession.send(iq.createResult(siResponse));
+
+        // Create a stage, which completes when either S5B or IBB negotiation finished, whichever comes first.
+        CompletionStage<ByteStreamSession> eitherS5bOrIbb = completableFutureS5b.applyToEither(completableFutureIbb, Function.identity());
+        // If any of the previous negotiation failed, always try IBB as fallback.
+        CompletionStage<ByteStreamSession> withFallbackStage = CompletionStages.withFallback(eitherS5bOrIbb, (f, t) -> completableFutureIbb);
+
+        // And then wait until the peer opens the stream.
+        return new AsyncResult<>(withFallbackStage.applyToEither(CompletionStages.timeoutAfter(xmppSession.getConfiguration().getDefaultResponseTimeout() * 3, TimeUnit.MILLISECONDS), byteStreamSession -> {
+                    try {
+                        return new FileTransfer(byteStreamSession.getInputStream(), outputStream, fileTransferOffer.getSize());
+                    } catch (IOException e) {
+                        throw new CompletionException(e);
+                    }
                 }
+        )).whenComplete((byteStreamSession, throwable) -> {
+            // Remove the listeners when everything completed.
+            socks5ByteStreamManager.removeByteStreamListener(byteStreamListenerS5b);
+            inBandByteStreamManager.removeByteStreamListener(byteStreamListenerIbb);
+        });
+    }
+
+    private static Consumer<ByteStreamEvent> createSessionListener(final String sessionId, final CompletableFuture<ByteStreamSession> completableFuture) {
+        return e -> {
+            if (sessionId.equals(e.getSessionId())) {
+                // Auto-accept the inbound stream
+                e.accept().whenComplete((byteStreamSession, throwable) -> {
+                    if (throwable != null) {
+                        completableFuture.completeExceptionally(throwable);
+                    } else {
+                        completableFuture.complete(byteStreamSession);
+                    }
+                });
             }
         };
-
-        try {
-            socks5ByteStreamManager.addByteStreamListener(byteStreamListener);
-            inBandByteStreamManager.addByteStreamListener(byteStreamListener);
-
-            // Send the stream initiation result.
-            xmppSession.send(iq.createResult(siResponse));
-
-            // And then wait until the peer opens the stream.
-
-            ByteStreamSession byteStreamSession = null;
-            try {
-                // Poll the first offered byte stream session. This might be S5B or IBB, whichever comes first.
-                byteStreamSession = byteStreamSessions.poll(10, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-            if (byteStreamSession == null) {
-                if (!negotiationExceptions.isEmpty()) {
-                    throw new IOException("Error while negotiating byte stream.", negotiationExceptions.getFirst());
-                } else {
-                    throw new IOException("No byte stream could be negotiated in time.");
-                }
-            }
-            byteStreamSession.setReadTimeout(xmppSession.getConfiguration().getDefaultResponseTimeout());
-            return new FileTransfer(byteStreamSession.getInputStream(), outputStream, fileTransferOffer.getSize());
-        } finally {
-            inBandByteStreamManager.removeByteStreamListener(byteStreamListener);
-            socks5ByteStreamManager.removeByteStreamListener(byteStreamListener);
-        }
     }
 
     @Override

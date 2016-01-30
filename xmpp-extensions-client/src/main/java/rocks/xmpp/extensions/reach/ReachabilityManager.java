@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.reach;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -37,6 +36,7 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.extensions.reach.model.Address;
 import rocks.xmpp.extensions.reach.model.Reachability;
+import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.util.XmppUtils;
 
 import java.util.ArrayDeque;
@@ -179,18 +179,17 @@ public final class ReachabilityManager extends Manager {
      * Requests the reachability addresses of a contact.
      *
      * @param contact The contact.
-     * @return The reachability addresses.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the reachability addresses.
      */
-    public List<Address> requestReachabilityAddresses(Jid contact) throws XmppException {
+    public AsyncResult<List<Address>> requestReachabilityAddresses(Jid contact) {
         // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get".
-        IQ result = xmppSession.query(IQ.get(contact, new Reachability()));
-        Reachability reachability = result.getExtension(Reachability.class);
-        if (reachability != null) {
-            return reachability.getAddresses();
-        }
-        return null;
+        return xmppSession.query(IQ.get(contact, new Reachability())).thenApply(result -> {
+            Reachability reachability = result.getExtension(Reachability.class);
+            if (reachability != null) {
+                return reachability.getAddresses();
+            }
+            return null;
+        });
     }
 
     @Override

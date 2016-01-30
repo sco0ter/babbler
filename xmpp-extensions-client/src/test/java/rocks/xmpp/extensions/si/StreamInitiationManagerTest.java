@@ -41,14 +41,15 @@ import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Christian Schudt
  */
 public class StreamInitiationManagerTest extends BaseTest {
 
-    //@Test
-    public void testStreamInitiationWithAcceptance() throws XmppException, IOException {
+    @Test(enabled = false)
+    public void testStreamInitiationWithAcceptance() throws XmppException, IOException, ExecutionException, InterruptedException {
 
         MockServer mockServer = new MockServer();
 
@@ -60,21 +61,17 @@ public class StreamInitiationManagerTest extends BaseTest {
             if (!e.getName().equals("Filename") || e.getSize() != 123) {
                 Assert.fail();
             }
-            try {
-                e.accept(new ByteArrayOutputStream());
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            e.accept(new ByteArrayOutputStream());
         });
         StreamInitiationManager streamInitiationManager1 = xmppSession1.getManager(StreamInitiationManager.class);
-        OutputStream outputStream = streamInitiationManager1.initiateStream(JULIET, new SIFileTransferOffer("Filename", 123), "image/type", 2000);
+        OutputStream outputStream = streamInitiationManager1.initiateStream(JULIET, new SIFileTransferOffer("Filename", 123), "image/type", 2000).get();
 
         // Stream Initiation should have been succeeded, if we have OutputStream and no exception has occurred.
         Assert.assertNotNull(outputStream);
     }
 
-    //@Test
-    public void testStreamInitiationWithRejection() throws XmppException, IOException {
+    @Test
+    public void testStreamInitiationWithRejection() throws XmppException, IOException, InterruptedException, ExecutionException {
 
         MockServer mockServer = new MockServer();
 
@@ -91,9 +88,9 @@ public class StreamInitiationManagerTest extends BaseTest {
         StreamInitiationManager streamInitiationManager1 = xmppSession1.getManager(StreamInitiationManager.class);
 
         try {
-            streamInitiationManager1.initiateStream(JULIET, new SIFileTransferOffer("Filename", 123), "image/type", 2000);
-        } catch (StanzaException e) {
-            if (!(e.getCondition() == Condition.FORBIDDEN)) {
+            streamInitiationManager1.initiateStream(JULIET, new SIFileTransferOffer("Filename", 123), "image/type", 2000).get();
+        } catch (ExecutionException e) {
+            if (!(((StanzaException) e.getCause()).getCondition() == Condition.FORBIDDEN)) {
                 Assert.fail();
             } else {
                 return;

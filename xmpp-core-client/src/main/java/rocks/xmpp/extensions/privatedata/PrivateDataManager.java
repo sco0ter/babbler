@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.privatedata;
 
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.privatedata.model.PrivateData;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -53,19 +53,19 @@ public final class PrivateDataManager extends Manager {
      *
      * @param type The class of the private data. Note that this class needs a no-arg default constructor.
      * @param <T>  The type of private data.
-     * @return The list of stored items of the given type.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned an error, e.g. if the used namespace is reserved.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the list of stored items of the given type.
      */
     @SuppressWarnings("unchecked")
-    public final <T> T getData(Class<T> type) throws XmppException {
+    public final <T> AsyncResult<T> getData(Class<T> type) {
         try {
             Constructor<T> constructor = type.getDeclaredConstructor();
             constructor.setAccessible(true);
             T instance = constructor.newInstance();
-            IQ result = xmppSession.query(IQ.get(new PrivateData(instance)));
-            PrivateData privateData = result.getExtension(PrivateData.class);
-            return (T) privateData.getData();
+            AsyncResult<IQ> query = xmppSession.query(IQ.get(new PrivateData(instance)));
+            return query.thenApply(result -> {
+                PrivateData privateData = result.getExtension(PrivateData.class);
+                return (T) privateData.getData();
+            });
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalArgumentException("Cannot instantiate class.", e);
         } catch (NoSuchMethodException e) {
@@ -77,10 +77,9 @@ public final class PrivateDataManager extends Manager {
      * Stores private data.
      *
      * @param privateData The private data. The class of this object must be annotated with JAXB annotations and must known to the XMPP context in order to marshal und unmarshal it.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      */
-    public final void storeData(Object privateData) throws XmppException {
-        xmppSession.query(IQ.set(new PrivateData(privateData)));
+    public final AsyncResult<Void> storeData(Object privateData) {
+        return xmppSession.query(IQ.set(new PrivateData(privateData)), Void.class);
     }
 }

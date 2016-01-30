@@ -48,6 +48,8 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.AsyncResult;
+import rocks.xmpp.util.concurrent.CompletionStages;
 
 import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBException;
@@ -69,6 +71,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -78,9 +81,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -618,33 +618,25 @@ public abstract class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Sends an {@code <iq/>} stanza and waits for the response.
+     * Sends an {@code <iq/>} stanza and returns an async result, which can be used to wait for the response. The result is completed if the response IQ has arrived or the default timeout has exceeded, in which case the result completes with a {@link NoResponseException}.
      * <p>
-     * This method blocks until a result was received or a timeout occurred.
-     * </p>
      *
      * @param iq The {@code <iq/>} stanza, which must be of type {@linkplain Type#GET get} or {@linkplain Type#SET set}.
-     * @return The result {@code <iq/>} stanza.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
+     * @return The async IQ result.
      */
-    public IQ query(IQ iq) throws XmppException {
+    public final AsyncResult<IQ> query(IQ iq) {
         return query(iq, configuration.getDefaultResponseTimeout());
     }
 
     /**
-     * Sends an {@code <iq/>} stanza and waits for the response.
-     * <p>
-     * This method blocks until a result was received or a timeout occurred.
-     * </p>
+     * Sends an {@code <iq/>} stanza and returns an async result, which can be used to wait for the response. The result is completed if the response IQ has arrived or the timeout has exceeded, in which case the result completes with a {@link NoResponseException}.
      *
      * @param iq      The {@code <iq/>} stanza, which must be of type {@linkplain Type#GET get} or {@linkplain Type#SET set}.
      * @param timeout The timeout.
-     * @return The result {@code <iq/>} stanza.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
+     * @return The async IQ result.
      */
-    public IQ query(final IQ iq, long timeout) throws XmppException {
+    public final AsyncResult<IQ> query(IQ iq, long timeout) {
+
         if (!iq.isRequest()) {
             throw new IllegalArgumentException("IQ must be of type 'get' or 'set'");
         }
@@ -658,15 +650,27 @@ public abstract class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Sends a stanza and then waits for a presence stanza to arrive. The filter determines the characteristics of the presence stanza.
+     * Sends an {@code <iq/>} stanza and returns an async result, which can be used to wait for the response. The result is completed if the response IQ has arrived or the default timeout has exceeded, in which case the result completes with a {@link NoResponseException}.
+     * The payload of the response IQ is returned in the async result class.
+     *
+     * @param <T>   The type.
+     * @param iq    The {@code <iq/>} stanza, which must be of type {@linkplain rocks.xmpp.core.stanza.model.IQ.Type#GET get} or {@linkplain rocks.xmpp.core.stanza.model.IQ.Type#SET set}.
+     * @param clazz The class which is IQ response's payload.
+     * @return The async result with the IQ response's payload.
+     */
+    public final <T> AsyncResult<T> query(IQ iq, Class<T> clazz) {
+        return query(iq).thenApply(
+                result -> result.getExtension(clazz));
+    }
+
+    /**
+     * Sends a stanza and returns an async result which can wait for the presence stanza, which matches the predicate, to arrive.
      *
      * @param stanza The stanza, which is sent.
      * @param filter The presence filter.
-     * @return The presence stanza.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
+     * @return The async presence result.
      */
-    public final Presence sendAndAwaitPresence(Presence stanza, final Predicate<Presence> filter) throws XmppException {
+    public final AsyncResult<Presence> sendAndAwaitPresence(Presence stanza, final Predicate<Presence> filter) {
         return sendAndAwait(stanza,
                 PresenceEvent::getPresence,
                 filter,
@@ -678,15 +682,13 @@ public abstract class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Sends a stanza and then waits for a message stanza to arrive. The filter determines the characteristics of the message stanza.
+     * Sends a stanza and returns an async result which can wait for the message stanza, which matches the predicate, to arrive.
      *
      * @param stanza The stanza, which is sent.
      * @param filter The message filter.
-     * @return The message stanza.
-     * @throws StanzaException     If the entity returned a stanza error.
-     * @throws NoResponseException If the entity did not respond.
+     * @return The async message result.
      */
-    public final Message sendAndAwaitMessage(Message stanza, final Predicate<Message> filter) throws XmppException {
+    public final AsyncResult<Message> sendAndAwaitMessage(Message stanza, final Predicate<Message> filter) {
         return sendAndAwait(stanza,
                 MessageEvent::getMessage,
                 filter,
@@ -697,47 +699,25 @@ public abstract class XmppSession implements AutoCloseable {
         );
     }
 
-    @SuppressWarnings("unchecked")
-    private <S extends Stanza, E extends EventObject> S sendAndAwait(S stanza, Function<E, S> stanzaMapper, final Predicate<S> filter, Function<S, Trackable<S>> sendFunction, Consumer<Consumer<E>> addListener, Consumer<Consumer<E>> removeListener, long timeout) throws XmppException {
-        final Stanza[] result = new Stanza[1];
-        final Lock lock = new ReentrantLock();
-        final Condition resultReceived = lock.newCondition();
+    private <S extends Stanza, E extends EventObject> AsyncResult<S> sendAndAwait(S stanza, Function<E, S> stanzaMapper, final Predicate<S> filter, Function<S, Trackable<S>> sendFunction, Consumer<Consumer<E>> addListener, Consumer<Consumer<E>> removeListener, long timeout) {
+        CompletableFuture<S> completableFuture = new CompletableFuture<>();
 
         final Consumer<E> listener = e -> {
             S st = stanzaMapper.apply(e);
             if (filter.test(st)) {
-                lock.lock();
-                try {
-                    result[0] = st;
-                } finally {
-                    resultReceived.signalAll();
-                    lock.unlock();
+                if (st.getError() != null) {
+                    completableFuture.completeExceptionally(new StanzaException(st));
                 }
+                completableFuture.complete(st);
             }
         };
 
-        lock.lock();
-        try {
-            // Setup a listener, which waits
-            addListener.accept(listener);
-            sendFunction.apply(stanza);
-            // Wait for the stanza to arrive.
-            if (!resultReceived.await(timeout, TimeUnit.MILLISECONDS)) {
-                throw new NoResponseException("Timeout reached, while waiting on a response.");
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new XmppException("Thread is interrupted.", e);
-        } finally {
-            lock.unlock();
-            // run();
-            removeListener.accept(listener);
-        }
-        Stanza response = result[0];
-        if (response.getError() != null) {
-            throw new StanzaException(response);
-        }
-        return (S) response;
+        addListener.accept(listener);
+
+        Trackable<S> trackable = sendFunction.apply(stanza);
+
+        return new Query<>(completableFuture.applyToEither(CompletionStages.timeoutAfter(timeout, TimeUnit.MILLISECONDS, () -> new NoResponseException("Timeout reached, while waiting on a response.")), Function.identity()), trackable).whenComplete((result, e) ->
+                removeListener.accept(listener));
     }
 
     /**

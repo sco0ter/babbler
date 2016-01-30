@@ -28,10 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.avatar.AvatarManager;
@@ -39,7 +37,9 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.last.model.LastActivity;
 
 import java.time.Instant;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
+
 
 /**
  * @author Christian Schudt
@@ -47,25 +47,25 @@ import java.util.function.Consumer;
 public class LastActivityManagerTest extends BaseTest {
 
     @Test
-    public void testGetLastActivity() throws XmppException {
+    public void testGetLastActivity() throws ExecutionException, InterruptedException {
         MockServer mockServer = new MockServer();
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         new TestXmppSession(JULIET, mockServer);
         LastActivityManager lastActivityManager = xmppSession1.getManager(LastActivityManager.class);
-        LastActivity lastActivity = lastActivityManager.getLastActivity(JULIET);
+        LastActivity lastActivity = lastActivityManager.getLastActivity(JULIET).get();
         Assert.assertNotNull(lastActivity);
     }
 
     @Test
-    public void testGetLastActivityIfDisabled() throws XmppException {
+    public void testGetLastActivityIfDisabled() throws InterruptedException {
         MockServer mockServer = new MockServer();
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         TestXmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
         xmppSession2.getManager(LastActivityManager.class).setEnabled(false);
         LastActivityManager lastActivityManager = xmppSession1.getManager(LastActivityManager.class);
         try {
-            lastActivityManager.getLastActivity(JULIET);
-        } catch (StanzaException e) {
+            lastActivityManager.getLastActivity(JULIET).get();
+        } catch (ExecutionException e) {
             return;
         }
         Assert.fail();

@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.disco;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Extension;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
@@ -44,9 +43,9 @@ import rocks.xmpp.extensions.rsm.ResultSet;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.AsyncResult;
+import rocks.xmpp.util.concurrent.CompletionStages;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EventObject;
@@ -55,11 +54,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Manages <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>.
@@ -220,7 +221,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     @SuppressWarnings("unchecked")
-    public List<DataForm> getExtensions() {
+    public final List<DataForm> getExtensions() {
         return Collections.unmodifiableList((List<DataForm>) extensions.clone());
     }
 
@@ -349,11 +350,9 @@ public final class ServiceDiscoveryManager extends Manager {
      * </blockquote>
      *
      * @param jid The entity's JID.
-     * @return The service discovery result.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async service discovery result.
      */
-    public final InfoNode discoverInformation(Jid jid) throws XmppException {
+    public final AsyncResult<InfoNode> discoverInformation(Jid jid) {
         return discoverInformation(jid, null);
     }
 
@@ -366,25 +365,20 @@ public final class ServiceDiscoveryManager extends Manager {
      *
      * @param jid  The entity's JID.
      * @param node The node.
-     * @return The info discovery result or null, if info discovery is not supported.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async service discovery result.
      * @see #discoverInformation(Jid)
      */
-    public final InfoNode discoverInformation(Jid jid, String node) throws XmppException {
-        IQ result = xmppSession.query(IQ.get(jid, new InfoDiscovery(node)));
-        return result.getExtension(InfoDiscovery.class);
+    public final AsyncResult<InfoNode> discoverInformation(Jid jid, String node) {
+        return xmppSession.query(IQ.get(jid, new InfoDiscovery(node)), InfoNode.class);
     }
 
     /**
      * Discovers item associated with another XMPP entity.
      *
      * @param jid The JID.
-     * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the discovered items.
      */
-    public final ItemNode discoverItems(Jid jid) throws XmppException {
+    public final AsyncResult<ItemNode> discoverItems(Jid jid) {
         return discoverItems(jid, null, null);
     }
 
@@ -393,11 +387,9 @@ public final class ServiceDiscoveryManager extends Manager {
      *
      * @param jid       The JID.
      * @param resultSet The result set management.
-     * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the discovered items.
      */
-    public final ItemNode discoverItems(Jid jid, ResultSetManagement resultSet) throws XmppException {
+    public final AsyncResult<ItemNode> discoverItems(Jid jid, ResultSetManagement resultSet) {
         return discoverItems(jid, null, resultSet);
     }
 
@@ -406,11 +398,9 @@ public final class ServiceDiscoveryManager extends Manager {
      *
      * @param jid  The JID.
      * @param node The node.
-     * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the discovered items.
      */
-    public final ItemNode discoverItems(Jid jid, String node) throws XmppException {
+    public final AsyncResult<ItemNode> discoverItems(Jid jid, String node) {
         return discoverItems(jid, node, null);
     }
 
@@ -420,13 +410,10 @@ public final class ServiceDiscoveryManager extends Manager {
      * @param jid                 The JID.
      * @param node                The node.
      * @param resultSetManagement The result set management.
-     * @return The discovered items.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the discovered items.
      */
-    public final ItemNode discoverItems(Jid jid, String node, ResultSetManagement resultSetManagement) throws XmppException {
-        IQ result = xmppSession.query(IQ.get(jid, new ItemDiscovery(node, resultSetManagement)));
-        return result.getExtension(ItemDiscovery.class);
+    public final AsyncResult<ItemNode> discoverItems(Jid jid, String node, ResultSetManagement resultSetManagement) {
+        return xmppSession.query(IQ.get(jid, new ItemDiscovery(node, resultSetManagement)), ItemNode.class);
     }
 
     /**
@@ -438,10 +425,8 @@ public final class ServiceDiscoveryManager extends Manager {
      *
      * @param identity The identity.
      * @return The services, that belong to the namespace.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
      */
-    public final Collection<Item> discoverServices(Identity identity) throws XmppException {
+    public final AsyncResult<List<Item>> discoverServices(Identity identity) {
         return discoverServices(infoNode -> {
             for (Identity id : infoNode.getIdentities()) {
                 if (id.getCategory().equals(identity.getCategory()) && id.getType().equals(identity.getType())) {
@@ -456,35 +441,24 @@ public final class ServiceDiscoveryManager extends Manager {
      * Discovers a service on the connected server by its feature namespace.
      *
      * @param feature The feature namespace.
-     * @return The services, that belong to the namespace.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
+     * @return The async result with the services, that belong to the namespace.
      */
-    public final Collection<Item> discoverServices(String feature) throws XmppException {
+    public final AsyncResult<List<Item>> discoverServices(String feature) {
         return discoverServices(infoNode -> infoNode.getFeatures().contains(feature));
     }
 
-    private Collection<Item> discoverServices(Predicate<InfoNode> predicate) throws XmppException {
-        ItemNode itemDiscovery = discoverItems(xmppSession.getDomain());
-        Collection<Item> services = new ArrayDeque<>();
-        XmppException exception = null;
-        for (Item item : itemDiscovery.getItems()) {
-            try {
-                InfoNode infoDiscovery = discoverInformation(item.getJid());
-                if (predicate.test(infoDiscovery)) {
-                    services.add(item);
-                }
-            } catch (XmppException e) {
-                // If a disco#info request returns with an error, ignore it for now and try the next item.
-                exception = e;
-            }
-        }
-        // If an exception occurred and no service could be discovered, rethrow the original exception.
-        if (exception != null && services.isEmpty()) {
-            throw exception;
-        }
-        // Otherwise return the successfully discovered services.
-        return services;
+    private AsyncResult<List<Item>> discoverServices(Predicate<InfoNode> predicate) {
+        return discoverItems(xmppSession.getDomain()).thenCompose(itemDiscovery -> {
+            Collection<CompletionStage<List<Item>>> stages = itemDiscovery.getItems().stream()
+                    .map(item -> discoverInformation(item.getJid()).thenApply(infoDiscovery -> {
+                        if (predicate.test(infoDiscovery)) {
+                            return Collections.singletonList(item);
+                        }
+                        return Collections.<Item>emptyList();
+                    }))
+                    .collect(Collectors.toList());
+            return CompletionStages.allOf(stages);
+        });
     }
 
     /**

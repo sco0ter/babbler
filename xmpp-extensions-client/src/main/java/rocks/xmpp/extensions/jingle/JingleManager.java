@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.jingle;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -155,7 +154,7 @@ public final class JingleManager extends Manager {
         });
     }
 
-    public JingleSession createSession(Jid responder, Jingle.Content... contents) throws XmppException {
+    public JingleSession createSession(Jid responder, Jingle.Content... contents) {
         Objects.requireNonNull(responder, "responder must not be null.");
         if (contents.length == 0) {
             throw new IllegalArgumentException("no content provided.");

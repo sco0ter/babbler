@@ -36,6 +36,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSession;
@@ -74,7 +75,7 @@ public class FileTransferSender extends Application {
                 // Connect
                 xmppSession.connect();
                 // Login
-                xmppSession.login("111", "111", "filetransfer");
+                xmppSession.login("222", "222", "filetransfer");
 
                 return xmppSession;
             }
@@ -118,7 +119,7 @@ public class FileTransferSender extends Application {
                     protected Void call() throws Exception {
                         FileTransferManager fileTransferManager = xmppSession.get().getManager(FileTransferManager.class);
                         updateMessage("Offering file... waiting for acceptance");
-                        FileTransfer fileTransfer = fileTransferManager.offerFile(file, "Hello", xmppSession.get().getDomain().withLocal("222").withResource("filetransfer"), 10000);
+                        FileTransfer fileTransfer = fileTransferManager.offerFile(file, "Hello", Jid.of("111", xmppSession.get().getDomain().toString(), "filetransfer"), 10000).get();
                         fileTransfer.addFileTransferStatusListener(e -> {
                             System.out.println(e);
                             try {

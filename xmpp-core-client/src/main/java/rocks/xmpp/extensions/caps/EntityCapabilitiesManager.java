@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.caps;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
@@ -42,6 +41,7 @@ import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.cache.DirectoryCache;
 import rocks.xmpp.util.cache.LruCache;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayInputStream;
@@ -57,6 +57,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -277,12 +279,10 @@ public final class EntityCapabilitiesManager extends Manager {
      * Discovers the capabilities of another XMPP entity.
      *
      * @param jid The JID, which should usually be a full JID.
-     * @return The capabilities in form of a info node, which contains the identities, the features and service discovery extensions.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the capabilities in form of a info node, which contains the identities, the features and service discovery extensions.
      * @see <a href="http://xmpp.org/extensions/xep-0115.html#discover">6.2 Discovering Capabilities</a>
      */
-    public final InfoNode discoverCapabilities(Jid jid) throws XmppException {
+    public final AsyncResult<InfoNode> discoverCapabilities(Jid jid) {
         InfoNode infoNode = ENTITY_CAPABILITIES.get(jid);
         if (infoNode == null) {
             // Make sure, that for the same JID no multiple concurrent queries are sent. One is enough.
@@ -291,20 +291,19 @@ public final class EntityCapabilitiesManager extends Manager {
             // Acquire the lock for the JID.
             Lock lock = REQUESTING_LOCKS.computeIfAbsent(jid, key -> new ReentrantLock());
             lock.lock();
+            // Recheck the cache (this is the double-check), maybe it has been inserted by another thread.
+            infoNode = ENTITY_CAPABILITIES.get(jid);
+            if (infoNode != null) {
+                return new AsyncResult<>(CompletableFuture.completedFuture(infoNode));
+            }
             try {
-                // Recheck the cache (this is the double-check), maybe it has been inserted by another thread.
-                infoNode = ENTITY_CAPABILITIES.get(jid);
-                if (infoNode != null) {
-                    return infoNode;
-                }
-                infoNode = serviceDiscoveryManager.discoverInformation(jid);
-                ENTITY_CAPABILITIES.put(jid, infoNode);
+                return serviceDiscoveryManager.discoverInformation(jid).whenComplete((result, e) -> ENTITY_CAPABILITIES.put(jid, result));
             } finally {
                 lock.unlock();
                 REQUESTING_LOCKS.remove(jid);
             }
         }
-        return infoNode;
+        return new AsyncResult<>(CompletableFuture.completedFuture(infoNode));
     }
 
     /**
@@ -312,16 +311,20 @@ public final class EntityCapabilitiesManager extends Manager {
      *
      * @param feature The feature.
      * @param jid     The JID, which should usually be a full JID.
-     * @return True, if this entity supports the feature.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with true, if this entity supports the feature.
      */
-    public final boolean isSupported(String feature, Jid jid) throws XmppException {
-        try {
-            InfoNode infoNode = discoverCapabilities(jid);
-            return infoNode.getFeatures().contains(feature);
-        } catch (StanzaException e) {
-            return false;
-        }
+    public final AsyncResult<Boolean> isSupported(String feature, Jid jid) {
+        return discoverCapabilities(jid)
+                .handle((infoNode, e) -> {
+                    if (e == null) {
+                        return infoNode.getFeatures().contains(feature);
+                    } else {
+                        if (e.getCause() instanceof StanzaException) {
+                            return false;
+                        }
+                        throw (CompletionException) e;
+                    }
+                });
     }
 
     private void writeToCache(Verification verification, InfoNode infoNode) {
@@ -392,57 +395,61 @@ public final class EntityCapabilitiesManager extends Manager {
 
                     // 3.1 Send a service discovery information request to the generating entity.
                     // 3.2 Receive a service discovery information response from the generating entity.
-                    InfoNode infoDiscovery = serviceDiscoveryManager.discoverInformation(entity, nodeToDiscover);
-                    // 3.3 If the response includes more than one service discovery identity with the same category/type/lang/name, consider the entire response to be ill-formed.
-                    // 3.4 If the response includes more than one service discovery feature with the same XML character data, consider the entire response to be ill-formed.
-                    // => not possible due to java.util.Set semantics and equals method.
-                    // If the response had duplicates, just check the hash.
+                    serviceDiscoveryManager.discoverInformation(entity, nodeToDiscover).whenComplete((infoDiscovery, e1) -> {
+                        if (e1 != null) {
+                            logger.log(Level.WARNING, e1, () -> "Failed to discover information for entity '" + entity + "' for node '" + nodeToDiscover + "'");
+                        } else {
+                            // 3.3 If the response includes more than one service discovery identity with the same category/type/lang/name, consider the entire response to be ill-formed.
+                            // 3.4 If the response includes more than one service discovery feature with the same XML character data, consider the entire response to be ill-formed.
+                            // => not possible due to java.util.Set semantics and equals method.
+                            // If the response had duplicates, just check the hash.
 
-                    // 3.5 If the response includes more than one extended service discovery information form with the same FORM_TYPE or the FORM_TYPE field contains more than one <value/> element with different XML character data, consider the entire response to be ill-formed.
-                    Collection<String> ftValues = new ArrayDeque<>();
-                    for (DataForm dataForm : infoDiscovery.getExtensions()) {
-                        DataForm.Field formType = dataForm.findField(DataForm.FORM_TYPE);
-                        // 3.6 If the response includes an extended service discovery information form where the FORM_TYPE field is not of type "hidden" or the form does not include a FORM_TYPE field, ignore the form but continue processing.
-                        if (formType != null && formType.getType() == DataForm.Field.Type.HIDDEN && !formType.getValues().isEmpty()) {
-                            Collection<String> values = new ArrayDeque<>();
-                            for (String value : formType.getValues()) {
-                                if (values.contains(value)) {
-                                    // ill-formed
-                                    return;
+                            // 3.5 If the response includes more than one extended service discovery information form with the same FORM_TYPE or the FORM_TYPE field contains more than one <value/> element with different XML character data, consider the entire response to be ill-formed.
+                            Collection<String> ftValues = new ArrayDeque<>();
+                            for (DataForm dataForm : infoDiscovery.getExtensions()) {
+                                DataForm.Field formType = dataForm.findField(DataForm.FORM_TYPE);
+                                // 3.6 If the response includes an extended service discovery information form where the FORM_TYPE field is not of type "hidden" or the form does not include a FORM_TYPE field, ignore the form but continue processing.
+                                if (formType != null && formType.getType() == DataForm.Field.Type.HIDDEN && !formType.getValues().isEmpty()) {
+                                    Collection<String> values = new ArrayDeque<>();
+                                    for (String value : formType.getValues()) {
+                                        if (values.contains(value)) {
+                                            // ill-formed
+                                            return;
+                                        }
+                                        values.add(value);
+                                    }
+                                    String value = formType.getValues().get(0);
+                                    if (ftValues.contains(value)) {
+                                        // ill-formed
+                                        return;
+                                    }
+                                    ftValues.add(value);
                                 }
-                                values.add(value);
                             }
-                            String value = formType.getValues().get(0);
-                            if (ftValues.contains(value)) {
-                                // ill-formed
-                                return;
+
+                            // 3.7 If the response is considered well-formed, reconstruct the hash by using the service discovery information response to generate a local hash in accordance with the Generation Method).
+                            String verificationString = EntityCapabilities.getVerificationString(infoDiscovery, messageDigest);
+
+                            // 3.8 If the values of the received and reconstructed hashes match, the processing application MUST consider the result to be valid and SHOULD globally cache the result for all JabberIDs with which it communicates.
+                            if (verificationString.equals(entityCapabilities.getVerificationString())) {
+                                writeToCache(new Verification(hashAlgorithm, verificationString), infoDiscovery);
                             }
-                            ftValues.add(value);
+                            ENTITY_CAPABILITIES.put(entity, infoDiscovery);
                         }
-                    }
-
-                    // 3.7 If the response is considered well-formed, reconstruct the hash by using the service discovery information response to generate a local hash in accordance with the Generation Method).
-                    String verificationString = EntityCapabilities.getVerificationString(infoDiscovery, messageDigest);
-
-                    // 3.8 If the values of the received and reconstructed hashes match, the processing application MUST consider the result to be valid and SHOULD globally cache the result for all JabberIDs with which it communicates.
-                    if (verificationString.equals(entityCapabilities.getVerificationString())) {
-                        writeToCache(new Verification(hashAlgorithm, verificationString), infoDiscovery);
-                    }
-                    ENTITY_CAPABILITIES.put(entity, infoDiscovery);
-
+                    });
                     // 3.9 If the values of the received and reconstructed hashes do not match, the processing application MUST consider the result to be invalid and MUST NOT globally cache the verification string;
-                } catch (XmppException e1) {
-                    logger.log(Level.WARNING, "Failed to discover information for entity ''{0}'' for node ''{1}''", new Object[]{entity, nodeToDiscover});
                 } catch (NoSuchAlgorithmException e1) {
                     // 2. If the value of the 'hash' attribute does not match one of the processing application's supported hash functions, do the following:
-                    try {
-                        // 2.1 Send a service discovery information request to the generating entity.
-                        // 2.2 Receive a service discovery information response from the generating entity.
-                        // 2.3 Do not validate or globally cache the verification string as described below; instead, the processing application SHOULD associate the discovered identity+features only with the JabberID of the generating entity.
-                        ENTITY_CAPABILITIES.put(entity, serviceDiscoveryManager.discoverInformation(entity, nodeToDiscover));
-                    } catch (XmppException e2) {
-                        logger.log(Level.WARNING, "Failed to discover information for entity ''{0}'' for node ''{1}''", new Object[]{entity, nodeToDiscover});
-                    }
+                    // 2.1 Send a service discovery information request to the generating entity.
+                    // 2.2 Receive a service discovery information response from the generating entity.
+                    // 2.3 Do not validate or globally cache the verification string as described below; instead, the processing application SHOULD associate the discovered identity+features only with the JabberID of the generating entity.
+                    serviceDiscoveryManager.discoverInformation(entity, nodeToDiscover).whenComplete((result, e2) -> {
+                        if (e2 != null) {
+                            logger.log(Level.WARNING, "Failed to discover information for entity '{0}' for node '{1}'", new Object[]{entity, nodeToDiscover});
+                        } else {
+                            ENTITY_CAPABILITIES.put(entity, result);
+                        }
+                    });
                 }
             }
         }

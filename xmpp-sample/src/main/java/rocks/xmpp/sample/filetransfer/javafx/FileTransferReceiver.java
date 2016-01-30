@@ -54,14 +54,15 @@ public class FileTransferReceiver {
                 // Connect
                 xmppSession.connect();
                 // Login
-                xmppSession.login("222", "222", "filetransfer");
+                xmppSession.login("111", "111", "filetransfer");
 
                 FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
                 fileTransferManager.addFileTransferOfferListener(e -> {
                     try {
-                        FileTransfer fileTransfer = e.accept(new FileOutputStream(new File("test.png")));
+                        //e.reject();
+                        FileTransfer fileTransfer = e.accept(new FileOutputStream(new File("test.png"))).getResult();
                         fileTransfer.transfer();
-                    } catch (IOException e1) {
+                    } catch (Exception e1) {
                         e1.printStackTrace();
                     }
                 });

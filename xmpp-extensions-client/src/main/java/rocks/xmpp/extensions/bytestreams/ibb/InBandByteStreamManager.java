@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.bytestreams.ibb;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
+import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
@@ -183,17 +183,15 @@ public final class InBandByteStreamManager extends ByteStreamManager {
      * @param receiver  The receiver.
      * @param sessionId The session id.
      * @param blockSize The block size.
-     * @return The in-band byte stream session.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the in-band byte stream session.
      */
-    public final ByteStreamSession initiateSession(Jid receiver, final String sessionId, int blockSize) throws XmppException {
+    public final AsyncResult<ByteStreamSession> initiateSession(Jid receiver, final String sessionId, int blockSize) {
         if (blockSize > 65535) {
             throw new IllegalArgumentException("blockSize must not be greater than 65535.");
         }
         IbbSession ibbSession = createSession(receiver, sessionId, blockSize);
-        ibbSession.open();
-        return ibbSession;
+        return ibbSession.open().thenApply(result ->
+                (ByteStreamSession) ibbSession);
     }
 
     @Override

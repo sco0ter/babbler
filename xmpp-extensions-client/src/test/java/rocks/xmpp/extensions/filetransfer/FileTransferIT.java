@@ -32,6 +32,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
+import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 
 import java.io.ByteArrayInputStream;
@@ -58,7 +59,7 @@ public class FileTransferIT extends IntegrationTest {
     @BeforeClass
     public void before() throws XmppException {
         XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                //.debugger(ConsoleDebugger.class)
+                .debugger(ConsoleDebugger.class)
                 .build();
         xmppSession[0] = new XmppClient(DOMAIN, configuration, TcpConnectionConfiguration.getDefault());
         xmppSession[0].connect();
@@ -96,26 +97,31 @@ public class FileTransferIT extends IntegrationTest {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Consumer<FileTransferOfferEvent> listener = e -> {
             try {
-                FileTransfer fileTransfer = e.accept(outputStream);
+                FileTransfer fileTransfer = e.accept(outputStream).get();
                 Assert.assertEquals(e.getDescription(), "Description");
                 Assert.assertEquals(e.getName(), "test.txt");
                 Assert.assertEquals(e.getSize(), 4);
 
-                fileTransfer.transfer().get();
-                lock.lock();
-                try {
-                    transferCompleted.signal();
-                } finally {
-                    lock.unlock();
-                }
-            } catch (IOException | InterruptedException | ExecutionException e1) {
+                fileTransfer.addFileTransferStatusListener(ev -> {
+                    System.out.println(ev.getStatus());
+                    if (ev.getStatus() == FileTransfer.Status.COMPLETED) {
+                        lock.lock();
+                        try {
+                            transferCompleted.signal();
+                        } finally {
+                            lock.unlock();
+                        }
+                    }
+                });
+                fileTransfer.transfer();
+            } catch (InterruptedException | ExecutionException e1) {
                 Assert.fail(e1.getMessage(), e1);
             }
         };
         try {
             // Let the receiver listen for incoming file transfers.
             fileTransferManagers[1].addFileTransferOfferListener(listener);
-            FileTransfer fileTransfer = fileTransferManagers[0].offerFile(new ByteArrayInputStream(data), "test.txt", data.length, Instant.now(), "Description", xmppSession[1].getConnectedResource(), 12000);
+            FileTransfer fileTransfer = fileTransferManagers[0].offerFile(new ByteArrayInputStream(data), "test.txt", data.length, Instant.now(), "Description", xmppSession[1].getConnectedResource(), 12000).get();
             fileTransfer.transfer();
 
             lock.lock();

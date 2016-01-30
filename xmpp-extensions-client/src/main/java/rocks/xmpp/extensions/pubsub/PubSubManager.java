@@ -25,14 +25,13 @@
 package rocks.xmpp.extensions.pubsub;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Identity;
-import rocks.xmpp.extensions.disco.model.items.Item;
+import rocks.xmpp.extensions.pubsub.model.PubSub;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -60,13 +59,13 @@ public final class PubSubManager extends Manager {
     /**
      * Discovers the publish-subscribe services for the current connection.
      *
-     * @return The list of publish-subscribe services.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
+     * @return The async result with the list of publish-subscribe services.
      */
-    public Collection<PubSubService> discoverPubSubServices() throws XmppException {
-        Collection<Item> services = serviceDiscoveryManager.discoverServices(Identity.pubsubService());
-        return services.stream().map(service -> new PubSubService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager)).collect(Collectors.toList());
+    public AsyncResult<List<PubSubService>> discoverPubSubServices() {
+        return serviceDiscoveryManager.discoverServices(PubSub.NAMESPACE)
+                .thenApply(services -> services.stream()
+                        .map(service -> new PubSubService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager))
+                        .collect(Collectors.toList()));
     }
 
     /**

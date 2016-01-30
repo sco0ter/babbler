@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.blocking;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -35,11 +34,11 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.blocking.model.Block;
 import rocks.xmpp.extensions.blocking.model.BlockList;
 import rocks.xmpp.extensions.blocking.model.Unblock;
+import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.util.XmppUtils;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -147,49 +146,42 @@ public final class BlockingManager extends Manager {
     /**
      * Retrieves the blocked contacts.
      *
-     * @return The block list.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the block list.
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#blocklist">3.2 User Retrieves Block List</a>
      */
-    public final Collection<Jid> getBlockedContacts() throws XmppException {
-        synchronized (blockedContacts) {
-            IQ result = xmppSession.query(IQ.get(new BlockList()));
+    public final AsyncResult<Set<Jid>> getBlockedContacts() {
+        return xmppSession.query(IQ.get(new BlockList())).thenApply(result -> {
             BlockList blockList = result.getExtension(BlockList.class);
-            if (blockList != null) {
-                blockedContacts.addAll(blockList.getItems().stream().collect(Collectors.toList()));
+            synchronized (blockedContacts) {
+                if (blockList != null) {
+                    blockedContacts.addAll(blockList.getItems().stream().collect(Collectors.toList()));
+                }
             }
             return blockedContacts;
-        }
+        });
     }
 
     /**
      * Blocks communications with contacts.
      *
      * @param jids The contacts.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#block">3.3 User Blocks Contact</a>
      */
-    public final void blockContact(Jid... jids) throws XmppException {
-        Collection<Jid> items = new ArrayDeque<>();
-        Collections.addAll(items, jids);
-        xmppSession.query(IQ.set(new Block(items)));
+    public final AsyncResult<IQ> blockContact(Jid... jids) {
+        return xmppSession.query(IQ.set(new Block(Arrays.asList(jids))));
     }
 
     /**
      * Unblocks communications with specific contacts or with all contacts. If you want to unblock all communications, pass no arguments to this method.
      *
      * @param jids The contacts.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#unblock">3.4 User Unblocks Contact</a>
      * @see <a href="http://xmpp.org/extensions/xep-0191.html#unblockall">3.5 User Unblocks All Contacts</a>
      */
-    public final void unblockContact(Jid... jids) throws XmppException {
-        Collection<Jid> items = new ArrayDeque<>();
-        Collections.addAll(items, jids);
-        xmppSession.query(IQ.set(new Unblock(items)));
+    public final AsyncResult<IQ> unblockContact(Jid... jids) {
+        return xmppSession.query(IQ.set(new Unblock(Arrays.asList(jids))));
     }
 
     @Override

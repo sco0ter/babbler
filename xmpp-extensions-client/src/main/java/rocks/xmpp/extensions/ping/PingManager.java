@@ -38,7 +38,9 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.ping.model.Ping;
 import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -127,41 +129,34 @@ public final class PingManager extends Manager {
      * Pings the given XMPP entity.
      *
      * @param jid The JID to ping.
-     * @return True if a response has been received within the timeout and the recipient is available, false otherwise.
+     * @return The async result with true if a response has been received within the timeout and the recipient is available, false otherwise.
      */
-    public final boolean ping(Jid jid) {
-        return ping(jid, xmppSession.getConfiguration().getDefaultResponseTimeout());
-    }
-
-    /**
-     * Pings the given XMPP entity.
-     *
-     * @param jid     The JID to ping.
-     * @param timeout The timeout in milliseconds.
-     * @return True if a response has been received within the timeout and the recipient is available, false otherwise.
-     */
-    public final boolean ping(Jid jid, long timeout) {
-        try {
-            xmppSession.query(IQ.get(jid, Ping.INSTANCE), timeout);
+    public final AsyncResult<Boolean> ping(Jid jid) {
+        IQ request = IQ.get(jid, Ping.INSTANCE);
+        return xmppSession.query(request).handle((iq, e) -> {
+            if (e != null) {
+                Throwable cause = e instanceof CompletionException ? e.getCause() : e;
+                if (cause instanceof RuntimeException) {
+                    // Rethrow any RuntimeException, mainly CancellationException
+                    throw (RuntimeException) e;
+                }
+                // If we pinged a full JID and the resource if offline, the server will respond on behalf of the user with <service-unavailable/>.
+                // In this case we want to return false, because the intended recipient is unavailable.
+                // If we pinged a bare JID, the server will respond. If it returned a <service-unavailable/> error, it just means it doesn't understand the ping protocol.
+                // Nonetheless an error response is still a valid pong, hence always return true in this case.
+                // If any other error is returned, most likely <remote-server-not-found/>, <remote-server-timeout/>, <gone/> return false.
+                return cause instanceof StanzaException && (jid == null || jid.isBareJid()) && ((StanzaException) cause).getCondition() == Condition.SERVICE_UNAVAILABLE;
+            }
             return true;
-        } catch (StanzaException e) {
-            // If we pinged a full JID and the resource if offline, the server will respond on behalf of the user with <service-unavailable/>.
-            // In this case we want to return false, because the intended recipient is unavailable.
-            // If we pinged a bare JID, the server will respond. If it returned a <service-unavailable/> error, it just means it doesn't understand the ping protocol.
-            // Nonetheless an error response is still a valid pong, hence always return true in this case.
-            // If any other error is returned, most likely <remote-server-not-found/>, <remote-server-timeout/>, <gone/> return false.
-            return (jid == null || jid.isBareJid()) && e.getCondition() == Condition.SERVICE_UNAVAILABLE;
-        } catch (XmppException e) {
-            return false;
-        }
+        });
     }
 
     /**
      * Pings the connected server.
      *
-     * @return True if a response has been received, false otherwise.
+     * @return The async result with true if a response has been received, false otherwise.
      */
-    public final boolean pingServer() {
+    public final AsyncResult<Boolean> pingServer() {
         return ping(xmppSession.getDomain());
     }
 
@@ -192,13 +187,15 @@ public final class PingManager extends Manager {
             cancelNextPing();
             nextPing = scheduledExecutorService.schedule(() -> {
                 if (isEnabled() && xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
-                    if (!pingServer()) {
-                        try {
-                            throw new XmppException("Server ping failed.");
-                        } catch (XmppException e) {
-                            xmppSession.notifyException(e);
+                    pingServer().thenAccept(result -> {
+                        if (!result) {
+                            try {
+                                throw new XmppException("Server ping failed.");
+                            } catch (XmppException e) {
+                                xmppSession.notifyException(e);
+                            }
                         }
-                    }
+                    });
                 }
                 // Rescheduling of the next ping is already done by the IQ response of the ping.
             }, pingInterval, TimeUnit.SECONDS);

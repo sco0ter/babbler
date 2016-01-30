@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.bytestreams.s5b;
 
+import rocks.xmpp.core.XmppException;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -128,8 +130,12 @@ final class LocalSocks5Server {
      *
      * @return The port.
      */
-    public String getAddress() throws UnknownHostException {
-        return InetAddress.getLocalHost().getHostAddress();
+    public String getAddress() throws XmppException {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            throw new XmppException(e);
+        }
     }
 
     /**

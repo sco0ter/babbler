@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.privacy;
 
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -33,9 +32,9 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.privacy.model.Privacy;
 import rocks.xmpp.extensions.privacy.model.PrivacyList;
+import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.util.XmppUtils;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -125,120 +124,108 @@ public final class PrivacyListManager extends Manager {
     /**
      * Gets the privacy lists.
      *
-     * @return The privacy lists.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the privacy lists.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
      */
-    public Collection<PrivacyList> getPrivacyLists() throws XmppException {
-        IQ result = xmppSession.query(IQ.get(new Privacy()));
-        Privacy privacy = result.getExtension(Privacy.class);
-
-        Collection<PrivacyList> privacyLists = new ArrayDeque<>();
-        for (PrivacyList privacyList : privacy.getPrivacyLists()) {
-            if (privacyList.getName() != null && privacyList.getName().equals(privacy.getDefaultName())) {
-                privacyLists.add(privacyList.asDefault());
+    public AsyncResult<Collection<PrivacyList>> getPrivacyLists() {
+        return xmppSession.query(IQ.get(new Privacy())).thenApply(result -> {
+            Privacy privacy = result.getExtension(Privacy.class);
+            Collection<PrivacyList> privacyLists = new ArrayList<>();
+            for (PrivacyList privacyList : privacy.getPrivacyLists()) {
+                if (privacyList.getName() != null && privacyList.getName().equals(privacy.getDefaultName())) {
+                    privacyLists.add(privacyList.asDefault());
+                }
+                if (privacyList.getName() != null && privacyList.getName().equals(privacy.getActiveName())) {
+                    privacyLists.add(privacyList.asActive());
+                }
             }
-            if (privacyList.getName() != null && privacyList.getName().equals(privacy.getActiveName())) {
-                privacyLists.add(privacyList.asActive());
-            }
-        }
-        return privacyLists;
+            return privacyLists;
+        });
     }
 
     /**
      * Gets a privacy list.
      *
      * @param name The privacy list name.
-     * @return The privacy list.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the privacy list.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
      */
-    public PrivacyList getPrivacyList(String name) throws XmppException {
-        IQ result = xmppSession.query(IQ.get(new Privacy(new PrivacyList(name))));
-        Privacy privacy = result.getExtension(Privacy.class);
-        if (privacy != null) {
-            return privacy.getPrivacyLists().get(0);
-        }
-        return null;
+    public AsyncResult<PrivacyList> getPrivacyList(String name) {
+        return xmppSession.query(IQ.get(new Privacy(new PrivacyList(name)))).thenApply(result -> {
+            Privacy privacy = result.getExtension(Privacy.class);
+            if (privacy != null) {
+                return privacy.getPrivacyLists().get(0);
+            }
+            return null;
+        });
     }
 
     /**
      * Changes the active list currently being applied.
      *
      * @param name The active list name.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the user attempts to set an active list but a list by that name does not exist, the server MUST return an {@code <item-not-found/>} stanza error to the user.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the server's IQ reply.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-active">2.4 Managing Active Lists</a>
      */
-    public void setActiveList(String name) throws XmppException {
-        setPrivacy(Privacy.withActive(name));
+    public AsyncResult<IQ> setActiveList(String name) {
+        return setPrivacy(Privacy.withActive(name));
     }
 
     /**
      * Declines the use of any active list.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the request returned with an error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the server's IQ reply.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-active">2.4 Managing Active Lists</a>
      */
-    public void declineActiveList() throws XmppException {
-        setActiveList("");
+    public AsyncResult<IQ> declineActiveList() {
+        return setActiveList("");
     }
 
     /**
      * Change the default list (which applies to the user as a whole, not only the sending resource).
      *
      * @param name The list name.
-     * @throws rocks.xmpp.core.stanza.StanzaException      <ul>
-     *                                                     <li>If the user attempts to change which list is the default list but the default list is in use by at least one connected resource other than the sending resource, the server MUST return a {@code <conflict/>} stanza error to the sending resource</li>
-     *                                                     <li>If the user attempts to set a default list but a list by that name does not exist, the server MUST return an {@code <item-not-found/>} stanza error to the user</li>
-     *                                                     </ul>
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the server's IQ reply.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-default">2.5 Managing the Default List</a>
      */
-    public void setDefaultList(String name) throws XmppException {
-        setPrivacy(Privacy.withDefault(name));
+    public AsyncResult<IQ> setDefaultList(String name) {
+        return setPrivacy(Privacy.withDefault(name));
     }
 
     /**
      * Declines the use of any default list.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException      If one connected resource attempts to decline the use of a default list for the user as a whole but the default list currently applies to at least one other connected resource, the server MUST return a {@code <conflict/>} error to the sending resource.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the server's IQ reply.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-default">2.5 Managing the Default List</a>
      */
-    public void declineDefaultList() throws XmppException {
-        setDefaultList("");
+    public AsyncResult<IQ> declineDefaultList() {
+        return setDefaultList("");
     }
 
     /**
      * Creates or edits a privacy list.
      *
      * @param privacyList The privacy list.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the server's IQ reply.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-edit">2.6 Editing a Privacy List</a>
      */
-    public void createOrUpdateList(PrivacyList privacyList) throws XmppException {
-        setPrivacy(new Privacy(privacyList));
+    public AsyncResult<IQ> createOrUpdateList(PrivacyList privacyList) {
+        return setPrivacy(new Privacy(privacyList));
     }
 
     /**
      * Removes a privacy list.
      *
      * @param name The privacy list.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the server's IQ reply.
      * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-remove">2.8 Removing a Privacy List</a>
      */
-    public void removeList(String name) throws XmppException {
-        setPrivacy(new Privacy(new PrivacyList(name)));
+    public AsyncResult<IQ> removeList(String name) {
+        return setPrivacy(new Privacy(new PrivacyList(name)));
     }
 
-    private void setPrivacy(Privacy privacy) throws XmppException {
-        xmppSession.query(IQ.set(privacy));
+    private AsyncResult<IQ> setPrivacy(Privacy privacy) {
+        return xmppSession.query(IQ.set(privacy));
     }
 
     @Override

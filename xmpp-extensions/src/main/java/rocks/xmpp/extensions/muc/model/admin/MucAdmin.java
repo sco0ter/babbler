@@ -292,7 +292,7 @@ public final class MucAdmin {
      *
      * @return The items.
      */
-    public List<? extends Item> getItems() {
+    public List<Item> getItems() {
         return Collections.unmodifiableList(item);
     }
 

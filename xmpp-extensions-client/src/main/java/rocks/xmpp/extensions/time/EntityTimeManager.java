@@ -25,13 +25,13 @@
 package rocks.xmpp.extensions.time;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.time.model.EntityTime;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.time.OffsetDateTime;
 
@@ -73,13 +73,13 @@ public final class EntityTimeManager extends Manager {
      * Gets the time information (e.g. time zone) of another XMPP entity.
      *
      * @param jid The entity's JID.
-     * @return The entity time or null if this protocol is not supported by the entity.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the entity time or null if this protocol is not supported by the entity.
      */
-    public OffsetDateTime getEntityTime(Jid jid) throws XmppException {
-        IQ result = xmppSession.query(IQ.get(jid, new EntityTime()));
-        EntityTime entityTime = result.getExtension(EntityTime.class);
-        return entityTime != null ? entityTime.getDateTime() : null;
+    public AsyncResult<OffsetDateTime> getEntityTime(Jid jid) {
+        AsyncResult<IQ> query = xmppSession.query(IQ.get(jid, new EntityTime()));
+        return query.thenApply(result -> {
+            EntityTime entityTime = result.getExtension(EntityTime.class);
+            return entityTime != null ? entityTime.getDateTime() : null;
+        });
     }
 }

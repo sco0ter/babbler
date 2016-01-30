@@ -24,12 +24,13 @@
 
 package rocks.xmpp.extensions.invisible;
 
-import rocks.xmpp.core.XmppException;
+
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.invisible.model.InvisibleCommand;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * @author Christian Schudt
@@ -45,23 +46,27 @@ public final class InvisibilityManager extends Manager {
     /**
      * Becomes invisible.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      */
-    public synchronized void becomeInvisible() throws XmppException {
-        xmppSession.query(IQ.set(InvisibleCommand.INVISIBLE));
-        invisible = true;
+    public AsyncResult<Void> becomeInvisible() {
+        return xmppSession.query(IQ.set(InvisibleCommand.INVISIBLE)).thenRun(() -> {
+            synchronized (InvisibilityManager.this) {
+                invisible = true;
+            }
+        });
     }
 
     /**
      * Becomes visible.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      */
-    public synchronized void becomeVisible() throws XmppException {
-        xmppSession.query(IQ.set(InvisibleCommand.VISIBLE));
-        invisible = false;
+    public AsyncResult<Void> becomeVisible() {
+        return xmppSession.query(IQ.set(InvisibleCommand.VISIBLE)).thenRun(() -> {
+            synchronized (InvisibilityManager.this) {
+                invisible = false;
+            }
+        });
     }
 
     /**
@@ -76,11 +81,9 @@ public final class InvisibilityManager extends Manager {
     /**
      * Checks, whether invisibility is supported by the server.
      *
-     * @return True, if invisibility is supported.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with true, if invisibility is supported.
      */
-    public boolean isSupported() throws XmppException {
+    public AsyncResult<Boolean> isSupported() {
         EntityCapabilitiesManager entityCapabilitiesManager = xmppSession.getManager(EntityCapabilitiesManager.class);
         return entityCapabilitiesManager.isSupported(InvisibleCommand.NAMESPACE, xmppSession.getDomain());
     }

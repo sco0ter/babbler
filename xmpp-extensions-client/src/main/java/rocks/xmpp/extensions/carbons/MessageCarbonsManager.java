@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.carbons;
 
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.carbons.model.MessageCarbons;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * Manages message carbons. It allows you to {@linkplain #enableCarbons()} ()} enable} or {@linkplain #disableCarbons()} disable} message carbons on the server.
@@ -54,20 +54,18 @@ public final class MessageCarbonsManager extends Manager {
     /**
      * Enables message carbons on the server for this session.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      */
-    public final void enableCarbons() throws XmppException {
-        xmppSession.query(IQ.set(MessageCarbons.ENABLE));
+    public final AsyncResult<IQ> enableCarbons() {
+        return xmppSession.query(IQ.set(MessageCarbons.ENABLE));
     }
 
     /**
      * Disables message carbons on the server for this session.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      */
-    public final void disableCarbons() throws XmppException {
-        xmppSession.query(IQ.set(MessageCarbons.DISABLE));
+    public final AsyncResult<IQ> disableCarbons() {
+        return xmppSession.query(IQ.set(MessageCarbons.DISABLE));
     }
 }

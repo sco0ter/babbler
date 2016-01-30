@@ -25,11 +25,11 @@
 package rocks.xmpp.extensions.bytestreams.ibb;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -86,8 +86,8 @@ final class IbbSession extends ByteStreamSession {
         }
     }
 
-    final void open() throws XmppException {
-        xmppSession.query(IQ.set(jid, new InBandByteStream.Open(blockSize, getSessionId())));
+    final AsyncResult<IQ> open() {
+        return xmppSession.query(IQ.set(jid, new InBandByteStream.Open(blockSize, getSessionId())));
     }
 
     @Override
@@ -120,16 +120,17 @@ final class IbbSession extends ByteStreamSession {
         }
     }
 
-    final void send(byte[] bytes) throws XmppException {
-        xmppSession.query(IQ.set(jid, new InBandByteStream.Data(bytes, getSessionId(), outboundSequence)));
+    final AsyncResult<IQ> send(byte[] bytes) {
+        AsyncResult<IQ> result = xmppSession.query(IQ.set(jid, new InBandByteStream.Data(bytes, getSessionId(), outboundSequence)));
         // The 'seq' value starts at 0 (zero) for each sender and MUST be incremented for each packet sent by that entity. Thus, the second chunk sent has a 'seq' value of 1, the third chunk has a 'seq' value of 2, and so on. The counter loops at maximum, so that after value 65535 (215 - 1) the 'seq' MUST start again at 0.
         if (++outboundSequence > 65535) {
             outboundSequence = 0;
         }
+        return result;
     }
 
     @Override
-    public final void close() throws Exception {
+    public final void close() throws IOException {
         synchronized (this) {
             if (closed) {
                 return;
@@ -139,7 +140,7 @@ final class IbbSession extends ByteStreamSession {
         try {
             inputStream.close();
             outputStream.close();
-            xmppSession.query(IQ.set(jid, new InBandByteStream.Close(getSessionId())));
+            xmppSession.send(IQ.set(jid, new InBandByteStream.Close(getSessionId())));
         } finally {
             // the party that sent the original <close/> element SHOULD wait to receive the IQ response from the receiving party before considering the bytestream to be closed.
             // Remove this session from the map.

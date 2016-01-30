@@ -34,6 +34,8 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.rpc.model.Value;
 
+import java.util.concurrent.ExecutionException;
+
 /**
  * @author Christian Schudt
  */
@@ -53,7 +55,7 @@ public class RpcManagerTest extends BaseTest {
     }
 
     @Test
-    public void testCall() throws XmppException, RpcException {
+    public void testCall() throws ExecutionException, InterruptedException {
         MockServer mockServer = new MockServer();
 
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
@@ -69,7 +71,7 @@ public class RpcManagerTest extends BaseTest {
             return null;
         });
 
-        Value result = xmppSession2.getManager(RpcManager.class).call(ROMEO, "square", Value.of(2));
+        Value result = xmppSession2.getManager(RpcManager.class).call(ROMEO, "square", Value.of(2)).get();
         Assert.assertEquals(result.getAsInteger().intValue(), 4);
     }
 
@@ -93,10 +95,10 @@ public class RpcManagerTest extends BaseTest {
         });
 
         try {
-            xmppSession2.getManager(RpcManager.class).call(ROMEO, "fault", Value.of(2));
-        } catch (RpcException e) {
-            Assert.assertEquals(e.getFaultCode(), 2);
-            Assert.assertEquals(e.getFaultString(), "faulty");
+            xmppSession2.getManager(RpcManager.class).call(ROMEO, "fault", Value.of(2)).get();
+        } catch (Exception e) {
+            Assert.assertEquals(((RpcException) e.getCause()).getFaultCode(), 2);
+            Assert.assertEquals(((RpcException) e.getCause()).getFaultString(), "faulty");
             return;
         }
         Assert.fail("RpcException expected.");

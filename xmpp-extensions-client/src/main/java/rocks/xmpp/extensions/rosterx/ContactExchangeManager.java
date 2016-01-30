@@ -25,9 +25,6 @@
 package rocks.xmpp.extensions.rosterx;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
-import rocks.xmpp.im.roster.RosterManager;
-import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -37,10 +34,13 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
+import rocks.xmpp.im.roster.RosterManager;
+import rocks.xmpp.im.roster.model.Contact;
+import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.time.Instant;
 import java.util.ArrayDeque;
@@ -48,9 +48,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -118,11 +118,7 @@ public final class ContactExchangeManager extends Manager {
     private void processItems(List<ContactExchange.Item> items, Jid sender, String message, Instant date) {
         if (getTrustedEntities().contains(sender.asBareJid())) {
             for (ContactExchange.Item item : items) {
-                try {
-                    approve(item);
-                } catch (XmppException e1) {
-                    logger.log(Level.SEVERE, e1, () -> "Auto approving roster exchange item failed: " + e1.getMessage());
-                }
+                approve(item);
             }
         } else {
             XmppUtils.notifyEventListeners(contactExchangeListeners, new ContactExchangeEvent(this, items, sender, message, date));
@@ -193,11 +189,10 @@ public final class ContactExchangeManager extends Manager {
      * Suggests the addition of one or more contacts to another user.
      *
      * @param jid      The recipient.
-     * @param contacts The contacts
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @param contacts The contacts.
+     * @return The async result.
      */
-    public final void suggestContactAddition(Jid jid, Contact... contacts) throws XmppException {
+    public AsyncResult<Void> suggestContactAddition(Jid jid, Contact... contacts) {
 
         // Only support adding contacts for now:
         // However, if the sender is a human user and/or the sending application has a primary Service Discovery category of "client" (e.g., a bot) [10], the sending application SHOULD NOT specify an 'action' attribute other than "add"
@@ -216,7 +211,7 @@ public final class ContactExchangeManager extends Manager {
             // http://xmpp.org/extensions/xep-0144.html#stanza
             Presence presence = xmppSession.getManager(PresenceManager.class).getPresence(jid);
             if (presence.isAvailable()) {
-                xmppSession.query(IQ.set(presence.getFrom(), contactExchange));
+                return xmppSession.query(IQ.set(presence.getFrom(), contactExchange), Void.class);
             } else {
                 // If the sending entity does not know that the receiving entity is online and available, it MUST send a <message/> stanza to the receiving entity's "bare JID" (user@host) rather than an <iq/> stanza to a particular resource.
                 Message message = new Message(jid, Message.Type.NORMAL);
@@ -224,6 +219,7 @@ public final class ContactExchangeManager extends Manager {
                 xmppSession.send(message);
             }
         }
+        return new AsyncResult<>(CompletableFuture.completedFuture(null));
     }
 
     /**
@@ -242,10 +238,8 @@ public final class ContactExchangeManager extends Manager {
      *
      * @param item The roster exchange item.
      * @return The action, which was actually performed. This may vary from the specified action, e.g. if you add a contact that already exists, only its groups are updated. If no action was performed, e.g. if you want to delete a contact, that does not exist, null is returned.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
      */
-    public ContactExchange.Item.Action approve(ContactExchange.Item item) throws XmppException {
+    public ContactExchange.Item.Action approve(ContactExchange.Item item) {
         RosterManager rosterManager = xmppSession.getManager(RosterManager.class);
         Contact contact = rosterManager.getContact(item.getJid());
         ContactExchange.Item.Action action = null;

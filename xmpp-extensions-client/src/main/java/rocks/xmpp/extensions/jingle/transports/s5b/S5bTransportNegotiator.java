@@ -51,13 +51,13 @@ public final class S5bTransportNegotiator extends TransportNegotiator<S5bTranspo
     }
 
 
-    private S5bTransportMethod createTransport() throws IOException {
-        S5bTransportMethod s5bTransportMethod = new S5bTransportMethod();
-        List<StreamHost> streamHosts = socks5ByteStreamManager.getAvailableStreamHosts();
-
-        for (StreamHost streamHost : streamHosts) {
-            s5bTransportMethod.getCandidates().add(new S5bTransportMethod.Candidate(UUID.randomUUID().toString(), streamHost.getHost(), streamHost.getJid(), 0, streamHost.getJid().equals(xmppSession.getConnectedResource()) ? S5bTransportMethod.Candidate.Type.DIRECT : S5bTransportMethod.Candidate.Type.PROXY, streamHost.getPort()));
-        }
-        return s5bTransportMethod;
-    }
+//    private S5bTransportMethod createTransport() throws IOException {
+//        S5bTransportMethod s5bTransportMethod = new S5bTransportMethod();
+//        List<StreamHost> streamHosts = socks5ByteStreamManager.getAvailableStreamHosts();
+//
+//        for (StreamHost streamHost : streamHosts) {
+//            s5bTransportMethod.getCandidates().add(new S5bTransportMethod.Candidate(UUID.randomUUID().toString(), streamHost.getHost(), streamHost.getJid(), 0, streamHost.getJid().equals(xmppSession.getConnectedResource()) ? S5bTransportMethod.Candidate.Type.DIRECT : S5bTransportMethod.Candidate.Type.PROXY, streamHost.getPort()));
+//        }
+//        return s5bTransportMethod;
+//    }
 }

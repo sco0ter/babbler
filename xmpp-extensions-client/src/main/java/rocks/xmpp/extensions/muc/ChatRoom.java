@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.muc;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
@@ -38,7 +37,6 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
-import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
 import rocks.xmpp.extensions.muc.model.Actor;
 import rocks.xmpp.extensions.muc.model.Affiliation;
@@ -58,6 +56,7 @@ import rocks.xmpp.extensions.muc.model.user.Status;
 import rocks.xmpp.extensions.register.model.Registration;
 import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,6 +67,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 
@@ -307,11 +307,10 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Enters the room.
      *
      * @param nick The nickname.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the self-presence returned by the chat room.
      */
-    public void enter(String nick) throws XmppException {
-        enter(nick, null, null);
+    public AsyncResult<Presence> enter(String nick) {
+        return enter(nick, null, null);
     }
 
     /**
@@ -319,71 +318,68 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      *
      * @param nick     The nickname.
      * @param password The password.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the self-presence returned by the chat room.
      */
-    public void enter(String nick, String password) throws XmppException {
-        enter(nick, password, null);
+    public AsyncResult<Presence> enter(String nick, String password) {
+        return enter(nick, password, null);
     }
 
     /**
      * Enters the room and requests history messages.
      *
-     * @param nick              The nickname.
-     * @param discussionHistory The history.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @param nick    The nickname.
+     * @param history The history.
+     * @return The async result with the self-presence returned by the chat room.
      */
-    public void enter(String nick, DiscussionHistory discussionHistory) throws XmppException {
-        enter(nick, null, discussionHistory);
+    public AsyncResult<Presence> enter(String nick, DiscussionHistory history) {
+        return enter(nick, null, history);
     }
 
     /**
      * Enters the room with a password and requests history messages.
      *
-     * @param nick              The nickname.
-     * @param password          The password.
-     * @param discussionHistory The history.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @param nick     The nickname.
+     * @param password The password.
+     * @param history  The history.
+     * @return The async result with the self-presence returned by the chat room.
      */
-    public synchronized void enter(final String nick, String password, DiscussionHistory discussionHistory) throws XmppException {
+    public synchronized AsyncResult<Presence> enter(final String nick, String password, DiscussionHistory history) {
         Objects.requireNonNull(nick, "nick must not be null.");
 
         if (entered) {
             throw new IllegalStateException("You already entered this room.");
         }
+        xmppSession.addInboundMessageListener(messageListener);
+        xmppSession.addInboundPresenceListener(presenceListener);
 
-        try {
-            xmppSession.addInboundMessageListener(messageListener);
-            xmppSession.addInboundPresenceListener(presenceListener);
-
-            final Presence enterPresence = new Presence(roomJid.withResource(nick));
-            enterPresence.addExtension(Muc.withPasswordAndHistory(password, discussionHistory));
-            this.nick = nick;
-            xmppSession.sendAndAwaitPresence(enterPresence, presence -> {
-                Jid room = presence.getFrom().asBareJid();
-                return presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence);
-            });
-        } catch (XmppException e) {
-            xmppSession.removeInboundMessageListener(messageListener);
-            xmppSession.removeInboundPresenceListener(presenceListener);
-            throw e;
-        }
-        multiUserChatManager.roomEntered(this, nick);
-        entered = true;
+        final Presence enterPresence = new Presence(roomJid.withResource(nick));
+        enterPresence.getExtensions().add(Muc.withPasswordAndHistory(password, history));
+        this.nick = nick;
+        return xmppSession.sendAndAwaitPresence(enterPresence, presence -> {
+            Jid room = presence.getFrom().asBareJid();
+            return presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence);
+        }).whenComplete((presence, e) -> {
+            if (e != null) {
+                xmppSession.removeInboundMessageListener(messageListener);
+                xmppSession.removeInboundPresenceListener(presenceListener);
+            } else {
+                multiUserChatManager.roomEntered(this, nick);
+                synchronized (this) {
+                    entered = true;
+                }
+            }
+        });
     }
 
     /**
      * Changes the room subject.
      *
      * @param subject The subject.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the message returned by the chat room.
      */
-    public void changeSubject(final String subject) throws XmppException {
+    public AsyncResult<Message> changeSubject(final String subject) {
         Message message = new Message(roomJid, Message.Type.GROUPCHAT, null, subject, null);
-        xmppSession.sendAndAwaitMessage(message, message1 -> message1.getSubject() != null && message1.getSubject().equals(subject));
+        return xmppSession.sendAndAwaitMessage(message, message1 -> message1.getSubject() != null && message1.getSubject().equals(subject));
     }
 
     /**
@@ -414,17 +410,16 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Changes the nickname.
      *
      * @param newNickname The new nickname.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the presence returned by the chat room.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#changenick">7.6 Changing Nickname</a>
      */
-    public synchronized void changeNickname(String newNickname) throws XmppException {
+    public synchronized AsyncResult<Presence> changeNickname(String newNickname) {
         if (!entered) {
             throw new IllegalStateException("You must have entered the room to change your nickname.");
         }
 
         final Presence changeNickNamePresence = new Presence(roomJid.withResource(newNickname));
-        xmppSession.sendAndAwaitPresence(changeNickNamePresence, presence -> presence.getFrom().equals(changeNickNamePresence.getTo()));
+        return xmppSession.sendAndAwaitPresence(changeNickNamePresence, presence -> presence.getFrom().equals(changeNickNamePresence.getTo()));
     }
 
     /**
@@ -476,32 +471,29 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     /**
      * Gets the data form necessary to register with the room.
      *
-     * @return The data form.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the data form.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
      * @see rocks.xmpp.extensions.muc.model.RoomRegistration
      */
-    public DataForm getRegistrationForm() throws XmppException {
-        IQ iq = IQ.get(roomJid, Registration.empty());
-        IQ result = xmppSession.query(iq);
-        Registration registration = result.getExtension(Registration.class);
-        if (registration != null) {
-            return registration.getRegistrationForm();
-        }
-        return null;
+    public AsyncResult<DataForm> getRegistrationForm() {
+        return xmppSession.query(IQ.get(roomJid, Registration.empty())).thenApply(result -> {
+            Registration registration = result.getExtension(Registration.class);
+            if (registration != null) {
+                return registration.getRegistrationForm();
+            }
+            return null;
+        });
     }
 
     /**
      * Registers with the room.
      *
      * @param registration The registration.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
      * @see rocks.xmpp.extensions.muc.model.RoomRegistration
      */
-    public void register(Registration registration) throws XmppException {
+    public AsyncResult<IQ> register(Registration registration) {
         Objects.requireNonNull(registration, "registration must not be null.");
         if (registration.getRegistrationForm() != null) {
             if (registration.getRegistrationForm().getType() != DataForm.Type.SUBMIT) {
@@ -511,27 +503,26 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                 throw new IllegalArgumentException("Data Form is not of type 'http://jabber.org/protocol/muc#register'");
             }
         }
-        xmppSession.query(IQ.set(roomJid, registration));
+        return xmppSession.query(IQ.set(roomJid, registration));
     }
 
     /**
      * Gets your reserved room nickname.
      *
-     * @return The reserved nickname or null, if you don't have a reserved nickname.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the reserved nickname or null, if you don't have a reserved nickname.
      */
-    public String discoverReservedNickname() throws XmppException {
+    public AsyncResult<String> discoverReservedNickname() {
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(roomJid, "x-roomuser-item");
-        if (infoNode != null) {
-            for (Identity identity : infoNode.getIdentities()) {
-                if ("conference".equals(identity.getCategory()) && "text".equals(identity.getType())) {
-                    return identity.getName();
+        return serviceDiscoveryManager.discoverInformation(roomJid, "x-roomuser-item").thenApply(infoNode -> {
+            if (infoNode != null) {
+                for (Identity identity : infoNode.getIdentities()) {
+                    if ("conference".equals(identity.getCategory()) && "text".equals(identity.getType())) {
+                        return identity.getName();
+                    }
                 }
             }
-        }
-        return null;
+            return null;
+        });
     }
 
     /**
@@ -549,35 +540,32 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     /**
      * Exits the room.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#exit">7.14 Exiting a Room</a>
      */
-    public void exit() throws XmppException {
-        exit(null);
+    public AsyncResult<Void> exit() {
+        return exit(null);
     }
 
     /**
      * Exits the room with a custom message.
      *
      * @param message The exit message.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#exit">7.14 Exiting a Room</a>
      */
-    public synchronized void exit(String message) throws XmppException {
+    public synchronized AsyncResult<Void> exit(String message) {
 
         if (!entered) {
-            return;
+            return new AsyncResult<>(CompletableFuture.completedFuture(null));
         }
-        try {
-            xmppSession.sendAndAwaitPresence(new Presence(roomJid.withResource(nick), Presence.Type.UNAVAILABLE, message), presence -> {
-                Jid room = presence.getFrom().asBareJid();
-                return !presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence);
-            });
-        } finally {
+        return xmppSession.sendAndAwaitPresence(new Presence(roomJid.withResource(nick), Presence.Type.UNAVAILABLE, message), presence -> {
+            Jid room = presence.getFrom().asBareJid();
+            return !presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence);
+        }).handle((result, throwable) -> {
             userHasExited();
-        }
+            return null;
+        });
     }
 
     /**
@@ -594,45 +582,42 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     /**
      * Gets the voice list.
      *
-     * @return The voice list.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the voice list.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyvoice">8.5 Modifying the Voice List</a>
      */
-    public List<? extends rocks.xmpp.extensions.muc.model.Item> getVoiceList() throws XmppException {
-        IQ result = xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Role.PARTICIPANT, null, null)));
-        MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
-        return mucAdmin.getItems();
+    public AsyncResult<List<rocks.xmpp.extensions.muc.model.Item>> getVoiceList() {
+        return xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Role.PARTICIPANT, null, null))).thenApply(result -> {
+            MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
+            return mucAdmin.getItems();
+        });
     }
 
     /**
      * Changes multiple affiliations or roles.
      *
      * @param items The items.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyvoice">8.5 Modifying the Voice List</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymod">9.8 Modifying the Moderator List</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyowner">10.5 Modifying the Owner List</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyadmin">10.8 Modifying the Admin List</a>
      */
-    public void changeAffiliationsOrRoles(List<rocks.xmpp.extensions.muc.model.Item> items) throws XmppException {
-        xmppSession.query(IQ.set(roomJid, MucAdmin.withItems(items)));
+    public AsyncResult<IQ> changeAffiliationsOrRoles(List<rocks.xmpp.extensions.muc.model.Item> items) {
+        return xmppSession.query(IQ.set(roomJid, MucAdmin.withItems(items)));
     }
 
     /**
      * Gets the ban list.
      *
-     * @return The ban list.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @return The async result with the ban list.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyban">9.2 Modifying the Ban List</a>
      */
-    public List<? extends rocks.xmpp.extensions.muc.model.Item> getBanList() throws XmppException {
-        IQ result = xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Affiliation.OUTCAST, null, null)));
-        MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
-        return mucAdmin.getItems();
+    public AsyncResult<List<rocks.xmpp.extensions.muc.model.Item>> getBanList() {
+        return xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Affiliation.OUTCAST, null, null))).thenApply(result -> {
+            MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
+            return mucAdmin.getItems();
+        });
     }
 
     /**
@@ -653,8 +638,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param affiliation The new affiliation for the user.
      * @param user        The user.
      * @param reason      The reason.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#ban">9.1 Banning a User</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmember">9.3 Granting Membership</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemember">9.4 Revoking Membership</a>
@@ -663,8 +647,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantadmin">10.6 Granting Admin Status</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokeadmin">10.7 Revoking Admin Status</a>
      */
-    public void changeAffiliation(Affiliation affiliation, Jid user, String reason) throws XmppException {
-        xmppSession.query(IQ.set(roomJid, MucAdmin.withItem(affiliation, user, reason)));
+    public AsyncResult<IQ> changeAffiliation(Affiliation affiliation, Jid user, String reason) {
+        return xmppSession.query(IQ.set(roomJid, MucAdmin.withItem(affiliation, user, reason)));
     }
 
     /**
@@ -683,51 +667,44 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param role     The new role for the user.
      * @param nickname The occupant's nickname.
      * @param reason   The reason.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#kick">8.2 Kicking an Occupant</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantvoice">8.3 Granting Voice to a Visitor</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokevoice">8.4 Revoking Voice from a Participant</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmod">9.6 Granting Moderator Status</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemod">9.7 Revoking Moderator Status</a>
      */
-    public void changeRole(Role role, String nickname, String reason) throws XmppException {
-        xmppSession.query(IQ.set(roomJid, MucAdmin.withItem(role, nickname, reason)));
+    public AsyncResult<IQ> changeRole(Role role, String nickname, String reason) {
+        return xmppSession.query(IQ.set(roomJid, MucAdmin.withItem(role, nickname, reason)));
     }
 
     /**
      * Gets the owners of the room.
      *
-     * @return The owners.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @return The async result with the owners.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
-    public List<? extends rocks.xmpp.extensions.muc.model.Item> getOwners() throws XmppException {
+    public AsyncResult<List<? extends rocks.xmpp.extensions.muc.model.Item>> getOwners() {
         return getByAffiliation(Affiliation.OWNER);
     }
 
     /**
      * Gets the outcasts of the room.
      *
-     * @return The outcasts.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @return The async result with the outcasts.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
-    public List<? extends rocks.xmpp.extensions.muc.model.Item> getOutcasts() throws XmppException {
+    public AsyncResult<List<? extends rocks.xmpp.extensions.muc.model.Item>> getOutcasts() {
         return getByAffiliation(Affiliation.OUTCAST);
     }
 
     /**
      * Gets the admins of the room.
      *
-     * @return The admins.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @return The async result with the admins.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
-    public List<? extends rocks.xmpp.extensions.muc.model.Item> getAdmins() throws XmppException {
+    public AsyncResult<List<? extends rocks.xmpp.extensions.muc.model.Item>> getAdmins() {
         return getByAffiliation(Affiliation.ADMIN);
     }
 
@@ -740,108 +717,102 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * In the context of an open room, the member list is simply a list of users (bare JID and reserved nick) who are registered with the room.
      * </p>
      *
-     * @return The members.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @return The async result with the members.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
-    public List<? extends rocks.xmpp.extensions.muc.model.Item> getMembers() throws XmppException {
+    public AsyncResult<List<? extends rocks.xmpp.extensions.muc.model.Item>> getMembers() {
         return getByAffiliation(Affiliation.MEMBER);
     }
 
-    private List<? extends rocks.xmpp.extensions.muc.model.Item> getByAffiliation(Affiliation affiliation) throws XmppException {
-        IQ result = xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(affiliation, null, null)));
-        MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
-        return mucAdmin.getItems();
+    private AsyncResult<List<? extends rocks.xmpp.extensions.muc.model.Item>> getByAffiliation(Affiliation affiliation) {
+        return xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(affiliation, null, null))).thenApply(result -> {
+            MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
+            return mucAdmin.getItems();
+        });
     }
 
     /**
      * Gets the moderators.
      *
-     * @return The moderators.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @return The async result with the moderators.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymod">9.8 Modifying the Moderator List</a>
      */
-    public List<? extends rocks.xmpp.extensions.muc.model.Item> getModerators() throws XmppException {
-        IQ result = xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Role.MODERATOR, null, null)));
-        MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
-        return mucAdmin.getItems();
+    public AsyncResult<List<rocks.xmpp.extensions.muc.model.Item>> getModerators() {
+        return xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Role.MODERATOR, null, null))).thenApply(result -> {
+            MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
+            return mucAdmin.getItems();
+        });
     }
 
     /**
      * Creates an instant room.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-instant">10.1.2 Creating an Instant Room</a>
      */
-    public void createRoom() throws XmppException {
-        enter(nick);
-        xmppSession.query(IQ.set(roomJid, MucOwner.withConfiguration(new DataForm(DataForm.Type.SUBMIT))));
+    public AsyncResult<IQ> createRoom() {
+        return enter(nick).thenCompose(presence ->
+                xmppSession.query(IQ.set(roomJid, MucOwner.withConfiguration(new DataForm(DataForm.Type.SUBMIT)))));
     }
 
     /**
      * Gets the room information for this chat room.
      *
-     * @return The room info.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @return The async result with the room info.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-roominfo">6.4 Querying for Room Information</a>
      */
-    public RoomInformation getRoomInformation() throws XmppException {
-        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(roomJid);
+    public AsyncResult<RoomInformation> getRoomInformation() {
+        return serviceDiscoveryManager.discoverInformation(roomJid).thenApply(infoNode -> {
 
-        Identity identity = null;
-        Set<MucFeature> mucFeatures = new HashSet<>();
-        RoomInfo roomInfo = null;
+            Identity identity = null;
+            Set<MucFeature> mucFeatures = new HashSet<>();
+            RoomInfo roomInfo = null;
 
-        if (infoNode != null) {
-            Set<Identity> identities = infoNode.getIdentities();
-            Iterator<Identity> iterator = identities.iterator();
-            if (iterator.hasNext()) {
-                identity = iterator.next();
-            }
-            for (String feature : infoNode.getFeatures()) {
-                for (MucFeature mucFeature : MucFeature.values()) {
-                    if (mucFeature.getServiceDiscoveryFeature().equals(feature)) {
-                        mucFeatures.add(mucFeature);
+            if (infoNode != null) {
+                Set<Identity> identities = infoNode.getIdentities();
+                Iterator<Identity> iterator = identities.iterator();
+                if (iterator.hasNext()) {
+                    identity = iterator.next();
+                }
+                for (String feature : infoNode.getFeatures()) {
+                    for (MucFeature mucFeature : MucFeature.values()) {
+                        if (mucFeature.getServiceDiscoveryFeature().equals(feature)) {
+                            mucFeatures.add(mucFeature);
+                        }
+                    }
+                }
+
+                for (DataForm dataForm : infoNode.getExtensions()) {
+                    String formType = dataForm.getFormType();
+                    if (RoomInfo.FORM_TYPE.equals(formType)) {
+                        roomInfo = new RoomInfo(dataForm);
+                        break;
                     }
                 }
             }
-
-            for (DataForm dataForm : infoNode.getExtensions()) {
-                String formType = dataForm.getFormType();
-                if (RoomInfo.FORM_TYPE.equals(formType)) {
-                    roomInfo = new RoomInfo(dataForm);
-                    break;
-                }
-            }
-        }
-
-        return new RoomInformation(identity, mucFeatures, roomInfo);
+            return new RoomInformation(identity, mucFeatures, roomInfo);
+        });
     }
 
     /**
      * Gets the occupants in this room, i.e. their nicknames. This method should be used, when you are not yet in the room.
      *
-     * @return The occupants.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @return The async result with the occupants.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-roomitems">6.5 Querying for Room Items</a>
      * @see #getOccupants()
      */
-    public List<String> discoverOccupants() throws XmppException {
-        ItemNode itemNode = serviceDiscoveryManager.discoverItems(roomJid);
-        List<String> occupants = new ArrayList<>();
-        List<Item> items = itemNode.getItems();
-        items.stream().filter(item -> item.getJid() != null).forEach(item -> {
-            String nickname = item.getJid().getResource();
-            if (nickname != null) {
-                occupants.add(nickname);
-            }
+    public AsyncResult<List<String>> discoverOccupants() {
+        return serviceDiscoveryManager.discoverItems(roomJid).thenApply(itemNode -> {
+            List<String> occupants = new ArrayList<>();
+            List<Item> items = itemNode.getItems();
+            items.stream().filter(item -> item.getJid() != null).forEach(item -> {
+                String nickname = item.getJid().getResource();
+                if (nickname != null) {
+                    occupants.add(nickname);
+                }
+            });
+            return occupants;
         });
-        return occupants;
     }
 
     /**
@@ -859,6 +830,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param nickname The occupant's nickname.
      * @return The occupant.
      */
+
     public Occupant getOccupant(String nickname) {
         return occupantMap.get(nickname);
     }
@@ -870,32 +842,30 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Use this method if you want to create a reserved room or configure an existing room.
      * </p>
      *
-     * @return The configuration form.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @return The async result with the configuration form.
      * @see rocks.xmpp.extensions.muc.model.RoomConfiguration
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
      * @see #configure(rocks.xmpp.extensions.muc.model.RoomConfiguration)
      */
-    public DataForm getConfigurationForm() throws XmppException {
-        IQ result = xmppSession.query(IQ.get(roomJid, MucOwner.empty()));
-        MucOwner mucOwner = result.getExtension(MucOwner.class);
-        return mucOwner.getConfigurationForm();
+    public AsyncResult<DataForm> getConfigurationForm() {
+        return xmppSession.query(IQ.get(roomJid, MucOwner.empty())).thenApply(result -> {
+            MucOwner mucOwner = result.getExtension(MucOwner.class);
+            return mucOwner.getConfigurationForm();
+        });
     }
 
     /**
      * Configures this room.
      *
-     * @param roomConfiguration The room configuration form.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @param roomConfiguration The async result with the room configuration form.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
      * @see #getConfigurationForm()
      */
-    public void configure(RoomConfiguration roomConfiguration) throws XmppException {
+    public AsyncResult<IQ> configure(RoomConfiguration roomConfiguration) {
         Objects.requireNonNull(roomConfiguration, "roomConfiguration must not be null.");
-        MucOwner mucOwner = MucOwner.withConfiguration(roomConfiguration.getDataForm());
-        xmppSession.query(IQ.set(roomJid, mucOwner));
+        MucOwner mucOwner = MucOwner.withConfiguration((roomConfiguration.getDataForm()));
+        return xmppSession.query(IQ.set(roomJid, mucOwner));
     }
 
     /**
@@ -903,6 +873,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      *
      * @return The room name.
      */
+
     public String getName() {
         return name;
     }
@@ -911,24 +882,23 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Destroys the room.
      *
      * @param reason The reason for the room destruction.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#destroyroom">10.9 Destroying a Room</a>
      */
-    public void destroy(String reason) throws XmppException {
+    public AsyncResult<IQ> destroy(String reason) {
         MucOwner mucOwner = MucOwner.withDestroy(roomJid, reason);
-        xmppSession.query(IQ.set(roomJid, mucOwner));
+        return xmppSession.query(IQ.set(roomJid, mucOwner));
+
     }
 
     /**
      * Destroys the room.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#destroyroom">10.9 Destroying a Room</a>
      */
-    public final void destroy() throws XmppException {
-        destroy(null);
+    public final AsyncResult<IQ> destroy() {
+        return destroy(null);
     }
 
     /**
@@ -943,13 +913,11 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     /**
      * Discovers the allowable traffic, i.e. the allowed extensions.
      *
-     * @return The list of allowable features.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the chat service returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the chat service did not respond.
+     * @return The async result with the list of allowable features.
      * @see <a href="http://www.xmpp.org/extensions/xep-0045.html#impl-service-traffic">17.1.1 Allowable Traffic</a>
      */
-    public Set<String> discoverAllowableTraffic() throws XmppException {
-        return serviceDiscoveryManager.discoverInformation(roomJid, "http://jabber.org/protocol/muc#traffic").getFeatures();
+    public AsyncResult<Set<String>> discoverAllowableTraffic() {
+        return serviceDiscoveryManager.discoverInformation(roomJid, "http://jabber.org/protocol/muc#traffic").thenApply(InfoNode::getFeatures);
     }
 
     @Override

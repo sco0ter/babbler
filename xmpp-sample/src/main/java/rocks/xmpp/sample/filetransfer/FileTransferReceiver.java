@@ -24,6 +24,7 @@
 
 package rocks.xmpp.sample.filetransfer;
 
+import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
@@ -65,9 +66,9 @@ public class FileTransferReceiver {
                 FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
                 fileTransferManager.addFileTransferOfferListener(e -> {
                     try {
-                        FileTransfer fileTransfer = e.accept(Paths.get("test.png"));
+                        FileTransfer fileTransfer = e.accept(Paths.get("test.png")).getResult();
                         fileTransfer.transfer();
-                    } catch (IOException e1) {
+                    } catch (IOException | XmppException e1) {
                         e1.printStackTrace();
                     }
                 });

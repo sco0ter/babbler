@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.filetransfer;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.hashes.model.Hash;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.io.File;
 import java.io.IOException;
@@ -94,9 +95,8 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
      *
      * @param outputStream The output stream, to which the file will be written.
      * @return The file transfer object.
-     * @throws java.io.IOException If the byte stream session could not be established.
      */
-    public FileTransfer accept(OutputStream outputStream) throws IOException {
+    public AsyncResult<FileTransfer> accept(OutputStream outputStream) {
         return fileTransferNegotiator.accept(iq, sessionId, fileTransferOffer, protocol, outputStream);
     }
 
@@ -108,7 +108,7 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
      * @return The file transfer object.
      * @throws java.io.IOException If the byte stream session could not be established.
      */
-    public final FileTransfer accept(final Path destination) throws IOException {
+    public final AsyncResult<FileTransfer> accept(final Path destination) throws IOException {
         return accept(Files.newOutputStream(destination));
     }
 
@@ -120,7 +120,7 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
      * @return The file transfer object.
      * @throws java.io.IOException If the byte stream session could not be established.
      */
-    public final FileTransfer accept(final File target) throws IOException {
+    public final AsyncResult<FileTransfer> accept(final File target) throws IOException {
         return accept(target.toPath());
     }
 

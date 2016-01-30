@@ -22,19 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.filetransfer;
-
-import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.io.OutputStream;
-
 /**
- * @author Christian Schudt
+ * Classes for concurrency.
  */
-public interface FileTransferNegotiator {
-
-    AsyncResult<FileTransfer> accept(IQ iq, String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream);
-
-    void reject(IQ iq);
-}
+package rocks.xmpp.util.concurrent;

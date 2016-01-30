@@ -24,7 +24,8 @@
 
 package rocks.xmpp.extensions.bytestreams;
 
-import java.io.IOException;
+import rocks.xmpp.util.concurrent.AsyncResult;
+
 import java.util.EventObject;
 import java.util.function.Consumer;
 
@@ -66,9 +67,8 @@ public abstract class ByteStreamEvent extends EventObject {
      * Accepts the session.
      *
      * @return The byte stream session.
-     * @throws java.io.IOException If the byte stream session could not be established.
      */
-    public abstract ByteStreamSession accept() throws IOException;
+    public abstract AsyncResult<ByteStreamSession> accept();
 
     /**
      * Rejects the session.

@@ -52,23 +52,28 @@ public class RegistrationSample {
                 xmppSession.connect();
 
                 RegistrationManager registrationManager = xmppSession.getManager(RegistrationManager.class);
-                Registration registration = registrationManager.getRegistration();
+                registrationManager.getRegistration().thenAccept(registration -> {
+                    if (!registration.isRegistered()) {
+                        // Usually you would probably show a visual registration form here.
+                        // Then submit the registration as follows:
+                        Registration registration1 = Registration.builder()
+                                .username("user")
+                                .password("pass")
+                                .familyName("Family Name")
+                                .givenName("Given Name")
+                                .nickname("Nick Name")
+                                .email("E-Mail")
+                                .build();
+                        registrationManager.register(registration1);
+                    }
+                    // Login
+                    try {
+                        xmppSession.login("user", "pass", "register");
+                    } catch (XmppException e) {
+                        e.printStackTrace();
+                    }
+                });
 
-                if (!registration.isRegistered()) {
-                    // Usually you would probably show a visual registration form here.
-                    // Then submit the registration as follows:
-                    Registration registration1 = Registration.builder()
-                            .username("user")
-                            .password("pass")
-                            .familyName("Family Name")
-                            .givenName("Given Name")
-                            .nickname("Nick Name")
-                            .email("E-Mail")
-                            .build();
-                    registrationManager.register(registration1);
-                }
-                // Login
-                xmppSession.login("user", "pass", "register");
 
 
             } catch (XmppException e) {

@@ -35,6 +35,7 @@ import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.extensions.disco.model.items.Item;
 
 import java.util.Collection;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Christian Schudt
@@ -54,9 +55,9 @@ public class ServiceDiscoveryIT extends IntegrationTest {
     }
 
     @Test
-    public void testDiscoverService() throws XmppException {
+    public void testDiscoverService() throws ExecutionException, InterruptedException {
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-        Collection<Item> items = serviceDiscoveryManager.discoverServices("http://jabber.org/protocol/pubsub");
+        Collection<Item> items = serviceDiscoveryManager.discoverServices("http://jabber.org/protocol/pubsub").get();
         Assert.assertEquals(items.size(), 1);
     }
 }

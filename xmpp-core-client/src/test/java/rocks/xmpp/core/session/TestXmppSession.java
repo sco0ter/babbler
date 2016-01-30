@@ -28,8 +28,6 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.SameThreadExecutorService;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
@@ -40,6 +38,7 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
+
 
 /**
  * @author Christian Schudt
@@ -105,49 +104,29 @@ public final class TestXmppSession extends XmppSession {
     }
 
     @Override
+    public void connect(Jid from) throws XmppException {
+
+    }
+
+    @Override
     public Future<?> send(StreamElement element) {
         Future<?> future = super.send(element);
         if (mockServer != null && element instanceof Stanza) {
             ((Stanza) element).setFrom(connectedResource);
             mockServer.receive((Stanza) element);
+
         }
         return future;
     }
 
     @Override
-    public void connect(Jid from) throws XmppException {
-    }
-
-    @Override
-    public IQ query(final IQ iq) throws XmppException {
-        final IQ[] result = new IQ[1];
-
-        final Consumer<IQEvent> iqListener = e -> {
-            if (e.getIQ().isResponse() && e.getIQ().getId() != null && e.getIQ().getId().equals(iq.getId())) {
-                result[0] = e.getIQ();
-            }
-        };
-
-        addInboundIQListener(iqListener);
-        send(iq);
-
-        removeInboundIQListener(iqListener);
-        IQ response = result[0];
-        if (response.getType() == IQ.Type.ERROR) {
-            throw new StanzaException(response);
-        }
-        return response;
-    }
-
-    @Override
-    public IQ query(final IQ iq, long timeout) throws XmppException {
-        // Ignore timeout for tests.
-        return query(iq);
-    }
-
-    @Override
     public final Trackable<IQ> sendIQ(final IQ stanza) {
-        return trackAndSend(stanza);
+        Future<?> future = super.send(stanza);
+        if (mockServer != null) {
+            stanza.setFrom(connectedResource);
+            mockServer.receive(stanza);
+        }
+        return null;
     }
 
     @Override

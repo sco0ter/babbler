@@ -24,15 +24,17 @@
 
 package rocks.xmpp.extensions.register;
 
-import rocks.xmpp.core.XmppException;
+
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
-import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.register.model.Registration;
 import rocks.xmpp.extensions.register.model.feature.RegisterFeature;
+import rocks.xmpp.util.concurrent.AsyncResult;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * This manager allows to register, cancel an existing registration (i.e. remove an account) or change the password with a host.
@@ -48,21 +50,19 @@ public final class RegistrationManager extends Manager {
     /**
      * Determines, if in-band registration is supported by the server.
      *
-     * @return True if registration is supported by the server; otherwise false.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned a stanza error. Common errors are {@link rocks.xmpp.core.stanza.model.errors.Condition#CONFLICT} (username is already in use) or {@link rocks.xmpp.core.stanza.model.errors.Condition#NOT_ACCEPTABLE} (some required information not provided).
-     * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
+     * @return The async result with true, if registration is supported by the server; otherwise false.
      */
-    public boolean isRegistrationSupported() throws XmppException {
+    public final AsyncResult<Boolean> isRegistrationSupported() {
         // server returns a stream header to the client and MAY announce support for in-band registration by including the relevant stream feature.
         boolean isSupported = xmppSession.getManager(StreamFeaturesManager.class).getFeatures().containsKey(RegisterFeature.class);
 
         // Since the stream feature is only optional, discover the server features, too.
         if (!isSupported) {
-            ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-            InfoNode infoNode = serviceDiscoveryManager.discoverInformation(xmppSession.getDomain());
-            isSupported = infoNode.getFeatures().contains(Registration.NAMESPACE);
+            EntityCapabilitiesManager entityCapabilitiesManager = xmppSession.getManager(EntityCapabilitiesManager.class);
+            return entityCapabilitiesManager.discoverCapabilities(xmppSession.getDomain())
+                    .thenApply(infoNode -> infoNode.getFeatures().contains(Registration.NAMESPACE));
         }
-        return isSupported;
+        return new AsyncResult<>(CompletableFuture.completedFuture(true));
     }
 
     /**
@@ -72,38 +72,33 @@ public final class RegistrationManager extends Manager {
      * </p>
      * If you are already registered to the server, this method returns your registration data and {@link rocks.xmpp.extensions.register.model.Registration#isRegistered()} returns true.
      *
-     * @return The registration data.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
+     * @return The async result with the registration data.
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-register">3.1 Entity Registers with a Host</a>
      * @see rocks.xmpp.extensions.register.model.Registration
      */
-    public Registration getRegistration() throws XmppException {
-        IQ result = xmppSession.query(IQ.get(Registration.empty()));
-        return result.getExtension(Registration.class);
+    public final AsyncResult<Registration> getRegistration() {
+        return xmppSession.query(IQ.get(Registration.empty()), Registration.class);
     }
 
     /**
      * Registers a new account. Call this method before authenticating.
      *
      * @param registration The registration.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned a stanza error. Common errors are {@link rocks.xmpp.core.stanza.model.errors.Condition#CONFLICT} (username is already in use) or {@link rocks.xmpp.core.stanza.model.errors.Condition#NOT_ACCEPTABLE} (some required information not provided).
-     * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-register">3.1 Entity Registers with a Host</a>
      */
-    public void register(Registration registration) throws XmppException {
-        xmppSession.query(IQ.set(registration));
+    public final AsyncResult<Void> register(Registration registration) {
+        return xmppSession.query(IQ.set(registration), Void.class);
     }
 
     /**
      * Cancels a registration. This method must be called after having authenticated to the server.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-cancel">3.2 Entity Cancels an Existing Registration</a>
      */
-    public void cancelRegistration() throws XmppException {
-        xmppSession.query(IQ.set(Registration.remove()));
+    public final AsyncResult<Void> cancelRegistration() {
+        return xmppSession.query(IQ.set(Registration.remove()), Void.class);
     }
 
     /**
@@ -111,11 +106,11 @@ public final class RegistrationManager extends Manager {
      *
      * @param username The user name.
      * @param password The password.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the server returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the server did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-changepw">3.3 User Changes Password</a>
      */
-    public void changePassword(String username, String password) throws XmppException {
-        xmppSession.query(IQ.set(Registration.builder().username(username).password(password).build()));
+
+    public final AsyncResult<Void> changePassword(String username, String password) {
+        return xmppSession.query(new IQ(IQ.Type.SET, Registration.builder().username(username).password(password).build()), Void.class);
     }
 }

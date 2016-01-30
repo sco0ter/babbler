@@ -25,13 +25,13 @@
 package rocks.xmpp.extensions.bob;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bob.model.Data;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -69,18 +69,18 @@ class BitsOfBinaryManager extends Manager {
      *
      * @param contentId Gets the data from
      * @param to        The recipient. This should be a full JID.
-     * @return The data.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error, e.g. {@link rocks.xmpp.core.stanza.model.errors.ItemNotFound}, if the data was not found.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the data.
      */
-    public Data getData(String contentId, Jid to) throws XmppException {
-        IQ result = xmppSession.query(IQ.get(to, new Data(contentId)));
-        Data data = result.getExtension(Data.class);
-//        // Only cache the data, if the max-age attribute absent or not zero.
+
+    public AsyncResult<Data> getData(String contentId, Jid to) {
+        return xmppSession.query(IQ.get(to, new Data(contentId))).thenApply(result -> {
+            Data data = result.getExtension(Data.class);
+            // Only cache the data, if the max-age attribute absent or not zero.
 //        if (data != null && (data.getMaxAge() != null && data.getMaxAge() != 0 || data.getMaxAge() == null)) {
 //            dataCache.put(contentId, data);
 //        }
-        return data;
+            return data;
+        });
     }
 
     /**
@@ -89,6 +89,7 @@ class BitsOfBinaryManager extends Manager {
      *
      * @param data The data.
      */
+
     public void put(Data data) {
         dataCache.put(data.getContentId(), data);
     }

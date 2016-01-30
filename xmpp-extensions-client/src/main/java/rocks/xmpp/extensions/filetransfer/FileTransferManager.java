@@ -37,11 +37,11 @@ import rocks.xmpp.extensions.si.StreamInitiationManager;
 import rocks.xmpp.extensions.si.model.StreamInitiation;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -49,12 +49,14 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Set;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
+
 
 /**
  * @author Christian Schudt
@@ -83,21 +85,21 @@ public final class FileTransferManager extends Manager {
      * @param description The description of the file.
      * @param recipient   The recipient's JID (must be a full JID).
      * @param timeout     The timeout (indicates how long to wait until the file has been downloaded).
-     * @throws FileTransferRejectedException               If the recipient rejected the file.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the user is unavailable or failed to download the file.
-     * @throws rocks.xmpp.core.session.NoResponseException If the recipient did not downloaded the file within the timeout.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
      */
-    public void offerFile(URL url, String description, Jid recipient, long timeout) throws XmppException {
-        try {
-            xmppSession.query(IQ.set(recipient, new OobIQ(url, description)), timeout);
-        } catch (StanzaException e) {
-            if (e.getCondition() == Condition.NOT_ACCEPTABLE) {
-                throw new FileTransferRejectedException();
-            } else {
-                throw e;
-            }
-        }
+    public final AsyncResult<IQ> offerFile(URL url, String description, Jid recipient, long timeout) {
+        return xmppSession.query(IQ.set(recipient, new OobIQ(url, description)), timeout);
+// TODO
+//        try {
+//            xmppSession.query(IQ.set(recipient, new OobIQ(url, description)), timeout);
+//        } catch (StanzaException e) {
+//            if (e.getCondition() == Condition.NOT_ACCEPTABLE) {
+//                throw new FileTransferRejectedException();
+//            } else {
+//                throw e;
+//            }
+//        }
     }
 
     /**
@@ -108,13 +110,10 @@ public final class FileTransferManager extends Manager {
      * @param description The description of the file.
      * @param recipient   The recipient's JID (must be a <em>full</em> JID, i. e. including {@code resource}).
      * @param timeout     The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
-     * @return The file transfer object.
-     * @throws FileTransferRejectedException               If the recipient rejected the file.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the user is unavailable or failed to download the file.
-     * @throws rocks.xmpp.core.session.NoResponseException If the recipient did not downloaded the file within the timeout.
-     * @throws java.io.IOException                         If the file could not be read.
+     * @return The async result with the file transfer object.
+     * @throws IOException If the file can't be read.
      */
-    public final FileTransfer offerFile(final File file, final String description, final Jid recipient, final long timeout) throws XmppException, IOException {
+    public final AsyncResult<FileTransfer> offerFile(final File file, final String description, final Jid recipient, final long timeout) throws IOException {
         return offerFile(requireNonNull(file, "file must not be null.").toPath(), description, recipient, timeout);
     }
 
@@ -126,13 +125,10 @@ public final class FileTransferManager extends Manager {
      * @param description The description of the file.
      * @param recipient   The recipient's JID (must be a <em>full</em> JID, i. e. including {@code resource}).
      * @param timeout     The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
-     * @return The file transfer object.
-     * @throws FileTransferRejectedException               If the recipient rejected the file.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the user is unavailable or failed to download the file.
-     * @throws rocks.xmpp.core.session.NoResponseException If the recipient did not downloaded the file within the timeout.
-     * @throws java.io.IOException                         If the file could not be read.
+     * @return The async result with the file transfer object.
+     * @throws IOException If the file can't be read.
      */
-    public final FileTransfer offerFile(final Path source, final String description, final Jid recipient, final long timeout) throws XmppException, IOException {
+    public final AsyncResult<FileTransfer> offerFile(final Path source, final String description, final Jid recipient, final long timeout) throws IOException {
         if (Files.notExists(requireNonNull(source, "source must not be null."))) {
             throw new NoSuchFileException(source.getFileName().toString());
         }
@@ -150,35 +146,45 @@ public final class FileTransferManager extends Manager {
      * @param description  The description of the file.
      * @param recipient    The recipient's JID (must be a <em>full</em> JID, i. e. including {@code resource}).
      * @param timeout      The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
-     * @return The file transfer object.
-     * @throws FileTransferRejectedException               If the recipient rejected the file.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the user is unavailable or failed to download the file.
-     * @throws rocks.xmpp.core.session.NoResponseException If the recipient did not downloaded the file within the timeout.
-     * @throws java.io.IOException                         If the file could not be read.
+     * @return The async result with the file transfer object.
      */
-    public final FileTransfer offerFile(final InputStream source, final String fileName, final long fileSize, Instant lastModified, final String description, final Jid recipient, final long timeout) throws XmppException, IOException {
+    public final AsyncResult<FileTransfer> offerFile(final InputStream source, final String fileName, final long fileSize, Instant lastModified, final String description, final Jid recipient, final long timeout) {
         if (!requireNonNull(recipient, "jid must not be null.").isFullJid()) {
             throw new IllegalArgumentException("recipient must be a full JID (including resource)");
         }
-
         // Before a Stream Initiation is attempted the Sender should be sure that the Receiver supports both Stream Initiation and the specific profile that they wish to use.
-        if (!(this.entityCapabilitiesManager.isSupported(StreamInitiation.NAMESPACE, recipient) && this.entityCapabilitiesManager.isSupported(SIFileTransferOffer.NAMESPACE, recipient))) {
-            throw new XmppException("Feature not supported");
-        }
-
-        final SIFileTransferOffer fileTransfer = new SIFileTransferOffer(fileName, fileSize, lastModified, null, description, null);
-        final String mimeType = URLConnection.guessContentTypeFromStream(source); // Files.probeContentType(file.toPath());
-
-        try {
-            final OutputStream outputStream = this.streamInitiationManager.initiateStream(recipient, fileTransfer, mimeType, timeout);
-            return new FileTransfer(source, outputStream, fileSize);
-        } catch (final StanzaException e) {
-            if (e.getCondition() == Condition.FORBIDDEN) {
-                throw new FileTransferRejectedException();
-            } else {
-                throw e;
+        return this.entityCapabilitiesManager.isSupported(StreamInitiation.NAMESPACE, recipient).thenCompose(isSISupported -> {
+            if (!isSISupported) {
+                throw new CompletionException(new XmppException("Feature not supported"));
             }
-        }
+            return this.entityCapabilitiesManager.isSupported(SIFileTransferOffer.NAMESPACE, recipient).thenCompose(isSIFileTransferSupported -> {
+                if (!isSIFileTransferSupported) {
+                    throw new CompletionException(new XmppException("Feature not supported"));
+                }
+                final SIFileTransferOffer fileTransfer = new SIFileTransferOffer(fileName, fileSize, lastModified, null, description, null);
+                final String mimeType; // Files.probeContentType(file.toPath());
+                try {
+                    mimeType = URLConnection.guessContentTypeFromStream(source);
+                } catch (IOException e) {
+                    throw new CompletionException(e);
+                }
+
+                return this.streamInitiationManager.initiateStream(recipient, fileTransfer, mimeType, timeout).handle((outputStream, e) -> {
+                    if (e != null) {
+                        if (e instanceof CompletionException) {
+                            if (e.getCause() instanceof StanzaException && ((StanzaException) e.getCause()).getCondition() == Condition.FORBIDDEN) {
+                                throw new CompletionException(new FileTransferRejectedException());
+                            } else {
+                                throw (CompletionException) e;
+                            }
+                        } else {
+                            throw new CompletionException(e);
+                        }
+                    }
+                    return new FileTransfer(source, outputStream, fileSize);
+                });
+            });
+        });
     }
 
     public void fileTransferOffered(final IQ iq, final String sessionId, final String mimeType, final FileTransferOffer fileTransferOffer, final Object protocol, final FileTransferNegotiator fileTransferNegotiator) {

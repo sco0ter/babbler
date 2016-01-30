@@ -47,6 +47,7 @@ import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
@@ -455,7 +456,7 @@ public final class XmppClient extends XmppSession {
         logger.log(Level.FINE, "Negotiating resource binding, resource: {0}.", resource);
 
         // Bind the resource
-        IQ result = query(IQ.set(new Bind(this.resource)));
+        IQ result = query(IQ.set(new Bind(this.resource))).getResult();
 
         Bind bindResult = result.getExtension(Bind.class);
         this.connectedResource = bindResult.getJid();
@@ -542,9 +543,8 @@ public final class XmppClient extends XmppSession {
      * @param feature The feature, usually defined by an XMPP Extension Protocol, e.g. "urn:xmpp:ping".
      * @param jid     The XMPP entity.
      * @return True, if the XMPP entity supports the given feature; otherwise false.
-     * @throws XmppException If an error occurred while discovering support.
      */
-    public final boolean isSupported(String feature, Jid jid) throws XmppException {
+    public final AsyncResult<Boolean> isSupported(String feature, Jid jid) {
         return getManager(EntityCapabilitiesManager.class).isSupported(feature, jid);
     }
 }

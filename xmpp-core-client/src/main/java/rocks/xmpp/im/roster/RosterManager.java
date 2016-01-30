@@ -25,22 +25,22 @@
 package rocks.xmpp.im.roster;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
-import rocks.xmpp.im.roster.model.Contact;
-import rocks.xmpp.im.roster.model.ContactGroup;
-import rocks.xmpp.im.roster.model.Roster;
-import rocks.xmpp.im.roster.versioning.model.RosterVersioning;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
-import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.extensions.privatedata.PrivateDataManager;
 import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
+import rocks.xmpp.im.roster.model.Contact;
+import rocks.xmpp.im.roster.model.ContactGroup;
+import rocks.xmpp.im.roster.model.Roster;
+import rocks.xmpp.im.roster.versioning.model.RosterVersioning;
+import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.cache.DirectoryCache;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayInputStream;
@@ -57,6 +57,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
@@ -382,7 +384,7 @@ public final class RosterManager extends Manager {
     }
 
     /**
-     * Gets the contact groups. The returned collection is sorted. It should not be shared
+     * Gets the contact groups. The returned collection is sorted. It should not be shared.
      *
      * @return The contact groups.
      */
@@ -454,44 +456,56 @@ public final class RosterManager extends Manager {
      * if there's a cached version of your roster in the {@linkplain rocks.xmpp.core.session.XmppSessionConfiguration#getCacheDirectory() cache directory}.
      * If so and if Roster Versioning is supported by the server, the cached version is returned and any missing roster items are sent later by the server via roster pushes.
      *
-     * @return The roster.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async roster result.
      */
-    public final Roster requestRoster() throws XmppException {
+    public final AsyncResult<Roster> requestRoster() {
+        AsyncResult<Void> rosterDelimiterQuery;
+
         // XEP-0083: A compliant client SHOULD ask for the nested delimiter before requesting the user's roster
         if (isAskForGroupDelimiter()) {
-            try {
-                PrivateDataManager privateDataManager = xmppSession.getManager(PrivateDataManager.class);
-                RosterDelimiter rosterDelimiter = privateDataManager.getData(RosterDelimiter.class);
-                setGroupDelimiter(rosterDelimiter.getRosterDelimiter());
-            } catch (Exception e) {
-                logger.log(Level.WARNING, "Roster delimiter could not be retrieved from private storage.");
-            }
-        }
-
-        Roster rosterRequest;
-        Roster roster = null;
-        if (isRosterVersioningSupported()) {
-            // If a client supports roster versioning and the server to which it has connected advertises support for roster versioning as described in the foregoing section, then the client SHOULD include the 'ver' element in its request for the roster.
-            // If the client includes the 'ver' attribute in its roster get, it sets the attribute's value to the version ID associated with its last cache of the roster.
-            roster = readRosterFromCache();
-            // If the client has not yet cached the roster or the cache is lost or corrupted, but the client wishes to bootstrap the use of roster versioning, it MUST set the 'ver' attribute to the empty string (i.e., ver="").
-            String ver = roster != null ? roster.getVersion() : "";
-            rosterRequest = new Roster(ver);
+            PrivateDataManager privateDataManager = xmppSession.getManager(PrivateDataManager.class);
+            AsyncResult<RosterDelimiter> query = privateDataManager.getData(RosterDelimiter.class);
+            rosterDelimiterQuery = query.exceptionally(e -> {
+                // Ignore the exception, so that the stage does not complete exceptionally. Log it instead and return a null delimiter.
+                // An exception here should not prevent loading the roster and eventually the login process.
+                if (e != null) {
+                    logger.log(Level.WARNING, "Roster delimiter could not be retrieved from private storage.", e);
+                }
+                return null;
+            }).thenAccept(rosterDelimiter -> setGroupDelimiter(rosterDelimiter != null ? rosterDelimiter.getRosterDelimiter() : null));
         } else {
-            // If the server does not advertise support for roster versioning, the client MUST NOT include the 'ver' attribute.
-            rosterRequest = new Roster();
+            rosterDelimiterQuery = new AsyncResult<>(CompletableFuture.completedFuture(null));
         }
+        return rosterDelimiterQuery.thenCompose(result -> {
 
-        IQ result = xmppSession.query(IQ.get(rosterRequest));
-        Roster rosterResult = result.getExtension(Roster.class);
-        // null result means, the requested roster version (from cache) is taken and any updates (if any) are done via roster pushes.
-        if (rosterResult != null) {
-            roster = rosterResult;
-        }
-        updateRoster(roster, false);
-        return roster;
+            Roster rosterRequest;
+            Roster cachedRoster = null;
+            if (isRosterVersioningSupported()) {
+                // If a client supports roster versioning and the server to which it has connected advertises support for roster versioning as described in the foregoing section, then the client SHOULD include the 'ver' element in its request for the roster.
+                // If the client includes the 'ver' attribute in its roster get, it sets the attribute's value to the version ID associated with its last cache of the roster.
+                cachedRoster = readRosterFromCache();
+                // If the client has not yet cached the roster or the cache is lost or corrupted, but the client wishes to bootstrap the use of roster versioning, it MUST set the 'ver' attribute to the empty string (i.e., ver="").
+                String ver = cachedRoster != null ? cachedRoster.getVersion() : "";
+                rosterRequest = new Roster(ver);
+            } else {
+                // If the server does not advertise support for roster versioning, the client MUST NOT include the 'ver' attribute.
+                rosterRequest = new Roster();
+            }
+            final Roster tempRoster = cachedRoster;
+
+            return xmppSession.query(new IQ(IQ.Type.GET, rosterRequest)).thenApply(iq -> {
+                Roster rosterResult = iq.getExtension(Roster.class);
+                Roster currentRoster;
+                // null result means, the requested roster version (from cache) is taken and any updates (if any) are done via roster pushes.
+                if (rosterResult != null) {
+                    currentRoster = rosterResult;
+                } else {
+                    currentRoster = tempRoster;
+                }
+                updateRoster(currentRoster, false);
+                return currentRoster;
+            });
+        });
     }
 
     /**
@@ -500,38 +514,37 @@ public final class RosterManager extends Manager {
      * @param contact             The contact.
      * @param requestSubscription If true, the contact is also sent a subscription request.
      * @param status              The optional status text, which is sent together with a subscription request. May be null.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      */
-    public final void addContact(Contact contact, boolean requestSubscription, String status) throws XmppException {
+    public final AsyncResult<Void> addContact(Contact contact, boolean requestSubscription, String status) {
         Objects.requireNonNull(contact, "contact must not be null.");
-        xmppSession.query(IQ.set(new Roster(contact)));
-        if (requestSubscription) {
-            xmppSession.getManager(PresenceManager.class).requestSubscription(contact.getJid(), status);
-        }
+        AsyncResult<IQ> query = xmppSession.query(IQ.set(new Roster(contact)));
+        return query.thenRun(() -> {
+            if (requestSubscription) {
+                xmppSession.getManager(PresenceManager.class).requestSubscription(contact.getJid(), status);
+            }
+        });
     }
 
     /**
      * Updates a contact in the roster.
      *
      * @param contact The contact to update.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      */
-    public final void updateContact(Contact contact) throws XmppException {
-        addContact(contact, false, null);
+    public final AsyncResult<Void> updateContact(Contact contact) {
+        return addContact(contact, false, null);
     }
 
     /**
      * Removes a contact from the roster.
      *
      * @param jid The contact's JID.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      */
-    public final void removeContact(Jid jid) throws XmppException {
+    public final AsyncResult<Void> removeContact(Jid jid) {
         Roster roster = new Roster(new Contact(jid, null, null, null, Contact.Subscription.REMOVE, Collections.emptyList()));
-        xmppSession.query(IQ.set(roster));
+        return xmppSession.query(IQ.set(roster), Void.class);
     }
 
     /**
@@ -539,10 +552,9 @@ public final class RosterManager extends Manager {
      *
      * @param contactGroup The contact group.
      * @param name         The new name.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      */
-    public final void renameContactGroup(ContactGroup contactGroup, String name) throws XmppException {
+    public final AsyncResult<Void> renameContactGroup(ContactGroup contactGroup, String name) {
         // Make this method synchronized so that roster pushes (which will occur during this method) don't mess up with this logic here (because the ContactGroup objects are reused and modified).
         int depth = -1;
         // Determine the depth of this group.
@@ -551,7 +563,7 @@ public final class RosterManager extends Manager {
             parentGroup = parentGroup.getParentGroup();
             depth++;
         } while (parentGroup != null);
-        replaceGroupName(contactGroup, name, depth);
+        return replaceGroupName(contactGroup, name, depth);
     }
 
     /**
@@ -560,10 +572,9 @@ public final class RosterManager extends Manager {
      * @param contactGroup The contact group.
      * @param name         The new group name,
      * @param index        The index of the group name.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      */
-    private synchronized void replaceGroupName(ContactGroup contactGroup, String name, int index) throws XmppException {
+    private synchronized AsyncResult<Void> replaceGroupName(ContactGroup contactGroup, String name, int index) {
         // Update each contact in this group with the new group name.
         String newName = name;
         if (groupDelimiter != null && !groupDelimiter.isEmpty()) {
@@ -579,18 +590,22 @@ public final class RosterManager extends Manager {
             newName = sb.toString();
         }
 
+        Collection<CompletionStage<?>> completionStages = new ArrayList<>();
         for (Contact contact : contactGroup.getContacts()) {
             Collection<String> newGroups = new ArrayDeque<>(contact.getGroups());
             newGroups.remove(contactGroup.getFullName());
             newGroups.add(newName);
             // Only do a roster update, if the groups have really changed.
             if (!contact.getGroups().equals(newGroups)) {
-                updateContact(new Contact(contact.getJid(), contact.getName(), newGroups));
+                completionStages.add(updateContact(new Contact(contact.getJid(), contact.getName(), newGroups)));
             }
         }
         for (ContactGroup subGroup : contactGroup.getGroups()) {
-            replaceGroupName(subGroup, name, index);
+            completionStages.add(replaceGroupName(subGroup, name, index));
         }
+        return new AsyncResult<>(CompletableFuture.allOf(completionStages.stream()
+                .map(stage -> stage.toCompletableFuture())
+                .toArray(CompletableFuture<?>[]::new)));
     }
 
     /**
@@ -598,20 +613,23 @@ public final class RosterManager extends Manager {
      * All contacts in this group and all sub groups are moved to the parent group (if present) or to no group at all.
      *
      * @param contactGroup The contact group.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      */
-    public final void removeContactGroup(ContactGroup contactGroup) throws XmppException {
+    public final AsyncResult<Void> removeContactGroup(ContactGroup contactGroup) {
         Collection<Contact> allContacts = collectAllContactsInGroup(contactGroup);
+        CompletableFuture<?>[] completableFutures;
         if (contactGroup.getParentGroup() != null) {
-            for (Contact contact : allContacts) {
-                updateContact(new Contact(contact.getJid(), contact.getName(), contactGroup.getParentGroup().getFullName()));
-            }
+            completableFutures = allContacts.stream()
+                    .map(contact -> updateContact(new Contact(contact.getJid(), contact.getName(), contactGroup.getParentGroup().getFullName())).thenRun(() -> {
+                    }).toCompletableFuture())
+                    .toArray(CompletableFuture<?>[]::new);
         } else {
-            for (Contact contact : allContacts) {
-                updateContact(new Contact(contact.getJid(), contact.getName()));
-            }
+            completableFutures = allContacts.stream()
+                    .map(contact -> updateContact(new Contact(contact.getJid(), contact.getName())).thenRun(() -> {
+                    }).toCompletableFuture())
+                    .toArray(CompletableFuture<?>[]::new);
         }
+        return new AsyncResult<>(CompletableFuture.allOf(completableFutures));
     }
 
     /**
@@ -642,14 +660,13 @@ public final class RosterManager extends Manager {
      * Stores the roster group delimiter in the private storage and afterwards sets it.
      *
      * @param groupDelimiter The group delimiter.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      * @see #setGroupDelimiter(String)
      * @see <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
      */
-    public final synchronized void storeGroupDelimiter(String groupDelimiter) throws XmppException {
-        privateDataManager.storeData(RosterDelimiter.of(groupDelimiter));
-        setGroupDelimiter(groupDelimiter);
+    public final AsyncResult<Void> storeGroupDelimiter(String groupDelimiter) {
+        return privateDataManager.storeData(RosterDelimiter.of(groupDelimiter))
+                .thenAccept(result -> setGroupDelimiter(groupDelimiter));
     }
 
     /**

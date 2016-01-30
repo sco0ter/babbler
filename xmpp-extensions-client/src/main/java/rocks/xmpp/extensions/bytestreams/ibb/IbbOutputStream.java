@@ -80,7 +80,7 @@ final class IbbOutputStream extends OutputStream {
             return;
         }
         try {
-            ibbSession.send(Arrays.copyOf(buffer, n));
+            ibbSession.send(Arrays.copyOf(buffer, n)).getResult();
         } catch (XmppException e) {
             throw new IOException(e);
         } finally {

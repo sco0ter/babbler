@@ -25,11 +25,11 @@
 package rocks.xmpp.extensions.search;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.search.model.Search;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * The search manager allows to perform search requests on a server or service component according to <a href="http://xmpp.org/extensions/xep-0055.html">XEP-0055: Jabber Search</a>.
@@ -60,13 +60,10 @@ public final class SearchManager extends Manager {
      * </blockquote>
      *
      * @param service The service address.
-     * @return The possible search fields and instructions or null, if search is not supported. Search fields are supported if they are not null.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @return The async result with the possible search fields and instructions or null, if search is not supported. Search fields are supported if they are not null.
      */
-    public Search discoverSearchFields(Jid service) throws XmppException {
-        IQ result = xmppSession.query(IQ.get(service, new Search()));
-        return result.getExtension(Search.class);
+    public AsyncResult<Search> discoverSearchFields(Jid service) {
+        return xmppSession.query(IQ.get(service, new Search()), Search.class);
     }
 
     /**
@@ -75,12 +72,9 @@ public final class SearchManager extends Manager {
      *
      * @param search  The search parameters.
      * @param service The service, which will perform the search, usually a server or server component.
-     * @return The search result (see {@link Search#getItems()}) or null if search is not supported.
-     * @throws rocks.xmpp.core.stanza.StanzaException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
+     * @return The async result with the search result (see {@link Search#getItems()}) or null if search is not supported.
      */
-    public Search search(Search search, Jid service) throws XmppException {
-        IQ result = xmppSession.query(IQ.set(service, search));
-        return result.getExtension(Search.class);
+    public AsyncResult<Search> search(Search search, Jid service) {
+        return xmppSession.query(IQ.set(service, search), Search.class);
     }
 }

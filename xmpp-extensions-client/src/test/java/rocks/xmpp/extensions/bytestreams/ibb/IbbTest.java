@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
@@ -37,6 +36,7 @@ import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Christian Schudt
@@ -58,7 +58,7 @@ public class IbbTest extends BaseTest {
     }
 
     @Test
-    public void testIbbSessionRejection() {
+    public void testIbbSessionRejection() throws InterruptedException {
         MockServer mockServer = new MockServer();
         final XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         final XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
@@ -68,10 +68,10 @@ public class IbbTest extends BaseTest {
         InBandByteStreamManager inBandBytestreamManager1 = xmppSession1.getManager(InBandByteStreamManager.class);
         boolean rejected = false;
         try {
-            inBandBytestreamManager1.initiateSession(JULIET, UUID.randomUUID().toString(), 4096);
-        } catch (XmppException e) {
-            if (e instanceof StanzaException) {
-                if (((StanzaException) e).getCondition() == Condition.NOT_ACCEPTABLE) {
+            inBandBytestreamManager1.initiateSession(JULIET, UUID.randomUUID().toString(), 4096).get();
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof StanzaException) {
+                if (((StanzaException) e.getCause()).getCondition() == Condition.NOT_ACCEPTABLE) {
                     rejected = true;
                 }
             }

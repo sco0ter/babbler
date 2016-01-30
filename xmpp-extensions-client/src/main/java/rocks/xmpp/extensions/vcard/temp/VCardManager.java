@@ -25,16 +25,14 @@
 package rocks.xmpp.extensions.vcard.temp;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Presence;
-import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.extensions.avatar.AvatarManager;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
-
-import java.util.Objects;
+import rocks.xmpp.im.subscription.PresenceManager;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * This manager allows to retrieve or save one owns vCard or retrieve another user's vCard.
@@ -53,49 +51,42 @@ public final class VCardManager extends Manager {
     /**
      * Gets the vCard of the current user.
      *
-     * @return The vCard.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the vCard.
      */
-    public VCard getVCard() throws XmppException {
-        IQ result = xmppSession.query(IQ.get(new VCard()));
-        return result.getExtension(VCard.class);
-    }
-
-    /**
-     * Saves or updates a vCard.
-     *
-     * @param vCard The vCard.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
-     */
-    public void setVCard(VCard vCard) throws XmppException {
-        // Update the vCard
-        xmppSession.query(IQ.set(vCard));
-
-        // Then inform about the update by sending a presence. The avatar manager will add the update extension.
-        AvatarManager avatarManager = xmppSession.getManager(AvatarManager.class);
-        if (isEnabled() && avatarManager.isEnabled()) {
-            Presence presence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
-            if (presence == null) {
-                presence = new Presence();
-            }
-            presence.getExtensions().clear();
-            xmppSession.send(presence);
-        }
+    public AsyncResult<VCard> getVCard() {
+        return xmppSession.query(IQ.get(new VCard()), VCard.class);
     }
 
     /**
      * Gets the vCard of another user.
      *
      * @param jid The user's JID.
-     * @return The vCard of the other user or null, if it does not exist.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result of the vCard which may be null, if it does not exist.
      */
-    public VCard getVCard(Jid jid) throws XmppException {
-        Objects.requireNonNull(jid, "jid must not be null.");
-        IQ result = xmppSession.query(IQ.get(jid.asBareJid(), new VCard()));
-        return result.getExtension(VCard.class);
+    public AsyncResult<VCard> getVCard(Jid jid) {
+        return xmppSession.query(IQ.get(jid.asBareJid(), new VCard()), VCard.class);
+    }
+
+    /**
+     * Saves or updates a vCard.
+     *
+     * @param vCard The vCard.
+     * @return The async result.
+     */
+    public AsyncResult<Void> setVCard(VCard vCard) {
+        // Update the vCard
+        AsyncResult<IQ> query = xmppSession.query(IQ.set(vCard));
+        return query.thenRun(() -> {
+            // Then inform about the update by sending a presence. The avatar manager will add the update extension.
+            AvatarManager avatarManager = xmppSession.getManager(AvatarManager.class);
+            if (isEnabled() && avatarManager.isEnabled()) {
+                Presence presence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
+                if (presence == null) {
+                    presence = new Presence();
+                }
+                presence.getExtensions().clear();
+                xmppSession.send(presence);
+            }
+        });
     }
 }

@@ -25,19 +25,18 @@
 package rocks.xmpp.extensions.pubsub;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
-import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.pubsub.model.Affiliation;
 import rocks.xmpp.extensions.pubsub.model.NodeType;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
 import rocks.xmpp.extensions.pubsub.model.Subscription;
 import rocks.xmpp.extensions.pubsub.model.owner.PubSubOwner;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -45,6 +44,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
 
 /**
  * This class acts a facade to deal with a remote pubsub service.
@@ -78,14 +78,11 @@ public final class PubSubService {
     /**
      * Discovers the features, which are supported by the pubsub service.
      *
-     * @return The set of supported features.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the set of supported features.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-features">5.1 Discover Features</a>
      */
-    public Collection<PubSubFeature> discoverFeatures() throws XmppException {
-        InfoNode infoNode = serviceDiscoveryManager.discoverInformation(service);
-        return getFeatures(infoNode);
+    public AsyncResult<Collection<PubSubFeature>> discoverFeatures() {
+        return serviceDiscoveryManager.discoverInformation(service).thenApply(this::getFeatures);
     }
 
     Collection<PubSubFeature> getFeatures(InfoNode infoNode) {
@@ -107,14 +104,16 @@ public final class PubSubService {
     /**
      * Discovers the first-level nodes of this pubsub service.
      *
-     * @return The list of nodes.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the list of nodes.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-nodes">5.2 Discover Nodes</a>
      */
-    public List<PubSubNode> discoverNodes() throws XmppException {
-        ItemNode itemNode = serviceDiscoveryManager.discoverItems(service);
-        return itemNode.getItems().stream().map(item -> new PubSubNode(item.getNode(), service, xmppSession)).collect(Collectors.toList());
+    public AsyncResult<List<PubSubNode>> discoverNodes() {
+        return serviceDiscoveryManager.discoverItems(service).thenApply(itemNode ->
+                itemNode.getItems()
+                        .stream()
+                        .map(item -> new PubSubNode(item.getNode(), service, xmppSession))
+                        .collect(Collectors.toList())
+        );
     }
 
     /**
@@ -130,57 +129,53 @@ public final class PubSubService {
     /**
      * Gets the subscriptions for all nodes.
      *
-     * @return The subscriptions for all nodes.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the subscriptions for all nodes.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-subscriptions">5.6 Retrieve Subscriptions</a>
      */
-    private List<Subscription> getSubscriptions() throws XmppException {
-        IQ result = xmppSession.query(IQ.get(service, PubSub.withSubscriptions()));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getSubscriptions();
+    public AsyncResult<List<Subscription>> getSubscriptions() {
+        return xmppSession.query(IQ.get(service, PubSub.withSubscriptions())).thenApply(result -> {
+            PubSub pubSub = result.getExtension(PubSub.class);
+            return pubSub.getSubscriptions();
+        });
     }
 
     /**
      * Gets the affiliations for all nodes.
      *
-     * @return The affiliations for all nodes.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the affiliations for all nodes.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-affiliations">5.7 Retrieve Affiliations</a>
      */
-    private List<Affiliation> getAffiliations() throws XmppException {
-        IQ result = xmppSession.query(IQ.get(service, PubSub.withAffiliations()));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getAffiliations();
+    public AsyncResult<List<Affiliation>> getAffiliations() {
+        return xmppSession.query(IQ.get(service, PubSub.withAffiliations())).thenApply(result -> {
+            PubSub pubSub = result.getExtension(PubSub.class);
+            return pubSub.getAffiliations();
+        });
     }
 
     /**
      * Gets the default subscription options for this pubsub service.
      *
-     * @return The default subscription options.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the default subscription options.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default Subscription Configuration Options</a>
      */
-    private DataForm getDefaultSubscriptionOptions() throws XmppException {
-        IQ result = xmppSession.query(IQ.get(service, PubSub.withDefault()));
-        PubSub pubSub = result.getExtension(PubSub.class);
-        return pubSub.getDefault().getDataForm();
+    public AsyncResult<DataForm> getDefaultSubscriptionOptions() {
+        return xmppSession.query(IQ.get(service, PubSub.withDefault())).thenApply(result -> {
+            PubSub pubSub = result.getExtension(PubSub.class);
+            return pubSub.getDefault().getDataForm();
+        });
     }
 
     /**
      * Gets the default node configuration form for this pubsub service.
      *
-     * @return The configuration form.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the configuration form.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-default">8.3 Request Default Node Configuration Options</a>
      */
-    private DataForm getDefaultNodeConfiguration() throws XmppException {
-        IQ result = xmppSession.query(IQ.get(service, PubSubOwner.withDefault()));
-        PubSubOwner pubSubOwner = result.getExtension(PubSubOwner.class);
-        return pubSubOwner.getConfigurationForm();
+    public AsyncResult<DataForm> getDefaultNodeConfiguration() {
+        return xmppSession.query(IQ.get(service, PubSubOwner.withDefault())).thenApply(result -> {
+            PubSubOwner pubSubOwner = result.getExtension(PubSubOwner.class);
+            return pubSubOwner.getConfigurationForm();
+        });
     }
 
     /**

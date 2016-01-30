@@ -42,14 +42,14 @@ public final class JingleFileTransferSession {
         this.jingleSession = jingleSession;
     }
 
-    public void accept(Jingle.Content... contents) throws XmppException {
+    public void accept(Jingle.Content... contents) {
         jingleSession.accept(contents);
     }
 
-    public void communicateHash() throws XmppException {
+    public void communicateHash() {
         jingleSession.sendSessionInfo(new JingleFileTransfer.Checksum(null, null, null));
     }
 
-    public void offer(File file, String description) throws XmppException {
+    public void offer(File file, String description) {
     }
 }

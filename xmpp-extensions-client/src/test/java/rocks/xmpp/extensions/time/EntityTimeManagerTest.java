@@ -28,12 +28,11 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
-import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
 import java.time.OffsetDateTime;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Christian Schudt
@@ -41,25 +40,25 @@ import java.time.OffsetDateTime;
 public class EntityTimeManagerTest extends BaseTest {
 
     @Test
-    public void testEntityTimeManager() throws XmppException {
+    public void testEntityTimeManager() throws ExecutionException, InterruptedException {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         new TestXmppSession(JULIET, mockServer);
         EntityTimeManager entityTimeManager = connection1.getManager(EntityTimeManager.class);
-        OffsetDateTime entityTime = entityTimeManager.getEntityTime(JULIET);
+        OffsetDateTime entityTime = entityTimeManager.getEntityTime(JULIET).get();
         Assert.assertNotNull(entityTime);
     }
 
     @Test
-    public void testEntityTimeIfDisabled() throws XmppException {
+    public void testEntityTimeIfDisabled() throws InterruptedException {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         connection2.getManager(EntityTimeManager.class).setEnabled(false);
         EntityTimeManager entityTimeManager = connection1.getManager(EntityTimeManager.class);
         try {
-            entityTimeManager.getEntityTime(JULIET);
-        } catch (StanzaException e) {
+            entityTimeManager.getEntityTime(JULIET).get();
+        } catch (ExecutionException e) {
             return;
         }
         Assert.fail();

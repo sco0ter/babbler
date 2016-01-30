@@ -25,11 +25,11 @@
 package rocks.xmpp.extensions.jingle;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.jingle.model.Jingle;
 import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,32 +87,30 @@ public final class JingleSession {
     /**
      * Initiates the session.
      *
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#protocol-initiate">6.2 Initiation</a>
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-session-initiate">7.2.10 session-initiate</a>
      */
-    public void initiate() throws XmppException {
+    public AsyncResult<Void> initiate() {
         if (state != State.INITIAL) {
             throw new IllegalStateException("Session has already been initiated.");
         }
         if (!createdLocally) {
             throw new UnsupportedOperationException("You are not the initiator.");
         }
-        xmppSession.query(IQ.set(peer, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.SESSION_INITIATE, contents)));
-        state = State.PENDING;
+        return xmppSession.query(IQ.set(peer, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.SESSION_INITIATE, contents))).thenAccept(result ->
+                state = State.PENDING);
     }
 
     /**
      * Accepts the session. You must at least provide one content element.
      *
      * @param contents The contents.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#session-acceptance">6.5 Acceptance</a>
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-session-accept">7.2.8 session-accept</a>
      */
-    public void accept(Jingle.Content... contents) throws XmppException {
+    public AsyncResult<Void> accept(Jingle.Content... contents) {
         if (state != State.PENDING) {
             throw new IllegalStateException("The session is not in pending state.");
         }
@@ -132,20 +130,20 @@ public final class JingleSession {
             }
         }
 
-        xmppSession.query(IQ.set(peer, Jingle.responder(xmppSession.getConnectedResource(), sessionId, Jingle.Action.SESSION_ACCEPT, Arrays.asList(contents))));
-        // The session is now in the ACTIVE state.
-        state = State.ACTIVE;
+        return xmppSession.query(IQ.set(peer, Jingle.responder(xmppSession.getConnectedResource(), sessionId, Jingle.Action.SESSION_ACCEPT, Arrays.asList(contents)))).thenAccept(result -> {
+            // The session is now in the ACTIVE state.
+            state = State.ACTIVE;
+        });
     }
 
     /**
      * Terminates the Jingle session.
      *
      * @param reason The reason for termination.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#session-terminate">6.7 Termination</a>
      */
-    public void terminate(Jingle.Reason reason) throws XmppException {
+    public AsyncResult<IQ> terminate(Jingle.Reason reason) {
         if (state == State.INITIAL) {
             throw new IllegalStateException("The session has not yet been initialized.");
         }
@@ -153,7 +151,7 @@ public final class JingleSession {
         // (even before receiving acknowledgement from the other party).
         state = State.ENDED;
         try {
-            xmppSession.query(IQ.set(peer, new Jingle(sessionId, Jingle.Action.SESSION_TERMINATE, reason)));
+            return xmppSession.query(IQ.set(peer, new Jingle(sessionId, Jingle.Action.SESSION_TERMINATE, reason)));
         } finally {
             jingleManager.removeSession(sessionId);
         }
@@ -162,38 +160,36 @@ public final class JingleSession {
     /**
      * @param contentName     The content name.
      * @param transportMethod The replaced transport method.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-transport-replace">7.2.15 transport-replace</a>
      */
-    public void replaceTransport(String contentName, TransportMethod transportMethod) throws XmppException {
+    public AsyncResult<IQ> replaceTransport(String contentName, TransportMethod transportMethod) {
         Jingle.Content content = new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
-        xmppSession.query(IQ.set(peer, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REPLACE, Collections.singletonList(content))));
+        return xmppSession.query(IQ.set(peer, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REPLACE, Collections.singletonList(content))));
     }
 
-    public void acceptTransport(String contentName, TransportMethod transportMethod) throws XmppException {
+    public AsyncResult<IQ> acceptTransport(String contentName, TransportMethod transportMethod) {
         Jingle.Content content = new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
-        xmppSession.query(IQ.set(peer, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_ACCEPT, Collections.singletonList(content))));
+        return xmppSession.query(IQ.set(peer, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_ACCEPT, Collections.singletonList(content))));
     }
 
-    public void rejectTransport(String contentName, TransportMethod transportMethod) throws XmppException {
+    public AsyncResult<IQ> rejectTransport(String contentName, TransportMethod transportMethod) {
         Jingle.Content content = new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
-        xmppSession.query(IQ.set(peer, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REJECT, Collections.singletonList(content))));
+        return xmppSession.query(IQ.set(peer, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REJECT, Collections.singletonList(content))));
     }
 
     /**
      * Sends a session info.
      *
      * @param object The session info payload.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-session-info">7.2.9 session-info</a>
      */
-    public void sendSessionInfo(Object object) throws XmppException {
+    public AsyncResult<IQ> sendSessionInfo(Object object) {
         if (state == State.INITIAL) {
             throw new IllegalStateException("The session has not yet been initialized.");
         }
-        xmppSession.query(IQ.set(peer, new Jingle(sessionId, Jingle.Action.SESSION_INFO, object)));
+        return xmppSession.query(IQ.set(peer, new Jingle(sessionId, Jingle.Action.SESSION_INFO, object)));
     }
 
     /**

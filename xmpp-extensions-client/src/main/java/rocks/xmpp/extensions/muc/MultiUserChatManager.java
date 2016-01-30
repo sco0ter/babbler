@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.muc;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
@@ -34,13 +33,15 @@ import rocks.xmpp.extensions.disco.DefaultItemProvider;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.items.Item;
+import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
 import rocks.xmpp.extensions.muc.model.user.Invite;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
+import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.util.XmppUtils;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -128,27 +129,25 @@ public final class MultiUserChatManager extends Manager {
     /**
      * Discovers the multi-user chat services hosted at the connected domain.
      *
-     * @return The list of chat services.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the list of chat services.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-service">6.1 Discovering a MUC Service</a>
      */
-    public Collection<ChatService> discoverChatServices() throws XmppException {
-        Collection<Item> services = serviceDiscoveryManager.discoverServices(Identity.conferenceText());
-        return services.stream().map(service -> new ChatService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager, this)).collect(Collectors.toList());
+    public AsyncResult<List<ChatService>> discoverChatServices() {
+        return serviceDiscoveryManager.discoverServices(Identity.conferenceText()).thenApply(services ->
+                services.stream()
+                        .map(service -> new ChatService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager, this))
+                        .collect(Collectors.toList()));
     }
 
     /**
      * Discovers the rooms, where a contact is in.
      *
      * @param contact The contact, which must be a full JID.
-     * @return The items, {@link rocks.xmpp.extensions.disco.model.items.Item#getJid()} has the room address, and {@link rocks.xmpp.extensions.disco.model.items.Item#getName()}} has the nickname.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the items, {@link rocks.xmpp.extensions.disco.model.items.Item#getJid()} has the room address, and {@link rocks.xmpp.extensions.disco.model.items.Item#getName()}} has the nickname.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-client">6.7 Discovering Client Support for MUC</a>
      */
-    public Collection<Item> discoverEnteredRooms(Jid contact) throws XmppException {
-        return serviceDiscoveryManager.discoverItems(contact, ROOMS_NODE).getItems();
+    public AsyncResult<List<Item>> discoverEnteredRooms(Jid contact) {
+        return serviceDiscoveryManager.discoverItems(contact, ROOMS_NODE).thenApply(ItemNode::getItems);
     }
 
     /**

@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.bookmarks;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.bookmarks.model.Bookmark;
@@ -33,6 +32,7 @@ import rocks.xmpp.extensions.bookmarks.model.BookmarkStorage;
 import rocks.xmpp.extensions.bookmarks.model.ChatRoomBookmark;
 import rocks.xmpp.extensions.bookmarks.model.WebPageBookmark;
 import rocks.xmpp.extensions.privatedata.PrivateDataManager;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.net.URL;
 import java.util.ArrayDeque;
@@ -60,22 +60,18 @@ public final class BookmarkManager extends Manager {
     /**
      * Gets a sorted collection of chat room bookmarks.
      *
-     * @return The chat room bookmarks.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the chat room bookmarks.
      */
-    public final Collection<ChatRoomBookmark> getChatRoomBookmarks() throws XmppException {
+    public final AsyncResult<List<ChatRoomBookmark>> getChatRoomBookmarks() {
         return getBookmarks(ChatRoomBookmark.class);
     }
 
     /**
      * Gets a sorted collection of web page bookmarks.
      *
-     * @return The web page bookmarks.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the web page bookmarks.
      */
-    public final Collection<WebPageBookmark> getWebPageBookmarks() throws XmppException {
+    public final AsyncResult<List<WebPageBookmark>> getWebPageBookmarks() {
         return getBookmarks(WebPageBookmark.class);
     }
 
@@ -83,52 +79,52 @@ public final class BookmarkManager extends Manager {
      * Adds a bookmark.
      *
      * @param bookmark The bookmark.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      */
-    public final void addBookmark(Bookmark bookmark) throws XmppException {
-        BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
-        Collection<Bookmark> bookmarks = new ArrayDeque<>(bookmarkStorage.getBookmarks());
-        bookmarks.remove(bookmark);
-        bookmarks.add(bookmark);
-        privateDataManager.storeData(new BookmarkStorage(bookmarks));
+    public final AsyncResult<Void> addBookmark(Bookmark bookmark) {
+        return privateDataManager.getData(BookmarkStorage.class).thenCompose(bookmarkStorage -> {
+            Collection<Bookmark> bookmarks = new ArrayDeque<>(bookmarkStorage.getBookmarks());
+            bookmarks.remove(bookmark);
+            bookmarks.add(bookmark);
+            return privateDataManager.storeData(new BookmarkStorage(bookmarks));
+        });
     }
 
     /**
      * Removes a chat room bookmark.
      *
      * @param chatRoom The chat room.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      */
-    public final void removeChatRoomBookmark(Jid chatRoom) throws XmppException {
-        BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
-        Collection<Bookmark> bookmarks = new ArrayDeque<>(bookmarkStorage.getBookmarks());
-        bookmarks.remove(new ChatRoomBookmark("", chatRoom));
-        privateDataManager.storeData(new BookmarkStorage(bookmarks));
+    public final AsyncResult<Void> removeChatRoomBookmark(Jid chatRoom) {
+        return privateDataManager.getData(BookmarkStorage.class).thenCompose(bookmarkStorage -> {
+            Collection<Bookmark> bookmarks = new ArrayDeque<>(bookmarkStorage.getBookmarks());
+            bookmarks.remove(new ChatRoomBookmark("", chatRoom));
+            return privateDataManager.storeData(new BookmarkStorage(bookmarks));
+        });
     }
 
     /**
      * Removes a web page bookmark.
      *
      * @param webPage The web page.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      */
-    public final void removeWebPageBookmark(URL webPage) throws XmppException {
-        BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
-        Collection<Bookmark> bookmarks = new ArrayDeque<>(bookmarkStorage.getBookmarks());
-        bookmarks.remove(new WebPageBookmark("", webPage));
-        privateDataManager.storeData(new BookmarkStorage(bookmarks));
+    public final AsyncResult<Void> removeWebPageBookmark(URL webPage) {
+        return privateDataManager.getData(BookmarkStorage.class).thenCompose(bookmarkStorage -> {
+            Collection<Bookmark> bookmarks = new ArrayDeque<>(bookmarkStorage.getBookmarks());
+            bookmarks.remove(new WebPageBookmark("", webPage));
+            return privateDataManager.storeData(new BookmarkStorage(bookmarks));
+        });
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Bookmark> Collection<T> getBookmarks(Class<T> clazz) throws XmppException {
-        List<T> bookmarks = new ArrayList<>();
-        BookmarkStorage bookmarkStorage = privateDataManager.getData(BookmarkStorage.class);
-
-        bookmarks.addAll(bookmarkStorage.getBookmarks().stream().filter(bookmark -> bookmark.getClass() == clazz).map(bookmark -> (T) bookmark).collect(Collectors.toList()));
-        bookmarks.sort(null);
-        return bookmarks;
+    private <T extends Bookmark> AsyncResult<List<T>> getBookmarks(Class<T> clazz) {
+        return privateDataManager.getData(BookmarkStorage.class).thenApply(bookmarkStorage -> {
+            List<T> bookmarks = new ArrayList<>();
+            bookmarks.addAll(bookmarkStorage.getBookmarks().stream().filter(bookmark -> bookmark.getClass() == clazz).map(bookmark -> (T) bookmark).collect(Collectors.toList()));
+            bookmarks.sort(null);
+            return bookmarks;
+        });
     }
 }

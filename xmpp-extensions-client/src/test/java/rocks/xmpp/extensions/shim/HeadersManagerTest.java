@@ -30,11 +30,11 @@ import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
-import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Christian Schudt
@@ -42,7 +42,7 @@ import java.util.List;
 public class HeadersManagerTest extends BaseTest {
 
     @Test
-    public void testServiceDiscoveryIfHeadersAreDisabled() throws XmppException {
+    public void testServiceDiscoveryIfHeadersAreDisabled() throws XmppException, InterruptedException {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(JULIET, mockServer);
         TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);
@@ -55,8 +55,8 @@ public class HeadersManagerTest extends BaseTest {
         ServiceDiscoveryManager serviceDiscoveryManager = connection2.getManager(ServiceDiscoveryManager.class);
         InfoNode infoNode = null;
         try {
-            infoNode = serviceDiscoveryManager.discoverInformation(JULIET);
-        } catch (StanzaException e) {
+            infoNode = serviceDiscoveryManager.discoverInformation(JULIET).get();
+        } catch (ExecutionException e) {
             Assert.fail();
         }
         // By default headers are not support, unless they are enabled.
@@ -64,7 +64,7 @@ public class HeadersManagerTest extends BaseTest {
     }
 
     @Test
-    public void testServiceDiscoveryIfHeadersAreEnabled() throws XmppException {
+    public void testServiceDiscoveryIfHeadersAreEnabled() throws XmppException, InterruptedException {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(JULIET, mockServer);
         TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);
@@ -78,23 +78,23 @@ public class HeadersManagerTest extends BaseTest {
         ServiceDiscoveryManager serviceDiscoveryManager = connection2.getManager(ServiceDiscoveryManager.class);
         InfoNode infoNode = null;
         try {
-            infoNode = serviceDiscoveryManager.discoverInformation(JULIET);
-        } catch (StanzaException e) {
+            infoNode = serviceDiscoveryManager.discoverInformation(JULIET).get();
+        } catch (ExecutionException e) {
             Assert.fail();
         }
         Assert.assertTrue(infoNode.getFeatures().contains("http://jabber.org/protocol/shim"));
 
         try {
-            InfoNode infoNode1 = serviceDiscoveryManager.discoverInformation(JULIET, "http://jabber.org/protocol/shim");
+            InfoNode infoNode1 = serviceDiscoveryManager.discoverInformation(JULIET, "http://jabber.org/protocol/shim").get();
             Assert.assertTrue(infoNode1.getFeatures().contains("http://jabber.org/protocol/shim#In-Reply-To"));
             Assert.assertTrue(infoNode1.getFeatures().contains("http://jabber.org/protocol/shim#Keywords"));
-        } catch (StanzaException e) {
+        } catch (ExecutionException e) {
             Assert.fail();
         }
     }
 
     @Test
-    public void testDiscoverSupportedHeaders() throws XmppException {
+    public void testDiscoverSupportedHeaders() throws ExecutionException, InterruptedException {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(JULIET, mockServer);
         TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);
@@ -106,7 +106,7 @@ public class HeadersManagerTest extends BaseTest {
         headerManager.setEnabled(true);
 
         HeaderManager headerManager2 = connection2.getManager(HeaderManager.class);
-        List<String> headers = headerManager2.discoverSupportedHeaders(JULIET);
+        List<String> headers = headerManager2.discoverSupportedHeaders(JULIET).get();
 
         Assert.assertEquals(headers.size(), 2);
         Assert.assertTrue(headers.contains("In-Reply-To"));

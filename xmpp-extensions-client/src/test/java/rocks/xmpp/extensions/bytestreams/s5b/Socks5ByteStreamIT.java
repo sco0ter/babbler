@@ -35,6 +35,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -46,7 +47,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Socks5ByteStreamIT extends IntegrationTest {
 
     @Test
-    public void test() throws XmppException, IOException {
+    public void test() throws XmppException, IOException, ExecutionException, InterruptedException {
 
         final XmppClient xmppSession1 = new XmppClient(DOMAIN);
         final XmppClient xmppSession2 = new XmppClient(DOMAIN);
@@ -66,7 +67,7 @@ public class Socks5ByteStreamIT extends IntegrationTest {
             final ByteStreamSession s5bSession;
 
             try {
-                s5bSession = e.accept();
+                s5bSession = e.accept().get();
 
                 new Thread() {
                     @Override
@@ -95,13 +96,13 @@ public class Socks5ByteStreamIT extends IntegrationTest {
                         }
                     }
                 }.start();
-            } catch (IOException e1) {
+            } catch (InterruptedException | ExecutionException e1) {
                 Assert.fail(e1.getMessage(), e1);
             }
         });
 
         Socks5ByteStreamManager socks5ByteStreamManager1 = xmppSession1.getManager(Socks5ByteStreamManager.class);
-        ByteStreamSession s5bSession = socks5ByteStreamManager1.initiateSession(xmppSession2.getConnectedResource(), "sid");
+        ByteStreamSession s5bSession = socks5ByteStreamManager1.initiateSession(xmppSession2.getConnectedResource(), "sid").get();
         OutputStream os = s5bSession.getOutputStream();
         os.write(new byte[]{1, 2, 3, 4});
         os.flush();

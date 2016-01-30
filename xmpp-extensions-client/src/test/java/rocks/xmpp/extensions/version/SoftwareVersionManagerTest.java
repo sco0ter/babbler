@@ -30,9 +30,10 @@ import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
-import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Christian Schudt
@@ -40,14 +41,14 @@ import rocks.xmpp.extensions.version.model.SoftwareVersion;
 public class SoftwareVersionManagerTest extends BaseTest {
 
     @Test
-    public void testSoftwareVersionManager() throws XmppException {
+    public void testSoftwareVersionManager() throws XmppException, ExecutionException, InterruptedException {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         new TestXmppSession(JULIET, mockServer);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         connection2.getManager(SoftwareVersionManager.class).setSoftwareVersion(new SoftwareVersion("Name", "Version"));
         SoftwareVersionManager softwareVersionManager = connection1.getManager(SoftwareVersionManager.class);
-        SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(JULIET);
+        SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(JULIET).get();
         Assert.assertNotNull(softwareVersion);
         Assert.assertEquals(softwareVersion.getName(), "Name");
         Assert.assertEquals(softwareVersion.getVersion(), "Version");
@@ -61,8 +62,8 @@ public class SoftwareVersionManagerTest extends BaseTest {
         connection2.getManager(SoftwareVersionManager.class).setEnabled(false);
         SoftwareVersionManager softwareVersionManager = connection1.getManager(SoftwareVersionManager.class);
         try {
-            softwareVersionManager.getSoftwareVersion(JULIET);
-        } catch (StanzaException e) {
+            softwareVersionManager.getSoftwareVersion(JULIET).get();
+        } catch (InterruptedException | ExecutionException e) {
             return;
         }
         Assert.fail();

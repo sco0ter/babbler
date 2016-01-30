@@ -37,16 +37,18 @@ import rocks.xmpp.extensions.filetransfer.FileTransferStatusEvent;
 import rocks.xmpp.extensions.filetransfer.Range;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.oob.model.iq.OobIQ;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.function.Consumer;
 
 /**
@@ -139,28 +141,30 @@ public final class OutOfBandFileTransferManager extends Manager implements FileT
     }
 
     @Override
-    public FileTransfer accept(final IQ iq, String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) throws IOException {
-        try {
-            URL url = new URL(fileTransferOffer.getName());
-            URLConnection urlConnection = url.openConnection();
-            final FileTransfer fileTransfer = new FileTransfer(urlConnection.getInputStream(), outputStream, fileTransferOffer.getSize());
-            fileTransfer.addFileTransferStatusListener(new Consumer<FileTransferStatusEvent>() {
-                @Override
-                public void accept(FileTransferStatusEvent e) {
-                    if (e.getStatus() == FileTransfer.Status.COMPLETED) {
-                        xmppSession.send(iq.createResult());
-                        fileTransfer.removeFileTransferStatusListener(this);
-                    } else if (e.getStatus() == FileTransfer.Status.CANCELED ||
-                            e.getStatus() == FileTransfer.Status.FAILED) {
-                        xmppSession.send(iq.createError(Condition.ITEM_NOT_FOUND));
-                        fileTransfer.removeFileTransferStatusListener(this);
+    public AsyncResult<FileTransfer> accept(final IQ iq, String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) {
+        return new AsyncResult<>(CompletableFuture.supplyAsync(() -> {
+            try {
+                URL url = new URL(fileTransferOffer.getName());
+                URLConnection urlConnection = url.openConnection();
+                final FileTransfer fileTransfer = new FileTransfer(urlConnection.getInputStream(), outputStream, fileTransferOffer.getSize());
+                fileTransfer.addFileTransferStatusListener(new Consumer<FileTransferStatusEvent>() {
+                    @Override
+                    public void accept(FileTransferStatusEvent e) {
+                        if (e.getStatus() == FileTransfer.Status.COMPLETED) {
+                            xmppSession.send(iq.createResult());
+                            fileTransfer.removeFileTransferStatusListener(this);
+                        } else if (e.getStatus() == FileTransfer.Status.CANCELED ||
+                                e.getStatus() == FileTransfer.Status.FAILED) {
+                            xmppSession.send(iq.createError(Condition.ITEM_NOT_FOUND));
+                            fileTransfer.removeFileTransferStatusListener(this);
+                        }
                     }
-                }
-            });
-            return fileTransfer;
-        } catch (MalformedURLException e) {
-            throw new IOException(e);
-        }
+                });
+                return fileTransfer;
+            } catch (IOException e) {
+                throw new CompletionException(e);
+            }
+        }));
     }
 
     @Override

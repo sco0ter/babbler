@@ -30,7 +30,6 @@ import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.address.model.Address;
@@ -48,6 +47,7 @@ import rocks.xmpp.extensions.vcard.temp.model.VCard;
 import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.cache.DirectoryCache;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -59,9 +59,10 @@ import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.locks.Lock;
@@ -72,7 +73,6 @@ import java.util.logging.Logger;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
-
 
 /**
  * This class manages avatar updates as described in <a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a> and <a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>.
@@ -173,11 +173,13 @@ public final class AvatarManager extends Manager {
                         notifyListeners(contact, avatar);
                     } else {
                         // If the avatar was either known before or could be successfully retrieved from the vCard.
-                        try {
-                            notifyListeners(contact, getAvatarByVCard(contact));
-                        } catch (XmppException e1) {
-                            logger.log(Level.WARNING, "Failed to retrieve vCard based avatar for user: {0}", contact);
-                        }
+                        getAvatarByVCard(contact).whenComplete((avatarResult, ex) -> {
+                            if (ex == null) {
+                                notifyListeners(contact, avatarResult);
+                            } else {
+                                logger.log(Level.WARNING, ex, () -> "Failed to retrieve vCard based avatar for user: " + contact);
+                            }
+                        });
                     }
                 }
             }
@@ -196,23 +198,22 @@ public final class AvatarManager extends Manager {
                     presence.addExtension(new AvatarUpdate());
 
                     // Load my own avatar in order to advertise an image.
-                    try {
-                        getAvatarByVCard(xmppSession.getConnectedResource().asBareJid());
-
-                        // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
-                        Presence lastPresence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
-                        Presence presence1;
-                        if (lastPresence != null) {
-                            presence1 = new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null);
+                    getAvatarByVCard(xmppSession.getConnectedResource().asBareJid()).whenComplete((avatarResult, ex) -> {
+                        if (ex == null) {
+                            // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
+                            Presence lastPresence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
+                            Presence presence1;
+                            if (lastPresence != null) {
+                                presence1 = new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null);
+                            } else {
+                                presence1 = new Presence();
+                            }
+                            // Send out a presence, which will be filled with the extension later, because we now know or own avatar and have the hash for it.
+                            xmppSession.send(presence1);
                         } else {
-                            presence1 = new Presence();
+                            logger.warning("Failed to retrieve own vCard based avatar.");
                         }
-                        // Send out a presence, which will be filled with the extension later, because we now know or own avatar and have the hash for it.
-                        xmppSession.send(presence1);
-                    } catch (XmppException e1) {
-                        logger.warning("Failed to retrieve own vCard based avatar.");
-                    }
-
+                    });
                 } else if (!presence.hasExtension(AvatarUpdate.class)) {
                     presence.addExtension(new AvatarUpdate(myHash));
                 }
@@ -287,20 +288,21 @@ public final class AvatarManager extends Manager {
                                         logger.log(Level.WARNING, "Failed to download avatar from advertised URL: {0}.", chosenInfo.getUrl());
                                     }
                                 } else {
-                                    try {
-                                        PubSubService pubSubService = xmppSession.getManager(PubSubManager.class).createPubSubService(message.getFrom());
-                                        List<Item> items = pubSubService.node(AvatarData.NAMESPACE).getItems(item.getId());
-                                        if (!items.isEmpty()) {
-                                            Item i = items.get(0);
-                                            if (i.getPayload() instanceof AvatarData) {
-                                                AvatarData avatarData = (AvatarData) i.getPayload();
-                                                storeToCache(item.getId(), avatarData.getData());
-                                                notifyListeners(message.getFrom().asBareJid(), avatarData.getData());
+                                    PubSubService pubSubService = xmppSession.getManager(PubSubManager.class).createPubSubService(message.getFrom());
+                                    pubSubService.node(AvatarData.NAMESPACE).getItems(item.getId()).whenComplete((items, ex) -> {
+                                        if (ex != null) {
+                                            logger.log(Level.WARNING, () -> String.format("Failed to retrieve avatar '%s' from PEP service for user '%s'", item.getId(), message.getFrom()));
+                                        } else {
+                                            if (!items.isEmpty()) {
+                                                Item i = items.get(0);
+                                                if (i.getPayload() instanceof AvatarData) {
+                                                    AvatarData avatarData = (AvatarData) i.getPayload();
+                                                    storeToCache(item.getId(), avatarData.getData());
+                                                    notifyListeners(message.getFrom().asBareJid(), avatarData.getData());
+                                                }
                                             }
                                         }
-                                    } catch (XmppException e1) {
-                                        logger.log(Level.WARNING, () -> "Failed to retrieve avatar '" + item.getId() + "' from PEP service for user '" + message.getFrom() + "'");
-                                    }
+                                    });
                                 }
                             }
                         }
@@ -342,10 +344,13 @@ public final class AvatarManager extends Manager {
         XmppUtils.notifyEventListeners(avatarChangeListeners, new AvatarChangeEvent(AvatarManager.this, contact, avatar));
     }
 
-    private byte[] getAvatarByVCard(Jid contact) throws XmppException {
-        byte[] avatar = null;
+    private AsyncResult<byte[]> getAvatarByVCard(Jid contact) {
+        Lock lock = new ReentrantLock();
+        Lock existingLock = requestingAvatarLocks.putIfAbsent(contact, lock);
+        if (existingLock != null) {
+            lock = existingLock;
+        }
 
-        Lock lock = requestingAvatarLocks.computeIfAbsent(contact, key -> new ReentrantLock());
         lock.lock();
         try {
             // Let's see, if there's a stored image already.
@@ -355,51 +360,47 @@ public final class AvatarManager extends Manager {
                 if (hash != null) {
                     byte[] imageData = loadFromCache(hash);
                     if (imageData != null) {
-                        avatar = imageData;
+                        return new AsyncResult<>(CompletableFuture.completedFuture(imageData));
                     }
                 }
-                if (avatar == null) {
-                    // If there's no avatar for that user, create an empty avatar and load it.
-                    avatar = new byte[0];
-                    hash = "";
-                    VCardManager vCardManager = xmppSession.getManager(VCardManager.class);
 
-                    // Load the vCard for that user
-                    VCard vCard;
-                    try {
-                        if (contact.equals(xmppSession.getConnectedResource().asBareJid())) {
-                            vCard = vCardManager.getVCard();
-                        } else {
-                            vCard = vCardManager.getVCard(contact);
-                        }
-                    } catch (StanzaException e) {
-                        // If the user has no vCard (e.g. server returned <item-not-found/> or <service-unavailable/>),
-                        // the user also has no avatar obviously.
-                        // If another exception has occurred (e.g. NoResponseException) we should rethrow the exception,
-                        // so that it can be tried later again.
-                        vCard = null;
-                    }
-                    if (vCard != null) {
+                VCardManager vCardManager = xmppSession.getManager(VCardManager.class);
+
+                // Load the vCard for that user
+                AsyncResult<VCard> vCard;
+
+                if (contact.equals(xmppSession.getConnectedResource().asBareJid())) {
+                    vCard = vCardManager.getVCard();
+                } else {
+                    vCard = vCardManager.getVCard(contact);
+                }
+                return vCard.thenApply(result -> {
+                    // If there's no avatar for that user, create an empty avatar and load it.
+                    byte[] avatar = new byte[0];
+                    String hash1 = "";
+                    // If the user has no vCard (e.g. server returned <item-not-found/> or <service-unavailable/>),
+                    // the user also has no avatar obviously.
+                    VCard vCardResult = result != null ? result : null;
+                    if (vCardResult != null) {
                         // And check if it has a photo.
-                        VCard.Image image = vCard.getPhoto();
+                        VCard.Image image = vCardResult.getPhoto();
                         if (image != null && image.getValue() != null) {
-                            hash = XmppUtils.hash(image.getValue());
-                            if (hash != null) {
-                                avatar = image.getValue();
-                            }
+                            hash1 = XmppUtils.hash(image.getValue());
+                            avatar = image.getValue();
                         }
                     }
-                    userHashes.put(contact, hash);
+                    userHashes.put(contact, hash1);
                     if (!Arrays.equals(avatar, new byte[0])) {
                         storeToCache(hash, avatar);
                     }
-                }
+                    return avatar;
+                });
             }
-            return avatar;
         } finally {
             lock.unlock();
             requestingAvatarLocks.remove(contact);
         }
+        return new AsyncResult<>(CompletableFuture.completedFuture(new byte[0]));
     }
 
     private byte[] loadFromCache(String hash) {
@@ -427,11 +428,9 @@ public final class AvatarManager extends Manager {
      * Gets the user avatar from the user's vCard.
      *
      * @param contact The contact.
-     * @return The contact's avatar or null, if it has no avatar.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the contact's avatar or null, if it has no avatar.
      */
-    public final byte[] getAvatar(Jid contact) throws XmppException {
+    public final AsyncResult<byte[]> getAvatar(Jid contact) {
         return getAvatarByVCard(contact.asBareJid());
     }
 
@@ -439,52 +438,40 @@ public final class AvatarManager extends Manager {
      * Gets the user avatar from the user's vCard.
      *
      * @param contact The contact. Must not be {@code null}.
-     * @return The contact's avatar or null, if it has no avatar.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result with the contact's avatar or null, if it has no avatar.
      */
-    public final BufferedImage getAvatarImage(final Jid contact) throws XmppException {
-        try {
-            final byte[] bitmap = this.getAvatar(requireNonNull(contact));
-            return bitmap == null ? null : asBufferedImage(bitmap);
-        } catch (final ConversionException e) {
-            throw new XmppException(e);
-        }
+    public final AsyncResult<BufferedImage> getAvatarImage(final Jid contact) {
+        return this.getAvatar(requireNonNull(contact)).thenApply(bitmap -> {
+            try {
+                return bitmap == null ? null : asBufferedImage(bitmap);
+            } catch (ConversionException e) {
+                throw new CompletionException(e);
+            }
+        });
     }
 
     /**
      * Publishes an avatar to your VCard.
      *
      * @param imageData The avatar image data, which must be in PNG format. {@code null} resets the avatar.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
+     * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User Publishes Avatar</a>
      */
-    public final void publishAvatar(byte[] imageData) throws XmppException {
+    public final AsyncResult<Void> publishAvatar(byte[] imageData) {
 
-        XmppException vCardException = null;
         String hash = imageData != null ? XmppUtils.hash(imageData) : null;
         AvatarMetadata.Info info = imageData != null ? new AvatarMetadata.Info(imageData.length, hash, hash) : null;
 
-        try {
-            // Try publishing to vCard first. If this fails, don't immediately throw an exception, but try PEP first.
-            publishToVCard(imageData, null, hash);
-        } catch (XmppException e) {
-            vCardException = e;
-            logger.warning("Failed to publish avatar to vCard.");
-        }
-        try {
-            publishToPersonalEventingService(imageData, hash, info);
-        } catch (XmppException e) {
-            if (vCardException != null) {
-                // Only if both vCard and PEP publishing threw an exception rethrow it.
-                e.addSuppressed(vCardException);
-                throw e;
-            } else {
-                // If only PEP publishing failed, log a warning. The avatar is still published to vCard.
-                logger.warning("Failed to publish avatar to PEP service.");
-            }
-        }
+        // Try publishing to vCard first. If this fails, don't immediately throw an exception, but try PEP first.
+        return publishToVCard(imageData, null, hash)
+                .whenComplete((result, e) -> {
+                    if (e != null) {
+                        logger.warning("Failed to publish avatar to vCard.");
+                    }
+                })
+                .thenCompose((aVoid) -> publishToPersonalEventingService(imageData, hash, info))
+                .thenRun(() -> {
+                });
     }
 
     /**
@@ -492,14 +479,12 @@ public final class AvatarManager extends Manager {
      *
      * @param bufferedImage The avatar image, which must be in PNG format. {@code null}
      *                      resets the avatar.
-     * @throws rocks.xmpp.core.stanza.StanzaException      If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException If the entity did not respond.
-     * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User
-     * Publishes Avatar</a>
+     * @return The async result.
+     * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User Publishes Avatar</a>
      */
-    public final void publishAvatarImage(final BufferedImage bufferedImage) throws XmppException {
+    public final AsyncResult<Void> publishAvatarImage(final BufferedImage bufferedImage) throws XmppException {
         try {
-            this.publishAvatar(bufferedImage == null ? null : asPNG(bufferedImage));
+            return this.publishAvatar(bufferedImage == null ? null : asPNG(bufferedImage));
         } catch (final ConversionException e) {
             throw new XmppException(e);
         }
@@ -511,36 +496,33 @@ public final class AvatarManager extends Manager {
      * @param avatar The avatar or null, if the avatar is reset.
      * @param type   The image type.
      * @param hash   The hash.
-     * @throws rocks.xmpp.core.XmppException If an XMPP exception occurs.
+     * @return The async result.
      */
-    private void publishToVCard(byte[] avatar, String type, String hash) throws XmppException {
+    private AsyncResult<Void> publishToVCard(byte[] avatar, String type, String hash) {
 
-        VCard vCard;
-        try {
-            vCard = vCardManager.getVCard();
-        } catch (StanzaException e) {
+        return vCardManager.getVCard().thenApply(result -> {
             // If there's no vCard yet (e.g. <item-not-found/>), create a new one.
-            vCard = new VCard();
-        }
-
-        if (avatar != null) {
-            // Within a given session, a client MUST NOT attempt to upload a given avatar image more than once.
-            // The client MAY upload the avatar image to the vCard on login and after that MUST NOT upload the vCard again
-            // unless the user actively changes the avatar image.
-            if (vCard.getPhoto() == null || !Arrays.equals(vCard.getPhoto().getValue(), avatar)) {
-                userHashes.put(xmppSession.getConnectedResource().asBareJid(), hash);
-                // If either there is avatar yet, or the old avatar is different from the new one: update
-                vCard.setPhoto(new VCard.Image(type, avatar));
-                vCardManager.setVCard(vCard);
+            return result != null ? result : new VCard();
+        }).thenAccept(vCard -> {
+            if (avatar != null) {
+                // Within a given session, a client MUST NOT attempt to upload a given avatar image more than once.
+                // The client MAY upload the avatar image to the vCard on login and after that MUST NOT upload the vCard again
+                // unless the user actively changes the avatar image.
+                if (vCard.getPhoto() == null || !Arrays.equals(vCard.getPhoto().getValue(), avatar)) {
+                    userHashes.put(xmppSession.getConnectedResource().asBareJid(), hash);
+                    // If either there is avatar yet, or the old avatar is different from the new one: update
+                    vCard.setPhoto(new VCard.Image(type, avatar));
+                    vCardManager.setVCard(vCard);
+                }
+            } else {
+                userHashes.put(xmppSession.getConnectedResource().asBareJid(), "");
+                // If there's currently a photo, we want to reset it.
+                if (vCard.getPhoto() != null && vCard.getPhoto().getValue() != null) {
+                    vCard.setPhoto(null);
+                    vCardManager.setVCard(vCard);
+                }
             }
-        } else {
-            userHashes.put(xmppSession.getConnectedResource().asBareJid(), "");
-            // If there's currently a photo, we want to reset it.
-            if (vCard.getPhoto() != null && vCard.getPhoto().getValue() != null) {
-                vCard.setPhoto(null);
-                vCardManager.setVCard(vCard);
-            }
-        }
+        });
     }
 
     /**
@@ -549,19 +531,19 @@ public final class AvatarManager extends Manager {
      * @param avatar The avatar or null, if the avatar is reset.
      * @param itemId The item id.
      * @param info   The info element.
-     * @throws rocks.xmpp.core.XmppException If an XMPP exception occurs.
+     * @return The async result.
      */
-    private void publishToPersonalEventingService(byte[] avatar, String itemId, AvatarMetadata.Info info) throws XmppException {
+    private AsyncResult<String> publishToPersonalEventingService(byte[] avatar, String itemId, AvatarMetadata.Info info) {
         PubSubService personalEventingService = xmppSession.getManager(PubSubManager.class).createPersonalEventingService();
         if (avatar != null) {
             if (info.getUrl() == null) {
                 // Publish image.
-                personalEventingService.node(AvatarData.NAMESPACE).publish(itemId, new AvatarData(avatar));
+                return personalEventingService.node(AvatarData.NAMESPACE).publish(itemId, new AvatarData(avatar));
             }
             // Publish meta data.
-            personalEventingService.node(AvatarMetadata.NAMESPACE).publish(itemId, new AvatarMetadata(info));
+            return personalEventingService.node(AvatarMetadata.NAMESPACE).publish(itemId, new AvatarMetadata(info));
         } else {
-            personalEventingService.node(AvatarMetadata.NAMESPACE).publish(itemId, new AvatarMetadata());
+            return personalEventingService.node(AvatarMetadata.NAMESPACE).publish(itemId, new AvatarMetadata());
         }
     }
 

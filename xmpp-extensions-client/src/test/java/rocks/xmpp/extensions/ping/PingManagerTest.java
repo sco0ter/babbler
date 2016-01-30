@@ -32,6 +32,8 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
+import java.util.concurrent.ExecutionException;
+
 /**
  * @author Christian Schudt
  */
@@ -47,13 +49,13 @@ public class PingManagerTest extends BaseTest {
     }
 
     @Test
-    public void testPingIfDisabled() throws XmppException {
+    public void testPingIfDisabled() throws XmppException, ExecutionException, InterruptedException {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         connection2.getManager(PingManager.class).setEnabled(false);
         PingManager pingManager = connection1.getManager(PingManager.class);
-        Assert.assertFalse(pingManager.ping(JULIET));
+        Assert.assertFalse(pingManager.ping(JULIET).get());
     }
 
     @Test

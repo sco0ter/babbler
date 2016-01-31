@@ -18,7 +18,7 @@ This is called pre-binding and can be used, if you want to transport the session
 BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
         .hostname("domain")
         .port(5280)
-        .file("/http-bind/")
+        .path("/http-bind/")
         .build();
         
         

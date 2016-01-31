@@ -19,11 +19,11 @@ bookmarkManager.addBookmark(new WebPageBookmark("chatroom", new URL("http://www.
 ## Retrieving Bookmarks
 
 ```java
-Collection<ChatRoomBookmark> chatRoomBookmarks = bookmarkManager.getChatRoomBookmarks();
+Collection<ChatRoomBookmark> chatRoomBookmarks = bookmarkManager.getChatRoomBookmarks().getResult();
 ```
 
 ```java
-Collection<WebPageBookmark> webPageBookmarks = bookmarkManager.getWebPageBookmarks();
+Collection<WebPageBookmark> webPageBookmarks = bookmarkManager.getWebPageBookmarks().getResult();
 ```
 
 ## Removing a Bookmark

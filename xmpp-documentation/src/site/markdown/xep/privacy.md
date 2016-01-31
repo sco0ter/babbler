@@ -11,7 +11,7 @@ You can get all existing privacy lists from the server like this:
 
 ```java
 PrivacyListManager privacyListManager = xmppClient.getManager(PrivacyListManager.class);
-Collection<PrivacyList> privacyLists = privacyListManager.getPrivacyLists();
+Collection<PrivacyList> privacyLists = privacyListManager.getPrivacyLists().getResult();
 ```
 
 ### Creating or Updating a Privacy List

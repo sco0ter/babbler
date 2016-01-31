@@ -11,7 +11,7 @@ If you want to find out how long ago a user logged out, you query for the user's
 
 ```java
 LastActivityManager lastActivityManager = xmppClient.getManager(LastActivityManager.class);
-LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.of("juliet@im.example.com"));
+LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.of("juliet@im.example.com")).getResult();
 // user logged out lastActivity.getSeconds() ago
 ```
 
@@ -63,7 +63,7 @@ When querying a server or component the result is the uptime of it.
 
 ```java
 LastActivityManager lastActivityManager = xmppClient.getManager(LastActivityManager.class);
-LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.of("im.example.com"));
+LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.of("im.example.com")).getResult();
 Instant uptime = Instant.now().minusSeconds(lastActivity.getSeconds());
 ```
 

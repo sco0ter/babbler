@@ -64,7 +64,7 @@ If accepted, you can transfer the file.
 ```java
 try {
     FileTransferManager fileTransferManager = xmppClient.getManager(FileTransferManager.class);
-    FileTransfer fileTransfer = fileTransferManager.offerFile(Paths.get("test.png"), "Description", Jid.of("juliet@exampl.net/balcony"), 60000);
+    FileTransfer fileTransfer = fileTransferManager.offerFile(Paths.get("test.png"), "Description", Jid.of("juliet@exampl.net/balcony"), 60000).getResult();
     fileTransfer.transfer();
 } catch (FileTransferRejectedException e) {
     // The user rejected the file transfer.
@@ -78,7 +78,7 @@ try {
 ```java
 fileTransferManager.addFileTransferOfferListener(e -> {
     try {
-        FileTransfer fileTransfer = e.accept(Paths.get("test.png"));
+        FileTransfer fileTransfer = e.accept(Paths.get("test.png")).getResult();
         fileTransfer.transfer();
     } catch (IOException e1) {
         // ...

@@ -57,7 +57,7 @@ Managers usually also allow to interact with other entities, e.g. retrieving the
 
 ```
 LastActivityManager lastActivityManager = xmppClient.getManager(LastActivityManager.class);
-LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.of("juliet@example.net"));
+LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.of("juliet@example.net")).getResult();
 ```
 
 (This will get the last activity of the user, i.e. the last logout date.)

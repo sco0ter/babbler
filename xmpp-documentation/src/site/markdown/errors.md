@@ -20,7 +20,7 @@ Here's an example how to react to stream errors.
 xmppClient.addSessionStatusListener(e -> {
     if (e.getThrowable() instanceof StreamErrorException) {
         StreamErrorException streamException = (StreamErrorException) e.getThrowable();
-        if (streamException.getStreamError().getCondition() == Condition.SYSTEM_SHUTDOWN) {
+        if (streamException.getCondition() == Condition.SYSTEM_SHUTDOWN) {
             // Server was shut down.
         }
     }
@@ -46,12 +46,11 @@ Here's an example:
 
 ```java
 try {
-    EntityTime entityTime = entityTimeManager.getEntityTime(Jid.of("juliet@example.net/balcony"));
+    EntityTime entityTime = entityTimeManager.getEntityTime(Jid.of("juliet@example.net/balcony")).getResult();
 } catch (NoResponseException e) {
     // The entity did not respond
 } catch (StanzaException e) {
-    StanzaError stanzaError = e.getStanza().getError();
-    if (stanzaError.getCondition() == Condition.SERVICE_UNAVAILABLE) {
+    if (e.getCondition() == Condition.SERVICE_UNAVAILABLE) {
         // The entity returned a <service-unavailable/> stanza error.
     }
 } catch (XmppException e) {

@@ -84,7 +84,7 @@ After having established an XMPP session the requester can then query the respon
 Addition addition = new Addition(52, 22);
 
 // Request the sum of two values (52 + 22). The requester will calculate it for you and return a result.
-IQ resultIQ = xmppClient.query(new IQ(Jid.of("responder@domain/resource")), IQ.Type.GET, addition));
+IQ resultIQ = xmppClient.query(IQ.get(Jid.of("responder@domain/resource"), addition)).getResult();
 
 System.out.println(resultIQ.getExtension(Addition.class));
 ```

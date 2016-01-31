@@ -12,7 +12,7 @@ MultiUserChatManager multiUserChatManager = xmppClient.getManager(MultiUserChatM
 If you don't have an idea, which chat services your XMPP domain hosts, you can easily discover them:
 
 ```java
-Collection<ChatService> chatServices = multiUserChatManager.discoverChatServices();
+Collection<ChatService> chatServices = multiUserChatManager.discoverChatServices().getResult();
 ```
 
 If you already know the address of your chat service, you can also create an instance of the `ChatService` directly:
@@ -26,7 +26,7 @@ A chat service allows you to do two things:
 First, discovering public chat rooms hosted by this service:
 
 ```java
-List<ChatRoom> publicRooms = chatService.discoverRooms();
+List<ChatRoom> publicRooms = chatService.discoverRooms().getResult();
 ```
 
 or second - if you know an existing room or want to create a new one - creating a new chat room directly:
@@ -57,13 +57,13 @@ Once you have a `ChatRoom` instance, you can now do multiple things with it:
 You can discover the occupants, which are currently in the room (nicknames only) with:
 
 ```java
-List<String> occupants = chatRoom.discoverOccupants();
+List<String> occupants = chatRoom.discoverOccupants().getResult();
 ```
 
 And you get additional room info (e.g. the current subject, the max history messages, the description and room features) with:
 
 ```java
-RoomInformation roomInfo = chatRoom.getRoomInformation();
+RoomInformation roomInfo = chatRoom.getRoomInformation().getResult();
 ```
 
 ### Occupant Use Cases

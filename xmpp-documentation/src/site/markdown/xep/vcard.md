@@ -9,7 +9,7 @@ Here are a few examples how to do it.
 
 ```java
 VCardManager vCardManager = xmppClient.getManager(VCardManager.class);
-VCard vCard = vCardManager.getVCard(Jid.of("juliet@example.net"));
+VCard vCard = vCardManager.getVCard(Jid.of("juliet@example.net")).getResult();
 if (vCard != null) {
     if (vCard.getName() != null) {
         String familyName = vCard.getName().getFamilyName();

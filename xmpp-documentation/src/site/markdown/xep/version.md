@@ -8,7 +8,7 @@
 
 ```java
 SoftwareVersionManager softwareVersionManager = xmppClient.getManager(SoftwareVersionManager.class);
-SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(Jid.of("example.net"));
+SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(Jid.of("example.net")).getResult();
 ```
 
 If you query a server, you will obviously get the server software.

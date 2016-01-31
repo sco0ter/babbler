@@ -60,7 +60,7 @@ myComponent.addIQHandler(LanguageTranslation.class, new AbstractIQHandler(IQ.Typ
         
         // Do a real translation here and return proper results in accordance with XEP-0171.
         translations.addAll(translation.getTranslations().stream()
-                .map(t -> LanguageTranslation.Translation.ofDestinationLanguage(t.getDestinationLanguage())
+                .map(t -> LanguageTranslation.Translation.forDestinationLanguage(t.getDestinationLanguage())
                         .withSourceLanguage(translation.getSourceLanguage())
                         .withTranslatedText("HALLO"))
                 .collect(Collectors.toList()));

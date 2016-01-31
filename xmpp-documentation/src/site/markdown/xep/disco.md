@@ -16,7 +16,7 @@ You discover information about another XMPP entity by sending a request to it:
 
 ```java
 ServiceDiscoveryManager serviceDiscoveryManager = xmppClient.getManager(ServiceDiscoveryManager.class);
-InfoNode infoNode = serviceDiscoveryManager.discoverInformation(Jid.of("example.net"));
+InfoNode infoNode = serviceDiscoveryManager.discoverInformation(Jid.of("example.net")).getResult();
 ```
 
 `infoNode` will contain information about the entity, i.e. its identity and features it supports.
@@ -28,7 +28,7 @@ For most use cases you are probably only interested if another entity supports a
 Because that use case is specified by nearly every XEP ("determining support"), there's a convenience method for it directly on `XmppClient`, which internally also uses [XEP-0115: Entity Capabilities][Entity Capabilities] (for optimization and caching):
 
 ```
-boolean supportsChatStates = xmppClient.isSupported(ChatState.NAMESPACE, Jid.of("romeo@example.net/park"));
+boolean supportsChatStates = xmppClient.isSupported(ChatState.NAMESPACE, Jid.of("romeo@example.net/park")).getResult();
 ```
 
 Note that the passed JID should be a full JID in most cases (if you want to check client capabilities).
@@ -40,14 +40,14 @@ This method will first check the cache for entity capabilities. Only if no cache
 You can also discover items associated with an XMPP entity.
 
 ```
-ItemNode node = serviceDiscoveryManager.discoverItems(Jid.of("example.net"));
+ItemNode node = serviceDiscoveryManager.discoverItems(Jid.of("example.net")).getResult();
 List<Item> items = node.getItems();
 ```
 
 This will discover items at the "root" node, but you can also discover items at another node:
 
 ```
-ItemNode node = serviceDiscoveryManager.discoverItems(Jid.of("example.net"), "music");
+ItemNode node = serviceDiscoveryManager.discoverItems(Jid.of("example.net"), "music").getResult();
 List<Item> items = node.getItems();
 ```
 
@@ -56,7 +56,7 @@ List<Item> items = node.getItems();
 You can request a limited result set like this, which will request the first 20 items:
 
 ```
-ItemNode itemNode = serviceDiscoveryManager.discoverItems(Jid.of("example.net"), ResultSetManagement.forLimit(20));
+ItemNode itemNode = serviceDiscoveryManager.discoverItems(Jid.of("example.net"), ResultSetManagement.forLimit(20)).getResult();
 List<Item> items = itemNode.getItems();
 ```
 
@@ -67,7 +67,7 @@ For more limited result set options refer to `ResultSetManagement`.
 The following would discover Multi-User Chat services at your server:
 
 ```
-serviceDiscoveryManager.discoverServices(Muc.NAMESPACE);
+serviceDiscoveryManager.discoverServices(Muc.NAMESPACE).getResult();
 ```
 
 ## Providing Items

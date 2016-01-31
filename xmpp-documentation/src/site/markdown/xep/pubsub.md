@@ -14,7 +14,7 @@ PubSubManager pubSubManager = xmppClient.getManager(PubSubManager.class);
 If you don't know the address of your server's pubsub service, you can discover pubsub services like that:
 
 ```java
-Collection<PubSubService> pubSubServices = pubSubManager.discoverPubSubServices();
+Collection<PubSubService> pubSubServices = pubSubManager.discoverPubSubServices().getResult();
 ```
 
 The resulting list will contain the available PubSub services on your server. Most often it's probably only one: "pubsub.yourxmppdomain".
@@ -34,7 +34,7 @@ The `PubSubService` instance allows you to perform all use cases described in [X
 Because [XEP-0060][PubSub] is quite complex and many features are optional, a PubSub service might not support all PubSub features. You can get the supported features of your service like that:
 
 ```java
-Collection<PubSubFeature> pubSubFeatures = pubSubService.discoverFeatures();
+Collection<PubSubFeature> pubSubFeatures = pubSubService.discoverFeatures().getResult();
 ```
 
 Each feature is represented as an enum value of `PubSubFeature`, e.g. `PubSubFeature.AUTO_SUBSCRIBE`. If you want to know, if the service supports a feature, you can simply ask for:
@@ -113,7 +113,7 @@ The following shows, how to deal with pubsub specific errors.
 try {
     PubSubService pubSubService = pubSubManager.createPubSubService(Jid.of("pubsub.yourdomain"));
     PubSubNode pubSubNode = pubSubService.node("princely_musings");
-    pubSubNode.subscribe();
+    pubSubNode.subscribe().getResult();
 }  catch (StanzaException e) {
     Object extension = e.getStanza().getError().getExtension();
     if (extension instanceof PresenceSubscriptionRequired) {

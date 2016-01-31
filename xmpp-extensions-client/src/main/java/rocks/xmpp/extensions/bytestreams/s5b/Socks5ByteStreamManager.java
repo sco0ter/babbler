@@ -227,7 +227,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
                 if (result.isEmpty()) {
                     throw new XmppException("No stream hosts found.");
                 }
-                return streamHosts;
+                return result;
             } catch (XmppException e) {
                 throw new CompletionException(e);
             }
@@ -247,57 +247,65 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
             localSocks5Server.start();
         }
 
+        // Discover available stream hosts (which also adds ourselves to the list of available hosts)
         return getAvailableStreamHosts().thenCompose(streamHosts -> {
-            Jid requester = xmppSession.getConnectedResource();
+                    final Jid requester = xmppSession.getConnectedResource();
 
-            // Create the hash, which will identify the socket connection.
-            String hash = Socks5ByteStream.hash(sessionId, requester, target);
-            localSocks5Server.allowedAddresses.add(hash);
+                    // Create the hash, which will identify the socket connection.
+                    final String hash = Socks5ByteStream.hash(sessionId, requester, target);
+                    localSocks5Server.allowedAddresses.add(hash);
 
-            try {
-                // 5.3.1 Requester Initiates S5B Negotiation
-                // 6.3.1 Requester Initiates S5B Negotiation
-                return xmppSession.query(IQ.set(target, new Socks5ByteStream(sessionId, streamHosts, hash))).thenCompose(result -> {
+                    // 5.3.1 Requester Initiates S5B Negotiation
+                    // 6.3.1 Requester Initiates S5B Negotiation
+                    // Then send the available stream hosts to the receiver, which will then try to connect to one of the hosts.
+                    return xmppSession.query(IQ.set(target, new Socks5ByteStream(sessionId, streamHosts, hash))).whenComplete((a, e) ->
+                                    // When the receiver responded (either with success or with error, we can remove the hash)
+                                    localSocks5Server.allowedAddresses.remove(hash)
+                    ).thenCompose(result -> {
 
-                    // 5.3.3 Target Acknowledges Bytestream
-                    // 6.3.3 Target Acknowledges Bytestream
-                    Socks5ByteStream socks5ByteStream = result.getExtension(Socks5ByteStream.class);
-                    StreamHost streamHostUsed = null;
-                    for (StreamHost streamHost : streamHosts) {
-                        if (socks5ByteStream.getStreamHostUsed() != null && socks5ByteStream.getStreamHostUsed().equals(streamHost.getJid())) {
-                            streamHostUsed = streamHost;
-                            break;
+                        // Then complete the process by either connecting to a SOCKS5 proxy or use the socket which our receiver connected to.
+
+                        // 5.3.3 Target Acknowledges Bytestream
+                        // 6.3.3 Target Acknowledges Bytestream
+                        Socks5ByteStream socks5ByteStream = result.getExtension(Socks5ByteStream.class);
+                        StreamHost streamHostUsed = null;
+                        for (StreamHost streamHost : streamHosts) {
+                            if (socks5ByteStream.getStreamHostUsed() != null && socks5ByteStream.getStreamHostUsed().equals(streamHost.getJid())) {
+                                streamHostUsed = streamHost;
+                                break;
+                            }
                         }
-                    }
-                    final StreamHost usedStreamHost = streamHostUsed;
-                    if (usedStreamHost == null) {
-                        throw new CompletionException(new XmppException("Target did not respond with a stream host."));
-                    }
+                        final StreamHost usedStreamHost = streamHostUsed;
+                        if (usedStreamHost == null) {
+                            throw new CompletionException(new XmppException("Target did not respond with a stream host."));
+                        }
 
-                    Socket socket;
-                    if (!usedStreamHost.getJid().equals(requester)) {
-                        // 6.3.4 Requester Establishes SOCKS5 Connection with StreamHost
-                        socket = new Socket();
-                        try {
-                            socket.connect(new InetSocketAddress(usedStreamHost.getHost(), usedStreamHost.getPort()));
-                            Socks5Protocol.establishClientConnection(socket, hash, 0);
-                        } catch (IOException e) {
-                            throw new CompletionException(e);
+                        Socket socket;
+                        if (!usedStreamHost.getJid().equals(requester)) {
+                            socket = new Socket();
+                            return CompletableFuture.runAsync(() -> {
+                                // 6.3.4 Requester Establishes SOCKS5 Connection with StreamHost
+                                try {
+                                    socket.connect(new InetSocketAddress(usedStreamHost.getHost(), usedStreamHost.getPort()));
+                                    Socks5Protocol.establishClientConnection(socket, hash, 0);
+                                } catch (IOException e) {
+                                    throw new CompletionException(e);
+                                }
+                            }).thenCompose(a ->
+                                            // 6.3.5 Activation of Bytestream
+                                            xmppSession.query(IQ.set(usedStreamHost.getJid(), Socks5ByteStream.activate(sessionId, target))).thenApply(aVoid -> new S5bSession(sessionId, socket, usedStreamHost.getJid()))
+                            );
+                        } else {
+                            socket = localSocks5Server.getSocket(hash);
+                            if (socket == null) {
+                                throw new CompletionException(new IOException("Not connected to stream host"));
+                            }
+                            return CompletableFuture.completedFuture(new S5bSession(sessionId, socket, usedStreamHost.getJid()));
                         }
-                        // 6.3.5 Activation of Bytestream
-                        return xmppSession.query(IQ.set(usedStreamHost.getJid(), Socks5ByteStream.activate(sessionId, target))).thenApply(aVoid -> new S5bSession(sessionId, socket, usedStreamHost.getJid()));
-                    } else {
-                        socket = localSocks5Server.getSocket(hash);
-                        if (socket == null) {
-                            throw new CompletionException(new IOException("Not connected to stream host"));
-                        }
-                        return CompletableFuture.completedFuture(new S5bSession(sessionId, socket, usedStreamHost.getJid()));
-                    }
-                });
-            } finally {
-                localSocks5Server.removeConnection(hash);
-            }
-        });
+                    });
+                }
+
+        );
     }
 
     @Override

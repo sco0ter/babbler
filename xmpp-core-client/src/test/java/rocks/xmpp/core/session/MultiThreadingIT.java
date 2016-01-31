@@ -200,7 +200,7 @@ public class MultiThreadingIT extends IntegrationTest {
         countDownLatch.await();
         Assert.assertEquals(authenticating.get(), 1);
         Assert.assertEquals(authenticated.get(), 1);
-        Assert.assertEquals(exceptions.get(), 99);
+        Assert.assertEquals(exceptions.get(), 0);
     }
 
     /**

@@ -11,12 +11,13 @@
 * Add more `ReconnectionStrategy` implementations.
 * Check connected state of socket before connecting (to prevent `SocketException` when a `SocketFactory` provides a connected socket)
 * Add `XmppSession#isAuthenticated()` method.
+* Add static `XmppSession#addCreationListener()` method to allow to listen for newly created sessions.
 * Update XEP-0080 to version 1.9 (add `altaccuracy` element).
 * Add API to destroy a MUC room without a reason.
-* More documentation, e.g. clarify the use of ConnectionConfiguration#secure()
+* More documentation, e.g. clarify the use of `ConnectionConfiguration#secure()`
 * Don't include an empty body in Message Delivery Receipts.
 * Add correct XML names to component namespace stanzas.
-* Eagerly releases unused port to prevent ports-leaks due delayed GC
+* Eagerly release unused port to prevent ports-leaks due to delayed GC
 * Improve thread-safety during connect() and login()
 * Fix encoding issues, caused by missing UTF-8 encoding, mainly in the debugger.
 

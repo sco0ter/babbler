@@ -45,7 +45,7 @@ public class ExternalComponentIT extends IntegrationTest {
     @Test
     public void testStatusAfterConnect() throws Exception {
 
-        final XmppSession xmppSession = new ExternalComponent("test."+DOMAIN, "test", XmppSessionConfiguration.builder().debugger(ConsoleDebugger.class).build(), "localhost", 5275);
+        final XmppSession xmppSession = ExternalComponent.create("test."+DOMAIN, "test", XmppSessionConfiguration.builder().debugger(ConsoleDebugger.class).build(), "localhost", 5275);
         final AtomicInteger exceptions = new AtomicInteger();
         final AtomicInteger connecting = new AtomicInteger();
         final AtomicInteger connected = new AtomicInteger();

@@ -82,7 +82,7 @@ This will create the `JAXBContext` with your class (in addition to all other XMP
 Then create the session with that configuration:
 
 ```java
-XmppClient xmppClient = new XmppClient("domain", configuration);
+XmppClient xmppClient = XmppClient.create("domain", configuration);
 ```
 
 You can then simply send a message with that extension:

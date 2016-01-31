@@ -22,7 +22,7 @@ BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfigur
         .build();
         
         
-try (XmppClient xmppClient = new XmppClient("domain", boshConnectionConfiguration)) {
+try (XmppClient xmppClient = XmppClient.create("domain", boshConnectionConfiguration)) {
     // Connect
     xmppClient.connect();
     // Login

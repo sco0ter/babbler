@@ -52,7 +52,7 @@ public class GeolocationPublisher {
                         .defaultResponseTimeout(5000)
                         .build();
 
-                XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);
+                XmppClient xmppSession = XmppClient.create("localhost", configuration, tcpConfiguration);
 
                 // Listen for inbound messages.
                 xmppSession.addInboundMessageListener(e -> System.out.println(e.getMessage()));

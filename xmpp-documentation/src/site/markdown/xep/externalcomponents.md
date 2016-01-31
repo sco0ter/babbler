@@ -11,7 +11,7 @@ Clients could send messages (or other stanzas) to the component (e.g. to `mycomp
 Here's a sample of a component:
 
 ```java
-ExternalComponent myComponent = new ExternalComponent("translation", "sharedSecret", "localhost", 5275);
+ExternalComponent myComponent = ExternalComponent.create("translation", "sharedSecret", "localhost", 5275);
 ```
 
 It connects to a server hosted at `localhost` which allows external components to connect on port 5275.

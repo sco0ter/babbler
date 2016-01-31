@@ -57,7 +57,7 @@ public class MucSampleUser2 {
                         .defaultResponseTimeout(5000)
                         .build();
 
-                XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);
+                XmppClient xmppSession = XmppClient.create("localhost", configuration, tcpConfiguration);
 
                 // Connect
                 xmppSession.connect();

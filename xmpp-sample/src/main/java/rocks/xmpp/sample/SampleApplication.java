@@ -87,7 +87,7 @@ public class SampleApplication {
                         .debugger(ConsoleDebugger.class)
                         .build();
 
-                XmppClient xmppClient = new XmppClient("localhost", configuration, webSocketConfiguration);
+                XmppClient xmppClient = XmppClient.create("localhost", configuration, tcpConfiguration);
 
                 // Listen for inbound messages.
                 xmppClient.addInboundMessageListener(e -> logger.info("Received: " + e.getMessage()));

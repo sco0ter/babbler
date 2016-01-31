@@ -57,7 +57,7 @@ public class CustomIQHandlerResponder {
                         .extensions(Extension.of(Addition.class))
                         .build();
 
-                XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);
+                XmppClient xmppSession = XmppClient.create("localhost", configuration, tcpConfiguration);
 
                 // Reqister an IQ Handler, which will return the sum of two values.
                 xmppSession.addIQHandler(Addition.class, iq -> {

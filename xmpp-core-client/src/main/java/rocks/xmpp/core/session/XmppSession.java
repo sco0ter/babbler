@@ -598,7 +598,7 @@ public abstract class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Adds a connection listener, which is triggered, when the connection is disconnected or reconnected.
+     * Adds a connection listener, which is triggered, when the connection used by this session is disconnected or reconnected.
      *
      * @param connectionListener The connection listener.
      * @see #removeConnectionListener(Consumer)

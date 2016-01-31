@@ -57,7 +57,7 @@ public class ExternalComponentSample {
                         .debugger(VisualDebugger.class)
                         .build();
 
-                ExternalComponent myComponent = new ExternalComponent("translation", "test", configuration, "localhost", 5275);
+                ExternalComponent myComponent = ExternalComponent.create("translation", "test", configuration, "localhost", 5275);
 
                 ServiceDiscoveryManager serviceDiscoveryManager = myComponent.getManager(ServiceDiscoveryManager.class);
 

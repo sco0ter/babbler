@@ -184,7 +184,7 @@ This project is licensed under [MIT License](http://opensource.org/licenses/MIT)
 The first thing you want to do in order to connect to an XMPP server is creating a `XmppClient` object:
 
 ```java
-XmppClient xmppClient = new XmppClient("domain");
+XmppClient xmppClient = XmppClient.create("domain");
 ```
 
 The `XmppClient` instance is the central object. Every other action you will do revolves around this instance (e.g. sending and receiving messages).
@@ -237,7 +237,7 @@ WebSocketConnectionConfiguration webSocketConfiguration = WebSocketConnectionCon
 Now let's pass them to the session to tell it that it should use them:
 
 ```java
-XmppClient xmppClient = new XmppClient("domain", tcpConfiguration, boshConfiguration);
+XmppClient xmppClient = XmppClient.create("domain", tcpConfiguration, boshConfiguration);
 ```
 
 During connecting, the session will try all configured connections in order, until a connection is established.
@@ -346,7 +346,7 @@ xmppClient.close();
 Note, that `XmppClient` implements `java.lang.AutoCloseable`, which means you can also use the try-with-resources statement, which automatically closes the session:
 
 ```java
-try (XmppClient xmppClient = new XmppClient("domain")) {
+try (XmppClient xmppClient = XmppClient.create("domain")) {
     xmppClient.connect();
 } catch (XmppException e) {
     // handle exception

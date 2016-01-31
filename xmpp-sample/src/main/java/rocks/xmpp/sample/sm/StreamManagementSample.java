@@ -70,7 +70,7 @@ public class StreamManagementSample {
                             .debugger(ConsoleDebugger.class)
                             .build();
 
-                    XmppClient xmppSession = new XmppClient("localhost", configuration, webSocketConnectionConfiguration);
+                    XmppClient xmppSession = XmppClient.create("localhost", configuration, webSocketConnectionConfiguration);
                     xmppSession.enableFeature(StreamManagement.NAMESPACE);
                     // Connect
                     xmppSession.connect();

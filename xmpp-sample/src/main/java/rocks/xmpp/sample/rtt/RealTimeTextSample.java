@@ -68,7 +68,7 @@ public class RealTimeTextSample extends Application {
                 .build();
 
 
-        final XmppClient xmppClient = new XmppClient("localhost", xmppSessionConfiguration, tcpConnectionConfiguration);
+        final XmppClient xmppClient = XmppClient.create("localhost", xmppSessionConfiguration, tcpConnectionConfiguration);
 
         // Enable XEP-0301 Real-time Text
         xmppClient.enableFeature(RealTimeText.NAMESPACE);

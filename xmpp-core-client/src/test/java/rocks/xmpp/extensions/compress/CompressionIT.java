@@ -44,7 +44,7 @@ public class CompressionIT extends IntegrationTest {
                 .secure(false)
                 .build();
 
-        try (XmppClient xmppSession = new XmppClient(DOMAIN, tcpConfiguration)) {
+        try (XmppClient xmppSession = XmppClient.create(DOMAIN, tcpConfiguration)) {
             xmppSession.connect();
             xmppSession.loginAnonymously();
             CompressionManager compressionManager = xmppSession.getManager(CompressionManager.class);

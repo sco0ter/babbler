@@ -46,7 +46,7 @@ public class GeolocationReceiver {
                         .secure(false)
                         .build();
 
-                XmppClient xmppSession = new XmppClient("localhost", tcpConfiguration);
+                XmppClient xmppSession = XmppClient.create("localhost", tcpConfiguration);
 
                 // Connect
                 xmppSession.connect();

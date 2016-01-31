@@ -72,7 +72,7 @@ XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
 Then create the session with that configuration:
 
 ```java
-XmppClient xmppClient = new XmppClient("domain", configuration);
+XmppClient xmppClient = XmppClient.create("domain", configuration);
 ```
 
 

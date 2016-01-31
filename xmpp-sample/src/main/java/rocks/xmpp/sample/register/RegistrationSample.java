@@ -46,7 +46,7 @@ public class RegistrationSample {
                         .secure(false) // Disable TLS only for simpler example here.
                         .build();
 
-                XmppClient xmppSession = new XmppClient("localhost", tcpConnectionConfiguration);
+                XmppClient xmppSession = XmppClient.create("localhost", tcpConnectionConfiguration);
 
                 // Connect
                 xmppSession.connect();

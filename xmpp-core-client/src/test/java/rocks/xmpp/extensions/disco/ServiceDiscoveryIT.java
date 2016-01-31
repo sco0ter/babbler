@@ -49,7 +49,7 @@ public class ServiceDiscoveryIT extends IntegrationTest {
         XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                 //.debugger(ConsoleDebugger.class)
                 .build();
-        xmppSession = new XmppClient(DOMAIN, configuration, TcpConnectionConfiguration.getDefault());
+        xmppSession = XmppClient.create(DOMAIN, configuration, TcpConnectionConfiguration.getDefault());
         xmppSession.connect();
         xmppSession.login(USER_1, PASSWORD_1);
     }

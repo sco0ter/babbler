@@ -71,7 +71,7 @@ import java.util.logging.Logger;
  * The following example shows the most simple way to establish a session:
  * <pre>
  * {@code
- * XmppClient xmppClient = new XmppClient("domain");
+ * XmppClient xmppClient = XmppClient.create("domain");
  * xmppClient.connect();
  * xmppClient.login("username", "password");
  * }
@@ -142,7 +142,9 @@ public final class XmppClient extends XmppSession {
      *
      * @param xmppServiceDomain        The service domain.
      * @param connectionConfigurations The connection configurations.
+     * @deprecated Use {@link #create(String, ConnectionConfiguration...)}
      */
+    @Deprecated
     public XmppClient(String xmppServiceDomain, ConnectionConfiguration... connectionConfigurations) {
         this(xmppServiceDomain, XmppSessionConfiguration.getDefault(), connectionConfigurations);
     }
@@ -153,7 +155,9 @@ public final class XmppClient extends XmppSession {
      * @param xmppServiceDomain        The service domain.
      * @param configuration            The configuration.
      * @param connectionConfigurations The connection configurations.
+     * @deprecated Use {@link #create(String, XmppSessionConfiguration, ConnectionConfiguration...)}
      */
+    @Deprecated
     public XmppClient(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
         super(xmppServiceDomain, configuration, connectionConfigurations);
 

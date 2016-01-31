@@ -80,7 +80,7 @@ public class Main {
                     .debugger(ConsoleDebugger.class)
                     .build();
 
-            XmppClient xmppClient = new XmppClient("localhost", xmppSessionConfiguration, connectionConfiguration);
+            XmppClient xmppClient = XmppClient.create("localhost", xmppSessionConfiguration, connectionConfiguration);
 
             try {
                 xmppClient.connect();

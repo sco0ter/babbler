@@ -49,8 +49,8 @@ public class InBandByteStreamIT extends IntegrationTest {
     @Test
     public void test() throws XmppException, IOException, ExecutionException, InterruptedException {
 
-        final XmppClient xmppSession1 = new XmppClient(DOMAIN);
-        final XmppClient xmppSession2 = new XmppClient(DOMAIN);
+        final XmppClient xmppSession1 = XmppClient.create(DOMAIN);
+        final XmppClient xmppSession2 = XmppClient.create(DOMAIN);
 
         xmppSession1.connect();
         xmppSession1.login(USER_1, PASSWORD_1);

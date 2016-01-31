@@ -41,7 +41,7 @@ public class BoshIT extends IntegrationTest {
         long start = System.currentTimeMillis();
 
         for (int i = 0; i < 10; i++) {
-            try (XmppClient xmppSession = new XmppClient(DOMAIN, BoshConnectionConfiguration.getDefault())) {
+            try (XmppClient xmppSession = XmppClient.create(DOMAIN, BoshConnectionConfiguration.getDefault())) {
                 System.out.println(i);
                 xmppSession.connect();
                 xmppSession.login("admin", "admin", null);

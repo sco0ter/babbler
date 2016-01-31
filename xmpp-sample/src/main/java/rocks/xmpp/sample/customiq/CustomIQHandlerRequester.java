@@ -56,7 +56,7 @@ public class CustomIQHandlerRequester {
                         .extensions(Extension.of(Addition.class))
                         .build();
 
-                XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);
+                XmppClient xmppSession = XmppClient.create("localhost", configuration, tcpConfiguration);
 
                 // Connect
                 xmppSession.connect();

@@ -257,7 +257,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         XmppSessionConfiguration configuration1 = XmppSessionConfiguration.builder()
                 .build();
 
-        XmppClient xmppClient1 = new XmppClient("domain", configuration1);
+        XmppClient xmppClient1 = XmppClient.create("domain", configuration1);
         // By default XEP-0115 Entity Capabilities should be enabled.
         Assert.assertTrue(xmppClient1.getManager(EntityCapabilitiesManager.class).isEnabled());
         Assert.assertTrue(xmppClient1.getEnabledFeatures().contains(EntityCapabilities.NAMESPACE));
@@ -271,7 +271,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
                         Extension.of(RosterManager.class, false))
                 .build();
 
-        XmppClient xmppClient2 = new XmppClient("domain", configuration2);
+        XmppClient xmppClient2 = XmppClient.create("domain", configuration2);
         Assert.assertFalse(xmppClient2.getManager(EntityCapabilitiesManager.class).isEnabled());
         Assert.assertFalse(xmppClient2.getEnabledFeatures().contains(EntityCapabilities.NAMESPACE));
 

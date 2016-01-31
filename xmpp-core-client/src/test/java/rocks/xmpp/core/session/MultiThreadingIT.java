@@ -45,7 +45,7 @@ public class MultiThreadingIT extends IntegrationTest {
     @Test
     public void shouldNotCloseMoreThanOnce() throws XmppException, InterruptedException {
 
-        final XmppClient xmppSession = new XmppClient(DOMAIN, TcpConnectionConfiguration.getDefault());
+        final XmppClient xmppSession = XmppClient.create(DOMAIN, TcpConnectionConfiguration.getDefault());
 
         final AtomicInteger closing = new AtomicInteger();
         final AtomicInteger closed = new AtomicInteger();
@@ -86,7 +86,7 @@ public class MultiThreadingIT extends IntegrationTest {
     @Test
     public void shouldNotConnectMoreThanOnceWhileConnected() throws Exception {
 
-        final XmppClient xmppSession = new XmppClient(DOMAIN, TcpConnectionConfiguration.getDefault());
+        final XmppClient xmppSession = XmppClient.create(DOMAIN, TcpConnectionConfiguration.getDefault());
 
         final AtomicInteger connecting = new AtomicInteger();
         final AtomicInteger connected = new AtomicInteger();
@@ -125,7 +125,7 @@ public class MultiThreadingIT extends IntegrationTest {
     @Test
     public void shouldNotConnectWhileLoggedIn() throws Exception {
 
-        final XmppClient xmppSession = new XmppClient(DOMAIN, TcpConnectionConfiguration.getDefault());
+        final XmppClient xmppSession = XmppClient.create(DOMAIN, TcpConnectionConfiguration.getDefault());
 
         final AtomicInteger connecting = new AtomicInteger();
         final AtomicInteger connected = new AtomicInteger();
@@ -167,7 +167,7 @@ public class MultiThreadingIT extends IntegrationTest {
     @Test
     public void shouldOnlyLoginOnce() throws Exception {
 
-        final XmppClient xmppSession = new XmppClient(DOMAIN, TcpConnectionConfiguration.getDefault());
+        final XmppClient xmppSession = XmppClient.create(DOMAIN, TcpConnectionConfiguration.getDefault());
 
         final AtomicInteger authenticating = new AtomicInteger();
         final AtomicInteger authenticated = new AtomicInteger();
@@ -213,7 +213,7 @@ public class MultiThreadingIT extends IntegrationTest {
     @Test
     public void testConnectedStatusAfterConnect() throws Exception {
 
-        final XmppClient xmppSession = new XmppClient(DOMAIN, XmppSessionConfiguration.builder().debugger(ConsoleDebugger.class).build(), TcpConnectionConfiguration.getDefault());
+        final XmppClient xmppSession = XmppClient.create(DOMAIN, XmppSessionConfiguration.builder().debugger(ConsoleDebugger.class).build(), TcpConnectionConfiguration.getDefault());
         final AtomicInteger exceptions = new AtomicInteger();
         final AtomicInteger connecting = new AtomicInteger();
         final AtomicInteger connected = new AtomicInteger();
@@ -255,7 +255,7 @@ public class MultiThreadingIT extends IntegrationTest {
     @Test
     public void testLoginStatusAfterConnect() throws Exception {
 
-        final XmppClient xmppSession = new XmppClient(DOMAIN, XmppSessionConfiguration.builder().debugger(ConsoleDebugger.class).build(), TcpConnectionConfiguration.getDefault());
+        final XmppClient xmppSession = XmppClient.create(DOMAIN, XmppSessionConfiguration.builder().debugger(ConsoleDebugger.class).build(), TcpConnectionConfiguration.getDefault());
         final AtomicInteger exceptions = new AtomicInteger();
         final AtomicInteger connecting = new AtomicInteger();
         final AtomicInteger connected = new AtomicInteger();

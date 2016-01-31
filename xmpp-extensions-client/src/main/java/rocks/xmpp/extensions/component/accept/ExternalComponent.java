@@ -45,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 /**
@@ -69,13 +70,44 @@ public final class ExternalComponent extends XmppSession {
 
     private volatile boolean streamHeaderReceived;
 
+    @Deprecated
     public ExternalComponent(String componentName, String sharedSecret, String hostname, int port) {
         this(componentName, sharedSecret, XmppSessionConfiguration.getDefault(), hostname, port);
     }
 
+    @Deprecated
     public ExternalComponent(String componentName, String sharedSecret, XmppSessionConfiguration configuration, String hostname, int port) {
         super(componentName, configuration, TcpConnectionConfiguration.builder().hostname(hostname).port(port).build());
         this.sharedSecret = sharedSecret;
+    }
+
+    /**
+     * Creates a new external component using a default configuration. Any registered {@link #addCreationListener(Consumer) creation listeners} are triggered.
+     *
+     * @param componentName The component name.
+     * @param sharedSecret  The shared secret (password).
+     * @param hostname      The hostname to connect to.
+     * @param port          The port to connect to.
+     * @return The external component.
+     */
+    public static ExternalComponent create(String componentName, String sharedSecret, String hostname, int port) {
+        return create(componentName, sharedSecret, XmppSessionConfiguration.getDefault(), hostname, port);
+    }
+
+    /**
+     * Creates a new external component. Any registered {@link #addCreationListener(Consumer) creation listeners} are triggered.
+     *
+     * @param componentName The component name.
+     * @param sharedSecret  The shared secret (password).
+     * @param configuration The configuration.
+     * @param hostname      The hostname to connect to.
+     * @param port          The port to connect to.
+     * @return The external component.
+     */
+    public static ExternalComponent create(String componentName, String sharedSecret, XmppSessionConfiguration configuration, String hostname, int port) {
+        ExternalComponent component = new ExternalComponent(componentName, sharedSecret, configuration, hostname, port);
+        notifyCreationListeners(component);
+        return component;
     }
 
     @Override

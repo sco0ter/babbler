@@ -43,13 +43,6 @@ import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.websocket.model.Close;
 import rocks.xmpp.websocket.model.Open;
 
-import javax.naming.Context;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
 import javax.websocket.ClientEndpointConfig;
 import javax.websocket.CloseReason;
 import javax.websocket.DeploymentException;
@@ -66,7 +59,6 @@ import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -130,11 +122,11 @@ public final class WebSocketConnection extends Connection {
         super(xmppSession, connectionConfiguration);
         this.connectionConfiguration = connectionConfiguration;
         this.debugger = xmppSession.getDebugger();
-        this.streamManager = getXmppSession().getManager(StreamManager.class);
+        this.streamManager = xmppSession.getManager(StreamManager.class);
     }
 
     void initialize() {
-        StreamFeaturesManager streamFeaturesManager = getXmppSession().getManager(StreamFeaturesManager.class);
+        StreamFeaturesManager streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         streamFeaturesManager.addFeatureNegotiator(streamManager);
     }
 
@@ -157,7 +149,7 @@ public final class WebSocketConnection extends Connection {
 
     @Override
     protected final void restartStream() {
-        send(new Open(getXmppSession().getDomain(), getXmppSession().getConfiguration().getLanguage()));
+        send(new Open(xmppSession.getDomain(), xmppSession.getConfiguration().getLanguage()));
     }
 
     @Override
@@ -168,8 +160,8 @@ public final class WebSocketConnection extends Connection {
             try (StringWriter writer = new StringWriter()) {
                 XMLStreamWriter xmlStreamWriter = null;
                 try {
-                    xmlStreamWriter = XmppUtils.createXmppStreamWriter(getXmppSession().getConfiguration().getXmlOutputFactory().createXMLStreamWriter(writer), null);
-                    getXmppSession().createMarshaller().marshal(streamElement, xmlStreamWriter);
+                    xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(writer), null);
+                    xmppSession.createMarshaller().marshal(streamElement, xmlStreamWriter);
                     xmlStreamWriter.flush();
                     String xml = writer.toString();
                     if (streamElement instanceof Stanza) {
@@ -186,7 +178,7 @@ public final class WebSocketConnection extends Connection {
                             debugger.writeStanza(xml, streamElement);
                         }
                     } catch (IOException e) {
-                        getXmppSession().notifyException(e);
+                        xmppSession.notifyException(e);
                     }
 
                 } finally {
@@ -195,7 +187,7 @@ public final class WebSocketConnection extends Connection {
                     }
                 }
             } catch (Exception e) {
-                getXmppSession().notifyException(e);
+                xmppSession.notifyException(e);
             }
             return null;
         });
@@ -222,20 +214,20 @@ public final class WebSocketConnection extends Connection {
                     // If a hostname has been configured, use it to connect.
                     if (getHostname() != null) {
                         uri = new URI(protocol, null, getHostname(), targetPort, connectionConfiguration.getPath(), null, null);
-                    } else if (getXmppSession().getDomain() != null) {
+                    } else if (xmppSession.getDomain() != null) {
                         // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
-                        String resolvedUrl = findWebSocketEndpoint(getXmppSession().getDomain().toString(), connectionConfiguration.getConnectTimeout());
+                        String resolvedUrl = findWebSocketEndpoint(xmppSession.getDomain().toString(), connectionConfiguration.getConnectTimeout());
                         if (resolvedUrl != null) {
                             uri = new URI(resolvedUrl);
                         } else {
                             // Fallback mechanism:
                             // If the URL could not be resolved, use the domain name and port 5280 as default.
-                            uri = new URI(protocol, null, getXmppSession().getDomain().toString(), targetPort, connectionConfiguration.getPath(), null, null);
+                            uri = new URI(protocol, null, xmppSession.getDomain().toString(), targetPort, connectionConfiguration.getPath(), null, null);
                         }
                         this.port = uri.getPort();
                         this.hostname = uri.getHost();
                     } else {
-                        throw new IllegalStateException("Neither an URL nor a domain given for a BOSH connection.");
+                        throw new IllegalStateException("Neither an URL nor a domain given for a WebSocket connection.");
                     }
                 }
                 path = uri;
@@ -298,7 +290,7 @@ public final class WebSocketConnection extends Connection {
                         @Override
                         public void onMessage(String message) {
                             try {
-                                Object element = getXmppSession().createUnmarshaller().unmarshal(new StringReader(message));
+                                Object element = xmppSession.createUnmarshaller().unmarshal(new StringReader(message));
                                 if (debugger != null) {
                                     debugger.readStanza(message, element);
                                 }
@@ -320,11 +312,11 @@ public final class WebSocketConnection extends Connection {
                                         lock.unlock();
                                     }
                                 }
-                                if (getXmppSession().handleElement(element)) {
+                                if (xmppSession.handleElement(element)) {
                                     restartStream();
                                 }
                             } catch (Exception e) {
-                                getXmppSession().notifyException(e);
+                                xmppSession.notifyException(e);
                             }
                         }
                     });
@@ -392,7 +384,7 @@ public final class WebSocketConnection extends Connection {
     @Override
     public final synchronized String toString() {
         StringBuilder sb = new StringBuilder("WebSocket connection");
-        if (hostname != null) {
+        if (uri != null) {
             sb.append(" to ").append(uri);
         }
         if (streamId != null) {

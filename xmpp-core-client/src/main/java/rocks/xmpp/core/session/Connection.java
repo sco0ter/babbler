@@ -50,7 +50,7 @@ public abstract class Connection implements AutoCloseable {
 
     protected Jid from;
 
-    private XmppSession xmppSession;
+    protected XmppSession xmppSession;
 
     /**
      * Creates a connection to the specified host and port through a proxy.
@@ -62,15 +62,6 @@ public abstract class Connection implements AutoCloseable {
         this.hostname = connectionConfiguration.getHostname();
         this.port = connectionConfiguration.getPort();
         this.proxy = connectionConfiguration.getProxy();
-    }
-
-    /**
-     * Gets the XMPP session which is associated with this connection. This method should only be called from the session itself.
-     *
-     * @return The XMPP session.
-     */
-    public final XmppSession getXmppSession() {
-        return xmppSession;
     }
 
     /**

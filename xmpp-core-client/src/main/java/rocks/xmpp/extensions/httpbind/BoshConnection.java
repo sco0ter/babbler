@@ -171,7 +171,7 @@ public final class BoshConnection extends Connection {
     BoshConnection(XmppSession xmppSession, BoshConnectionConfiguration configuration) {
         super(xmppSession, configuration);
         this.boshConnectionConfiguration = configuration;
-        this.debugger = getXmppSession().getDebugger();
+        this.debugger = xmppSession.getDebugger();
 
         compressionMethods = new LinkedHashMap<>();
         for (CompressionMethod compressionMethod : boshConnectionConfiguration.getCompressionMethods()) {
@@ -279,10 +279,6 @@ public final class BoshConnection extends Connection {
             return;
         }
 
-        if (getXmppSession() == null) {
-            throw new IllegalStateException("Can't connect without XmppSession. Use XmppSession to connect.");
-        }
-
         if (url == null) {
             String protocol = boshConnectionConfiguration.isSecure() ? "https" : "http";
             // If no port has been configured, use the default ports.
@@ -290,15 +286,15 @@ public final class BoshConnection extends Connection {
             // If a hostname has been configured, use it to connect.
             if (getHostname() != null) {
                 url = new URL(protocol, getHostname(), targetPort, boshConnectionConfiguration.getPath());
-            } else if (getXmppSession().getDomain() != null) {
+            } else if (xmppSession.getDomain() != null) {
                 // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
-                String resolvedUrl = findBoshUrl(getXmppSession().getDomain().toString(), boshConnectionConfiguration.getConnectTimeout());
+                String resolvedUrl = findBoshUrl(xmppSession.getDomain().toString(), boshConnectionConfiguration.getConnectTimeout());
                 if (resolvedUrl != null) {
                     url = new URL(resolvedUrl);
                 } else {
                     // Fallback mechanism:
                     // If the URL could not be resolved, use the domain name and port 5280 as default.
-                    url = new URL(protocol, getXmppSession().getDomain().toString(), targetPort, boshConnectionConfiguration.getPath());
+                    url = new URL(protocol, xmppSession.getDomain().toString(), targetPort, boshConnectionConfiguration.getPath());
                 }
                 this.port = url.getPort() > 0 ? url.getPort() : url.getDefaultPort();
                 this.hostname = url.getHost();
@@ -321,7 +317,7 @@ public final class BoshConnection extends Connection {
 
         // Create initial request.
         Body.Builder body = Body.builder()
-                .language(getXmppSession().getConfiguration().getLanguage())
+                .language(xmppSession.getConfiguration().getLanguage())
                 .version("1.11")
                 .wait(boshConnectionConfiguration.getWait())
                 .hold((byte) 1)
@@ -330,8 +326,8 @@ public final class BoshConnection extends Connection {
                 .from(from)
                 .xmppVersion("1.0");
 
-        if (getXmppSession().getDomain() != null) {
-            body.to(getXmppSession().getDomain().toString());
+        if (xmppSession.getDomain() != null) {
+            body.to(xmppSession.getDomain().toString());
         }
 
         // Try if we can connect in order to fail fast if we can't.
@@ -416,7 +412,7 @@ public final class BoshConnection extends Connection {
         }
 
         for (Object wrappedObject : responseBody.getWrappedObjects()) {
-            if (getXmppSession().handleElement(wrappedObject)) {
+            if (xmppSession.handleElement(wrappedObject)) {
                 restartStream();
             }
         }
@@ -442,8 +438,8 @@ public final class BoshConnection extends Connection {
             bodyBuilder = Body.builder()
                     .sessionId(sessionId)
                     .restart(true)
-                    .to(getXmppSession().getDomain().toString())
-                    .language(getXmppSession().getConfiguration().getLanguage())
+                    .to(xmppSession.getDomain().toString())
+                    .language(xmppSession.getConfiguration().getLanguage())
                     .from(from);
         }
         sendNewRequest(bodyBuilder, false);
@@ -691,11 +687,11 @@ public final class BoshConnection extends Connection {
                                 XMLStreamWriter xmlStreamWriter = null;
                                 try {
                                     // Create the writer for this connection.
-                                    xmlStreamWriter = XmppUtils.createXmppStreamWriter(getXmppSession().getConfiguration().getXmlOutputFactory().createXMLStreamWriter(xmppOutputStream, "UTF-8"));
+                                    xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(xmppOutputStream, "UTF-8"));
 
                                     // Then write the XML to the output stream by marshalling the object to the writer.
                                     // Marshaller needs to be recreated here, because it's not thread-safe.
-                                    getXmppSession().createMarshaller().marshal(body, xmlStreamWriter);
+                                    xmppSession.createMarshaller().marshal(body, xmlStreamWriter);
                                     xmlStreamWriter.flush();
 
                                     if (debugger != null) {
@@ -732,13 +728,13 @@ public final class BoshConnection extends Connection {
                                     XMLEventReader xmlEventReader = null;
                                     try {
                                         // Read the response.
-                                        xmlEventReader = getXmppSession().getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
+                                        xmlEventReader = xmppSession.getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
                                         while (xmlEventReader.hasNext()) {
                                             XMLEvent xmlEvent = xmlEventReader.peek();
 
                                             // Parse the <body/> element.
                                             if (xmlEvent.isStartElement()) {
-                                                JAXBElement<Body> element = getXmppSession().createUnmarshaller().unmarshal(xmlEventReader, Body.class);
+                                                JAXBElement<Body> element = xmppSession.createUnmarshaller().unmarshal(xmlEventReader, Body.class);
 
                                                 if (debugger != null) {
                                                     debugger.readStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), element.getValue());
@@ -777,7 +773,7 @@ public final class BoshConnection extends Connection {
                             }
                         }
                     } catch (Exception e) {
-                        getXmppSession().notifyException(e);
+                        xmppSession.notifyException(e);
                     } finally {
                         if (httpConnection != null) {
                             httpConnection.disconnect();
@@ -796,8 +792,8 @@ public final class BoshConnection extends Connection {
             if (body != null) {
                 body.build().getWrappedObjects().stream().filter(object -> object instanceof Stanza).forEach(object -> {
                     Stanza stanza = (Stanza) object;
-                    getXmppSession().getUnacknowledgedStanzas().remove(stanza);
-                    getXmppSession().markAcknowledged(stanza);
+                    xmppSession.getUnacknowledgedStanzas().remove(stanza);
+                    xmppSession.markAcknowledged(stanza);
                 });
             }
         }
@@ -837,7 +833,7 @@ public final class BoshConnection extends Connection {
     @Override
     public final synchronized String toString() {
         StringBuilder sb = new StringBuilder("BOSH connection");
-        if (hostname != null) {
+        if (url != null) {
             sb.append(" to ").append(url);
         }
         if (sessionId != null) {

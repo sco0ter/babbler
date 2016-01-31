@@ -104,12 +104,12 @@ public final class TcpConnection extends Connection {
     TcpConnection(XmppSession xmppSession, TcpConnectionConfiguration configuration) {
         super(xmppSession, configuration);
         this.tcpConnectionConfiguration = configuration;
-        streamManager = getXmppSession().getManager(StreamManager.class);
+        streamManager = xmppSession.getManager(StreamManager.class);
     }
 
     void initialize() {
-        StreamFeaturesManager streamFeaturesManager = getXmppSession().getManager(StreamFeaturesManager.class);
-        streamFeaturesManager.addFeatureNegotiator(new SecurityManager(getXmppSession(), () -> {
+        StreamFeaturesManager streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
+        streamFeaturesManager.addFeatureNegotiator(new SecurityManager(xmppSession, () -> {
             try {
                 secureConnection();
             } catch (Exception e) {
@@ -117,7 +117,7 @@ public final class TcpConnection extends Connection {
             }
         }, tcpConnectionConfiguration.isSecure()));
 
-        final CompressionManager compressionManager = getXmppSession().getManager(CompressionManager.class);
+        final CompressionManager compressionManager = xmppSession.getManager(CompressionManager.class);
         compressionManager.getConfiguredCompressionMethods().addAll(tcpConnectionConfiguration.getCompressionMethods());
         compressionManager.addFeatureListener(() -> {
             CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
@@ -172,16 +172,12 @@ public final class TcpConnection extends Connection {
             }
         }
 
-        if (getXmppSession() == null) {
-            throw new IllegalStateException("Can't connect without XmppSession. Use XmppSession to connect.");
-        }
-
         if (getHostname() != null && !getHostname().isEmpty()) {
             this.socket = createAndConnectSocket(InetSocketAddress.createUnresolved(getHostname(), getPort()), getProxy());
-        } else if (getXmppSession().getDomain() != null) {
-            if (!connectWithXmppServiceDomain(getXmppSession().getDomain())) {
+        } else if (xmppSession.getDomain() != null) {
+            if (!connectWithXmppServiceDomain(xmppSession.getDomain())) {
                 // 9. If the initiating entity does not receive a response to its SRV query, it SHOULD attempt the fallback process described in the next section.
-                this.socket = createAndConnectSocket(InetSocketAddress.createUnresolved(getXmppSession().getDomain().toString(), getPort()), getProxy());
+                this.socket = createAndConnectSocket(InetSocketAddress.createUnresolved(xmppSession.getDomain().toString(), getPort()), getProxy());
             }
         } else {
             throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
@@ -191,12 +187,12 @@ public final class TcpConnection extends Connection {
         outputStream = new BufferedOutputStream(socket.getOutputStream());
         inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
-        xmppStreamWriter = new XmppStreamWriter(namespace, streamManager, this.getXmppSession());
+        xmppStreamWriter = new XmppStreamWriter(namespace, streamManager, this.xmppSession);
         xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
         xmppStreamWriter.openStream(outputStream, from);
 
         // Start reading from the input stream.
-        xmppStreamReader = new XmppStreamReader(namespace, this, this.getXmppSession(), onStreamOpened);
+        xmppStreamReader = new XmppStreamReader(namespace, this, this.xmppSession, onStreamOpened);
         xmppStreamReader.startReading(inputStream);
     }
 
@@ -240,7 +236,7 @@ public final class TcpConnection extends Connection {
         synchronized (this) {
             socket = sslContext.getSocketFactory().createSocket(
                     socket,
-                    getXmppSession().getDomain().toString(),
+                    xmppSession.getDomain().toString(),
                     socket.getPort(),
                     true);
             sslSocket = (SSLSocket) socket;
@@ -261,8 +257,8 @@ public final class TcpConnection extends Connection {
             sslSocket.startHandshake();
             // We are calling an "alien" method here, i.e. code we don't control.
             // Don't call alien methods from within synchronized regions, that's why the regions are split.
-            if (!verifier.verify(getXmppSession().getDomain().toString(), sslSocket.getSession())) {
-                throw new CertificateException("Server failed to authenticate as " + getXmppSession().getDomain());
+            if (!verifier.verify(xmppSession.getDomain().toString(), sslSocket.getSession())) {
+                throw new CertificateException("Server failed to authenticate as " + xmppSession.getDomain());
             }
         }
 

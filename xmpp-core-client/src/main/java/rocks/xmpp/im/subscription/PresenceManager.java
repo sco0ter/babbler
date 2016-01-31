@@ -75,11 +75,17 @@ public final class PresenceManager extends Manager {
         xmppSession.addOutboundPresenceListener(e -> {
             Presence presence = e.getPresence();
             // Store the last sent presences, in order to automatically resend them, after a disconnect.
-            if (presence.getType() == null || presence.getType() == Presence.Type.UNAVAILABLE) {
+            if (presence.isAvailable()) {
                 if (presence.getTo() == null) {
                     lastSentPresences.put("", presence);
                 } else {
                     lastSentPresences.put(presence.getTo().toString(), presence);
+                }
+            } else if (presence.getType() == Presence.Type.UNAVAILABLE) {
+                if (presence.getTo() == null) {
+                    lastSentPresences.remove("");
+                } else {
+                    lastSentPresences.remove(presence.getTo().toString());
                 }
             }
         });

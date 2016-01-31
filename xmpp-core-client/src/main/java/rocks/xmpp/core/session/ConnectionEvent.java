@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 /**
  * This event is fired for the following use cases:
  * <ul>
- * <li>When the XMPP session's underlying connection gets a {@linkplain Type#DISCONNECTED disconnected}.</li>
+ * <li>When the XMPP session's underlying connection gets {@linkplain Type#DISCONNECTED disconnected}.</li>
  * <li>When the automatic reconnection has successfully {@linkplain Type#RECONNECTION_SUCCEEDED reconnected}, i.e. re-established the previous session status.</li>
  * <li>While the XMPP session is disconnected, a {@linkplain Type#RECONNECTION_PENDING pending} event is fired every second.</li>
  * <li>When the reconnection {@linkplain Type#RECONNECTION_FAILED failed}.</li>

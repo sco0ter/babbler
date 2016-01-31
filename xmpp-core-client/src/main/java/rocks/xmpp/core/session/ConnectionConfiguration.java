@@ -41,6 +41,7 @@ import java.util.List;
  * Among these common properties are hostname, port, proxy, security settings and a timeout.
  *
  * @author Christian Schudt
+ * @see Connection
  */
 public abstract class ConnectionConfiguration {
 

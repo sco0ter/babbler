@@ -93,14 +93,18 @@ public abstract class Connection implements AutoCloseable {
 
     /**
      * Restarts the stream.
+     *
+     * @see <a href="https://tools.ietf.org/html/rfc6120#section-4.3.3">RFC 6120 § 4.3.3.  Restarts</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0206.html#preconditions-sasl">XEP-0206 Authentication and Resource Binding</a>
+     * @see <a href="https://tools.ietf.org/html/rfc7395#section-3.7">RFC 7395 § 3.7.  Stream Restarts</a>
      */
     protected abstract void restartStream();
 
     /**
-     * Sends an element.
+     * Sends an element over this connection.
      *
      * @param streamElement The element.
-     * @return The future representing the sent process and which allows to cancel it.
+     * @return The future representing the send process and which allows to cancel it.
      */
     public abstract Future<?> send(StreamElement streamElement);
 
@@ -128,5 +132,16 @@ public abstract class Connection implements AutoCloseable {
      */
     public abstract String getStreamId();
 
+    /**
+     * Indicates, whether this connection is using acknowledgements.
+     * <p>
+     * TCP and WebSocket connections use <a href="http://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a> to acknowledge stanzas.
+     * <p>
+     * BOSH connections use another mechanism for acknowledgements, described in <a href="http://xmpp.org/extensions/xep-0124.html#ack">XEP-0124 § 9. Acknowledgements</a>.
+     *
+     * @return True, if this connection is using acknowledgements.
+     * @see <a href="http://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>
+     * @see <a href="http://xmpp.org/extensions/xep-0124.html#ack">XEP-0124 § 9. Acknowledgements</a>
+     */
     public abstract boolean isUsingAcknowledgements();
 }

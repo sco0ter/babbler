@@ -61,6 +61,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -173,10 +174,25 @@ public final class XmppClient extends XmppSession {
         });
     }
 
+    /**
+     * Creates a new XMPP client instance. Any registered {@link #addCreationListener(Consumer) creation listeners} are triggered.
+     *
+     * @param xmppServiceDomain        The XMPP service domain.
+     * @param connectionConfigurations The connection methods, which are used to connect.
+     * @return The XMPP client.
+     */
     public static XmppClient create(String xmppServiceDomain, ConnectionConfiguration... connectionConfigurations) {
         return create(xmppServiceDomain, XmppSessionConfiguration.getDefault(), connectionConfigurations);
     }
 
+    /**
+     * Creates a new XMPP client instance. Any registered {@link #addCreationListener(Consumer) creation listeners} are triggered.
+     *
+     * @param xmppServiceDomain        The XMPP service domain.
+     * @param configuration            The configuration.
+     * @param connectionConfigurations The connection methods, which are used to connect.
+     * @return The XMPP client.
+     */
     public static XmppClient create(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
         XmppClient xmppClient = new XmppClient(xmppServiceDomain, configuration, connectionConfigurations);
         notifyCreationListeners(xmppClient);

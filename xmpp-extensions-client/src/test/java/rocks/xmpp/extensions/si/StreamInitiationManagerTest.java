@@ -48,7 +48,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class StreamInitiationManagerTest extends BaseTest {
 
-    @Test(enabled = false)
+    @Test
     public void testStreamInitiationWithAcceptance() throws XmppException, IOException, ExecutionException, InterruptedException {
 
         MockServer mockServer = new MockServer();

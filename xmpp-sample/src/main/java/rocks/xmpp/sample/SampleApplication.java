@@ -31,7 +31,7 @@ import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
-import rocks.xmpp.websocket.WebSocketConnection;
+import rocks.xmpp.extensions.ping.PingManager;
 import rocks.xmpp.websocket.WebSocketConnectionConfiguration;
 
 import javax.net.ssl.SSLContext;
@@ -74,7 +74,7 @@ public class SampleApplication {
                 BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()
                         .hostname("localhost")
                         .port(7070)
-                        //.sslContext(getTrustAllSslContext())
+                                //.sslContext(getTrustAllSslContext())
                         .secure(false)
                         .build();
                 WebSocketConnectionConfiguration webSocketConfiguration = WebSocketConnectionConfiguration.builder()

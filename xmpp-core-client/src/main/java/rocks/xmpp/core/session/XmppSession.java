@@ -152,7 +152,7 @@ public abstract class XmppSession implements AutoCloseable {
      */
     private final Queue<Stanza> unacknowledgedStanzas = new ConcurrentLinkedQueue<>();
 
-    private final Map<Stanza, StanzaTracking<? extends Stanza>> stanzaTrackingMap = new ConcurrentHashMap<>();
+    private final Map<Stanza, SendTask<? extends Stanza>> stanzaTrackingMap = new ConcurrentHashMap<>();
 
     /**
      * Holds the connection state.
@@ -699,7 +699,7 @@ public abstract class XmppSession implements AutoCloseable {
         );
     }
 
-    private <S extends Stanza, E extends EventObject> AsyncResult<S> sendAndAwait(S stanza, Function<E, S> stanzaMapper, final Predicate<S> filter, Function<S, Trackable<S>> sendFunction, Consumer<Consumer<E>> addListener, Consumer<Consumer<E>> removeListener, long timeout) {
+    private <S extends Stanza, E extends EventObject> AsyncResult<S> sendAndAwait(S stanza, Function<E, S> stanzaMapper, final Predicate<S> filter, Function<S, SendTask<S>> sendFunction, Consumer<Consumer<E>> addListener, Consumer<Consumer<E>> removeListener, long timeout) {
         CompletableFuture<S> completableFuture = new CompletableFuture<>();
 
         final Consumer<E> listener = e -> {
@@ -716,7 +716,7 @@ public abstract class XmppSession implements AutoCloseable {
 
         sendFunction.apply(stanza);
 
-        return new AsyncResult<S>(completableFuture.applyToEither(CompletionStages.timeoutAfter(timeout, TimeUnit.MILLISECONDS, () -> new NoResponseException("Timeout reached, while waiting on a response.")), Function.identity())).whenComplete((result, e) ->
+        return new AsyncResult<>(completableFuture.applyToEither(CompletionStages.timeoutAfter(timeout, TimeUnit.MILLISECONDS, () -> new NoResponseException("Timeout reached, while waiting on a response.")), Function.identity())).whenComplete((result, e) ->
                 removeListener.accept(listener));
     }
 
@@ -782,34 +782,34 @@ public abstract class XmppSession implements AutoCloseable {
      * Sends an IQ.
      *
      * @param iq The IQ.
-     * @return The trackable, which allows to track the stanza.
+     * @return The send task, which allows to track the stanza.
      */
-    public abstract Trackable<IQ> sendIQ(final IQ iq);
+    public abstract SendTask<IQ> sendIQ(final IQ iq);
 
     /**
      * Sends a message.
      *
      * @param message The message.
-     * @return The trackable, which allows to track the stanza.
+     * @return The send task, which allows to track the stanza.
      */
-    public abstract Trackable<Message> sendMessage(final Message message);
+    public abstract SendTask<Message> sendMessage(final Message message);
 
     /**
      * Sends a presence.
      *
      * @param presence The presence.
-     * @return The trackable, which allows to track the stanza.
+     * @return The send task, which allows to track the stanza.
      */
-    public abstract Trackable<Presence> sendPresence(final Presence presence);
+    public abstract SendTask<Presence> sendPresence(final Presence presence);
 
-    protected final <S extends Stanza> Trackable<S> trackAndSend(S stanza) {
-        StanzaTracking<S> stanzaTracking = new StanzaTracking<>(stanza);
+    protected final <S extends Stanza> SendTask<S> trackAndSend(S stanza) {
+        SendTask<S> sendTask = new SendTask<>(stanza);
         // Only track stanzas, if the connection allows it.
         if (activeConnection.isUsingAcknowledgements()) {
-            stanzaTrackingMap.putIfAbsent(stanza, stanzaTracking);
+            stanzaTrackingMap.putIfAbsent(stanza, sendTask);
         }
         sendInternal(stanza);
-        return stanzaTracking;
+        return sendTask;
     }
 
     /**
@@ -1187,9 +1187,9 @@ public abstract class XmppSession implements AutoCloseable {
             if (acknowledgedStanza instanceof Message) {
                 XmppUtils.notifyEventListeners(messageAcknowledgedListeners, new MessageEvent(this, (Message) acknowledgedStanza, false));
             }
-            StanzaTracking stanzaTracking = stanzaTrackingMap.remove(acknowledgedStanza);
-            if (stanzaTracking != null) {
-                stanzaTracking.receivedByServer();
+            SendTask sendTask = stanzaTrackingMap.remove(acknowledgedStanza);
+            if (sendTask != null) {
+                sendTask.receivedByServer();
             }
         }
     }

@@ -120,7 +120,7 @@ public final class TestXmppSession extends XmppSession {
     }
 
     @Override
-    public final Trackable<IQ> sendIQ(final IQ stanza) {
+    public final SendTask<IQ> sendIQ(final IQ stanza) {
         Future<?> future = super.send(stanza);
         if (mockServer != null) {
             stanza.setFrom(connectedResource);
@@ -130,12 +130,12 @@ public final class TestXmppSession extends XmppSession {
     }
 
     @Override
-    public final Trackable<Message> sendMessage(final Message stanza) {
+    public final SendTask<Message> sendMessage(final Message stanza) {
         return trackAndSend(stanza);
     }
 
     @Override
-    public final Trackable<Presence> sendPresence(final Presence stanza) {
+    public final SendTask<Presence> sendPresence(final Presence stanza) {
         return trackAndSend(stanza);
     }
 

@@ -538,17 +538,17 @@ public final class XmppClient extends XmppSession {
     }
 
     @Override
-    public final Trackable<IQ> sendIQ(final IQ iq) {
+    public final SendTask<IQ> sendIQ(final IQ iq) {
         return trackAndSend(ClientIQ.from(iq));
     }
 
     @Override
-    public final Trackable<Message> sendMessage(final Message message) {
+    public final SendTask<Message> sendMessage(final Message message) {
         return trackAndSend(ClientMessage.from(message));
     }
 
     @Override
-    public final Trackable<Presence> sendPresence(final Presence presence) {
+    public final SendTask<Presence> sendPresence(final Presence presence) {
         return trackAndSend(ClientPresence.from(presence));
     }
 

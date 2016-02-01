@@ -25,8 +25,8 @@
 package rocks.xmpp.sample.sm;
 
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.SendTask;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
-import rocks.xmpp.core.session.Trackable;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
@@ -70,7 +70,7 @@ public class StreamManagementSample {
                             .debugger(ConsoleDebugger.class)
                             .build();
 
-                    XmppClient xmppSession = XmppClient.create("localhost", configuration, webSocketConnectionConfiguration);
+                    XmppClient xmppSession = XmppClient.create("localhost", configuration, tcpConnectionConfiguration);
                     xmppSession.enableFeature(StreamManagement.NAMESPACE);
                     // Connect
                     xmppSession.connect();
@@ -81,13 +81,13 @@ public class StreamManagementSample {
                         System.out.println("Received by server!!!");
                     });
                     // Send a message to myself, which is caught by the listener above.
-                    Trackable<Message> trackableMessage = xmppSession.sendMessage(new Message(xmppSession.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
-                    trackableMessage.onAcknowledged(message -> {
+                    SendTask<Message> trackableMessage = xmppSession.sendMessage(new Message(xmppSession.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
+                    trackableMessage.onAcknowledge(message -> {
                         System.out.println("Received by server: " + message);
                     });
 
-                    Trackable<Presence> trackablePresence = xmppSession.sendPresence(new Presence(Presence.Show.AWAY));
-                    trackablePresence.onAcknowledged(presence -> {
+                    SendTask<Presence> trackablePresence = xmppSession.sendPresence(new Presence(Presence.Show.AWAY));
+                    trackablePresence.onAcknowledge(presence -> {
                         System.out.println("Received by server: " + presence);
                     });
 

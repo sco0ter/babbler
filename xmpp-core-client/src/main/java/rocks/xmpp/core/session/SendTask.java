@@ -24,21 +24,59 @@
 
 package rocks.xmpp.core.session;
 
+import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Stanza;
 
 import java.util.function.Consumer;
 
 /**
- * Keeps track of a stanza by notifying a consumer, when the stanza gets acknowledged.
+ * A send task is the result of a send action and allows to keep track of the sent stanza.
  *
  * @author Christian Schudt
+ * @see XmppSession#sendMessage(Message)
  */
-public interface Trackable<S extends Stanza> {
+public final class SendTask<S extends Stanza> {
+
+    private final S stanza;
 
     /**
-     * Adds a consumer, which gets notified when the stanza has been received (acknowledged) by the server.
-     *
-     * @param onAcknowledged The consumer, which gets notified on acknowledgement.
+     * Guarded by this.
      */
-    void onAcknowledged(Consumer<S> onAcknowledged);
+    private Consumer<S> onAcknowledge;
+
+    /**
+     * Guarded by this.
+     */
+    private boolean receivedByServer;
+
+    SendTask(S stanza) {
+        this.stanza = stanza;
+    }
+
+    /**
+     * Called when the sent stanza has been acknowledged by the server.
+     *
+     * @param onAcknowledge The consumer.
+     */
+    public final void onAcknowledge(Consumer<S> onAcknowledge) {
+        boolean received;
+        synchronized (this) {
+            received = receivedByServer;
+            this.onAcknowledge = onAcknowledge;
+        }
+        if (received) {
+            onAcknowledge.accept(stanza);
+        }
+    }
+
+    void receivedByServer() {
+        Consumer<S> consumer;
+        synchronized (this) {
+            receivedByServer = true;
+            consumer = onAcknowledge;
+        }
+        if (consumer != null) {
+            consumer.accept(stanza);
+        }
+    }
 }

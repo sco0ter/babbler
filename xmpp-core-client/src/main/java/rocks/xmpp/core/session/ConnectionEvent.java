@@ -89,6 +89,11 @@ public final class ConnectionEvent extends EventObject {
         return type;
     }
 
+    @Override
+    public final String toString() {
+        return getClass().getName() + "[type=" + type + ", nextReconnectionAttempt=" + nextReconnectionAttempt + ']';
+    }
+
     /**
      * The connection event type.
      */

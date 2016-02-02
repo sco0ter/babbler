@@ -487,7 +487,6 @@ public final class XmppClient extends XmppSession {
         // "If, before completing the resource binding step, the client attempts to send an XML stanza to an entity other
         // than the server itself or the client's account, the server MUST NOT process the stanza
         // and MUST close the stream with a <not-authorized/> stream error."
-        updateStatus(Status.AUTHENTICATED);
         wasLoggedIn = true;
 
         // Deprecated method of session binding, according to the <a href="http://xmpp.org/rfcs/rfc3921.html#session">old specification</a>
@@ -498,6 +497,10 @@ public final class XmppClient extends XmppSession {
             logger.fine("Establishing session.");
             query(IQ.set(new Session()));
         }
+
+        // Set this status after session establishment. It's used to auto-send service discovery to a server and some servers won't response,
+        // if it's send before.
+        updateStatus(Status.AUTHENTICATED);
     }
 
     /**

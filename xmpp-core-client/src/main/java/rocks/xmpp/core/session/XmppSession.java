@@ -752,7 +752,12 @@ public abstract class XmppSession implements AutoCloseable {
 
         Status status = getStatus();
         if (!isConnected() && !EnumSet.of(Status.CLOSING, Status.CONNECTING).contains(status)) {
-            throw new IllegalStateException("Session is not connected to server (status: " + status + ')');
+            IllegalStateException ise = new IllegalStateException("Session is not connected to server (status: " + status + ')');
+            Throwable cause = exception;
+            if (cause != null) {
+                ise.initCause(cause);
+            }
+            throw ise;
         }
         if (element instanceof Stanza) {
             Stanza stanza = (Stanza) element;

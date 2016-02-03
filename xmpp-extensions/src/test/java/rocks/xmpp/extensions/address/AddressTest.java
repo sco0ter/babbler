@@ -30,11 +30,15 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.address.model.Address;
 import rocks.xmpp.extensions.address.model.Addresses;
+import rocks.xmpp.im.roster.model.Roster;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -43,17 +47,18 @@ import java.util.Collection;
 public class AddressTest extends XmlTest {
 
     protected AddressTest() throws JAXBException, XMLStreamException {
-        super(Addresses.class);
+        super(Addresses.class, Roster.class);
     }
 
     @Test
     public void marshalAddresses() throws JAXBException, XMLStreamException {
-        Collection<Address> addressList = new ArrayDeque<>();
+        List<Address> addressList = new ArrayList<>();
         addressList.add(new Address(Address.Type.TO, Jid.of("hildjj@jabber.org/Work"), "description", "node"));
-        addressList.add(new Address(Address.Type.CC, Jid.of("jer@jabber.org/Home")));
+        addressList.add(new Address(Address.Type.CC, Jid.of("jer@jabber.org/Home"), new Roster()));
         Addresses addresses = new Addresses(addressList);
 
         String xml = marshal(addresses);
-        Assert.assertEquals(xml, "<addresses xmlns=\"http://jabber.org/protocol/address\"><address type=\"to\" jid=\"hildjj@jabber.org/Work\" desc=\"description\" node=\"node\"></address><address type=\"cc\" jid=\"jer@jabber.org/Home\"></address></addresses>");
+        Assert.assertEquals(xml, "<addresses xmlns=\"http://jabber.org/protocol/address\"><address type=\"to\" jid=\"hildjj@jabber.org/Work\" desc=\"description\" node=\"node\"></address><address type=\"cc\" jid=\"jer@jabber.org/Home\"><query xmlns=\"jabber:iq:roster\"></query></address></addresses>");
+        Assert.assertNotNull(addressList.get(1).getExtension(Roster.class));
     }
 }

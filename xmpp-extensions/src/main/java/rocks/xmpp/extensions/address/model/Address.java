@@ -26,9 +26,14 @@ package rocks.xmpp.extensions.address.model;
 
 import rocks.xmpp.addr.Jid;
 
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -63,6 +68,9 @@ public final class Address {
     @XmlAttribute
     private final URI uri;
 
+    @XmlAnyElement(lax = true)
+    private final List<Object> extensions = new ArrayList<>();
+
     private Address() {
         this.type = null;
         this.jid = null;
@@ -72,20 +80,22 @@ public final class Address {
     }
 
     /**
-     * @param type The address type.
-     * @param jid  Specifies a simple Jabber ID associated with this address.
+     * @param type       The address type.
+     * @param jid        Specifies a simple Jabber ID associated with this address.
+     * @param extensions The extensions.
      */
-    public Address(Type type, Jid jid) {
-        this(type, jid, null);
+    public Address(Type type, Jid jid, Object... extensions) {
+        this(type, jid, null, extensions);
     }
 
     /**
      * @param type        The address type.
      * @param jid         Specifies a simple Jabber ID associated with this address.
      * @param description Specifies human-readable information for this address. This data may be used by clients to provide richer address-book integration.
+     * @param extensions  The extensions.
      */
-    public Address(Type type, Jid jid, String description) {
-        this(type, jid, description, null);
+    public Address(Type type, Jid jid, CharSequence description, Object... extensions) {
+        this(type, jid, description, null, extensions);
     }
 
     /**
@@ -93,27 +103,31 @@ public final class Address {
      * @param jid         Specifies a simple Jabber ID associated with this address.
      * @param description Specifies human-readable information for this address. This data may be used by clients to provide richer address-book integration.
      * @param node        Specifies a sub-addressable unit at a particular JID, corresponding to a Service Discovery node.
+     * @param extensions  The extensions.
      */
-    public Address(Type type, Jid jid, String description, String node) {
+    public Address(Type type, Jid jid, CharSequence description, CharSequence node, Object... extensions) {
         this.type = Objects.requireNonNull(type);
         this.jid = jid;
-        this.desc = description;
-        this.node = node;
+        this.desc = description != null ? description.toString() : null;
+        this.node = node != null ? node.toString() : null;
         this.uri = null;
+        this.extensions.addAll(Arrays.asList(extensions));
     }
 
     /**
      * @param type        The address type.
      * @param uri         Specifies an external system address, such as a sip:, sips:, or im: URI.
      * @param description Specifies human-readable information for this address. This data may be used by clients to provide richer address-book integration.
+     * @param extensions  The extensions.
      */
-    public Address(Type type, URI uri, String description) {
+    public Address(Type type, URI uri, CharSequence description, Object... extensions) {
         // If the 'uri' attribute is specified, the 'jid' and 'node' attributes MUST NOT be specified.
         this.type = Objects.requireNonNull(type);
         this.jid = null;
         this.uri = uri;
-        this.desc = description;
+        this.desc = description != null ? description.toString() : null;
         this.node = null;
+        this.extensions.addAll(Arrays.asList(extensions));
     }
 
     /**
@@ -164,6 +178,32 @@ public final class Address {
      */
     public final URI getUri() {
         return uri;
+    }
+
+    /**
+     * Gets the extensions as unmodifiable list.
+     *
+     * @return The extensions.
+     * @see <a href="http://xmpp.org/extensions/xep-0033.html#extensibility">4.7 Extensibility</a>
+     */
+    public final List<Object> getExtensions() {
+        return Collections.unmodifiableList(extensions);
+    }
+
+    /**
+     * Gets the extension.
+     *
+     * @return The extension or null.
+     * @see <a href="http://xmpp.org/extensions/xep-0033.html#extensibility">4.7 Extensibility</a>
+     */
+    @SuppressWarnings("unchecked")
+    public final <T> T getExtension(Class<T> clazz) {
+        for (Object extension : extensions) {
+            if (clazz.isAssignableFrom(extension.getClass())) {
+                return (T) extension;
+            }
+        }
+        return null;
     }
 
     /**

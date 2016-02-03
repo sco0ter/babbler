@@ -20,7 +20,7 @@
 * Eagerly release unused port to prevent ports-leaks due to delayed GC
 * Improve thread-safety during connect() and login()
 * Fix encoding issues, caused by missing UTF-8 encoding, mainly in the debugger.
-
+* XEP-0033: Address should have extensions.
 
 ### Version 0.6.2 (2015-12-08)
 

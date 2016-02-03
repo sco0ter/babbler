@@ -111,6 +111,6 @@ public final class RegistrationManager extends Manager {
      */
 
     public final AsyncResult<Void> changePassword(String username, String password) {
-        return xmppSession.query(new IQ(IQ.Type.SET, Registration.builder().username(username).password(password).build()), Void.class);
+        return xmppSession.query(IQ.set(Registration.builder().username(username).password(password).build()), Void.class);
     }
 }

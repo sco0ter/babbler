@@ -493,7 +493,7 @@ public final class RosterManager extends Manager {
             }
             final Roster tempRoster = cachedRoster;
 
-            return xmppSession.query(new IQ(IQ.Type.GET, rosterRequest)).thenApply(iq -> {
+            return xmppSession.query(IQ.get(rosterRequest)).thenApply(iq -> {
                 Roster rosterResult = iq.getExtension(Roster.class);
                 Roster currentRoster;
                 // null result means, the requested roster version (from cache) is taken and any updates (if any) are done via roster pushes.

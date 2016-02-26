@@ -676,16 +676,26 @@ public final class BoshConnection extends Connection {
 
                         requestCount.getAndIncrement();
                         try {
-                            try (OutputStream requestStream = requestCompressionMethod != null ? requestCompressionMethod.compress(httpConnection.getOutputStream()) : httpConnection.getOutputStream();
-                                 // This is for logging only.
-                                 ByteArrayOutputStream byteArrayOutputStreamRequest = new ByteArrayOutputStream();
-
-                                 // Branch the stream, so that its output can also be logged.
-                                 OutputStream branchedOutputStream = XmppUtils.createBranchedOutputStream(requestStream, byteArrayOutputStreamRequest);
-                                 OutputStream xmppOutputStream = debugger != null ? debugger.createOutputStream(branchedOutputStream) : branchedOutputStream) {
-
+                            try (OutputStream requestStream = requestCompressionMethod != null ? requestCompressionMethod.compress(httpConnection.getOutputStream()) : httpConnection.getOutputStream()) {
+                                ByteArrayOutputStream byteArrayOutputStreamRequest = null;
                                 XMLStreamWriter xmlStreamWriter = null;
+                                OutputStream xmppOutputStream = null;
                                 try {
+                                    if (debugger != null) {
+                                        // This is for logging only.
+                                        byteArrayOutputStreamRequest = new ByteArrayOutputStream();
+
+                                        // Branch the stream, so that its output can also be logged.
+                                        xmppOutputStream = XmppUtils.createBranchedOutputStream(requestStream, byteArrayOutputStreamRequest);
+                                        OutputStream debuggerOutputStream = debugger.createOutputStream(xmppOutputStream);
+                                        if (debuggerOutputStream != null) {
+                                            xmppOutputStream = debuggerOutputStream;
+                                        }
+                                    }
+                                    if (xmppOutputStream == null) {
+                                        xmppOutputStream = requestStream;
+                                    }
+
                                     // Create the writer for this connection.
                                     xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(xmppOutputStream, "UTF-8"));
 
@@ -700,6 +710,9 @@ public final class BoshConnection extends Connection {
                                 } finally {
                                     if (xmlStreamWriter != null) {
                                         xmlStreamWriter.close();
+                                    }
+                                    if (xmppOutputStream != null) {
+                                        xmppOutputStream.close();
                                     }
                                 }
                             }
@@ -718,15 +731,26 @@ public final class BoshConnection extends Connection {
                                 }
 
                                 String contentEncoding = httpConnection.getHeaderField("Content-Encoding");
-                                try (InputStream responseStream = contentEncoding != null ? compressionMethods.get(contentEncoding).decompress(httpConnection.getInputStream()) : httpConnection.getInputStream();
-                                     // This is for logging only.
-                                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                                     // Branch the stream so that its input can be logged.
-                                     InputStream inputStream = XmppUtils.createBranchedInputStream(responseStream, byteArrayOutputStream);
-                                     InputStream xmppInputStream = debugger != null ? debugger.createInputStream(inputStream) : inputStream) {
-
+                                try (InputStream responseStream = contentEncoding != null ? compressionMethods.get(contentEncoding).decompress(httpConnection.getInputStream()) : httpConnection.getInputStream()) {
+                                    InputStream xmppInputStream = null;
+                                    ByteArrayOutputStream byteArrayOutputStream = null;
                                     XMLEventReader xmlEventReader = null;
                                     try {
+                                        if (debugger != null) {
+                                            // This is for logging only.
+                                            byteArrayOutputStream = new ByteArrayOutputStream();
+                                            // Branch the stream so that its input can be logged.
+                                            xmppInputStream = XmppUtils.createBranchedInputStream(responseStream, byteArrayOutputStream);
+                                            InputStream debuggerInputStream = debugger.createInputStream(xmppInputStream);
+                                            if (debuggerInputStream != null) {
+                                                xmppInputStream = debuggerInputStream;
+                                            }
+                                        }
+
+                                        if (xmppInputStream == null) {
+                                            xmppInputStream = responseStream;
+                                        }
+
                                         // Read the response.
                                         xmlEventReader = xmppSession.getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
                                         while (xmlEventReader.hasNext()) {
@@ -749,6 +773,9 @@ public final class BoshConnection extends Connection {
                                     } finally {
                                         if (xmlEventReader != null) {
                                             xmlEventReader.close();
+                                        }
+                                        if (xmppInputStream != null) {
+                                            xmppInputStream.close();
                                         }
                                     }
                                 }

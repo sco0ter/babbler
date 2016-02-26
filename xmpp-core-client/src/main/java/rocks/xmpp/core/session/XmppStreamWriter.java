@@ -148,11 +148,16 @@ final class XmppStreamWriter {
             executor.execute(() -> {
                 try {
 
-                    OutputStream xmppOutputStream;
+                    OutputStream xmppOutputStream = null;
                     if (debugger != null) {
                         byteArrayOutputStream = new ByteArrayOutputStream();
-                        xmppOutputStream = debugger.createOutputStream(XmppUtils.createBranchedOutputStream(outputStream, byteArrayOutputStream));
-                    } else {
+                        xmppOutputStream = XmppUtils.createBranchedOutputStream(outputStream, byteArrayOutputStream);
+                        OutputStream debuggerOutputStream = debugger.createOutputStream(xmppOutputStream);
+                        if (debuggerOutputStream != null) {
+                            xmppOutputStream = debuggerOutputStream;
+                        }
+                    }
+                    if (xmppOutputStream == null) {
                         xmppOutputStream = outputStream;
                     }
                     xmlStreamWriter = xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(xmppOutputStream, "UTF-8");

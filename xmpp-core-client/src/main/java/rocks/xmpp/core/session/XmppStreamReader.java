@@ -99,10 +99,11 @@ final class XmppStreamReader {
                 XMLEventReader xmlEventReader = null;
                 try {
 
-                    InputStream xmppInputStream;
+                    InputStream xmppInputStream = null;
                     if (debugger != null) {
                         xmppInputStream = debugger.createInputStream(inputStream);
-                    } else {
+                    }
+                    if (xmppInputStream == null) {
                         xmppInputStream = inputStream;
                     }
                     XMLEvent startDocument = null;

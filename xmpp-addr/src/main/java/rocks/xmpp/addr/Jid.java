@@ -32,9 +32,11 @@ import java.io.Serializable;
 import java.net.IDN;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -676,14 +678,15 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     private static final class LruCache<K, V> {
         private final int maxEntries;
 
-        private final ConcurrentHashMap<K, V> map;
+        private final Map<K, V> map;
 
-        private final ConcurrentLinkedQueue<K> queue;
+        private final Queue<K> queue;
 
         private LruCache(int maxEntries) {
             this.maxEntries = maxEntries;
             this.map = new ConcurrentHashMap<>(maxEntries);
-            this.queue = new ConcurrentLinkedQueue<>();
+            // use ConcurrentLinkedDeque because it's faster than ConcurrentLinkedQueue
+            this.queue = new ConcurrentLinkedDeque<>();
         }
 
         private void put(final K key, final V value) {

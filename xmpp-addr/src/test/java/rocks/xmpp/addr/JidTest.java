@@ -38,7 +38,10 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -47,26 +50,21 @@ import java.util.concurrent.Executors;
  */
 public class JidTest {
 
-    public static void main1(String[] args) {
-        Executor executor = Executors.newFixedThreadPool(1);
-
-        executor.execute(() -> {
-            Executor executor1 = Executors.newCachedThreadPool();
-            for (int i = 0; i < 100; i++) {
-                // Start 100 threads
-                executor1.execute(() -> {
-                    int j = 0;
-                    while (true) {
-                        j++;
-                        Jid.of(j + "@test");
-                        if (j == 3000) {
-                            j = 0;
-                        }
-                    }
-                });
+    public static void main(String[] args) {
+        // Showcases the performance differences between
+        // ConcurrentLinkedDeque and ConcurrentLinkedQueue
+        // (for the static Jid cache)
+        Queue<String> queue = new ConcurrentLinkedDeque<>();
+        String a = "a";
+        String b = "b";
+        queue.offer(a);
+        for (int i = 0; ; i++) {
+            if (i % 1024 == 0) {
+                System.out.println("i = " + i);
             }
-        });
-
+            queue.offer(b);
+            queue.remove(b);
+        }
     }
 
     @Test

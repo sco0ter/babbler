@@ -73,6 +73,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
@@ -150,7 +151,7 @@ public abstract class XmppSession implements AutoCloseable {
     /**
      * The unacknowledged stanzas.
      */
-    private final Queue<Stanza> unacknowledgedStanzas = new ConcurrentLinkedQueue<>();
+    private final Queue<Stanza> unacknowledgedStanzas = new ConcurrentLinkedDeque<>();
 
     private final Map<Stanza, SendTask<? extends Stanza>> stanzaTrackingMap = new ConcurrentHashMap<>();
 

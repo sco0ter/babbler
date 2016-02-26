@@ -26,9 +26,10 @@ package rocks.xmpp.util.cache;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * A simple concurrent implementation of a least-recently-used cache.
@@ -44,14 +45,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public final class LruCache<K, V> implements Map<K, V> {
     private final int maxEntries;
 
-    private final ConcurrentHashMap<K, V> map;
+    private final Map<K, V> map;
 
-    private final ConcurrentLinkedQueue<K> queue;
+    private final Queue<K> queue;
 
     public LruCache(int maxEntries) {
         this.maxEntries = maxEntries;
         this.map = new ConcurrentHashMap<>(maxEntries);
-        this.queue = new ConcurrentLinkedQueue<>();
+        this.queue = new ConcurrentLinkedDeque<>();
     }
 
     @Override
@@ -71,7 +72,7 @@ public final class LruCache<K, V> implements Map<K, V> {
 
     @Override
     public boolean containsValue(Object value) {
-        return map.contains(value);
+        return map.containsValue(value);
     }
 
     @Override

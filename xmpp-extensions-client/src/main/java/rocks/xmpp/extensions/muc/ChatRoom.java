@@ -100,9 +100,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
 
     private final Consumer<PresenceEvent> presenceListener;
 
-    private volatile String nick;
+    private String nick;
 
-    private volatile boolean entered;
+    private boolean entered;
 
     ChatRoom(final Jid roomJid, String name, XmppSession xmppSession, ServiceDiscoveryManager serviceDiscoveryManager, MultiUserChatManager multiUserChatManager) {
         if (Objects.requireNonNull(roomJid).getLocal() == null) {
@@ -155,7 +155,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                             // A new occupant entered the room.
                             if (previousOccupant == null) {
                                 // Only notify about "joins", if it's not our own join and we are already in the room.
-                                if (!isSelfPresence && entered) {
+                                if (!isSelfPresence && hasEntered()) {
                                     type = OccupantEvent.Type.ENTERED;
                                 } else {
                                     type = OccupantEvent.Type.STATUS_CHANGED;
@@ -229,7 +229,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         }
     }
 
-    private boolean isSelfPresence(Presence presence) {
+    private synchronized boolean isSelfPresence(Presence presence) {
         boolean isSelfPresence = false;
         MucUser mucUser = presence.getExtension(MucUser.class);
         if (mucUser != null) {
@@ -750,7 +750,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-instant">10.1.2 Creating an Instant Room</a>
      */
-    public AsyncResult<IQ> createRoom() {
+    public synchronized AsyncResult<IQ> createRoom() {
         return enter(nick).thenCompose(presence ->
                 xmppSession.query(IQ.set(roomJid, MucOwner.withConfiguration(new DataForm(DataForm.Type.SUBMIT)))));
     }
@@ -873,9 +873,17 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      *
      * @return The room name.
      */
-
-    public String getName() {
+    public final String getName() {
         return name;
+    }
+
+    /**
+     * Gets the nickname in this room. Usually this is the nick used to enter the room, but can also be a nickname assigned by the chat service.
+     *
+     * @return The nickname in this room or {@code null}, if not entered.
+     */
+    public final synchronized String getNick() {
+        return nick;
     }
 
     /**
@@ -888,7 +896,6 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     public AsyncResult<IQ> destroy(String reason) {
         MucOwner mucOwner = MucOwner.withDestroy(roomJid, reason);
         return xmppSession.query(IQ.set(roomJid, mucOwner));
-
     }
 
     /**

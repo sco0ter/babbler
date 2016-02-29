@@ -922,7 +922,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
 
     @Override
     public String toString() {
-        return roomJid != null ? roomJid.toString() : super.toString();
+        return roomJid.toString();
     }
 
     /**
@@ -946,11 +946,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
             }
             // If the names are equal, compare addresses.
             if (result == 0) {
-                if (roomJid != null) {
-                    return o.roomJid != null ? roomJid.compareTo(o.roomJid) : -1;
-                } else {
-                    return o.roomJid != null ? 1 : 0;
-                }
+                return roomJid.compareTo(o.roomJid);
             }
             return result;
         }

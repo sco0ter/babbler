@@ -21,6 +21,7 @@
 * Improve thread-safety during connect() and login()
 * Fix encoding issues, caused by missing UTF-8 encoding, mainly in the debugger.
 * XEP-0033: Address should have extensions.
+* Add workaround for a [JDK bug](https://bugs.openjdk.java.net/browse/JDK-8054446) causing memory issues and high CPU.
 
 ### Version 0.6.2 (2015-12-08)
 

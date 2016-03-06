@@ -26,6 +26,7 @@ package rocks.xmpp.addr;
 
 import rocks.xmpp.precis.PrecisProfile;
 import rocks.xmpp.precis.PrecisProfiles;
+import rocks.xmpp.util.cache.LruCache;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
@@ -34,9 +35,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -101,12 +99,12 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
     /**
      * Caches the escaped JIDs.
      */
-    private static final LruCache<CharSequence, Jid> ESCAPED_CACHE = new LruCache<>(5000);
+    private static final Map<CharSequence, Jid> ESCAPED_CACHE = new LruCache<>(5000);
 
     /**
      * Caches the unescaped JIDs.
      */
-    private static final LruCache<CharSequence, Jid> UNESCAPED_CACHE = new LruCache<>(5000);
+    private static final Map<CharSequence, Jid> UNESCAPED_CACHE = new LruCache<>(5000);
 
     private static final long serialVersionUID = -3824234106101731424L;
 
@@ -664,56 +662,6 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
         @Override
         protected CharSequence applyDirectionalityRule(CharSequence charSequence) {
             return charSequence;
-        }
-    }
-
-    /**
-     * A simple concurrent implementation of a least-recently-used cache.
-     *
-     * @param <K> The key.
-     * @param <V> The value.
-     * @see <a href="http://javadecodedquestions.blogspot.de/2013/02/java-cache-static-data-loading.html">http://javadecodedquestions.blogspot.de/2013/02/java-cache-static-data-loading.html</a>
-     * @see <a href="http://stackoverflow.com/a/22891780">http://stackoverflow.com/a/22891780</a>
-     */
-    private static final class LruCache<K, V> {
-        private final int maxEntries;
-
-        private final Map<K, V> map;
-
-        private final Queue<K> queue;
-
-        private LruCache(int maxEntries) {
-            this.maxEntries = maxEntries;
-            this.map = new ConcurrentHashMap<>(maxEntries);
-            // use ConcurrentLinkedDeque because it's faster than ConcurrentLinkedQueue
-            this.queue = new ConcurrentLinkedDeque<>();
-        }
-
-        private void put(final K key, final V value) {
-            // Put the new key/value in the map.
-            if (map.put(key, value) != null) {
-                // If the key already existed, remove it from the queue and re-add it, to make it the most recently used key.
-                if (queue.remove(key)) {
-                    queue.offer(key);
-                }
-            } else {
-                queue.offer(key);
-            }
-
-            while (queue.size() > maxEntries) {
-                K oldestKey = queue.poll();
-                if (null != oldestKey) {
-                    map.remove(oldestKey);
-                }
-            }
-        }
-
-        private V get(K key) {
-            // Remove the key from the queue and re-add it to the tail. It is now the most recently used key.
-            if (queue.remove(key)) {
-                queue.offer(key);
-            }
-            return map.get(key);
         }
     }
 }

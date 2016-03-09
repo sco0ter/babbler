@@ -176,7 +176,7 @@ public final class LruCache<K, V> implements Map<K, V> {
 
     @Override
     public final V computeIfAbsent(final K key, final Function<? super K, ? extends V> mappingFunction) {
-        return map.computeIfAbsent(key, mappingFunction.andThen(v -> {
+        return map.computeIfAbsent(key, mappingFunction.<V>andThen(v -> {
             keyUsed(key);
             limit();
             return v;
@@ -185,7 +185,7 @@ public final class LruCache<K, V> implements Map<K, V> {
 
     @Override
     public final V computeIfPresent(final K key, final BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
-        return map.computeIfPresent(key, remappingFunction.andThen(v -> {
+        return map.computeIfPresent(key, remappingFunction.<V>andThen(v -> {
             keyUsed(key);
             limit();
             return v;
@@ -194,7 +194,7 @@ public final class LruCache<K, V> implements Map<K, V> {
 
     @Override
     public final V compute(final K key, final BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
-        return map.compute(key, remappingFunction.andThen(v -> {
+        return map.compute(key, remappingFunction.<V>andThen(v -> {
             keyUsed(key);
             limit();
             return v;
@@ -203,7 +203,7 @@ public final class LruCache<K, V> implements Map<K, V> {
 
     @Override
     public final V merge(K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
-        return map.merge(key, value, remappingFunction.andThen(v -> {
+        return map.merge(key, value, remappingFunction.<V>andThen(v -> {
             keyUsed(key);
             limit();
             return v;

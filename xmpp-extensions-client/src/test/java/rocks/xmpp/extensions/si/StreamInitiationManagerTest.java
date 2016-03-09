@@ -64,7 +64,7 @@ public class StreamInitiationManagerTest extends BaseTest {
             e.accept(new ByteArrayOutputStream());
         });
         StreamInitiationManager streamInitiationManager1 = xmppSession1.getManager(StreamInitiationManager.class);
-        OutputStream outputStream = streamInitiationManager1.initiateStream(JULIET, new SIFileTransferOffer("Filename", 123), "image/type", 2000).get();
+        OutputStream outputStream = streamInitiationManager1.initiateStream(JULIET, new SIFileTransferOffer("Filename", 123), "image/type", 2000).get().getOutputStream();
 
         // Stream Initiation should have been succeeded, if we have OutputStream and no exception has occurred.
         Assert.assertNotNull(outputStream);

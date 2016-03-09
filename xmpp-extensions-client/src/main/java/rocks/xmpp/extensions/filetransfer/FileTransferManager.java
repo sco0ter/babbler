@@ -42,6 +42,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -169,7 +170,7 @@ public final class FileTransferManager extends Manager {
                     throw new CompletionException(e);
                 }
 
-                return this.streamInitiationManager.initiateStream(recipient, fileTransfer, mimeType, timeout).handle((outputStream, e) -> {
+                return this.streamInitiationManager.initiateStream(recipient, fileTransfer, mimeType, timeout).handle((byteStreamSession, e) -> {
                     if (e != null) {
                         if (e instanceof CompletionException) {
                             if (e.getCause() instanceof StanzaException && ((StanzaException) e.getCause()).getCondition() == Condition.FORBIDDEN) {
@@ -181,7 +182,13 @@ public final class FileTransferManager extends Manager {
                             throw new CompletionException(e);
                         }
                     }
-                    return new FileTransfer(source, outputStream, fileSize);
+                    OutputStream outputStream;
+                    try {
+                        outputStream = byteStreamSession.getOutputStream();
+                    } catch (IOException e1) {
+                        throw new CompletionException(e1);
+                    }
+                    return new FileTransfer(byteStreamSession.getSessionId(), source, outputStream, fileSize);
                 });
             });
         });

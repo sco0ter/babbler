@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 
 /**
  * A class for managing a single file transfer.
- * It allows to monitor
+ * It allows to monitor the progress and status of a file transfer by {@linkplain #addFileTransferStatusListener(Consumer) adding a listener}.
  *
  * @author Christian Schudt
  */
@@ -54,16 +54,19 @@ public final class FileTransfer {
 
     private final ExecutorService executorService;
 
+    private final String sessionId;
+
     private volatile Status status = Status.INITIAL;
 
     private volatile Exception exception;
 
     private volatile long bytesTransferred;
 
-    public FileTransfer(InputStream inputStream, OutputStream outputStream, long length) {
+    public FileTransfer(String sessionId, InputStream inputStream, OutputStream outputStream, long length) {
         this.inputStream = inputStream;
         this.outputStream = outputStream;
         this.length = length;
+        this.sessionId = sessionId;
         this.executorService = Executors.newSingleThreadExecutor();
     }
 
@@ -87,7 +90,7 @@ public final class FileTransfer {
         fileTransferStatusListeners.remove(fileTransferStatusListener);
     }
 
-    private final void notifyFileTransferStatusListeners() {
+    private void notifyFileTransferStatusListeners() {
         XmppUtils.notifyEventListeners(fileTransferStatusListeners, new FileTransferStatusEvent(this, status, bytesTransferred));
     }
 
@@ -107,6 +110,11 @@ public final class FileTransfer {
         }
     }
 
+    /**
+     * Returns true, when the file transfer is done.
+     *
+     * @return True, when the file transfer is done.
+     */
     public final boolean isDone() {
         return status != Status.IN_PROGRESS;
     }
@@ -120,7 +128,7 @@ public final class FileTransfer {
         return bytesTransferred;
     }
 
-    private final void setBytesTransferred(final long bytesTransferred) {
+    private void setBytesTransferred(final long bytesTransferred) {
         if (this.bytesTransferred == bytesTransferred)
             return;
 
@@ -129,7 +137,7 @@ public final class FileTransfer {
         notifyFileTransferStatusListeners();
     }
 
-    private final void addBytesTransferred(final long bytesTransferredAdditionally) {
+    private void addBytesTransferred(final long bytesTransferredAdditionally) {
         setBytesTransferred(bytesTransferred + bytesTransferredAdditionally);
     }
 
@@ -189,8 +197,20 @@ public final class FileTransfer {
         );
     }
 
+    /**
+     * Cancels the file transfer.
+     */
     public void cancel() {
         updateStatus(Status.CANCELED);
+    }
+
+    /**
+     * Gets the session id for this file transfer session.
+     *
+     * @return The session id.
+     */
+    public final String getSessionId() {
+        return sessionId;
     }
 
     /**

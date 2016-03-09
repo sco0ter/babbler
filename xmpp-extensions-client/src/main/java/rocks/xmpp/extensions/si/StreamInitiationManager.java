@@ -156,7 +156,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
      * @param timeout  The timeout, which wait until the stream has been negotiated.
      * @return The async result with the output stream which has been negotiated.
      */
-    public AsyncResult<OutputStream> initiateStream(Jid receiver, SIFileTransferOffer profile, String mimeType, long timeout) {
+    public AsyncResult<ByteStreamSession> initiateStream(Jid receiver, SIFileTransferOffer profile, String mimeType, long timeout) {
 
         // Create a random id for the stream session.
         String sessionId = UUID.randomUUID().toString();
@@ -192,13 +192,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
                 default:
                     throw new CompletionException(new IOException("Receiver returned unsupported stream method."));
             }
-            return byteStreamSessionStage.thenApply(byteStreamSession -> {
-                try {
-                    return byteStreamSession.getOutputStream();
-                } catch (IOException e) {
-                    throw new CompletionException(e);
-                }
-            });
+            return byteStreamSessionStage;
         });
     }
 
@@ -238,7 +232,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
         // And then wait until the peer opens the stream.
         return new AsyncResult<>(withFallbackStage.applyToEither(CompletionStages.timeoutAfter(xmppSession.getConfiguration().getDefaultResponseTimeout() * 3, TimeUnit.MILLISECONDS), byteStreamSession -> {
                     try {
-                        return new FileTransfer(byteStreamSession.getInputStream(), outputStream, fileTransferOffer.getSize());
+                        return new FileTransfer(byteStreamSession.getSessionId(), byteStreamSession.getInputStream(), outputStream, fileTransferOffer.getSize());
                     } catch (IOException e) {
                         throw new CompletionException(e);
                     }

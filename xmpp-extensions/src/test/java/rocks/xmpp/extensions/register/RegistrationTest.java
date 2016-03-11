@@ -173,6 +173,6 @@ public class RegistrationTest extends XmlTest {
         IQ iq = unmarshal(xml, IQ.class);
         Registration registration = iq.getExtension(Registration.class);
         Assert.assertNotNull(registration);
-        Assert.assertEquals(registration.getWebRegistrationUrl(), new URL("http://www.shakespeare.lit/contests.php"));
+        Assert.assertEquals(registration.getWebRegistrationUrl().toString(), new URL("http://www.shakespeare.lit/contests.php").toString());
     }
 }

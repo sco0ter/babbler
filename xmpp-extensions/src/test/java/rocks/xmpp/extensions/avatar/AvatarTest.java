@@ -93,7 +93,7 @@ public class AvatarTest extends XmlTest {
         Assert.assertEquals(avatarMetadata.getInfoList().get(1).getHeight(), Integer.valueOf(64));
         Assert.assertEquals(avatarMetadata.getInfoList().get(1).getWidth(), Integer.valueOf(64));
         Assert.assertEquals(avatarMetadata.getInfoList().get(1).getType(), "image/png");
-        Assert.assertEquals(avatarMetadata.getInfoList().get(1).getUrl(), new URL("http://avatars.example.org/happy.png"));
+        Assert.assertEquals(avatarMetadata.getInfoList().get(1).getUrl().toString(), new URL("http://avatars.example.org/happy.png").toString());
     }
 
     @Test

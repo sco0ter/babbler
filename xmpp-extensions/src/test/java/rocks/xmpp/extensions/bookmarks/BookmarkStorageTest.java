@@ -68,6 +68,6 @@ public class BookmarkStorageTest extends XmlTest {
 
         WebPageBookmark bookmark2 = (WebPageBookmark) bookmarkStorage.getBookmarks().get(1);
         Assert.assertEquals(bookmark2.getName(), "Complete Works of Shakespeare");
-        Assert.assertEquals(bookmark2.getUrl(), new URL("http://the-tech.mit.edu/Shakespeare/"));
+        Assert.assertEquals(bookmark2.getUrl().toString(), new URL("http://the-tech.mit.edu/Shakespeare/").toString());
     }
 }

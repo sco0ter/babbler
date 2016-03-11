@@ -61,6 +61,6 @@ public class HttpAuthTest extends XmlTest {
         Assert.assertNotNull(confirmationRequest);
         Assert.assertEquals(confirmationRequest.getId(), "a7374jnjlalasdf82");
         Assert.assertEquals(confirmationRequest.getMethod(), "GET");
-        Assert.assertEquals(confirmationRequest.getUrl(), new URL("https://files.shakespeare.lit:9345/missive.html"));
+        Assert.assertEquals(confirmationRequest.getUrl().toString(), new URL("https://files.shakespeare.lit:9345/missive.html").toString());
     }
 }

@@ -61,7 +61,7 @@ public class OutOfBandTest extends XmlTest {
         IQ iq = unmarshal(xml, IQ.class);
         OobIQ oobIQ = iq.getExtension(OobIQ.class);
         Assert.assertNotNull(oobIQ);
-        Assert.assertEquals(oobIQ.getUrl(), new URL("http://www.jabber.org/images/psa-license.jpg"));
+        Assert.assertEquals(oobIQ.getUrl().toString(), new URL("http://www.jabber.org/images/psa-license.jpg").toString());
         Assert.assertEquals(oobIQ.getDescription(), "A license to Jabber!");
         Assert.assertEquals(oobIQ.getSessionId(), "a0");
     }
@@ -79,7 +79,7 @@ public class OutOfBandTest extends XmlTest {
         Message message = unmarshal(xml, Message.class);
         OobX oobX = message.getExtension(OobX.class);
         Assert.assertNotNull(oobX);
-        Assert.assertEquals(oobX.getUrl(), new URL("http://www.jabber.org/images/psa-license.jpg"));
+        Assert.assertEquals(oobX.getUrl().toString(), new URL("http://www.jabber.org/images/psa-license.jpg").toString());
         Assert.assertEquals(oobX.getDescription(), "A license to Jabber!");
     }
 }

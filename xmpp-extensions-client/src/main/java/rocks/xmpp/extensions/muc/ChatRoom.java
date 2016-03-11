@@ -72,7 +72,9 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 
 /**
- * Represents a chat room.
+ * Represents a multi-user chat room.
+ * <p/>
+ * Use this class to enter a chat room, to send and receive messages, invite others and to manage members (e.g. kick or ban a user, grant admin status, etc.).
  *
  * @author Christian Schudt
  */
@@ -647,8 +649,107 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantadmin">10.6 Granting Admin Status</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokeadmin">10.7 Revoking Admin Status</a>
      */
-    public AsyncResult<IQ> changeAffiliation(Affiliation affiliation, Jid user, String reason) {
-        return xmppSession.query(IQ.set(roomJid, MucAdmin.withItem(affiliation, user, reason)));
+    public final AsyncResult<IQ> changeAffiliation(Affiliation affiliation, Jid user, String reason) {
+        return xmppSession.query(IQ.set(roomJid, MucAdmin.withItem(affiliation, user, null, reason)));
+    }
+
+    private AsyncResult<IQ> changeAffiliation(Affiliation affiliation, Jid user, String nick, String reason) {
+        return xmppSession.query(IQ.set(roomJid, MucAdmin.withItem(affiliation, user, nick, reason)));
+    }
+
+    /**
+     * Bans a user. Note that you must be an owner or admin of the room.
+     *
+     * @param user   The user.
+     * @param reason The reason (optional). May be <code>null</code>.
+     * @return The async result.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#ban">9.1 Banning a User</a>
+     */
+    public final AsyncResult<IQ> banUser(Jid user, String reason) {
+        return changeAffiliation(Affiliation.OUTCAST, user, reason);
+    }
+
+    /**
+     * Grants membership to a user. Note that you must be an owner or admin of the room.
+     *
+     * @param user   The user.
+     * @param nick   The nick (optional). That nick becomes the user's default nick in the room if that functionality is supported by the implementation. May be <code>null</code>.
+     * @param reason The reason (optional). May be <code>null</code>.
+     * @return The async result.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmember">9.3 Granting Membership</a>
+     * @see #revokeMembership(Jid, String)
+     */
+    public final AsyncResult<IQ> grantMembership(Jid user, String nick, String reason) {
+        return changeAffiliation(Affiliation.MEMBER, user, nick, reason);
+    }
+
+    /**
+     * Revokes a user's membership. Note that you must be an owner or admin of the room.
+     *
+     * @param user   The user.
+     * @param reason The reason (optional). May be <code>null</code>.
+     * @return The async result.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemember">9.4 Revoking Membership</a>
+     * @see #grantMembership(Jid, String, String)
+     */
+    public final AsyncResult<IQ> revokeMembership(Jid user, String reason) {
+        return changeAffiliation(Affiliation.NONE, user, reason);
+    }
+
+    /**
+     * Grants owner status to a user. Note that you must be an owner of the room.
+     *
+     * @param user   The user.
+     * @param reason The reason (optional). May be <code>null</code>.
+     * @return The async result.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantowner">10.3 Granting Owner Status</a>
+     * @see #revokeOwnerStatus(Jid, String)
+     */
+    public final AsyncResult<IQ> grantOwnerStatus(Jid user, String reason) {
+        return changeAffiliation(Affiliation.OWNER, user, reason);
+    }
+
+    /**
+     * Revokes a user's owner status. The new status of the user will be 'admin'.
+     * Note that you must be an owner of the room.
+     * This method does basically the same as {@link #grantAdminStatus(Jid, String)}}.
+     *
+     * @param user   The user.
+     * @param reason The reason (optional). May be <code>null</code>.
+     * @return The async result.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokeowner">10.4 Revoking Owner Status</a>
+     * @see #grantOwnerStatus(Jid, String)
+     */
+    public final AsyncResult<IQ> revokeOwnerStatus(Jid user, String reason) {
+        return changeAffiliation(Affiliation.ADMIN, user, reason);
+    }
+
+    /**
+     * Grants admin status to a user. Note that you must be an owner of the room.
+     * This method does basically the same as {@link #revokeOwnerStatus(Jid, String)}.
+     *
+     * @param user   The user.
+     * @param reason The reason (optional). May be <code>null</code>.
+     * @return The async result.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantadmin">10.6 Granting Admin Status</a>
+     * @see #revokeAdminStatus(Jid, String)
+     */
+    public final AsyncResult<IQ> grantAdminStatus(Jid user, String reason) {
+        return changeAffiliation(Affiliation.ADMIN, user, reason);
+    }
+
+    /**
+     * Revokes a user's admin status. The new status of the user will be 'none'.
+     * Note that you must be an owner of the room.
+     *
+     * @param user   The user.
+     * @param reason The reason (optional). May be <code>null</code>.
+     * @return The async result.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokeadmin">10.7 Revoking Admin Status</a>
+     * @see #grantAdminStatus(Jid, String)
+     */
+    public final AsyncResult<IQ> revokeAdminStatus(Jid user, String reason) {
+        return changeAffiliation(Affiliation.NONE, user, reason);
     }
 
     /**
@@ -674,8 +775,72 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmod">9.6 Granting Moderator Status</a>
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemod">9.7 Revoking Moderator Status</a>
      */
-    public AsyncResult<IQ> changeRole(Role role, String nickname, String reason) {
+    public final AsyncResult<IQ> changeRole(Role role, String nickname, String reason) {
         return xmppSession.query(IQ.set(roomJid, MucAdmin.withItem(role, nickname, reason)));
+    }
+
+    /**
+     * Kicks an occupant from the room. Note that you must be a moderator in the room.
+     *
+     * @param nickname The nickname.
+     * @param reason   The reason (optional). May be <code>null</code>.
+     * @return The async result.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#kick">8.2 Kicking an Occupant</a>
+     */
+    public final AsyncResult<IQ> kickOccupant(String nickname, String reason) {
+        return changeRole(Role.NONE, nickname, reason);
+    }
+
+    /**
+     * Grants voice to a visitor. Note that you must be a moderator in the room.
+     * This method does basically the same as {@link #revokeModeratorStatus(String, String)}}}.
+     *
+     * @param nickname The nickname.
+     * @param reason   The reason (optional). May be <code>null</code>.
+     * @return The async result.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantvoice">8.3 Granting Voice to a Visitor</a>
+     * @see #revokeVoice(String, String)
+     */
+    public final AsyncResult<IQ> grantVoice(String nickname, String reason) {
+        return changeRole(Role.PARTICIPANT, nickname, reason);
+    }
+
+    /**
+     * Revokes voice from a participant. Note that you must be a moderator in the room.
+     *
+     * @param nickname The nickname.
+     * @param reason   The reason (optional). May be <code>null</code>.
+     * @return The async result.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokevoice">8.4 Revoking Voice from a Participant</a>
+     * @see #grantVoice(String, String)
+     */
+    public final AsyncResult<IQ> revokeVoice(String nickname, String reason) {
+        return changeRole(Role.VISITOR, nickname, reason);
+    }
+
+    /**
+     * Grants moderator status to a participant or visitor. Note that you must be an admin in the room.
+     *
+     * @param nickname The nickname.
+     * @param reason   The reason (optional). May be <code>null</code>.
+     * @return The async result.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmod">9.6 Granting Moderator Status</a>
+     */
+    public final AsyncResult<IQ> grantModeratorStatus(String nickname, String reason) {
+        return changeRole(Role.MODERATOR, nickname, reason);
+    }
+
+    /**
+     * Revokes moderator status from a participant or visitor. Note that you must be an admin in the room.
+     * This method does basically the same as {@link #grantVoice(String, String)}.
+     *
+     * @param nickname The nickname.
+     * @param reason   The reason (optional). May be <code>null</code>.
+     * @return The async result.
+     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemod">9.7 Revoking Moderator Status</a>
+     */
+    public final AsyncResult<IQ> revokeModeratorStatus(String nickname, String reason) {
+        return changeRole(Role.PARTICIPANT, nickname, reason);
     }
 
     /**
@@ -749,7 +914,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      *
      * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-instant">10.1.2 Creating an Instant Room</a>
+     * @deprecated This method is flawed. Simply enter the room.
      */
+    @Deprecated
     public synchronized AsyncResult<IQ> createRoom() {
         return enter(nick).thenCompose(presence ->
                 xmppSession.query(IQ.set(roomJid, MucOwner.withConfiguration(new DataForm(DataForm.Type.SUBMIT)))));

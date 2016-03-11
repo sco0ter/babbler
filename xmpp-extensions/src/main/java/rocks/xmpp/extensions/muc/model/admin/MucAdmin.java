@@ -152,6 +152,30 @@ public final class MucAdmin {
     }
 
     /**
+     * Creates a {@code <query/>} element with an {@code <item/>} child element.
+     * <p><b>Sample:</b></p>
+     * <pre>
+     * {@code
+     * <query xmlns='http://jabber.org/protocol/muc#admin'>
+     *     <item affiliation='member'
+     *      jid='hag66@shakespeare.lit'
+     *      nick='thirdwitch'>
+     *     <reason>A worthy witch indeed!</reason>
+     * </query>
+     * }
+     * </pre>
+     *
+     * @param affiliation The affiliation.
+     * @param jid         The JID.
+     * @param nick        The nick.
+     * @param reason      The reason.
+     * @return The {@link MucAdmin} instance.
+     */
+    public static MucAdmin withItem(Affiliation affiliation, Jid jid, String nick, String reason) {
+        return new MucAdmin(new MucAdminItem(affiliation, null, jid, nick, null, reason));
+    }
+
+    /**
      * Creates a {@code <query/>} element with {@code <item/>} child elements.
      * <p><b>Sample:</b></p>
      * <pre>
@@ -378,6 +402,7 @@ public final class MucAdmin {
         }
 
         private static final class MucAdminActor implements Actor {
+
             @XmlAttribute
             private Jid jid;
 

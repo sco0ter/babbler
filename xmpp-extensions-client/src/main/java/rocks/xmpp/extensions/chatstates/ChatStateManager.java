@@ -25,13 +25,13 @@
 package rocks.xmpp.extensions.chatstates;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.xhtmlim.model.Html;
+import rocks.xmpp.im.chat.Chat;
 
 import java.util.Map;
 import java.util.Objects;

@@ -27,8 +27,8 @@ package rocks.xmpp.extensions.httpbind;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.IntegrationTest;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.core.session.XmppClient;
+import rocks.xmpp.im.roster.RosterManager;
 
 /**
  * @author Christian Schudt

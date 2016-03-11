@@ -38,8 +38,8 @@ import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
 import rocks.xmpp.extensions.muc.model.user.Invite;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
-import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.List;
 import java.util.Map;

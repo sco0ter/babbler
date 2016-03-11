@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.jingle.apps.filetransfer;
 
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.extensions.jingle.JingleSession;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.model.Jingle;

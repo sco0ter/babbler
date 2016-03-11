@@ -28,12 +28,12 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.privacy.model.Privacy;
 import rocks.xmpp.extensions.privacy.model.PrivacyList;
 import rocks.xmpp.extensions.privacy.model.PrivacyRule;
+import rocks.xmpp.im.roster.model.Contact;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;

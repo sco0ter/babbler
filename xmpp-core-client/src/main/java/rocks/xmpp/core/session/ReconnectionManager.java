@@ -39,7 +39,8 @@ import java.util.function.BiPredicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static rocks.xmpp.core.session.ReconnectionStrategy.*;
+import static rocks.xmpp.core.session.ReconnectionStrategy.onSystemShutdownFirstOrElseSecond;
+import static rocks.xmpp.core.session.ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy;
 
 /**
  * If the connection goes down, this class automatically reconnects, if the user was authenticated.

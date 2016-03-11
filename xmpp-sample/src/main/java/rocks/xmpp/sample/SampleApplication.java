@@ -31,7 +31,6 @@ import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
-import rocks.xmpp.extensions.ping.PingManager;
 import rocks.xmpp.websocket.WebSocketConnectionConfiguration;
 
 import javax.net.ssl.SSLContext;

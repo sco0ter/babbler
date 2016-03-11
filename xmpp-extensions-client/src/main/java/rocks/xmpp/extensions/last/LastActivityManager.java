@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.last;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -38,6 +37,7 @@ import rocks.xmpp.core.stanza.model.Presence.Show;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.idle.model.Idle;
 import rocks.xmpp.extensions.last.model.LastActivity;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.time.Duration;
 import java.time.Instant;

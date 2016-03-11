@@ -28,11 +28,11 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.BaseTest;
+import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.im.roster.model.ContactGroup;
 import rocks.xmpp.im.roster.model.Roster;
-import rocks.xmpp.core.session.TestXmppSession;
-import rocks.xmpp.core.session.XmppSession;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;

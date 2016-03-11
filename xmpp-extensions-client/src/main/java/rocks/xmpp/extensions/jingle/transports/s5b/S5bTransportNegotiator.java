@@ -26,14 +26,9 @@ package rocks.xmpp.extensions.jingle.transports.s5b;
 
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.bytestreams.s5b.Socks5ByteStreamManager;
-import rocks.xmpp.extensions.bytestreams.s5b.model.StreamHost;
 import rocks.xmpp.extensions.jingle.JingleSession;
 import rocks.xmpp.extensions.jingle.transports.TransportNegotiator;
 import rocks.xmpp.extensions.jingle.transports.s5b.model.S5bTransportMethod;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
 
 /**
  * @author Christian Schudt

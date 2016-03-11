@@ -30,7 +30,6 @@ import rocks.xmpp.core.IntegrationTest;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 
-import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;

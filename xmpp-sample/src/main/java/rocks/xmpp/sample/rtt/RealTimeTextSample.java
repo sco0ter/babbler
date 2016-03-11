@@ -33,8 +33,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.im.chat.Chat;
-import rocks.xmpp.im.chat.ChatManager;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
@@ -43,6 +41,8 @@ import rocks.xmpp.extensions.rtt.InboundRealTimeMessage;
 import rocks.xmpp.extensions.rtt.OutboundRealTimeMessage;
 import rocks.xmpp.extensions.rtt.RealTimeTextManager;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
+import rocks.xmpp.im.chat.Chat;
+import rocks.xmpp.im.chat.ChatManager;
 
 /**
  * @author Christian Schudt

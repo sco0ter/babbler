@@ -28,14 +28,14 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
-import rocks.xmpp.im.chat.Chat;
-import rocks.xmpp.im.chat.ChatManager;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.im.chat.Chat;
+import rocks.xmpp.im.chat.ChatManager;
 
 import java.util.ArrayDeque;
 import java.util.Collection;

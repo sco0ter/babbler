@@ -109,6 +109,7 @@
                             <finalName>babbler-${project.version}</finalName>
                             <artifactSet>
                                 <includes>
+                                    <include>rocks.xmpp:precis</include>
                                     <include>rocks.xmpp:xmpp-addr</include>
                                     <include>rocks.xmpp:xmpp-core</include>
                                     <include>rocks.xmpp:xmpp-core-client</include>

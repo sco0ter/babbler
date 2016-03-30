@@ -73,18 +73,4 @@ public class TlsTest extends XmlTest {
         String xml = marshal(new StartTls());
         Assert.assertEquals(xml, "<starttls xmlns=\"urn:ietf:params:xml:ns:xmpp-tls\"></starttls>");
     }
-
-    //@Test
-    public void unmarshalPerformanceTest() throws JAXBException, XMLStreamException {
-        String xml = "<failure xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>";
-
-        long now = System.currentTimeMillis();
-
-        for (int i = 0; i < 100000; i++) {
-            Failure failure = unmarshal(xml, Failure.class);
-            boolean t = failure == Failure.INSTANCE;
-        }
-
-        System.out.println(System.currentTimeMillis() - now);
-    }
 }

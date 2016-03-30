@@ -59,7 +59,7 @@ import java.util.Map;
  */
 public class MockServer {
 
-    private Map<Jid, XmppSession> connections = new HashMap<>();
+    private final Map<Jid, XmppSession> connections = new HashMap<>();
 
     public void registerConnection(XmppSession xmppSession) {
         connections.put(xmppSession.getConnectedResource(), xmppSession);

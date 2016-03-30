@@ -7,8 +7,7 @@ body {
     font-size: 16px;
     font-weight: 400;
     font-style: normal;
-    background-image: linear-gradient(#FAF7F4 0%, #FFFFFF 25%, #FFFFFF 50%, #F5F2EF 100%);
-    background-attachment: fixed;
+    background: linear-gradient(#FAF7F4 0%, #FFFFFF 25%, #FFFFFF 50%, #F5F2EF 100%) fixed;
     color: #222222;
 }
 
@@ -17,7 +16,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nav-list > .active > a, .nav-list > .active > a:hover, .nav-list > .active > a:focus {
-    background: linear-gradient(#0099E6 0%, #0088cc 100%) repeat scroll 0 0%, #0088cc none repeat scroll 0 0;
+    background: linear-gradient(#0099E6 0%, #0088cc 100%) repeat scroll 0 0, #0088cc none repeat scroll 0 0;
 }
 
 #bannerLeft, .nav-header {
@@ -59,7 +58,6 @@ pre.prettyprint, .sidebar-nav, #breadcrumbs {
 
 a.externalLink[href^="http"] {
     background: none;
-    background-image: none;
     padding-right: 0;
 }
 

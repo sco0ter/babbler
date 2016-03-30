@@ -62,7 +62,7 @@ public final class Rtp extends ApplicationFormat {
     private String ssrc;
 
     @XmlElement(name = "payload-type")
-    private List<PayloadType> payloadTypes = new ArrayList<>();
+    private final List<PayloadType> payloadTypes = new ArrayList<>();
 
     private Encryption encryption;
 

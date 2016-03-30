@@ -278,32 +278,32 @@ public class DataFormsTest extends XmlTest {
         DataForm.Field field2 = DataForm.Field.builder()
                 .value(date)
                 .build();
-        DataForm dataForm2 = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(field));
-        String xml2 = marshal(dataForm);
+        DataForm dataForm2 = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(field2));
+        String xml2 = marshal(dataForm2);
         Assert.assertEquals(xml2, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\"></field></x>");
 
         Jid jid = null;
         DataForm.Field field3 = DataForm.Field.builder()
                 .value(jid)
                 .build();
-        DataForm dataForm3 = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(field));
-        String xml3 = marshal(dataForm);
-        Assert.assertEquals(xml3, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\"></field></x>");
+        DataForm dataForm3 = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(field3));
+        String xml3 = marshal(dataForm3);
+        Assert.assertEquals(xml3, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"jid-single\"></field></x>");
 
         List<String> values = null;
         DataForm.Field field4 = DataForm.Field.builder()
                 .values(values)
                 .build();
-        DataForm dataForm4 = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(field));
+        DataForm dataForm4 = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(field4));
         String xml4 = marshal(dataForm4);
-        Assert.assertEquals(xml4, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\"></field></x>");
+        Assert.assertEquals(xml4, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-multi\"></field></x>");
 
         List<Jid> valuesJid = null;
         DataForm.Field field5 = DataForm.Field.builder()
                 .valuesJid(valuesJid)
                 .build();
-        DataForm dataForm5 = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(field));
+        DataForm dataForm5 = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(field5));
         String xml5 = marshal(dataForm5);
-        Assert.assertEquals(xml5, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"text-single\"></field></x>");
+        Assert.assertEquals(xml5, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"jid-multi\"></field></x>");
     }
 }

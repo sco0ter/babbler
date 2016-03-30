@@ -27,6 +27,7 @@ package rocks.xmpp.core;
 import org.testng.annotations.BeforeClass;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.XmppSession;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -42,11 +43,11 @@ public class BaseTest {
 
     protected static final Jid ROMEO = Jid.of("romeo@example.com/resource");
 
+    protected final XmppSession xmppSession;
+
     protected Marshaller marshaller;
 
     protected Unmarshaller unmarshaller;
-
-    protected TestXmppSession xmppSession;
 
     public BaseTest() {
         xmppSession = new TestXmppSession();

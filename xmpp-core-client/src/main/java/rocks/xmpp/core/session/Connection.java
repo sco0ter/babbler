@@ -39,6 +39,8 @@ import java.util.function.Consumer;
  */
 public abstract class Connection implements AutoCloseable {
 
+    protected final XmppSession xmppSession;
+
     /**
      * The proxy, which is used while connecting to a host.
      */
@@ -49,8 +51,6 @@ public abstract class Connection implements AutoCloseable {
     protected int port;
 
     protected Jid from;
-
-    protected XmppSession xmppSession;
 
     /**
      * Creates a connection to the specified host and port through a proxy.

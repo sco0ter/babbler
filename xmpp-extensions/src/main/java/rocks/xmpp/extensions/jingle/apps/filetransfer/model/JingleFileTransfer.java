@@ -186,7 +186,7 @@ public final class JingleFileTransfer extends ApplicationFormat {
     @XmlRootElement
     public static final class Checksum extends InformationalMessage {
 
-        private File file;
+        private final File file;
 
         private Checksum() {
             super(null, null);

@@ -326,9 +326,8 @@ public final class TcpConnection extends Connection {
      *
      * @param xmppServiceDomain The fully qualified domain name.
      * @return If the connection could be established.
-     * @throws IOException If no connection could be established to a resolved host.
      */
-    private boolean connectWithXmppServiceDomain(final Jid xmppServiceDomain) throws IOException {
+    private boolean connectWithXmppServiceDomain(final Jid xmppServiceDomain) {
 
         // 1. The initiating entity constructs a DNS SRV query whose inputs are:
         //

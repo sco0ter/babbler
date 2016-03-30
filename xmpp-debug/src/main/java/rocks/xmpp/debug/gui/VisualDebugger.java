@@ -88,7 +88,7 @@ public final class VisualDebugger implements XmppDebugger {
 
     private static volatile boolean platformInitialized;
 
-    final StringProperty title = new SimpleStringProperty();
+    private final StringProperty title = new SimpleStringProperty();
 
     private DebugController debugController;
 

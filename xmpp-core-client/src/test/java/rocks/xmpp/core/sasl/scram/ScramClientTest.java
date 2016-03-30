@@ -102,6 +102,7 @@ public class ScramClientTest {
 
         scramSha1SaslClient.evaluateChallenge(new byte[0]);
         byte[] result = scramSha1SaslClient.evaluateChallenge(serverResponse.getBytes(StandardCharsets.UTF_8));
+        Assert.assertNotNull(result);
         Assert.assertTrue(new String(result, StandardCharsets.UTF_8).startsWith("c=biws,r=fyko+d2lbbFgONRv9qkxdawL3rfcNHYJY1ZVvWVs7j,p="));
     }
 

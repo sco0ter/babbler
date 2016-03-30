@@ -89,7 +89,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
 
     private static final Pattern JID = Pattern.compile("^((.*?)@)?" + DOMAIN_PART + "(/(.*))?$");
 
-    private static final IDNProfile IDN_PROFILE = new IDNProfile(false);
+    private static final IDNProfile IDN_PROFILE = new IDNProfile();
 
     /**
      * Label separators for domain labels, which should be mapped to "." (dot): IDEOGRAPHIC FULL STOP character (U+3002)
@@ -616,8 +616,8 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      */
     private static final class IDNProfile extends PrecisProfile {
 
-        private IDNProfile(boolean identifierClass) {
-            super(identifierClass);
+        private IDNProfile() {
+            super(false);
         }
 
         @Override

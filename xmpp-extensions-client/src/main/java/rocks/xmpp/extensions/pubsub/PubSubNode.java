@@ -376,7 +376,7 @@ public final class PubSubNode {
      * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-delete">7.2 Delete an Item from a Node</a>
      */
-    private AsyncResult<IQ> deleteItem(String id, boolean notify) {
+    public AsyncResult<IQ> deleteItem(String id, boolean notify) {
         return xmppSession.query(IQ.set(pubSubServiceAddress, PubSub.withRetract(nodeId, id, notify)));
     }
 

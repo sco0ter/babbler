@@ -150,8 +150,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
 
                     if (nick != null) {
                         boolean isSelfPresence = isSelfPresence(presence);
+                        Occupant occupant = new Occupant(presence, isSelfPresence);
                         if (presence.isAvailable()) {
-                            Occupant occupant = new Occupant(presence, isSelfPresence);
                             Occupant previousOccupant = occupantMap.put(nick, occupant);
                             OccupantEvent.Type type;
                             // A new occupant entered the room.
@@ -168,36 +168,36 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                             XmppUtils.notifyEventListeners(occupantListeners, new OccupantEvent(ChatRoom.this, occupant, type, null, null, null));
                         } else if (presence.getType() == Presence.Type.UNAVAILABLE) {
                             // Occupant has exited the room.
-                            Occupant occupant = occupantMap.remove(nick);
-                            if (occupant != null) {
-                                OccupantEvent occupantEvent = null;
-                                if (mucUser.getItem() != null) {
-                                    Actor actor = mucUser.getItem().getActor();
-                                    String reason = mucUser.getItem().getReason();
-                                    if (!mucUser.getStatusCodes().isEmpty()) {
-                                        if (mucUser.getStatusCodes().contains(Status.KICKED)) {
-                                            occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.KICKED, actor, reason, null);
-                                        } else if (mucUser.getStatusCodes().contains(Status.BANNED)) {
-                                            occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.BANNED, actor, reason, null);
-                                        } else if (mucUser.getStatusCodes().contains(Status.MEMBERSHIP_REVOKED)) {
-                                            occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.MEMBERSHIP_REVOKED, actor, reason, null);
-                                        } else if (mucUser.getStatusCodes().contains(Status.NICK_CHANGED)) {
-                                            occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.NICKNAME_CHANGED, actor, reason, null);
-                                        } else if (mucUser.getStatusCodes().contains(Status.SERVICE_SHUT_DOWN)) {
-                                            occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.SYSTEM_SHUTDOWN, actor, reason, null);
-                                        }
-                                    } else if (mucUser.getDestroy() != null) {
-                                        occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.ROOM_DESTROYED, actor, mucUser.getDestroy().getReason(), mucUser.getDestroy().getJid());
-                                    } else {
-                                        occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null, null, null);
+                            occupantMap.remove(nick);
+
+                            OccupantEvent occupantEvent = null;
+                            if (mucUser.getItem() != null) {
+                                Actor actor = mucUser.getItem().getActor();
+                                String reason = mucUser.getItem().getReason();
+                                if (!mucUser.getStatusCodes().isEmpty()) {
+                                    if (mucUser.getStatusCodes().contains(Status.KICKED)) {
+                                        occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.KICKED, actor, reason, null);
+                                    } else if (mucUser.getStatusCodes().contains(Status.BANNED)) {
+                                        occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.BANNED, actor, reason, null);
+                                    } else if (mucUser.getStatusCodes().contains(Status.MEMBERSHIP_REVOKED)) {
+                                        occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.MEMBERSHIP_REVOKED, actor, reason, null);
+                                    } else if (mucUser.getStatusCodes().contains(Status.NICK_CHANGED)) {
+                                        occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.NICKNAME_CHANGED, actor, reason, null);
+                                    } else if (mucUser.getStatusCodes().contains(Status.SERVICE_SHUT_DOWN)) {
+                                        occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.SYSTEM_SHUTDOWN, actor, reason, null);
                                     }
+                                } else if (mucUser.getDestroy() != null) {
+                                    occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.ROOM_DESTROYED, actor, mucUser.getDestroy().getReason(), mucUser.getDestroy().getJid());
                                 } else {
                                     occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null, null, null);
                                 }
-                                if (occupantEvent != null) {
-                                    XmppUtils.notifyEventListeners(occupantListeners, occupantEvent);
-                                }
+                            } else {
+                                occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null, null, null);
                             }
+                            if (occupantEvent != null) {
+                                XmppUtils.notifyEventListeners(occupantListeners, occupantEvent);
+                            }
+
                             if (isSelfPresence) {
                                 userHasExited();
                             }

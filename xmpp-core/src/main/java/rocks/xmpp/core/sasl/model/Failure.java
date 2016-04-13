@@ -110,7 +110,7 @@ public final class Failure implements StreamElement {
     @Override
     public final String toString() {
         String text = getText();
-        return "SASL failure:" + (condition != null ? condition.toString() : "") + (text != null ? " (" + text + ')' : "");
+        return "SASL failure:" + (condition != null ? " " + condition.toString() : "") + (text != null ? " (" + text + ')' : "");
     }
 
     /**
@@ -122,6 +122,7 @@ public final class Failure implements StreamElement {
      */
     @XmlType(factoryMethod = "create")
     static final class Aborted extends Condition {
+
         private Aborted() {
         }
 
@@ -139,6 +140,7 @@ public final class Failure implements StreamElement {
      */
     @XmlType(factoryMethod = "create")
     static final class AccountDisabled extends Condition {
+
         private AccountDisabled() {
         }
 
@@ -156,6 +158,7 @@ public final class Failure implements StreamElement {
      */
     @XmlType(factoryMethod = "create")
     static final class CredentialsExpired extends Condition {
+
         private CredentialsExpired() {
         }
 
@@ -173,6 +176,7 @@ public final class Failure implements StreamElement {
      */
     @XmlType(factoryMethod = "create")
     static final class EncryptionRequired extends Condition {
+
         private EncryptionRequired() {
         }
 
@@ -190,6 +194,7 @@ public final class Failure implements StreamElement {
      */
     @XmlType(factoryMethod = "create")
     static final class IncorrectEncoding extends Condition {
+
         private IncorrectEncoding() {
         }
 
@@ -207,6 +212,7 @@ public final class Failure implements StreamElement {
      */
     @XmlType(factoryMethod = "create")
     static final class InvalidAuthzid extends Condition {
+
         private InvalidAuthzid() {
         }
 
@@ -224,6 +230,7 @@ public final class Failure implements StreamElement {
      */
     @XmlType(factoryMethod = "create")
     static final class InvalidMechanism extends Condition {
+
         private InvalidMechanism() {
         }
 
@@ -241,6 +248,7 @@ public final class Failure implements StreamElement {
      */
     @XmlType(factoryMethod = "create")
     static class MalformedRequest extends Condition {
+
         private MalformedRequest() {
         }
 
@@ -258,6 +266,7 @@ public final class Failure implements StreamElement {
      */
     @XmlType(factoryMethod = "create")
     static final class MechanismTooWeak extends Condition {
+
         private MechanismTooWeak() {
         }
 
@@ -275,6 +284,7 @@ public final class Failure implements StreamElement {
      */
     @XmlType(factoryMethod = "create")
     static final class NotAuthorized extends Condition {
+
         private NotAuthorized() {
         }
 
@@ -292,6 +302,7 @@ public final class Failure implements StreamElement {
      */
     @XmlType(factoryMethod = "create")
     static final class TemporaryAuthFailure extends Condition {
+
         private TemporaryAuthFailure() {
         }
 
@@ -418,6 +429,7 @@ public final class Failure implements StreamElement {
      * The text element of the failure.
      */
     private static final class Text {
+
         @XmlValue
         private final String text;
 

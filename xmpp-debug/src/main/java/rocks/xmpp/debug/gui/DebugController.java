@@ -29,7 +29,6 @@ import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -336,7 +335,7 @@ public final class DebugController implements Initializable {
                     try {
                         StreamResult result = new StreamResult(new StringWriter());
                         String streamEndTag = "</stream:stream>";
-                        SAXSource source = new SAXSource(parser.getXMLReader(), new InputSource(new StringReader(newValue.getXml() + streamEndTag)));
+                        Source source = new SAXSource(parser.getXMLReader(), new InputSource(new StringReader(newValue.getXml() + streamEndTag)));
                         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
                         transformer.transform(source, result);
                         String stream = result.getWriter().toString().trim();
@@ -470,15 +469,11 @@ public final class DebugController implements Initializable {
                         setText(null);
                         setTooltip(null);
                         if (!empty) {
-                            setText(item);
-                            //                            StreamResult result = new StreamResult(new StringWriter());
-                            //                            try {
-                            //                                Source source = new SAXSource(debugView.parser.getXMLReader(), new InputSource(new StringReader(item)));
-                            //                                debugView.transformer.transform(source, result);
-                            //                                setTooltip(new Tooltip(result.getWriter().toString()));
-                            //                            } catch (TransformerException | SAXException e) {
-                            //                                setTooltip(new Tooltip(item));
-                            //                            }
+                            if (item.length() > 150) {
+                                setText(item.substring(0, 150) + "...");
+                            } else {
+                                setText(item);
+                            }
                         }
                     }
                 };
@@ -556,22 +551,22 @@ public final class DebugController implements Initializable {
 
 
     void appendTextInbound(final String s) {
-        Platform.runLater(() -> txtInbound.appendText(s));
+        txtInbound.appendText(s);
     }
 
     void appendTextOutbound(final String s) {
-        Platform.runLater(() -> txtOutbound.appendText(s));
+        txtOutbound.appendText(s);
     }
 
-    public void clearOutbound(ActionEvent actionEvent) {
+    public void clearOutbound() {
         txtOutbound.clear();
     }
 
-    public void clearInbound(ActionEvent actionEvent) {
+    public void clearInbound() {
         txtInbound.clear();
     }
 
-    public void copyToClipboard(ActionEvent actionEvent) {
+    public void copyToClipboard() {
 
         StringBuilder sb = new StringBuilder();
 
@@ -584,7 +579,5 @@ public final class DebugController implements Initializable {
         StringSelection strSel = new StringSelection(sb.toString());
         clipboard.setContents(strSel, null);
     }
-
-
 }
 

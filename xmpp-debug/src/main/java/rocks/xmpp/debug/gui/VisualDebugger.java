@@ -24,7 +24,6 @@
 
 package rocks.xmpp.debug.gui;
 
-import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -226,31 +225,9 @@ public final class VisualDebugger implements XmppDebugger {
                 tab.textProperty().bind(title);
                 CONNECTION_LISTENER_MAP.put(tab, connectionListener);
 
-                final AnimationTimer animationTimer = new AnimationTimer() {
-                    @Override
-                    public void handle(long now) {
-                        if (outputStreamInbound != null) {
-                            String inbound = new String(outputStreamInbound.toByteArray(), StandardCharsets.UTF_8);
-                            if (!inbound.isEmpty()) {
-                                debugController.appendTextInbound(inbound);
-                                outputStreamInbound.reset();
-                            }
-                        }
-                        if (outputStreamOutbound != null) {
-                            String outbound = new String(outputStreamOutbound.toByteArray(), StandardCharsets.UTF_8);
-                            if (!outbound.isEmpty()) {
-                                debugController.appendTextOutbound(outbound);
-                                outputStreamOutbound.reset();
-                            }
-                        }
-                    }
-                };
-                animationTimer.start();
-
                 tab.setOnClosed(event -> {
                     xmppSession.removeSessionStatusListener(CONNECTION_LISTENER_MAP.remove(tab));
                     xmppSession.removeOutboundPresenceListener(presenceListener);
-                    animationTimer.stop();
                 });
 
                 tabPane.getTabs().add(tab);

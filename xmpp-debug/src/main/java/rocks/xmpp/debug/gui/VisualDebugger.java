@@ -165,13 +165,12 @@ public final class VisualDebugger implements XmppDebugger {
         final Consumer<SessionStatusEvent> connectionListener = e -> {
             waitForPlatform();
             Platform.runLater(() -> {
-                if (e.getStatus() == XmppSession.Status.CONNECTED && xmppSession.getActiveConnection() != null) {
+                if (xmppSession.getConnectedResource() != null) {
+                    title.set(xmppSession.getConnectedResource().toString());
+                } else if (xmppSession.getActiveConnection() != null) {
                     debugController.viewModel.server.set(xmppSession.getActiveConnection().getHostname());
                     debugController.viewModel.port.set(xmppSession.getActiveConnection().getPort());
                     title.set(xmppSession.getDomain() != null ? xmppSession.getDomain().toString() : "...");
-                }
-                if (e.getStatus() == XmppSession.Status.AUTHENTICATED) {
-                    title.set(xmppSession.getConnectedResource().toString());
                 } else {
                     debugController.viewModel.presence.set(null);
                 }
@@ -238,7 +237,7 @@ public final class VisualDebugger implements XmppDebugger {
                             }
                         }
                         if (outputStreamOutbound != null) {
-                            String outbound = new String(outputStreamOutbound.toByteArray(), StandardCharsets.UTF_8);;
+                            String outbound = new String(outputStreamOutbound.toByteArray(), StandardCharsets.UTF_8);
                             if (!outbound.isEmpty()) {
                                 debugController.appendTextOutbound(outbound);
                                 outputStreamOutbound.reset();

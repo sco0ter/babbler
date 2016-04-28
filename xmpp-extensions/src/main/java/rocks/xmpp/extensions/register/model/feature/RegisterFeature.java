@@ -42,4 +42,9 @@ public final class RegisterFeature extends StreamFeature {
      * http://jabber.org/features/iq-register
      */
     public static final String NAMESPACE = "http://jabber.org/features/iq-register";
+
+    @Override
+    public final String toString() {
+        return "In-Band Registration";
+    }
 }

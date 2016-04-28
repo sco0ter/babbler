@@ -110,6 +110,6 @@ public final class Bind extends StreamFeature {
 
     @Override
     public final String toString() {
-        return resource != null ? "Resource binding: " + resource : jid != null ? ", JID: " + jid.toString() : "";
+        return "Resource binding" + (resource != null ? ": " + resource : jid != null ? ", JID: " + jid.toString() : "");
     }
 }

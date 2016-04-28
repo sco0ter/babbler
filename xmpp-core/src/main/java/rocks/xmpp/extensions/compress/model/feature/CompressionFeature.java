@@ -66,4 +66,9 @@ public final class CompressionFeature extends StreamFeature {
     public final int getPriority() {
         return 2;
     }
+
+    @Override
+    public final String toString() {
+        return "Stream Compression";
+    }
 }

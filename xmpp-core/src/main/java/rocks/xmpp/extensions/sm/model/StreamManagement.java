@@ -40,6 +40,8 @@ import javax.xml.bind.annotation.XmlType;
  * The implementation of the {@code <sm/>} element in the {@code urn:xmpp:sm:3} namespace.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0198.html#schemas">XML Schema</a>
  */
 @XmlRootElement(name = "sm")
 @XmlSeeAlso({StreamManagement.Answer.class, StreamManagement.Enable.class, StreamManagement.Enabled.class, StreamManagement.Failed.class, StreamManagement.Request.class, StreamManagement.Resume.class, StreamManagement.Resumed.class})
@@ -74,6 +76,11 @@ public final class StreamManagement extends StreamFeature {
     @Override
     public final int getPriority() {
         return 4;
+    }
+
+    @Override
+    public final String toString() {
+        return "Stream Management";
     }
 
     /**

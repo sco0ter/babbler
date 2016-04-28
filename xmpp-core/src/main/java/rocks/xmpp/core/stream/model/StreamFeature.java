@@ -51,7 +51,7 @@ public abstract class StreamFeature implements Comparable<StreamFeature> {
      * @return The priority.
      */
     public int getPriority() {
-        return 0;
+        return Integer.MAX_VALUE;
     }
 
     /**

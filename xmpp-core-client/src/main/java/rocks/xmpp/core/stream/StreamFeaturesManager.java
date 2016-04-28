@@ -31,13 +31,14 @@ import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.tls.model.StartTls;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -88,7 +89,7 @@ public final class StreamFeaturesManager extends Manager {
     /**
      * The list of features, which the server advertised and have not yet been negotiated.
      */
-    private final List<StreamFeature> featuresToNegotiate = new ArrayList<>();
+    private final Queue<StreamFeature> featuresToNegotiate = new ArrayDeque<>();
 
     /**
      * The feature for which negotiation has started.
@@ -160,25 +161,20 @@ public final class StreamFeaturesManager extends Manager {
      */
     public final synchronized void processFeatures(StreamFeatures featuresElement) throws StreamNegotiationException {
         List<Object> featureList = featuresElement.getFeatures();
-        List<StreamFeature> sortedFeatureList = new ArrayList<>();
 
         featuresToNegotiate.clear();
 
         // Check if a feature is known, that means it must implement Feature and be added to the context.
-        featureList.stream().filter(feature -> feature instanceof StreamFeature).forEach(feature -> {
+        featureList.stream().filter(feature -> feature instanceof StreamFeature).sorted().forEach(feature -> {
             StreamFeature f = (StreamFeature) feature;
             advertisedFeatures.put(f.getClass(), f);
-            sortedFeatureList.add(f);
+            // Store the list of features. Each feature will be negotiated sequentially, if there is a corresponding feature negotiator.
+            featuresToNegotiate.add(f);
         });
         // If the receiving entity advertises only the STARTTLS feature [...] the parties MUST consider TLS as mandatory-to-negotiate.
         if (featureList.size() == 1 && featureList.get(0) instanceof StartTls) {
             ((StartTls) featureList.get(0)).setMandatory(true);
         }
-
-        sortedFeatureList.sort(null);
-
-        // Store the list of features. Each feature will be negotiated sequentially, if there is a corresponding feature negotiator.
-        featuresToNegotiate.addAll(sortedFeatureList);
 
         // Immediately start negotiating the first feature.
         negotiateNextFeature();
@@ -220,9 +216,11 @@ public final class StreamFeaturesManager extends Manager {
      * @throws StreamNegotiationException If an exception occurred during feature negotiation.
      */
     private synchronized boolean negotiateNextFeature() throws StreamNegotiationException {
-        if (!featuresToNegotiate.isEmpty()) {
-            StreamFeature advertisedFeature = featuresToNegotiate.remove(0);
-            if (!negotiatingFeatures.contains(advertisedFeature.getClass())) {
+        StreamFeature advertisedFeature;
+        // Get the next feature
+        if ((advertisedFeature = featuresToNegotiate.poll()) != null) {
+            Class<? extends StreamFeature> featureClass = advertisedFeature.getClass();
+            if (negotiatingFeatures.add(featureClass)) {
                 StreamFeatureNegotiator.Status negotiationStatus = StreamFeatureNegotiator.Status.IGNORE;
                 // See if there's a feature negotiator associated with the feature.
                 for (StreamFeatureNegotiator streamFeatureNegotiator : streamFeatureNegotiators) {
@@ -233,10 +231,8 @@ public final class StreamFeaturesManager extends Manager {
                     }
                 }
 
-                negotiatingFeatures.add(advertisedFeature.getClass());
-
                 // Check if there's a condition waiting for that feature to be negotiated.
-                Condition condition = featureNegotiationStartedConditions.remove(advertisedFeature.getClass());
+                Condition condition = featureNegotiationStartedConditions.remove(featureClass);
                 if (condition != null) {
                     lock.lock();
                     try {

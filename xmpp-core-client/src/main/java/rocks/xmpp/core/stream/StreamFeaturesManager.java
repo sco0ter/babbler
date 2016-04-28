@@ -50,10 +50,22 @@ import java.util.concurrent.locks.ReentrantLock;
  * Manages the various features, which are advertised during stream negotiation.
  * <blockquote>
  * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-negotiation">4.3.  Stream Negotiation</a></cite></p>
- * <p>Because the receiving entity for a stream acts as a gatekeeper to the domains it services, it imposes certain conditions for connecting as a client or as a peer server. At a minimum, the initiating entity needs to authenticate with the receiving entity before it is allowed to send stanzas to the receiving entity (for client-to-server streams this means using SASL as described under Section 6). However, the receiving entity can consider conditions other than authentication to be mandatory-to-negotiate, such as encryption using TLS as described under Section 5. The receiving entity informs the initiating entity about such conditions by communicating "stream features": the set of particular protocol interactions that the initiating entity needs to complete before the receiving entity will accept XML stanzas from the initiating entity, as well as any protocol interactions that are voluntary-to-negotiate but that might improve the handling of an XML stream (e.g., establishment of application-layer compression as described in [XEP-0138]).</p>
+ * <p>Because the receiving entity for a stream acts as a gatekeeper to the domains it services, it imposes
+ * certain conditions for connecting as a client or as a peer server. At a minimum, the initiating entity
+ * needs to authenticate with the receiving entity before it is allowed to send stanzas to the receiving
+ * entity (for client-to-server streams this means using SASL as described under Section 6). However, the
+ * receiving entity can consider conditions other than authentication to be mandatory-to-negotiate, such as
+ * encryption using TLS as described under Section 5. The receiving entity informs the initiating entity
+ * about such conditions by communicating "stream features": the set of particular protocol interactions that
+ * the initiating entity needs to complete before the receiving entity will accept XML stanzas from the
+ * initiating entity, as well as any protocol interactions that are voluntary-to-negotiate but that might
+ * improve the handling of an XML stream (e.g., establishment of application-layer compression as described
+ * in [XEP-0138]).</p>
  * </blockquote>
- * <p>Each feature is associated with a {@linkplain StreamFeatureNegotiator feature negotiator}, which negotiates the particular feature.</p>
- * <p>This class manages these negotiators, receives XML elements and delegates them to the responsible feature negotiator for further processing.</p>
+ * <p>Each feature is associated with a {@linkplain StreamFeatureNegotiator feature negotiator}, which
+ * negotiates the particular feature.</p>
+ * <p>This class manages these negotiators, receives XML elements and delegates them to the responsible
+ * feature negotiator for further processing.</p>
  * <p>It negotiates the stream by sequentially negotiating each stream feature.</p>
  * <p>
  * This class is thread-safe.
@@ -187,7 +199,7 @@ public final class StreamFeaturesManager extends Manager {
                 // Mark the feature negotiation as started.
                 negotiatingFeatures.add(streamFeatureNegotiator.getFeatureClass());
                 // If the feature has been successfully negotiated.
-                if (NEGOTIATION_COMPLETED.contains(status)){
+                if (NEGOTIATION_COMPLETED.contains(status)) {
                     // Check if the feature expects a restart now.
                     if (status == StreamFeatureNegotiator.Status.SUCCESS && streamFeatureNegotiator.needsRestart()) {
                         return true;

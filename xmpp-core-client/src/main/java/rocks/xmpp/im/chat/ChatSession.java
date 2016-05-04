@@ -27,13 +27,13 @@ package rocks.xmpp.im.chat;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.util.XmppUtils;
 
 import java.util.EventObject;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.util.Objects.requireNonNull;
@@ -94,21 +94,6 @@ public final class ChatSession extends Chat implements AutoCloseable {
         chatPartnerListeners.remove(requireNonNull(chatPartnerListener, "chatPartnerListener must not be nulll"));
     }
 
-    private final void notifyChatPartnerListeners(final ChatPartnerEvent chatPartnerEvent) {
-        requireNonNull(chatPartnerEvent, "chatPartnerEvent must not be null");
-        for (final Consumer<ChatPartnerEvent> chatPartnerListener : chatPartnerListeners) {
-            try {
-                chatPartnerListener.accept(chatPartnerEvent);
-            } catch (final Exception e) {
-                LOGGER.log(Level.WARNING, e.getMessage(), e);
-            }
-        }
-    }
-
-    private final void notifyChatPartnerListeners(final Jid oldChatPartner, final Jid newChatPartner) {
-        notifyChatPartnerListeners(new ChatPartnerEvent(this, requireNonNull(oldChatPartner, "oldChatPartner must not be null"), requireNonNull(newChatPartner, "newChatPartner must not be null")));
-    }
-
     /**
      * Sends a chat message to the chat partner.
      *
@@ -145,8 +130,9 @@ public final class ChatSession extends Chat implements AutoCloseable {
     final void setChatPartner(final Jid chatPartner) {
         final Jid oldChatPartner = this.chatPartner;
         this.chatPartner = chatPartner;
-        if (!Objects.equals(oldChatPartner, chatPartner))
-            notifyChatPartnerListeners(oldChatPartner, chatPartner);
+        if (!Objects.equals(oldChatPartner, chatPartner)) {
+            XmppUtils.notifyEventListeners(chatPartnerListeners, new ChatPartnerEvent(this, requireNonNull(oldChatPartner, "oldChatPartner must not be null"), requireNonNull(chatPartner, "newChatPartner must not be null")));
+        }
     }
 
     /**

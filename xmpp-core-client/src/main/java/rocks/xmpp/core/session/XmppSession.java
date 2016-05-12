@@ -159,7 +159,10 @@ public abstract class XmppSession implements AutoCloseable {
      */
     private final AtomicReference<Status> status = new AtomicReference<>(Status.INITIAL);
 
-    protected volatile Connection activeConnection;
+    /**
+     * guarded by "connections"
+     */
+    protected Connection activeConnection;
 
     /**
      * The XMPP domain which will be assigned by the server's response. This is read by different threads, so make it volatile to ensure visibility of the written value.
@@ -302,30 +305,30 @@ public abstract class XmppSession implements AutoCloseable {
 
         // Close any previous connection, which might still be open.
         try {
-            if (activeConnection != null) {
-                activeConnection.close();
-            }
+            closeAndNullifyConnection();
         } catch (Exception e) {
             logger.log(Level.WARNING, "Failure during closing previous connection.", e);
         }
 
-        Iterator<Connection> connectionIterator = getConnections().iterator();
-        while (connectionIterator.hasNext()) {
-            Connection connection = connectionIterator.next();
-            try {
-                connection.connect(from, namespace, onStreamOpened);
-                activeConnection = connection;
-                break;
-            } catch (IOException e) {
-                if (connectionIterator.hasNext()) {
-                    logger.log(Level.WARNING, "{0} failed to connect. Trying alternative connection.", connection);
-                    logger.log(Level.FINE, e.getMessage(), e);
-                } else {
-                    throw new ConnectionException(e);
+        synchronized (connections) {
+            Iterator<Connection> connectionIterator = getConnections().iterator();
+            while (connectionIterator.hasNext()) {
+                Connection connection = connectionIterator.next();
+                try {
+                    connection.connect(from, namespace, onStreamOpened);
+                    activeConnection = connection;
+                    break;
+                } catch (IOException e) {
+                    if (connectionIterator.hasNext()) {
+                        logger.log(Level.WARNING, "{0} failed to connect. Trying alternative connection.", connection);
+                        logger.log(Level.FINE, e.getMessage(), e);
+                    } else {
+                        throw new ConnectionException(e);
+                    }
                 }
             }
+            logger.log(Level.FINE, "Connected via {0}", activeConnection);
         }
-        logger.log(Level.FINE, "Connected via {0}", activeConnection);
     }
 
     /**
@@ -364,10 +367,7 @@ public abstract class XmppSession implements AutoCloseable {
      */
     protected final void onConnectionFailed(Status previousStatus, Throwable e) throws XmppException {
         try {
-            if (activeConnection != null) {
-                activeConnection.close();
-                activeConnection = null;
-            }
+            closeAndNullifyConnection();
         } catch (Exception e1) {
             e.addSuppressed(e1);
         }
@@ -726,7 +726,9 @@ public abstract class XmppSession implements AutoCloseable {
      * @return The actively used connection.
      */
     public final Connection getActiveConnection() {
-        return activeConnection;
+        synchronized (connections) {
+            return activeConnection;
+        }
     }
 
     /**
@@ -751,14 +753,6 @@ public abstract class XmppSession implements AutoCloseable {
     private Future<?> sendInternal(StreamElement element) {
 
         Status status = getStatus();
-        if (!isConnected() && !EnumSet.of(Status.CLOSING, Status.CONNECTING).contains(status)) {
-            IllegalStateException ise = new IllegalStateException("Session is not connected to server (status: " + status + ')');
-            Throwable cause = exception;
-            if (cause != null) {
-                ise.initCause(cause);
-            }
-            throw ise;
-        }
         if (element instanceof Stanza) {
             Stanza stanza = (Stanza) element;
             // If resource binding has not completed and it's tried to send a stanza which doesn't serve the purpose
@@ -776,10 +770,17 @@ public abstract class XmppSession implements AutoCloseable {
                 XmppUtils.notifyEventListeners(outboundIQListeners, new IQEvent(this, (IQ) stanza, false));
             }
         }
-        if (activeConnection != null) {
-            return activeConnection.send(element);
-        } else {
-            throw new IllegalStateException("No connection established.");
+        synchronized (connections) {
+            if (activeConnection == null) {
+                IllegalStateException ise = new IllegalStateException("Session is not connected to server (status: " + status + ')');
+                Throwable cause = exception;
+                if (cause != null) {
+                    ise.initCause(cause);
+                }
+                throw ise;
+            } else {
+                return activeConnection.send(element);
+            }
         }
     }
 
@@ -810,7 +811,7 @@ public abstract class XmppSession implements AutoCloseable {
     protected final <S extends Stanza> SendTask<S> trackAndSend(S stanza) {
         SendTask<S> sendTask = new SendTask<>(stanza);
         // Only track stanzas, if the connection allows it.
-        if (activeConnection.isUsingAcknowledgements()) {
+        if (getActiveConnection().isUsingAcknowledgements()) {
             stanzaTrackingMap.putIfAbsent(stanza, sendTask);
         }
         sendInternal(stanza);
@@ -1055,10 +1056,7 @@ public abstract class XmppSession implements AutoCloseable {
         }
         // The following code should only be called once, no matter how many threads concurrently call this method.
         try {
-            if (activeConnection != null) {
-                activeConnection.close();
-                activeConnection = null;
-            }
+            closeAndNullifyConnection();
         } catch (Exception e) {
             throwAsXmppExceptionIfNotNull(e);
         } finally {
@@ -1079,6 +1077,18 @@ public abstract class XmppSession implements AutoCloseable {
         }
     }
 
+    private void closeAndNullifyConnection() throws Exception {
+        synchronized (connections) {
+            if (activeConnection != null) {
+                try {
+                    activeConnection.close();
+                } finally {
+                    activeConnection = null;
+                }
+            }
+        }
+    }
+
     /**
      * Called if any unhandled exception is thrown during reading or writing.
      * <p>
@@ -1093,9 +1103,8 @@ public abstract class XmppSession implements AutoCloseable {
         // Release a potential waiting thread.
         streamFeaturesManager.cancelNegotiation();
         if (EnumSet.of(Status.AUTHENTICATED, Status.AUTHENTICATING, Status.CONNECTED, Status.CONNECTING).contains(getStatus()) && !(e instanceof AuthenticationException)) {
-
             try {
-                activeConnection.close();
+                closeAndNullifyConnection();
             } catch (Exception e1) {
                 e.addSuppressed(e1);
             }

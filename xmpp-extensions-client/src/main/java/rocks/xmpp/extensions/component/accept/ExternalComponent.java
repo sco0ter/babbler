@@ -179,7 +179,7 @@ public final class ExternalComponent extends XmppSession {
                     return;
                 }
                 // Send the <handshake/> element.
-                send(Handshake.create(activeConnection.getStreamId(), sharedSecret));
+                send(Handshake.create(getActiveConnection().getStreamId(), sharedSecret));
                 lock.lock();
                 try {
                     // Wait for the <handshake/> element to be received from the server.

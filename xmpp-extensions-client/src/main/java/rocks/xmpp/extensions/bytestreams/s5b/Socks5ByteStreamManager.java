@@ -215,7 +215,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      * @return The async result with the stream hosts.
      */
     public AsyncResult<List<StreamHost>> getAvailableStreamHosts() {
-        return discoverProxies().thenApply((streamHosts) -> {
+        return discoverProxies().thenApply(streamHosts -> {
             try {
                 List<StreamHost> result = new ArrayList<>();
                 if (isLocalHostEnabled()) {
@@ -223,9 +223,24 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
                     Jid requester = xmppSession.getConnectedResource();
                     result.add(new StreamHost(requester, localSocks5Server.getAddress(), localSocks5Server.getPort()));
                 }
-                result.addAll(streamHosts);
+
+                IOException ioException = null;
+                // Try, if we -as initiator- can connect to the offered stream proxies, before suggesting them to the receiver.
+                for (StreamHost streamHost : streamHosts) {
+                    try (Socket socket = new Socket()) {
+                        socket.connect(new InetSocketAddress(streamHost.getHost(), streamHost.getPort()), 5000);
+                        // We can connect, let's add to the stream hosts we send to the receiver.
+                        result.add(streamHost);
+                    } catch (IOException e) {
+                        ioException = e;
+                    }
+                }
                 if (result.isEmpty()) {
-                    throw new XmppException("No stream hosts found.");
+                    XmppException xmppException = new XmppException("No stream hosts found.");
+                    if (ioException != null) {
+                        ioException.initCause(ioException);
+                    }
+                    throw xmppException;
                 }
                 return result;
             } catch (XmppException e) {

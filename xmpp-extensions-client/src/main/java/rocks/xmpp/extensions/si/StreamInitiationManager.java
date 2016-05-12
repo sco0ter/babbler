@@ -230,7 +230,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
         CompletionStage<ByteStreamSession> withFallbackStage = CompletionStages.withFallback(eitherS5bOrIbb, (f, t) -> completableFutureIbb);
 
         // And then wait until the peer opens the stream.
-        return new AsyncResult<>(withFallbackStage.applyToEither(CompletionStages.timeoutAfter(xmppSession.getConfiguration().getDefaultResponseTimeout() * 3, TimeUnit.MILLISECONDS), byteStreamSession -> {
+        return new AsyncResult<>(withFallbackStage.applyToEither(CompletionStages.timeoutAfter(xmppSession.getConfiguration().getDefaultResponseTimeout() * 5, TimeUnit.MILLISECONDS), byteStreamSession -> {
                     try {
                         return new FileTransfer(byteStreamSession.getSessionId(), byteStreamSession.getInputStream(), outputStream, fileTransferOffer.getSize());
                     } catch (IOException e) {

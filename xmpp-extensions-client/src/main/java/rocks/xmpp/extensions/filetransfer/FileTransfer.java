@@ -34,6 +34,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 /**
@@ -56,7 +57,7 @@ public final class FileTransfer {
 
     private final String sessionId;
 
-    private volatile Status status = Status.INITIAL;
+    private final AtomicReference<Status> status = new AtomicReference<>(Status.INITIAL);
 
     private volatile Exception exception;
 
@@ -91,7 +92,7 @@ public final class FileTransfer {
     }
 
     private void notifyFileTransferStatusListeners() {
-        XmppUtils.notifyEventListeners(fileTransferStatusListeners, new FileTransferStatusEvent(this, status, bytesTransferred));
+        XmppUtils.notifyEventListeners(fileTransferStatusListeners, new FileTransferStatusEvent(this, status.get(), bytesTransferred));
     }
 
     /**
@@ -100,12 +101,17 @@ public final class FileTransfer {
      * @return The status.
      */
     public final Status getStatus() {
-        return status;
+        return status.get();
     }
 
     private void updateStatus(Status status) {
-        if (this.status != status) {
-            this.status = status;
+        if (this.status.getAndSet(status) != status) {
+            notifyFileTransferStatusListeners();
+        }
+    }
+
+    private void updateStatusIf(Status expected, Status status) {
+        if (this.status.compareAndSet(expected, status)) {
             notifyFileTransferStatusListeners();
         }
     }
@@ -116,7 +122,7 @@ public final class FileTransfer {
      * @return True, when the file transfer is done.
      */
     public final boolean isDone() {
-        return status != Status.IN_PROGRESS;
+        return status.get() != Status.IN_PROGRESS;
     }
 
     /**
@@ -168,29 +174,34 @@ public final class FileTransfer {
                     updateStatus(Status.IN_PROGRESS);
 
                     try {
-                        while ((len = inputStream.read(buffer)) > -1 && status != Status.CANCELED) {
+                        while ((len = inputStream.read(buffer)) > -1 && status.get() != Status.CANCELED) {
                             outputStream.write(buffer, 0, len);
                             addBytesTransferred(len);
                         }
 
-                        if (bytesTransferred != length) {
+                        if (bytesTransferred != length && status.get() != Status.CANCELED) {
                             updateStatus(Status.FAILED);
                         }
                     } catch (IOException e) {
                         exception = e;
                         updateStatus(Status.FAILED);
                     } finally {
-                        // Close the stream
+                        // Close the streams
                         try {
-                            inputStream.close();
-                            outputStream.close();
-                        } catch (IOException e) {
-                            exception = e;
-                            updateStatus(Status.FAILED);
-                        } finally {
-                            if (status == Status.IN_PROGRESS) {
-                                updateStatus(Status.COMPLETED);
+                            try {
+                                inputStream.close();
+                            } catch (IOException e) {
+                                exception = e;
+                                updateStatus(Status.FAILED);
                             }
+                            try {
+                                outputStream.close();
+                            } catch (IOException e) {
+                                exception = e;
+                                updateStatus(Status.FAILED);
+                            }
+                        } finally {
+                            updateStatusIf(Status.IN_PROGRESS, Status.COMPLETED);
                         }
                     }
                 }
@@ -222,12 +233,33 @@ public final class FileTransfer {
         return exception;
     }
 
+    /**
+     * The status of the file transfer.
+     */
     public enum Status {
+        /**
+         * Indicates that the file transfer request has not been accepted yet.
+         */
         INITIAL,
+        /**
+         * Indicates that the file transfer has been cancelled.
+         */
         CANCELED,
+        /**
+         * Indicates that the file transfer has been completed successfully.
+         */
         COMPLETED,
+        /**
+         * Indicates that the file transfer failed.
+         */
         FAILED,
+        /**
+         * Indicates that the file transfer is in progress, i.e. bytes are currently streamed.
+         */
         IN_PROGRESS,
+        /**
+         * Indicates that the file transfer request has been rejected.
+         */
         REJECTED
     }
 }

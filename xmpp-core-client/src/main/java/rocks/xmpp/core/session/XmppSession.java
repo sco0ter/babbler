@@ -747,10 +747,11 @@ public abstract class XmppSession implements AutoCloseable {
      * @return The sent stream element, which is usually the same as the parameter, but may differ in case a stanza is sent, e.g. a {@link Message} is translated to a {@link rocks.xmpp.core.stanza.model.client.ClientMessage}.
      */
     public Future<?> send(StreamElement element) {
-        return sendInternal(element);
+        return sendInternal(element, connection -> {
+        });
     }
 
-    private Future<?> sendInternal(StreamElement element) {
+    private Future<?> sendInternal(StreamElement element, Consumer<Connection> beforeSend) {
 
         Status status = getStatus();
         if (element instanceof Stanza) {
@@ -779,6 +780,7 @@ public abstract class XmppSession implements AutoCloseable {
                 }
                 throw ise;
             } else {
+                beforeSend.accept(activeConnection);
                 return activeConnection.send(element);
             }
         }
@@ -810,11 +812,12 @@ public abstract class XmppSession implements AutoCloseable {
 
     protected final <S extends Stanza> SendTask<S> trackAndSend(S stanza) {
         SendTask<S> sendTask = new SendTask<>(stanza);
-        // Only track stanzas, if the connection allows it.
-        if (getActiveConnection().isUsingAcknowledgements()) {
-            stanzaTrackingMap.putIfAbsent(stanza, sendTask);
-        }
-        sendInternal(stanza);
+        sendInternal(stanza, connection -> {
+            // Only track stanzas, if the connection allows it.
+            if (connection.isUsingAcknowledgements()) {
+                stanzaTrackingMap.putIfAbsent(stanza, sendTask);
+            }
+        });
         return sendTask;
     }
 

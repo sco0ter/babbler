@@ -66,7 +66,7 @@ import rocks.xmpp.extensions.jingle.JingleManager;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
 import rocks.xmpp.extensions.jingle.model.Jingle;
-import rocks.xmpp.extensions.jingle.transports.ibb.model.InBandBytestreamsTransportMethod;
+import rocks.xmpp.extensions.jingle.transports.ibb.model.InBandByteStreamsTransportMethod;
 import rocks.xmpp.extensions.jingle.transports.iceudp.model.IceUdpTransportMethod;
 import rocks.xmpp.extensions.jingle.transports.s5b.model.S5bTransportMethod;
 import rocks.xmpp.extensions.json.model.Json;
@@ -307,7 +307,7 @@ public final class ExtensionModule implements Module {
                 Extension.of(S5bTransportMethod.NAMESPACE, null, false, S5bTransportMethod.class),
 
                 // XEP-0261: Jingle In-Band Bytestreams Transport Method
-                Extension.of(InBandBytestreamsTransportMethod.NAMESPACE, null, false, InBandBytestreamsTransportMethod.class),
+                Extension.of(InBandByteStreamsTransportMethod.NAMESPACE, null, false, InBandByteStreamsTransportMethod.class),
 
                 // XEP-0280: Message Carbons
                 Extension.of(MessageCarbons.NAMESPACE, MessageCarbonsManager.class, false, MessageCarbons.class),

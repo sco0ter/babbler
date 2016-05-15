@@ -30,7 +30,7 @@ import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
 import rocks.xmpp.extensions.jingle.model.Jingle;
-import rocks.xmpp.extensions.jingle.transports.ibb.model.InBandBytestreamsTransportMethod;
+import rocks.xmpp.extensions.jingle.transports.ibb.model.InBandByteStreamsTransportMethod;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -40,7 +40,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class InbandBytestreamsTransportMethodTest extends XmlTest {
     protected InbandBytestreamsTransportMethodTest() throws JAXBException, XMLStreamException {
-        super(Jingle.class, InBandBytestreamsTransportMethod.class, Rtp.class);
+        super(Jingle.class, InBandByteStreamsTransportMethod.class, Rtp.class);
     }
 
     @Test
@@ -60,12 +60,12 @@ public class InbandBytestreamsTransportMethodTest extends XmlTest {
 
         Jingle jingle = unmarshal(xml, Jingle.class);
         Assert.assertNotNull(jingle);
-        Assert.assertTrue(jingle.getContents().get(0).getTransportMethod() instanceof InBandBytestreamsTransportMethod);
-        InBandBytestreamsTransportMethod inBandBytestreamsTransportMethod = (InBandBytestreamsTransportMethod) jingle.getContents().get(0).getTransportMethod();
-        Assert.assertNotNull(inBandBytestreamsTransportMethod);
+        Assert.assertTrue(jingle.getContents().get(0).getTransportMethod() instanceof InBandByteStreamsTransportMethod);
+        InBandByteStreamsTransportMethod inBandByteStreamsTransportMethod = (InBandByteStreamsTransportMethod) jingle.getContents().get(0).getTransportMethod();
+        Assert.assertNotNull(inBandByteStreamsTransportMethod);
         Assert.assertNull(jingle.getContents().get(0).getApplicationFormat());
-        Assert.assertEquals(inBandBytestreamsTransportMethod.getSessionId(), "ch3d9s71");
-        Assert.assertEquals(inBandBytestreamsTransportMethod.getBlockSize(), 2048);
-        Assert.assertEquals(inBandBytestreamsTransportMethod.getStanzaType(), InBandByteStream.Open.StanzaType.IQ);
+        Assert.assertEquals(inBandByteStreamsTransportMethod.getSessionId(), "ch3d9s71");
+        Assert.assertEquals(inBandByteStreamsTransportMethod.getBlockSize(), 2048);
+        Assert.assertEquals(inBandByteStreamsTransportMethod.getStanzaType(), InBandByteStream.Open.StanzaType.IQ);
     }
 }

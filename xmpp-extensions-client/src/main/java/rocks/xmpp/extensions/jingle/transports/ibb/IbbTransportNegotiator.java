@@ -26,13 +26,13 @@ package rocks.xmpp.extensions.jingle.transports.ibb;
 
 import rocks.xmpp.extensions.jingle.JingleSession;
 import rocks.xmpp.extensions.jingle.transports.TransportNegotiator;
-import rocks.xmpp.extensions.jingle.transports.ibb.model.InBandBytestreamsTransportMethod;
+import rocks.xmpp.extensions.jingle.transports.ibb.model.InBandByteStreamsTransportMethod;
 import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
 
 /**
  * @author Christian Schudt
  */
-public class IbbTransportNegotiator extends TransportNegotiator<InBandBytestreamsTransportMethod> {
+public class IbbTransportNegotiator extends TransportNegotiator<InBandByteStreamsTransportMethod> {
 
     private TransportMethod currentTransport = null;
 
@@ -40,7 +40,7 @@ public class IbbTransportNegotiator extends TransportNegotiator<InBandBytestream
         super(jingleSession);
     }
 
-    public boolean replaceTransport(InBandBytestreamsTransportMethod transport) {
+    public boolean replaceTransport(InBandByteStreamsTransportMethod transport) {
         if (currentTransport == null) {
             throw new IllegalStateException("No transport has been set yet, therefore no transport can be replaced.");
         }

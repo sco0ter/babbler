@@ -35,7 +35,7 @@ import rocks.xmpp.extensions.jingle.JingleManager;
 import rocks.xmpp.extensions.jingle.JingleSession;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.model.Jingle;
-import rocks.xmpp.extensions.jingle.transports.ibb.model.InBandBytestreamsTransportMethod;
+import rocks.xmpp.extensions.jingle.transports.ibb.model.InBandByteStreamsTransportMethod;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,7 +64,7 @@ public final class JingleFileTransferManager extends Manager {
 
 
         String ibbSessionId = UUID.randomUUID().toString();
-        InBandBytestreamsTransportMethod ibbTransportMethod = new InBandBytestreamsTransportMethod(4096, ibbSessionId);
+        InBandByteStreamsTransportMethod ibbTransportMethod = new InBandByteStreamsTransportMethod(4096, ibbSessionId);
 
         Jingle.Content content = new Jingle.Content("a-file-offer", Jingle.Content.Creator.INITIATOR, jingleFileTransfer, ibbTransportMethod);
         final JingleSession jingleSession = jingleManager.createSession(responder, content);

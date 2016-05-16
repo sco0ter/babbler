@@ -54,7 +54,7 @@ public class Socks5ByteStreamsTest extends XmlTest {
         Socks5ByteStream data = unmarshal(xml, Socks5ByteStream.class);
         Assert.assertNotNull(data);
         Assert.assertEquals(data.getStreamHosts().size(), 1);
-        Assert.assertEquals(data.getStreamHosts().get(0).getHost(), "24.24.24.1");
+        Assert.assertEquals(data.getStreamHosts().get(0).getHostname(), "24.24.24.1");
         Assert.assertEquals(data.getStreamHosts().get(0).getJid(), Jid.of("streamer.example.com"));
         Assert.assertEquals(data.getStreamHosts().get(0).getPort(), 7625);
     }

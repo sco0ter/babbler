@@ -88,7 +88,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
         for (StreamHost streamHost : streamHosts) {
             try {
                 Socket socket = new Socket();
-                socket.connect(new InetSocketAddress(streamHost.getHost(), streamHost.getPort()));
+                socket.connect(new InetSocketAddress(streamHost.getHostname(), streamHost.getPort()));
                 // If the Target is able to open a TCP socket on a StreamHost/Requester, it MUST use the SOCKS5 protocol to establish a SOCKS5 connection.
                 Socks5Protocol.establishClientConnection(socket, Socks5ByteStream.hash(sessionId, requester, target), 0);
                 socketUsed = socket;
@@ -117,7 +117,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
                     // If the request is malformed (e.g., the <query/> element does not include the 'sid' attribute), the Target MUST return an error of <bad-request/>.
                     return iq.createError(Condition.BAD_REQUEST);
                 } else {
-                    XmppUtils.notifyEventListeners(byteStreamListeners, new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq, socks5ByteStream.getStreamHosts()));
+                    XmppUtils.notifyEventListeners(byteStreamListeners, new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq, new ArrayList<>(socks5ByteStream.getStreamHosts())));
                     return null;
                 }
             }
@@ -228,7 +228,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
                 // Try, if we -as initiator- can connect to the offered stream proxies, before suggesting them to the receiver.
                 for (StreamHost streamHost : streamHosts) {
                     try (Socket socket = new Socket()) {
-                        socket.connect(new InetSocketAddress(streamHost.getHost(), streamHost.getPort()), 5000);
+                        socket.connect(new InetSocketAddress(streamHost.getHostname(), streamHost.getPort()), 5000);
                         // We can connect, let's add to the stream hosts we send to the receiver.
                         result.add(streamHost);
                     } catch (IOException e) {
@@ -301,7 +301,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
                             return CompletableFuture.runAsync(() -> {
                                 // 6.3.4 Requester Establishes SOCKS5 Connection with StreamHost
                                 try {
-                                    socket.connect(new InetSocketAddress(usedStreamHost.getHost(), usedStreamHost.getPort()));
+                                    socket.connect(new InetSocketAddress(usedStreamHost.getHostname(), usedStreamHost.getPort()));
                                     Socks5Protocol.establishClientConnection(socket, hash, 0);
                                 } catch (IOException e) {
                                     throw new CompletionException(e);

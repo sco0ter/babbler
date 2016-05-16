@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.jingle.transports.s5b.model;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
+import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5StreamHost;
 import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -229,7 +230,7 @@ public final class S5bTransportMethod extends TransportMethod {
      * The best (preferred) candidate is the one, with the highest priority.
      * Multiple candidates are naturally sorted by their priority (highest first).
      */
-    public static final class Candidate implements Comparable<Candidate> {
+    public static final class Candidate implements Socks5StreamHost, Comparable<Candidate> {
 
         @XmlAttribute
         private final String cid;
@@ -284,6 +285,7 @@ public final class S5bTransportMethod extends TransportMethod {
          *
          * @return The candidate's hostname.
          */
+        @Override
         public final String getHostname() {
             return host;
         }
@@ -293,6 +295,7 @@ public final class S5bTransportMethod extends TransportMethod {
          *
          * @return The candidate's JID.
          */
+        @Override
         public final Jid getJid() {
             return jid;
         }
@@ -302,6 +305,7 @@ public final class S5bTransportMethod extends TransportMethod {
          *
          * @return The port.
          */
+        @Override
         public final int getPort() {
             return port;
         }

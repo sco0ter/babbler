@@ -26,76 +26,31 @@ package rocks.xmpp.extensions.bytestreams.s5b.model;
 
 import rocks.xmpp.addr.Jid;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import java.util.Objects;
-
 /**
- * The {@code <streamhost/>} element.
+ * A SOCKS5 stream host interface which is shared by the XEP-0065 implementation and the XEP-0260 implementation.
  *
  * @author Christian Schudt
  */
-public final class StreamHost implements Socks5StreamHost {
-
-    @XmlAttribute
-    private final Jid jid;
-
-    @XmlAttribute
-    private final String host;
-
-    @XmlAttribute
-    private final int port;
-
-    private StreamHost() {
-        this.jid = null;
-        this.host = null;
-        this.port = 1080;
-    }
-
-    /**
-     * Creates a {@code <streamhost/>} element.
-     *
-     * @param jid  The JID.
-     * @param host The host address.
-     * @param port The port.
-     */
-    public StreamHost(Jid jid, String host, int port) {
-        this.jid = Objects.requireNonNull(jid);
-        this.host = Objects.requireNonNull(host);
-        this.port = port;
-    }
+public interface Socks5StreamHost {
 
     /**
      * Gets the IP address or DNS domain name of the StreamHost for SOCKS5 communication over TCP.
      *
-     * @return The host.
+     * @return The hostname.
      */
-    @Override
-    public final String getHostname() {
-        return host;
-    }
+    String getHostname();
 
     /**
      * Gets the JabberID of the StreamHost for communication over XMPP.
      *
      * @return The JID.
      */
-    @Override
-    public final Jid getJid() {
-        return jid;
-    }
+    Jid getJid();
 
     /**
      * Get the port on which to connect for SOCKS5 communication over TCP.
      *
      * @return The port.
      */
-    @Override
-    public final int getPort() {
-        return port;
-    }
-
-    @Override
-    public final String toString() {
-        return jid + " (" + host + ":" + port + ')';
-    }
+    int getPort();
 }

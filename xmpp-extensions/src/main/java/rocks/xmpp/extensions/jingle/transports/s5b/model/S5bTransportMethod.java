@@ -259,7 +259,7 @@ public final class S5bTransportMethod extends TransportMethod {
          * @param port     The port.
          * @param jid      The JID.
          * @param type     The type.
-         * @param priority The priority, see {@link #calculatePriority(Type, int)}.
+         * @param priority The priority, see {@code calculatePriority(Type, int)}.
          */
         public Candidate(String cid, String hostname, int port, Jid jid, Type type, int priority) {
             this.cid = cid;

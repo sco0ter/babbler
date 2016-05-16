@@ -480,6 +480,7 @@ public final class AvatarManager extends Manager {
      * @param bufferedImage The avatar image, which must be in PNG format. {@code null}
      *                      resets the avatar.
      * @return The async result.
+     * @throws XmppException If the image could not be converted to PNG.
      * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User Publishes Avatar</a>
      */
     public final AsyncResult<Void> publishAvatarImage(final BufferedImage bufferedImage) throws XmppException {

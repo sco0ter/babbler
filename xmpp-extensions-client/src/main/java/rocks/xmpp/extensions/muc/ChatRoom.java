@@ -73,7 +73,7 @@ import java.util.function.Consumer;
 
 /**
  * Represents a multi-user chat room.
- * <p/>
+ * <p>
  * Use this class to enter a chat room, to send and receive messages, invite others and to manage members (e.g. kick or ban a user, grant admin status, etc.).
  *
  * @author Christian Schudt

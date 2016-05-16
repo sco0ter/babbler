@@ -193,6 +193,8 @@ public final class Address {
     /**
      * Gets the extension.
      *
+     * @param <T>   The extension type.
+     * @param clazz The extension class.
      * @return The extension or null.
      * @see <a href="http://xmpp.org/extensions/xep-0033.html#extensibility">4.7 Extensibility</a>
      */

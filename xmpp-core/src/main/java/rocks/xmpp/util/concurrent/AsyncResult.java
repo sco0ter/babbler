@@ -330,6 +330,8 @@ public class AsyncResult<T> implements Future<T>, CompletionStage<T> {
      * <p>
      * If the thread, waiting on the result is interrupted, this method continues to block until the result is available or the timeout elapses.
      *
+     * @param timeout The timeout
+     * @param unit    The time unit.
      * @return The result.
      * @throws XmppException    If the response threw an exception.
      * @throws TimeoutException If the result didn't receive in time.

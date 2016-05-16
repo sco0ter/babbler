@@ -38,8 +38,8 @@ import javax.xml.stream.XMLStreamException;
 /**
  * @author Christian Schudt
  */
-public class InbandBytestreamsTransportMethodTest extends XmlTest {
-    protected InbandBytestreamsTransportMethodTest() throws JAXBException, XMLStreamException {
+public class InbandByteStreamsTransportMethodTest extends XmlTest {
+    protected InbandByteStreamsTransportMethodTest() throws JAXBException, XMLStreamException {
         super(Jingle.class, InBandByteStreamsTransportMethod.class, Rtp.class);
     }
 

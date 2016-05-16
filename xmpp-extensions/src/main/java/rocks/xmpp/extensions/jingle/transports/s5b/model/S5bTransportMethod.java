@@ -339,7 +339,7 @@ public final class S5bTransportMethod extends TransportMethod {
             @XmlEnumValue("direct")
             DIRECT(126),
             /**
-             * Direct connection using the given interface.
+             * Direct connection using NAT assisting technologies like NAT-PMP or UPnP-IGD.
              */
             @XmlEnumValue("assisted")
             ASSISTED(120),

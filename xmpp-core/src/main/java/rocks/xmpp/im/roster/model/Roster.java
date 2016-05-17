@@ -46,6 +46,11 @@ import java.util.List;
 @XmlRootElement(name = "query")
 public final class Roster {
 
+    /**
+     * jabber:iq:roster
+     */
+    public static final String NAMESPACE = "jabber:iq:roster";
+
     private final List<Contact> item = new ArrayList<>();
 
     @XmlAttribute

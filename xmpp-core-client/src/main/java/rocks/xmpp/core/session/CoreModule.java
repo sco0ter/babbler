@@ -73,7 +73,7 @@ public final class CoreModule implements Module {
         return Arrays.asList(
 
                 // Core
-                Extension.of(StreamFeatures.class, StreamError.class, ClientMessage.class, ClientPresence.class, ClientIQ.class, Session.class, Roster.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class),
+                Extension.of(StreamFeatures.class, StreamError.class, ClientMessage.class, ClientPresence.class, ClientIQ.class, Session.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class),
 
                 // XEP-0004: Data Forms
                 Extension.of(DataForm.class),
@@ -119,7 +119,7 @@ public final class CoreModule implements Module {
 
                 Extension.of(ReconnectionManager.class, true),
 
-                Extension.of(RosterManager.class, true)
+                Extension.of(Roster.NAMESPACE, RosterManager.class, true, Roster.class)
         );
     }
 }

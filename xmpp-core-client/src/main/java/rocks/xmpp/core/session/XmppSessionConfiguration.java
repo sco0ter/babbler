@@ -139,13 +139,17 @@ public final class XmppSessionConfiguration {
         this.language = builder.language != null ? builder.language : Locale.getDefault();
         this.reconnectionStrategy = builder.reconnectionStrategy;
         this.extensions = new HashSet<>();
-        this.extensions.addAll(builder.extensions);
 
         // Find all modules, then add all extension from each module.
         ServiceLoader<Module> loader = ServiceLoader.load(Module.class);
         for (Module module : loader) {
             extensions.addAll(module.getExtensions());
         }
+
+        // Then remove any extensions, which are custom defined, e.g. a new Roster extension for the jabber:iq:roster class.
+        this.extensions.removeAll(builder.extensions);
+        // Then add the custom extensions.
+        this.extensions.addAll(builder.extensions);
 
         Collection<Class<?>> classesToBeBound = new ArrayDeque<>();
         // For each extension, get its classes in order to add them to the JAXBContext.

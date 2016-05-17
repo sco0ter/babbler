@@ -753,7 +753,6 @@ public abstract class XmppSession implements AutoCloseable {
 
     private Future<?> sendInternal(StreamElement element, Consumer<Connection> beforeSend) {
 
-        Status status = getStatus();
         if (element instanceof Stanza) {
             Stanza stanza = (Stanza) element;
             // If resource binding has not completed and it's tried to send a stanza which doesn't serve the purpose
@@ -773,7 +772,7 @@ public abstract class XmppSession implements AutoCloseable {
         }
         synchronized (connections) {
             if (activeConnection == null) {
-                IllegalStateException ise = new IllegalStateException("Session is not connected to server (status: " + status + ')');
+                IllegalStateException ise = new IllegalStateException("Session is not connected to server (status: " + getStatus() + ')');
                 Throwable cause = exception;
                 if (cause != null) {
                     ise.initCause(cause);

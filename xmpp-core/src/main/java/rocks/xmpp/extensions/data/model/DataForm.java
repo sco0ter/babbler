@@ -596,7 +596,7 @@ public final class DataForm implements Comparable<DataForm> {
          * @return The JID or null, if the values are empty.
          */
         public final Jid getValueAsJid() {
-            return value.isEmpty() ? null : Jid.of(value.get(0));
+            return value.isEmpty() ? null : Jid.ofEscaped(value.get(0));
         }
 
         /**

@@ -235,12 +235,16 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
     public static Jid of(CharSequence jid) {
-        return of(jid.toString(), false);
+        return of(jid.toString(), false, true);
     }
 
     /**
      * Creates a JID from a escaped JID string. The format must be
      * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>
+     * This method should be used, when parsing JIDs from the XMPP stream.
+     * <p>
+     * Note, that validation and enforcement is skipped when using this method, because it's expected,
+     * that JID strings passed to this method are already enforced.
      *
      * @param jid The JID.
      * @return The JID.
@@ -249,21 +253,22 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
     public static Jid ofEscaped(CharSequence jid) {
-        return of(jid.toString(), true);
+        return of(jid.toString(), true, false);
     }
 
     /**
      * Creates a JID from a string. The format must be
      * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>
      *
-     * @param jid        The JID.
-     * @param doUnescape If the jid parameter will be unescaped.
+     * @param jid                The JID.
+     * @param doUnescape         If the jid parameter will be unescaped.
+     * @param enforceAndValidate If the JID should be enforced and validated.
      * @return The JID.
      * @throws NullPointerException     If the jid is null.
      * @throws IllegalArgumentException If the jid could not be parsed or is not valid.
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
-    private static Jid of(String jid, final boolean doUnescape) {
+    private static Jid of(String jid, final boolean doUnescape, final boolean enforceAndValidate) {
         Objects.requireNonNull(jid, "jid must not be null.");
 
         jid = jid.trim();
@@ -285,7 +290,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
 
         Matcher matcher = JID.matcher(jid);
         if (matcher.matches()) {
-            Jid jidValue = new Jid(matcher.group(2), matcher.group(3), matcher.group(8), doUnescape, true);
+            Jid jidValue = new Jid(matcher.group(2), matcher.group(3), matcher.group(8), doUnescape, enforceAndValidate);
             if (doUnescape) {
                 UNESCAPED_CACHE.put(jid, jidValue);
             } else {

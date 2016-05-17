@@ -520,4 +520,11 @@ public class JidTest {
         Jid jid = Jid.ofDomain("sub\u3002domain");
         Assert.assertEquals(jid.getDomain(), "sub.domain");
     }
+
+    @Test
+    public void testBadCodePoints() throws IOException, ClassNotFoundException {
+        Jid jid = Jid.ofEscaped("99999_contains_both_-_dash_and_–_emdash@conf.hipchat.com");
+        Assert.assertEquals(jid.getLocal(), "99999_contains_both_-_dash_and_–_emdash");
+        Assert.assertEquals(jid.getDomain(), "conf.hipchat.com");
+    }
 }

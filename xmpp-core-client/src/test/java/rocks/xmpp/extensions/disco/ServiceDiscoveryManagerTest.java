@@ -42,6 +42,7 @@ import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.im.roster.RosterManager;
+import rocks.xmpp.im.roster.model.Roster;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -268,7 +269,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
                 // We override the default context with a disabled EntityCapabilitiesManager
                 .extensions(
                         Extension.of(EntityCapabilities.NAMESPACE, EntityCapabilitiesManager.class, false, EntityCapabilities.class),
-                        Extension.of(RosterManager.class, false))
+                        Extension.of(Roster.NAMESPACE, RosterManager.class, false))
                 .build();
 
         XmppClient xmppClient2 = XmppClient.create("domain", configuration2);

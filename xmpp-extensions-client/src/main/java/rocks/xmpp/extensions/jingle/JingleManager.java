@@ -64,7 +64,8 @@ public final class JingleManager extends Manager {
         xmppSession.addIQHandler(Jingle.class, new AbstractIQHandler(IQ.Type.SET) {
             @Override
             public IQ processRequest(IQ iq) {
-                Jingle jingle = iq.getExtension(Jingle.class);
+                final Jingle jingle = iq.getExtension(Jingle.class);
+                final JingleSession jingleSession;
 
                 // The value of the 'action' attribute MUST be one of the following.
                 // If an entity receives a value not defined here, it MUST ignore the attribute and MUST return a <bad-request/> error to the sender.
@@ -74,6 +75,7 @@ public final class JingleManager extends Manager {
                 } else if (jingle.getSessionId() == null) {
                     return iq.createError(new StanzaError(Condition.BAD_REQUEST, "No session id set."));
                 } else if (jingle.getAction() == Jingle.Action.SESSION_INITIATE) {
+
 
                     // Check if the Jingle request is not mal-formed, otherwise return a bad-request error.
                     // See 6.3.2 Errors
@@ -116,42 +118,40 @@ public final class JingleManager extends Manager {
 
                             if (!hasSupportedApplications) {
                                 // Terminate the session with <unsupported-applications/>.
-                                xmppSession.send(IQ.set(iq.getFrom(), new Jingle(jingle.getSessionId(), Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.UnsupportedApplications()))));
+                                return IQ.set(iq.getFrom(), new Jingle(jingle.getSessionId(), Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.UnsupportedApplications())));
                             } else if (!hasSupportedTransports) {
                                 // Terminate the session with <unsupported-transports/>.
-                                xmppSession.send(IQ.set(iq.getFrom(), new Jingle(jingle.getSessionId(), Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.UnsupportedTransports()))));
+                                return IQ.set(iq.getFrom(), new Jingle(jingle.getSessionId(), Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.UnsupportedTransports())));
                             } else {
                                 // Everything is fine, create the session and notify the listeners.
-                                JingleSession jingleSession = new JingleSession(jingle.getSessionId(), iq.getFrom(), false, xmppSession, JingleManager.this, jingle.getContents());
+                                jingleSession = new JingleSession(jingle.getSessionId(), iq.getFrom(), false, xmppSession, JingleManager.this, jingle.getContents());
                                 jingleSessionMap.put(jingle.getSessionId(), jingleSession);
                                 Consumer<JingleSession> consumer = registeredApplicationFormats.get(jingle.getContents().get(0).getApplicationFormat().getClass());
                                 if (consumer != null) {
                                     consumer.accept(jingleSession);
                                 }
-                                XmppUtils.notifyEventListeners(jingleListeners, new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
                             }
                             // If the request was ok, immediately acknowledge the initiation request.
                             // See 6.3.1 Acknowledgement
-                            return iq.createResult();
+                            //return iq.createResult();
                         }
                     }
                 } else {
-
                     // Another action (!= session-initiate) has been sent.
                     // Check if we know the session.
-                    JingleSession jingleSession = jingleSessionMap.get(jingle.getSessionId());
+                    jingleSession = jingleSessionMap.get(jingle.getSessionId());
+                }
 
-                    if (jingleSession == null) {
-                        // If we receive a non-session-initiate Jingle action with an unknown session id,
-                        // return <item-not-found/> and <unknown-session/>
-                        return iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND, new UnknownSession()));
-                    } else {
-                        ForkJoinPool.commonPool().execute(() -> {
-                            XmppUtils.notifyEventListeners(jingleSession.jingleListeners, new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
-                        });
-                        // Immediately return a result, before sending a session-accept.
-                        return iq.createResult();
-                    }
+                if (jingleSession == null) {
+                    // If we receive a non-session-initiate Jingle action with an unknown session id,
+                    // return <item-not-found/> and <unknown-session/>
+                    return iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND, new UnknownSession()));
+                } else {
+                    ForkJoinPool.commonPool().execute(() -> {
+                        XmppUtils.notifyEventListeners(jingleSession.jingleListeners, new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
+                    });
+                    // Immediately return a result, before sending a session-accept.
+                    return iq.createResult();
                 }
             }
         });

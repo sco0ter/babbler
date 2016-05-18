@@ -29,6 +29,7 @@ import rocks.xmpp.util.XmppUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
@@ -117,12 +118,12 @@ public final class FileTransfer {
     }
 
     /**
-     * Returns true, when the file transfer is done.
+     * Returns true, if the file transfer is done, i.e. neither in progress nor in initial status.
      *
-     * @return True, when the file transfer is done.
+     * @return True, if the file transfer is done.
      */
     public final boolean isDone() {
-        return status.get() != Status.IN_PROGRESS;
+        return EnumSet.of(Status.CANCELED, Status.COMPLETED, Status.FAILED, Status.REJECTED).contains(status.get());
     }
 
     /**

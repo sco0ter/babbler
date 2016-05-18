@@ -28,16 +28,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.precis.PrecisProfiles;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Queue;
-import java.util.UUID;
+import java.io.*;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
@@ -486,43 +478,43 @@ public class JidTest {
         Jid jid = Jid.of("local@domain/resource");
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream out = new ObjectOutputStream(byteArrayOutputStream);
-        out.writeObject(jid);
-
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-
-        ObjectInputStream in = new ObjectInputStream(byteArrayInputStream);
-        Jid readJid = (Jid) in.readObject();
-        Assert.assertNotNull(readJid);
-        Assert.assertEquals(readJid, jid);
+        try (ObjectOutputStream out = new ObjectOutputStream(byteArrayOutputStream)) {
+            out.writeObject(jid);
+            try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray())) {
+                ObjectInputStream in = new ObjectInputStream(byteArrayInputStream);
+                Jid readJid = (Jid) in.readObject();
+                Assert.assertNotNull(readJid);
+                Assert.assertEquals(readJid, jid);
+            }
+        }
     }
 
     @Test
-    public void testAsciiDomain() throws IOException, ClassNotFoundException {
+    public void testAsciiDomain() {
         Jid jid = Jid.ofDomain("xn--dmin-moa0i");
         Assert.assertEquals(jid.getDomain(), "dömäin");
     }
 
     @Test
-    public void testTrailingDot() throws IOException, ClassNotFoundException {
+    public void testTrailingDot() {
         Jid jid = Jid.ofDomain("domain.");
         Assert.assertEquals(jid.getDomain(), "domain");
     }
 
     @Test
-    public void testDomain() throws IOException, ClassNotFoundException {
+    public void testDomain() {
         Jid jid = Jid.ofDomain("DOMAIN");
         Assert.assertEquals(jid.getDomain(), "domain");
     }
 
     @Test
-    public void testIdeographicFullStop() throws IOException, ClassNotFoundException {
+    public void testIdeographicFullStop() {
         Jid jid = Jid.ofDomain("sub\u3002domain");
         Assert.assertEquals(jid.getDomain(), "sub.domain");
     }
 
     @Test
-    public void testBadCodePoints() throws IOException, ClassNotFoundException {
+    public void testBadCodePoints() {
         Jid jid = Jid.ofEscaped("99999_contains_both_-_dash_and_–_emdash@conf.hipchat.com");
         Assert.assertEquals(jid.getLocal(), "99999_contains_both_-_dash_and_–_emdash");
         Assert.assertEquals(jid.getDomain(), "conf.hipchat.com");

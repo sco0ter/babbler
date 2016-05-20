@@ -33,6 +33,7 @@ import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.concurrent.Executors;
 
 /**
@@ -52,7 +53,6 @@ public class FileTransferSender {
 
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                         .debugger(VisualDebugger.class)
-                        .defaultResponseTimeout(5000)
                         .build();
 
                 XmppClient xmppSession = XmppClient.create("localhost", configuration, tcpConfiguration);
@@ -63,7 +63,7 @@ public class FileTransferSender {
                 xmppSession.login("111", "111", "filetransfer");
 
                 FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
-                FileTransfer fileTransfer = fileTransferManager.offerFile(Paths.get("info.png"), "Description", xmppSession.getDomain().withLocal("222").withResource("filetransfer"), 5000).getResult();
+                FileTransfer fileTransfer = fileTransferManager.offerFile(Paths.get("info.png"), "Description", xmppSession.getDomain().withLocal("222").withResource("filetransfer"), Duration.ofSeconds(5)).getResult();
                 fileTransfer.transfer();
 
             } catch (Exception e) {

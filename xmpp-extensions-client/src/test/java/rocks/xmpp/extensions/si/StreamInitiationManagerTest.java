@@ -41,6 +41,7 @@ import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -64,7 +65,7 @@ public class StreamInitiationManagerTest extends BaseTest {
             e.accept(new ByteArrayOutputStream());
         });
         StreamInitiationManager streamInitiationManager1 = xmppSession1.getManager(StreamInitiationManager.class);
-        OutputStream outputStream = streamInitiationManager1.initiateStream(JULIET, new SIFileTransferOffer("Filename", 123), "image/type", 2000).get().getOutputStream();
+        OutputStream outputStream = streamInitiationManager1.initiateStream(JULIET, new SIFileTransferOffer("Filename", 123), "image/type", Duration.ofSeconds(2)).get().getOutputStream();
 
         // Stream Initiation should have been succeeded, if we have OutputStream and no exception has occurred.
         Assert.assertNotNull(outputStream);
@@ -88,7 +89,7 @@ public class StreamInitiationManagerTest extends BaseTest {
         StreamInitiationManager streamInitiationManager1 = xmppSession1.getManager(StreamInitiationManager.class);
 
         try {
-            streamInitiationManager1.initiateStream(JULIET, new SIFileTransferOffer("Filename", 123), "image/type", 2000).get();
+            streamInitiationManager1.initiateStream(JULIET, new SIFileTransferOffer("Filename", 123), "image/type", Duration.ofSeconds(2)).get();
         } catch (ExecutionException e) {
             if (!(((StanzaException) e.getCause()).getCondition() == Condition.FORBIDDEN)) {
                 Assert.fail();

@@ -38,6 +38,7 @@ import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -121,7 +122,7 @@ public class FileTransferIT extends IntegrationTest {
         try {
             // Let the receiver listen for incoming file transfers.
             fileTransferManagers[1].addFileTransferOfferListener(listener);
-            FileTransfer fileTransfer = fileTransferManagers[0].offerFile(new ByteArrayInputStream(data), "test.txt", data.length, Instant.now(), "Description", xmppSession[1].getConnectedResource(), 12000).get();
+            FileTransfer fileTransfer = fileTransferManagers[0].offerFile(new ByteArrayInputStream(data), "test.txt", data.length, Instant.now(), "Description", xmppSession[1].getConnectedResource(), Duration.ofSeconds(12)).get();
             fileTransfer.transfer();
 
             lock.lock();

@@ -46,6 +46,7 @@ import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 
 import java.io.File;
+import java.time.Duration;
 
 /**
  * @author Christian Schudt
@@ -67,7 +68,7 @@ public class FileTransferSender extends Application {
 
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                         .debugger(VisualDebugger.class)
-                        .defaultResponseTimeout(10000)
+                        .defaultResponseTimeout(Duration.ofSeconds(10))
                         .build();
 
                 XmppClient xmppSession = XmppClient.create("localhost", configuration, tcpConfiguration);
@@ -119,7 +120,7 @@ public class FileTransferSender extends Application {
                     protected Void call() throws Exception {
                         FileTransferManager fileTransferManager = xmppSession.get().getManager(FileTransferManager.class);
                         updateMessage("Offering file... waiting for acceptance");
-                        FileTransfer fileTransfer = fileTransferManager.offerFile(file, "Hello", Jid.of("111", xmppSession.get().getDomain().toString(), "filetransfer"), 10000).get();
+                        FileTransfer fileTransfer = fileTransferManager.offerFile(file, "Hello", Jid.of("111", xmppSession.get().getDomain().toString(), "filetransfer"), Duration.ofSeconds(10)).get();
                         fileTransfer.addFileTransferStatusListener(e -> {
                             System.out.println(e);
                             try {

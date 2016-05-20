@@ -31,6 +31,7 @@ import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.tls.model.StartTls;
 
+import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -267,7 +268,7 @@ public final class StreamFeaturesManager extends Manager {
      * @throws InterruptedException If the current thread is interrupted.
      * @throws NoResponseException  If the server didn't respond.
      */
-    public final void awaitNegotiation(Class<? extends StreamFeature> streamFeature, long timeout) throws InterruptedException, NoResponseException {
+    public final void awaitNegotiation(Class<? extends StreamFeature> streamFeature, Duration timeout) throws InterruptedException, NoResponseException {
 
         synchronized (this) {
             // Check if the feature is already negotiated and if there's no condition yet registered.
@@ -282,7 +283,7 @@ public final class StreamFeaturesManager extends Manager {
         lock.lock();
         try {
             // Wait until the feature will be negotiated.
-            if (!condition.await(timeout, TimeUnit.MILLISECONDS)) {
+            if (!condition.await(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
                 throw new NoResponseException("No response while waiting on feature: " + streamFeature.getSimpleName());
             }
         } catch (InterruptedException e) {
@@ -302,14 +303,14 @@ public final class StreamFeaturesManager extends Manager {
      * @throws NoResponseException        If the server didn't respond.
      * @throws StreamNegotiationException If the stream negotiation failed.
      */
-    public final void completeNegotiation(long timeout) throws InterruptedException, NoResponseException, StreamNegotiationException {
+    public final void completeNegotiation(Duration timeout) throws InterruptedException, NoResponseException, StreamNegotiationException {
         if (!negotiateNextFeature()) {
             return;
         }
 
         lock.lock();
         try {
-            if (!negotiationCompleted.await(timeout, TimeUnit.MILLISECONDS)) {
+            if (!negotiationCompleted.await(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
                 throw new NoResponseException("No response while waiting during stream feature negotiation.");
             }
         } finally {

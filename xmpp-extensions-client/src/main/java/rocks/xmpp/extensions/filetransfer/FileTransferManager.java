@@ -48,6 +48,7 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Set;
 import java.util.concurrent.CompletionException;
@@ -89,7 +90,7 @@ public final class FileTransferManager extends Manager {
      * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
      */
-    public final AsyncResult<IQ> offerFile(URL url, String description, Jid recipient, long timeout) {
+    public final AsyncResult<IQ> offerFile(URL url, String description, Jid recipient, Duration timeout) {
         return xmppSession.query(IQ.set(recipient, new OobIQ(url, description)), timeout);
 // TODO
 //        try {
@@ -114,7 +115,7 @@ public final class FileTransferManager extends Manager {
      * @return The async result with the file transfer object.
      * @throws IOException If the file can't be read.
      */
-    public final AsyncResult<FileTransfer> offerFile(final File file, final String description, final Jid recipient, final long timeout) throws IOException {
+    public final AsyncResult<FileTransfer> offerFile(final File file, final String description, final Jid recipient, final Duration timeout) throws IOException {
         return offerFile(requireNonNull(file, "file must not be null.").toPath(), description, recipient, timeout);
     }
 
@@ -129,7 +130,7 @@ public final class FileTransferManager extends Manager {
      * @return The async result with the file transfer object.
      * @throws IOException If the file can't be read.
      */
-    public final AsyncResult<FileTransfer> offerFile(final Path source, final String description, final Jid recipient, final long timeout) throws IOException {
+    public final AsyncResult<FileTransfer> offerFile(final Path source, final String description, final Jid recipient, final Duration timeout) throws IOException {
         if (Files.notExists(requireNonNull(source, "source must not be null."))) {
             throw new NoSuchFileException(source.getFileName().toString());
         }
@@ -149,7 +150,7 @@ public final class FileTransferManager extends Manager {
      * @param timeout      The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
      * @return The async result with the file transfer object.
      */
-    public final AsyncResult<FileTransfer> offerFile(final InputStream source, final String fileName, final long fileSize, Instant lastModified, final String description, final Jid recipient, final long timeout) {
+    public final AsyncResult<FileTransfer> offerFile(final InputStream source, final String fileName, final long fileSize, Instant lastModified, final String description, final Jid recipient, final Duration timeout) {
         if (!requireNonNull(recipient, "jid must not be null.").isFullJid()) {
             throw new IllegalArgumentException("recipient must be a full JID (including resource)");
         }

@@ -50,7 +50,6 @@ public class JingleFileTransferReceiver {
 
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                         .debugger(VisualDebugger.class)
-                        .defaultResponseTimeout(5000)
                         .build();
 
                 XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);

@@ -272,7 +272,7 @@ public final class StreamManager extends StreamFeatureNegotiator {
         }
         lock.lock();
         try {
-            if (!resumed.await(xmppSession.getConfiguration().getDefaultResponseTimeout(), TimeUnit.MILLISECONDS)) {
+            if (!resumed.await(xmppSession.getConfiguration().getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS)) {
                 throw new NoResponseException("Stream could not be resumed in time.");
             }
         } finally {

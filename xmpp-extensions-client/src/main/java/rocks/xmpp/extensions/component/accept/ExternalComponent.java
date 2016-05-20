@@ -133,7 +133,7 @@ public final class ExternalComponent extends XmppSession {
                         lock.lock();
                         try {
                             if (!streamHeaderReceived) {
-                                streamOpened.await(configuration.getDefaultResponseTimeout(), TimeUnit.MILLISECONDS);
+                                streamOpened.await(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
                             }
                         } finally {
                             lock.unlock();
@@ -183,7 +183,7 @@ public final class ExternalComponent extends XmppSession {
                 lock.lock();
                 try {
                     // Wait for the <handshake/> element to be received from the server.
-                    handshakeReceived.await(configuration.getDefaultResponseTimeout(), TimeUnit.MILLISECONDS);
+                    handshakeReceived.await(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
                 } finally {
                     lock.unlock();
                 }

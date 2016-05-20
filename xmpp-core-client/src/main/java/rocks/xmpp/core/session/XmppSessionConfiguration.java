@@ -35,6 +35,7 @@ import javax.xml.stream.XMLOutputFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,6 +43,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -109,7 +111,7 @@ public final class XmppSessionConfiguration {
 
     private final Class<? extends XmppDebugger> xmppDebugger;
 
-    private final int defaultResponseTimeout;
+    private final Duration defaultResponseTimeout;
 
     private final List<String> authenticationMechanisms;
 
@@ -224,7 +226,7 @@ public final class XmppSessionConfiguration {
      *
      * @return The response timeout.
      */
-    public final int getDefaultResponseTimeout() {
+    public final Duration getDefaultResponseTimeout() {
         return defaultResponseTimeout;
     }
 
@@ -318,7 +320,7 @@ public final class XmppSessionConfiguration {
 
         private Class<? extends XmppDebugger> xmppDebugger;
 
-        private int defaultResponseTimeout;
+        private Duration defaultResponseTimeout;
 
         private Path cacheDirectory;
 
@@ -339,7 +341,7 @@ public final class XmppSessionConfiguration {
                 "ANONYMOUS");
 
         private Builder() {
-            defaultResponseTimeout(5000).cacheDirectory(DEFAULT_APPLICATION_DATA_PATH)
+            defaultResponseTimeout(Duration.ofSeconds(5)).cacheDirectory(DEFAULT_APPLICATION_DATA_PATH)
                     .initialPresence(Presence::new);
         }
 
@@ -370,9 +372,21 @@ public final class XmppSessionConfiguration {
          *
          * @param defaultResponseTimeout The default response timeout.
          * @return The builder.
+         * @deprecated Use {@link #defaultResponseTimeout(Duration)}
          */
+        @Deprecated
         public final Builder defaultResponseTimeout(int defaultResponseTimeout) {
-            this.defaultResponseTimeout = defaultResponseTimeout;
+            return defaultResponseTimeout(Duration.ofMillis(defaultResponseTimeout));
+        }
+
+        /**
+         * Sets the default response timeout for synchronous calls, usually IQ calls.
+         *
+         * @param defaultResponseTimeout The default response timeout.
+         * @return The builder.
+         */
+        public final Builder defaultResponseTimeout(Duration defaultResponseTimeout) {
+            this.defaultResponseTimeout = Objects.requireNonNull(defaultResponseTimeout);
             return this;
         }
 

@@ -288,7 +288,7 @@ public abstract class ConnectionConfiguration {
          * This timeout is only used for DNS lookup (which is not used in all cases) and for connection establishment of the underlying transport (e.g. for a socket connection), but not for stream negotiation.
          * Therefore it does not reflect how long the whole connection process may take, but should be understood as hint for establishing the underlying XMPP transport.
          * <p>
-         * XMPP stream negotiation is configured via {@link rocks.xmpp.core.session.XmppSessionConfiguration.Builder#defaultResponseTimeout(int)}
+         * XMPP stream negotiation is configured via {@link rocks.xmpp.core.session.XmppSessionConfiguration.Builder#defaultResponseTimeout(java.time.Duration)}
          *
          * @param connectTimeout The timeout in milliseconds.
          * @return The builder.

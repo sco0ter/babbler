@@ -51,6 +51,7 @@ import rocks.xmpp.util.concurrent.CompletionStages;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
@@ -156,7 +157,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
      * @param timeout  The timeout, which wait until the stream has been negotiated.
      * @return The async result with the output stream which has been negotiated.
      */
-    public AsyncResult<ByteStreamSession> initiateStream(Jid receiver, SIFileTransferOffer profile, String mimeType, long timeout) {
+    public AsyncResult<ByteStreamSession> initiateStream(Jid receiver, SIFileTransferOffer profile, String mimeType, Duration timeout) {
 
         // Create a random id for the stream session.
         String sessionId = UUID.randomUUID().toString();
@@ -230,7 +231,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
         CompletionStage<ByteStreamSession> withFallbackStage = CompletionStages.withFallback(eitherS5bOrIbb, (f, t) -> completableFutureIbb);
 
         // And then wait until the peer opens the stream.
-        return new AsyncResult<>(withFallbackStage.applyToEither(CompletionStages.timeoutAfter(xmppSession.getConfiguration().getDefaultResponseTimeout() * 5, TimeUnit.MILLISECONDS), byteStreamSession -> {
+        return new AsyncResult<>(withFallbackStage.applyToEither(CompletionStages.timeoutAfter(xmppSession.getConfiguration().getDefaultResponseTimeout().toMillis() * 5, TimeUnit.MILLISECONDS), byteStreamSession -> {
                     try {
                         return new FileTransfer(byteStreamSession.getSessionId(), byteStreamSession.getInputStream(), outputStream, fileTransferOffer.getSize());
                     } catch (IOException e) {

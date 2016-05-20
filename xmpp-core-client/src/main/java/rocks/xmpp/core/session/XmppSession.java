@@ -58,6 +58,7 @@ import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -635,7 +636,7 @@ public abstract class XmppSession implements AutoCloseable {
      * @param timeout The timeout.
      * @return The async IQ result.
      */
-    public final AsyncResult<IQ> query(IQ iq, long timeout) {
+    public final AsyncResult<IQ> query(IQ iq, Duration timeout) {
 
         if (!iq.isRequest()) {
             throw new IllegalArgumentException("IQ must be of type 'get' or 'set'");
@@ -699,7 +700,7 @@ public abstract class XmppSession implements AutoCloseable {
         );
     }
 
-    private <S extends Stanza, E extends EventObject> AsyncResult<S> sendAndAwait(S stanza, Function<E, S> stanzaMapper, final Predicate<S> filter, Function<S, SendTask<S>> sendFunction, Consumer<Consumer<E>> addListener, Consumer<Consumer<E>> removeListener, long timeout) {
+    private <S extends Stanza, E extends EventObject> AsyncResult<S> sendAndAwait(S stanza, Function<E, S> stanzaMapper, final Predicate<S> filter, Function<S, SendTask<S>> sendFunction, Consumer<Consumer<E>> addListener, Consumer<Consumer<E>> removeListener, Duration timeout) {
         CompletableFuture<S> completableFuture = new CompletableFuture<>();
 
         final Consumer<E> listener = e -> {
@@ -716,7 +717,7 @@ public abstract class XmppSession implements AutoCloseable {
 
         sendFunction.apply(stanza);
 
-        return new AsyncResult<>(completableFuture.applyToEither(CompletionStages.timeoutAfter(timeout, TimeUnit.MILLISECONDS, () -> new NoResponseException("Timeout reached, while waiting on a response.")), Function.identity())).whenComplete((result, e) ->
+        return new AsyncResult<>(completableFuture.applyToEither(CompletionStages.timeoutAfter(timeout.toMillis(), TimeUnit.MILLISECONDS, () -> new NoResponseException("Timeout reached, while waiting on a response.")), Function.identity())).whenComplete((result, e) ->
                 removeListener.accept(listener));
     }
 

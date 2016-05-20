@@ -241,7 +241,7 @@ public final class XmppClient extends XmppSession {
 
                 // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
                 try {
-                    streamFeaturesManager.awaitNegotiation(Mechanisms.class, 10000);
+                    streamFeaturesManager.awaitNegotiation(Mechanisms.class, Duration.ofSeconds(10));
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw e;

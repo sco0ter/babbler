@@ -40,6 +40,7 @@ import rocks.xmpp.extensions.ping.model.Ping;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
+import java.time.Duration;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -70,7 +71,7 @@ public final class PingManager extends Manager {
     /**
      * guarded by "this"
      */
-    private long pingInterval = 900; // 15 minutes
+    private Duration pingInterval = Duration.ofMinutes(15);
 
     private final IQHandler iqHandler;
 
@@ -161,29 +162,41 @@ public final class PingManager extends Manager {
     }
 
     /**
-     * Gets the ping interval in seconds. The default ping interval is 900 seconds (15 minutes).
-     *
-     * @return The ping interval in seconds.
-     * @see #setPingInterval(long)
-     */
-    public final synchronized long getPingInterval() {
-        return pingInterval;
-    }
-
-    /**
      * Sets the automatic ping interval in seconds. Any scheduled future ping is canceled and a new ping is scheduled after the specified interval.
      *
      * @param pingInterval The ping interval in seconds.
      * @see #getPingInterval()
+     * @deprecated Use {@link #setPingInterval(Duration)}
      */
+    @Deprecated
     public final synchronized void setPingInterval(long pingInterval) {
+        setPingInterval(Duration.ofSeconds(pingInterval));
+    }
+
+    /**
+     * Gets the ping interval. The default ping interval is 900 seconds (15 minutes).
+     *
+     * @return The ping interval in seconds.
+     * @see #setPingInterval(long)
+     */
+    public final synchronized Duration getPingInterval() {
+        return pingInterval;
+    }
+
+    /**
+     * Sets the automatic ping interval. Any scheduled future ping is canceled and a new ping is scheduled after the specified interval.
+     *
+     * @param pingInterval The ping interval in seconds.
+     * @see #getPingInterval()
+     */
+    public final synchronized void setPingInterval(Duration pingInterval) {
         this.pingInterval = pingInterval;
         rescheduleNextPing();
     }
 
     private synchronized void rescheduleNextPing() {
         // Reschedule in a separate thread, so that it won't interrupt the "pinging" thread due to the cancel, which then causes the ping to fail.
-        if (pingInterval > 0 && !scheduledExecutorService.isShutdown()) {
+        if (pingInterval != null && !pingInterval.isNegative() && !scheduledExecutorService.isShutdown()) {
             cancelNextPing();
             nextPing = scheduledExecutorService.schedule(() -> {
                 if (isEnabled() && xmppSession.getStatus() == XmppSession.Status.AUTHENTICATED) {
@@ -198,7 +211,7 @@ public final class PingManager extends Manager {
                     });
                 }
                 // Rescheduling of the next ping is already done by the IQ response of the ping.
-            }, pingInterval, TimeUnit.SECONDS);
+            }, pingInterval.getSeconds(), TimeUnit.SECONDS);
         }
     }
 

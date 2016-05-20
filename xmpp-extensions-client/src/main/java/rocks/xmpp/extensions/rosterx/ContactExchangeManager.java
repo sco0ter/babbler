@@ -51,16 +51,14 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * Manages contact exchange between entities.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/extensions/xep-0144.html">XEP-0144: Roster Item Exchange</a>
  */
 public final class ContactExchangeManager extends Manager {
-
-    private static final Logger logger = Logger.getLogger(ContactExchangeManager.class.getName());
 
     private final Set<Consumer<ContactExchangeEvent>> contactExchangeListeners = new CopyOnWriteArraySet<>();
 
@@ -241,14 +239,16 @@ public final class ContactExchangeManager extends Manager {
      */
     public ContactExchange.Item.Action approve(ContactExchange.Item item) {
         RosterManager rosterManager = xmppSession.getManager(RosterManager.class);
+        if (!rosterManager.isEnabled()) {
+            return null;
+        }
         Contact contact = rosterManager.getContact(item.getJid());
-        ContactExchange.Item.Action action = null;
         if (item.getAction() == null || item.getAction() == ContactExchange.Item.Action.ADD) {
             // If the contact does not exist yes, add it and request subscription.
             // (After completing the roster set, the receiving application SHOULD also send a <presence/> stanza of type "subscribe" to the JID of the new item.)
             if (contact == null) {
                 rosterManager.addContact(new Contact(item.getJid(), item.getName(), item.getGroups()), true, null);
-                action = ContactExchange.Item.Action.ADD;
+                return ContactExchange.Item.Action.ADD;
             } else {
                 Collection<String> newGroups = new ArrayDeque<>(contact.getGroups());
                 Collection<String> additionalGroups = new ArrayDeque<>(item.getGroups());
@@ -259,7 +259,7 @@ public final class ContactExchangeManager extends Manager {
                     newGroups.addAll(additionalGroups);
                     // ... SHOULD edit the existing item so that will also belong to the specified group (in addition to the existing group, if any).
                     rosterManager.updateContact(new Contact(contact.getJid(), contact.getName(), newGroups));
-                    action = ContactExchange.Item.Action.MODIFY;
+                    return ContactExchange.Item.Action.MODIFY;
                 }
             }
         } else if (item.getAction() == ContactExchange.Item.Action.DELETE) {
@@ -271,19 +271,19 @@ public final class ContactExchangeManager extends Manager {
                 // If there are still some groups left, only update the contact, but do not delete it.
                 if (!existingGroups.isEmpty()) {
                     rosterManager.updateContact(new Contact(contact.getJid(), contact.getName(), existingGroups));
-                    action = ContactExchange.Item.Action.MODIFY;
+                    return ContactExchange.Item.Action.MODIFY;
                 } else {
                     rosterManager.removeContact(item.getJid());
-                    action = ContactExchange.Item.Action.DELETE;
+                    return ContactExchange.Item.Action.DELETE;
                 }
             }
         } else if (item.getAction() == ContactExchange.Item.Action.MODIFY) {
             if (contact != null) {
                 rosterManager.updateContact(new Contact(item.getJid(), item.getName(), item.getGroups()));
-                action = ContactExchange.Item.Action.MODIFY;
+                return ContactExchange.Item.Action.MODIFY;
             }
         }
-        return action;
+        return null;
     }
 
     /**

@@ -23,18 +23,18 @@ Since this project is quite young, the API might change. Comments on the API are
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-core-client</artifactId>
-    <version>0.6.2</version>
+    <version>0.7.0-beta-1</version>
 </dependency>
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-extensions-client</artifactId>
-    <version>0.6.2</version>
+    <version>0.7.0-beta-1</version>
 </dependency>
 ```
 
 ## Snapshots
 
-Development snapshots are availble on OSS Sonatype nexus:
+Development snapshots are available on OSS Sonatype nexus:
 
 ```xml
 <repositories>

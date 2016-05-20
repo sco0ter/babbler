@@ -543,7 +543,7 @@ public final class RosterManager extends Manager {
      * @return The async result.
      */
     public final AsyncResult<Void> removeContact(Jid jid) {
-        Roster roster = new Roster(new Contact(jid, null, null, null, Contact.Subscription.REMOVE, Collections.emptyList()));
+        Roster roster = new Roster(Contact.removeContact(jid));
         return xmppSession.query(IQ.set(roster), Void.class);
     }
 
@@ -597,7 +597,7 @@ public final class RosterManager extends Manager {
             newGroups.add(newName);
             // Only do a roster update, if the groups have really changed.
             if (!contact.getGroups().equals(newGroups)) {
-                completionStages.add(updateContact(new Contact(contact.getJid(), contact.getName(), newGroups)));
+                completionStages.add(updateContact(contact.withGroups(newGroups)));
             }
         }
         for (ContactGroup subGroup : contactGroup.getGroups()) {
@@ -620,12 +620,12 @@ public final class RosterManager extends Manager {
         CompletableFuture<?>[] completableFutures;
         if (contactGroup.getParentGroup() != null) {
             completableFutures = allContacts.stream()
-                    .map(contact -> updateContact(new Contact(contact.getJid(), contact.getName(), contactGroup.getParentGroup().getFullName())).thenRun(() -> {
+                    .map(contact -> updateContact(contact.withGroups(contactGroup.getParentGroup().getFullName())).thenRun(() -> {
                     }).toCompletableFuture())
                     .toArray(CompletableFuture<?>[]::new);
         } else {
             completableFutures = allContacts.stream()
-                    .map(contact -> updateContact(new Contact(contact.getJid(), contact.getName())).thenRun(() -> {
+                    .map(contact -> updateContact(contact.withoutGroups()).thenRun(() -> {
                     }).toCompletableFuture())
                     .toArray(CompletableFuture<?>[]::new);
         }

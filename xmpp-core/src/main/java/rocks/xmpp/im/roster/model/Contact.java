@@ -142,6 +142,41 @@ public final class Contact implements Comparable<Contact> {
     }
 
     /**
+     * Creates a new contact to send to the server for removal.
+     * @param jid Jid of the contact to be removed.
+     * @return a contact with only the Jid and {@link Subscription#REMOVE} set.
+     */
+    public static Contact removeContact(Jid jid) {
+        return new Contact(jid, null, null, null, Subscription.REMOVE, Collections.emptyList());
+    }
+
+    /**
+     * Creates an identical contact with only the groups changed.
+     * @param groups the new groups.
+     * @return a new contact with only the groups changed.
+     */
+    public Contact withGroups(Collection<String> groups) {
+        return new Contact(jid, name, ask, approved, subscription, groups);
+    }
+
+    /**
+     * Creates an identical contact with only the groups changed.
+     * @param groups the new groups.
+     * @return a new contact with only the groups changed.
+     */
+    public Contact withGroups(String... groups) {
+        return withGroups(groups != null ? Arrays.asList(groups) : null);
+    }
+
+    /**
+     * Creates an identical contact without groups.
+     * @return a new contact with no groups.
+     */
+    public Contact withoutGroups() {
+        return withGroups();
+    }
+
+    /**
      * Gets the JID of the contact.
      *
      * @return The JID.

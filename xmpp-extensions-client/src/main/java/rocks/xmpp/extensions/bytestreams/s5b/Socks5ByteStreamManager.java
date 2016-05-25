@@ -43,6 +43,8 @@ import rocks.xmpp.util.concurrent.CompletionStages;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -80,7 +82,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
         this.localSocks5Server = new LocalSocks5Server();
     }
 
-    static S5bSession createS5bSession(Jid requester, Jid target, String sessionId, List<StreamHost> streamHosts) throws IOException {
+    static S5bSession createS5bSession(Jid requester, Jid target, String sessionId, List<StreamHost> streamHosts, Duration timeout) throws IOException {
         Socket socketUsed = null;
         Jid streamHostUsed = null;
         IOException ioException = null;
@@ -102,7 +104,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
         if (streamHostUsed == null) {
             throw new IOException("Unable to connect to any stream host.", ioException);
         }
-        return new S5bSession(sessionId, socketUsed, streamHostUsed);
+        return new S5bSession(sessionId, socketUsed, streamHostUsed, timeout);
     }
 
     @Override
@@ -308,14 +310,24 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
                                 }
                             }).thenCompose(a ->
                                             // 6.3.5 Activation of Bytestream
-                                            xmppSession.query(IQ.set(usedStreamHost.getJid(), Socks5ByteStream.activate(sessionId, target))).thenApply(aVoid -> new S5bSession(sessionId, socket, usedStreamHost.getJid()))
+                                            xmppSession.query(IQ.set(usedStreamHost.getJid(), Socks5ByteStream.activate(sessionId, target))).thenApply(aVoid -> {
+                                                try {
+                                                    return new S5bSession(sessionId, socket, usedStreamHost.getJid(), xmppSession.getConfiguration().getDefaultResponseTimeout());
+                                                } catch (SocketException e) {
+                                                    throw new CompletionException(e);
+                                                }
+                                            })
                             );
                         } else {
                             socket = localSocks5Server.getSocket(hash);
                             if (socket == null) {
                                 throw new CompletionException(new IOException("Not connected to stream host"));
                             }
-                            return CompletableFuture.completedFuture(new S5bSession(sessionId, socket, usedStreamHost.getJid()));
+                            try {
+                                return CompletableFuture.completedFuture(new S5bSession(sessionId, socket, usedStreamHost.getJid(), xmppSession.getConfiguration().getDefaultResponseTimeout()));
+                            } catch (SocketException e) {
+                                throw new CompletionException(e);
+                            }
                         }
                     });
                 }

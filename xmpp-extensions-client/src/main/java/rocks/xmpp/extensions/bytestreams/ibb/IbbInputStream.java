@@ -46,10 +46,7 @@ final class IbbInputStream extends InputStream {
 
     private final IbbSession ibbSession;
 
-    /**
-     * Guarded by "this"
-     */
-    int readTimeout;
+    private final long readTimeout;
 
     /**
      * Guarded by "this"
@@ -66,8 +63,9 @@ final class IbbInputStream extends InputStream {
      */
     private boolean closed;
 
-    IbbInputStream(IbbSession ibbSession) {
+    IbbInputStream(IbbSession ibbSession, long readTimeout) {
         this.ibbSession = ibbSession;
+        this.readTimeout = readTimeout;
     }
 
     @Override
@@ -76,7 +74,7 @@ final class IbbInputStream extends InputStream {
         // If the buffer is empty, retrieve the next data packet and load it into the buffer.
         if (n == 0) {
             try {
-                int timeout;
+                long timeout;
                 synchronized (this) {
                     if (closed && queue.isEmpty()) {
                         return -1;

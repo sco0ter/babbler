@@ -63,7 +63,7 @@ final class S5bEvent extends ByteStreamEvent {
             try {
                 // 5.3.2 Target Establishes SOCKS5 Connection with StreamHost/Requester
                 // 6.3.2 Target Establishes SOCKS5 Connection with Proxy
-                S5bSession s5bSession = Socks5ByteStreamManager.createS5bSession(iq.getFrom(), iq.getTo(), getSessionId(), streamHosts);
+                S5bSession s5bSession = Socks5ByteStreamManager.createS5bSession(iq.getFrom(), iq.getTo(), getSessionId(), streamHosts, xmppSession.getConfiguration().getDefaultResponseTimeout());
                 // 5.3.3 Target Acknowledges Bytestream
                 // 6.3.3 Target Acknowledges Bytestream
                 xmppSession.send(iq.createResult(Socks5ByteStream.streamHostUsed(s5bSession.getSessionId(), s5bSession.getStreamHost())));

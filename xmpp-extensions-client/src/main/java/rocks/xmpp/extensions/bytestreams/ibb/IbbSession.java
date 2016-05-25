@@ -34,6 +34,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.Duration;
 
 /**
  * @author Christian Schudt
@@ -67,10 +68,10 @@ final class IbbSession extends ByteStreamSession {
      */
     private boolean closed;
 
-    IbbSession(String sessionId, XmppSession xmppSession, Jid jid, int blockSize, InBandByteStreamManager manager) {
+    IbbSession(String sessionId, XmppSession xmppSession, Jid jid, int blockSize, Duration readTimeout, InBandByteStreamManager manager) {
         super(sessionId);
         this.outputStream = new IbbOutputStream(this, blockSize);
-        this.inputStream = new IbbInputStream(this);
+        this.inputStream = new IbbInputStream(this, readTimeout.toMillis());
         this.jid = jid;
         this.xmppSession = xmppSession;
         this.blockSize = blockSize;
@@ -104,20 +105,6 @@ final class IbbSession extends ByteStreamSession {
             throw new IOException("IBB session is closed.");
         }
         return inputStream;
-    }
-
-    @Override
-    public final int getReadTimeout() {
-        synchronized (inputStream) {
-            return inputStream.readTimeout;
-        }
-    }
-
-    @Override
-    public final void setReadTimeout(int readTimeout) {
-        synchronized (inputStream) {
-            inputStream.readTimeout = readTimeout;
-        }
     }
 
     final AsyncResult<IQ> send(byte[] bytes) {

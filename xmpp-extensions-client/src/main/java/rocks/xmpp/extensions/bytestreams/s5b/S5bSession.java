@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
+import java.time.Duration;
 
 /**
  * @author Christian Schudt
@@ -41,9 +43,10 @@ final class S5bSession extends ByteStreamSession {
 
     private final Socket socket;
 
-    S5bSession(String sessionId, Socket socket, Jid streamHost) {
+    S5bSession(String sessionId, Socket socket, Jid streamHost, Duration readTimeout) throws SocketException {
         super(sessionId);
         this.socket = socket;
+        this.socket.setSoTimeout((int) readTimeout.toMillis());
         this.streamHost = streamHost;
     }
 
@@ -60,16 +63,6 @@ final class S5bSession extends ByteStreamSession {
     @Override
     public final void close() throws Exception {
         socket.close();
-    }
-
-    @Override
-    public final int getReadTimeout() throws IOException {
-        return socket.getSoTimeout();
-    }
-
-    @Override
-    public final void setReadTimeout(int readTimeout) throws IOException {
-        this.socket.getSoTimeout();
     }
 
     /**

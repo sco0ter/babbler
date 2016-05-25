@@ -72,23 +72,4 @@ public abstract class ByteStreamSession implements AutoCloseable {
     public final String getSessionId() {
         return sessionId;
     }
-
-    /**
-     * Gets the timeout (in milliseconds) for read operations on the {@linkplain #getInputStream() input stream}.
-     * The default timeout is 0, i.e. infinite. Read operations will therefore block forever, unless the session is closed.
-     *
-     * @return The read timeout.
-     * @throws java.io.IOException If an I/O error occurred.
-     * @see #setReadTimeout(int)
-     */
-    public abstract int getReadTimeout() throws IOException;
-
-    /**
-     * Sets the timeout (in milliseconds).
-     *
-     * @param readTimeout The read timeout.
-     * @throws java.io.IOException If an I/O error occurred.
-     * @see #getReadTimeout()
-     */
-    public abstract void setReadTimeout(int readTimeout) throws IOException;
 }

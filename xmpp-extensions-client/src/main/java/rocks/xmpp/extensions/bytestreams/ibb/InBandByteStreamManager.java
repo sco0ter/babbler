@@ -172,7 +172,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
      * @return The in-band byte stream session.
      */
     IbbSession createSession(Jid receiver, final String sessionId, int blockSize) {
-        IbbSession ibbSession = new IbbSession(sessionId, xmppSession, receiver, blockSize, this);
+        IbbSession ibbSession = new IbbSession(sessionId, xmppSession, receiver, blockSize, xmppSession.getConfiguration().getDefaultResponseTimeout(), this);
         ibbSessionMap.put(ibbSession.getSessionId(), ibbSession);
         return ibbSession;
     }
@@ -190,8 +190,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
             throw new IllegalArgumentException("blockSize must not be greater than 65535.");
         }
         IbbSession ibbSession = createSession(receiver, sessionId, blockSize);
-        return ibbSession.open().thenApply(result ->
-                (ByteStreamSession) ibbSession);
+        return ibbSession.open().thenApply(result -> ibbSession);
     }
 
     @Override

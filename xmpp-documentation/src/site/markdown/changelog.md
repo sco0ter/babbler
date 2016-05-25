@@ -7,6 +7,7 @@
 * Add support for WebSocket connection method ([RFC 7395](https://tools.ietf.org/html/rfc7395)).
 * Update `Jid` class to the new XMPP Address Format ([RFC 7622](https://tools.ietf.org/html/rfc7622))
 * Represent `xml:lang` attributes as `java.util.Locale`, not as `String`.
+* Represent timeouts as `java.time.Duration` instead of `int`/`long` for better clearness.
 * Add a very minimalistic DNS resolver for resolving SRV and TXT records in order to remove the dependency to `com.sun.*` classes.
 * Add more `ReconnectionStrategy` implementations.
 * Check connected state of socket before connecting (to prevent `SocketException` when a `SocketFactory` provides a connected socket)

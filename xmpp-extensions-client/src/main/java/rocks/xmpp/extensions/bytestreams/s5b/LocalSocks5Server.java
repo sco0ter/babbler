@@ -147,9 +147,4 @@ final class LocalSocks5Server {
     public Socket getSocket(String destinationAddress) {
         return socketMap.remove(destinationAddress);
     }
-
-    void removeConnection(String destinationAddress) {
-        allowedAddresses.remove(destinationAddress);
-        socketMap.remove(destinationAddress);
-    }
 }

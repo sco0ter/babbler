@@ -278,7 +278,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
                     return xmppSession.query(IQ.set(target, new Socks5ByteStream(sessionId, streamHosts, hash))).whenComplete((a, e) ->
                                     // When the receiver responded (either with success or with error, we can remove the hash)
                                     localSocks5Server.allowedAddresses.remove(hash)
-                    ).thenCompose(result -> {
+                    ).thenComposeAsync(result -> {
 
                         // Then complete the process by either connecting to a SOCKS5 proxy or use the socket which our receiver connected to.
 
@@ -300,24 +300,22 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
                         Socket socket;
                         if (!usedStreamHost.getJid().equals(requester)) {
                             socket = new Socket();
-                            return CompletableFuture.runAsync(() -> {
-                                // 6.3.4 Requester Establishes SOCKS5 Connection with StreamHost
+
+                            // 6.3.4 Requester Establishes SOCKS5 Connection with StreamHost
+                            try {
+                                socket.connect(new InetSocketAddress(usedStreamHost.getHostname(), usedStreamHost.getPort()));
+                                Socks5Protocol.establishClientConnection(socket, hash, 0);
+                            } catch (IOException e) {
+                                throw new CompletionException(e);
+                            }
+                            // 6.3.5 Activation of Bytestream
+                            return xmppSession.query(IQ.set(usedStreamHost.getJid(), Socks5ByteStream.activate(sessionId, target))).thenApply(aVoid -> {
                                 try {
-                                    socket.connect(new InetSocketAddress(usedStreamHost.getHostname(), usedStreamHost.getPort()));
-                                    Socks5Protocol.establishClientConnection(socket, hash, 0);
-                                } catch (IOException e) {
+                                    return new S5bSession(sessionId, socket, usedStreamHost.getJid(), xmppSession.getConfiguration().getDefaultResponseTimeout());
+                                } catch (SocketException e) {
                                     throw new CompletionException(e);
                                 }
-                            }).thenCompose(a ->
-                                            // 6.3.5 Activation of Bytestream
-                                            xmppSession.query(IQ.set(usedStreamHost.getJid(), Socks5ByteStream.activate(sessionId, target))).thenApply(aVoid -> {
-                                                try {
-                                                    return new S5bSession(sessionId, socket, usedStreamHost.getJid(), xmppSession.getConfiguration().getDefaultResponseTimeout());
-                                                } catch (SocketException e) {
-                                                    throw new CompletionException(e);
-                                                }
-                                            })
-                            );
+                            });
                         } else {
                             socket = localSocks5Server.getSocket(hash);
                             if (socket == null) {

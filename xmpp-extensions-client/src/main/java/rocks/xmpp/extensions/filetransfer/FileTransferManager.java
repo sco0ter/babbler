@@ -51,6 +51,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
@@ -151,6 +152,24 @@ public final class FileTransferManager extends Manager {
      * @return The async result with the file transfer object.
      */
     public final AsyncResult<FileTransfer> offerFile(final InputStream source, final String fileName, final long fileSize, Instant lastModified, final String description, final Jid recipient, final Duration timeout) {
+        return this.offerFile(source, fileName, fileSize, lastModified, description, recipient, timeout, UUID.randomUUID().toString());
+    }
+
+    /**
+     * Offers a stream to another user. If this method returns successfully, the recipient has accepted the offer, the stream method has been negotiated and the file is ready to be transferred.
+     * Call {@link FileTransfer#transfer()} to start the file transfer.
+     *
+     * @param source       The stream.
+     * @param fileName     The file name.
+     * @param fileSize     The file size.
+     * @param lastModified The last modified date.
+     * @param description  The description of the file.
+     * @param recipient    The recipient's JID (must be a <em>full</em> JID, i. e. including {@code resource}).
+     * @param timeout      The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
+     * @param sessionId    The session id.
+     * @return The async result with the file transfer object.
+     */
+    public final AsyncResult<FileTransfer> offerFile(final InputStream source, final String fileName, final long fileSize, Instant lastModified, final String description, final Jid recipient, final Duration timeout, final String sessionId) {
         if (!requireNonNull(recipient, "jid must not be null.").isFullJid()) {
             throw new IllegalArgumentException("recipient must be a full JID (including resource)");
         }
@@ -171,7 +190,7 @@ public final class FileTransferManager extends Manager {
                     throw new CompletionException(e);
                 }
 
-                return this.streamInitiationManager.initiateStream(recipient, fileTransfer, mimeType, timeout).handle((byteStreamSession, e) -> {
+                return this.streamInitiationManager.initiateStream(recipient, fileTransfer, mimeType, timeout, sessionId).handle((byteStreamSession, e) -> {
                     if (e != null) {
                         if (e instanceof CompletionException) {
                             if (e.getCause() instanceof StanzaException && ((StanzaException) e.getCause()).getCondition() == Condition.FORBIDDEN) {

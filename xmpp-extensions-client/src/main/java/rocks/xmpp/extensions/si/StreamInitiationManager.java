@@ -58,6 +58,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -158,16 +159,27 @@ public final class StreamInitiationManager extends Manager implements FileTransf
      * @return The async result with the output stream which has been negotiated.
      */
     public AsyncResult<ByteStreamSession> initiateStream(Jid receiver, SIFileTransferOffer profile, String mimeType, Duration timeout) {
+        return this.initiateStream(receiver, profile, mimeType, timeout, UUID.randomUUID().toString());
+    }
 
-        // Create a random id for the stream session.
-        String sessionId = UUID.randomUUID().toString();
+    /**
+     * Initiates a stream with another entity.
+     *
+     * @param receiver  The receiver, i.e. the XMPP entity you want to negotiate a stream.
+     * @param profile   The profile. Currently there's only the {@link rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer} profile.
+     * @param mimeType  The mime type of the stream.
+     * @param timeout   The timeout, which wait until the stream has been negotiated.
+     * @param sessionId The session id.
+     * @return The async result with the output stream which has been negotiated.
+     */
+    public AsyncResult<ByteStreamSession> initiateStream(Jid receiver, SIFileTransferOffer profile, String mimeType, Duration timeout, String sessionId) {
 
         // Offer stream methods.
         List<DataForm.Option> options = getSupportedStreamMethods().stream().map(DataForm.Option::new).collect(Collectors.toList());
         DataForm.Field field = DataForm.Field.builder().var(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).options(options).build();
         DataForm dataForm = new DataForm(DataForm.Type.FORM, Collections.singleton(field));
         // Offer the file to the recipient and wait until it's accepted.
-        return xmppSession.query(IQ.set(receiver, new StreamInitiation(sessionId, SIFileTransferOffer.NAMESPACE, mimeType, profile, new FeatureNegotiation(dataForm))), timeout).thenCompose(result -> {
+        return xmppSession.query(IQ.set(receiver, new StreamInitiation(Objects.requireNonNull(sessionId), SIFileTransferOffer.NAMESPACE, mimeType, profile, new FeatureNegotiation(dataForm))), timeout).thenCompose(result -> {
 
             // The recipient must response with a stream initiation.
             StreamInitiation streamInitiation = result.getExtension(StreamInitiation.class);

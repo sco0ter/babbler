@@ -38,6 +38,7 @@ import rocks.xmpp.core.stanza.model.IQ.Type;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.stream.StreamNegotiationException;
@@ -960,12 +961,12 @@ public abstract class XmppSession implements AutoCloseable {
 
             if (iq.getType() == null) {
                 // return <bad-request/> if the <iq/> has no type.
-                send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST));
+                send(iq.createError(Condition.BAD_REQUEST));
             } else if (iq.isRequest()) {
                 Object payload = iq.getExtension(Object.class);
                 if (payload == null) {
                     // return <bad-request/> if the <iq/> has no payload.
-                    send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST));
+                    send(iq.createError(Condition.BAD_REQUEST));
                 } else {
                     Executor executor;
                     final IQHandler iqHandler;
@@ -985,12 +986,12 @@ public abstract class XmppSession implements AutoCloseable {
                             } catch (Exception e) {
                                 logger.log(Level.WARNING, e, () -> "Failed to handle IQ request: " + e.getMessage());
                                 // If any exception occurs during processing the IQ, return <service-unavailable/>.
-                                send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.SERVICE_UNAVAILABLE));
+                                send(iq.createError(Condition.SERVICE_UNAVAILABLE));
                             }
                         });
                     } else {
                         // return <service-unavailable/> if the <iq/> is not understood.
-                        send(iq.createError(rocks.xmpp.core.stanza.model.errors.Condition.SERVICE_UNAVAILABLE));
+                        send(iq.createError(Condition.SERVICE_UNAVAILABLE));
                     }
                 }
             }

@@ -92,17 +92,20 @@ public final class FileTransferManager extends Manager {
      * @see <a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
      */
     public final AsyncResult<IQ> offerFile(URL url, String description, Jid recipient, Duration timeout) {
-        return xmppSession.query(IQ.set(recipient, new OobIQ(url, description)), timeout);
-// TODO
-//        try {
-//            xmppSession.query(IQ.set(recipient, new OobIQ(url, description)), timeout);
-//        } catch (StanzaException e) {
-//            if (e.getCondition() == Condition.NOT_ACCEPTABLE) {
-//                throw new FileTransferRejectedException();
-//            } else {
-//                throw e;
-//            }
-//        }
+        return xmppSession.query(IQ.set(recipient, new OobIQ(url, description)), timeout).handle((iq, e) -> {
+            if (e != null) {
+                if (e instanceof CompletionException) {
+                    if (e.getCause() instanceof StanzaException && ((StanzaException) e.getCause()).getCondition() == Condition.NOT_ACCEPTABLE) {
+                        throw new CompletionException(new FileTransferRejectedException());
+                    } else {
+                        throw (CompletionException) e;
+                    }
+                } else {
+                    throw new CompletionException(e);
+                }
+            }
+            return null;
+        });
     }
 
     /**

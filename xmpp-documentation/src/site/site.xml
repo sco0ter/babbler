@@ -67,6 +67,7 @@
             <item href="extensions.html" name="Using Extensions"/>
             <item href="customextensions.html" name="Writing Custom Extensions"/>
             <item href="customiq.html" name="Custom IQs"/>
+            <item href="customauthentication.html" name="Custom Authentication"/>
             <item href="errors.html" name="Exceptions and XMPP Errors"/>
             <item href="reconnection.html" name="Dis- and Reconnection"/>
             <item href="debugging.html" name="Debugging XMPP Traffic"/>

@@ -24,6 +24,7 @@
 
 package rocks.xmpp.im.chat;
 
+import rocks.xmpp.core.session.SendTask;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.Message;
 
@@ -47,7 +48,7 @@ public abstract class Chat {
      * @param message The message.
      * @return The message, which has been sent.
      */
-    public abstract Message sendMessage(String message);
+    public abstract SendTask<Message> sendMessage(String message);
 
     /**
      * Sends a message to the chat.
@@ -55,7 +56,7 @@ public abstract class Chat {
      * @param message The message.
      * @return The message, which has been sent.
      */
-    public abstract Message sendMessage(Message message);
+    public abstract SendTask<Message> sendMessage(Message message);
 
     /**
      * Adds a message listener, which allows to listen for inbound messages.

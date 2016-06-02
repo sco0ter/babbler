@@ -121,7 +121,7 @@ public final class TestXmppSession extends XmppSession {
 
     @Override
     public final SendTask<IQ> sendIQ(final IQ stanza) {
-        Future<?> future = super.send(stanza);
+        super.send(stanza);
         if (mockServer != null) {
             stanza.setFrom(connectedResource);
             mockServer.receive(stanza);
@@ -131,7 +131,12 @@ public final class TestXmppSession extends XmppSession {
 
     @Override
     public final SendTask<Message> sendMessage(final Message stanza) {
-        return trackAndSend(stanza);
+        SendTask<Message> result = trackAndSend(stanza);
+        if (mockServer != null) {
+            stanza.setFrom(connectedResource);
+            mockServer.receive(stanza);
+        }
+        return result;
     }
 
     @Override

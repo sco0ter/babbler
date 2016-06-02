@@ -54,6 +54,15 @@ public final class SendTask<S extends Stanza> {
     }
 
     /**
+     * Gets the stanza, which has been sent.
+     *
+     * @return The stanza.
+     */
+    public final S getStanza() {
+        return stanza;
+    }
+
+    /**
      * Called when the sent stanza has been acknowledged by the server.
      *
      * @param onAcknowledge The consumer.

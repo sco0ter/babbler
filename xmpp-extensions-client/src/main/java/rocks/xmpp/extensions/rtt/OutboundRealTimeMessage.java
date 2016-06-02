@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.rtt;
 
+import rocks.xmpp.core.session.SendTask;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
 import rocks.xmpp.im.chat.Chat;
@@ -263,11 +264,11 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
      *
      * @return The final message.
      */
-    public final Message commit() {
+    public final SendTask<Message> commit() {
         if (complete) {
             throw new IllegalStateException("Already committed.");
         }
-        Message message = chat.sendMessage(getText());
+        SendTask<Message> message = chat.sendMessage(getText());
         complete = true;
         synchronized (this) {
             if (nextRefresh != null) {

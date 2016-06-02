@@ -529,10 +529,23 @@ public abstract class XmppSession implements AutoCloseable {
     }
 
     /**
+     * Adds a listener, which gets called, when the server acknowledges the receipt of a message.
+     *
      * @param messageListener The message listener.
+     * @see #removeMessageAcknowledgedListener(Consumer)
      */
     public final void addMessageAcknowledgedListener(Consumer<MessageEvent> messageListener) {
         messageAcknowledgedListeners.add(messageListener);
+    }
+
+    /**
+     * Removes a previously added message acknowledge listener.
+     *
+     * @param messageListener The message listener.
+     * @see #addMessageAcknowledgedListener(Consumer)
+     */
+    public final void removeMessageAcknowledgedListener(Consumer<MessageEvent> messageListener) {
+        messageAcknowledgedListeners.remove(messageListener);
     }
 
     /**

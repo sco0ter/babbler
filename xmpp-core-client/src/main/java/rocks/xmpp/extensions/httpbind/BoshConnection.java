@@ -480,8 +480,10 @@ public final class BoshConnection extends Connection {
     }
 
     private synchronized void shutdown() {
-        httpBindExecutor.shutdown();
-        httpBindExecutor = null;
+        if (httpBindExecutor != null) {
+            httpBindExecutor.shutdown();
+            httpBindExecutor = null;
+        }
     }
 
     /**
@@ -491,12 +493,7 @@ public final class BoshConnection extends Connection {
      * @see <a href="https://conversejs.org/docs/html/#prebinding-and-single-session-support">https://conversejs.org/docs/html/#prebinding-and-single-session-support</a>
      */
     public final long detach() {
-        synchronized (this) {
-            if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
-                httpBindExecutor.shutdown();
-                httpBindExecutor = null;
-            }
-        }
+        shutdown();
         // Return the latest and greatest rid.
         return rid.get();
     }

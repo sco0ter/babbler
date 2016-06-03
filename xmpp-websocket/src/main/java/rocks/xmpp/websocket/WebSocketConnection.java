@@ -286,38 +286,35 @@ public final class WebSocketConnection extends Connection {
                         }
                     }
 
-                    session.addMessageHandler(new MessageHandler.Whole<String>() {
-                        @Override
-                        public void onMessage(String message) {
-                            try {
-                                Object element = xmppSession.createUnmarshaller().unmarshal(new StringReader(message));
-                                if (debugger != null) {
-                                    debugger.readStanza(message, element);
-                                }
-                                if (element instanceof Open) {
-                                    Open open = (Open) element;
-                                    onStreamOpened.accept(open.getFrom());
-                                    synchronized (WebSocketConnection.this) {
-                                        streamId = open.getId();
-                                    }
-                                } else if (element instanceof Close) {
-                                    synchronized (WebSocketConnection.this) {
-                                        closedByServer = true;
-                                    }
-                                    close();
-                                    lock.lock();
-                                    try {
-                                        closeReceived.signalAll();
-                                    } finally {
-                                        lock.unlock();
-                                    }
-                                }
-                                if (xmppSession.handleElement(element)) {
-                                    restartStream();
-                                }
-                            } catch (Exception e) {
-                                xmppSession.notifyException(e);
+                    session.addMessageHandler((MessageHandler.Whole<String>) message -> {
+                        try {
+                            Object element = xmppSession.createUnmarshaller().unmarshal(new StringReader(message));
+                            if (debugger != null) {
+                                debugger.readStanza(message, element);
                             }
+                            if (element instanceof Open) {
+                                Open open = (Open) element;
+                                onStreamOpened.accept(open.getFrom());
+                                synchronized (WebSocketConnection.this) {
+                                    streamId = open.getId();
+                                }
+                            } else if (element instanceof Close) {
+                                synchronized (WebSocketConnection.this) {
+                                    closedByServer = true;
+                                }
+                                close();
+                                lock.lock();
+                                try {
+                                    closeReceived.signalAll();
+                                } finally {
+                                    lock.unlock();
+                                }
+                            }
+                            if (xmppSession.handleElement(element)) {
+                                restartStream();
+                            }
+                        } catch (Exception e) {
+                            xmppSession.notifyException(e);
                         }
                     });
 

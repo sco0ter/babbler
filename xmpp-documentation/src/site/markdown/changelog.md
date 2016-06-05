@@ -1,11 +1,12 @@
 # Changelog
 ---
 
-## Version 0.7.0-SNAPSHOT
+## Version 0.7.0 (2016-06-05)
 
 * Add support for [XEP-0198: Stream Management](http://www.xmpp.org/extensions/xep-0198.html)
 * Add support for WebSocket connection method ([RFC 7395](https://tools.ietf.org/html/rfc7395)).
 * Update `Jid` class to the new XMPP Address Format ([RFC 7622](https://tools.ietf.org/html/rfc7622))
+* IQ queries can now be executed asynchronously (non-blocking) using Java 8's `java.util.concurrent.CompletableFuture` API.
 * Represent `xml:lang` attributes as `java.util.Locale`, not as `String`.
 * Represent timeouts as `java.time.Duration` instead of `int`/`long` for better clearness.
 * Add a very minimalistic DNS resolver for resolving SRV and TXT records in order to remove the dependency to `com.sun.*` classes.
@@ -19,10 +20,11 @@
 * Don't include an empty body in Message Delivery Receipts.
 * Add correct XML names to component namespace stanzas.
 * Eagerly release unused port to prevent ports-leaks due to delayed GC
-* Improve thread-safety during connect() and login()
+* Improve thread-safety during `connect()` and `login()`
 * Fix encoding issues, caused by missing UTF-8 encoding, mainly in the debugger.
 * XEP-0033: Address should have extensions.
 * Add workaround for a [JDK bug](https://bugs.openjdk.java.net/browse/JDK-8054446) causing memory issues and high CPU.
+* Add documentation for custom SASL authentication.
 
 ### Version 0.6.2 (2015-12-08)
 

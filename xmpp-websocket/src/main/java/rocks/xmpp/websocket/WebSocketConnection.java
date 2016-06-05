@@ -49,7 +49,6 @@ import javax.websocket.DeploymentException;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.HandshakeResponse;
-import javax.websocket.MessageHandler;
 import javax.websocket.Session;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
@@ -286,7 +285,7 @@ public final class WebSocketConnection extends Connection {
                         }
                     }
 
-                    session.addMessageHandler((MessageHandler.Whole<String>) message -> {
+                    session.addMessageHandler(String.class, message -> {
                         try {
                             Object element = xmppSession.createUnmarshaller().unmarshal(new StringReader(message));
                             if (debugger != null) {

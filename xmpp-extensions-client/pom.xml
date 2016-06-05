@@ -30,7 +30,7 @@
     <parent>
         <groupId>rocks.xmpp</groupId>
         <artifactId>root</artifactId>
-        <version>0.7.0-SNAPSHOT</version>
+        <version>0.7.0</version>
     </parent>
     <artifactId>xmpp-extensions-client</artifactId>
     <name>XMPP.rocks - Extensions (Client)</name>

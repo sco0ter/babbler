@@ -33,6 +33,7 @@ import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.extensions.muc.model.RoomConfiguration;
 
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
@@ -90,7 +91,7 @@ public class MultiUserChatIT extends IntegrationTest {
         chatRoom[0].addInboundMessageListener(messageListener);
 
         try {
-            chatRoom[0].enter("test");
+            chatRoom[0].enter("test").get();
             chatRoom[0].sendMessage("Hello");
             if (!countDownLatch.await(3, TimeUnit.SECONDS)) {
                 Assert.fail("Timeout reached while waiting on message.");
@@ -134,6 +135,7 @@ public class MultiUserChatIT extends IntegrationTest {
         });
         try {
             chatRoom[0].enter("test").get();
+            chatRoom[0].configure(RoomConfiguration.builder().build()).get();
             chatRoom[1].enter("nick").get();
             if (!countDownLatch.await(6, TimeUnit.SECONDS)) {
                 Assert.fail("Timeout reached while waiting on user entering.");

@@ -150,7 +150,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                     String nick = presence.getFrom().getResource();
 
                     if (nick != null) {
-                        boolean isSelfPresence = isSelfPresence(presence);
+                        boolean isSelfPresence = isSelfPresence(presence, nick);
                         Occupant occupant = new Occupant(presence, isSelfPresence);
                         if (presence.isAvailable()) {
                             Occupant previousOccupant = occupantMap.put(nick, occupant);
@@ -232,7 +232,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         }
     }
 
-    private synchronized boolean isSelfPresence(Presence presence) {
+    private synchronized boolean isSelfPresence(Presence presence, final String currentNick) {
         boolean isSelfPresence = false;
         MucUser mucUser = presence.getExtension(MucUser.class);
         if (mucUser != null) {
@@ -243,7 +243,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
             }
             isSelfPresence = mucUser.getStatusCodes().contains(Status.SELF_PRESENCE) || nicknameChanged;
         }
-        return isSelfPresence || nick != null && presence.getFrom() != null && nick.equals(presence.getFrom().getResource());
+        String usedNick = nick != null ? nick : currentNick;
+        return isSelfPresence || usedNick != null && presence.getFrom() != null && usedNick.equals(presence.getFrom().getResource());
     }
 
     /**
@@ -360,7 +361,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         this.nick = nick;
         return xmppSession.sendAndAwaitPresence(enterPresence, presence -> {
             Jid room = presence.getFrom().asBareJid();
-            return room.equals(roomJid) && isSelfPresence(presence);
+            return room.equals(roomJid) && isSelfPresence(presence, nick);
         }).whenComplete((presence, e) -> {
             if (e != null) {
                 xmppSession.removeInboundMessageListener(messageListener);
@@ -562,9 +563,11 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         if (!entered) {
             return new AsyncResult<>(CompletableFuture.completedFuture(null));
         }
+        // Store the current nick, to determine self-presence (because nick gets null before determining self-presence).
+        final String usedNick = nick;
         return xmppSession.sendAndAwaitPresence(new Presence(roomJid.withResource(nick), Presence.Type.UNAVAILABLE, message), presence -> {
             Jid room = presence.getFrom().asBareJid();
-            return !presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence);
+            return !presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence, usedNick);
         }).handle((result, throwable) -> {
             userHasExited();
             return null;

@@ -52,7 +52,7 @@ public class JingleFileTransferReceiver {
                         .debugger(VisualDebugger.class)
                         .build();
 
-                XmppClient xmppSession = new XmppClient("localhost", configuration, tcpConfiguration);
+                XmppClient xmppSession = XmppClient.create("localhost", configuration, tcpConfiguration);
                 xmppSession.enableFeature(Jingle.NAMESPACE);
                 xmppSession.enableFeature(JingleFileTransfer.NAMESPACE);
 

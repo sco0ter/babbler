@@ -56,11 +56,11 @@ public class MultiUserChatIT extends IntegrationTest {
         XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                 //.debugger(ConsoleDebugger.class)
                 .build();
-        xmppSession[0] = new XmppClient(DOMAIN, configuration, TcpConnectionConfiguration.getDefault());
+        xmppSession[0] = XmppClient.create(DOMAIN, configuration, TcpConnectionConfiguration.getDefault());
         xmppSession[0].connect();
         xmppSession[0].login(USER_1, PASSWORD_1);
 
-        xmppSession[1] = new XmppClient(DOMAIN, TcpConnectionConfiguration.getDefault());
+        xmppSession[1] = XmppClient.create(DOMAIN, TcpConnectionConfiguration.getDefault());
         xmppSession[1].connect();
         xmppSession[1].login(USER_2, PASSWORD_2);
 
@@ -83,7 +83,7 @@ public class MultiUserChatIT extends IntegrationTest {
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         Consumer<MessageEvent> messageListener = e -> {
-            if (e.getMessage().getBody().equals("Hello")) {
+            if ("Hello".equals(e.getMessage().getBody())) {
                 countDownLatch.countDown();
             }
         };

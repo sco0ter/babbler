@@ -360,7 +360,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         this.nick = nick;
         return xmppSession.sendAndAwaitPresence(enterPresence, presence -> {
             Jid room = presence.getFrom().asBareJid();
-            return presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence);
+            return room.equals(roomJid) && isSelfPresence(presence);
         }).whenComplete((presence, e) -> {
             if (e != null) {
                 xmppSession.removeInboundMessageListener(messageListener);

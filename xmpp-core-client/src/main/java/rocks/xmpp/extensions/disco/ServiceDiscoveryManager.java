@@ -54,7 +54,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -449,6 +448,8 @@ public final class ServiceDiscoveryManager extends Manager {
     }
 
     private AsyncResult<List<Item>> discoverServices(Predicate<InfoNode> predicate) {
+        // First discover the items of the server.
+        // Then, for each item, discover the features of the item, but ignore any exceptions.
         return discoverItems(xmppSession.getDomain()).thenCompose(itemDiscovery -> {
             Collection<CompletionStage<List<Item>>> stages = itemDiscovery.getItems().stream()
                     .map(item -> discoverInformation(item.getJid()).thenApply(infoDiscovery -> {
@@ -456,6 +457,14 @@ public final class ServiceDiscoveryManager extends Manager {
                             return Collections.singletonList(item);
                         }
                         return Collections.<Item>emptyList();
+                    }).handle((items, throwable) -> {
+                        // If one disco#info fails, don't let the whole discoverServices() method fail.
+                        // Instead of failing, return an empty list, other services can hopefully be discovered successfully.
+                        if (throwable != null) {
+                            return Collections.<Item>emptyList();
+                        } else {
+                            return items;
+                        }
                     }))
                     .collect(Collectors.toList());
             return CompletionStages.allOf(stages);

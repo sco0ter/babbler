@@ -67,6 +67,7 @@ import rocks.xmpp.extensions.jingle.apps.filetransfer.JingleFileTransferManager;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
 import rocks.xmpp.extensions.jingle.model.Jingle;
+import rocks.xmpp.extensions.jingle.thumbs.model.Thumbnail;
 import rocks.xmpp.extensions.jingle.transports.ibb.model.InBandByteStreamsTransportMethod;
 import rocks.xmpp.extensions.jingle.transports.iceudp.model.IceUdpTransportMethod;
 import rocks.xmpp.extensions.jingle.transports.s5b.model.S5bTransportMethod;
@@ -309,6 +310,9 @@ public final class ExtensionModule implements Module {
 
                 // XEP-0261: Jingle In-Band Bytestreams Transport Method
                 Extension.of(InBandByteStreamsTransportMethod.NAMESPACE, null, false, InBandByteStreamsTransportMethod.class),
+
+                // XEP-0264: Jingle Content Thumbnails
+                Extension.of(Thumbnail.class),
 
                 // XEP-0280: Message Carbons
                 Extension.of(MessageCarbons.NAMESPACE, MessageCarbonsManager.class, false, MessageCarbons.class),

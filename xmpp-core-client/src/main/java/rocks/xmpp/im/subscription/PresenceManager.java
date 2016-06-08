@@ -40,14 +40,12 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Manages subscription requests and presences.
  * <p>
- * See also <a href="http://xmpp.org/rfcs/rfc6121.html#sub">3.  Managing Presence Subscriptions</a>
- * </p>
- * <p>
  * This class allows to request, approve, deny and unsubscribe subscriptions.
  * </p>
  * This class is unconditionally thread-safe.
  *
  * @author Christian Schudt
+ * @see <a href="http://xmpp.org/rfcs/rfc6121.html#sub">3.  Managing Presence Subscriptions</a>
  */
 public final class PresenceManager extends Manager {
 
@@ -134,13 +132,11 @@ public final class PresenceManager extends Manager {
 
     /**
      * Sends a subscription request to a potential contact.
-     * <p>
-     * See also <a href="http://xmpp.org/rfcs/rfc6121.html#sub-request-gen">3.1.1.  Client Generation of Outbound Subscription Request</a>
-     * </p>
      *
      * @param jid    The contact's JID.
      * @param status The status, which is used for additional information during the subscription request.
      * @return The id, which is used for the request.
+     * @see <a href="http://xmpp.org/rfcs/rfc6121.html#sub-request-gen">3.1.1.  Client Generation of Outbound Subscription Request</a>
      */
     public final String requestSubscription(Jid jid, String status) {
         // the value of the 'to' attribute MUST be a bare JID
@@ -151,12 +147,10 @@ public final class PresenceManager extends Manager {
 
     /**
      * Approves a subscription request.
-     * <p>
-     * See also <a href="http://xmpp.org/rfcs/rfc6121.html#sub-request-handle">3.1.4.  Client Processing of Inbound Subscription Request</a>
-     * </p>
      *
      * @param jid The contact's JID, who has previously requested a subscription.
      * @return The id, which is used for the approval.
+     * @see <a href="http://xmpp.org/rfcs/rfc6121.html#sub-request-handle">3.1.4.  Client Processing of Inbound Subscription Request</a>
      */
     public final String approveSubscription(Jid jid) {
         // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.
@@ -170,10 +164,10 @@ public final class PresenceManager extends Manager {
      * <p>
      * This basically means that the contact won't receive presence information from you.
      * </p>
-     * See also <a href="http://xmpp.org/rfcs/rfc6121.html#sub-cancel-gen">3.2.1.  Client Generation of Subscription Cancellation</a>
      *
      * @param jid The contact's JID, whose subscription is denied or canceled.
      * @return The id, which is used for the subscription denial.
+     * @see <a href="http://xmpp.org/rfcs/rfc6121.html#sub-cancel-gen">3.2.1.  Client Generation of Subscription Cancellation</a>
      */
     public final String denySubscription(Jid jid) {
         // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.
@@ -187,10 +181,10 @@ public final class PresenceManager extends Manager {
      * <p>
      * That basically means, that you will not receive any presence information from the contact anymore.
      * </p>
-     * See also <a href="http://xmpp.org/rfcs/rfc6121.html#sub-unsub-gen">3.3.1.  Client Generation of Unsubscribe</a>
      *
      * @param jid The contact's JID.
      * @return The id, which is used for the unsubscription.
+     * @see <a href="http://xmpp.org/rfcs/rfc6121.html#sub-unsub-gen">3.3.1.  Client Generation of Unsubscribe</a
      */
     public final String unsubscribe(Jid jid) {
         // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.

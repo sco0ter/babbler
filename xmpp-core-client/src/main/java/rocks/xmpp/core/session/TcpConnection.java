@@ -322,10 +322,10 @@ public final class TcpConnection extends Connection {
 
     /**
      * This is the preferred way to resolve the FQDN.
-     * See also <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">3.2.1.  Preferred Process: SRV Lookup</a>
      *
      * @param xmppServiceDomain The fully qualified domain name.
      * @return If the connection could be established.
+     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">3.2.1.  Preferred Process: SRV Lookup</a>
      */
     private boolean connectWithXmppServiceDomain(final Jid xmppServiceDomain) {
 

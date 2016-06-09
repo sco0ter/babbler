@@ -654,6 +654,30 @@ public final class DataForm implements Comparable<DataForm> {
             }
         }
 
+        @Override
+        public final String toString() {
+            final StringBuilder sb = new StringBuilder();
+            if (var != null) {
+                sb.append(var);
+            }
+            if (!value.isEmpty()) {
+                if (var != null) {
+                    sb.append(": ");
+                }
+                if (value.size() == 1) {
+                    final String v = value.get(0);
+                    if (type == Type.BOOLEAN) {
+                        sb.append(parseBoolean(v));
+                    } else {
+                        sb.append(v);
+                    }
+                } else {
+                    sb.append(value);
+                }
+            }
+            return sb.toString();
+        }
+
         /**
          * Defines field types.
          * <blockquote>

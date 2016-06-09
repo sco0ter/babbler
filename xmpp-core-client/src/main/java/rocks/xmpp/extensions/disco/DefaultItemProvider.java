@@ -43,7 +43,9 @@ import java.util.Objects;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0030.html#items-nodes">XEP-0030: Service Discovery 4.2 Items Nodes</a>
  * @see <a href="http://xmpp.org/extensions/xep-0059.html#examples">XEP-0059: Result Set Management 3. Examples</a>
+ * @deprecated Use {@link ResultSetProvider#forItems(Collection)}}
  */
+@Deprecated
 public final class DefaultItemProvider implements ResultSetProvider<Item> {
 
     private final Collection<Item> items;

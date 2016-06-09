@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.rsm;
 
 import rocks.xmpp.extensions.rsm.model.ResultSetItem;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -84,4 +85,19 @@ public interface ResultSetProvider<T extends ResultSetItem> {
      * @return The index or -1, if no index could be determined.
      */
     int indexOf(String itemId);
+
+    /**
+     * Creates a {@link Collection}-based result set provider.
+     * <p>
+     * It is highly recommended that the provided list is thread-safe, e.g. by using {@link java.util.Collections#synchronizedList(List)}} or a concurrent collection.
+     * Otherwise modifications on the list, while reading a sub list ({@link #getItems(int, int)}) may produce {@link java.util.ConcurrentModificationException}.
+     *
+     * @param items The items.
+     * @param <T>   The result set item.
+     * @return The result set provider.
+     * @since 0.8.0
+     */
+    static <T extends ResultSetItem> ResultSetProvider<T> forItems(Collection<T> items) {
+        return new CollectionBasedItemProvider<>(items);
+    }
 }

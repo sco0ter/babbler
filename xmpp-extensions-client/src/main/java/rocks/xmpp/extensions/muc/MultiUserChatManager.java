@@ -29,7 +29,6 @@ import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.extensions.disco.DefaultItemProvider;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.items.Item;
@@ -44,7 +43,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -63,7 +62,7 @@ public final class MultiUserChatManager extends Manager {
 
     private final Set<Consumer<InvitationEvent>> invitationListeners = new CopyOnWriteArraySet<>();
 
-    private final Map<Jid, Item> enteredRoomsMap = new ConcurrentHashMap<>();
+    private final Map<Jid, Item> enteredRoomsMap = new ConcurrentSkipListMap<>();
 
     private final Consumer<MessageEvent> messageListener;
 
@@ -88,7 +87,7 @@ public final class MultiUserChatManager extends Manager {
                 }
             }
         };
-        itemProvider = new DefaultItemProvider(enteredRoomsMap.values());
+        itemProvider = ResultSetProvider.forItems(enteredRoomsMap.values());
     }
 
     @Override

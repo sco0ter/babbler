@@ -492,7 +492,7 @@ public final class ServiceDiscoveryManager extends Manager {
     /**
      * Sets an item provider for the root node.
      * <p>
-     * If you want to manage items in memory, you can use {@link DefaultItemProvider}.
+     * If you want to manage items in memory, you can use {@link ResultSetProvider#forItems(Collection)}}.
      *
      * @param itemProvider The item provider.
      */
@@ -507,7 +507,7 @@ public final class ServiceDiscoveryManager extends Manager {
     /**
      * Sets an item provider for a node.
      * <p>
-     * If you want to manage items in memory, you can use {@link DefaultItemProvider}.
+     * If you want to manage items in memory, you can use {@link ResultSetProvider#forItems(Collection)}}.
      *
      * @param node         The node name.
      * @param itemProvider The item provider.

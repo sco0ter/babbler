@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2015 Christian Schudt
+ * Copyright (c) 2014-2016 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,27 +24,38 @@
 
 package rocks.xmpp.extensions.mam.model;
 
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.forward.model.Forwarded;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Christian Schudt
  */
-@XmlSeeAlso({MessageArchive.Query.class, MessageArchive.Result.class})
+@XmlSeeAlso({MessageArchive.Query.class, MessageArchive.Result.class, MessageArchive.Fin.class, MessageArchive.Preferences.class})
 public abstract class MessageArchive {
+
     /**
      * urn:xmpp:mam:1
      */
     public static final String NAMESPACE = "urn:xmpp:mam:1";
 
-    @XmlRootElement()
+    @XmlRootElement
     public static final class Query extends MessageArchive {
+
         @XmlAttribute
         private final String queryid;
 
@@ -64,10 +75,17 @@ public abstract class MessageArchive {
             this.rsm = null;
         }
 
+        /**
+         * @param queryid The client can optionally include a 'queryid' attribute in their query, which allows the client to match results to their initiating query.
+         */
         public Query(String queryid) {
             this(queryid, null);
         }
 
+        /**
+         * @param queryid The client can optionally include a 'queryid' attribute in their query, which allows the client to match results to their initiating query.
+         * @param node    The pubsub node, when querying a pubsub node's archive.
+         */
         public Query(String queryid, String node) {
             this.queryid = queryid;
             this.node = node;
@@ -82,8 +100,19 @@ public abstract class MessageArchive {
         public final DataForm getDataForm() {
             return dataForm;
         }
+
+        public final String getNode() {
+            return node;
+        }
+
+        public final ResultSetManagement getResultSetManagement() {
+            return rsm;
+        }
     }
 
+    /**
+     * The {@code <result/>} element.
+     */
     @XmlRootElement
     public static final class Result extends MessageArchive {
 
@@ -94,8 +123,123 @@ public abstract class MessageArchive {
             this.forwarded = null;
         }
 
+        public Result(Forwarded forwarded) {
+            this.forwarded = forwarded;
+        }
+
         public Forwarded getForwarded() {
             return forwarded;
+        }
+    }
+
+    /**
+     * The {@code <fin/>} element.
+     */
+    @XmlRootElement
+    public static final class Fin extends MessageArchive {
+
+        @XmlAttribute
+        private final Boolean complete;
+
+        @XmlElementRef
+        private final ResultSetManagement rsm;
+
+        private Fin() {
+            this.rsm = null;
+            this.complete = null;
+        }
+
+        public Fin(ResultSetManagement rsm, Boolean complete) {
+            this.rsm = Objects.requireNonNull(rsm);
+            this.complete = complete;
+        }
+
+        public final ResultSetManagement getResultSet() {
+            return rsm;
+        }
+
+        public final boolean isComplete() {
+            return complete != null && complete;
+        }
+    }
+
+    /**
+     * The {@code <prefs/>} element, i.e. the preferences for the message archive.
+     */
+    @XmlRootElement(name = "prefs")
+    public static final class Preferences extends MessageArchive {
+
+        @XmlAttribute(name = "default")
+        private final Default _default;
+
+        @XmlElementWrapper(name = "always")
+        @XmlElement(name = "jid")
+        private final List<Jid> always;
+
+        @XmlElementWrapper(name = "never")
+        @XmlElement(name = "jid")
+        private final List<Jid> never;
+
+        public Preferences() {
+            this._default = null;
+            this.always = null;
+            this.never = null;
+        }
+
+        public Preferences(Default theDefault, Collection<Jid> always, Collection<Jid> never) {
+            this._default = theDefault;
+            this.always = new ArrayList<>(always);
+            this.never = new ArrayList<>(never);
+        }
+
+        /**
+         * Gets the default store behavior, which applies for JIDs which are neither in the 'always' nor in the 'never' list.
+         *
+         * @return The default store behavior.
+         * @see #getAlways()
+         * @see #getNever()
+         */
+        public final Default getDefault() {
+            return _default;
+        }
+
+        /**
+         * Gets the JIDs which should always be archived by the server.
+         *
+         * @return The list of JIDs.
+         */
+        public final List<Jid> getAlways() {
+            return always != null ? Collections.unmodifiableList(always) : Collections.emptyList();
+        }
+
+        /**
+         * Gets the JIDs which should never be archived by the server.
+         *
+         * @return The list of JIDs.
+         */
+        public final List<Jid> getNever() {
+            return never != null ? Collections.unmodifiableList(never) : Collections.emptyList();
+        }
+
+        /**
+         * The default behavior to store messages.
+         */
+        public enum Default {
+            /**
+             * All messages are archived by default.
+             */
+            @XmlEnumValue("always")
+            ALWAYS,
+            /**
+             * Messages are never archived by default.
+             */
+            @XmlEnumValue("never")
+            NEVER,
+            /**
+             * Messages are archived only if the contact's bare JID is in the user's roster.
+             */
+            @XmlEnumValue("roster")
+            ROSTER
         }
     }
 }

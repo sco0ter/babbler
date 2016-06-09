@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2015 Christian Schudt
+ * Copyright (c) 2014-2016 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,33 +24,6 @@
 
 package rocks.xmpp.extensions.mam.model;
 
-/**
- * @author Christian Schudt
- */
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014-2015 Christian Schudt
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
 
@@ -59,46 +32,20 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 
 /**
- * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#roomconfig}, which can be used to configure a MUC room.
+ * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code urn:xmpp:mam:1}, which can be used to query a message archive.
  * <h3>Usage</h3>
- * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
  * <pre>
  * {@code
- * RoomConfiguration roomConfiguration = new RoomConfiguration(dataForm);
- * }
- * </pre>
- * To build a form:
- * <pre>
- * {@code
- * RoomConfiguration roomConfiguration = RoomConfiguration.builder()
- *     .maxHistoryMessages(4)
- *     .rolesThatMaySendPrivateMessages(Arrays.asList(Role.MODERATOR, Role.PARTICIPANT))
- *     .invitesAllowed(true)
- *     .changeSubjectAllowed(true)
- *     .loggingEnabled(true)
- *     .rolesThatMayRetrieveMemberList(Collections.singleton(Role.PARTICIPANT))
- *     .language("en")
- *     .pubSubNode(URI.create("xmpp:pubsub.shakespeare.lit?;node=princely_musings"))
- *     .maxUsers(30)
- *     .membersOnly(true)
- *     .moderated(true)
- *     .passwordProtected(true)
- *     .persistent(true)
- *     .rolesForWhichPresenceIsBroadcast(Arrays.asList(Role.MODERATOR, Role.PARTICIPANT))
- *     .publicRoom(true)
- *     .administrators(Arrays.asList(Jid.of("admin1"), Jid.of("admin2")))
- *     .description("description")
- *     .name("name")
- *     .owners(Arrays.asList(Jid.of("owner1"), Jid.of("owner2")))
- *     .password("pass")
- *     .rolesThatMayDiscoverRealJids(EnumSet.of(Role.MODERATOR))
- *     .build();
+ * ArchiveConfiguration configuration = ArchiveConfiguration.builder()
+ *      .with(Jid.of("juliet@capulet.lit"))
+ *      .start(start)
+ *      .end(end)
+ *      .build();
  * }
  * </pre>
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner">15.5.3 muc#roomconfig FORM_TYPE</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0313.html#filter">4.1 Filtering results</a>
  */
 public final class ArchiveConfiguration {
 
@@ -158,7 +105,7 @@ public final class ArchiveConfiguration {
         /**
          * @param with The JID against which to match messages.
          * @return The builder.
-         * @see <a href="http://www.xmpp.org/extensions/xep-0313.html#filter-jid">4.1.1 Filtering by JID</a>
+         * @see <a href="http://xmpp.org/extensions/xep-0313.html#filter-jid">4.1.1 Filtering by JID</a>
          */
         public final Builder with(Jid with) {
             this.with = with;
@@ -166,9 +113,12 @@ public final class ArchiveConfiguration {
         }
 
         /**
+         * If specified, a server MUST only return messages whose timestamp is equal to or later than the given timestamp.
+         * If omitted, the server SHOULD assume the value of 'start' to be equal to the date/time of the earliest message stored in the archive.
+         *
          * @param start The start date.
          * @return The builder.
-         * @see <a href="http://www.xmpp.org/extensions/xep-0313.html#filter-time">4.1.2 Filtering by time received</a>
+         * @see <a href="http://xmpp.org/extensions/xep-0313.html#filter-time">4.1.2 Filtering by time received</a>
          */
         public final Builder start(Instant start) {
             this.start = start;
@@ -176,9 +126,12 @@ public final class ArchiveConfiguration {
         }
 
         /**
+         * The 'end' field is used to exclude from the results messages after a certain point in time.
+         * If omitted, the server SHOULD assume the value of 'end' to be equal to the date/time of the most recent message stored in the archive.
+         *
          * @param end The end date.
          * @return The builder.
-         * @see <a href="http://www.xmpp.org/extensions/xep-0313.html#filter-time">4.1.2 Filtering by time received</a>
+         * @see <a href="http://xmpp.org/extensions/xep-0313.html#filter-time">4.1.2 Filtering by time received</a>
          */
         public final Builder end(Instant end) {
             this.end = end;

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2015 Christian Schudt
+ * Copyright (c) 2014-2016 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,12 +34,14 @@ import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.mam.model.ArchiveConfiguration;
 import rocks.xmpp.extensions.mam.model.MessageArchive;
+import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Collections;
 
 /**
  * @author Christian Schudt
@@ -104,6 +106,64 @@ public class MessageArchiveManagementTest extends XmlTest {
         Assert.assertNotNull(mam);
         Assert.assertNotNull(mam.getDataForm());
         Assert.assertEquals(mam.getDataForm().findValueAsInstant("start"), OffsetDateTime.of(2010, 6, 7, 0, 0, 0, 0, ZoneOffset.UTC).toInstant());
+    }
+
+    @Test
+    public void unmarshalFin() throws XMLStreamException, JAXBException {
+        String xml = "<iq type='result' id='u29303'>\n" +
+                "  <fin xmlns='urn:xmpp:mam:1' complete='true'>\n" +
+                "    <set xmlns='http://jabber.org/protocol/rsm'>\n" +
+                "      <first index='0'>23452-4534-1</first>\n" +
+                "      <last>390-2342-22</last>\n" +
+                "      <count>16</count>\n" +
+                "    </set>\n" +
+                "  </fin>\n" +
+                "</iq>\n";
+        IQ iq = unmarshal(xml, IQ.class);
+        MessageArchive.Fin fin = iq.getExtension(MessageArchive.Fin.class);
+        Assert.assertNotNull(fin);
+        Assert.assertNotNull(fin.getResultSet());
+        Assert.assertEquals(fin.getResultSet().getLastItem(), "390-2342-22");
+        Assert.assertTrue(fin.isComplete());
+    }
+
+    @Test
+    public void marshalFin() throws XMLStreamException, JAXBException {
+        MessageArchive.Fin fin = new MessageArchive.Fin(ResultSetManagement.forCount(1), true);
+        String xml = marshal(fin);
+        Assert.assertEquals(xml, "<fin xmlns=\"urn:xmpp:mam:1\" complete=\"true\"><set xmlns=\"http://jabber.org/protocol/rsm\"><count>1</count></set></fin>");
+    }
+
+    @Test
+    public void marshalPrefs() throws XMLStreamException, JAXBException {
+        MessageArchive.Preferences preferences = new MessageArchive.Preferences();
+        Assert.assertEquals(marshal(preferences), "<prefs xmlns=\"urn:xmpp:mam:1\"></prefs>");
+        Assert.assertTrue(preferences.getAlways().isEmpty());
+        Assert.assertTrue(preferences.getNever().isEmpty());
+
+        MessageArchive.Preferences preferences2 = new MessageArchive.Preferences(MessageArchive.Preferences.Default.ALWAYS, Collections.singleton(Jid.of("romeo@montague.lit")), Collections.emptyList());
+        Assert.assertEquals(marshal(preferences2), "<prefs xmlns=\"urn:xmpp:mam:1\" default=\"always\"><always><jid>romeo@montague.lit</jid></always><never></never></prefs>");
+    }
+
+    @Test
+    public void unmarshalPrefs() throws XMLStreamException, JAXBException {
+        String xml = "<iq type='result' id='juliet3'>\n" +
+                "  <prefs xmlns='urn:xmpp:mam:1' default='roster'>\n" +
+                "    <always>\n" +
+                "      <jid>romeo@montague.lit</jid>\n" +
+                "      <jid>juliet@montague.lit</jid>\n" +
+                "    </always>\n" +
+                "    <never>\n" +
+                "      <jid>montague@montague.lit</jid>\n" +
+                "    </never>\n" +
+                "  </prefs>\n" +
+                "</iq>";
+        IQ iq = unmarshal(xml, IQ.class);
+        MessageArchive.Preferences prefs = iq.getExtension(MessageArchive.Preferences.class);
+        Assert.assertNotNull(prefs);
+        Assert.assertEquals(prefs.getDefault(), MessageArchive.Preferences.Default.ROSTER);
+        Assert.assertEquals(prefs.getAlways().size(), 2);
+        Assert.assertEquals(prefs.getNever().size(), 1);
     }
 
     @Test

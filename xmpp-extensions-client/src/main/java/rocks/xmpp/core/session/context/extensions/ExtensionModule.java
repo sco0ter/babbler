@@ -75,6 +75,7 @@ import rocks.xmpp.extensions.json.model.Json;
 import rocks.xmpp.extensions.langtrans.model.LanguageTranslation;
 import rocks.xmpp.extensions.last.LastActivityManager;
 import rocks.xmpp.extensions.last.model.LastActivity;
+import rocks.xmpp.extensions.mam.model.MessageArchive;
 import rocks.xmpp.extensions.messagecorrect.model.Replace;
 import rocks.xmpp.extensions.mood.MoodManager;
 import rocks.xmpp.extensions.mood.model.Mood;
@@ -328,6 +329,9 @@ public final class ExtensionModule implements Module {
 
                 // XEP-0308: Last Message Correction
                 Extension.of(Replace.NAMESPACE, false, Replace.class),
+
+                // XEP-0313: Message Archive Management
+                Extension.of(MessageArchive.NAMESPACE, false, MessageArchive.class),
 
                 // XEP-0319: Last User Interaction in Presence
                 Extension.of(Idle.NAMESPACE, true, Idle.class),

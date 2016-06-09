@@ -138,27 +138,13 @@ public final class XmppClient extends XmppSession {
     private volatile boolean anonymous;
 
     /**
-     * Creates a session with the specified service domain, by using the default configuration.
-     *
-     * @param xmppServiceDomain        The service domain.
-     * @param connectionConfigurations The connection configurations.
-     * @deprecated Use {@link #create(String, ConnectionConfiguration...)}
-     */
-    @Deprecated
-    public XmppClient(String xmppServiceDomain, ConnectionConfiguration... connectionConfigurations) {
-        this(xmppServiceDomain, XmppSessionConfiguration.getDefault(), connectionConfigurations);
-    }
-
-    /**
      * Creates a session with the specified service domain by using a configuration.
      *
      * @param xmppServiceDomain        The service domain.
      * @param configuration            The configuration.
      * @param connectionConfigurations The connection configurations.
-     * @deprecated Use {@link #create(String, XmppSessionConfiguration, ConnectionConfiguration...)}
      */
-    @Deprecated
-    public XmppClient(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
+    private XmppClient(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
         super(xmppServiceDomain, configuration, connectionConfigurations);
 
         authenticationManager = new AuthenticationManager(this);

@@ -70,13 +70,7 @@ public final class ExternalComponent extends XmppSession {
 
     private volatile boolean streamHeaderReceived;
 
-    @Deprecated
-    public ExternalComponent(String componentName, String sharedSecret, String hostname, int port) {
-        this(componentName, sharedSecret, XmppSessionConfiguration.getDefault(), hostname, port);
-    }
-
-    @Deprecated
-    public ExternalComponent(String componentName, String sharedSecret, XmppSessionConfiguration configuration, String hostname, int port) {
+    private ExternalComponent(String componentName, String sharedSecret, XmppSessionConfiguration configuration, String hostname, int port) {
         super(componentName, configuration, TcpConnectionConfiguration.builder().hostname(hostname).port(port).build());
         this.sharedSecret = sharedSecret;
     }

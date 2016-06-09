@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
  * E.g. {@link #after(long, TimeUnit)} always tries to reconnect after a fix amount of time.
  *
  * @author Christian Schudt
- * @see ReconnectionManager#setReconnectionStrategy(ReconnectionStrategy)
+ * @see rocks.xmpp.core.session.XmppSessionConfiguration.Builder#reconnectionStrategy(ReconnectionStrategy)
  */
 @FunctionalInterface
 public interface ReconnectionStrategy {
@@ -59,7 +59,7 @@ public interface ReconnectionStrategy {
     Duration getNextReconnectionAttempt(int attempt, Throwable cause);
 
     /**
-     * This is the default reconnection strategy used by the {@link rocks.xmpp.core.session.ReconnectionManager}.
+     * This is the default reconnection strategy.
      * <p>
      * It exponentially increases the time span from which a random value for the next reconnection attempt is chosen.
      * The formula for doing this, is: <code>(2<sup>n</sup> - 1) * s</code>, where <code>n</code> is the number of reconnection attempt and <code>s</code> is the slot time, which is 60 seconds by default.

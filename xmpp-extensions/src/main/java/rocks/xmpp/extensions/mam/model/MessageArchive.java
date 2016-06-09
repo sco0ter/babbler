@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.mam.model;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.forward.model.Forwarded;
+import rocks.xmpp.extensions.rsm.model.ResultSetItem;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -114,21 +115,40 @@ public abstract class MessageArchive {
      * The {@code <result/>} element.
      */
     @XmlRootElement
-    public static final class Result extends MessageArchive {
+    public static final class Result extends MessageArchive implements ResultSetItem {
+
+        @XmlAttribute
+        private final String queryid;
+
+        @XmlAttribute
+        private final String id;
 
         @XmlElementRef
         private final Forwarded forwarded;
 
         private Result() {
+            this.id = null;
             this.forwarded = null;
+            this.queryid = null;
         }
 
-        public Result(Forwarded forwarded) {
-            this.forwarded = forwarded;
+        public Result(String id, Forwarded forwarded, String queryId) {
+            this.id = Objects.requireNonNull(id);
+            this.forwarded = Objects.requireNonNull(forwarded);
+            this.queryid = queryId;
         }
 
-        public Forwarded getForwarded() {
+        public final Forwarded getForwarded() {
             return forwarded;
+        }
+
+        public final String getQueryId() {
+            return queryid;
+        }
+
+        @Override
+        public final String getId() {
+            return id;
         }
     }
 

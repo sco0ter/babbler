@@ -114,7 +114,7 @@ public class DataFormsTest extends XmlTest {
         Assert.assertEquals(dataForm.getInstructions().get(0), "Fill out this form to configure your new bot!");
 
         Assert.assertEquals(dataForm.getFields().size(), 13);
-        Assert.assertEquals(dataForm.getFields().get(0).getValues().get(0), "jabber:bot");
+        Assert.assertEquals(dataForm.getFields().get(0).getValue(), "jabber:bot");
         Assert.assertEquals(dataForm.getFields().get(0).getType(), DataForm.Field.Type.HIDDEN);
         Assert.assertEquals(dataForm.getFields().get(0).getVar(), "FORM_TYPE");
 

@@ -108,7 +108,7 @@ public final class ResultSet<T extends ResultSetItem> {
                 }
             } else {
                 // 2.7 Getting the Item Count
-                return new ResultSet<>(null, ResultSetManagement.forCount(resultSetProvider.getItemCount()));
+                return new ResultSet<>(null, ResultSetManagement.forCountResponse(resultSetProvider.getItemCount()));
             }
         } else {
             // If there's no RSM in the query, return all items, without any result set info.
@@ -120,11 +120,11 @@ public final class ResultSet<T extends ResultSetItem> {
         ResultSetManagement resultSetManagement;
         if (!result.isEmpty()) {
             //  the responding entity MUST include <first/> and <last/> elements that specify the unique ID (UID) for the first and last items in the page.
-            resultSetManagement = ResultSetManagement.forCount(resultSetProvider.getItemCount(), resultSetProvider.indexOf(result.get(0).getId()), result.get(0).getId(), result.get(result.size() - 1).getId());
+            resultSetManagement = ResultSetManagement.forResponse(resultSetProvider.getItemCount(), resultSetProvider.indexOf(result.get(0).getId()), result.get(0).getId(), result.get(result.size() - 1).getId());
         } else {
             // If there are no items in the page, then the <first/> and <last/> elements MUST NOT be included.
             // Only return the <count/> in this case.
-            resultSetManagement = ResultSetManagement.forCount(resultSetProvider.getItemCount());
+            resultSetManagement = ResultSetManagement.forCountResponse(resultSetProvider.getItemCount());
         }
         return new ResultSet<>(result, resultSetManagement);
     }

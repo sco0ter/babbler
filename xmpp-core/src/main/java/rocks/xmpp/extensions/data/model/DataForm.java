@@ -551,6 +551,15 @@ public final class DataForm implements Comparable<DataForm> {
         }
 
         /**
+         * Gets the value of the field.
+         *
+         * @return The value.
+         */
+        public final String getValue() {
+            return value.isEmpty() ? null : value.get(0);
+        }
+
+        /**
          * Gets the value as boolean.
          *
          * @return The value as boolean.

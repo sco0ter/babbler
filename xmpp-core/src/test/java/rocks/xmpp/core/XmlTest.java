@@ -54,9 +54,9 @@ public abstract class XmlTest {
 
     private static final String END_STREAM = "</stream:stream>";
 
-    private static final XMLInputFactory INPUT_FACTORY = XMLInputFactory.newFactory();
+    public static final XMLInputFactory INPUT_FACTORY = XMLInputFactory.newFactory();
 
-    private static final XMLOutputFactory OUTPUT_FACTORY = XMLOutputFactory.newFactory();
+    public static final XMLOutputFactory OUTPUT_FACTORY = XMLOutputFactory.newFactory();
 
     private Unmarshaller unmarshaller;
 

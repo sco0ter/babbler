@@ -61,7 +61,7 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         Writer writer = new StringWriter();
 
-        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
+        XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
 
         XMLStreamWriter prefixFreeWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, "jabber:client");
 
@@ -85,7 +85,7 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         Writer writer = new StringWriter();
 
-        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
+        XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
         XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter);
 
         JAXBContext jaxbContext = JAXBContext.newInstance(Body.class);
@@ -103,7 +103,7 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         Writer writer = new StringWriter();
 
-        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
+        XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
         XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter);
         xmppStreamWriter.writeStartElement("stream");
         JAXBContext jaxbContext = JAXBContext.newInstance(Auth.class, Response.class);
@@ -124,7 +124,7 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         Writer writer = new StringWriter();
 
-        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
+        XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
         XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter);
 
         JAXBContext jaxbContext = JAXBContext.newInstance(Body.class, StreamFeatures.class, Bind.class);
@@ -142,7 +142,7 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         Writer writer = new StringWriter();
 
-        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
+        XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
         XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, "jabber:client", true);
 
         JAXBContext jaxbContext = JAXBContext.newInstance(Body.class, StreamFeatures.class, Bind.class);
@@ -160,7 +160,7 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         Writer writer = new StringWriter();
 
-        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
+        XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
         XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, "jabber:client", false);
 
         JAXBContext jaxbContext = JAXBContext.newInstance(Body.class, StreamFeatures.class, Auth.class);

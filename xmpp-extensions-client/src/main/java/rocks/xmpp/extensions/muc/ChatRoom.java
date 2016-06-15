@@ -37,17 +37,18 @@ import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
-import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
 import rocks.xmpp.extensions.muc.model.Actor;
 import rocks.xmpp.extensions.muc.model.Affiliation;
 import rocks.xmpp.extensions.muc.model.DiscussionHistory;
+import rocks.xmpp.extensions.muc.model.Item;
 import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.extensions.muc.model.MucFeature;
 import rocks.xmpp.extensions.muc.model.RequestVoice;
 import rocks.xmpp.extensions.muc.model.Role;
 import rocks.xmpp.extensions.muc.model.RoomConfiguration;
 import rocks.xmpp.extensions.muc.model.RoomInfo;
+import rocks.xmpp.extensions.muc.model.RoomRegistration;
 import rocks.xmpp.extensions.muc.model.admin.MucAdmin;
 import rocks.xmpp.extensions.muc.model.owner.MucOwner;
 import rocks.xmpp.extensions.muc.model.user.Decline;
@@ -477,7 +478,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      *
      * @return The async result with the data form.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
-     * @see rocks.xmpp.extensions.muc.model.RoomRegistration
+     * @see RoomRegistration
      */
     public AsyncResult<DataForm> getRegistrationForm() {
         return xmppSession.query(IQ.get(roomJid, Registration.empty())).thenApply(result -> {
@@ -495,7 +496,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param registration The registration.
      * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
-     * @see rocks.xmpp.extensions.muc.model.RoomRegistration
+     * @see RoomRegistration
      */
     public AsyncResult<IQ> register(Registration registration) {
         Objects.requireNonNull(registration, "registration must not be null.");
@@ -853,7 +854,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @return The async result with the owners.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
-    public AsyncResult<List<? extends rocks.xmpp.extensions.muc.model.Item>> getOwners() {
+    public AsyncResult<List<Item>> getOwners() {
         return getByAffiliation(Affiliation.OWNER);
     }
 
@@ -863,7 +864,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @return The async result with the outcasts.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
-    public AsyncResult<List<? extends rocks.xmpp.extensions.muc.model.Item>> getOutcasts() {
+    public AsyncResult<List<Item>> getOutcasts() {
         return getByAffiliation(Affiliation.OUTCAST);
     }
 
@@ -873,7 +874,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @return The async result with the admins.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
-    public AsyncResult<List<? extends rocks.xmpp.extensions.muc.model.Item>> getAdmins() {
+    public AsyncResult<List<Item>> getAdmins() {
         return getByAffiliation(Affiliation.ADMIN);
     }
 
@@ -889,11 +890,11 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @return The async result with the members.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
-    public AsyncResult<List<? extends rocks.xmpp.extensions.muc.model.Item>> getMembers() {
+    public AsyncResult<List<Item>> getMembers() {
         return getByAffiliation(Affiliation.MEMBER);
     }
 
-    private AsyncResult<List<? extends rocks.xmpp.extensions.muc.model.Item>> getByAffiliation(Affiliation affiliation) {
+    private AsyncResult<List<Item>> getByAffiliation(Affiliation affiliation) {
         return xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(affiliation, null, null))).thenApply(result -> {
             MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
             return mucAdmin.getItems();
@@ -906,7 +907,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @return The async result with the moderators.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymod">9.8 Modifying the Moderator List</a>
      */
-    public AsyncResult<List<rocks.xmpp.extensions.muc.model.Item>> getModerators() {
+    public AsyncResult<List<Item>> getModerators() {
         return xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Role.MODERATOR, null, null))).thenApply(result -> {
             MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
             return mucAdmin.getItems();
@@ -975,7 +976,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     public AsyncResult<List<String>> discoverOccupants() {
         return serviceDiscoveryManager.discoverItems(roomJid).thenApply(itemNode -> {
             List<String> occupants = new ArrayList<>();
-            List<Item> items = itemNode.getItems();
+            List<rocks.xmpp.extensions.disco.model.items.Item> items = itemNode.getItems();
             items.stream().filter(item -> item.getJid() != null).forEach(item -> {
                 String nickname = item.getJid().getResource();
                 if (nickname != null) {
@@ -1008,15 +1009,15 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
 
     /**
      * Gets the configuration form for the room.
-     * You can wrap the form into {@link rocks.xmpp.extensions.muc.model.RoomConfiguration} for easier processing.
+     * You can wrap the form into {@link RoomConfiguration} for easier processing.
      * <p>
      * Use this method if you want to create a reserved room or configure an existing room.
      * </p>
      *
      * @return The async result with the configuration form.
-     * @see rocks.xmpp.extensions.muc.model.RoomConfiguration
+     * @see RoomConfiguration
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
-     * @see #configure(rocks.xmpp.extensions.muc.model.RoomConfiguration)
+     * @see #configure(RoomConfiguration)
      */
     public AsyncResult<DataForm> getConfigurationForm() {
         return xmppSession.query(IQ.get(roomJid, MucOwner.empty())).thenApply(result -> {

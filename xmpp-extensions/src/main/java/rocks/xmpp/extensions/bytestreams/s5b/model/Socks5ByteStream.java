@@ -117,19 +117,6 @@ public final class Socks5ByteStream {
     }
 
     /**
-     * Creates a {@code <query/>} element with an {@code <streamhost-used/>} child element.
-     *
-     * @param jid The JID.
-     * @return The query element.
-     */
-    @Deprecated
-    public static Socks5ByteStream streamHostUsed(Jid jid) {
-        Socks5ByteStream socks5ByteStream = new Socks5ByteStream();
-        socks5ByteStream.streamHostUsed = new StreamHostUsed(jid);
-        return socks5ByteStream;
-    }
-
-    /**
      * Creates the hexadecimal-encoded SHA-1 hash for usage in SOCKS5 negotiation.
      *
      * @param sessionId    The session id

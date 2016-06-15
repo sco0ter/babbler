@@ -372,18 +372,6 @@ public final class XmppSessionConfiguration {
          *
          * @param defaultResponseTimeout The default response timeout.
          * @return The builder.
-         * @deprecated Use {@link #defaultResponseTimeout(Duration)}
-         */
-        @Deprecated
-        public final Builder defaultResponseTimeout(int defaultResponseTimeout) {
-            return defaultResponseTimeout(Duration.ofMillis(defaultResponseTimeout));
-        }
-
-        /**
-         * Sets the default response timeout for synchronous calls, usually IQ calls.
-         *
-         * @param defaultResponseTimeout The default response timeout.
-         * @return The builder.
          */
         public final Builder defaultResponseTimeout(Duration defaultResponseTimeout) {
             this.defaultResponseTimeout = Objects.requireNonNull(defaultResponseTimeout);

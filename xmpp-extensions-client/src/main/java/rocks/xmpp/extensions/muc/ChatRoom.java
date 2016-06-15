@@ -915,19 +915,6 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     /**
-     * Creates an instant room.
-     *
-     * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-instant">10.1.2 Creating an Instant Room</a>
-     * @deprecated This method is flawed. Simply enter the room.
-     */
-    @Deprecated
-    public synchronized AsyncResult<IQ> createRoom() {
-        return enter(nick).thenCompose(presence ->
-                xmppSession.query(IQ.set(roomJid, MucOwner.withConfiguration(new DataForm(DataForm.Type.SUBMIT)))));
-    }
-
-    /**
      * Gets the room information for this chat room.
      *
      * @return The async result with the room info.

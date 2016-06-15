@@ -47,29 +47,6 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  */
 public final class CompressionManager extends StreamFeatureNegotiator {
-    /**
-     * The "zlib" compression method.
-     *
-     * @deprecated Use {@link CompressionMethod#ZLIB}
-     */
-    @Deprecated
-    public static final CompressionMethod ZLIB = CompressionMethod.ZLIB;
-
-    /**
-     * The "gzip" compression method.
-     *
-     * @deprecated Use {@link CompressionMethod#GZIP}
-     */
-    @Deprecated
-    public static final CompressionMethod GZIP = CompressionMethod.GZIP;
-
-    /**
-     * The "deflate" compression method.
-     *
-     * @deprecated Use {@link CompressionMethod#DEFLATE}
-     */
-    @Deprecated
-    public static final CompressionMethod DEFLATE = CompressionMethod.DEFLATE;
 
     private static final Logger logger = Logger.getLogger(CompressionManager.class.getName());
 

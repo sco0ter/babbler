@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Alternatively you can use some of the predefined strategies which you can retrieve by one of the static methods.
  * </p>
- * E.g. {@link #after(long, TimeUnit)} always tries to reconnect after a fix amount of time.
+ * E.g. {@link #alwaysAfter(Duration)} always tries to reconnect after a fix amount of time.
  *
  * @author Christian Schudt
  * @see rocks.xmpp.core.session.XmppSessionConfiguration.Builder#reconnectionStrategy(ReconnectionStrategy)
@@ -83,19 +83,6 @@ public interface ReconnectionStrategy {
      */
     static ReconnectionStrategy truncatedBinaryExponentialBackoffStrategy(int slotTime, int ceiling) {
         return new TruncatedBinaryExponentialBackoffStrategy(slotTime, ceiling);
-    }
-
-    /**
-     * Reconnects always after a fix duration, e.g. after 10 seconds.
-     *
-     * @param duration The fix duration after which a reconnection is attempted.
-     * @param timeUnit The time unit.
-     * @return The reconnection strategy.
-     * @deprecated Use {@link #alwaysAfter(Duration)}
-     */
-    @Deprecated
-    static ReconnectionStrategy after(long duration, TimeUnit timeUnit) {
-        return (attempt, cause) -> Duration.ofSeconds(timeUnit.toSeconds(duration));
     }
 
     /**

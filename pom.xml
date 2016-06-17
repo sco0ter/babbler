@@ -211,6 +211,29 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>2.10.3</version>
+                    <configuration>
+                        <additionalparam>
+                            -Xdoclint:none
+                            -group "XMPP Address Format (RFC 7622)" rocks.xmpp.addr*
+                            -group "XMPP Core (RFC 6120)" rocks.xmpp.core*
+                            -group "XMPP Instant Messaging and Presence (RFC 6121)" rocks.xmpp.im*
+                            -group "XMPP Extensions" rocks.xmpp.extensions*
+                            -group "XMPP WebSocket Support (RFC 7395)" rocks.xmpp.websocket*
+                            -group "JavaFX Controls Useful for XMPP Clients" rocks.xmpp.javafx*
+                        </additionalparam>
+                        <quiet>true</quiet>
+                        <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
+                        <includeDependencySources>true</includeDependencySources>
+                        <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
+                        <nodeprecated>false</nodeprecated>
+                        <nodeprecatedlist>false</nodeprecatedlist>
+                        <author>false</author>
+                        <notimestamp>true</notimestamp>
+                        <doctitle>Babbler ${project.version}</doctitle>
+                        <windowtitle>Babbler ${project.version}</windowtitle>
+                        <docfilessubdirs>true</docfilessubdirs>
+                        <show>public</show>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -306,7 +329,6 @@
                                 <configuration>
                                     <additionalparam>-Xdoclint:none</additionalparam>
                                     <quiet>true</quiet>
-                                    <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
                                     <includeDependencySources>true</includeDependencySources>
                                     <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
                                     <nodeprecated>false</nodeprecated>

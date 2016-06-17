@@ -74,21 +74,6 @@
                         </reports>
                     </reportSet>
                 </reportSets>
-                <configuration>
-                    <additionalparam>-Xdoclint:none</additionalparam>
-                    <quiet>true</quiet>
-                    <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
-                    <includeDependencySources>true</includeDependencySources>
-                    <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
-                    <nodeprecated>false</nodeprecated>
-                    <nodeprecatedlist>false</nodeprecatedlist>
-                    <author>false</author>
-                    <notimestamp>true</notimestamp>
-                    <doctitle>Babbler ${project.version}</doctitle>
-                    <windowtitle>Babbler ${project.version}</windowtitle>
-                    <docfilessubdirs>true</docfilessubdirs>
-                    <show>public</show>
-                </configuration>
             </plugin>
         </plugins>
     </reporting>

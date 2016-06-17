@@ -184,7 +184,7 @@ public final class PresenceManager extends Manager {
      *
      * @param jid The contact's JID.
      * @return The id, which is used for the unsubscription.
-     * @see <a href="http://xmpp.org/rfcs/rfc6121.html#sub-unsub-gen">3.3.1.  Client Generation of Unsubscribe</a
+     * @see <a href="http://xmpp.org/rfcs/rfc6121.html#sub-unsub-gen">3.3.1.  Client Generation of Unsubscribe</a>
      */
     public final String unsubscribe(Jid jid) {
         // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.

@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <failure/>} element, which indicates a SASL failure.
@@ -72,6 +73,20 @@ public final class Failure implements StreamElement {
     private Failure() {
         this.condition = null;
         this.text = null;
+    }
+
+    public Failure(Condition condition) {
+        this.condition = Objects.requireNonNull(condition);
+        this.text = null;
+    }
+
+    public Failure(Condition condition, String text, Locale locale) {
+        this.condition = Objects.requireNonNull(condition);
+        if (text != null) {
+            this.text = new Text(text, locale);
+        } else {
+            this.text = null;
+        }
     }
 
     /**
@@ -439,6 +454,11 @@ public final class Failure implements StreamElement {
         private Text() {
             this.text = null;
             this.lang = null;
+        }
+
+        private Text(final String text, final Locale lang) {
+            this.text = text;
+            this.lang = lang;
         }
     }
 }

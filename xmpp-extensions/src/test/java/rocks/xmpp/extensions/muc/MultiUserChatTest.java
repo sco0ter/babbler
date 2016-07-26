@@ -32,6 +32,7 @@ import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.extensions.muc.model.Affiliation;
 import rocks.xmpp.extensions.muc.model.DiscussionHistory;
 import rocks.xmpp.extensions.muc.model.Muc;
+import rocks.xmpp.extensions.muc.model.Role;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -102,5 +103,12 @@ public class MultiUserChatTest extends XmlTest {
         Assert.assertTrue(Affiliation.ADMIN.isHigherThan(Affiliation.MEMBER));
         Assert.assertTrue(Affiliation.MEMBER.isHigherThan(Affiliation.NONE));
         Assert.assertTrue(Affiliation.NONE.isHigherThan(Affiliation.OUTCAST));
+    }
+
+    @Test
+    public void testRole() {
+        Assert.assertTrue(Role.MODERATOR.isHigherThan(Role.PARTICIPANT));
+        Assert.assertTrue(Role.PARTICIPANT.isHigherThan(Role.VISITOR));
+        Assert.assertTrue(Role.VISITOR.isHigherThan(Role.NONE));
     }
 }

@@ -52,14 +52,27 @@ public enum Affiliation {
     MEMBER,
 
     /**
-     * The outcast affiliation.
-     */
-    @XmlEnumValue("outcast")
-    OUTCAST,
-
-    /**
      * No affiliation.
      */
     @XmlEnumValue("none")
-    NONE
+    NONE,
+
+    /**
+     * The outcast affiliation.
+     */
+    @XmlEnumValue("outcast")
+    OUTCAST;
+
+    /**
+     * Compares two affiliations and returns true, if this affiliation is higher than the other
+     * with regards to their privileges in a multi-user chat.
+     * <p>
+     * The highest affiliation is owner, followed by admin, followed by member, followed by none and then outcast.
+     *
+     * @param affiliation The other affiliation.
+     * @return True, if this affiliation is higher than the other.
+     */
+    public final boolean isHigherThan(final Affiliation affiliation) {
+        return compareTo(affiliation) < 0;
+    }
 }

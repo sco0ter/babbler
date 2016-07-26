@@ -65,9 +65,9 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
 
     private String defaultNS;
 
-    PrefixFreeCanonicalizationWriter(final XMLStreamWriter xsw, final String contentNamespace, boolean writeStreamNamespace) {
+    PrefixFreeCanonicalizationWriter(final XMLStreamWriter xsw, final String contentNamespace, final boolean writeStreamNamespace) {
         this.xsw = xsw;
-        this.defaultNS = this.contentNamespace = contentNamespace;
+        this.defaultNS = this.contentNamespace = contentNamespace == null ? XMLConstants.NULL_NS_URI : contentNamespace;
         this.writeStreamNamespace = writeStreamNamespace;
     }
 

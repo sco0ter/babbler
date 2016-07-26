@@ -28,7 +28,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.pubsub.model.PubSub;
+import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.List;
@@ -62,7 +62,7 @@ public final class PubSubManager extends Manager {
      * @return The async result with the list of publish-subscribe services.
      */
     public AsyncResult<List<PubSubService>> discoverPubSubServices() {
-        return serviceDiscoveryManager.discoverServices(PubSub.NAMESPACE)
+        return serviceDiscoveryManager.discoverServices(Identity.pubsubService())
                 .thenApply(services -> services.stream()
                         .map(service -> new PubSubService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager))
                         .collect(Collectors.toList()));

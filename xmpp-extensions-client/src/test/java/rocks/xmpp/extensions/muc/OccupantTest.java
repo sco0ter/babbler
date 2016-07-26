@@ -111,10 +111,9 @@ public class OccupantTest {
         Assert.assertEquals(iterator.next(), occupant2b);
         Assert.assertEquals(iterator.next(), occupant3);
         Assert.assertEquals(iterator.next(), occupant4);
+        Assert.assertEquals(iterator.next(), occupant6);
         Assert.assertEquals(iterator.next(), occupant5);
         Assert.assertEquals(iterator.next(), occupant5a);
-        Assert.assertEquals(iterator.next(), occupant6);
-
 
     }
 }

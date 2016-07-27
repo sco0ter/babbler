@@ -159,7 +159,11 @@ public final class Occupant implements Comparable<Occupant> {
                     result = o.role != null ? 1 : 0;
                 }
             }
-            // If the roles are equal, compare nick names.
+            // If the roles are equal, compare presences.
+            if (result == 0) {
+                result = presence.compareTo(o.presence);
+            }
+            // If the presences are equal, compare nick names.
             if (result == 0) {
                 if (nick != null) {
                     // If this nick is not null, but the other is null, move this up (-1).

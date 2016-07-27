@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.httpbind.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.session.model.SessionOpen;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAnyElement;
@@ -50,7 +51,7 @@ import java.util.Locale;
  * @see <a href="http://xmpp.org/extensions/xep-0124.html#schema">XML Schema</a>
  */
 @XmlRootElement
-public final class Body {
+public final class Body implements SessionOpen {
 
     /**
      * http://jabber.org/protocol/httpbind
@@ -316,6 +317,7 @@ public final class Body {
      *
      * @return The 'from' attribute.
      */
+    @Override
     public final Jid getFrom() {
         return from;
     }
@@ -433,6 +435,11 @@ public final class Body {
         return sid;
     }
 
+    @Override
+    public final String getId() {
+        return sid;
+    }
+
     /**
      * <blockquote>
      * <p>If a connection manager supports the multi-streams feature, it MUST include a 'stream' attribute in its Session Creation Response. If a client does not receive the 'stream' attribute then it MUST assume that the connection manager does not support the feature.</p>
@@ -452,6 +459,7 @@ public final class Body {
         return time;
     }
 
+    @Override
     public final Jid getTo() {
         return to;
     }
@@ -475,6 +483,7 @@ public final class Body {
         return wait;
     }
 
+    @Override
     public final Locale getLanguage() {
         return lang;
     }

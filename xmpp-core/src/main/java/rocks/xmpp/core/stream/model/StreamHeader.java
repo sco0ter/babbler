@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stream.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.session.model.SessionOpen;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -51,7 +52,7 @@ import java.util.Objects;
  *
  * @author Christian Schudt
  */
-public final class StreamHeader {
+public final class StreamHeader implements SessionOpen {
 
     private final Jid from;
 
@@ -187,6 +188,7 @@ public final class StreamHeader {
      * @return The 'from' attribute.
      * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-attr-from">4.7.1.  from</a>
      */
+    @Override
     public final Jid getFrom() {
         return from;
     }
@@ -197,6 +199,7 @@ public final class StreamHeader {
      * @return The 'to' attribute.
      * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-attr-to">4.7.2.  to</a>
      */
+    @Override
     public final Jid getTo() {
         return to;
     }
@@ -207,6 +210,7 @@ public final class StreamHeader {
      * @return The 'id' attribute.
      * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-attr-id">4.7.3.  id</a>
      */
+    @Override
     public final String getId() {
         return id;
     }
@@ -217,6 +221,7 @@ public final class StreamHeader {
      * @return The 'xml:lang' attribute.
      * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-attr-xmllang">4.7.4.  xml:lang</a>
      */
+    @Override
     public final Locale getLanguage() {
         return lang;
     }

@@ -429,12 +429,18 @@ public final class Body implements SessionOpen {
      * <p>All requests after the first one MUST include a valid 'sid' attribute (provided by the connection manager in the Session Creation Response). The initialization request is unique in that the {@code <body/>} element MUST NOT possess a 'sid' attribute.</p>
      * </blockquote>
      *
-     * @return The 'route' attribute value.
+     * @return The 'sid' attribute value.
      */
     public final String getSid() {
         return sid;
     }
 
+    /**
+     * Gets the session id.
+     *
+     * @return The session id.
+     * @see #getSid()
+     */
     @Override
     public final String getId() {
         return sid;

@@ -327,7 +327,7 @@ public final class BoshConnection extends Connection {
                 .xmppVersion("1.0");
 
         if (xmppSession.getDomain() != null) {
-            body.to(xmppSession.getDomain().toString());
+            body.to(xmppSession.getDomain());
         }
 
         // Try if we can connect in order to fail fast if we can't.
@@ -438,7 +438,7 @@ public final class BoshConnection extends Connection {
             bodyBuilder = Body.builder()
                     .sessionId(sessionId)
                     .restart(true)
-                    .to(xmppSession.getDomain().toString())
+                    .to(xmppSession.getDomain())
                     .language(xmppSession.getConfiguration().getLanguage())
                     .from(from);
         }

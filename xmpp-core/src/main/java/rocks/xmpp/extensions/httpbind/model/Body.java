@@ -155,7 +155,7 @@ public final class Body {
      * This attribute communicates the identity of the backend server to which the client is attempting to connect.
      */
     @XmlAttribute
-    private final String to;
+    private final Jid to;
 
     @XmlAttribute
     private final Type type;
@@ -452,7 +452,7 @@ public final class Body {
         return time;
     }
 
-    public final String getTo() {
+    public final Jid getTo() {
         return to;
     }
 
@@ -620,7 +620,7 @@ public final class Body {
 
         private Type type;
 
-        private String to;
+        private Jid to;
 
         private Locale language;
 
@@ -666,7 +666,7 @@ public final class Body {
          * @param to The 'to' attribute.
          * @return The builder.
          */
-        public final Builder to(String to) {
+        public final Builder to(Jid to) {
             this.to = to;
             return this;
         }

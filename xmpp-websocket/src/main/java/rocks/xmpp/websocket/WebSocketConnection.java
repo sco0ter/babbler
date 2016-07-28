@@ -326,6 +326,7 @@ public final class WebSocketConnection extends Connection {
                     synchronized (WebSocketConnection.this) {
                         exception = t;
                     }
+                    xmppSession.notifyException(t);
                 }
 
             }, clientEndpointConfig, path);

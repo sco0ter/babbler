@@ -50,6 +50,7 @@ import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.HandshakeResponse;
 import javax.websocket.Session;
+import javax.websocket.SessionException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.StringReader;
@@ -329,6 +330,12 @@ public final class WebSocketConnection extends Connection {
                     xmppSession.notifyException(t);
                 }
 
+                @Override
+                public void onClose(Session session, CloseReason closeReason) {
+                    if (closeReason.getCloseCode() != CloseReason.CloseCodes.NORMAL_CLOSURE) {
+                        xmppSession.notifyException(new SessionException(closeReason.toString(), null, session));
+                    }
+                }
             }, clientEndpointConfig, path);
 
             if (!session.isOpen()) {

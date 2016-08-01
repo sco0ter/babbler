@@ -744,7 +744,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     /**
-     * Revokes a user's admin status. The new status of the user will be 'none'.
+     * Revokes a user's admin status. The new status of the user will be 'member'.
      * Note that you must be an owner of the room.
      *
      * @param user   The user.
@@ -754,7 +754,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see #grantAdminStatus(Jid, String)
      */
     public final AsyncResult<IQ> revokeAdminStatus(Jid user, String reason) {
-        return changeAffiliation(Affiliation.NONE, user, reason);
+        return changeAffiliation(Affiliation.MEMBER, user, reason);
     }
 
     /**

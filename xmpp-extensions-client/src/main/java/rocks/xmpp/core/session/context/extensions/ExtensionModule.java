@@ -49,6 +49,7 @@ import rocks.xmpp.extensions.component.accept.model.ComponentIQ;
 import rocks.xmpp.extensions.component.accept.model.ComponentMessage;
 import rocks.xmpp.extensions.component.accept.model.ComponentPresence;
 import rocks.xmpp.extensions.component.accept.model.Handshake;
+import rocks.xmpp.extensions.csi.model.ClientState;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
@@ -333,7 +334,10 @@ public final class ExtensionModule implements Module {
                 Extension.of(Idle.NAMESPACE, true, Idle.class),
 
                 // XEP-0335: JSON Containers
-                Extension.of(Json.class)
+                Extension.of(Json.class),
+
+                // XEP-0352: Client State Indication
+                Extension.of(ClientState.class)
         );
     }
 }

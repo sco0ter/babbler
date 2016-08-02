@@ -34,21 +34,6 @@ import javax.xml.bind.annotation.XmlEnumValue;
  */
 public enum AffiliationState {
     /**
-     * A member, which is allowed to subscribe to and retrieve items from a node.
-     */
-    @XmlEnumValue("member")
-    MEMBER,
-    /**
-     * No affiliation.
-     */
-    @XmlEnumValue("none")
-    NONE,
-    /**
-     * An entity that is disallowed from subscribing or publishing to a node.
-     */
-    @XmlEnumValue("outcast")
-    OUTCAST,
-    /**
      * The manager of a node, of which there may be more than one; often but not necessarily the node creator.
      */
     @XmlEnumValue("owner")
@@ -62,5 +47,21 @@ public enum AffiliationState {
      * An entity that is allowed to publish items to a node but that is not allowed to receive notifications. (This affiliation is useful in the context of nodes that do not have an open access model when automated entities need to generate notifications on behalf of the owner.)
      */
     @XmlEnumValue("publish-only")
-    PUBLISH_ONLY
+    PUBLISH_ONLY,
+    /**
+     * A member, which is allowed to subscribe to and retrieve items from a node.
+     */
+    @XmlEnumValue("member")
+    MEMBER,
+    /**
+     * No affiliation.
+     */
+    @XmlEnumValue("none")
+    NONE,
+    /**
+     * An entity that is disallowed from subscribing or publishing to a node.
+     */
+    @XmlEnumValue("outcast")
+    OUTCAST
+
 }

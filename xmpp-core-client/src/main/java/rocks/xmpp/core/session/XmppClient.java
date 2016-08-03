@@ -259,7 +259,6 @@ public final class XmppClient extends XmppSession {
             if (wasLoggedIn) {
                 logger.fine("Was already logged in. Re-login automatically with known credentials.");
                 login(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
-                XmppUtils.notifyEventListeners(connectionListeners, new ConnectionEvent(this, ConnectionEvent.Type.RECONNECTION_SUCCEEDED, null, Duration.ZERO));
             }
 
         } catch (Throwable e) {
@@ -461,6 +460,7 @@ public final class XmppClient extends XmppSession {
                 throwAsXmppExceptionIfNotNull(e);
             }
             logger.fine("Login successful.");
+            afterLogin();
             return authenticationManager.getSuccessData();
         }
     }
@@ -487,7 +487,6 @@ public final class XmppClient extends XmppSession {
         // "If, before completing the resource binding step, the client attempts to send an XML stanza to an entity other
         // than the server itself or the client's account, the server MUST NOT process the stanza
         // and MUST close the stream with a <not-authorized/> stream error."
-        wasLoggedIn = true;
 
         // Deprecated method of session binding, according to the <a href="http://xmpp.org/rfcs/rfc3921.html#session">old specification</a>
         // This is no longer used, according to the <a href="http://xmpp.org/rfcs/rfc6120.html">updated specification</a>.

@@ -186,6 +186,7 @@ public final class ExternalComponent extends XmppSession {
             updateStatus(Status.AUTHENTICATED);
             // Check if the server returned a stream error, e.g. not-authorized and throw it.
             throwAsXmppExceptionIfNotNull(exception);
+            afterLogin();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             // Revert status

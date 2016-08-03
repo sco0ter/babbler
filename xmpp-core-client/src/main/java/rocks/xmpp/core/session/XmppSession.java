@@ -303,6 +303,16 @@ public abstract class XmppSession implements AutoCloseable {
 
     public abstract void connect(Jid from) throws XmppException;
 
+    /**
+     * Called after successful login.
+     */
+    protected final void afterLogin() {
+        if (wasLoggedIn) {
+            XmppUtils.notifyEventListeners(connectionListeners, new ConnectionEvent(this, ConnectionEvent.Type.RECONNECTION_SUCCEEDED, null, Duration.ZERO));
+        }
+        wasLoggedIn = true;
+    }
+
     protected final void tryConnect(Jid from, String namespace, Consumer<Jid> onStreamOpened) throws XmppException {
 
         // Close any previous connection, which might still be open.

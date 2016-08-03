@@ -62,7 +62,7 @@ public final class StreamHeader implements SessionOpen {
 
     private final Locale lang;
 
-    private final boolean clientStream;
+    private final String contentNamespace;
 
     private final List<QName> additionalNamespaces = new ArrayList<>();
 
@@ -73,12 +73,12 @@ public final class StreamHeader implements SessionOpen {
      * @param lang                 The 'xml:lang' attribute specifies an entity's preferred or default language for any human-readable XML character data to be sent over the stream.
      * @param additionalNamespaces Any optional additional namespace declarations.
      */
-    private StreamHeader(Jid from, Jid to, String id, Locale lang, boolean clientStream, QName... additionalNamespaces) {
+    private StreamHeader(Jid from, Jid to, String id, Locale lang, String contentNamespace, QName... additionalNamespaces) {
         this.from = from;
         this.to = to;
         this.id = id;
         this.lang = lang;
-        this.clientStream = clientStream;
+        this.contentNamespace = contentNamespace;
         this.additionalNamespaces.addAll(Arrays.asList(additionalNamespaces));
     }
 
@@ -94,7 +94,23 @@ public final class StreamHeader implements SessionOpen {
     public static StreamHeader initialClientToServer(Jid from, Jid to, Locale lang, QName... additionalNamespaces) {
         // For initial stream headers in both client-to-server and server-to-server communication, the initiating entity MUST include the 'to' attribute and MUST set its value to a domainpart that the initiating entity knows or expects the receiving entity to service.
         // For initial stream headers, the initiating entity MUST NOT include the 'id' attribute;
-        return new StreamHeader(from, Objects.requireNonNull(to).asBareJid().withLocal(null), null, lang, true, additionalNamespaces);
+        return initialClientToServer(from, to, lang, "jabber:client", additionalNamespaces);
+    }
+
+    /**
+     * Creates an initial stream header for client-to-server or component-to-server streams.
+     *
+     * @param from                 The XMPP identity of the principal controlling the client, i.e., a JID of the form {@code localpart@domainpart>}.
+     * @param to                   A domainpart that the initiating entity knows or expects the receiving entity to service.
+     * @param lang                 An entity's preferred or default language for any human-readable XML character data to be sent over the stream.
+     * @param contentNamespace     The content namespace.
+     * @param additionalNamespaces Any optional additional namespace declarations.
+     * @return The stream header.
+     */
+    public static StreamHeader initialClientToServer(Jid from, Jid to, Locale lang, String contentNamespace, QName... additionalNamespaces) {
+        // For initial stream headers in both client-to-server and server-to-server communication, the initiating entity MUST include the 'to' attribute and MUST set its value to a domainpart that the initiating entity knows or expects the receiving entity to service.
+        // For initial stream headers, the initiating entity MUST NOT include the 'id' attribute;
+        return new StreamHeader(from, Objects.requireNonNull(to).asBareJid().withLocal(null), null, lang, contentNamespace, additionalNamespaces);
     }
 
     /**
@@ -112,7 +128,7 @@ public final class StreamHeader implements SessionOpen {
         // For response stream headers in client-to-server communication, if the client included a 'from' attribute in the initial stream header then the server MUST include a 'to' attribute in the response stream header and MUST set its value to the bare JID specified in the 'from' attribute of the initial stream header.
         // For response stream headers, the receiving entity MUST include the 'id' attribute.
         // For response stream headers, the receiving entity MUST include the 'xml:lang' attribute.
-        return new StreamHeader(Objects.requireNonNull(from).asBareJid().withLocal(null), to != null ? to.asBareJid() : null, Objects.requireNonNull(id), Objects.requireNonNull(lang), true, additionalNamespaces);
+        return new StreamHeader(Objects.requireNonNull(from).asBareJid().withLocal(null), to != null ? to.asBareJid() : null, Objects.requireNonNull(id), Objects.requireNonNull(lang), "jabber:client", additionalNamespaces);
     }
 
     /**
@@ -127,7 +143,7 @@ public final class StreamHeader implements SessionOpen {
     public static StreamHeader initialServerToServer(Jid from, Jid to, Locale lang, QName... additionalNamespaces) {
         // For initial stream headers in both client-to-server and server-to-server communication, the initiating entity MUST include the 'to' attribute and MUST set its value to a domainpart that the initiating entity knows or expects the receiving entity to service.
         // For initial stream headers, the initiating entity MUST NOT include the 'id' attribute;
-        return new StreamHeader(from, Objects.requireNonNull(to).asBareJid().withLocal(null), null, lang, false, additionalNamespaces);
+        return new StreamHeader(from, Objects.requireNonNull(to).asBareJid().withLocal(null), null, lang, "jabber:server", additionalNamespaces);
     }
 
     /**
@@ -145,7 +161,7 @@ public final class StreamHeader implements SessionOpen {
         // For response stream headers in server-to-server communication, the receiving entity MUST include a 'to' attribute in the response stream header and MUST set its value to the domainpart specified in the 'from' attribute of the initial stream header.
         // For response stream headers, the receiving entity MUST include the 'id' attribute.
         // For response stream headers, the receiving entity MUST include the 'xml:lang' attribute.
-        return new StreamHeader(Objects.requireNonNull(from).asBareJid().withLocal(null), Objects.requireNonNull(to).asBareJid().withLocal(null), Objects.requireNonNull(id), Objects.requireNonNull(lang), false, additionalNamespaces);
+        return new StreamHeader(Objects.requireNonNull(from).asBareJid().withLocal(null), Objects.requireNonNull(to).asBareJid().withLocal(null), Objects.requireNonNull(id), Objects.requireNonNull(lang), "jabber:server", additionalNamespaces);
     }
 
     /**
@@ -171,7 +187,7 @@ public final class StreamHeader implements SessionOpen {
         if (lang != null) {
             writer.writeAttribute(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI, "lang", lang.toLanguageTag());
         }
-        writer.writeNamespace(XMLConstants.DEFAULT_NS_PREFIX, clientStream ? "jabber:client" : "jabber:server");
+        writer.writeNamespace(XMLConstants.DEFAULT_NS_PREFIX, contentNamespace);
         writer.writeNamespace("stream", StreamFeatures.NAMESPACE);
 
         for (QName qName : additionalNamespaces) {
@@ -227,15 +243,6 @@ public final class StreamHeader implements SessionOpen {
     }
 
     /**
-     * Indicates, whether this is a client-to-server stream (jabber:client) or server-to-server stream (jabber:server).
-     *
-     * @return True for c2s streams, false for s2s streams.
-     */
-    public final boolean isClientStream() {
-        return clientStream;
-    }
-
-    /**
      * Gets additional namespaces other than the content namespace and the stream namespace.
      *
      * @return The namespaces.
@@ -264,13 +271,9 @@ public final class StreamHeader implements SessionOpen {
         if (lang != null) {
             sb.append(" xml:lang=\"").append(lang.toLanguageTag()).append('"');
         }
-        sb.append(" xmlns=\"");
-        if (clientStream) {
-            sb.append("jabber:client");
-        } else {
-            sb.append("jabber:server");
-        }
-        sb.append("\" xmlns:stream=\"").append(StreamFeatures.NAMESPACE).append('"');
+        sb.append(" xmlns=\"")
+                .append(contentNamespace)
+                .append("\" xmlns:stream=\"").append(StreamFeatures.NAMESPACE).append('"');
 
         for (QName qName : additionalNamespaces) {
             sb.append(" xmlns:").append(qName.getPrefix()).append("=\"").append(qName.getNamespaceURI()).append('"');

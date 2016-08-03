@@ -164,7 +164,7 @@ final class XmppStreamWriter {
                     prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, namespace);
                     streamOpened = false;
 
-                    StreamHeader streamHeader = StreamHeader.initialClientToServer(from, xmppSession.getDomain(), xmppSession.getConfiguration().getLanguage());
+                    StreamHeader streamHeader = StreamHeader.initialClientToServer(from, xmppSession.getDomain(), xmppSession.getConfiguration().getLanguage(), namespace);
                     streamHeader.writeTo(xmlStreamWriter);
 
                     if (debugger != null) {

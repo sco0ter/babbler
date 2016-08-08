@@ -741,7 +741,7 @@ public abstract class XmppSession implements AutoCloseable {
 
         sendFunction.apply(stanza);
 
-        return new AsyncResult<>(completableFuture.applyToEither(CompletionStages.timeoutAfter(timeout.toMillis(), TimeUnit.MILLISECONDS, () -> new NoResponseException("Timeout reached, while waiting on a response.")), Function.identity())).whenComplete((result, e) ->
+        return new AsyncResult<>(completableFuture.applyToEither(CompletionStages.timeoutAfter(timeout.toMillis(), TimeUnit.MILLISECONDS, () -> new NoResponseException("Timeout reached, while waiting on a response for request: " + stanza)), Function.identity())).whenComplete((result, e) ->
                 removeListener.accept(listener));
     }
 

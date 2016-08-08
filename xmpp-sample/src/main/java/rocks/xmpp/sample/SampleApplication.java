@@ -67,10 +67,10 @@ public class SampleApplication {
             try {
 
                 TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
-                        .hostname("sg3linkdevko1") // The hostname.
+                        .hostname("localhost") // The hostname.
                         .port(5222) // The XMPP default port.
                         .sslContext(getTrustAllSslContext()) // Use an SSL context, which trusts every server. Only use it for testing!
-                        .secure(false) // We want to negotiate a TLS connection.
+                        .secure(true) // We want to negotiate a TLS connection.
                         .build();
 
                 BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()

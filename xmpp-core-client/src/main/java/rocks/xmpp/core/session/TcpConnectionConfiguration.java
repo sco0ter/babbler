@@ -101,9 +101,7 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
 
     @Override
     public final Connection createConnection(XmppSession xmppSession) {
-        TcpConnection connection = new TcpConnection(xmppSession, this);
-        connection.initialize();
-        return connection;
+        return new TcpConnection(xmppSession, this);
     }
 
     /**
@@ -133,6 +131,7 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
      * A builder to create a {@link TcpConnectionConfiguration} instance.
      */
     public static final class Builder extends ConnectionConfiguration.Builder<Builder> {
+
         private int keepAliveInterval;
 
         private SocketFactory socketFactory;

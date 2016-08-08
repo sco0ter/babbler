@@ -114,9 +114,7 @@ public final class WebSocketConnectionConfiguration extends ConnectionConfigurat
 
     @Override
     public final Connection createConnection(final XmppSession xmppSession) {
-        WebSocketConnection connection = new WebSocketConnection(xmppSession, this);
-        connection.initialize();
-        return connection;
+        return new WebSocketConnection(xmppSession, this);
     }
 
     @Override

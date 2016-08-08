@@ -81,6 +81,8 @@ import java.util.function.Consumer;
  */
 public final class WebSocketConnection extends Connection {
 
+    private final StreamFeaturesManager streamFeaturesManager;
+
     private final StreamManager streamManager;
 
     private final XmppDebugger debugger;
@@ -122,12 +124,8 @@ public final class WebSocketConnection extends Connection {
         super(xmppSession, connectionConfiguration);
         this.connectionConfiguration = connectionConfiguration;
         this.debugger = xmppSession.getDebugger();
+        this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         this.streamManager = xmppSession.getManager(StreamManager.class);
-    }
-
-    void initialize() {
-        StreamFeaturesManager streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
-        streamFeaturesManager.addFeatureNegotiator(streamManager);
     }
 
     private static String findWebSocketEndpoint(String xmppServiceDomain, long timeout) {
@@ -267,6 +265,8 @@ public final class WebSocketConnection extends Connection {
                 client.getProperties().put(ClientProperties.PROXY_URI, "http://" + proxy.address().toString());
             }
 
+            streamFeaturesManager.addFeatureNegotiator(streamManager);
+
             final Session session = client.connectToServer(new Endpoint() {
                 @Override
                 public void onOpen(Session session, EndpointConfig config) {
@@ -368,20 +368,24 @@ public final class WebSocketConnection extends Connection {
 
     @Override
     public final synchronized void close() throws Exception {
-        if (session != null && session.isOpen()) {
-            send(new Close());
+        try {
+            if (session != null && session.isOpen()) {
+                send(new Close());
 
-            lock.lock();
-            try {
-                if (!closedByServer) {
-                    closeReceived.await(500, TimeUnit.MILLISECONDS);
+                lock.lock();
+                try {
+                    if (!closedByServer) {
+                        closeReceived.await(500, TimeUnit.MILLISECONDS);
+                    }
+                } finally {
+                    lock.unlock();
                 }
-            } finally {
-                lock.unlock();
+                executorService.shutdown();
+                executorService = null;
+                session.close();
             }
-            executorService.shutdown();
-            executorService = null;
-            session.close();
+        } finally {
+            streamFeaturesManager.removeFeatureNegotiator(streamManager);
         }
     }
 

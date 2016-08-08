@@ -66,6 +66,12 @@ import java.util.function.Consumer;
  */
 public final class TcpConnection extends Connection {
 
+    private final StreamFeaturesManager streamFeaturesManager;
+
+    private final SecurityManager securityManager;
+
+    private final CompressionManager compressionManager;
+
     final StreamManager streamManager;
 
     private final TcpConnectionConfiguration tcpConnectionConfiguration;
@@ -104,20 +110,16 @@ public final class TcpConnection extends Connection {
     TcpConnection(XmppSession xmppSession, TcpConnectionConfiguration configuration) {
         super(xmppSession, configuration);
         this.tcpConnectionConfiguration = configuration;
-        streamManager = xmppSession.getManager(StreamManager.class);
-    }
-
-    void initialize() {
-        StreamFeaturesManager streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
-        streamFeaturesManager.addFeatureNegotiator(new SecurityManager(xmppSession, () -> {
+        this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
+        this.streamManager = xmppSession.getManager(StreamManager.class);
+        this.securityManager = new SecurityManager(xmppSession, () -> {
             try {
                 secureConnection();
             } catch (Exception e) {
                 throw new StreamNegotiationException(e);
             }
-        }, tcpConnectionConfiguration.isSecure()));
-
-        final CompressionManager compressionManager = xmppSession.getManager(CompressionManager.class);
+        }, tcpConnectionConfiguration.isSecure());
+        this.compressionManager = xmppSession.getManager(CompressionManager.class);
         compressionManager.getConfiguredCompressionMethods().addAll(tcpConnectionConfiguration.getCompressionMethods());
         compressionManager.addFeatureListener(() -> {
             CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
@@ -140,8 +142,6 @@ public final class TcpConnection extends Connection {
                 throw new StreamNegotiationException(e);
             }
         });
-        streamFeaturesManager.addFeatureNegotiator(compressionManager);
-        streamFeaturesManager.addFeatureNegotiator(streamManager);
     }
 
     /**
@@ -184,6 +184,11 @@ public final class TcpConnection extends Connection {
         }
 
         this.from = from;
+
+        streamFeaturesManager.addFeatureNegotiator(securityManager);
+        streamFeaturesManager.addFeatureNegotiator(compressionManager);
+        streamFeaturesManager.addFeatureNegotiator(streamManager);
+
         outputStream = new BufferedOutputStream(socket.getOutputStream());
         inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
@@ -308,6 +313,10 @@ public final class TcpConnection extends Connection {
         inputStream = null;
         outputStream = null;
         streamId = null;
+
+        streamFeaturesManager.removeFeatureNegotiator(securityManager);
+        streamFeaturesManager.removeFeatureNegotiator(compressionManager);
+        streamFeaturesManager.removeFeatureNegotiator(streamManager);
 
         // We have sent a </stream:stream> to close the stream and waited for a server response, which also closes the stream by sending </stream:stream>.
         // Now close the socket.

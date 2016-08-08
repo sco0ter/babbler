@@ -155,6 +155,15 @@ public final class StreamFeaturesManager extends Manager {
     }
 
     /**
+     * Removes a feature negotiator.
+     *
+     * @param streamFeatureNegotiator The feature negotiator.
+     */
+    public final void removeFeatureNegotiator(StreamFeatureNegotiator streamFeatureNegotiator) {
+        streamFeatureNegotiators.remove(streamFeatureNegotiator);
+    }
+
+    /**
      * Processes the {@code <stream:features/>} element and immediately starts negotiating the first feature.
      *
      * @param featuresElement The {@code <stream:features/>} element.

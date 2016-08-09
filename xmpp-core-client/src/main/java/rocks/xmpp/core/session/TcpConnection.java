@@ -51,7 +51,7 @@ import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.List;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -270,10 +270,10 @@ public final class TcpConnection extends Connection {
     }
 
     @Override
-    public final synchronized Future<Void> send(StreamElement element) {
-        return xmppStreamWriter.send(element, () -> {
+    public final synchronized CompletableFuture<Void> send(StreamElement element) {
+        return xmppStreamWriter.send(element).thenRun(() -> {
             if (element instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) element)) {
-                xmppStreamWriter.send(StreamManagement.REQUEST, null);
+                send(StreamManagement.REQUEST);
             }
         });
     }

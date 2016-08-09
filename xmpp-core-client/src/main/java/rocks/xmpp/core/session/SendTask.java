@@ -27,14 +27,18 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Stanza;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
  * A send task is the result of a send action and allows to keep track of the sent stanza.
+ * <p>
+ * This class implements {@link Future}, which {@linkplain Future#isDone()} is done}, when the stanza has been sent to the server.
  *
  * @author Christian Schudt
  * @see XmppSession#sendMessage(Message)
@@ -53,7 +57,7 @@ public final class SendTask<S extends Stanza> implements Future<Void> {
      */
     private boolean receivedByServer;
 
-    Future<Void> sendFuture;
+    CompletableFuture<Void> sendFuture;
 
     SendTask(S stanza) {
         this.stanza = stanza;
@@ -82,6 +86,28 @@ public final class SendTask<S extends Stanza> implements Future<Void> {
         if (received) {
             onAcknowledge.accept(stanza);
         }
+    }
+
+    /**
+     * Called, when a stanza has been sent to the server. Note, that this does not mean, that the server received it.
+     *
+     * @param onSent The callback.
+     */
+    public final void onSent(Consumer<S> onSent) {
+        sendFuture.thenRun(() -> onSent.accept(stanza));
+    }
+
+    /**
+     * Called, when a send operation failed.
+     *
+     * @param onFailure The callback.
+     */
+    public final void onFailed(BiConsumer<Throwable, S> onFailure) {
+        sendFuture.whenComplete((aVoid, throwable) -> {
+            if (throwable != null) {
+                onFailure.accept(throwable, stanza);
+            }
+        });
     }
 
     void receivedByServer() {

@@ -61,9 +61,10 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
@@ -153,10 +154,10 @@ public final class WebSocketConnection extends Connection {
     }
 
     @Override
-    public final synchronized Future<Void> send(StreamElement streamElement) {
+    public final synchronized CompletableFuture<Void> send(StreamElement streamElement) {
         // Note: The TyrusFuture returned by session.getAsyncRemote().sendText() is not cancellable.
         // Therefore use our own future with the BasicRemote.
-        return executorService.submit(() -> {
+        return CompletableFuture.runAsync(() -> {
             try (StringWriter writer = new StringWriter()) {
                 XMLStreamWriter xmlStreamWriter = null;
                 try {
@@ -169,16 +170,12 @@ public final class WebSocketConnection extends Connection {
                         this.streamManager.markUnacknowledged((Stanza) streamElement);
                     }
 
-                    try {
-                        session.getBasicRemote().sendText(xml);
-                        if (streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement)) {
-                            send(StreamManagement.REQUEST);
-                        }
-                        if (debugger != null) {
-                            debugger.writeStanza(xml, streamElement);
-                        }
-                    } catch (IOException e) {
-                        xmppSession.notifyException(e);
+                    session.getBasicRemote().sendText(xml);
+                    if (streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement)) {
+                        send(StreamManagement.REQUEST);
+                    }
+                    if (debugger != null) {
+                        debugger.writeStanza(xml, streamElement);
                     }
 
                 } finally {
@@ -188,9 +185,9 @@ public final class WebSocketConnection extends Connection {
                 }
             } catch (Exception e) {
                 xmppSession.notifyException(e);
+                throw new CompletionException(e);
             }
-            return null;
-        });
+        }, executorService);
     }
 
     @Override

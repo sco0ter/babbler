@@ -776,38 +776,44 @@ public abstract class XmppSession implements AutoCloseable {
         });
     }
 
-    private Future<Void> sendInternal(StreamElement element, Consumer<Connection> beforeSend) {
+    private CompletableFuture<Void> sendInternal(StreamElement element, Consumer<Connection> beforeSend) {
 
-        if (element instanceof Stanza) {
-            Stanza stanza = (Stanza) element;
-            // If resource binding has not completed and it's tried to send a stanza which doesn't serve the purpose
-            // of resource binding, throw an exception, because otherwise the server will terminate the connection with a stream error.
-            // TODO: Consider queuing such stanzas and send them as soon as logged in instead of throwing exception.
-            if (!EnumSet.of(Status.AUTHENTICATED, Status.CLOSING).contains(getStatus())
-                    && !isSentToUserOrServer(stanza, getDomain(), getConnectedResource())) {
-                throw new IllegalStateException("Cannot send stanzas before resource binding has completed.");
-            }
-            if (stanza instanceof Message) {
-                XmppUtils.notifyEventListeners(outboundMessageListeners, new MessageEvent(this, (Message) stanza, false));
-            } else if (stanza instanceof Presence) {
-                XmppUtils.notifyEventListeners(outboundPresenceListeners, new PresenceEvent(this, (Presence) stanza, false));
-            } else if (stanza instanceof IQ) {
-                XmppUtils.notifyEventListeners(outboundIQListeners, new IQEvent(this, (IQ) stanza, false));
-            }
-        }
-        synchronized (connections) {
-            if (activeConnection == null) {
-                IllegalStateException ise = new IllegalStateException("Session is not connected to server (status: " + getStatus() + ')');
-                Throwable cause = exception;
-                if (cause != null) {
-                    ise.initCause(cause);
+        CompletableFuture<Void> sendFuture = new CompletableFuture<>();
+        try {
+            if (element instanceof Stanza) {
+                Stanza stanza = (Stanza) element;
+                // If resource binding has not completed and it's tried to send a stanza which doesn't serve the purpose
+                // of resource binding, throw an exception, because otherwise the server will terminate the connection with a stream error.
+                // TODO: Consider queuing such stanzas and send them as soon as logged in instead of throwing exception.
+                if (!EnumSet.of(Status.AUTHENTICATED, Status.CLOSING).contains(getStatus())
+                        && !isSentToUserOrServer(stanza, getDomain(), getConnectedResource())) {
+                    throw new IllegalStateException("Cannot send stanzas before resource binding has completed.");
                 }
-                throw ise;
-            } else {
-                beforeSend.accept(activeConnection);
-                return activeConnection.send(element);
+                if (stanza instanceof Message) {
+                    XmppUtils.notifyEventListeners(outboundMessageListeners, new MessageEvent(this, (Message) stanza, false));
+                } else if (stanza instanceof Presence) {
+                    XmppUtils.notifyEventListeners(outboundPresenceListeners, new PresenceEvent(this, (Presence) stanza, false));
+                } else if (stanza instanceof IQ) {
+                    XmppUtils.notifyEventListeners(outboundIQListeners, new IQEvent(this, (IQ) stanza, false));
+                }
             }
+            synchronized (connections) {
+                if (activeConnection == null) {
+                    IllegalStateException ise = new IllegalStateException("Session is not connected to server (status: " + getStatus() + ')');
+                    Throwable cause = exception;
+                    if (cause != null) {
+                        ise.initCause(cause);
+                    }
+                    throw ise;
+                } else {
+                    beforeSend.accept(activeConnection);
+                    return activeConnection.send(element);
+                }
+            }
+        } catch (Exception e) {
+            sendFuture.completeExceptionally(e);
         }
+        return sendFuture;
     }
 
     /**

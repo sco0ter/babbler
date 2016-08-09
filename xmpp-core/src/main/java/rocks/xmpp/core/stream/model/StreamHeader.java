@@ -168,7 +168,7 @@ public final class StreamHeader implements SessionOpen {
      * Writes the stream header to a {@link XMLStreamWriter}.
      *
      * @param writer The writer.
-     * @throws XMLStreamException
+     * @throws XMLStreamException If writing to the writer fails.
      */
     public final void writeTo(final XMLStreamWriter writer) throws XMLStreamException {
         writer.writeStartDocument(StandardCharsets.UTF_8.name(), "1.0");

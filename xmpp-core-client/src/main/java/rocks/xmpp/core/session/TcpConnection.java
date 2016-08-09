@@ -270,7 +270,7 @@ public final class TcpConnection extends Connection {
     }
 
     @Override
-    public final synchronized Future<?> send(StreamElement element) {
+    public final synchronized Future<Void> send(StreamElement element) {
         return xmppStreamWriter.send(element, () -> {
             if (element instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) element)) {
                 xmppStreamWriter.send(StreamManagement.REQUEST, null);

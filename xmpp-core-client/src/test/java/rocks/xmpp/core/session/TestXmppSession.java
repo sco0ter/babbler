@@ -68,7 +68,7 @@ public final class TestXmppSession extends XmppSession {
             }
 
             @Override
-            public Future<?> send(StreamElement clientStreamElement) {
+            public Future<Void> send(StreamElement clientStreamElement) {
                 return CompletableFuture.completedFuture(null);
             }
 
@@ -109,8 +109,8 @@ public final class TestXmppSession extends XmppSession {
     }
 
     @Override
-    public Future<?> send(StreamElement element) {
-        Future<?> future = super.send(element);
+    public Future<Void> send(StreamElement element) {
+        Future<Void> future = super.send(element);
         if (mockServer != null && element instanceof Stanza) {
             ((Stanza) element).setFrom(connectedResource);
             mockServer.receive((Stanza) element);

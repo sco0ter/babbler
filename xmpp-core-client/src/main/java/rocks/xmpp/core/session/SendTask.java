@@ -27,6 +27,10 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Stanza;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 /**
@@ -35,7 +39,7 @@ import java.util.function.Consumer;
  * @author Christian Schudt
  * @see XmppSession#sendMessage(Message)
  */
-public final class SendTask<S extends Stanza> {
+public final class SendTask<S extends Stanza> implements Future<Void> {
 
     private final S stanza;
 
@@ -48,6 +52,8 @@ public final class SendTask<S extends Stanza> {
      * Guarded by this.
      */
     private boolean receivedByServer;
+
+    Future<Void> sendFuture;
 
     SendTask(S stanza) {
         this.stanza = stanza;
@@ -87,5 +93,30 @@ public final class SendTask<S extends Stanza> {
         if (consumer != null) {
             consumer.accept(stanza);
         }
+    }
+
+    @Override
+    public final boolean cancel(boolean mayInterruptIfRunning) {
+        return sendFuture.cancel(mayInterruptIfRunning);
+    }
+
+    @Override
+    public final boolean isCancelled() {
+        return sendFuture.isCancelled();
+    }
+
+    @Override
+    public final boolean isDone() {
+        return sendFuture.isDone();
+    }
+
+    @Override
+    public final Void get() throws InterruptedException, ExecutionException {
+        return sendFuture.get();
+    }
+
+    @Override
+    public final Void get(long timeout, TimeUnit timeUnit) throws InterruptedException, ExecutionException, TimeoutException {
+        return sendFuture.get(timeout, timeUnit);
     }
 }

@@ -499,7 +499,7 @@ public final class BoshConnection extends Connection {
     }
 
     @Override
-    public final Future<?> send(StreamElement element) {
+    public final Future<Void> send(StreamElement element) {
         // Only put content in the body element, if it is allowed (e.g. it does not contain restart='true' and an unacknowledged body isn't resent).
         Body.Builder bodyBuilder = Body.builder().sessionId(getSessionId());
         synchronized (elementsToSend) {

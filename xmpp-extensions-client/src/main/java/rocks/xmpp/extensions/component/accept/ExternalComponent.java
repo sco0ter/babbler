@@ -248,7 +248,7 @@ public final class ExternalComponent extends XmppSession {
     }
 
     @Override
-    public final Future<?> send(StreamElement element) {
+    public final Future<Void> send(StreamElement element) {
 
         if (element instanceof Stanza && ((Stanza) element).getFrom() == null) {
             ((Stanza) element).setFrom(connectedResource);

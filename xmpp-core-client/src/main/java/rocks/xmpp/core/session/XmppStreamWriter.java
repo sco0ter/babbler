@@ -111,7 +111,7 @@ final class XmppStreamWriter {
         }
     }
 
-    synchronized Future<?> send(final StreamElement clientStreamElement, final Runnable afterSend) {
+    synchronized Future<Void> send(final StreamElement clientStreamElement, final Runnable afterSend) {
         Objects.requireNonNull(clientStreamElement);
         return executor.submit(() -> {
             try {
@@ -140,6 +140,7 @@ final class XmppStreamWriter {
             } catch (Exception e) {
                 notifyException(e);
             }
+            return null;
         });
     }
 

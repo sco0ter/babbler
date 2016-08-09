@@ -525,7 +525,7 @@ public final class XmppClient extends XmppSession {
     }
 
     @Override
-    public final Future<?> send(StreamElement element) {
+    public final Future<Void> send(StreamElement element) {
         StreamElement e;
         if (element instanceof Message) {
             e = ClientMessage.from((Message) element);

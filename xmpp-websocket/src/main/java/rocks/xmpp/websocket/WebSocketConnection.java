@@ -153,7 +153,7 @@ public final class WebSocketConnection extends Connection {
     }
 
     @Override
-    public final synchronized Future<?> send(StreamElement streamElement) {
+    public final synchronized Future<Void> send(StreamElement streamElement) {
         // Note: The TyrusFuture returned by session.getAsyncRemote().sendText() is not cancellable.
         // Therefore use our own future with the BasicRemote.
         return executorService.submit(() -> {

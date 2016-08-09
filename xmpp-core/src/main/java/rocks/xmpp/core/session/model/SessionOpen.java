@@ -1,6 +1,7 @@
 package rocks.xmpp.core.session.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 import java.util.Locale;
 
@@ -14,7 +15,7 @@ import java.util.Locale;
  *
  * @author Christian Schudt
  */
-public interface SessionOpen {
+public interface SessionOpen extends StreamElement {
 
     /**
      * Gets the 'from' attribute.

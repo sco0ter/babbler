@@ -39,8 +39,9 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -110,11 +111,11 @@ final class XmppStreamWriter {
         }
     }
 
-    synchronized Future<Void> send(final StreamElement clientStreamElement, final Runnable afterSend) {
+    synchronized CompletableFuture<Void> send(final StreamElement clientStreamElement) {
         Objects.requireNonNull(clientStreamElement);
-        return executor.submit(() -> {
+        return CompletableFuture.runAsync(() -> {
             try {
-                // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowleged" queue.
+                // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowledged" queue.
                 if (clientStreamElement instanceof Stanza) {
                     streamManager.markUnacknowledged((Stanza) clientStreamElement);
                 }
@@ -128,19 +129,15 @@ final class XmppStreamWriter {
                     prefixFreeCanonicalizationWriter.flush();
                 }
 
-                if (afterSend != null) {
-                    afterSend.run();
-                }
-
                 if (debugger != null) {
                     debugger.writeStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8).trim(), clientStreamElement);
                     byteArrayOutputStream.reset();
                 }
             } catch (Exception e) {
                 notifyException(e);
+                throw new CompletionException(e);
             }
-            return null;
-        });
+        }, executor);
     }
 
     synchronized void openStream(final OutputStream outputStream, final Jid from) {

@@ -68,7 +68,7 @@ public final class TestXmppSession extends XmppSession {
             }
 
             @Override
-            public Future<Void> send(StreamElement clientStreamElement) {
+            public CompletableFuture<Void> send(StreamElement clientStreamElement) {
                 return CompletableFuture.completedFuture(null);
             }
 

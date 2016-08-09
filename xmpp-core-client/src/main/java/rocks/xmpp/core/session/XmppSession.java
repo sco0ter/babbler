@@ -83,6 +83,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -148,6 +149,10 @@ public abstract class XmppSession implements AutoCloseable {
     private final Map<Class<? extends Manager>, Manager> instances = new ConcurrentHashMap<>();
 
     private final Set<Consumer<MessageEvent>> messageAcknowledgedListeners = new CopyOnWriteArraySet<>();
+
+    private final Set<Consumer<StreamElement>> sendSucceededListeners = new CopyOnWriteArraySet<>();
+
+    private final Set<BiConsumer<StreamElement, Throwable>> sendFailedListeners = new CopyOnWriteArraySet<>();
 
     /**
      * The unacknowledged stanzas.
@@ -559,6 +564,47 @@ public abstract class XmppSession implements AutoCloseable {
     }
 
     /**
+     * Adds a listener, which gets called, whenever a stream element (e.g. message) has been sent successfully.
+     *
+     * @param sendSucceededListener The listener.
+     * @see #removeSendSucceededListener(Consumer)
+     */
+    public final void addSendSucceededListener(Consumer<StreamElement> sendSucceededListener) {
+        sendSucceededListeners.add(sendSucceededListener);
+    }
+
+    /**
+     * Removes a previously added send succeeded listener.
+     *
+     * @param sendSucceededListener The listener.
+     * @see #addSendSucceededListener(Consumer)
+     */
+    public final void removeSendSucceededListener(Consumer<StreamElement> sendSucceededListener) {
+        sendSucceededListeners.remove(sendSucceededListener);
+    }
+
+    /**
+     * Adds a listener, which gets called, whenever a stream element (e.g. message) has been sent unsuccessfully.
+     *
+     * @param sendFailedListener The listener.
+     * @see #removeSendFailedListener(BiConsumer)
+     */
+    public final void addSendFailedListener(BiConsumer<StreamElement, Throwable> sendFailedListener) {
+        sendFailedListeners.add(sendFailedListener);
+    }
+
+    /**
+     * Removes a previously added send failed listener.
+     *
+     * @param sendFailedListener The listener.
+     * @see #addSendFailedListener(BiConsumer)
+     * @see #addSendSucceededListener(Consumer)
+     */
+    public final void removeSendFailedListener(BiConsumer<StreamElement, Throwable> sendFailedListener) {
+        sendFailedListeners.remove(sendFailedListener);
+    }
+
+    /**
      * Adds an IQ handler for a given payload type. The handler will be processed asynchronously, which means it won't block the inbound stanza processing queue.
      *
      * @param type      The payload type.
@@ -785,7 +831,7 @@ public abstract class XmppSession implements AutoCloseable {
                 // If resource binding has not completed and it's tried to send a stanza which doesn't serve the purpose
                 // of resource binding, throw an exception, because otherwise the server will terminate the connection with a stream error.
                 // TODO: Consider queuing such stanzas and send them as soon as logged in instead of throwing exception.
-                if (!EnumSet.of(Status.AUTHENTICATED, Status.CLOSING).contains(getStatus())
+                if (!EnumSet.of(Status.AUTHENTICATED, Status.CLOSING, Status.DISCONNECTED).contains(getStatus())
                         && !isSentToUserOrServer(stanza, getDomain(), getConnectedResource())) {
                     throw new IllegalStateException("Cannot send stanzas before resource binding has completed.");
                 }
@@ -807,13 +853,31 @@ public abstract class XmppSession implements AutoCloseable {
                     throw ise;
                 } else {
                     beforeSend.accept(activeConnection);
-                    return activeConnection.send(element);
+                    sendFuture = activeConnection.send(element);
                 }
             }
         } catch (Exception e) {
             sendFuture.completeExceptionally(e);
         }
-        return sendFuture;
+        return sendFuture.whenComplete(((aVoid, throwable) -> {
+            if (throwable == null) {
+                sendSucceededListeners.forEach(listener -> {
+                    try {
+                        listener.accept(element);
+                    } catch (Exception e) {
+                        logger.log(Level.WARNING, e.getMessage(), e);
+                    }
+                });
+            } else {
+                sendFailedListeners.forEach(listener -> {
+                    try {
+                        listener.accept(element, throwable);
+                    } catch (Exception e) {
+                        logger.log(Level.WARNING, e.getMessage(), e);
+                    }
+                });
+            }
+        }));
     }
 
     /**
@@ -1100,6 +1164,9 @@ public abstract class XmppSession implements AutoCloseable {
             outboundPresenceListeners.clear();
             inboundIQListeners.clear();
             outboundIQListeners.clear();
+            messageAcknowledgedListeners.clear();
+            sendSucceededListeners.clear();
+            sendFailedListeners.clear();
             stanzaListenerExecutor.shutdown();
             iqHandlerExecutor.shutdown();
             if (shutdownHook != null) {

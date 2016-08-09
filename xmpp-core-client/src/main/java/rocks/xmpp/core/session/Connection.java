@@ -106,7 +106,7 @@ public abstract class Connection implements AutoCloseable {
      * @param streamElement The element.
      * @return The future representing the send process and which allows to cancel it.
      */
-    public abstract Future<?> send(StreamElement streamElement);
+    public abstract Future<Void> send(StreamElement streamElement);
 
     /**
      * Connects to the server and provides an optional 'from' attribute.

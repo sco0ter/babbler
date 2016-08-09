@@ -1,10 +1,12 @@
 # Changelog
 ---
 
-### Version 0.7.1
+### Version 0.7.1 (2016-08-09)
 
 * Discovering services should not fail immediately if one sub-query fails.
 * Make sure abnormal WebSocket disconnections trigger the reconnection.
+* Make sure RECONNECTION_SUCCEEDED event is triggered for external components.
+* Add listeners to listen for successful or failed send operations.
 * Add public constructor for the SASL challenge class.
 * Add public constructors to SASL Failure class.
 * Make sure to not write `XMLConstants.XML_NS_URI` to XML elements (FasterXML Aalto's XMLStreamWriter implementation writes it)

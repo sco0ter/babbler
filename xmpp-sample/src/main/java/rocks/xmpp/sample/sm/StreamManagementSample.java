@@ -37,6 +37,8 @@ import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.websocket.WebSocketConnectionConfiguration;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class StreamManagementSample {
 
@@ -80,6 +82,13 @@ public class StreamManagementSample {
                     xmppSession.addMessageAcknowledgedListener(messageEvent -> {
                         System.out.println("Received by server!!!");
                     });
+                    xmppSession.addSendSucceededListener(messageEvent -> {
+                        System.out.println("Sent to server!!!" + messageEvent);
+                    });
+                    xmppSession.addSendFailedListener((messageEvent, e) -> {
+                        System.out.println("FAILED!!!" + messageEvent);
+                        e.printStackTrace();
+                    });
                     // Send a message to myself, which is caught by the listener above.
                     SendTask<Message> trackableMessage = xmppSession.sendMessage(new Message(xmppSession.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
                     trackableMessage.onAcknowledge(message -> {
@@ -90,6 +99,11 @@ public class StreamManagementSample {
                     trackablePresence.onAcknowledge(presence -> {
                         System.out.println("Received by server: " + presence);
                     });
+
+                    ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+                    scheduledExecutorService.scheduleAtFixedRate(() -> {
+                        xmppSession.sendPresence(new Presence(Presence.Show.AWAY));
+                    }, 0, 10, TimeUnit.SECONDS);
 
                 } catch (XmppException e) {
                     e.printStackTrace();

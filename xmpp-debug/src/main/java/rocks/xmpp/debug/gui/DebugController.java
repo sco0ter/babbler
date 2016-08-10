@@ -52,6 +52,7 @@ import org.xml.sax.SAXParseException;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.Stanza;
 
 import javax.xml.bind.DataBindingException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -350,15 +351,23 @@ public final class DebugController implements Initializable {
                 }
 
                 // Add the highlighted items.
-                stanzaTableView.getItems().stream().filter(entry -> newValue.getStanza() instanceof IQ && entry.getStanza() instanceof IQ).forEach(entry -> {
-                    IQ selectedIQ = (IQ) newValue.getStanza();
-                    IQ otherIQ = (IQ) entry.getStanza();
-                    if (otherIQ.getId() != null && otherIQ.getId().equals(selectedIQ.getId())
-                            && ((selectedIQ.isRequest() && otherIQ.isResponse())
-                            || selectedIQ.isResponse() && otherIQ.isRequest())
-                            && newValue.isInbound() != entry.isInbound()) {
-                        // Add the highlighted items.
-                        viewModel.highlightedItems.add(entry);
+                stanzaTableView.getItems().stream().forEach(entry -> {
+                    if (newValue.getStanza() instanceof Stanza && entry.getStanza() instanceof Stanza) {
+                        Stanza selectedStanza = (Stanza) newValue.getStanza();
+                        Stanza otherStanza = (Stanza) entry.getStanza();
+                        if (otherStanza.getId() != null && otherStanza.getId().equals(selectedStanza.getId()) && newValue.isInbound() != entry.isInbound()) {
+                            if (selectedStanza instanceof IQ && otherStanza instanceof IQ) {
+                                IQ selectedIQ = (IQ) selectedStanza;
+                                IQ otherIQ = (IQ) otherStanza;
+                                if (((selectedIQ.isRequest() && otherIQ.isResponse())
+                                        || selectedIQ.isResponse() && otherIQ.isRequest())) {
+                                    // Add the highlighted items.
+                                    viewModel.highlightedItems.add(entry);
+                                }
+                            } else {
+                                viewModel.highlightedItems.add(entry);
+                            }
+                        }
                     }
                 });
                 // Workaround to refresh table:

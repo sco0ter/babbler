@@ -1,6 +1,23 @@
 # Changelog
 ---
 
+### Version 0.7.1 (2016-08-09)
+
+* Discovering services should not fail immediately if one sub-query fails.
+* Make sure abnormal WebSocket disconnections trigger the reconnection.
+* Make sure RECONNECTION_SUCCEEDED event is triggered for external components.
+* Add listeners to listen for successful or failed send operations.
+* Add public constructor for the SASL challenge class.
+* Add public constructors to SASL Failure class.
+* Make sure to not write `XMLConstants.XML_NS_URI` to XML elements (FasterXML Aalto's XMLStreamWriter implementation writes it)
+* Add `DataForm.Field#getValue()` and implement `toString()` method.
+* Add convenient API to compare two MUC affiliations and roles (i.e. `Affiliation.OWNER.isHigherThan(Affiliation.ADMIN)`)
+* Compare presences of MUC occupants in the Occupant's `Comparable` implementation.
+* Minor performance improvement by using a `ListIterator` in collection based result sets.
+* Discover PubSub services by identity, not by feature name (it's more reliable)
+* Add `nextPage()` and `previousPage()` method and refine the naming of other methods in result set management (e.g. having `forCount()` and `forItemCount()` was confusing)
+
+
 ## Version 0.7.0 (2016-06-05)
 
 * Add support for [XEP-0198: Stream Management](http://www.xmpp.org/extensions/xep-0198.html)

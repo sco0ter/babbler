@@ -433,7 +433,7 @@ public final class XmppClient extends XmppSession {
                 RosterManager rosterManager = getManager(RosterManager.class);
                 if (callbackHandler != null && rosterManager.isEnabled() && rosterManager.isRetrieveRosterOnLogin()) {
                     logger.fine("Retrieving roster on login (as per configuration).");
-                    rosterManager.requestRoster();
+                    rosterManager.requestRoster().getResult();
                 }
                 PresenceManager presenceManager = getManager(PresenceManager.class);
                 if (presenceManager.getLastSentPresence() != null) {

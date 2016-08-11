@@ -46,7 +46,6 @@ import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.subscription.PresenceManager;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 import javax.security.auth.callback.CallbackHandler;
@@ -61,6 +60,8 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -402,19 +403,24 @@ public final class XmppClient extends XmppSession {
                 throwAsXmppExceptionIfNotNull(exception);
 
                 // Stream resumption.
-                StreamManager streamManager = getManager(StreamManager.class);
-                if (streamManager.resume()) {
-                    updateStatus(Status.AUTHENTICATED);
-                    // Copy the unacknowledged stanzas.
-                    Queue<Stanza> toBeResent = new ArrayDeque<>(getUnacknowledgedStanzas());
-                    // Then clear the queue.
-                    getUnacknowledgedStanzas().clear();
+                try {
+                    StreamManager streamManager = getManager(StreamManager.class);
+                    if (streamManager.resume().getResult(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS)) {
+                        logger.fine("Stream resumed.");
+                        updateStatus(Status.AUTHENTICATED);
+                        // Copy the unacknowledged stanzas.
+                        Queue<Stanza> toBeResent = new ArrayDeque<>(getUnacknowledgedStanzas());
+                        // Then clear the queue.
+                        getUnacknowledgedStanzas().clear();
 
-                    // Then resend everything, which the server didn't acknowledge.
-                    for (Stanza stanza : toBeResent) {
-                        send(stanza);
+                        // Then resend everything, which the server didn't acknowledge.
+                        for (Stanza stanza : toBeResent) {
+                            send(stanza);
+                        }
+                        return authenticationManager.getSuccessData();
                     }
-                    return authenticationManager.getSuccessData();
+                } catch (TimeoutException e) {
+                    logger.warning("Could not resume stream due to timeout.");
                 }
 
                 // Then negotiate resource binding manually.

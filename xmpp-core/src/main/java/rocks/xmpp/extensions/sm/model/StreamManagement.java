@@ -144,16 +144,21 @@ public final class StreamManagement extends StreamFeature {
      * The implementation of the {@code <failed/>} element in the {@code urn:xmpp:sm:3} namespace.
      */
     @XmlRootElement(name = "failed")
-    public static final class Failed implements StreamElement {
+    public static final class Failed extends LastHandledStanza {
 
         @XmlElementRef
         private final Condition stanzaError;
 
         public Failed() {
-            this.stanzaError = null;
+            this(null);
         }
 
         public Failed(Condition stanzaError) {
+            this(stanzaError, null);
+        }
+
+        public Failed(Condition stanzaError, Long h) {
+            super(h);
             this.stanzaError = stanzaError;
         }
 
@@ -284,35 +289,45 @@ public final class StreamManagement extends StreamFeature {
      * The implementation of the {@code <a/>} element in the {@code urn:xmpp:sm:3} namespace.
      */
     @XmlRootElement(name = "a")
-    public static final class Answer implements StreamElement {
-
-        @XmlAttribute(name = "h")
-        private final Long h;
+    public static final class Answer extends LastHandledStanza {
 
         private Answer() {
-            this.h = null;
+            super(null);
         }
 
         public Answer(long h) {
-            this.h = h;
-        }
-
-        public final Long getLastHandledStanza() {
-            return h;
+            super(h);
         }
     }
 
     @XmlTransient
-    private abstract static class AbstractResume implements StreamElement {
+    private abstract static class LastHandledStanza implements StreamElement {
 
         @XmlAttribute(name = "h")
         private final Long lastHandledStanza;
+
+        private LastHandledStanza(Long lastHandledStanza) {
+            this.lastHandledStanza = lastHandledStanza;
+        }
+
+        /**
+         * Gets the last handled stanza.
+         *
+         * @return The last handled stanza.
+         */
+        public final Long getLastHandledStanza() {
+            return lastHandledStanza;
+        }
+    }
+
+    @XmlTransient
+    private abstract static class AbstractResume extends LastHandledStanza {
 
         @XmlAttribute(name = "previd")
         private final String previd;
 
         private AbstractResume(long lastHandledStanza, String previd) {
-            this.lastHandledStanza = lastHandledStanza;
+            super(lastHandledStanza);
             this.previd = previd;
         }
 
@@ -323,15 +338,6 @@ public final class StreamManagement extends StreamFeature {
          */
         public final String getPreviousId() {
             return previd;
-        }
-
-        /**
-         * Gets the last handled stanza.
-         *
-         * @return The last handled stanza.
-         */
-        public final long getLastHandledStanza() {
-            return lastHandledStanza;
         }
     }
 }

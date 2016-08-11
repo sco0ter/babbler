@@ -118,6 +118,10 @@ public final class StreamManager extends StreamFeatureNegotiator {
             }
             return Status.SUCCESS;
         } else if (element instanceof StreamManagement.Failed) {
+            StreamManagement.Failed failed = (StreamManagement.Failed) element;
+            if (failed.getLastHandledStanza() != null) {
+                markAcknowledged(failed.getLastHandledStanza());
+            }
             resumed(false);
             // Stream management errors SHOULD be considered recoverable.
             // Therefore don't throw an exception.

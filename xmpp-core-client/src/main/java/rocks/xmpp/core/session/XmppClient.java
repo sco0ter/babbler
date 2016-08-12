@@ -52,7 +52,6 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.sasl.RealmCallback;
-import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
@@ -242,7 +241,9 @@ public final class XmppClient extends XmppSession {
 
                 // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
                 try {
-                    streamFeaturesManager.awaitNegotiation(Mechanisms.class, Duration.ofSeconds(10));
+                    streamFeaturesManager.awaitNegotiation(Mechanisms.class).get(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                } catch (TimeoutException e) {
+                    throw new NoResponseException("Timeout while waiting on advertised authentication mechanisms.");
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw e;
@@ -388,7 +389,7 @@ public final class XmppClient extends XmppSession {
             lastAuthorizationId = authorizationId;
             lastCallbackHandler = callbackHandler;
             try {
-
+                long timeout = configuration.getDefaultResponseTimeout().toMillis();
                 logger.fine("Starting SASL negotiation (authentication).");
                 if (callbackHandler == null) {
                     authenticationManager.startAuthentication(mechanisms, null, null);
@@ -397,15 +398,18 @@ public final class XmppClient extends XmppSession {
                 }
 
                 // Negotiate all pending features until <bind/> would be negotiated.
-                streamFeaturesManager.awaitNegotiation(Bind.class, configuration.getDefaultResponseTimeout());
-
+                try {
+                    streamFeaturesManager.awaitNegotiation(Bind.class).get(timeout, TimeUnit.MILLISECONDS);
+                } catch (TimeoutException e) {
+                    throw new NoResponseException("Timeout while on resource binding feature.");
+                }
                 // Check if stream feature negotiation failed with an exception.
                 throwAsXmppExceptionIfNotNull(exception);
 
                 // Stream resumption.
                 try {
                     StreamManager streamManager = getManager(StreamManager.class);
-                    if (streamManager.resume().getResult(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS)) {
+                    if (streamManager.resume().getResult(timeout, TimeUnit.MILLISECONDS)) {
                         logger.fine("Stream resumed.");
                         updateStatus(Status.AUTHENTICATED);
                         // Copy the unacknowledged stanzas.
@@ -428,8 +432,11 @@ public final class XmppClient extends XmppSession {
 
                 // Proceed with any outstanding stream features which are negotiated after resource binding, e.g. XEP-0198
                 // and wait until all features have been negotiated.
-                streamFeaturesManager.completeNegotiation(configuration.getDefaultResponseTimeout());
-
+                try {
+                    streamFeaturesManager.completeNegotiation().get(timeout * 2, TimeUnit.MILLISECONDS);
+                } catch (TimeoutException e) {
+                    throw new NoResponseException("Timeout while waiting on stream feature negotiation to finish.");
+                }
                 // Check again, if stream feature negotiation failed with an exception.
                 throwAsXmppExceptionIfNotNull(exception);
 

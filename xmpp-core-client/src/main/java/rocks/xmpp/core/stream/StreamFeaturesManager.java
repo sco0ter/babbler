@@ -25,13 +25,11 @@
 package rocks.xmpp.core.stream;
 
 import rocks.xmpp.core.session.Manager;
-import rocks.xmpp.core.session.NoResponseException;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.tls.model.StartTls;
 
-import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -41,12 +39,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.Future;
 
 /**
  * Manages the various features, which are advertised during stream negotiation.
@@ -78,9 +74,7 @@ public final class StreamFeaturesManager extends Manager {
 
     private static final EnumSet<StreamFeatureNegotiator.Status> NEGOTIATION_COMPLETED = EnumSet.of(StreamFeatureNegotiator.Status.SUCCESS, StreamFeatureNegotiator.Status.IGNORE);
 
-    private final Lock lock = new ReentrantLock();
-
-    private final Map<Class<? extends StreamFeature>, Condition> featureNegotiationStartedConditions = new ConcurrentHashMap<>();
+    private final Map<Class<? extends StreamFeature>, CompletableFuture<Void>> featureNegotiationStartedConditions = new ConcurrentHashMap<>();
 
     /**
      * The features which have been advertised by the server.
@@ -102,7 +96,7 @@ public final class StreamFeaturesManager extends Manager {
      */
     private final Set<StreamFeatureNegotiator> streamFeatureNegotiators = new CopyOnWriteArraySet<>();
 
-    private final Condition negotiationCompleted = lock.newCondition();
+    private CompletableFuture<Void> negotiationCompleted;
 
     private StreamFeaturesManager(XmppSession xmppSession) {
         super(xmppSession, false);
@@ -186,6 +180,8 @@ public final class StreamFeaturesManager extends Manager {
             ((StartTls) featureList.get(0)).setMandatory(true);
         }
 
+        negotiationCompleted = new CompletableFuture<>();
+
         // Immediately start negotiating the first feature.
         negotiateNextFeature();
     }
@@ -242,14 +238,9 @@ public final class StreamFeaturesManager extends Manager {
                 }
 
                 // Check if there's a condition waiting for that feature to be negotiated.
-                Condition condition = featureNegotiationStartedConditions.remove(featureClass);
+                CompletableFuture<Void> condition = featureNegotiationStartedConditions.remove(featureClass);
                 if (condition != null) {
-                    lock.lock();
-                    try {
-                        condition.signalAll();
-                    } finally {
-                        lock.unlock();
-                    }
+                    condition.complete(null);
                 }
                 // If feature negotiation is incomplete, return and wait until it is completed.
                 if (negotiationStatus == StreamFeatureNegotiator.Status.INCOMPLETE) {
@@ -259,12 +250,7 @@ public final class StreamFeaturesManager extends Manager {
             // If no feature negotiator was found or if the feature has been successfully negotiated, immediately go on with the next feature.
             return negotiateNextFeature();
         } else {
-            lock.lock();
-            try {
-                negotiationCompleted.signalAll();
-            } finally {
-                lock.unlock();
-            }
+            negotiationCompleted.complete(null);
             return false;
         }
     }
@@ -273,71 +259,38 @@ public final class StreamFeaturesManager extends Manager {
      * Waits until the given feature will be negotiated. If the feature has already been negotiated it immediately returns.
      *
      * @param streamFeature The stream feature class.
-     * @param timeout       The timeout.
-     * @throws InterruptedException If the current thread is interrupted.
-     * @throws NoResponseException  If the server didn't respond.
      */
-    public final void awaitNegotiation(Class<? extends StreamFeature> streamFeature, Duration timeout) throws InterruptedException, NoResponseException {
+    public final Future<Void> awaitNegotiation(Class<? extends StreamFeature> streamFeature) {
 
         synchronized (this) {
             // Check if the feature is already negotiated and if there's no condition yet registered.
             if (negotiatingFeatures.contains(streamFeature) || featureNegotiationStartedConditions.containsKey(streamFeature)) {
-                return;
+                return CompletableFuture.completedFuture(null);
             }
         }
-        Condition condition = lock.newCondition();
-        // Register a new "wait" condition.
-        featureNegotiationStartedConditions.put(streamFeature, condition);
-
-        lock.lock();
-        try {
-            // Wait until the feature will be negotiated.
-            if (!condition.await(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
-                throw new NoResponseException("No response while waiting on feature: " + streamFeature.getSimpleName());
-            }
-        } catch (InterruptedException e) {
-            // Restore the initial state before this method was called.
-            featureNegotiationStartedConditions.remove(streamFeature);
-            throw e;
-        } finally {
-            lock.unlock();
-        }
+        CompletableFuture<Void> streamFuture = new CompletableFuture<>();
+        featureNegotiationStartedConditions.put(streamFeature, streamFuture);
+        return streamFuture;
     }
 
     /**
      * Negotiates all pending features, if any, and waits until all features have been negotiated.
      *
-     * @param timeout The timeout.
-     * @throws InterruptedException       If the current thread is interrupted.
-     * @throws NoResponseException        If the server didn't respond.
      * @throws StreamNegotiationException If the stream negotiation failed.
      */
-    public final void completeNegotiation(Duration timeout) throws InterruptedException, NoResponseException, StreamNegotiationException {
+    public final synchronized Future<Void> completeNegotiation() throws StreamNegotiationException {
         if (!negotiateNextFeature()) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
-
-        lock.lock();
-        try {
-            if (!negotiationCompleted.await(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
-                throw new NoResponseException("No response while waiting during stream feature negotiation.");
-            }
-        } finally {
-            lock.unlock();
-        }
+        return negotiationCompleted;
     }
 
     /**
      * Cancels negotiation and releases any locks.
      */
     public void cancelNegotiation() {
-        for (Condition condition : featureNegotiationStartedConditions.values()) {
-            lock.lock();
-            try {
-                condition.signalAll();
-            } finally {
-                lock.unlock();
-            }
+        for (Future<Void> condition : featureNegotiationStartedConditions.values()) {
+            condition.cancel(false);
         }
         featureNegotiationStartedConditions.clear();
     }

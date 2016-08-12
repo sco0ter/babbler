@@ -430,7 +430,11 @@ public final class XmppClient extends XmppSession {
                 RosterManager rosterManager = getManager(RosterManager.class);
                 if (callbackHandler != null && rosterManager.isEnabled() && rosterManager.isRetrieveRosterOnLogin()) {
                     logger.fine("Retrieving roster on login (as per configuration).");
-                    rosterManager.requestRoster().getResult();
+                    try {
+                        rosterManager.requestRoster().getResult(timeout, TimeUnit.MILLISECONDS);
+                    } catch (TimeoutException e) {
+                        logger.warning("Could not retrieve roster in time.");
+                    }
                 }
                 PresenceManager presenceManager = getManager(PresenceManager.class);
                 if (presenceManager.getLastSentPresence() != null) {
@@ -473,7 +477,12 @@ public final class XmppClient extends XmppSession {
         logger.log(Level.FINE, "Negotiating resource binding, resource: {0}.", resource);
 
         // Bind the resource
-        IQ result = query(IQ.set(new Bind(this.resource))).getResult();
+        IQ result;
+        try {
+            result = query(IQ.set(new Bind(this.resource))).getResult(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            throw new NoResponseException("Could not bind resource due to timeout.");
+        }
 
         Bind bindResult = result.getExtension(Bind.class);
         this.connectedResource = bindResult.getJid();

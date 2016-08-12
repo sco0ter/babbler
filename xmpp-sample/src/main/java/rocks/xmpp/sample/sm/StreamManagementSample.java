@@ -44,70 +44,67 @@ public class StreamManagementSample {
 
     public static void main(String[] args) {
 
-        Executors.newFixedThreadPool(1).execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
+        Executors.newFixedThreadPool(1).execute(() -> {
+            try {
 
-                    TcpConnectionConfiguration tcpConnectionConfiguration = TcpConnectionConfiguration.builder()
-                            .hostname("localhost")
-                            .port(5222)
-                            .secure(false) // Disable TLS only for simpler example here.
-                            .build();
+                TcpConnectionConfiguration tcpConnectionConfiguration = TcpConnectionConfiguration.builder()
+                        .hostname("localhost")
+                        .port(5222)
+                        .secure(false) // Disable TLS only for simpler example here.
+                        .build();
 
-                    BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()
-                            .hostname("localhost")
-                            .port(7070)
-                                    //.sslContext(getTrustAllSslContext())
-                            .secure(false)
-                            .build();
+                BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()
+                        .hostname("localhost")
+                        .port(7070)
+                                //.sslContext(getTrustAllSslContext())
+                        .secure(false)
+                        .build();
 
-                    WebSocketConnectionConfiguration webSocketConnectionConfiguration = WebSocketConnectionConfiguration.builder()
-                            .hostname("localhost")
-                            .port(80)
-                            .secure(false) // Disable TLS only for simpler example here.
-                            .build();
+                WebSocketConnectionConfiguration webSocketConnectionConfiguration = WebSocketConnectionConfiguration.builder()
+                        .hostname("localhost")
+                        .port(80)
+                        .secure(false) // Disable TLS only for simpler example here.
+                        .build();
 
-                    XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                            .debugger(ConsoleDebugger.class)
-                            .build();
+                XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
+                        .debugger(ConsoleDebugger.class)
+                        .build();
 
-                    XmppClient xmppSession = XmppClient.create("localhost", configuration, tcpConnectionConfiguration);
-                    xmppSession.enableFeature(StreamManagement.NAMESPACE);
-                    // Connect
-                    xmppSession.connect();
+                XmppClient xmppSession = XmppClient.create("localhost", configuration, tcpConnectionConfiguration);
+                xmppSession.enableFeature(StreamManagement.NAMESPACE);
+                // Connect
+                xmppSession.connect();
 
-                    // Login
-                    xmppSession.login("admin", "admin", "sm");
-                    xmppSession.addMessageAcknowledgedListener(messageEvent -> {
-                        System.out.println("Received by server!!!");
-                    });
-                    xmppSession.addSendSucceededListener(messageEvent -> {
-                        System.out.println("Sent to server!!!" + messageEvent);
-                    });
-                    xmppSession.addSendFailedListener((messageEvent, e) -> {
-                        System.out.println("FAILED!!!" + messageEvent);
-                        e.printStackTrace();
-                    });
-                    // Send a message to myself, which is caught by the listener above.
-                    SendTask<Message> trackableMessage = xmppSession.sendMessage(new Message(xmppSession.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
-                    trackableMessage.onAcknowledge(message -> {
-                        System.out.println("Received by server: " + message);
-                    });
-
-                    SendTask<Presence> trackablePresence = xmppSession.sendPresence(new Presence(Presence.Show.AWAY));
-                    trackablePresence.onAcknowledge(presence -> {
-                        System.out.println("Received by server: " + presence);
-                    });
-
-                    ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-                    scheduledExecutorService.scheduleAtFixedRate(() -> {
-                        xmppSession.sendPresence(new Presence(Presence.Show.AWAY));
-                    }, 0, 10, TimeUnit.SECONDS);
-
-                } catch (XmppException e) {
+                // Login
+                xmppSession.login("admin", "admin", "sm");
+                xmppSession.addMessageAcknowledgedListener(messageEvent -> {
+                    System.out.println("Received by server!!!");
+                });
+                xmppSession.addSendSucceededListener(messageEvent -> {
+                    System.out.println("Sent to server!!!" + messageEvent);
+                });
+                xmppSession.addSendFailedListener((messageEvent, e) -> {
+                    System.out.println("FAILED!!!" + messageEvent);
                     e.printStackTrace();
-                }
+                });
+                // Send a message to myself, which is caught by the listener above.
+                SendTask<Message> trackableMessage = xmppSession.sendMessage(new Message(xmppSession.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
+                trackableMessage.onAcknowledge(message -> {
+                    System.out.println("Received by server: " + message);
+                });
+
+                SendTask<Presence> trackablePresence = xmppSession.sendPresence(new Presence(Presence.Show.AWAY));
+                trackablePresence.onAcknowledge(presence -> {
+                    System.out.println("Received by server: " + presence);
+                });
+
+                ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+                scheduledExecutorService.scheduleAtFixedRate(() -> {
+                    xmppSession.sendPresence(new Presence(Presence.Show.AWAY));
+                }, 0, 10, TimeUnit.SECONDS);
+
+            } catch (XmppException e) {
+                e.printStackTrace();
             }
         });
     }

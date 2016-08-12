@@ -115,9 +115,7 @@ public final class ContactExchangeManager extends Manager {
 
     private void processItems(List<ContactExchange.Item> items, Jid sender, String message, Instant date) {
         if (getTrustedEntities().contains(sender.asBareJid())) {
-            for (ContactExchange.Item item : items) {
-                approve(item);
-            }
+            items.forEach(this::approve);
         } else {
             XmppUtils.notifyEventListeners(contactExchangeListeners, new ContactExchangeEvent(this, items, sender, message, date));
         }

@@ -400,9 +400,7 @@ public final class XmppClient extends XmppSession {
                         getUnacknowledgedStanzas().clear();
 
                         // Then resend everything, which the server didn't acknowledge.
-                        for (Stanza stanza : toBeResent) {
-                            send(stanza);
-                        }
+                        toBeResent.forEach(this::send);
                         return authenticationManager.getSuccessData();
                     }
                 } catch (TimeoutException e) {

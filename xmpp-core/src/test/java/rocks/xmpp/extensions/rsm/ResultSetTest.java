@@ -50,7 +50,7 @@ public class ResultSetTest extends XmlTest {
 
     @Test
     public void marshalLimit() throws JAXBException, XMLStreamException {
-        ResultSetManagement resultSetManagement = ResultSetManagement.forLimit(10);
+        ResultSetManagement resultSetManagement = ResultSetManagement.forFirstPage(10);
         Assert.assertFalse(resultSetManagement.isRequestingCount());
         String xml = marshal(resultSetManagement);
         Assert.assertEquals(xml, "<set xmlns=\"http://jabber.org/protocol/rsm\"><max>10</max></set>");

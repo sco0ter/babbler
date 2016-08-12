@@ -198,7 +198,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         Assert.assertTrue(resultItemCount.getItems().isEmpty());
         Assert.assertEquals(resultItemCount.getResultSetManagement().getItemCount(), Integer.valueOf(100));
 
-        ItemNode result = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forLimit(10)).get();
+        ItemNode result = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forFirstPage(10)).get();
         Assert.assertEquals(result.getItems().size(), 10);
         Assert.assertEquals(result.getItems().get(0).getNode(), "item0");
         Assert.assertEquals(result.getResultSetManagement().getItemCount(), Integer.valueOf(100));
@@ -240,7 +240,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         Assert.assertTrue(resultItemCount.getItems().isEmpty());
         Assert.assertEquals(resultItemCount.getResultSetManagement().getItemCount(), Integer.valueOf(30));
 
-        ItemNode page1 = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forLimit(10)).get();
+        ItemNode page1 = serviceDiscoveryManager2.discoverItems(ROMEO, ResultSetManagement.forFirstPage(10)).get();
         Assert.assertEquals(page1.getItems().size(), 10);
         Assert.assertEquals(page1.getItems().get(0).getNode(), "item0");
         Assert.assertEquals(page1.getResultSetManagement().getItemCount(), Integer.valueOf(30));

@@ -44,7 +44,7 @@ import java.security.Security;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -114,7 +114,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
                     throw new StreamNegotiationException("Server doesn't support any of the requested SASL mechanisms: " + mechanisms + ".");
                 }
                 successData = null;
-                saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[clientMechanisms.size()]), authorizationId, "xmpp", xmppSession.getDomain().toString(), new HashMap<>(), callbackHandler);
+                saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[clientMechanisms.size()]), authorizationId, "xmpp", xmppSession.getActiveConnection().getHostname(), Collections.emptyMap(), callbackHandler);
 
                 if (saslClient == null) {
                     throw new SaslException("No SASL client found for mechanisms: " + clientMechanisms);

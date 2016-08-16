@@ -58,6 +58,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -471,6 +472,11 @@ public final class XmppClient extends XmppSession {
                 // Revert status
                 updateStatus(previousStatus, e);
                 throwAsXmppExceptionIfNotNull(e);
+            } catch (CancellationException e) {
+                Throwable cause = exception != null ? exception : e;
+                // Revert status
+                updateStatus(previousStatus, cause);
+                throwAsXmppExceptionIfNotNull(cause);
             } catch (Throwable e) {
                 // Revert status
                 updateStatus(previousStatus, e);

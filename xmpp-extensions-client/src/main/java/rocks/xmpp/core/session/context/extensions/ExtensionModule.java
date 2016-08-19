@@ -108,6 +108,7 @@ import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rtt.RealTimeTextManager;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
 import rocks.xmpp.extensions.search.model.Search;
+import rocks.xmpp.extensions.seclabel.model.SecurityLabel;
 import rocks.xmpp.extensions.shim.HeaderManager;
 import rocks.xmpp.extensions.shim.model.Headers;
 import rocks.xmpp.extensions.si.StreamInitiationManager;
@@ -305,6 +306,9 @@ public final class ExtensionModule implements Module {
 
                 // XEP-0249: Direct MUC Invitations
                 Extension.of(DirectInvitation.NAMESPACE, MultiUserChatManager.class, true, DirectInvitation.class),
+
+                // XEP-0258: Security Labels in XMPP
+                Extension.of(SecurityLabel.NAMESPACE, false, SecurityLabel.class),
 
                 // XEP-0260: Jingle SOCKS5 Bytestreams Transport Method
                 Extension.of(S5bTransportMethod.NAMESPACE, null, false, S5bTransportMethod.class),

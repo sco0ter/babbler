@@ -60,5 +60,5 @@ xmppClient.addConnectionListener(e -> {
 If you don't want to wait for the automatic reconnection, you can manually reconnect by calling:
 
 ```java
-xmppSession.connect();
+xmppClient.connect();
 ```

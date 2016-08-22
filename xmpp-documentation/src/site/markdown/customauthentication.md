@@ -83,7 +83,7 @@ Note that, the following configuration disables all other default mechanism, lik
 
 ```java
 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-    .authenticationMechanisms(CustomSaslClient.NAME);
+    .authenticationMechanisms(CustomSaslClient.NAME)
     .build();
 ```
 

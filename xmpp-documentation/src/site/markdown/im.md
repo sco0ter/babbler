@@ -34,7 +34,7 @@ Whenever one of your contacts updates his presence (e.g. comes online, goes away
 ```java
 xmppClient.addInboundPresenceListener(e -> {
     Presence presence = e.getPresence();
-    Contact contact = xmppSession.getManager(RosterManager.class).getContact(presence.getFrom());
+    Contact contact = xmppClient.getManager(RosterManager.class).getContact(presence.getFrom());
     if (contact != null) {
         // ... contact's presence has updated.
     }
@@ -55,11 +55,11 @@ xmppClient.addInboundPresenceListener(e -> {
 You can then either approve or deny the subscription request:
 
 ```java
-xmppSession.getManager(PresenceManager.class).approveSubscription(presence.getFrom());
+xmppClient.getManager(PresenceManager.class).approveSubscription(presence.getFrom());
 ```
 
 ```java
-xmppSession.getManager(PresenceManager.class).denySubscription(presence.getFrom());
+xmppClient.getManager(PresenceManager.class).denySubscription(presence.getFrom());
 ```
 
 ## Listening for Inbound Messages
@@ -67,7 +67,7 @@ xmppSession.getManager(PresenceManager.class).denySubscription(presence.getFrom(
 Listening for messages is done by adding a message listener.
 
 ```java
-xmppSession.addInboundMessageListener(e -> {
+xmppClient.addInboundMessageListener(e -> {
     Message message = e.getMessage();
     // Handle message.
 });
@@ -82,7 +82,7 @@ The same approach as for inbound messages is also used for outbound messages. Th
 You can use this, if you want to add extensions to a stanza or otherwise modify the stanza.
 
 ```java
-xmppSession.addOutboundMessageListener(e -> {
+xmppClient.addOutboundMessageListener(e -> {
     Message message = e.getMessage();
     // you could add an extension to the message here.
 });

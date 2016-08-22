@@ -1,6 +1,16 @@
 # Changelog
 ---
 
+### Version 0.7.2-SNAPSHOT
+
+* Fix reconnection issue, when using multiple connection methods per session.
+* Wait for the roster response before sending initial presence during login, to prevent receiving presence information from yet unknown contacts.
+* Update XEP-0198 Stream Management to version 1.5 (respect the 'h' attribute in the `failed` element)
+* Make sure asynchronous method calls do not block (affected only few methods for avatars and entity capabilities)
+* Use the hostname instead of the domain for SASL clients (i.e. use the `Sasl.createSaslClient` API correctly as per the documentation, may affect DIGEST-MD5 authentication).
+* Call `SaslClient.dipose()` when SASL authentication has completed.
+* Include the requesting IQ in `NoResponseException`, when doing IQ queries.
+
 ### Version 0.7.1 (2016-08-09)
 
 * Discovering services should not fail immediately if one sub-query fails.

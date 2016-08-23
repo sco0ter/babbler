@@ -28,6 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.address.model.Address;
 import rocks.xmpp.extensions.address.model.Addresses;
 import rocks.xmpp.im.roster.model.Roster;
@@ -65,6 +66,20 @@ public class AddressTest extends XmlTest {
     }
 
     @Test
+    public void testWithoutBlindCarbonCopies() throws JAXBException, XMLStreamException {
+        List<Address> addressList = new ArrayList<>();
+        addressList.add(new Address(Address.Type.BCC, Jid.of("jer@jabber.org/Home")));
+        addressList.add(new Address(Address.Type.TO, Jid.of("hildjj@jabber.org/Work"), "description", "node"));
+        addressList.add(new Address(Address.Type.BCC, Jid.of("jer@jabber.org/Home")));
+        Addresses addresses = new Addresses(addressList);
+
+        Addresses withoutBCC = addresses.deliveredAndWithoutBlindCarbonCopies();
+        Assert.assertEquals(withoutBCC.getAddresses().size(), 1);
+        Assert.assertEquals(withoutBCC.getAddresses().get(0).getType(), Address.Type.TO);
+        Assert.assertTrue(withoutBCC.getAddresses().get(0).isDelivered());
+    }
+
+    @Test
     public void testDelivered() throws JAXBException, XMLStreamException {
         Address address = new Address(Address.Type.CC, Jid.of("jer@jabber.org/Home"), new Roster(), new Roster());
         Address delivered = address.delivered();
@@ -75,5 +90,25 @@ public class AddressTest extends XmlTest {
         Assert.assertEquals(address.getExtensions(), delivered.getExtensions());
         Assert.assertTrue(delivered.isDelivered());
         Assert.assertFalse(address.isDelivered());
+    }
+
+    @Test
+    public void testReplyHandling() throws JAXBException, XMLStreamException {
+        List<Address> addressList = new ArrayList<>();
+        addressList.add(new Address(Address.Type.CC, Jid.of("jer@jabber.org/Home")));
+        addressList.add(new Address(Address.Type.TO, Jid.of("hildjj@jabber.org/Work"), "description", "node"));
+        addressList.add(new Address(Address.Type.BCC, Jid.of("jer@jabber.org/Home")));
+
+        Addresses addresses = new Addresses(addressList);
+        Message message = new Message();
+        message.setTo(Jid.of("hildjj@jabber.org/Work"));
+        message.setFrom(Jid.of("jer@jabber.org/Home"));
+        message.addExtension(addresses);
+
+        Message replyMessage = new Message();
+
+        boolean reply = Addresses.createReply(message, replyMessage);
+        Assert.assertTrue(reply);
+        Assert.assertEquals(replyMessage.getExtension(Addresses.class).getAddresses().size(), 2);
     }
 }

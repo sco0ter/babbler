@@ -24,12 +24,16 @@
 
 package rocks.xmpp.extensions.address.model;
 
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stanza.model.Message;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The implementation of the {@code <addresses/>} element in the {@code http://jabber.org/protocol/address} namespace..
@@ -43,7 +47,13 @@ import java.util.List;
  * Message message = new Message(Jid.of("romeo@example.net"));
  * message.addExtension(addresses);
  * </code></pre>
- * <p>
+ * <h2>Creating a Reply for a Message</h2>
+ * To create a reply use {@link #createReply(Message, Message)}:
+ * <pre>
+ * {@code
+ * boolean replyGenerated = Addresses.createReply(message, replyMessage);
+ * }
+ * </pre>
  * This class is immutable.
  *
  * @author Christian Schudt
@@ -56,6 +66,7 @@ public final class Addresses {
 
     private final List<Address> address = new ArrayList<>();
 
+    @SuppressWarnings("unused")
     private Addresses() {
     }
 
@@ -84,5 +95,86 @@ public final class Addresses {
      */
     public final List<Address> getAddresses() {
         return Collections.unmodifiableList(address);
+    }
+
+    /**
+     * Creates a copy of this addresses extension, but without any BCC addresses.
+     * This is useful for server processing (multicast usage).
+     *
+     * @return A new addresses extension.
+     * @see <a href="http://xmpp.org/extensions/xep-0033.html#multicast">6. Multicast Usage</a>
+     */
+    public final Addresses deliveredAndWithoutBlindCarbonCopies() {
+        return new Addresses(this.address.stream().map(Address::delivered).filter(address -> address.getType() != Address.Type.BCC).collect(Collectors.toList()));
+    }
+
+    /**
+     * If a noreply address is specified, a reply SHOULD NOT be generated.
+     *
+     * @return True, if a reply should not be generated.
+     * @see <a href="http://xmpp.org/extensions/xep-0033.html#replies">8. Reply Handling</a>
+     */
+    public final boolean shouldNotReply() {
+        // If a noreply address is specified, a reply SHOULD NOT be generated.
+        return address.stream().anyMatch(a -> a.getType() == Address.Type.NOREPLY);
+    }
+
+    /**
+     * Creates a reply for a message.
+     * If the original message contains address information, a new address extension is created based on the original one and added to the reply.
+     * <p>
+     * This method return false, if either no address information is found on the original message or it contains either {@link Address.Type#NOREPLY} or {@link Address.Type#REPLYROOM} addresses.
+     *
+     * @param original The original message.
+     * @param reply    The reply message.
+     * @return True, if a reply has been generated; false, if a reply should not be generated.
+     * @see <a href="http://xmpp.org/extensions/xep-0033.html#replies">8. Reply Handling</a>
+     */
+    public static boolean createReply(Message original, Message reply) {
+        Addresses addresses = original.getExtension(Addresses.class);
+        if (addresses == null) {
+            return false;
+        }
+
+        if (addresses.shouldNotReply()) {
+            return false;
+        }
+        // an extended-address aware client MUST copy the address header from the original message into the reply, removing any delivered attributes
+        List<Address> addressList = new ArrayList<>();
+        Jid sender = original.getFrom() != null ? original.getFrom().asBareJid() : null;
+        Jid receiver = original.getTo() != null ? original.getTo().asBareJid() : null;
+        boolean containsOriginalSender = false;
+        for (Address addr : addresses.address) {
+            if (addr.getJid() != null) {
+                // If a replyto address is specified, the reply SHOULD go to the specified address.
+                // No further extended address processing is required.
+                // Any <thread/> element from the initial message MUST be copied into the reply.
+                if (addr.getType() == Address.Type.REPLYTO) {
+                    reply.setTo(addr.getJid());
+                    if (original.getThread() != null) {
+                        reply.setThread(original.getThread());
+                    }
+                    return true;
+                }
+                if (addr.getType() == Address.Type.REPLYROOM) {
+                    return false;
+                }
+                // The recipient's address SHOULD be removed from the list.
+                Jid bareJid = addr.getJid().asBareJid();
+                if (!bareJid.equals(receiver)) {
+                    addressList.add(addr.undelivered());
+                }
+                if (bareJid.equals(sender)) {
+                    containsOriginalSender = true;
+                }
+            }
+        }
+        //  If the original sender is not in the copied list, the original sender MUST be added as a 'to' address.
+        if (!containsOriginalSender) {
+            addressList.add(0, new Address(Address.Type.TO, sender));
+        }
+        reply.removeExtension(Addresses.class);
+        reply.addExtension(new Addresses(addressList));
+        return true;
     }
 }

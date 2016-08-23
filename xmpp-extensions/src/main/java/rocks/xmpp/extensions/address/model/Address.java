@@ -217,6 +217,15 @@ public final class Address {
     }
 
     /**
+     * Creates a copy of this address, whose delivered attribute is removed.
+     *
+     * @return A new address object without delivered attribute.
+     */
+    public final Address undelivered() {
+        return new Address(type, jid, uri, desc, node, null, extensions.toArray());
+    }
+
+    /**
      * Gets the extensions as unmodifiable list.
      *
      * @return The extensions.

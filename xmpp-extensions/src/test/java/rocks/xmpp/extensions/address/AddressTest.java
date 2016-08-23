@@ -55,7 +55,20 @@ public class AddressTest extends XmlTest {
         Addresses addresses = new Addresses(addressList);
 
         String xml = marshal(addresses);
-        Assert.assertEquals(xml, "<addresses xmlns=\"http://jabber.org/protocol/address\"><address type=\"to\" jid=\"hildjj@jabber.org/Work\" desc=\"description\" node=\"node\"></address><address type=\"cc\" jid=\"jer@jabber.org/Home\"><query xmlns=\"jabber:iq:roster\"></query></address></addresses>");
+        Assert.assertEquals(xml, "<addresses xmlns=\"http://jabber.org/protocol/address\"><address type=\"to\" jid=\"hildjj@jabber.org/Work\" node=\"node\" desc=\"description\"></address><address type=\"cc\" jid=\"jer@jabber.org/Home\"><query xmlns=\"jabber:iq:roster\"></query></address></addresses>");
         Assert.assertNotNull(addressList.get(1).getExtension(Roster.class));
+    }
+
+    @Test
+    public void testDelivered() throws JAXBException, XMLStreamException {
+        Address address = new Address(Address.Type.CC, Jid.of("jer@jabber.org/Home"), new Roster(), new Roster());
+        Address delivered = address.delivered();
+        Assert.assertEquals(address.getType(), delivered.getType());
+        Assert.assertEquals(address.getJid(), delivered.getJid());
+        Assert.assertEquals(address.getDescription(), delivered.getDescription());
+        Assert.assertEquals(address.getNode(), delivered.getNode());
+        Assert.assertEquals(address.getExtensions(), delivered.getExtensions());
+        Assert.assertTrue(delivered.isDelivered());
+        Assert.assertFalse(address.isDelivered());
     }
 }

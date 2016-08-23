@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.address.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -59,12 +60,21 @@ public final class Addresses {
     }
 
     /**
-     * Gets the address headers.
+     * Creates an address extension.
      *
-     * @param addresses The address headers.
+     * @param addresses The addresses.
      */
     public Addresses(Collection<Address> addresses) {
         this.address.addAll(addresses);
+    }
+
+    /**
+     * Creates an address extension.
+     *
+     * @param address The addresses.
+     */
+    public Addresses(Address... address) {
+        this.address.addAll(Arrays.asList(address));
     }
 
     /**

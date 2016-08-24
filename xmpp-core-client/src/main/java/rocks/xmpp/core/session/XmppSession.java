@@ -836,11 +836,23 @@ public abstract class XmppSession implements AutoCloseable {
                     throw new IllegalStateException("Cannot send stanzas before resource binding has completed.");
                 }
                 if (stanza instanceof Message) {
-                    XmppUtils.notifyEventListeners(outboundMessageListeners, new MessageEvent(this, (Message) stanza, false));
+                    MessageEvent messageEvent = new MessageEvent(this, (Message) stanza, false);
+                    XmppUtils.notifyEventListeners(outboundMessageListeners, messageEvent);
+                    if (messageEvent.isConsumed()) {
+                        throw new IllegalStateException("Message event has been consumed.");
+                    }
                 } else if (stanza instanceof Presence) {
-                    XmppUtils.notifyEventListeners(outboundPresenceListeners, new PresenceEvent(this, (Presence) stanza, false));
+                    PresenceEvent presenceEvent = new PresenceEvent(this, (Presence) stanza, false);
+                    XmppUtils.notifyEventListeners(outboundPresenceListeners, presenceEvent);
+                    if (presenceEvent.isConsumed()) {
+                        throw new IllegalStateException("Presence event has been consumed.");
+                    }
                 } else if (stanza instanceof IQ) {
-                    XmppUtils.notifyEventListeners(outboundIQListeners, new IQEvent(this, (IQ) stanza, false));
+                    IQEvent iqEvent = new IQEvent(this, (IQ) stanza, false);
+                    XmppUtils.notifyEventListeners(outboundIQListeners, iqEvent);
+                    if (iqEvent.isConsumed()) {
+                        throw new IllegalStateException("IQ event has been consumed.");
+                    }
                 }
             }
             synchronized (connections) {

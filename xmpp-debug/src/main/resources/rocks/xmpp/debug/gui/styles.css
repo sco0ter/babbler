@@ -66,6 +66,10 @@
     -fx-fill: linear-gradient(from 50% 0% to 50% 100%, #e6ac19 0%, #cc9916 100%);
 }
 
+.dnd {
+    -fx-fill: linear-gradient(from 50% 0% to 50% 100%, #E64B2C 0%, #B33A22 100%);
+}
+
 .unavailable {
     -fx-fill: linear-gradient(from 50% 0% to 50% 100%, #e6e6e6 0%, #cccccc 100%);
 }

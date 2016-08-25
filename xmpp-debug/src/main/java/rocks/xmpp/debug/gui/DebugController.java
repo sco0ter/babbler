@@ -98,6 +98,8 @@ public final class DebugController implements Initializable {
 
     private static final String CSS_AWAY = "away";
 
+    private static final String CSS_DND = "dnd";
+
     final DebugViewModel viewModel;
 
     private final Transformer transformer;
@@ -262,15 +264,18 @@ public final class DebugController implements Initializable {
         circlePresence.setRadius(10);
         circlePresence.getStyleClass().addAll(CSS_PRESENCE, CSS_UNAVAILABLE);
         viewModel.presence.addListener((observable, oldValue, newValue) -> {
-            circlePresence.getStyleClass().removeAll(CSS_UNAVAILABLE, CSS_AVAILABLE);
+            circlePresence.getStyleClass().removeAll(CSS_UNAVAILABLE, CSS_AVAILABLE, CSS_AWAY, CSS_DND);
             Presence presence = viewModel.presence.get();
             if (presence != null) {
                 if (presence.isAvailable()) {
                     if (presence.getShow() != null) {
                         switch (presence.getShow()) {
                             case AWAY:
+                            case XA:
                                 circlePresence.getStyleClass().add(CSS_AWAY);
                                 break;
+                            case DND:
+                                circlePresence.getStyleClass().add(CSS_DND);
                             default:
                                 circlePresence.getStyleClass().add(CSS_AVAILABLE);
                                 break;
@@ -285,22 +290,6 @@ public final class DebugController implements Initializable {
                 circlePresence.getStyleClass().add(CSS_UNAVAILABLE);
             }
         });
-//        circlePresence.fillProperty().bind(new ObjectBinding<Paint>() {
-//            {
-//                super.bind(viewModel.presence);
-//            }
-//
-//            @Override
-//            protected Paint computeValue() {
-//                if (viewModel.presence.get() != null) {
-//                    if (viewModel.presence.get().isAvailable()) {
-//                        return Color.GREEN;
-//                    }
-//                    return Color.GRAY;
-//                }
-//                return Color.GRAY;
-//            }
-//        });
 
         filteredList = new FilteredList<>(viewModel.stanzas, this::isVisible);
 

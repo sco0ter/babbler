@@ -53,6 +53,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
+import rocks.xmpp.extensions.sm.model.StreamManagement;
 
 import javax.xml.bind.DataBindingException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -75,6 +76,8 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -338,27 +341,58 @@ public final class DebugController implements Initializable {
                         stanzaView.setText(newValue.getXml());
                     }
                 }
-
+                List<StanzaEntry> outBoundRequests = new ArrayList<>();
+                List<StanzaEntry> outBoundAnswers = new ArrayList<>();
+                List<StanzaEntry> inBoundRequests = new ArrayList<>();
+                List<StanzaEntry> inBoundAnswers = new ArrayList<>();
+                int answerIndex = -1;
+                int requestIndex = -1;
                 // Add the highlighted items.
-                stanzaTableView.getItems().stream().forEach(entry -> {
-                    if (newValue.getStanza() instanceof Stanza && entry.getStanza() instanceof Stanza) {
-                        Stanza selectedStanza = (Stanza) newValue.getStanza();
-                        Stanza otherStanza = (Stanza) entry.getStanza();
-                        if (otherStanza.getId() != null && otherStanza.getId().equals(selectedStanza.getId()) && newValue.isInbound() != entry.isInbound()) {
-                            if (selectedStanza instanceof IQ && otherStanza instanceof IQ) {
-                                IQ selectedIQ = (IQ) selectedStanza;
-                                IQ otherIQ = (IQ) otherStanza;
-                                if (((selectedIQ.isRequest() && otherIQ.isResponse())
-                                        || selectedIQ.isResponse() && otherIQ.isRequest())) {
-                                    // Add the highlighted items.
+                for (StanzaEntry entry : stanzaTableView.getItems()) {
+                    if (newValue.isInbound() != entry.isInbound()) {
+                        if (newValue.getStanza() instanceof Stanza && entry.getStanza() instanceof Stanza) {
+                            Stanza selectedStanza = (Stanza) newValue.getStanza();
+                            Stanza otherStanza = (Stanza) entry.getStanza();
+                            if (otherStanza.getId() != null && otherStanza.getId().equals(selectedStanza.getId())) {
+                                if (selectedStanza instanceof IQ && otherStanza instanceof IQ) {
+                                    IQ selectedIQ = (IQ) selectedStanza;
+                                    IQ otherIQ = (IQ) otherStanza;
+                                    if (((selectedIQ.isRequest() && otherIQ.isResponse())
+                                            || selectedIQ.isResponse() && otherIQ.isRequest())) {
+                                        // Add the highlighted items.
+                                        viewModel.highlightedItems.add(entry);
+                                    }
+                                } else {
                                     viewModel.highlightedItems.add(entry);
                                 }
-                            } else {
-                                viewModel.highlightedItems.add(entry);
                             }
                         }
                     }
-                });
+                    if (entry.getStanza() instanceof StreamManagement.Answer) {
+                        List<StanzaEntry> answers = entry.isInbound() ? inBoundAnswers : outBoundAnswers;
+                        answers.add(entry);
+                        if (newValue == entry) {
+                            answerIndex = (newValue.isInbound() ? inBoundAnswers.size() : outBoundAnswers.size()) - 1;
+                        }
+                    }
+                    if (entry.getStanza() == StreamManagement.REQUEST) {
+                        List<StanzaEntry> requests = entry.isInbound() ? inBoundRequests : outBoundRequests;
+                        requests.add(entry);
+                        if (newValue == entry) {
+                            requestIndex = (newValue.isInbound() ? inBoundRequests.size() : outBoundRequests.size()) - 1;
+                        }
+                    }
+                }
+
+                List<StanzaEntry> requests = newValue.isInbound() ? outBoundRequests : inBoundRequests;
+                if (answerIndex > -1 && answerIndex < requests.size()) {
+                    viewModel.highlightedItems.add(requests.get(answerIndex));
+                }
+                List<StanzaEntry> answers = newValue.isInbound() ? outBoundAnswers : inBoundAnswers;
+                if (requestIndex > -1 && requestIndex < answers.size()) {
+                    viewModel.highlightedItems.add(answers.get(requestIndex));
+                }
+
                 // Workaround to refresh table:
                 // http://stackoverflow.com/questions/11065140/javafx-2-1-tableview-refresh-items
                 stanzaTableView.getColumns().get(0).setVisible(false);

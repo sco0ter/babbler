@@ -27,6 +27,7 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Stanza;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -52,12 +53,16 @@ public final class SendTask<S extends Stanza> implements Future<Void> {
      */
     private Consumer<S> onAcknowledge;
 
+    private Consumer<S> onSent;
+
+    private BiConsumer<Throwable, S> onFailure;
+
     /**
      * Guarded by this.
      */
     private boolean receivedByServer;
 
-    CompletableFuture<Void> sendFuture;
+    private CompletableFuture<Void> sendFuture;
 
     SendTask(S stanza) {
         this.stanza = stanza;
@@ -93,7 +98,8 @@ public final class SendTask<S extends Stanza> implements Future<Void> {
      *
      * @param onSent The callback.
      */
-    public final void onSent(Consumer<S> onSent) {
+    public final synchronized void onSent(Consumer<S> onSent) {
+        this.onSent = Objects.requireNonNull(onSent);
         sendFuture.thenRun(() -> onSent.accept(stanza));
     }
 
@@ -102,12 +108,29 @@ public final class SendTask<S extends Stanza> implements Future<Void> {
      *
      * @param onFailure The callback.
      */
-    public final void onFailed(BiConsumer<Throwable, S> onFailure) {
+    public final synchronized void onFailed(BiConsumer<Throwable, S> onFailure) {
+        this.onFailure = Objects.requireNonNull(onFailure);
         sendFuture.whenComplete((aVoid, throwable) -> {
             if (throwable != null) {
                 onFailure.accept(throwable, stanza);
             }
         });
+    }
+
+    synchronized void updateSendFuture(CompletableFuture<Void> sendFuture) {
+        this.sendFuture = sendFuture;
+        Consumer<S> consumerSent = onSent;
+        BiConsumer<Throwable, S> consumerFailed = onFailure;
+        if (consumerSent != null) {
+            this.sendFuture.thenRun(() -> consumerSent.accept(stanza));
+        }
+        if (consumerFailed != null) {
+            sendFuture.whenComplete((aVoid, throwable) -> {
+                if (throwable != null) {
+                    consumerFailed.accept(throwable, stanza);
+                }
+            });
+        }
     }
 
     void receivedByServer() {

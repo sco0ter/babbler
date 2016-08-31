@@ -263,6 +263,7 @@ public final class WebSocketConnection extends Connection {
             }
 
             streamFeaturesManager.addFeatureNegotiator(streamManager);
+            streamManager.reset();
 
             final Session session = client.connectToServer(new Endpoint() {
                 @Override

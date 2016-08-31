@@ -32,10 +32,12 @@ import java.util.List;
 import java.util.Locale;
 
 /**
+ * A stanza which is extensible (can have more than one extension), i.e. {@link Message} and {@link Presence}.
+ *
  * @author Christian Schudt
  */
 @XmlTransient
-abstract class ExtensibleStanza extends Stanza {
+public abstract class ExtensibleStanza extends Stanza {
 
     ExtensibleStanza(Jid to, Jid from, String id, Locale language, Collection<?> extensions, StanzaError error) {
         super(to, from, id, language, extensions, error);

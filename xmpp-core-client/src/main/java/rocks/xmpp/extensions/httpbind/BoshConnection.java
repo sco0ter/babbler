@@ -829,7 +829,6 @@ public final class BoshConnection extends Connection {
             if (body != null) {
                 body.build().getWrappedObjects().stream().filter(object -> object instanceof Stanza).forEach(object -> {
                     Stanza stanza = (Stanza) object;
-                    xmppSession.getUnacknowledgedStanzas().remove(stanza);
                     xmppSession.markAcknowledged(stanza);
                 });
             }

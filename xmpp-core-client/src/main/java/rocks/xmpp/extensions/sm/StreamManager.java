@@ -31,7 +31,9 @@ import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
+import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Predicate;
 
 /**
@@ -57,6 +59,13 @@ public final class StreamManager extends StreamFeatureNegotiator {
      * the value of 'h' SHALL be reset from 232-1 back to zero (rather than being incremented to 232).
      */
     private static final long MAX_H = 0xFFFFFFFFL;
+
+    /**
+     * Keep a private queue of unacknowledged stanzas.
+     * Unlike the {@link XmppSession#getUnacknowledgedStanzas()} queue, this queue only keeps stanzas, if stream management is enabled by the client.
+     * This is important to not mess up the counter.
+     */
+    private final Queue<Stanza> unacknowledgedStanzas = new ConcurrentLinkedDeque<>();
 
     /**
      * Tracks the count of inbound stanzas, we have received from the server.
@@ -102,13 +111,13 @@ public final class StreamManager extends StreamFeatureNegotiator {
             return Status.IGNORE;
         }
 
-        Status status = Status.INCOMPLETE;
         if (element instanceof StreamManagement) {
             // Client sets outbound count to zero.
             synchronized (this) {
                 acknowledgedStanzaCount = 0;
                 enabledByClient = true;
             }
+            unacknowledgedStanzas.clear();
             xmppSession.send(new StreamManagement.Enable(true));
         } else if (element instanceof StreamManagement.Enabled) {
             // In addition, client sets inbound count to zero.
@@ -144,8 +153,7 @@ public final class StreamManager extends StreamFeatureNegotiator {
             resumed(true);
             return Status.SUCCESS;
         }
-
-        return status;
+        return Status.INCOMPLETE;
     }
 
     private void resumed(boolean resumed) {
@@ -170,7 +178,7 @@ public final class StreamManager extends StreamFeatureNegotiator {
             }
             for (long i = 0; i < x; i++) {
                 // Remove X stanzas from the head of the queue and mark them as acknowledged.
-                xmppSession.markAcknowledged(xmppSession.getUnacknowledgedStanzas().poll());
+                xmppSession.markAcknowledged(unacknowledgedStanzas.poll());
             }
         }
     }
@@ -194,7 +202,7 @@ public final class StreamManager extends StreamFeatureNegotiator {
      */
     public synchronized void markUnacknowledged(Stanza stanza) {
         if (enabledByClient) {
-            xmppSession.getUnacknowledgedStanzas().offer(stanza);
+            unacknowledgedStanzas.offer(stanza);
         }
     }
 
@@ -251,6 +259,20 @@ public final class StreamManager extends StreamFeatureNegotiator {
         return enabled != null ? enabled.getId() : null;
     }
 
+    /**
+     * Resets any client enabled state.
+     */
+    public synchronized void reset() {
+        enabled = null;
+        enabledByClient = false;
+    }
+
+    /**
+     * Resumes the stream.
+     *
+     * @return The async result, which is done, if either the stream is not resumable, or the server resumed the stream.
+     * @see <a href="http://xmpp.org/extensions/xep-0198.html#resumption">5. Resumption</a>
+     */
     public AsyncResult<Boolean> resume() {
         if (!isResumable()) {
             return new AsyncResult<>(CompletableFuture.completedFuture(false));

@@ -188,6 +188,7 @@ public final class TcpConnection extends Connection {
         streamFeaturesManager.addFeatureNegotiator(securityManager);
         streamFeaturesManager.addFeatureNegotiator(compressionManager);
         streamFeaturesManager.addFeatureNegotiator(streamManager);
+        streamManager.reset();
 
         outputStream = new BufferedOutputStream(socket.getOutputStream());
         inputStream = new BufferedInputStream(socket.getInputStream());

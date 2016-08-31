@@ -34,7 +34,6 @@ import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
-import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.core.stanza.model.client.ClientPresence;
@@ -52,12 +51,10 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.sasl.RealmCallback;
-import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Queue;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -413,15 +410,7 @@ public final class XmppClient extends XmppSession {
                     if (streamManager.resume().getResult(timeout, TimeUnit.MILLISECONDS)) {
                         logger.fine("Stream resumed.");
                         updateStatus(Status.AUTHENTICATED);
-                        // Copy the unacknowledged stanzas.
-                        Queue<Stanza> toBeResent = new ArrayDeque<>(getUnacknowledgedStanzas());
-                        // Then clear the queue.
-                        getUnacknowledgedStanzas().clear();
-
-                        // Then resend everything, which the server didn't acknowledge.
-                        for (Stanza stanza : toBeResent) {
-                            send(stanza);
-                        }
+                        afterLogin();
                         return authenticationManager.getSuccessData();
                     }
                 } catch (TimeoutException e) {
@@ -456,6 +445,8 @@ public final class XmppClient extends XmppSession {
                 PresenceManager presenceManager = getManager(PresenceManager.class);
                 if (presenceManager.getLastSentPresence() != null) {
                     // After retrieving the roster, resend the last presence, if any (in reconnection case).
+                    // Note, that this will also rejoin any Multi-User Chats on reconnection.
+                    // It's important to first rejoin them, before resending unacknowledged MUC messages.
                     presenceManager.getLastSentPresences().forEach(presence -> {
                         presence.getExtensions().clear();
                         send(presence);

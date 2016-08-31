@@ -33,6 +33,7 @@ import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.StanzaException;
+import rocks.xmpp.core.stanza.model.ExtensibleStanza;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.IQ.Type;
 import rocks.xmpp.core.stanza.model.Message;
@@ -45,6 +46,7 @@ import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
+import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 import rocks.xmpp.extensions.sm.StreamManager;
@@ -60,6 +62,8 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -159,6 +163,14 @@ public abstract class XmppSession implements AutoCloseable {
      */
     private final Queue<Stanza> unacknowledgedStanzas = new ConcurrentLinkedDeque<>();
 
+    /**
+     * Maps a stanza to its send date. This is used when resending unacknowledged stanzas during reconnection (to have the original send date).
+     */
+    private final Map<Stanza, Instant> stanzaSendDate = new ConcurrentHashMap<>();
+
+    /**
+     * Maps a stanza to its send task.
+     */
     private final Map<Stanza, SendTask<? extends Stanza>> stanzaTrackingMap = new ConcurrentHashMap<>();
 
     /**
@@ -316,6 +328,22 @@ public abstract class XmppSession implements AutoCloseable {
             XmppUtils.notifyEventListeners(connectionListeners, new ConnectionEvent(this, ConnectionEvent.Type.RECONNECTION_SUCCEEDED, null, Duration.ZERO));
         }
         wasLoggedIn = true;
+        // Copy the unacknowledged stanzas.
+        Queue<Stanza> toBeResent = new ArrayDeque<>(unacknowledgedStanzas);
+        // Then clear the queue.
+        unacknowledgedStanzas.clear();
+
+        // Then resend everything, which the server didn't acknowledge.
+        toBeResent.forEach(stanza -> {
+            Instant originalSendDate = stanzaSendDate.remove(stanza);
+            if (originalSendDate != null) {
+                DelayedDelivery delayedDelivery = new DelayedDelivery(originalSendDate);
+                if (stanza instanceof ExtensibleStanza && !stanza.hasExtension(DelayedDelivery.class)) {
+                    ((ExtensibleStanza) stanza).addExtension(delayedDelivery);
+                }
+            }
+            this.sendInternal(stanza);
+        });
     }
 
     protected final void tryConnect(Jid from, String namespace, Consumer<Jid> onStreamOpened) throws XmppException {
@@ -785,10 +813,16 @@ public abstract class XmppSession implements AutoCloseable {
 
         addListener.accept(listener);
 
-        sendFunction.apply(stanza);
+        SendTask<S> sendTask = sendFunction.apply(stanza);
 
-        return new AsyncResult<>(completableFuture.applyToEither(CompletionStages.timeoutAfter(timeout.toMillis(), TimeUnit.MILLISECONDS, () -> new NoResponseException("Timeout reached, while waiting on a response for request: " + stanza)), Function.identity())).whenComplete((result, e) ->
-                removeListener.accept(listener));
+        return new AsyncResult<>(completableFuture
+                // When a response has received, mark the requesting stanza as acknowledged.
+                // This is especially important for Bind and Roster IQs, so that they won't be resend after login.
+                .whenComplete((result, e) -> removeFromQueue(sendTask.getStanza()))
+                .applyToEither(CompletionStages.timeoutAfter(timeout.toMillis(), TimeUnit.MILLISECONDS, () -> new NoResponseException("Timeout reached, while waiting on a response for request: " + stanza)), Function.identity()))
+                // When either a timeout happened or response has received, remove the listener.
+                .whenComplete((result, e) -> removeListener.accept(listener));
+
     }
 
     /**
@@ -818,19 +852,24 @@ public abstract class XmppSession implements AutoCloseable {
      * @return The sent stream element, which is usually the same as the parameter, but may differ in case a stanza is sent, e.g. a {@link Message} is translated to a {@link rocks.xmpp.core.stanza.model.client.ClientMessage}.
      */
     public Future<Void> send(StreamElement element) {
-        return sendInternal(element, connection -> {
-        });
+        return sendInternal(element);
     }
 
-    private CompletableFuture<Void> sendInternal(StreamElement element, Consumer<Connection> beforeSend) {
+    private CompletableFuture<Void> sendInternal(StreamElement element) {
 
-        CompletableFuture<Void> sendFuture = new CompletableFuture<>();
+        CompletableFuture<Void> sendFuture;
+        Stanza stanza = null;
         try {
             if (element instanceof Stanza) {
-                Stanza stanza = (Stanza) element;
+                stanza = (Stanza) element;
+                // Put the stanzas in an unacknowledged queue.
+                // They will be removed if either the stanza has been sent without error or if it has been acknowledged by the server (if the connection supports acknowledgements).
+                // In case of IQ queries, they will be removed, when the IQ response arrives.
+                unacknowledgedStanzas.offer(stanza);
+                stanzaSendDate.put(stanza, Instant.now());
+
                 // If resource binding has not completed and it's tried to send a stanza which doesn't serve the purpose
                 // of resource binding, throw an exception, because otherwise the server will terminate the connection with a stream error.
-                // TODO: Consider queuing such stanzas and send them as soon as logged in instead of throwing exception.
                 if (!EnumSet.of(Status.AUTHENTICATED, Status.CLOSING, Status.DISCONNECTED).contains(getStatus())
                         && !isSentToUserOrServer(stanza, getDomain(), getConnectedResource())) {
                     throw new IllegalStateException("Cannot send stanzas before resource binding has completed.");
@@ -864,12 +903,20 @@ public abstract class XmppSession implements AutoCloseable {
                     }
                     throw ise;
                 } else {
-                    beforeSend.accept(activeConnection);
                     sendFuture = activeConnection.send(element);
                 }
             }
         } catch (Exception e) {
+            sendFuture = new CompletableFuture<>();
             sendFuture.completeExceptionally(e);
+        }
+        // This is for resending. If this stanza has been already sent previously, but failed,
+        // there might be a associated send task. Update it with the new send future.
+        if (stanza != null) {
+            SendTask<?> sendTask = stanzaTrackingMap.get(stanza);
+            if (sendTask != null) {
+                sendTask.updateSendFuture(sendFuture);
+            }
         }
         return sendFuture.whenComplete(((aVoid, throwable) -> {
             if (throwable == null) {
@@ -880,6 +927,12 @@ public abstract class XmppSession implements AutoCloseable {
                         logger.log(Level.WARNING, e.getMessage(), e);
                     }
                 });
+                // The stanza has been successfully sent. Don't track it any longer, unless the connection supports acknowledgements.
+                if (element instanceof Stanza && !getActiveConnection().isUsingAcknowledgements()) {
+                    Stanza st = (Stanza) element;
+                    removeFromQueue(st);
+                    stanzaTrackingMap.remove(st);
+                }
             } else {
                 sendFailedListeners.forEach(listener -> {
                     try {
@@ -890,6 +943,11 @@ public abstract class XmppSession implements AutoCloseable {
                 });
             }
         }));
+    }
+
+    private void removeFromQueue(Stanza stanza) {
+        stanzaSendDate.remove(stanza);
+        unacknowledgedStanzas.remove(stanza);
     }
 
     /**
@@ -916,14 +974,10 @@ public abstract class XmppSession implements AutoCloseable {
      */
     public abstract SendTask<Presence> sendPresence(final Presence presence);
 
+    @SuppressWarnings("unchecked")
     protected final <S extends Stanza> SendTask<S> trackAndSend(S stanza) {
-        SendTask<S> sendTask = new SendTask<>(stanza);
-        sendTask.sendFuture = sendInternal(stanza, connection -> {
-            // Only track stanzas, if the connection allows it.
-            if (connection.isUsingAcknowledgements()) {
-                stanzaTrackingMap.putIfAbsent(stanza, sendTask);
-            }
-        });
+        SendTask<S> sendTask = (SendTask<S>) stanzaTrackingMap.computeIfAbsent(stanza, key -> new SendTask<>(stanza));
+        sendTask.updateSendFuture(sendInternal(stanza));
         return sendTask;
     }
 
@@ -1308,12 +1362,21 @@ public abstract class XmppSession implements AutoCloseable {
         return unacknowledgedStanzas;
     }
 
+    /**
+     * Marks a stanza as acknowledged.
+     * This method removes a stanza from the unacknowledged queue, so that it won't be resent during reconnection
+     * and notifies the {@linkplain #addMessageAcknowledgedListener(Consumer) acknowledged listeners}.
+     *
+     * @param acknowledgedStanza The acknowledged stanza.
+     * @see #addMessageAcknowledgedListener(Consumer)
+     */
     public final void markAcknowledged(Stanza acknowledgedStanza) {
         if (acknowledgedStanza != null) {
+            removeFromQueue(acknowledgedStanza);
             if (acknowledgedStanza instanceof Message) {
                 XmppUtils.notifyEventListeners(messageAcknowledgedListeners, new MessageEvent(this, (Message) acknowledgedStanza, false));
             }
-            SendTask sendTask = stanzaTrackingMap.remove(acknowledgedStanza);
+            SendTask<?> sendTask = stanzaTrackingMap.remove(acknowledgedStanza);
             if (sendTask != null) {
                 sendTask.receivedByServer();
             }

@@ -241,6 +241,7 @@ public final class StreamFeaturesManager extends Manager {
             // If no feature negotiator was found or if the feature has been successfully negotiated, immediately go on with the next feature.
             return negotiateNextFeature();
         } else {
+            featureNegotiationStartedFutures.clear();
             negotiationCompleted.complete(null);
             return false;
         }

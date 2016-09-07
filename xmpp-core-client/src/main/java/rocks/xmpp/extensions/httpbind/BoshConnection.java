@@ -612,10 +612,7 @@ public final class BoshConnection extends Connection {
                                 if (!unacknowledgedRequests.isEmpty()) {
                                     bodyBuilder.ack(highestReceivedRid);
                                 }
-                                body = bodyBuilder
-                                        .wrappedObjects(elementsToSend)
-                                        .requestId(rid.get())
-                                        .build();
+                                bodyBuilder.wrappedObjects(elementsToSend);
                                 // Prevent that the session is terminated with policy-violation due to this:
                                 //
                                 // If during any period the client sends a sequence of new requests equal in length to the number specified by the 'requests' attribute,
@@ -628,6 +625,7 @@ public final class BoshConnection extends Connection {
                                 //
                                 // In short: If we would send a second empty request, don't do that!
                                 // Also don't send a new request, if the executors are shutdown.
+                                body = bodyBuilder.build();
                                 if (body.getType() != Body.Type.TERMINATE &&
                                         ((httpBindExecutor == null || httpBindExecutor.isShutdown())
                                                 || (requestCount.get() > 0
@@ -635,16 +633,9 @@ public final class BoshConnection extends Connection {
                                                 && (body.getRestart() == null || !body.getRestart()) && sessionId != null && elementsToSend.isEmpty()))) {
                                     return;
                                 }
-                                rid.getAndIncrement();
                                 // Clear everything after the elements have been sent.
                                 elementsToSend.clear();
                             }
-                        } else {
-                            body = bodyBuilder.build();
-                        }
-
-                        if (isUsingAcknowledgements()) {
-                            unacknowledgedRequests.put(body.getRid(), bodyBuilder);
                         }
 
                         httpConnection = getConnection();
@@ -689,7 +680,7 @@ public final class BoshConnection extends Connection {
 
                                     // Create the writer for this connection.
                                     xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(xmppOutputStream, "UTF-8"));
-
+                                    body = bodyBuilder.requestId(rid.getAndIncrement()).build();
                                     // Then write the XML to the output stream by marshalling the object to the writer.
                                     // Marshaller needs to be recreated here, because it's not thread-safe.
                                     xmppSession.createMarshaller().marshal(body, xmlStreamWriter);
@@ -707,6 +698,9 @@ public final class BoshConnection extends Connection {
                                         }
                                     });
 
+                                } catch (Exception e) {
+                                    rid.getAndDecrement();
+                                    throw e;
                                 } finally {
                                     if (xmlStreamWriter != null) {
                                         xmlStreamWriter.close();
@@ -717,6 +711,9 @@ public final class BoshConnection extends Connection {
                                 }
                             }
 
+                            if (isUsingAcknowledgements()) {
+                                unacknowledgedRequests.put(body.getRid(), bodyBuilder);
+                            }
                             // Wait for the response
                             if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
 

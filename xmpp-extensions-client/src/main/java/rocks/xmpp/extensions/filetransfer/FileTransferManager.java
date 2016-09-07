@@ -87,7 +87,7 @@ public final class FileTransferManager extends Manager {
      * @param url         The URL of the file.
      * @param description The description of the file.
      * @param recipient   The recipient's JID (must be a full JID).
-     * @param timeout     The timeout (indicates how long to wait until the file has been downloaded).
+     * @param timeout     The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
      * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
      */

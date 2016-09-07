@@ -39,6 +39,7 @@ import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +49,8 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Set;
@@ -78,6 +81,30 @@ public final class FileTransferManager extends Manager {
         super(xmppSession, true);
         this.streamInitiationManager = xmppSession.getManager(StreamInitiationManager.class);
         this.entityCapabilitiesManager = xmppSession.getManager(EntityCapabilitiesManager.class);
+    }
+
+    /**
+     * Calculates the MD5 hash for a file. The returned string is hex encoded.
+     *
+     * @param source The source path.
+     * @return The hex encoded MD5 hash.
+     * @throws IOException If the file could not be read.
+     */
+    public static String md5Hash(Path source) throws IOException {
+        final MessageDigest md;
+        try (InputStream is = Files.newInputStream(source)) {
+            md = MessageDigest.getInstance("MD5");
+            byte[] buffer = new byte[8192];
+            int n;
+            while ((n = is.read(buffer)) > -1) {
+                md.update(buffer, 0, n);
+            }
+            byte[] digest = md.digest();
+            return DatatypeConverter.printHexBinary(digest).toLowerCase();
+        } catch (NoSuchAlgorithmException e) {
+            // Every implementation of the Java platform is required to support MD5
+            throw new AssertionError(e);
+        }
     }
 
     /**
@@ -135,10 +162,31 @@ public final class FileTransferManager extends Manager {
      * @throws IOException If the file can't be read.
      */
     public final AsyncResult<FileTransfer> offerFile(final Path source, final String description, final Jid recipient, final Duration timeout) throws IOException {
+        return offerFile(source, description, recipient, timeout, null, false);
+    }
+
+    /**
+     * Offers a file to another user. If this method returns successfully, the recipient has accepted the offer, the stream method has been negotiated and the file is ready to be transferred.
+     * Call {@link FileTransfer#transfer()} to start the file transfer.
+     *
+     * @param source        The file.
+     * @param description   The description of the file.
+     * @param recipient     The recipient's JID (must be a <em>full</em> JID, i. e. including {@code resource}).
+     * @param timeout       The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
+     * @param mimeType      The mime type. If null, the mime type is guessed.
+     * @param calculateHash If true, the MD5 hash for the file is calculated and included in the offer.
+     * @return The async result with the file transfer object.
+     * @throws IOException If the file can't be read.
+     */
+    public final AsyncResult<FileTransfer> offerFile(final Path source, final String description, final Jid recipient, final Duration timeout, final String mimeType, final boolean calculateHash) throws IOException {
         if (Files.notExists(requireNonNull(source, "source must not be null."))) {
             throw new NoSuchFileException(source.getFileName().toString());
         }
-        return offerFile(Files.newInputStream(source), source.getFileName().toString(), Files.size(source), Files.getLastModifiedTime(source).toInstant(), description, recipient, timeout);
+        String hash = null;
+        if (calculateHash) {
+            hash = md5Hash(source);
+        }
+        return offerFile(Files.newInputStream(source), source.getFileName().toString(), Files.size(source), Files.getLastModifiedTime(source).toInstant(), description, recipient, timeout, UUID.randomUUID().toString(), mimeType, hash);
     }
 
     /**
@@ -154,7 +202,7 @@ public final class FileTransferManager extends Manager {
      * @param timeout      The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
      * @return The async result with the file transfer object.
      */
-    public final AsyncResult<FileTransfer> offerFile(final InputStream source, final String fileName, final long fileSize, Instant lastModified, final String description, final Jid recipient, final Duration timeout) {
+    public final AsyncResult<FileTransfer> offerFile(final InputStream source, final String fileName, final long fileSize, final Instant lastModified, final String description, final Jid recipient, final Duration timeout) {
         return this.offerFile(source, fileName, fileSize, lastModified, description, recipient, timeout, UUID.randomUUID().toString());
     }
 
@@ -172,7 +220,28 @@ public final class FileTransferManager extends Manager {
      * @param sessionId    The session id.
      * @return The async result with the file transfer object.
      */
-    public final AsyncResult<FileTransfer> offerFile(final InputStream source, final String fileName, final long fileSize, Instant lastModified, final String description, final Jid recipient, final Duration timeout, final String sessionId) {
+    public final AsyncResult<FileTransfer> offerFile(final InputStream source, final String fileName, final long fileSize, final Instant lastModified, final String description, final Jid recipient, final Duration timeout, final String sessionId) {
+        return this.offerFile(source, fileName, fileSize, lastModified, description, recipient, timeout, sessionId, null, null);
+    }
+
+    /**
+     * Offers a stream to another user. If this method returns successfully, the recipient has accepted the offer, the stream method has been negotiated and the file is ready to be transferred.
+     * Call {@link FileTransfer#transfer()} to start the file transfer.
+     *
+     * @param source       The stream.
+     * @param fileName     The file name.
+     * @param fileSize     The file size.
+     * @param lastModified The last modified date.
+     * @param description  The description of the file.
+     * @param recipient    The recipient's JID (must be a <em>full</em> JID, i. e. including {@code resource}).
+     * @param timeout      The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
+     * @param sessionId    The session id.
+     * @param mimeType     The mime type. If null, the mime type is guessed.
+     * @param hash         The hash (maybe null). As per the specification this should be a hex-encoded MD5 hash.
+     * @return The async result with the file transfer object.
+     * @see #md5Hash(Path)
+     */
+    public final AsyncResult<FileTransfer> offerFile(final InputStream source, final String fileName, final long fileSize, final Instant lastModified, final String description, final Jid recipient, final Duration timeout, final String sessionId, final String mimeType, final String hash) {
         if (!requireNonNull(recipient, "jid must not be null.").isFullJid()) {
             throw new IllegalArgumentException("recipient must be a full JID (including resource)");
         }
@@ -185,15 +254,18 @@ public final class FileTransferManager extends Manager {
                 if (!isSIFileTransferSupported) {
                     throw new CompletionException(new XmppException("Feature not supported"));
                 }
-                final SIFileTransferOffer fileTransfer = new SIFileTransferOffer(fileName, fileSize, lastModified, null, description, null);
-                final String mimeType; // Files.probeContentType(file.toPath());
-                try {
-                    mimeType = URLConnection.guessContentTypeFromStream(source);
-                } catch (IOException e) {
-                    throw new CompletionException(e);
+
+                final SIFileTransferOffer fileTransfer = new SIFileTransferOffer(fileName, fileSize, lastModified, hash, description, null);
+                String mType = null;
+                if (mimeType == null) {
+                    try {
+                        mType = URLConnection.guessContentTypeFromStream(source);
+                    } catch (IOException e) {
+                        mType = null;
+                    }
                 }
 
-                return this.streamInitiationManager.initiateStream(recipient, fileTransfer, mimeType, timeout, sessionId).handle((byteStreamSession, e) -> {
+                return this.streamInitiationManager.initiateStream(recipient, fileTransfer, mType, timeout, sessionId).handle((byteStreamSession, e) -> {
                     if (e != null) {
                         if (e instanceof CompletionException) {
                             if (e.getCause() instanceof StanzaException && ((StanzaException) e.getCause()).getCondition() == Condition.FORBIDDEN) {

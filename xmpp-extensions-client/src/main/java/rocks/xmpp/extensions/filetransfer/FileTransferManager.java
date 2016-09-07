@@ -256,8 +256,8 @@ public final class FileTransferManager extends Manager {
                 }
 
                 final SIFileTransferOffer fileTransfer = new SIFileTransferOffer(fileName, fileSize, lastModified, hash, description, null);
-                String mType = null;
-                if (mimeType == null) {
+                String mType = mimeType;
+                if (mType == null) {
                     try {
                         mType = URLConnection.guessContentTypeFromStream(source);
                     } catch (IOException e) {

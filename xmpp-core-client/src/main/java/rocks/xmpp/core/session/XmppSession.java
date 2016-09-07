@@ -814,7 +814,8 @@ public abstract class XmppSession implements AutoCloseable {
         addListener.accept(listener);
 
         SendTask<S> sendTask = sendFunction.apply(stanza);
-
+        // When the sending failed, immediately complete the future with the exception.
+        sendTask.onFailed((throwable, s) -> completableFuture.completeExceptionally(throwable));
         return new AsyncResult<>(completableFuture
                 // When a response has received, mark the requesting stanza as acknowledged.
                 // This is especially important for Bind and Roster IQs, so that they won't be resend after login.

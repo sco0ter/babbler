@@ -18,6 +18,8 @@
 * Allow event consumption for outbound stanzas, which prevents the stanza to be sent.
 * Make stream feature negotiation more stable.
 * Minor graphical fixes in VisualDebugger.
+* Add API to include the hash and mime type in File Transfer offers.
+* Add API to create a chat session with a thread id.
 * Immediately complete (IQ-)queries if sending failed and don't wait on the timeout.
 
 ### Version 0.7.1 (2016-08-09)

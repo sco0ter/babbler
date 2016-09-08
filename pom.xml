@@ -30,7 +30,7 @@
 
     <groupId>rocks.xmpp</groupId>
     <artifactId>root</artifactId>
-    <version>0.7.2-SNAPSHOT</version>
+    <version>0.7.2</version>
     <packaging>pom</packaging>
 
     <name>XMPP.rocks - An XMPP Stack</name>
@@ -143,7 +143,7 @@
                 <version>2.1</version>
                 <inherited>false</inherited>
                 <configuration>
-                    <newVersion>0.7.2-SNAPSHOT</newVersion>
+                    <newVersion>0.7.2</newVersion>
                     <generateBackupPoms>false</generateBackupPoms>
                 </configuration>
                 <executions>

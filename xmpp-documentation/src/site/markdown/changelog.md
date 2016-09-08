@@ -1,7 +1,7 @@
 # Changelog
 ---
 
-### Version 0.7.2-SNAPSHOT
+### Version 0.7.2 (2016-09-08)
 
 * Fix reconnection issue, when using multiple connection methods per session.
 * Improve and fix stanza acknowledging and Stream Management

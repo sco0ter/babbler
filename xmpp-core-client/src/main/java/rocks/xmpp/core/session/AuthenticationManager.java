@@ -124,7 +124,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
                     throw new SaslException("No SASL client found for mechanisms: " + clientMechanisms);
                 }
 
-                byte[] initialResponse = new byte[0];
+                byte[] initialResponse = null;
                 if (saslClient.hasInitialResponse()) {
                     initialResponse = saslClient.evaluateChallenge(new byte[0]);
                 }

@@ -185,4 +185,20 @@ public class SaslTest extends XmlTest {
         Assert.assertNotNull(failure);
         Assert.assertTrue(failure.getCondition() == Failure.Condition.TEMPORARY_AUTH_FAILURE);
     }
+
+    @Test
+    public void marshalAuth() throws XMLStreamException, JAXBException {
+        String xml = marshal(new Auth("PLAIN", null));
+        Assert.assertEquals(xml, "<auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\"></auth>");
+        String xml2 = marshal(new Auth("PLAIN", new byte[0]));
+        Assert.assertEquals(xml2, "<auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\">=</auth>");
+    }
+
+    @Test
+    public void unmarshalEmptyAuth() throws XMLStreamException, JAXBException {
+        Auth auth = unmarshal("<auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\"></auth>", Auth.class);
+        Auth authEmpty = unmarshal("<auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\">=</auth>", Auth.class);
+        Assert.assertEquals(auth.getInitialResponse(), null);
+        Assert.assertEquals(authEmpty.getInitialResponse(), new byte[0]);
+    }
 }

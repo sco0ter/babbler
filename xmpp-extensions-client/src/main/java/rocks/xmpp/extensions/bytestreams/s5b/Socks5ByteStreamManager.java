@@ -57,10 +57,12 @@ import java.util.stream.Collectors;
 /**
  * A manager for <a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>.
  * <p>
- * This class starts a local SOCKS5 server to support direct connections between two entities.
+ * If {@linkplain #setLocalHostEnabled(boolean) enabled}, this class starts a local SOCKS5 server to support direct connections between two entities.
  * You can {@linkplain #setPort(int) set a port} of this local server, if you don't set a port, the default port 1080 is used.
  * <p>
  * It also allows you to {@linkplain #initiateSession(Jid, String) initiate a byte stream session} with another entity.
+ * <p>
+ * If you don't want to discover stream hosts, but want to configure your own, {@linkplain #setStreamHost(StreamHost) set a custom stream host}.
  *
  * @author Christian Schudt
  */
@@ -74,6 +76,11 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      * Guarded by "this".
      */
     private boolean localHostEnabled;
+
+    /**
+     * Guarded by "this".
+     */
+    private StreamHost streamHost;
 
     private Socks5ByteStreamManager(final XmppSession xmppSession) {
         super(xmppSession);
@@ -217,7 +224,17 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      * @return The async result with the stream hosts.
      */
     public AsyncResult<List<StreamHost>> getAvailableStreamHosts() {
-        return discoverProxies().thenApply(streamHosts -> {
+        final AsyncResult<List<StreamHost>> hosts;
+
+        StreamHost host = getStreamHost();
+        if (host != null) {
+            // If a host has been configured use that one.
+            hosts = new AsyncResult<>(CompletableFuture.completedFuture(Collections.singletonList(host)));
+        } else {
+            // Otherwise discover proxies via service discovery.
+            hosts = discoverProxies();
+        }
+        return hosts.thenApply(streamHosts -> {
             try {
                 List<StreamHost> result = new ArrayList<>();
                 if (isLocalHostEnabled()) {
@@ -249,6 +266,24 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
                 throw new CompletionException(e);
             }
         });
+    }
+
+    /**
+     * Configures a custom stream host. If a stream host is set this way, no stream hosts are discovered, but the configured one is used instead.
+     *
+     * @param streamHost The stream host.
+     */
+    public synchronized void setStreamHost(StreamHost streamHost) {
+        this.streamHost = streamHost;
+    }
+
+    /**
+     * Gets the configured stream host.
+     *
+     * @return The configured stream host or null if none was configured.
+     */
+    public synchronized StreamHost getStreamHost() {
+        return streamHost;
     }
 
     /**

@@ -29,6 +29,7 @@ import org.glassfish.tyrus.client.ClientProperties;
 import org.glassfish.tyrus.client.SslEngineConfigurator;
 import org.glassfish.tyrus.container.jdk.client.JdkClientContainer;
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
@@ -49,6 +50,8 @@ import javax.websocket.DeploymentException;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.HandshakeResponse;
+import javax.websocket.MessageHandler;
+import javax.websocket.PongMessage;
 import javax.websocket.Session;
 import javax.websocket.SessionException;
 import javax.xml.stream.XMLStreamWriter;
@@ -58,13 +61,17 @@ import java.io.StringWriter;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
@@ -94,6 +101,8 @@ public final class WebSocketConnection extends Connection {
 
     private final Condition closeReceived = lock.newCondition();
 
+    private final Set<String> pings = new CopyOnWriteArraySet<>();
+
     /**
      * Guarded by "this".
      */
@@ -119,7 +128,7 @@ public final class WebSocketConnection extends Connection {
      */
     private Throwable exception;
 
-    private ExecutorService executorService;
+    private ScheduledThreadPoolExecutor executorService;
 
     WebSocketConnection(XmppSession xmppSession, WebSocketConnectionConfiguration connectionConfiguration) {
         super(xmppSession, connectionConfiguration);
@@ -200,8 +209,35 @@ public final class WebSocketConnection extends Connection {
                 }
                 this.exception = null;
                 this.closedByServer = false;
-                this.executorService = Executors.newSingleThreadExecutor();
+                this.executorService = new ScheduledThreadPoolExecutor(1);
+                this.executorService.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
 
+                if (connectionConfiguration.getPingInterval() != null && !connectionConfiguration.getPingInterval().isNegative()) {
+                    this.executorService.scheduleAtFixedRate(() -> {
+                        // Send a WebSocket ping in an interval.
+                        synchronized (this) {
+                            try {
+                                if (session != null && session.isOpen()) {
+                                    String uuid = UUID.randomUUID().toString();
+                                    if (pings.add(uuid)) {
+                                        // Send the ping with the UUID as application data, so that we can match it to the pong.
+                                        session.getBasicRemote().sendPing(ByteBuffer.wrap(uuid.getBytes(StandardCharsets.UTF_8)));
+                                        // Later check if the ping has been answered by a pong.
+                                        this.executorService.schedule(() -> {
+                                            if (pings.remove(uuid)) {
+                                                // Ping has not been removed by a corresponding pong (still unanswered).
+                                                // Notify the session with an exception.
+                                                xmppSession.notifyException(new XmppException("No WebSocket pong received in time."));
+                                            }
+                                        }, xmppSession.getConfiguration().getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                                    }
+                                }
+                            } catch (IOException e) {
+                                xmppSession.notifyException(e);
+                            }
+                        }
+                    }, 0, connectionConfiguration.getPingInterval().toMillis(), TimeUnit.MILLISECONDS);
+                }
                 if (uri == null) {
                     String protocol = connectionConfiguration.isSecure() ? "wss" : "ws";
                     // If no port has been configured, use the default ports.
@@ -316,6 +352,8 @@ public final class WebSocketConnection extends Connection {
                         }
                     });
 
+                    session.addMessageHandler(new PongHandler());
+
                     // Opens the stream
                     restartStream();
                 }
@@ -381,6 +419,7 @@ public final class WebSocketConnection extends Connection {
                 executorService.shutdown();
                 executorService = null;
                 session.close();
+                pings.clear();
             }
         } finally {
             streamFeaturesManager.removeFeatureNegotiator(streamManager);
@@ -400,5 +439,17 @@ public final class WebSocketConnection extends Connection {
             sb.append(", from: ").append(from);
         }
         return sb.toString();
+    }
+
+    private final class PongHandler implements MessageHandler.Whole<PongMessage> {
+
+        @Override
+        public final void onMessage(final PongMessage message) {
+            // We received a pong from the server.
+            // We can now remove the corresponding ping.
+            final byte[] bytes = new byte[message.getApplicationData().limit()];
+            message.getApplicationData().get(bytes);
+            pings.remove(new String(bytes, StandardCharsets.UTF_8));
+        }
     }
 }

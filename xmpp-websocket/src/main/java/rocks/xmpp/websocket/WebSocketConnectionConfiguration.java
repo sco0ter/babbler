@@ -30,6 +30,7 @@ import rocks.xmpp.core.session.XmppSession;
 
 import javax.net.ssl.SSLContext;
 import java.net.Proxy;
+import java.time.Duration;
 
 /**
  * A configuration for a WebSocket connection.
@@ -61,9 +62,12 @@ public final class WebSocketConnectionConfiguration extends ConnectionConfigurat
 
     private final String path;
 
+    private final Duration pingInterval;
+
     private WebSocketConnectionConfiguration(Builder builder) {
         super(builder);
         this.path = builder.path;
+        this.pingInterval = builder.pingInterval;
     }
 
     /**
@@ -112,6 +116,16 @@ public final class WebSocketConnectionConfiguration extends ConnectionConfigurat
         return path;
     }
 
+    /**
+     * Gets the ping interval.
+     *
+     * @return The ping interval.
+     * @see Builder#pingInterval(Duration)
+     */
+    public final Duration getPingInterval() {
+        return pingInterval;
+    }
+
     @Override
     public final Connection createConnection(final XmppSession xmppSession) {
         return new WebSocketConnection(xmppSession, this);
@@ -129,6 +143,8 @@ public final class WebSocketConnectionConfiguration extends ConnectionConfigurat
 
         private String path;
 
+        private Duration pingInterval;
+
         private Builder() {
             // default values
             path("/ws/");
@@ -142,6 +158,19 @@ public final class WebSocketConnectionConfiguration extends ConnectionConfigurat
          */
         public final Builder path(String path) {
             this.path = path;
+            return this;
+        }
+
+        /**
+         * Sets the ping interval. If not null and non-negative, a WebSocket ping is sent periodically to the server.
+         * If no pong is received within the configured response timeout ({@link rocks.xmpp.core.session.XmppSessionConfiguration.Builder#defaultResponseTimeout(Duration)}) the XMPP session is closed with an exception.
+         *
+         * @param pingInterval The ping interval.
+         * @return The builder.
+         * @see <a href="https://tools.ietf.org/html/rfc6455#section-5.5.2">5.5.2.  Ping</a>
+         */
+        public final Builder pingInterval(Duration pingInterval) {
+            this.pingInterval = pingInterval;
             return this;
         }
 

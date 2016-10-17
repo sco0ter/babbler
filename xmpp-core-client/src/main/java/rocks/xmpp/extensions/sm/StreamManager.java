@@ -99,6 +99,18 @@ public final class StreamManager extends StreamFeatureNegotiator {
 
     private StreamManager(XmppSession xmppSession) {
         super(xmppSession, StreamManagement.class);
+        xmppSession.addSessionStatusListener(sessionStatusEvent -> {
+                    if (sessionStatusEvent.getStatus() == XmppSession.Status.CLOSING) {
+                        // When the client closes the session, acknowledge the receipt stanza count to the server,
+                        // so that the server won't resend them (store them offline).
+                        synchronized (this) {
+                            if (enabled != null) {
+                                xmppSession.send(new StreamManagement.Answer(inboundCount));
+                            }
+                        }
+                    }
+                }
+        );
     }
 
     static long diff(long h, long acknowledgedCount) {

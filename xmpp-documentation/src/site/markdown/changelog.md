@@ -1,6 +1,30 @@
 # Changelog
 ---
 
+## Version 0.8.0-SNAPSHOT
+
+
+### Version 0.7.2 (2016-09-08)
+
+* Fix reconnection issue, when using multiple connection methods per session.
+* Improve and fix stanza acknowledging and Stream Management
+    * Add Delayed Delivery (XEP-0203) extension to stanzas, which are resent automatically later (when reconnected again)
+    * Always resent all unacknowledged stanzas after login, not only after stream resumption.
+    * Highlight StreamManagement's request / answer pairs in VisualDebugger.
+    * Update XEP-0198 Stream Management to version 1.5 (respect the 'h' attribute in the `failed` element)
+* Wait for the roster response before sending initial presence during login, to prevent receiving presence information from yet unknown contacts.
+* Make sure asynchronous method calls do not block (affected only few methods for avatars and entity capabilities)
+* Use the hostname instead of the domain for SASL clients (i.e. use the `Sasl.createSaslClient` API correctly as per the documentation, may affect DIGEST-MD5 authentication).
+* Call `SaslClient.dispose()` when SASL authentication has completed.
+* Include the requesting IQ in `NoResponseException`, when doing IQ queries.
+* XEP-0184: Add the sender of a receipt to the MessageDeliveryEvent.
+* Allow event consumption for outbound stanzas, which prevents the stanza to be sent.
+* Make stream feature negotiation more stable.
+* Minor graphical fixes in VisualDebugger.
+* Add API to include the hash and mime type in File Transfer offers.
+* Add API to create a chat session with a thread id.
+* Immediately complete (IQ-)queries if sending failed and don't wait on the timeout.
+
 ### Version 0.7.1 (2016-08-09)
 
 * Discovering services should not fail immediately if one sub-query fails.
@@ -16,7 +40,6 @@
 * Minor performance improvement by using a `ListIterator` in collection based result sets.
 * Discover PubSub services by identity, not by feature name (it's more reliable)
 * Add `nextPage()` and `previousPage()` method and refine the naming of other methods in result set management (e.g. having `forCount()` and `forItemCount()` was confusing)
-
 
 ## Version 0.7.0 (2016-06-05)
 

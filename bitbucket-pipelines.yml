@@ -9,4 +9,4 @@ pipelines:
   default:
     - step:
         script: # Modify the commands below to build your repository.
-          - mvn clean install -Pnojavafx
+          - mvn clean install -pl !xmpp-debug,!xmpp-sample,!xmpp-fx

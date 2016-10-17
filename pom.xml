@@ -299,19 +299,6 @@
 
     <profiles>
         <profile>
-            <!-- This is used for build environments which don't support JavaFX -->
-            <id>nojavafx</id>
-            <modules>
-                <module>xmpp-addr</module>
-                <module>xmpp-core</module>
-                <module>xmpp-core-client</module>
-                <module>xmpp-extensions</module>
-                <module>xmpp-extensions-client</module>
-                <module>xmpp-documentation</module>
-                <module>xmpp-websocket</module>
-            </modules>
-        </profile>
-        <profile>
             <id>release</id>
             <build>
                 <plugins>

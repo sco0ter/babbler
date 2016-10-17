@@ -212,7 +212,7 @@ public final class WebSocketConnection extends Connection {
                 this.executorService = new ScheduledThreadPoolExecutor(1);
                 this.executorService.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
 
-                if (connectionConfiguration.getPingInterval() != null && !connectionConfiguration.getPingInterval().isNegative()) {
+                if (connectionConfiguration.getPingInterval() != null && !connectionConfiguration.getPingInterval().isNegative() && !connectionConfiguration.getPingInterval().isZero()) {
                     this.executorService.scheduleAtFixedRate(() -> {
                         // Send a WebSocket ping in an interval.
                         synchronized (this) {

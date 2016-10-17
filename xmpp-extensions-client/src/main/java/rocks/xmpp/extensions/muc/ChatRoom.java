@@ -154,17 +154,14 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                         boolean isSelfPresence = isSelfPresence(presence, nick);
                         Occupant occupant = new Occupant(presence, isSelfPresence);
                         if (presence.isAvailable()) {
-                            Occupant previousOccupant = occupantMap.put(nick, occupant);
-                            OccupantEvent.Type type;
+                            final Occupant previousOccupant = occupantMap.put(nick, occupant);
+                            final OccupantEvent.Type type;
                             // A new occupant entered the room.
-                            if (previousOccupant == null) {
-                                // Only notify about "joins", if it's not our own join and we are already in the room.
-                                if (!isSelfPresence && hasEntered()) {
-                                    type = OccupantEvent.Type.ENTERED;
-                                } else {
-                                    type = OccupantEvent.Type.STATUS_CHANGED;
-                                }
+                            if (previousOccupant == null && (isSelfPresence || hasEntered())) {
+                                // Only notify about "joins", if it's either our own join, or another occupant joining after we have already joined.
+                                type = OccupantEvent.Type.ENTERED;
                             } else {
+                                // For existing occupants (before we joined), always dispatch a status change event.
                                 type = OccupantEvent.Type.STATUS_CHANGED;
                             }
                             XmppUtils.notifyEventListeners(occupantListeners, new OccupantEvent(ChatRoom.this, occupant, type, null, null, null));

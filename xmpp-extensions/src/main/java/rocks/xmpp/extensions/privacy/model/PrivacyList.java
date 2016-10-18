@@ -28,6 +28,7 @@ import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
+import java.text.Collator;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -244,7 +245,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
         if (o != null) {
             if (isDefault) {
                 if (o.isDefault) {
-                    return name != null ? name.compareTo(o.name) : 1;
+                    return name != null ? Collator.getInstance().compare(name, o.name) : 1;
                 } else {
                     return -1;
                 }
@@ -252,7 +253,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
                 if (o.isDefault) {
                     return 1;
                 } else if (o.isActive) {
-                    return name != null ? name.compareTo(o.name) : 1;
+                    return name != null ? Collator.getInstance().compare(name, o.name) : 1;
                 } else {
                     return -1;
                 }
@@ -260,7 +261,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
                 if (o.isDefault || o.isActive) {
                     return 1;
                 } else {
-                    return name != null ? name.compareTo(o.name) : 1;
+                    return name != null ? Collator.getInstance().compare(name, o.name) : 1;
                 }
             }
         }

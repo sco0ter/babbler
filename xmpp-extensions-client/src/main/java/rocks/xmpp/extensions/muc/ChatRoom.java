@@ -60,6 +60,7 @@ import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -1103,7 +1104,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
             int result;
             // First compare name.
             if (name != null) {
-                result = o.name != null ? name.compareTo(o.name) : -1;
+                result = o.name != null ? Collator.getInstance().compare(name, o.name) : -1;
             } else {
                 result = o.name != null ? 1 : 0;
             }

@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -283,7 +284,7 @@ public final class Contact implements Comparable<Contact> {
             int result;
             if (name != null) {
                 if (o.name != null) {
-                    result = name.compareToIgnoreCase(o.name);
+                    result = Collator.getInstance().compare(name, o.name);
                 } else {
                     result = -1;
                 }

@@ -439,7 +439,7 @@ public class JidTest {
     @Test
     public void testComparable() {
         List<Jid> jids = new ArrayList<>();
-
+        Locale.setDefault(Locale.GERMAN);
         Jid jid1 = Jid.of("aaa");
         Jid jid2 = Jid.of("a@aaa");
         Jid jid3 = Jid.of("b@aaa");
@@ -448,6 +448,7 @@ public class JidTest {
         Jid jid6 = Jid.of("a@bbb");
         Jid jid7 = Jid.of("a@ccc");
         Jid jid8 = Jid.of("b@ccc");
+        Jid jid9 = Jid.of("ä@aaa");
 
         jids.add(jid1);
         jids.add(jid2);
@@ -457,18 +458,20 @@ public class JidTest {
         jids.add(jid6);
         jids.add(jid7);
         jids.add(jid8);
+        jids.add(jid9);
 
         Collections.shuffle(jids);
         jids.sort(null);
 
         Assert.assertEquals(jids.get(0), jid1);
         Assert.assertEquals(jids.get(1), jid2);
-        Assert.assertEquals(jids.get(2), jid3);
-        Assert.assertEquals(jids.get(3), jid4);
-        Assert.assertEquals(jids.get(4), jid5);
-        Assert.assertEquals(jids.get(5), jid6);
-        Assert.assertEquals(jids.get(6), jid7);
-        Assert.assertEquals(jids.get(7), jid8);
+        Assert.assertEquals(jids.get(2), jid9);
+        Assert.assertEquals(jids.get(3), jid3);
+        Assert.assertEquals(jids.get(4), jid4);
+        Assert.assertEquals(jids.get(5), jid5);
+        Assert.assertEquals(jids.get(6), jid6);
+        Assert.assertEquals(jids.get(7), jid7);
+        Assert.assertEquals(jids.get(8), jid8);
     }
 
 

@@ -30,6 +30,8 @@ import rocks.xmpp.extensions.muc.model.Affiliation;
 import rocks.xmpp.extensions.muc.model.Role;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
 
+import java.text.Collator;
+
 /**
  * The main actor in a multi-user chat environment is the occupant, who can be said to be located "in" a multi-user chat room and to participate in the discussions held in that room.
  *
@@ -167,7 +169,7 @@ public final class Occupant implements Comparable<Occupant> {
             if (result == 0) {
                 if (nick != null) {
                     // If this nick is not null, but the other is null, move this up (-1).
-                    return o.nick != null ? nick.compareTo(o.nick) : -1;
+                    return o.nick != null ? Collator.getInstance().compare(nick, o.nick) : -1;
                 } else {
                     // If this nick is null, but the other is not, move this down (1).
                     return o.nick != null ? 1 : 0;

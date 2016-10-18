@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.net.IDN;
 import java.nio.charset.StandardCharsets;
+import java.text.Collator;
 import java.text.Normalizer;
 import java.util.Map;
 import java.util.Objects;
@@ -581,10 +582,11 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
         }
 
         if (o != null) {
+            final Collator collator = Collator.getInstance();
             int result;
             // First compare domain parts.
             if (domain != null) {
-                result = o.domain != null ? domain.compareTo(o.domain) : -1;
+                result = o.domain != null ? collator.compare(domain, o.domain) : -1;
             } else {
                 result = o.domain != null ? 1 : 0;
             }
@@ -592,7 +594,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
             if (result == 0) {
                 if (local != null) {
                     // If this local part is not null, but the other is null, move this down (1).
-                    result = o.local != null ? local.compareTo(o.local) : 1;
+                    result = o.local != null ? collator.compare(local, o.local) : 1;
                 } else {
                     // If this local part is null, but the other is not, move this up (-1).
                     result = o.local != null ? -1 : 0;
@@ -602,7 +604,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
             if (result == 0) {
                 if (resource != null) {
                     // If this resource part is not null, but the other is null, move this down (1).
-                    return o.resource != null ? resource.compareTo(o.resource) : 1;
+                    return o.resource != null ? collator.compare(resource, o.resource) : 1;
                 } else {
                     // If this resource part is null, but the other is not, move this up (-1).
                     return o.resource != null ? -1 : 0;

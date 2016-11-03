@@ -58,6 +58,7 @@ import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -295,7 +296,8 @@ public final class WebSocketConnection extends Connection {
 
             final Proxy proxy = connectionConfiguration.getProxy();
             if (proxy != null && proxy.type() == Proxy.Type.HTTP) {
-                client.getProperties().put(ClientProperties.PROXY_URI, "http://" + proxy.address().toString());
+                InetSocketAddress inetSocketAddress = ((InetSocketAddress) proxy.address());
+                client.getProperties().put(ClientProperties.PROXY_URI, "http://" + inetSocketAddress.getHostName() + ':' + inetSocketAddress.getPort());
             }
 
             streamFeaturesManager.addFeatureNegotiator(streamManager);

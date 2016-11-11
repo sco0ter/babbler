@@ -36,8 +36,6 @@ import rocks.xmpp.extensions.oob.model.x.OobX;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * @author Christian Schudt
@@ -48,7 +46,7 @@ public class OutOfBandTest extends XmlTest {
     }
 
     @Test
-    public void unmarshalOobIQ() throws XMLStreamException, JAXBException, MalformedURLException {
+    public void unmarshalOobIQ() throws XMLStreamException, JAXBException {
         String xml = "<iq type='set'\n" +
                 "    from='stpeter@jabber.org/work'\n" +
                 "    to='MaineBoy@jabber.org/home'\n" +
@@ -61,13 +59,13 @@ public class OutOfBandTest extends XmlTest {
         IQ iq = unmarshal(xml, IQ.class);
         OobIQ oobIQ = iq.getExtension(OobIQ.class);
         Assert.assertNotNull(oobIQ);
-        Assert.assertEquals(oobIQ.getUrl().toString(), new URL("http://www.jabber.org/images/psa-license.jpg").toString());
+        Assert.assertEquals(oobIQ.getUri().toString(), "http://www.jabber.org/images/psa-license.jpg");
         Assert.assertEquals(oobIQ.getDescription(), "A license to Jabber!");
         Assert.assertEquals(oobIQ.getSessionId(), "a0");
     }
 
     @Test
-    public void unmarshalOobX() throws XMLStreamException, JAXBException, MalformedURLException {
+    public void unmarshalOobX() throws XMLStreamException, JAXBException {
         String xml = "<message from='stpeter@jabber.org/work'\n" +
                 "         to='MaineBoy@jabber.org/home'>\n" +
                 "  <body>Yeah, but do you have a license to Jabber?</body>\n" +
@@ -79,7 +77,7 @@ public class OutOfBandTest extends XmlTest {
         Message message = unmarshal(xml, Message.class);
         OobX oobX = message.getExtension(OobX.class);
         Assert.assertNotNull(oobX);
-        Assert.assertEquals(oobX.getUrl().toString(), new URL("http://www.jabber.org/images/psa-license.jpg").toString());
+        Assert.assertEquals(oobX.getUri().toString(), "http://www.jabber.org/images/psa-license.jpg");
         Assert.assertEquals(oobX.getDescription(), "A license to Jabber!");
     }
 }

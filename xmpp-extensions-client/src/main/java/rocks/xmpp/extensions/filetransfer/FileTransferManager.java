@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -117,9 +118,26 @@ public final class FileTransferManager extends Manager {
      * @param timeout     The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
      * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
+     * @deprecated Use {@link #offerFile(URI, String, Jid, Duration)}
      */
+    @Deprecated
     public final AsyncResult<IQ> offerFile(URL url, String description, Jid recipient, Duration timeout) {
-        return xmppSession.query(IQ.set(recipient, new OobIQ(url, description)), timeout).handle((iq, e) -> {
+        return offerFile(URI.create(url.toString()), description, recipient, timeout);
+    }
+
+    /**
+     * Offers a file to another user in form of an URL. The file can be downloaded by the recipient via an HTTP GET request.
+     * If this method returns without exception you can assume, that the file has been successfully downloaded by the recipient.
+     *
+     * @param uri         The URI of the file.
+     * @param description The description of the file.
+     * @param recipient   The recipient's JID (must be a full JID).
+     * @param timeout     The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
+     * @return The async result.
+     * @see <a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
+     */
+    public final AsyncResult<IQ> offerFile(URI uri, String description, Jid recipient, Duration timeout) {
+        return xmppSession.query(IQ.set(recipient, new OobIQ(uri, description)), timeout).handle((iq, e) -> {
             if (e != null) {
                 if (e instanceof CompletionException) {
                     if (e.getCause() instanceof StanzaException && ((StanzaException) e.getCause()).getCondition() == Condition.NOT_ACCEPTABLE) {

@@ -26,6 +26,10 @@ package rocks.xmpp.extensions.oob.model.iq;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.UncheckedIOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -44,7 +48,7 @@ public final class OobIQ {
      */
     public static final String NAMESPACE = "jabber:iq:oob";
 
-    private final URL url;
+    private final URI url;
 
     private final String desc;
 
@@ -52,19 +56,40 @@ public final class OobIQ {
     private final String sid;
 
     private OobIQ() {
-        this(null, null, null);
+        this((URI)null);
     }
 
+    @Deprecated
     public OobIQ(URL url) {
         this(url, null);
     }
 
+    @Deprecated
     public OobIQ(URL url, String description) {
         this(url, description, null);
     }
 
+    @Deprecated
     public OobIQ(URL url, String description, String sessionId) {
-        this.url = url;
+        try {
+            this.url = url.toURI();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        this.desc = description;
+        this.sid = sessionId;
+    }
+
+    public OobIQ(URI uri) {
+        this(uri, null);
+    }
+
+    public OobIQ(URI uri, String description) {
+        this(uri, description, null);
+    }
+
+    public OobIQ(URI uri, String description, String sessionId) {
+        this.url = uri;
         this.desc = description;
         this.sid = sessionId;
     }
@@ -74,7 +99,21 @@ public final class OobIQ {
      *
      * @return The URL.
      */
+    @Deprecated
     public final URL getUrl() {
+        try {
+            return url.toURL();
+        } catch (MalformedURLException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    /**
+     * Gets the URI.
+     *
+     * @return The URI.
+     */
+    public final URI getUri() {
         return url;
     }
 

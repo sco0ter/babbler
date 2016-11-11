@@ -35,7 +35,6 @@ import rocks.xmpp.extensions.vcard.temp.model.VCard;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.Month;
 
@@ -112,7 +111,7 @@ public class VCardTest extends XmlTest {
         Assert.assertEquals(vCard.getName().getGivenName(), "Peter");
         Assert.assertEquals(vCard.getName().getMiddleName(), "");
         Assert.assertEquals(vCard.getNickname(), "stpeter");
-        Assert.assertEquals(vCard.getUrl().toString(), new URL("http://www.xmpp.org/xsf/people/stpeter.shtml").toString());
+        Assert.assertEquals(vCard.getUrl().toString(), "http://www.xmpp.org/xsf/people/stpeter.shtml");
         Assert.assertEquals(vCard.getBirthday().getYear(), 1966);
         Assert.assertEquals(vCard.getBirthday().getMonth(), Month.AUGUST);
         Assert.assertEquals(vCard.getBirthday().getDayOfMonth(), 6);

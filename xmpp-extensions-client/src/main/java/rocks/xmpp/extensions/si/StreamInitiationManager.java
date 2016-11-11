@@ -219,7 +219,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
         // In the SI response, only include stream methods, which we actually support.
         offeredStreamMethods.retainAll(getSupportedStreamMethods());
 
-        DataForm.Field fieldReply = DataForm.Field.builder().var(STREAM_METHOD).values(offeredStreamMethods).type(DataForm.Field.Type.LIST_SINGLE).build();
+        DataForm.Field fieldReply = DataForm.Field.builder().var(STREAM_METHOD).value(offeredStreamMethods.get(0)).type(DataForm.Field.Type.LIST_SINGLE).build();
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(fieldReply));
         StreamInitiation siResponse = new StreamInitiation(new FeatureNegotiation(dataForm));
 

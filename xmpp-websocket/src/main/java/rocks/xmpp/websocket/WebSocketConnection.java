@@ -294,6 +294,10 @@ public final class WebSocketConnection extends Connection {
                 sslEngineConfigurator.setHostnameVerifier(connectionConfiguration.getHostnameVerifier());
             }
 
+            int connectTimeout = connectionConfiguration.getConnectTimeout();
+            if (connectTimeout > 0) {
+                client.getProperties().put(ClientProperties.HANDSHAKE_TIMEOUT, connectTimeout);
+            }
             final Proxy proxy = connectionConfiguration.getProxy();
             if (proxy != null && proxy.type() == Proxy.Type.HTTP) {
                 InetSocketAddress inetSocketAddress = ((InetSocketAddress) proxy.address());

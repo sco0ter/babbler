@@ -853,7 +853,7 @@ public abstract class XmppSession implements AutoCloseable {
      * @return The sent stream element, which is usually the same as the parameter, but may differ in case a stanza is sent, e.g. a {@link Message} is translated to a {@link rocks.xmpp.core.stanza.model.client.ClientMessage}.
      */
     public Future<Void> send(StreamElement element) {
-        return sendInternal(element);
+        return sendInternal(prepareElement(element));
     }
 
     private CompletableFuture<Void> sendInternal(StreamElement element) {
@@ -957,7 +957,9 @@ public abstract class XmppSession implements AutoCloseable {
      * @param iq The IQ.
      * @return The send task, which allows to track the stanza.
      */
-    public abstract SendTask<IQ> sendIQ(final IQ iq);
+    public SendTask<IQ> sendIQ(final IQ iq) {
+        return trackAndSend(iq);
+    }
 
     /**
      * Sends a message.
@@ -965,7 +967,9 @@ public abstract class XmppSession implements AutoCloseable {
      * @param message The message.
      * @return The send task, which allows to track the stanza.
      */
-    public abstract SendTask<Message> sendMessage(final Message message);
+    public SendTask<Message> sendMessage(final Message message) {
+        return trackAndSend(message);
+    }
 
     /**
      * Sends a presence.
@@ -973,13 +977,28 @@ public abstract class XmppSession implements AutoCloseable {
      * @param presence The presence.
      * @return The send task, which allows to track the stanza.
      */
-    public abstract SendTask<Presence> sendPresence(final Presence presence);
+    public SendTask<Presence> sendPresence(final Presence presence) {
+        return trackAndSend(presence);
+    }
 
     @SuppressWarnings("unchecked")
     protected final <S extends Stanza> SendTask<S> trackAndSend(S stanza) {
-        SendTask<S> sendTask = (SendTask<S>) stanzaTrackingMap.computeIfAbsent(stanza, key -> new SendTask<>(stanza));
-        sendTask.updateSendFuture(sendInternal(stanza));
+        Stanza s = (S) prepareElement(stanza);
+        SendTask<S> sendTask = (SendTask<S>) stanzaTrackingMap.computeIfAbsent(s, key -> new SendTask<>(s));
+        sendTask.updateSendFuture(sendInternal(s));
         return sendTask;
+    }
+
+    /**
+     * Prepares a stream element for sending.
+     * Usually only stanzas need to be prepared, which usually means converting it to the correct type (e.g. {@link Message} to {@link rocks.xmpp.core.stanza.model.client.ClientMessage}.so that it's in the correct namespace).
+     * Preparing could also be used to add the 'from' attribute (as required for external components).
+     *
+     * @param element The element.
+     * @return The prepared stanza.
+     */
+    protected StreamElement prepareElement(StreamElement element) {
+        return element;
     }
 
     /**

@@ -544,33 +544,15 @@ public final class XmppClient extends XmppSession {
     }
 
     @Override
-    public final Future<Void> send(StreamElement element) {
-        StreamElement e;
+    protected final StreamElement prepareElement(StreamElement element) {
         if (element instanceof Message) {
-            e = ClientMessage.from((Message) element);
+            element = ClientMessage.from((Message) element);
         } else if (element instanceof Presence) {
-            e = ClientPresence.from((Presence) element);
+            element = ClientPresence.from((Presence) element);
         } else if (element instanceof IQ) {
-            e = ClientIQ.from((IQ) element);
-        } else {
-            e = element;
+            element = ClientIQ.from((IQ) element);
         }
-        return super.send(e);
-    }
-
-    @Override
-    public final SendTask<IQ> sendIQ(final IQ iq) {
-        return trackAndSend(ClientIQ.from(iq));
-    }
-
-    @Override
-    public final SendTask<Message> sendMessage(final Message message) {
-        return trackAndSend(ClientMessage.from(message));
-    }
-
-    @Override
-    public final SendTask<Presence> sendPresence(final Presence presence) {
-        return trackAndSend(ClientPresence.from(presence));
+        return element;
     }
 
     /**

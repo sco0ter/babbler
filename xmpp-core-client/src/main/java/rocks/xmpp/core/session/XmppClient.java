@@ -56,7 +56,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
@@ -245,8 +244,9 @@ public final class XmppClient extends XmppSession {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw e;
+                } catch (CancellationException e) {
+                    throwAsXmppExceptionIfNotNull(exception != null ? exception : e);
                 }
-
                 // Check if stream negotiation threw any exception.
                 throwAsXmppExceptionIfNotNull(exception);
 

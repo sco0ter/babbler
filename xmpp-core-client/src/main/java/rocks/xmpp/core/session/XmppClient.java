@@ -41,11 +41,9 @@ import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.subscription.PresenceManager;
-import rocks.xmpp.util.concurrent.AsyncResult;
 
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
@@ -539,21 +537,5 @@ public final class XmppClient extends XmppSession {
             element = ClientIQ.from((IQ) element);
         }
         return element;
-    }
-
-    /**
-     * Determines support of another XMPP entity for a given feature.
-     * <p>
-     * Note that if you want to determine support of another client, you have to provide that client's full JID (user@domain/resource).
-     * If you want to determine the server's capabilities provide only the domain JID of the server.
-     * </p>
-     * This method uses cached information and the presence based entity capabilities (XEP-0115) to determine support. Only if no information is available an explicit service discovery request is made.
-     *
-     * @param feature The feature, usually defined by an XMPP Extension Protocol, e.g. "urn:xmpp:ping".
-     * @param jid     The XMPP entity.
-     * @return True, if the XMPP entity supports the given feature; otherwise false.
-     */
-    public final AsyncResult<Boolean> isSupported(String feature, Jid jid) {
-        return getManager(EntityCapabilitiesManager.class).isSupported(feature, jid);
     }
 }

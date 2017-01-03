@@ -32,9 +32,11 @@ import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.xhtmlim.model.Html;
 import rocks.xmpp.im.chat.Chat;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -124,6 +126,16 @@ public final class ChatStateManager extends Manager {
 
     /**
      * Sets the chat state for a chat. If this manager is disabled this method has no effect.
+     * Before sending chat states in a one-to-one chat, you should check, if the peer supports it, e.g. like that:
+     * <pre>
+     * {@code
+     * chatStateManager.isSupported(chat.getChatPartner()).thenAccept(result -> {
+     *     if (result) {
+     *         chatStateManager.setChatState(chatState, chat);
+     *     }
+     * });
+     * }
+     * </pre>
      *
      * @param chatState The chat state.
      * @param chat      The chat.
@@ -144,6 +156,27 @@ public final class ChatStateManager extends Manager {
         message.addExtension(chatState);
         chat.sendMessage(message);
         return true;
+    }
+
+    /**
+     * Indicates whether chat state notifications are supported by the peer.
+     *
+     * @param jid The JID.
+     * @return An async result indicating whether chat state notifications are supported.
+     * @see <a href="http://xmpp.org/extensions/xep-0085.html#bizrules-gen">5.1 Generation of Notifications</a>
+     */
+    public final AsyncResult<Boolean> isSupported(Jid jid) {
+        Boolean supports = contactSupportsChatStateNotifications.get(jid);
+        // If support is unknown, discover it via Service Discovery / Entity Capabilities.
+        if (supports == null) {
+            return xmppSession.isSupported(ChatState.NAMESPACE, jid).thenApply(result -> {
+                contactSupportsChatStateNotifications.put(jid, result);
+                return result;
+            });
+        } else {
+            // If support is known either via explicit or implicit discovery, return the result.
+            return new AsyncResult<>(CompletableFuture.completedFuture(supports));
+        }
     }
 
     @Override

@@ -404,7 +404,7 @@ public final class Jid implements Comparable<Jid>, Serializable, CharSequence {
      * @see #withResource(CharSequence)
      */
     public final Jid asBareJid() {
-        return new Jid(local, domain, null, false, false);
+        return isBareJid() ? this : new Jid(local, domain, null, false, false);
     }
 
     /**

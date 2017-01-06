@@ -27,8 +27,6 @@ package rocks.xmpp.extensions.jingle.apps.filetransfer;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.core.session.debug.ConsoleDebugger;
-import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.model.Jingle;
 
@@ -49,7 +47,6 @@ public class JingleFileTransferReceiver {
                         .build();
 
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                        .debugger(VisualDebugger.class)
                         .build();
 
                 XmppClient xmppSession = XmppClient.create("localhost", configuration, tcpConfiguration);

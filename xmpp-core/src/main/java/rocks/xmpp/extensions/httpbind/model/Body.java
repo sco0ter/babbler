@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.httpbind.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.session.model.SessionOpen;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAnyElement;
@@ -50,7 +51,7 @@ import java.util.Locale;
  * @see <a href="http://xmpp.org/extensions/xep-0124.html#schema">XML Schema</a>
  */
 @XmlRootElement
-public final class Body {
+public final class Body implements SessionOpen {
 
     /**
      * http://jabber.org/protocol/httpbind
@@ -155,7 +156,7 @@ public final class Body {
      * This attribute communicates the identity of the backend server to which the client is attempting to connect.
      */
     @XmlAttribute
-    private final String to;
+    private final Jid to;
 
     @XmlAttribute
     private final Type type;
@@ -316,6 +317,7 @@ public final class Body {
      *
      * @return The 'from' attribute.
      */
+    @Override
     public final Jid getFrom() {
         return from;
     }
@@ -427,9 +429,20 @@ public final class Body {
      * <p>All requests after the first one MUST include a valid 'sid' attribute (provided by the connection manager in the Session Creation Response). The initialization request is unique in that the {@code <body/>} element MUST NOT possess a 'sid' attribute.</p>
      * </blockquote>
      *
-     * @return The 'route' attribute value.
+     * @return The 'sid' attribute value.
      */
     public final String getSid() {
+        return sid;
+    }
+
+    /**
+     * Gets the session id.
+     *
+     * @return The session id.
+     * @see #getSid()
+     */
+    @Override
+    public final String getId() {
         return sid;
     }
 
@@ -452,7 +465,8 @@ public final class Body {
         return time;
     }
 
-    public final String getTo() {
+    @Override
+    public final Jid getTo() {
         return to;
     }
 
@@ -475,6 +489,7 @@ public final class Body {
         return wait;
     }
 
+    @Override
     public final Locale getLanguage() {
         return lang;
     }
@@ -620,7 +635,7 @@ public final class Body {
 
         private Type type;
 
-        private String to;
+        private Jid to;
 
         private Locale language;
 
@@ -666,7 +681,7 @@ public final class Body {
          * @param to The 'to' attribute.
          * @return The builder.
          */
-        public final Builder to(String to) {
+        public final Builder to(Jid to) {
             this.to = to;
             return this;
         }

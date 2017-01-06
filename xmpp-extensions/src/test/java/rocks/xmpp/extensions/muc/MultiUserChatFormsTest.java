@@ -195,7 +195,7 @@ public class MultiUserChatFormsTest extends XmlTest {
         Assert.assertEquals(roomRegistration2.getGivenName(), "Brunhilde");
         Assert.assertEquals(roomRegistration2.getFamilyName(), "Entwhistle-Throckmorton");
         Assert.assertEquals(roomRegistration2.getRoomNick(), "thirdwitch");
-        Assert.assertEquals(roomRegistration2.getWebPage().toString(), new URL("http://witchesonline/~hag66/").toString());
+        Assert.assertEquals(roomRegistration2.getWebPage().toString(), "http://witchesonline/~hag66/");
         Assert.assertEquals(roomRegistration2.getEmail(), "hag66@witchesonline");
         Assert.assertEquals(roomRegistration2.getFaqEntry(), "Just another witch.");
         Assert.assertTrue(roomRegistration2.isRegisterAllowed());
@@ -242,7 +242,7 @@ public class MultiUserChatFormsTest extends XmlTest {
         Assert.assertEquals(roomInfo2.getCurrentNumberOfOccupants(), Integer.valueOf(45));
         Assert.assertEquals(roomInfo2.getLdapGroup(), "cn=witches,dc=shakespeare,dc=lit");
         Assert.assertEquals(roomInfo2.getLanguage(), Locale.ENGLISH);
-        Assert.assertEquals(roomInfo2.getLogs().toString(), new URL("http://www.shakespeare.lit/chatlogs/coven/").toString());
+        Assert.assertEquals(roomInfo2.getLogs().toString(), "http://www.shakespeare.lit/chatlogs/coven/");
         Assert.assertEquals(roomInfo2.getMaxHistoryMessages(), Integer.valueOf(50));
     }
 }

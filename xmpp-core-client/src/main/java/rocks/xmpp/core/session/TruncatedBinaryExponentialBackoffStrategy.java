@@ -28,7 +28,7 @@ import java.time.Duration;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * This is the default reconnection strategy used by the {@link rocks.xmpp.core.session.ReconnectionManager}.
+ * This is the default reconnection strategy used.
  * <p>
  * It exponentially increases the time span from which a random value for the next reconnection attempt is chosen.
  * The formula for doing this, is: <code>(2<sup>n</sup> - 1) * s</code>, where <code>n</code> is the number of reconnection attempt and <code>s</code> is the slot time, which is 60 seconds by default.
@@ -47,7 +47,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see rocks.xmpp.core.session.ReconnectionManager#setReconnectionStrategy(ReconnectionStrategy)
  */
 class TruncatedBinaryExponentialBackoffStrategy implements ReconnectionStrategy {
 

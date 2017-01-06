@@ -24,7 +24,6 @@
 
 package rocks.xmpp.core.sasl.model;
 
-import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamFeature;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -43,7 +42,7 @@ import java.util.List;
  */
 @XmlRootElement
 @XmlSeeAlso({Abort.class, Auth.class, Challenge.class, Failure.class, Response.class, Success.class})
-public final class Mechanisms extends StreamFeature implements StreamElement {
+public final class Mechanisms extends StreamFeature {
 
     private final List<String> mechanism = new ArrayList<>();
 

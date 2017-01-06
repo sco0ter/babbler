@@ -34,7 +34,6 @@ import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * @author Christian Schudt
@@ -61,6 +60,6 @@ public class HttpAuthTest extends XmlTest {
         Assert.assertNotNull(confirmationRequest);
         Assert.assertEquals(confirmationRequest.getId(), "a7374jnjlalasdf82");
         Assert.assertEquals(confirmationRequest.getMethod(), "GET");
-        Assert.assertEquals(confirmationRequest.getUrl().toString(), new URL("https://files.shakespeare.lit:9345/missive.html").toString());
+        Assert.assertEquals(confirmationRequest.getUrl().toString(), "https://files.shakespeare.lit:9345/missive.html");
     }
 }

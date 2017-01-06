@@ -31,6 +31,7 @@ import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
+import rocks.xmpp.extensions.search.SearchManager;
 import rocks.xmpp.websocket.WebSocketConnectionConfiguration;
 
 import javax.net.ssl.SSLContext;
@@ -41,6 +42,8 @@ import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -67,7 +70,7 @@ public class SampleApplication {
                         .hostname("localhost") // The hostname.
                         .port(5222) // The XMPP default port.
                         .sslContext(getTrustAllSslContext()) // Use an SSL context, which trusts every server. Only use it for testing!
-                        .secure(false) // We want to negotiate a TLS connection.
+                        .secure(true) // We want to negotiate a TLS connection.
                         .build();
 
                 BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()

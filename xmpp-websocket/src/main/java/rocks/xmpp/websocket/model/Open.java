@@ -25,6 +25,7 @@
 package rocks.xmpp.websocket.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.session.model.SessionOpen;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Locale;
@@ -36,7 +37,7 @@ import java.util.Locale;
  * @since 0.7.0
  */
 @XmlRootElement
-public final class Open extends Frame {
+public final class Open extends Frame implements SessionOpen {
 
     @SuppressWarnings("unused")
     private Open() {

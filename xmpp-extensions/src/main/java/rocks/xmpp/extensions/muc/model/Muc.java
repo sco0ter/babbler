@@ -114,6 +114,24 @@ public final class Muc {
         return new Muc(password, discussionHistory);
     }
 
+    /**
+     * Gets the password.
+     *
+     * @return The password.
+     */
+    public final String getPassword() {
+        return password;
+    }
+
+    /**
+     * Gets the history.
+     *
+     * @return The history.
+     */
+    public final DiscussionHistory getHistory() {
+        return history;
+    }
+
     @Override
     public final String toString() {
         final StringBuilder sb = new StringBuilder("Multi-User Chat (entering a room).");

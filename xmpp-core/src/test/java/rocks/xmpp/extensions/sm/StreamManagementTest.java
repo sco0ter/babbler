@@ -76,12 +76,13 @@ public class StreamManagementTest extends XmlTest {
 
     @Test
     public void unmarshalFailed() throws XMLStreamException, JAXBException {
-        String xml = "<failed xmlns='urn:xmpp:sm:3'>\n" +
+        String xml = "<failed xmlns='urn:xmpp:sm:3' h='3'>\n" +
                 "     <unexpected-request xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>\n" +
                 "   </failed>";
         StreamManagement.Failed failed = unmarshal(xml, StreamManagement.Failed.class);
         Assert.assertNotNull(failed);
         Assert.assertTrue(failed.getError() == Condition.UNEXPECTED_REQUEST);
+        Assert.assertEquals(failed.getLastHandledStanza(), Long.valueOf(3));
     }
 
     @Test
@@ -106,7 +107,7 @@ public class StreamManagementTest extends XmlTest {
         StreamManagement.Resume resume = unmarshal(xml, StreamManagement.Resume.class);
         Assert.assertNotNull(resume);
         Assert.assertEquals(resume.getPreviousId(), "some-long-sm-id");
-        Assert.assertEquals(resume.getLastHandledStanza(), 2);
+        Assert.assertEquals(resume.getLastHandledStanza(), Long.valueOf(2));
     }
 
     @Test
@@ -118,6 +119,6 @@ public class StreamManagementTest extends XmlTest {
         StreamManagement.Resumed resumed = unmarshal(xml, StreamManagement.Resumed.class);
         Assert.assertNotNull(resumed);
         Assert.assertEquals(resumed.getPreviousId(), "some-long-sm-id");
-        Assert.assertEquals(resumed.getLastHandledStanza(), 2);
+        Assert.assertEquals(resumed.getLastHandledStanza(), Long.valueOf(2));
     }
 }

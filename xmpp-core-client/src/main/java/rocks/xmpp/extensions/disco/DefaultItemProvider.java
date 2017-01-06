@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Objects;
 
 /**
  * A default item provider for Service Discovery. When items are requested via Service Discovery, this class provides the items
@@ -41,13 +43,15 @@ import java.util.List;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0030.html#items-nodes">XEP-0030: Service Discovery 4.2 Items Nodes</a>
  * @see <a href="http://xmpp.org/extensions/xep-0059.html#examples">XEP-0059: Result Set Management 3. Examples</a>
+ * @deprecated Use {@link ResultSetProvider#forItems(Collection)}}
  */
+@Deprecated
 public final class DefaultItemProvider implements ResultSetProvider<Item> {
 
     private final Collection<Item> items;
 
     public DefaultItemProvider(Collection<Item> items) {
-        this.items = items;
+        this.items = Objects.requireNonNull(items);
     }
 
     @Override
@@ -83,11 +87,13 @@ public final class DefaultItemProvider implements ResultSetProvider<Item> {
 
     @Override
     public int indexOf(String itemId) {
+        Objects.requireNonNull(itemId);
         synchronized (items) {
-            for (int i = 0; i < items.size(); i++) {
-                Item item = new ArrayList<>(items).get(i);
-                if (item.getId() != null && item.getId().equals(itemId)) {
-                    return i;
+            ListIterator<Item> itemIterator = new ArrayList<>(items).listIterator();
+            while (itemIterator.hasNext()) {
+                Item item = itemIterator.next();
+                if (item != null && itemId.equals(item.getId())) {
+                    return itemIterator.previousIndex();
                 }
             }
         }

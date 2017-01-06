@@ -207,13 +207,13 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         DataForm dataForm = unmarshal(xml, DataForm.class);
         NodeConfiguration nodeConfiguration1 = new NodeConfiguration(dataForm);
         Assert.assertEquals(nodeConfiguration1.getAccessModel(), AccessModel.AUTHORIZE);
-        Assert.assertEquals(nodeConfiguration1.getBodyXslt().toString(), new URL("http://xmpp.org").toString());
+        Assert.assertEquals(nodeConfiguration1.getBodyXslt().toString(), "http://xmpp.org");
         Assert.assertEquals(nodeConfiguration1.getChildrenAssociationPolicy(), ChildrenAssociationPolicy.OWNERS);
         Assert.assertEquals(nodeConfiguration1.getChildrenAssociationWhitelist(), Collections.singleton(Jid.of("domain")));
         Assert.assertEquals(nodeConfiguration1.getChildren(), Collections.singleton("collection1"));
         Assert.assertEquals(nodeConfiguration1.getChildrenMax(), Integer.valueOf(23));
         Assert.assertEquals(nodeConfiguration1.getContacts(), Collections.singleton(Jid.of("contact")));
-        Assert.assertEquals(nodeConfiguration1.getDataformXslt().toString(), new URL("http://www.xmpp.org").toString());
+        Assert.assertEquals(nodeConfiguration1.getDataformXslt().toString(), "http://www.xmpp.org");
         Assert.assertTrue(nodeConfiguration1.isDeliverNotifications());
         Assert.assertFalse(nodeConfiguration1.isDeliverPayloads());
         Assert.assertEquals(nodeConfiguration1.getDescription(), "description");

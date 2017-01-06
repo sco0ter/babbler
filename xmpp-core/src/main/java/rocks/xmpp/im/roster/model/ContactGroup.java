@@ -24,6 +24,7 @@
 
 package rocks.xmpp.im.roster.model;
 
+import java.text.Collator;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
@@ -111,7 +112,7 @@ public final class ContactGroup implements Comparable<ContactGroup> {
         if (o != null) {
             if (fullName != null) {
                 if (o.fullName != null) {
-                    return fullName.compareToIgnoreCase(o.fullName);
+                    return Collator.getInstance().compare(fullName, o.fullName);
                 } else {
                     return -1;
                 }

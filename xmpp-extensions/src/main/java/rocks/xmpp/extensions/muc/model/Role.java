@@ -55,5 +55,18 @@ public enum Role {
      * No role.
      */
     @XmlEnumValue("none")
-    NONE
+    NONE;
+
+    /**
+     * Compares two roles and returns true, if this role is higher than the other
+     * with regards to their privileges in a multi-user chat.
+     * <p>
+     * The highest role is moderator, followed by participant, followed by visitor, followed by none.
+     *
+     * @param role The other role.
+     * @return True, if this role is higher than the other.
+     */
+    public final boolean isHigherThan(final Role role) {
+        return compareTo(role) < 0;
+    }
 }

@@ -30,7 +30,7 @@
 
     <groupId>rocks.xmpp</groupId>
     <artifactId>root</artifactId>
-    <version>0.7.0</version>
+    <version>0.8.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>XMPP.rocks - An XMPP Stack</name>
@@ -140,10 +140,10 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.1</version>
+                <version>2.3</version>
                 <inherited>false</inherited>
                 <configuration>
-                    <newVersion>0.7.0</newVersion>
+                    <newVersion>0.8.0-SNAPSHOT</newVersion>
                     <generateBackupPoms>false</generateBackupPoms>
                 </configuration>
                 <executions>
@@ -180,7 +180,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.5</version>
+                    <version>3.5.1</version>
                     <configuration>
                         <locales>en</locales>
                     </configuration>
@@ -205,12 +205,35 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>2.4</version>
+                    <version>3.0.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.10.3</version>
+                    <version>2.10.4</version>
+                    <configuration>
+                        <additionalparam>
+                            -Xdoclint:none
+                            -group "XMPP Address Format (RFC 7622)" rocks.xmpp.addr*
+                            -group "XMPP Core (RFC 6120)" rocks.xmpp.core*
+                            -group "XMPP Instant Messaging and Presence (RFC 6121)" rocks.xmpp.im*
+                            -group "XMPP Extensions" rocks.xmpp.extensions*
+                            -group "XMPP WebSocket Support (RFC 7395)" rocks.xmpp.websocket*
+                            -group "JavaFX Controls Useful for XMPP Clients" rocks.xmpp.javafx*
+                        </additionalparam>
+                        <quiet>true</quiet>
+                        <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
+                        <includeDependencySources>true</includeDependencySources>
+                        <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
+                        <nodeprecated>false</nodeprecated>
+                        <nodeprecatedlist>false</nodeprecatedlist>
+                        <author>false</author>
+                        <notimestamp>true</notimestamp>
+                        <doctitle>Babbler ${project.version}</doctitle>
+                        <windowtitle>Babbler ${project.version}</windowtitle>
+                        <docfilessubdirs>true</docfilessubdirs>
+                        <show>public</show>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -220,7 +243,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>3.0.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -230,7 +253,7 @@
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.6.6</version>
+                    <version>1.6.7</version>
                     <extensions>true</extensions>
                     <configuration>
                         <serverId>ossrh</serverId>
@@ -306,7 +329,6 @@
                                 <configuration>
                                     <additionalparam>-Xdoclint:none</additionalparam>
                                     <quiet>true</quiet>
-                                    <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
                                     <includeDependencySources>true</includeDependencySources>
                                     <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
                                     <nodeprecated>false</nodeprecated>

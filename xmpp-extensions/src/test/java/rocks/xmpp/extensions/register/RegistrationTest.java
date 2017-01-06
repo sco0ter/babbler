@@ -36,7 +36,6 @@ import rocks.xmpp.extensions.register.model.feature.RegisterFeature;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * @author Christian Schudt
@@ -173,6 +172,6 @@ public class RegistrationTest extends XmlTest {
         IQ iq = unmarshal(xml, IQ.class);
         Registration registration = iq.getExtension(Registration.class);
         Assert.assertNotNull(registration);
-        Assert.assertEquals(registration.getWebRegistrationUrl().toString(), new URL("http://www.shakespeare.lit/contests.php").toString());
+        Assert.assertEquals(registration.getWebRegistrationUri().toString(), "http://www.shakespeare.lit/contests.php");
     }
 }

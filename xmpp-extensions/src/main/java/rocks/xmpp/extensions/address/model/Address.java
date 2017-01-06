@@ -39,6 +39,18 @@ import java.util.Objects;
 /**
  * The implementation of the {@code <address/>} element in the {@code http://jabber.org/protocol/address} namespace.
  * <p>
+ * To create a new address, use one of the public constructors, like:
+ * <pre>
+ * {@code
+ * Address address = new Address(Address.Type.TO, Jid.of("hildjj@jabber.org/Work"), "description");
+ * }
+ * </pre>
+ * To mark an address as delivered, create a new immutable address object from an undelivered address:
+ * <pre>
+ * {@code
+ * Address delivered = address.delivered();
+ * }
+ * </pre>
  * This class is immutable.
  *
  * @author Christian Schudt
@@ -60,23 +72,28 @@ public final class Address {
     private final Jid jid;
 
     @XmlAttribute
-    private final String desc;
+    private final URI uri;
 
     @XmlAttribute
     private final String node;
 
     @XmlAttribute
-    private final URI uri;
+    private final String desc;
+
+    @XmlAttribute
+    private final Boolean delivered;
 
     @XmlAnyElement(lax = true)
     private final List<Object> extensions = new ArrayList<>();
 
+    @SuppressWarnings("unused")
     private Address() {
         this.type = null;
         this.jid = null;
         this.desc = null;
         this.node = null;
         this.uri = null;
+        this.delivered = null;
     }
 
     /**
@@ -106,12 +123,7 @@ public final class Address {
      * @param extensions  The extensions.
      */
     public Address(Type type, Jid jid, CharSequence description, CharSequence node, Object... extensions) {
-        this.type = Objects.requireNonNull(type);
-        this.jid = jid;
-        this.desc = description != null ? description.toString() : null;
-        this.node = node != null ? node.toString() : null;
-        this.uri = null;
-        this.extensions.addAll(Arrays.asList(extensions));
+        this(type, jid, null, description, node, null, extensions);
     }
 
     /**
@@ -122,11 +134,16 @@ public final class Address {
      */
     public Address(Type type, URI uri, CharSequence description, Object... extensions) {
         // If the 'uri' attribute is specified, the 'jid' and 'node' attributes MUST NOT be specified.
+        this(type, null, uri, description, null, null, extensions);
+    }
+
+    private Address(Type type, Jid jid, URI uri, CharSequence description, CharSequence node, Boolean delivered, Object... extensions) {
         this.type = Objects.requireNonNull(type);
-        this.jid = null;
+        this.jid = jid;
         this.uri = uri;
         this.desc = description != null ? description.toString() : null;
-        this.node = null;
+        this.node = node != null ? node.toString() : null;
+        this.delivered = delivered;
         this.extensions.addAll(Arrays.asList(extensions));
     }
 
@@ -151,13 +168,13 @@ public final class Address {
     }
 
     /**
-     * Gets the description. It specifies human-readable information for this address. This data may be used by clients to provide richer address-book integration.
+     * Gets the URI. It specifies an external system address, such as a sip:, sips:, or im: URI.
      *
-     * @return The description.
-     * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-desc">4.4 'desc' attribute</a>
+     * @return The URI.
+     * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-uri">4.2 'uri' attribute</a>
      */
-    public final String getDescription() {
-        return desc;
+    public final URI getUri() {
+        return uri;
     }
 
     /**
@@ -171,13 +188,41 @@ public final class Address {
     }
 
     /**
-     * Gets the URI. It specifies an external system address, such as a sip:, sips:, or im: URI.
+     * Gets the description. It specifies human-readable information for this address. This data may be used by clients to provide richer address-book integration.
      *
-     * @return The URI.
-     * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-uri">4.2 'uri' attribute</a>
+     * @return The description.
+     * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-desc">4.4 'desc' attribute</a>
      */
-    public final URI getUri() {
-        return uri;
+    public final String getDescription() {
+        return desc;
+    }
+
+    /**
+     * Indicates, whether the service has delivered the stanza to this address.
+     *
+     * @return True, if the service has delivered the stanza to this address.
+     * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-delivered">4.5 'delivered' attribute</a>
+     */
+    public final boolean isDelivered() {
+        return delivered != null && delivered;
+    }
+
+    /**
+     * Creates a copy of this address, which is marked as delivered.
+     *
+     * @return A new address object, marked as delivered.
+     */
+    public final Address delivered() {
+        return new Address(type, jid, uri, desc, node, true, extensions.toArray());
+    }
+
+    /**
+     * Creates a copy of this address, whose delivered attribute is removed.
+     *
+     * @return A new address object without delivered attribute.
+     */
+    public final Address undelivered() {
+        return new Address(type, jid, uri, desc, node, null, extensions.toArray());
     }
 
     /**

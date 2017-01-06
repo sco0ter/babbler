@@ -51,7 +51,7 @@ import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.List;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -65,6 +65,12 @@ import java.util.function.Consumer;
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">3.  TCP Binding</a>
  */
 public final class TcpConnection extends Connection {
+
+    private final StreamFeaturesManager streamFeaturesManager;
+
+    private final SecurityManager securityManager;
+
+    private final CompressionManager compressionManager;
 
     final StreamManager streamManager;
 
@@ -104,20 +110,16 @@ public final class TcpConnection extends Connection {
     TcpConnection(XmppSession xmppSession, TcpConnectionConfiguration configuration) {
         super(xmppSession, configuration);
         this.tcpConnectionConfiguration = configuration;
-        streamManager = xmppSession.getManager(StreamManager.class);
-    }
-
-    void initialize() {
-        StreamFeaturesManager streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
-        streamFeaturesManager.addFeatureNegotiator(new SecurityManager(xmppSession, () -> {
+        this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
+        this.streamManager = xmppSession.getManager(StreamManager.class);
+        this.securityManager = new SecurityManager(xmppSession, () -> {
             try {
                 secureConnection();
             } catch (Exception e) {
                 throw new StreamNegotiationException(e);
             }
-        }, tcpConnectionConfiguration.isSecure()));
-
-        final CompressionManager compressionManager = xmppSession.getManager(CompressionManager.class);
+        }, tcpConnectionConfiguration.isSecure());
+        this.compressionManager = xmppSession.getManager(CompressionManager.class);
         compressionManager.getConfiguredCompressionMethods().addAll(tcpConnectionConfiguration.getCompressionMethods());
         compressionManager.addFeatureListener(() -> {
             CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
@@ -140,8 +142,6 @@ public final class TcpConnection extends Connection {
                 throw new StreamNegotiationException(e);
             }
         });
-        streamFeaturesManager.addFeatureNegotiator(compressionManager);
-        streamFeaturesManager.addFeatureNegotiator(streamManager);
     }
 
     /**
@@ -184,6 +184,12 @@ public final class TcpConnection extends Connection {
         }
 
         this.from = from;
+
+        streamFeaturesManager.addFeatureNegotiator(securityManager);
+        streamFeaturesManager.addFeatureNegotiator(compressionManager);
+        streamFeaturesManager.addFeatureNegotiator(streamManager);
+        streamManager.reset();
+
         outputStream = new BufferedOutputStream(socket.getOutputStream());
         inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
@@ -270,10 +276,10 @@ public final class TcpConnection extends Connection {
     }
 
     @Override
-    public final synchronized Future<?> send(StreamElement element) {
-        return xmppStreamWriter.send(element, () -> {
+    public final synchronized CompletableFuture<Void> send(StreamElement element) {
+        return xmppStreamWriter.send(element).thenRun(() -> {
             if (element instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) element)) {
-                xmppStreamWriter.send(StreamManagement.REQUEST, null);
+                send(StreamManagement.REQUEST);
             }
         });
     }
@@ -309,6 +315,10 @@ public final class TcpConnection extends Connection {
         outputStream = null;
         streamId = null;
 
+        streamFeaturesManager.removeFeatureNegotiator(securityManager);
+        streamFeaturesManager.removeFeatureNegotiator(compressionManager);
+        streamFeaturesManager.removeFeatureNegotiator(streamManager);
+
         // We have sent a </stream:stream> to close the stream and waited for a server response, which also closes the stream by sending </stream:stream>.
         // Now close the socket.
         if (socket != null) {
@@ -322,10 +332,10 @@ public final class TcpConnection extends Connection {
 
     /**
      * This is the preferred way to resolve the FQDN.
-     * See also <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">3.2.1.  Preferred Process: SRV Lookup</a>
      *
      * @param xmppServiceDomain The fully qualified domain name.
      * @return If the connection could be established.
+     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">3.2.1.  Preferred Process: SRV Lookup</a>
      */
     private boolean connectWithXmppServiceDomain(final Jid xmppServiceDomain) {
 

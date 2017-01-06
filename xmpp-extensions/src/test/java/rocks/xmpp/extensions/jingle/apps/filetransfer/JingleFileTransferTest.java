@@ -33,6 +33,7 @@ import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.errors.FileTransferError;
 import rocks.xmpp.extensions.jingle.model.Jingle;
+import rocks.xmpp.extensions.jingle.thumbs.model.Thumbnail;
 import rocks.xmpp.extensions.jingle.transports.s5b.model.S5bTransportMethod;
 
 import javax.xml.bind.JAXBException;
@@ -150,5 +151,27 @@ public class JingleFileTransferTest extends XmlTest {
         IQ iq = unmarshal(xml, IQ.class);
         Jingle jingle = iq.getExtension(Jingle.class);
         Assert.assertEquals(jingle.getReason().getExtension(), FileTransferError.FILE_TOO_LARGE);
+    }
+
+    @Test
+    public void unmarshalThumbnail() throws XMLStreamException, JAXBException {
+        String xml = "<description xmlns='urn:xmpp:jingle:apps:file-transfer:4' senders='initiator'>\n" +
+                "        <file>\n" +
+                "          <media-type>image/jpeg</media-type>\n" +
+                "          <name>image.jpg</name>\n" +
+                "          <size>3032449</size>\n" +
+                "          <hash xmlns='urn:xmpp:hashes:1' algo='sha-1'>552da749930852c69ae5d2141d3766b1</hash>\n" +
+                "          <desc>This is a test. If this were a real file...</desc>\n" +
+                "          <thumbnail xmlns='urn:xmpp:thumbs:1'\n" +
+                "                     uri='cid:sha1+ffd7c8d28e9c5e82afea41f97108c6b4@bob.xmpp.org'\n" +
+                "                     media-type='image/png'\n" +
+                "                     width='128'\n" +
+                "                     height='96'/>\n" +
+                "        </file>\n" +
+                "      </description>";
+
+        JingleFileTransfer jingleFileTransfer = unmarshal(xml, JingleFileTransfer.class);
+        Thumbnail thumbnail = jingleFileTransfer.getFile().getThumbnail();
+        Assert.assertNotNull(thumbnail);
     }
 }

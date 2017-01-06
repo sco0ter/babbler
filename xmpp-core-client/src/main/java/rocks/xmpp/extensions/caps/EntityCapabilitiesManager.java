@@ -60,8 +60,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -95,7 +93,7 @@ public final class EntityCapabilitiesManager extends Manager {
     // Cache the capabilities of an entity.
     private static final Map<Jid, InfoNode> ENTITY_CAPABILITIES = new ConcurrentHashMap<>();
 
-    private static final Map<Jid, Lock> REQUESTING_LOCKS = new ConcurrentHashMap<>();
+    private static final Map<Jid, AsyncResult<InfoNode>> REQUESTS = new ConcurrentHashMap<>();
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
@@ -286,22 +284,13 @@ public final class EntityCapabilitiesManager extends Manager {
         InfoNode infoNode = ENTITY_CAPABILITIES.get(jid);
         if (infoNode == null) {
             // Make sure, that for the same JID no multiple concurrent queries are sent. One is enough.
-            // Use the double-checked locking idiom.
-
-            // Acquire the lock for the JID.
-            Lock lock = REQUESTING_LOCKS.computeIfAbsent(jid, key -> new ReentrantLock());
-            lock.lock();
-            // Recheck the cache (this is the double-check), maybe it has been inserted by another thread.
-            infoNode = ENTITY_CAPABILITIES.get(jid);
-            if (infoNode != null) {
-                return new AsyncResult<>(CompletableFuture.completedFuture(infoNode));
-            }
-            try {
-                return serviceDiscoveryManager.discoverInformation(jid).whenComplete((result, e) -> ENTITY_CAPABILITIES.put(jid, result));
-            } finally {
-                lock.unlock();
-                REQUESTING_LOCKS.remove(jid);
-            }
+            return REQUESTS.computeIfAbsent(jid, key -> serviceDiscoveryManager.discoverInformation(jid)
+                    .whenComplete((result, e) -> {
+                        if (result != null) {
+                            ENTITY_CAPABILITIES.put(jid, result);
+                        }
+                        REQUESTS.remove(jid);
+                    }));
         }
         return new AsyncResult<>(CompletableFuture.completedFuture(infoNode));
     }
@@ -459,6 +448,7 @@ public final class EntityCapabilitiesManager extends Manager {
      * A key for the cache (consisting of hash algorithm and verification string).
      */
     private static final class Verification {
+
         private final String hashAlgorithm;
 
         private final String verificationString;

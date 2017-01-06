@@ -28,6 +28,7 @@ import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * The implementation of the {@code <success/>} element, which indicates success during SASL negotiation.
@@ -44,6 +45,7 @@ import javax.xml.bind.annotation.XmlValue;
 public final class Success implements StreamElement {
 
     @XmlValue
+    @XmlJavaTypeAdapter(EmptyResponseAdapter.class)
     private final byte[] additionalData;
 
     public Success() {

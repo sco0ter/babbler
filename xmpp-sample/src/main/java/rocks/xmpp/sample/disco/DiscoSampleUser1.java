@@ -29,13 +29,14 @@ import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.debug.gui.VisualDebugger;
-import rocks.xmpp.extensions.disco.DefaultItemProvider;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.items.Item;
+import rocks.xmpp.extensions.rsm.ResultSetProvider;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 /**
@@ -64,13 +65,13 @@ public class DiscoSampleUser1 {
                 // Login
                 xmppSession.login("111", "111", "disco");
 
-                Collection<Item> myItems = new ArrayDeque<>();
+                List<Item> myItems = Collections.synchronizedList(new ArrayList<>());
                 for (int i = 0; i < 100; i++) {
                     myItems.add(new Item(Jid.of("test"), "myNode" + i, "test" + i));
                 }
 
                 ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-                serviceDiscoveryManager.setItemProvider(new DefaultItemProvider(myItems));
+                serviceDiscoveryManager.setItemProvider(ResultSetProvider.forItems(myItems));
             } catch (Exception e) {
                 e.printStackTrace();
             }

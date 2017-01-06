@@ -30,6 +30,7 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,7 +131,7 @@ public final class ChatService implements Comparable<ChatService> {
             int result;
             // First compare name.
             if (name != null) {
-                result = o.name != null ? name.compareTo(o.name) : -1;
+                result = o.name != null ? Collator.getInstance().compare(name, o.name) : -1;
             } else {
                 result = o.name != null ? 1 : 0;
             }

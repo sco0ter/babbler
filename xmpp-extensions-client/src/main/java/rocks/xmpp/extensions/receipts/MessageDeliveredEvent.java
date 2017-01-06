@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.receipts;
 
+import rocks.xmpp.addr.Jid;
+
 import java.time.Instant;
 import java.util.EventObject;
 
@@ -33,9 +35,12 @@ import java.util.EventObject;
  * @author Christian Schudt
  */
 public final class MessageDeliveredEvent extends EventObject {
+
     private final String messageId;
 
     private final Instant deliveryDate;
+
+    private final Jid from;
 
     /**
      * Constructs a message delivered event.
@@ -45,10 +50,11 @@ public final class MessageDeliveredEvent extends EventObject {
      * @param deliveryDate The date of the delivery.
      * @throws IllegalArgumentException if source is null.
      */
-    MessageDeliveredEvent(Object source, String messageId, Instant deliveryDate) {
+    MessageDeliveredEvent(Object source, String messageId, Instant deliveryDate, Jid from) {
         super(source);
         this.messageId = messageId;
         this.deliveryDate = deliveryDate;
+        this.from = from;
     }
 
     /**
@@ -56,7 +62,7 @@ public final class MessageDeliveredEvent extends EventObject {
      *
      * @return The message id.
      */
-    public String getMessageId() {
+    public final String getMessageId() {
         return messageId;
     }
 
@@ -65,7 +71,18 @@ public final class MessageDeliveredEvent extends EventObject {
      *
      * @return The delivery date.
      */
-    public Instant getDeliveryDate() {
+    public final Instant getDeliveryDate() {
         return deliveryDate;
+    }
+
+    /**
+     * Gets the sender of the receipt. Usually this is the receiver of the original message, which requested the receipt
+     * and which can be referenced via the id.
+     * But in the context of Multi-User Chat (XEP-0045) or Multi Cast (XEP-0033) this is not the case.s
+     *
+     * @return The sender.
+     */
+    public final Jid getFrom() {
+        return from;
     }
 }

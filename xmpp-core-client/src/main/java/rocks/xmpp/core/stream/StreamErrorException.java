@@ -56,16 +56,6 @@ public final class StreamErrorException extends XmppException {
      *
      * @return The stream error.
      */
-    @Deprecated
-    public final StreamError getStreamError() {
-        return streamError;
-    }
-
-    /**
-     * Gets the stream error.
-     *
-     * @return The stream error.
-     */
     public final StreamError getError() {
         return streamError;
     }

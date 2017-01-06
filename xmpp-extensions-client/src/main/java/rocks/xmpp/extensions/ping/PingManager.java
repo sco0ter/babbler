@@ -162,22 +162,10 @@ public final class PingManager extends Manager {
     }
 
     /**
-     * Sets the automatic ping interval in seconds. Any scheduled future ping is canceled and a new ping is scheduled after the specified interval.
-     *
-     * @param pingInterval The ping interval in seconds.
-     * @see #getPingInterval()
-     * @deprecated Use {@link #setPingInterval(Duration)}
-     */
-    @Deprecated
-    public final synchronized void setPingInterval(long pingInterval) {
-        setPingInterval(Duration.ofSeconds(pingInterval));
-    }
-
-    /**
      * Gets the ping interval. The default ping interval is 900 seconds (15 minutes).
      *
      * @return The ping interval in seconds.
-     * @see #setPingInterval(long)
+     * @see #setPingInterval(Duration)
      */
     public final synchronized Duration getPingInterval() {
         return pingInterval;

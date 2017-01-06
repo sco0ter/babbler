@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.bookmarks.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
+import java.text.Collator;
 
 /**
  * An abstract base class for bookmarks.
@@ -66,7 +67,7 @@ public abstract class Bookmark implements Comparable<Bookmark> {
         if (o != null) {
             if (name != null) {
                 if (o.name != null) {
-                    return name.compareTo(o.name);
+                    return Collator.getInstance().compare(name, o.name);
                 } else {
                     return -1;
                 }

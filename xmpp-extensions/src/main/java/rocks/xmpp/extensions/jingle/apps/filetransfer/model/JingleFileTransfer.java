@@ -30,6 +30,7 @@ import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.errors.FileTransferError;
 import rocks.xmpp.extensions.jingle.apps.model.ApplicationFormat;
 import rocks.xmpp.extensions.jingle.model.Jingle;
+import rocks.xmpp.extensions.jingle.thumbs.model.Thumbnail;
 import rocks.xmpp.util.adapters.InstantAdapter;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -86,28 +87,36 @@ public final class JingleFileTransfer extends ApplicationFormat {
 
         private final long size;
 
+        @XmlElementRef
+        private final Thumbnail thumbnail;
+
         private File() {
             this.name = null;
             this.size = 0;
             this.date = null;
             this.desc = null;
             this.mediaType = null;
+            this.thumbnail = null;
         }
 
         public File(String name, long size) {
-            this.name = name;
-            this.size = size;
-            this.date = null;
-            this.desc = null;
-            this.mediaType = null;
+            this(name, size, null, null, null);
         }
 
-        public File(String name, long size, Instant lastModified, String hash, String description) {
+        public File(String name, long size, Instant lastModified, Hash hash, String description) {
+            this(name, size, lastModified, hash, description, null);
+        }
+
+        public File(String name, long size, Instant lastModified, Hash hash, String description, Thumbnail thumbnail) {
             this.name = name;
             this.size = size;
             this.date = lastModified;
             this.desc = description;
             this.mediaType = null;
+            if (hash != null) {
+                this.hashes.add(hash);
+            }
+            this.thumbnail = thumbnail;
         }
 
         @Override
@@ -142,6 +151,16 @@ public final class JingleFileTransfer extends ApplicationFormat {
 
         public final String getMediaType() {
             return mediaType;
+        }
+
+        /**
+         * Gets the optional thumbnail.
+         *
+         * @return The thumbnail or null.
+         * @see <a href="http://xmpp.org/extensions/xep-0264.html">XEP-0264: Jingle Content Thumbnails</a>
+         */
+        public final Thumbnail getThumbnail() {
+            return thumbnail;
         }
 
         @Override

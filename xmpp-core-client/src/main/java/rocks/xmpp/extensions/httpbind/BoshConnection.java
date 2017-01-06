@@ -35,6 +35,7 @@ import rocks.xmpp.dns.TxtRecord;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.xml.bind.DatatypeConverter;
@@ -62,13 +63,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
@@ -109,6 +109,11 @@ public final class BoshConnection extends Connection {
      * Our supported compression methods.
      */
     private final Map<String, CompressionMethod> compressionMethods;
+
+    /**
+     * Maps the stream element which is sent to a future associated with it. The future is done, when the element has been sent.
+     */
+    private final Map<StreamElement, CompletableFuture<Void>> sendFutures = new ConcurrentHashMap<>();
 
     /**
      * When sending, elements are put ("collected") into this collection first. Later, when the HTTP request is sent, they are all put to the request.
@@ -327,7 +332,7 @@ public final class BoshConnection extends Connection {
                 .xmppVersion("1.0");
 
         if (xmppSession.getDomain() != null) {
-            body.to(xmppSession.getDomain().toString());
+            body.to(xmppSession.getDomain());
         }
 
         // Try if we can connect in order to fail fast if we can't.
@@ -438,7 +443,7 @@ public final class BoshConnection extends Connection {
             bodyBuilder = Body.builder()
                     .sessionId(sessionId)
                     .restart(true)
-                    .to(xmppSession.getDomain().toString())
+                    .to(xmppSession.getDomain())
                     .language(xmppSession.getConfiguration().getLanguage())
                     .from(from);
         }
@@ -499,45 +504,34 @@ public final class BoshConnection extends Connection {
     }
 
     @Override
-    public final Future<?> send(StreamElement element) {
+    public final CompletableFuture<Void> send(StreamElement element) {
         // Only put content in the body element, if it is allowed (e.g. it does not contain restart='true' and an unacknowledged body isn't resent).
         Body.Builder bodyBuilder = Body.builder().sessionId(getSessionId());
         synchronized (elementsToSend) {
             elementsToSend.add(element);
         }
-        final Future<?> future = sendNewRequest(bodyBuilder, false);
-        return new Future<Void>() {
+        final CompletableFuture<Void> future = sendNewRequest(bodyBuilder, false);
+        CompletableFuture<Void> sendFuture = new AsyncResult<Void>(future) {
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
                 // When cancelled, don't send the element.
                 synchronized (elementsToSend) {
                     elementsToSend.remove(element);
                 }
+                sendFutures.remove(element);
                 return future.cancel(mayInterruptIfRunning);
             }
-
-            @Override
-            public boolean isCancelled() {
-                return future.isCancelled();
+        }.toCompletableFuture();
+        sendFutures.put(element, sendFuture);
+        sendFuture.whenComplete((result, e) -> {
+            CompletableFuture<Void> completableFuture = sendFutures.remove(element);
+            if (e != null) {
+                completableFuture.completeExceptionally(e);
+            } else {
+                completableFuture.complete(null);
             }
-
-            @Override
-            public boolean isDone() {
-                return future.isDone();
-            }
-
-            @Override
-            public Void get() throws InterruptedException, ExecutionException {
-                future.get();
-                return null;
-            }
-
-            @Override
-            public Void get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-                future.get(timeout, unit);
-                return null;
-            }
-        };
+        });
+        return sendFuture;
     }
 
     /**
@@ -596,18 +590,18 @@ public final class BoshConnection extends Connection {
      * @param bodyBuilder      The body builder.
      * @param resendAfterError If the body is resent after an error has occurred. In this case the RID is not incremented.
      */
-    private Future<?> sendNewRequest(final Body.Builder bodyBuilder, boolean resendAfterError) {
+    private CompletableFuture<Void> sendNewRequest(final Body.Builder bodyBuilder, boolean resendAfterError) {
 
         // Make sure, no two threads access this block, in order to ensure that requestCount and httpBindExecutor.isShutdown() don't return inconsistent values.
         synchronized (this) {
             if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
-                return httpBindExecutor.submit(() -> {
+                return CompletableFuture.runAsync(() -> {
 
                     // Open a HTTP connection.
                     HttpURLConnection httpConnection = null;
                     boolean responseReceived = false;
+                    Body body = null;
                     try {
-                        Body body;
 
                         if (!resendAfterError) {
                             synchronized (elementsToSend) {
@@ -618,10 +612,7 @@ public final class BoshConnection extends Connection {
                                 if (!unacknowledgedRequests.isEmpty()) {
                                     bodyBuilder.ack(highestReceivedRid);
                                 }
-                                body = bodyBuilder
-                                        .wrappedObjects(elementsToSend)
-                                        .requestId(rid.get())
-                                        .build();
+                                bodyBuilder.wrappedObjects(elementsToSend);
                                 // Prevent that the session is terminated with policy-violation due to this:
                                 //
                                 // If during any period the client sends a sequence of new requests equal in length to the number specified by the 'requests' attribute,
@@ -634,6 +625,7 @@ public final class BoshConnection extends Connection {
                                 //
                                 // In short: If we would send a second empty request, don't do that!
                                 // Also don't send a new request, if the executors are shutdown.
+                                body = bodyBuilder.build();
                                 if (body.getType() != Body.Type.TERMINATE &&
                                         ((httpBindExecutor == null || httpBindExecutor.isShutdown())
                                                 || (requestCount.get() > 0
@@ -641,16 +633,9 @@ public final class BoshConnection extends Connection {
                                                 && (body.getRestart() == null || !body.getRestart()) && sessionId != null && elementsToSend.isEmpty()))) {
                                     return;
                                 }
-                                rid.getAndIncrement();
                                 // Clear everything after the elements have been sent.
                                 elementsToSend.clear();
                             }
-                        } else {
-                            body = bodyBuilder.build();
-                        }
-
-                        if (isUsingAcknowledgements()) {
-                            unacknowledgedRequests.put(body.getRid(), bodyBuilder);
                         }
 
                         httpConnection = getConnection();
@@ -695,7 +680,7 @@ public final class BoshConnection extends Connection {
 
                                     // Create the writer for this connection.
                                     xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(xmppOutputStream, "UTF-8"));
-
+                                    body = bodyBuilder.requestId(rid.getAndIncrement()).build();
                                     // Then write the XML to the output stream by marshalling the object to the writer.
                                     // Marshaller needs to be recreated here, because it's not thread-safe.
                                     xmppSession.createMarshaller().marshal(body, xmlStreamWriter);
@@ -704,6 +689,18 @@ public final class BoshConnection extends Connection {
                                     if (debugger != null) {
                                         debugger.writeStanza(new String(byteArrayOutputStreamRequest.toByteArray(), StandardCharsets.UTF_8), body);
                                     }
+
+                                    body.getWrappedObjects().stream().filter(wrappedObject -> wrappedObject instanceof StreamElement).forEach(wrappedObject -> {
+                                        StreamElement streamElement = (StreamElement) wrappedObject;
+                                        CompletableFuture<Void> future = sendFutures.remove(streamElement);
+                                        if (future != null) {
+                                            future.complete(null);
+                                        }
+                                    });
+
+                                } catch (Exception e) {
+                                    rid.getAndDecrement();
+                                    throw e;
                                 } finally {
                                     if (xmlStreamWriter != null) {
                                         xmlStreamWriter.close();
@@ -714,6 +711,9 @@ public final class BoshConnection extends Connection {
                                 }
                             }
 
+                            if (isUsingAcknowledgements()) {
+                                unacknowledgedRequests.put(body.getRid(), bodyBuilder);
+                            }
                             // Wait for the response
                             if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
 
@@ -798,12 +798,22 @@ public final class BoshConnection extends Connection {
                         }
                     } catch (Exception e) {
                         xmppSession.notifyException(e);
+                        if (body != null) {
+                            body.getWrappedObjects().stream().filter(wrappedObject -> wrappedObject instanceof StreamElement).forEach(wrappedObject -> {
+                                StreamElement streamElement = (StreamElement) wrappedObject;
+                                CompletableFuture<Void> future = sendFutures.remove(streamElement);
+                                if (future != null) {
+                                    future.completeExceptionally(e);
+                                }
+                            });
+                        }
+                        throw new CompletionException(e);
                     } finally {
                         if (httpConnection != null) {
                             httpConnection.disconnect();
                         }
                     }
-                });
+                }, httpBindExecutor);
             } else {
                 throw new IllegalStateException("Connection already shutdown via close() or detach()");
             }
@@ -816,7 +826,6 @@ public final class BoshConnection extends Connection {
             if (body != null) {
                 body.build().getWrappedObjects().stream().filter(object -> object instanceof Stanza).forEach(object -> {
                     Stanza stanza = (Stanza) object;
-                    xmppSession.getUnacknowledgedStanzas().remove(stanza);
                     xmppSession.markAcknowledged(stanza);
                 });
             }

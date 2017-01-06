@@ -29,6 +29,7 @@ import org.glassfish.tyrus.client.ClientProperties;
 import org.glassfish.tyrus.client.SslEngineConfigurator;
 import org.glassfish.tyrus.container.jdk.client.JdkClientContainer;
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
@@ -49,20 +50,29 @@ import javax.websocket.DeploymentException;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.HandshakeResponse;
+import javax.websocket.MessageHandler;
+import javax.websocket.PongMessage;
 import javax.websocket.Session;
+import javax.websocket.SessionException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
@@ -80,6 +90,8 @@ import java.util.function.Consumer;
  */
 public final class WebSocketConnection extends Connection {
 
+    private final StreamFeaturesManager streamFeaturesManager;
+
     private final StreamManager streamManager;
 
     private final XmppDebugger debugger;
@@ -89,6 +101,8 @@ public final class WebSocketConnection extends Connection {
     private final Lock lock = new ReentrantLock();
 
     private final Condition closeReceived = lock.newCondition();
+
+    private final Set<String> pings = new CopyOnWriteArraySet<>();
 
     /**
      * Guarded by "this".
@@ -115,18 +129,14 @@ public final class WebSocketConnection extends Connection {
      */
     private Throwable exception;
 
-    private ExecutorService executorService;
+    private ScheduledThreadPoolExecutor executorService;
 
     WebSocketConnection(XmppSession xmppSession, WebSocketConnectionConfiguration connectionConfiguration) {
         super(xmppSession, connectionConfiguration);
         this.connectionConfiguration = connectionConfiguration;
         this.debugger = xmppSession.getDebugger();
+        this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         this.streamManager = xmppSession.getManager(StreamManager.class);
-    }
-
-    void initialize() {
-        StreamFeaturesManager streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
-        streamFeaturesManager.addFeatureNegotiator(streamManager);
     }
 
     private static String findWebSocketEndpoint(String xmppServiceDomain, long timeout) {
@@ -152,10 +162,10 @@ public final class WebSocketConnection extends Connection {
     }
 
     @Override
-    public final synchronized Future<?> send(StreamElement streamElement) {
+    public final synchronized CompletableFuture<Void> send(StreamElement streamElement) {
         // Note: The TyrusFuture returned by session.getAsyncRemote().sendText() is not cancellable.
         // Therefore use our own future with the BasicRemote.
-        return executorService.submit(() -> {
+        return CompletableFuture.runAsync(() -> {
             try (StringWriter writer = new StringWriter()) {
                 XMLStreamWriter xmlStreamWriter = null;
                 try {
@@ -168,16 +178,12 @@ public final class WebSocketConnection extends Connection {
                         this.streamManager.markUnacknowledged((Stanza) streamElement);
                     }
 
-                    try {
-                        session.getBasicRemote().sendText(xml);
-                        if (streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement)) {
-                            send(StreamManagement.REQUEST);
-                        }
-                        if (debugger != null) {
-                            debugger.writeStanza(xml, streamElement);
-                        }
-                    } catch (IOException e) {
-                        xmppSession.notifyException(e);
+                    session.getBasicRemote().sendText(xml);
+                    if (streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement)) {
+                        send(StreamManagement.REQUEST);
+                    }
+                    if (debugger != null) {
+                        debugger.writeStanza(xml, streamElement);
                     }
 
                 } finally {
@@ -187,9 +193,9 @@ public final class WebSocketConnection extends Connection {
                 }
             } catch (Exception e) {
                 xmppSession.notifyException(e);
+                throw new CompletionException(e);
             }
-            return null;
-        });
+        }, executorService);
     }
 
     @Override
@@ -204,8 +210,35 @@ public final class WebSocketConnection extends Connection {
                 }
                 this.exception = null;
                 this.closedByServer = false;
-                this.executorService = Executors.newSingleThreadExecutor();
+                this.executorService = new ScheduledThreadPoolExecutor(1);
+                this.executorService.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
 
+                if (connectionConfiguration.getPingInterval() != null && !connectionConfiguration.getPingInterval().isNegative() && !connectionConfiguration.getPingInterval().isZero()) {
+                    this.executorService.scheduleAtFixedRate(() -> {
+                        // Send a WebSocket ping in an interval.
+                        synchronized (this) {
+                            try {
+                                if (session != null && session.isOpen()) {
+                                    String uuid = UUID.randomUUID().toString();
+                                    if (pings.add(uuid)) {
+                                        // Send the ping with the UUID as application data, so that we can match it to the pong.
+                                        session.getBasicRemote().sendPing(ByteBuffer.wrap(uuid.getBytes(StandardCharsets.UTF_8)));
+                                        // Later check if the ping has been answered by a pong.
+                                        this.executorService.schedule(() -> {
+                                            if (pings.remove(uuid)) {
+                                                // Ping has not been removed by a corresponding pong (still unanswered).
+                                                // Notify the session with an exception.
+                                                xmppSession.notifyException(new XmppException("No WebSocket pong received in time."));
+                                            }
+                                        }, xmppSession.getConfiguration().getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                                    }
+                                }
+                            } catch (IOException e) {
+                                xmppSession.notifyException(e);
+                            }
+                        }
+                    }, 0, connectionConfiguration.getPingInterval().toMillis(), TimeUnit.MILLISECONDS);
+                }
                 if (uri == null) {
                     String protocol = connectionConfiguration.isSecure() ? "wss" : "ws";
                     // If no port has been configured, use the default ports.
@@ -261,10 +294,18 @@ public final class WebSocketConnection extends Connection {
                 sslEngineConfigurator.setHostnameVerifier(connectionConfiguration.getHostnameVerifier());
             }
 
+            int connectTimeout = connectionConfiguration.getConnectTimeout();
+            if (connectTimeout > 0) {
+                client.getProperties().put(ClientProperties.HANDSHAKE_TIMEOUT, connectTimeout);
+            }
             final Proxy proxy = connectionConfiguration.getProxy();
             if (proxy != null && proxy.type() == Proxy.Type.HTTP) {
-                client.getProperties().put(ClientProperties.PROXY_URI, "http://" + proxy.address().toString());
+                InetSocketAddress inetSocketAddress = ((InetSocketAddress) proxy.address());
+                client.getProperties().put(ClientProperties.PROXY_URI, "http://" + inetSocketAddress.getHostName() + ':' + inetSocketAddress.getPort());
             }
+
+            streamFeaturesManager.addFeatureNegotiator(streamManager);
+            streamManager.reset();
 
             final Session session = client.connectToServer(new Endpoint() {
                 @Override
@@ -317,6 +358,8 @@ public final class WebSocketConnection extends Connection {
                         }
                     });
 
+                    session.addMessageHandler(new PongHandler());
+
                     // Opens the stream
                     restartStream();
                 }
@@ -326,8 +369,15 @@ public final class WebSocketConnection extends Connection {
                     synchronized (WebSocketConnection.this) {
                         exception = t;
                     }
+                    xmppSession.notifyException(t);
                 }
 
+                @Override
+                public void onClose(Session session, CloseReason closeReason) {
+                    if (closeReason.getCloseCode() != CloseReason.CloseCodes.NORMAL_CLOSURE) {
+                        xmppSession.notifyException(new SessionException(closeReason.toString(), null, session));
+                    }
+                }
             }, clientEndpointConfig, path);
 
             if (!session.isOpen()) {
@@ -360,20 +410,25 @@ public final class WebSocketConnection extends Connection {
 
     @Override
     public final synchronized void close() throws Exception {
-        if (session != null && session.isOpen()) {
-            send(new Close());
+        try {
+            if (session != null && session.isOpen()) {
+                send(new Close());
 
-            lock.lock();
-            try {
-                if (!closedByServer) {
-                    closeReceived.await(500, TimeUnit.MILLISECONDS);
+                lock.lock();
+                try {
+                    if (!closedByServer) {
+                        closeReceived.await(500, TimeUnit.MILLISECONDS);
+                    }
+                } finally {
+                    lock.unlock();
                 }
-            } finally {
-                lock.unlock();
+                executorService.shutdown();
+                executorService = null;
+                session.close();
+                pings.clear();
             }
-            executorService.shutdown();
-            executorService = null;
-            session.close();
+        } finally {
+            streamFeaturesManager.removeFeatureNegotiator(streamManager);
         }
     }
 
@@ -390,5 +445,17 @@ public final class WebSocketConnection extends Connection {
             sb.append(", from: ").append(from);
         }
         return sb.toString();
+    }
+
+    private final class PongHandler implements MessageHandler.Whole<PongMessage> {
+
+        @Override
+        public final void onMessage(final PongMessage message) {
+            // We received a pong from the server.
+            // We can now remove the corresponding ping.
+            final byte[] bytes = new byte[message.getApplicationData().limit()];
+            message.getApplicationData().get(bytes);
+            pings.remove(new String(bytes, StandardCharsets.UTF_8));
+        }
     }
 }

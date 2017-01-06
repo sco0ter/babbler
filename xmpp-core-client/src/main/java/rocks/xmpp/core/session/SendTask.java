@@ -27,15 +27,24 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Stanza;
 
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
  * A send task is the result of a send action and allows to keep track of the sent stanza.
+ * <p>
+ * This class implements {@link Future}, which {@linkplain Future#isDone()} is done}, when the stanza has been sent to the server.
  *
  * @author Christian Schudt
  * @see XmppSession#sendMessage(Message)
  */
-public final class SendTask<S extends Stanza> {
+public final class SendTask<S extends Stanza> implements Future<Void> {
 
     private final S stanza;
 
@@ -44,10 +53,16 @@ public final class SendTask<S extends Stanza> {
      */
     private Consumer<S> onAcknowledge;
 
+    private Consumer<S> onSent;
+
+    private BiConsumer<Throwable, S> onFailure;
+
     /**
      * Guarded by this.
      */
     private boolean receivedByServer;
+
+    private CompletableFuture<Void> sendFuture;
 
     SendTask(S stanza) {
         this.stanza = stanza;
@@ -78,6 +93,46 @@ public final class SendTask<S extends Stanza> {
         }
     }
 
+    /**
+     * Called, when a stanza has been sent to the server. Note, that this does not mean, that the server received it.
+     *
+     * @param onSent The callback.
+     */
+    public final synchronized void onSent(Consumer<S> onSent) {
+        this.onSent = Objects.requireNonNull(onSent);
+        sendFuture.thenRun(() -> onSent.accept(stanza));
+    }
+
+    /**
+     * Called, when a send operation failed.
+     *
+     * @param onFailure The callback.
+     */
+    public final synchronized void onFailed(BiConsumer<Throwable, S> onFailure) {
+        this.onFailure = Objects.requireNonNull(onFailure);
+        sendFuture.whenComplete((aVoid, throwable) -> {
+            if (throwable != null) {
+                onFailure.accept(throwable, stanza);
+            }
+        });
+    }
+
+    synchronized void updateSendFuture(CompletableFuture<Void> sendFuture) {
+        this.sendFuture = sendFuture;
+        Consumer<S> consumerSent = onSent;
+        BiConsumer<Throwable, S> consumerFailed = onFailure;
+        if (consumerSent != null) {
+            this.sendFuture.thenRun(() -> consumerSent.accept(stanza));
+        }
+        if (consumerFailed != null) {
+            sendFuture.whenComplete((aVoid, throwable) -> {
+                if (throwable != null) {
+                    consumerFailed.accept(throwable, stanza);
+                }
+            });
+        }
+    }
+
     void receivedByServer() {
         Consumer<S> consumer;
         synchronized (this) {
@@ -87,5 +142,30 @@ public final class SendTask<S extends Stanza> {
         if (consumer != null) {
             consumer.accept(stanza);
         }
+    }
+
+    @Override
+    public final boolean cancel(boolean mayInterruptIfRunning) {
+        return sendFuture.cancel(mayInterruptIfRunning);
+    }
+
+    @Override
+    public final boolean isCancelled() {
+        return sendFuture.isCancelled();
+    }
+
+    @Override
+    public final boolean isDone() {
+        return sendFuture.isDone();
+    }
+
+    @Override
+    public final Void get() throws InterruptedException, ExecutionException {
+        return sendFuture.get();
+    }
+
+    @Override
+    public final Void get(long timeout, TimeUnit timeUnit) throws InterruptedException, ExecutionException, TimeoutException {
+        return sendFuture.get(timeout, timeUnit);
     }
 }

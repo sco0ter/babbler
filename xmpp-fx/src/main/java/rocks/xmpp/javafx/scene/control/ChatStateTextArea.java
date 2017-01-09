@@ -42,6 +42,8 @@ import rocks.xmpp.extensions.chatstates.model.ChatState;
  * If you clear the text area, the state becomes {@linkplain ChatState#ACTIVE active} again, after the specified delay.
  * <p>
  * When losing focus, the state will become {@linkplain ChatState#INACTIVE inactive} after the delay (which means, if you refocus before the delay time is up, it will stay active).
+ * <p>
+ * Clearing the text area immediately sets the state to {@linkplain ChatState#INACTIVE active} (if focused) or {@linkplain ChatState#INACTIVE inactive} (if not focused).
  *
  * @author Christian Schudt
  * @see ChatState
@@ -95,6 +97,12 @@ public class ChatStateTextArea extends TextArea {
                 chatState.set(ChatState.INACTIVE);
             }
         });
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        chatState.set(isFocused() ? ChatState.ACTIVE : ChatState.INACTIVE);
     }
 
     /**

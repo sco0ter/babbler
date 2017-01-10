@@ -198,7 +198,9 @@ public final class AvatarManager extends Manager {
                     // Load my own avatar in order to advertise an image.
                     getAvatarByVCard(xmppSession.getConnectedResource().asBareJid()).whenComplete((avatarResult, ex) -> {
                         if (ex == null) {
-                            // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
+                            notifyListeners(xmppSession.getConnectedResource().asBareJid(), avatarResult);
+
+			    // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
                             Presence lastPresence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
                             Presence presence1;
                             if (lastPresence != null) {

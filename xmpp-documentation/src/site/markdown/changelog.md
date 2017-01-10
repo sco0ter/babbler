@@ -1,6 +1,20 @@
 # Changelog
 ---
 
+### Version 0.7.3
+
+* Use single equals sign ("=") for zero-length data in SASL, as per RFC 6120 § 6.4.2
+* Allow configuring a custom stream host and skip proxy discovery then for SI file transfer.
+* Implement WebSocket pings/pongs.
+* XEP-0198: Send an ack right before gracefully closing the stream.
+* MUC Room "enter" events should fire for oneself entering the room as well.
+* Use `java.text.Collator` for String-based default comparison
+* Fix WebSocket's proxy URI construction.
+* XEP-0066: Use URI instead of URL.
+* Use connect timeout for WebSocket connections.
+* Fix XMPP Ping in External Components, which broke the connection.
+* `Jid.asBareJid` returns `this` if it is already bare, reducing GC pressure.
+
 ### Version 0.7.2 (2016-09-08)
 
 * Fix reconnection issue, when using multiple connection methods per session.

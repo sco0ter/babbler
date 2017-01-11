@@ -433,13 +433,13 @@ public final class XmppClient extends XmppSession {
                     // It's important to first rejoin them, before resending unacknowledged MUC messages.
                     presenceManager.getLastSentPresences().forEach(presence -> {
                         presence.getExtensions().clear();
-                        send(presence);
+                        send(presence, false);
                     });
                 } else if (configuration.getInitialPresence() != null) {
                     // Or send initial presence
                     Presence initialPresence = configuration.getInitialPresence().get();
                     if (initialPresence != null) {
-                        send(initialPresence);
+                        send(initialPresence, false);
                     }
                 }
             } catch (InterruptedException e) {

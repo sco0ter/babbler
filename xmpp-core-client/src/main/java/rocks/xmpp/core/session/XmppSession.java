@@ -342,7 +342,7 @@ public abstract class XmppSession implements AutoCloseable {
                     ((ExtensibleStanza) stanza).addExtension(delayedDelivery);
                 }
             }
-            this.sendInternal(stanza);
+            this.sendInternal(stanza, true);
         });
     }
 
@@ -853,22 +853,34 @@ public abstract class XmppSession implements AutoCloseable {
      * @return The sent stream element, which is usually the same as the parameter, but may differ in case a stanza is sent, e.g. a {@link Message} is translated to a {@link rocks.xmpp.core.stanza.model.client.ClientMessage}.
      */
     public Future<Void> send(StreamElement element) {
-        return sendInternal(prepareElement(element));
+        return sendInternal(prepareElement(element), true);
     }
 
-    private CompletableFuture<Void> sendInternal(StreamElement element) {
+    /**
+     * Sends an XML element to the server, usually a stanza, i.e. a message, presence or IQ.
+     *
+     * @param element The XML element.
+     * @param queue   If the element should be queued for later resending.
+     * @return The sent stream element, which is usually the same as the parameter, but may differ in case a stanza is sent, e.g. a {@link Message} is translated to a {@link rocks.xmpp.core.stanza.model.client.ClientMessage}.
+     */
+    final Future<Void> send(StreamElement element, boolean queue) {
+        return sendInternal(prepareElement(element), queue);
+    }
+
+    private CompletableFuture<Void> sendInternal(StreamElement element, boolean queue) {
 
         CompletableFuture<Void> sendFuture;
         Stanza stanza = null;
         try {
             if (element instanceof Stanza) {
                 stanza = (Stanza) element;
-                // Put the stanzas in an unacknowledged queue.
-                // They will be removed if either the stanza has been sent without error or if it has been acknowledged by the server (if the connection supports acknowledgements).
-                // In case of IQ queries, they will be removed, when the IQ response arrives.
-                unacknowledgedStanzas.offer(stanza);
-                stanzaSendDate.put(stanza, Instant.now());
-
+                if (queue) {
+                    // Put the stanzas in an unacknowledged queue.
+                    // They will be removed if either the stanza has been sent without error or if it has been acknowledged by the server (if the connection supports acknowledgements).
+                    // In case of IQ queries, they will be removed, when the IQ response arrives.
+                    unacknowledgedStanzas.offer(stanza);
+                    stanzaSendDate.put(stanza, Instant.now());
+                }
                 // If resource binding has not completed and it's tried to send a stanza which doesn't serve the purpose
                 // of resource binding, throw an exception, because otherwise the server will terminate the connection with a stream error.
                 if (!EnumSet.of(Status.AUTHENTICATED, Status.CLOSING, Status.DISCONNECTED).contains(getStatus())
@@ -985,7 +997,7 @@ public abstract class XmppSession implements AutoCloseable {
     protected final <S extends Stanza> SendTask<S> trackAndSend(S stanza) {
         Stanza s = (S) prepareElement(stanza);
         SendTask<S> sendTask = (SendTask<S>) stanzaTrackingMap.computeIfAbsent(s, key -> new SendTask<>(s));
-        sendTask.updateSendFuture(sendInternal(s));
+        sendTask.updateSendFuture(sendInternal(s, true));
         return sendTask;
     }
 

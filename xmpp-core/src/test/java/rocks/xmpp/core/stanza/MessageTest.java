@@ -37,8 +37,10 @@ import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -239,8 +241,25 @@ public class MessageTest extends XmlTest {
     public void testRemoveExtension() {
         Message message = new Message();
         message.addExtension(new EntityCapabilities("node", "hash", "ver"));
+        message.addExtension(new EntityCapabilities("node", "hash", "ver"));
+        Assert.assertEquals(message.getExtensions().size(), 2);
+        message.putExtension(new EntityCapabilities("node", "hash", "ver"));
+        Assert.assertEquals(message.getExtensions().size(), 1);
+        message.removeExtension(null);
         message.removeExtension(EntityCapabilities.class);
 
+        Assert.assertTrue(message.getExtensions().isEmpty());
+    }
+
+    @Test
+    public void testAddNullExtension() {
+        Message message = new Message();
+        message.addExtension(null);
+        List<Object> extensions = new ArrayList<>();
+        extensions.add(null);
+        message.addExtensions(extensions);
+        message.addExtensions((Object) null);
+        message.removeExtension(null);
         Assert.assertTrue(message.getExtensions().isEmpty());
     }
 }

@@ -53,6 +53,8 @@ import java.security.cert.CertificateException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The default TCP socket connection as described in <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">TCP Binding</a>.
@@ -65,6 +67,8 @@ import java.util.function.Consumer;
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">3.  TCP Binding</a>
  */
 public final class TcpConnection extends Connection {
+
+    private static final Logger logger = Logger.getLogger(TcpConnection.class.getName());
 
     private final StreamFeaturesManager streamFeaturesManager;
 
@@ -115,6 +119,7 @@ public final class TcpConnection extends Connection {
         this.securityManager = new SecurityManager(xmppSession, () -> {
             try {
                 secureConnection();
+                logger.log(Level.FINE, "Connection has been secured via TLS.");
             } catch (Exception e) {
                 throw new StreamNegotiationException(e);
             }

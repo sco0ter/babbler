@@ -39,6 +39,8 @@ import java.util.function.Consumer;
  */
 public abstract class Connection implements AutoCloseable {
 
+    private final ConnectionConfiguration connectionConfiguration;
+
     protected final XmppSession xmppSession;
 
     /**
@@ -62,6 +64,16 @@ public abstract class Connection implements AutoCloseable {
         this.hostname = connectionConfiguration.getHostname();
         this.port = connectionConfiguration.getPort();
         this.proxy = connectionConfiguration.getProxy();
+        this.connectionConfiguration = connectionConfiguration;
+    }
+
+    /**
+     * Gets the configuration for this connection.
+     *
+     * @return The configuration.
+     */
+    public final ConnectionConfiguration getConfiguration() {
+        return connectionConfiguration;
     }
 
     /**

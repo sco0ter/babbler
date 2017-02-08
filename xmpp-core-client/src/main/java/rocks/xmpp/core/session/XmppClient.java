@@ -236,6 +236,9 @@ public final class XmppClient extends XmppSession {
 
                 logger.fine("Negotiating stream, waiting until SASL is ready to be negotiated.");
 
+                // Check if connecting failed with an exception.
+                throwAsXmppExceptionIfNotNull(exception);
+
                 // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
                 try {
                     streamFeaturesManager.awaitNegotiation(Mechanisms.class).get(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
@@ -252,6 +255,12 @@ public final class XmppClient extends XmppSession {
 
                 logger.fine("Stream negotiated until SASL, now ready to login.");
             }
+
+            // If a secure connection has been configured, but hasn't been negotiated for some reason (e.g. MitM attack), throw an exception.
+            if (!activeConnection.isSecure() && activeConnection.getConfiguration().isSecure()) {
+                throw new StreamNegotiationException("Transport Layer Security has been configured, but hasn't been negotiated.");
+            }
+
             // Don't call listeners from within synchronized blocks to avoid possible deadlocks.
             updateStatus(Status.CONNECTING, Status.CONNECTED);
 
@@ -399,7 +408,7 @@ public final class XmppClient extends XmppSession {
                 try {
                     streamFeaturesManager.awaitNegotiation(Bind.class).get(timeout, TimeUnit.MILLISECONDS);
                 } catch (TimeoutException e) {
-                    throw new NoResponseException("Timeout while on resource binding feature.");
+                    throw new NoResponseException("Timeout while waiting on resource binding feature.");
                 }
                 // Check if stream feature negotiation failed with an exception.
                 throwAsXmppExceptionIfNotNull(exception);

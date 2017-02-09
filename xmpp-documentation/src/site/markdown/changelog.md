@@ -1,7 +1,7 @@
 # Changelog
 ---
 
-### Version 0.7.3
+### Version 0.7.3 (2017-02-09)
 
 * Use single equals sign ("=") for zero-length data in SASL, as per RFC 6120 § 6.4.2
 * Allow configuring a custom stream host and skip proxy discovery then for SI file transfer.
@@ -15,6 +15,7 @@
 * Fix XMPP Ping in External Components, which broke the connection.
 * `Jid.asBareJid` returns `this` if it is already bare, reducing GC pressure.
 * `connect()` method should not throw `CancellationException`
+* Check if the connection has been secured (if configured) before starting to authenticate.
 
 ### Version 0.7.2 (2016-09-08)
 

@@ -3,6 +3,34 @@
 
 ## Version 0.8.0-SNAPSHOT
 
+* Make `Jid` class an interface. Full JIDs and bare JIDs now share the same instance. No new instances need to be created when calling `asBareJid()`, the interface just returns a different view on the full JID.
+Reduces GC pressure and increase performance.
+* Add low-level support for [XEP-0258: Security Labels in XMPP](http://www.xmpp.org/extensions/xep-0258.html)
+* Add low-level support for [XEP-0264: Jingle Content Thumbnails](http://www.xmpp.org/extensions/xep-0264.html)
+* Add low-level support for [XEP-0352: Client State Indication](http://www.xmpp.org/extensions/xep-0352.html)
+* Add a class `StreamHeader` which represents the stream header and checks for the rules in RFC 6120. 
+* Add `putExtension()` and `addExtensions()` methods to Stanza.
+* XEP-0033: Extended Stanza Addressing: Implement reply handling, add `delivered` attribute, add varargs constructor.
+* XEP-0045: Revoking admin status should result in mere membership, rather than no affiliation at all.
+* XEP-0059: Add `nextPage()` and `previousPage()` method to result set management. Also refine the naming of the RSM methods.
+* XEP-0085: Add `isSupported` method for Chat State Notifications (either discover implicit support or else use service discovery)
+* XEP-0096: Only return a single value during SI FileTransfer negotiation.
+
+### Version 0.7.3 (2017-02-09)
+
+* Use single equals sign ("=") for zero-length data in SASL, as per RFC 6120 § 6.4.2
+* Allow configuring a custom stream host and skip proxy discovery then for SI file transfer.
+* Implement WebSocket pings/pongs.
+* Fix WebSocket's proxy URI construction.
+* Use connect timeout for WebSocket connections.
+* XEP-0198: Send an ack right before gracefully closing the stream (i.e. update to version 1.5.2).
+* MUC Room "enter" events should fire for oneself entering the room as well.
+* Use `java.text.Collator` for String-based default comparison.
+* XEP-0066: Use URI instead of URL.
+* Fix XMPP Ping in External Components, which broke the connection.
+* `Jid.asBareJid` returns `this` if it is already bare, reducing GC pressure.
+* `connect()` method should not throw `CancellationException`
+* Check if the connection has been secured (if configured) before starting to authenticate.
 
 ### Version 0.7.2 (2016-09-08)
 

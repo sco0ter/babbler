@@ -30,10 +30,13 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
+import rocks.xmpp.util.ComparableTestHelper;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Christian Schudt
@@ -172,5 +175,30 @@ public class RosterTest extends XmlTest {
         Contact contact2 = new Contact(Jid.of("node1@domain"), "name", false, null, Contact.Subscription.FROM, Arrays.asList("group1", "group2"));
 
         Assert.assertEquals(contact1, contact2);
+    }
+
+    @Test
+    public void testContactCompareTo() {
+
+        List<Contact> contacts = Arrays.asList(
+                new Contact(Jid.of("node1@domain"), "name", false, null, Contact.Subscription.FROM, Arrays.asList("group2", "group1")),
+                new Contact(Jid.of("node1@domain"), "name2", true, null, Contact.Subscription.FROM, Arrays.asList("group1", "group2")),
+                new Contact(Jid.of("node1@domain"), "name3", true, true, null, Collections.emptyList()),
+                new Contact(Jid.of("node2@domain"), "name4", true, true, null, Collections.emptyList())
+        );
+        Collections.shuffle(contacts);
+        ComparableTestHelper.checkCompareToContract(contacts);
+
+        ContactGroup group1 = new ContactGroup("name", "fullname", null);
+
+        List<ContactGroup> contactGroups = Arrays.asList(
+                group1,
+                new ContactGroup("name", "fullname", group1),
+                new ContactGroup("name2", null, null),
+                new ContactGroup("name2", "fullname2", null),
+                new ContactGroup(null, null, null)
+        );
+        Collections.shuffle(contactGroups);
+        ComparableTestHelper.checkCompareToContract(contactGroups);
     }
 }

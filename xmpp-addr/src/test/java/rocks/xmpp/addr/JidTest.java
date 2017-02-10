@@ -27,6 +27,7 @@ package rocks.xmpp.addr;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.precis.PrecisProfiles;
+import rocks.xmpp.util.ComparableTestHelper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -486,6 +487,9 @@ public class JidTest {
         Assert.assertEquals(jids.get(6), jid6);
         Assert.assertEquals(jids.get(7), jid7);
         Assert.assertEquals(jids.get(8), jid8);
+
+        ComparableTestHelper.checkCompareToContract(jids);
+        Assert.assertTrue(ComparableTestHelper.isConsistentWithEquals(jids));
     }
 
     @Test

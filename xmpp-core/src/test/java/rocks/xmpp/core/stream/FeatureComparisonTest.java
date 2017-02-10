@@ -32,6 +32,7 @@ import rocks.xmpp.core.session.model.Session;
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.core.tls.model.StartTls;
 import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
+import rocks.xmpp.util.ComparableTestHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,5 +66,7 @@ public class FeatureComparisonTest {
         Assert.assertEquals(features.get(2), compression);
         Assert.assertEquals(features.get(3), bind);
         Assert.assertEquals(features.get(4), session);
+
+        ComparableTestHelper.checkCompareToContract(features);
     }
 }

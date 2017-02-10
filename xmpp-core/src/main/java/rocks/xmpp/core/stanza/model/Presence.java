@@ -341,29 +341,27 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
         if (o == null) {
             return -1;
         }
-        if (isAvailable() && !o.isAvailable()) {
-            return -1;
-        } else if (!isAvailable() && o.isAvailable()) {
-            return 1;
-        }
+        int result = Boolean.compare(o.isAvailable(), isAvailable());
 
-        // First compare the priority.
-        int result = Byte.compare(priority != null ? priority : 0, o.priority != null ? o.priority : 0);
-        // If priority is equal, compare the show element.
         if (result == 0) {
-            // If we have no show attribute, but the other one has, we are available and are better than the other.
-            if (show == null && o.show != null) {
-                return -1;
-            }
-            // If both have no show element, presences are equal.
-            else if (show== null) {
-                return 0;
-            }
-            // If we have a show element, but the other not, the other has higher priority.
-            else if (o.show == null) {
-                return 1;
-            } else {
-                return show.compareTo(o.show);
+            // First compare the priority.
+            result = Byte.compare(priority != null ? priority : 0, o.priority != null ? o.priority : 0);
+            // If priority is equal, compare the show element.
+            if (result == 0) {
+                // If we have no show attribute, but the other one has, we are available and are better than the other.
+                if (show == null && o.show != null) {
+                    return -1;
+                }
+                // If both have no show element, presences are equal.
+                else if (show == null) {
+                    return 0;
+                }
+                // If we have a show element, but the other not, the other has higher priority.
+                else if (o.show == null) {
+                    return 1;
+                } else {
+                    return show.compareTo(o.show);
+                }
             }
         }
         return result;

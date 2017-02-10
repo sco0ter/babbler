@@ -36,9 +36,13 @@ import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
+import rocks.xmpp.util.ComparableTestHelper;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
@@ -186,4 +190,17 @@ public class ServiceDiscoveryTest extends XmlTest {
         Assert.assertEquals(itemDiscovery.getResultSetManagement().getMaxSize(), Integer.valueOf(20));
     }
 
+    @Test
+    public void testIdentityCompareTo() {
+
+        Collection<Identity> identities = Arrays.asList(Identity.accountAdmin(),
+                Identity.ofCategoryAndType("category1", "type"),
+                Identity.ofCategoryAndType("category1", "type1"),
+                Identity.ofCategoryAndType("category", "type").withName("name", Locale.ENGLISH),
+                Identity.ofCategoryAndType("category", "type").withName("name", Locale.GERMAN),
+                Identity.ofCategoryAndType("category", "type").withName("name2", Locale.GERMAN),
+                Identity.ofCategoryAndType("category", "type").withName("name2", Locale.GERMAN));
+
+        ComparableTestHelper.checkCompareToContract(identities);
+    }
 }

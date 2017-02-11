@@ -567,8 +567,8 @@ final class FullJid implements Jid {
         Jid other = (Jid) o;
 
         return Objects.equals(local, other.getLocal())
-                && Objects.equals(domain, other.getDomain())
-                && Objects.equals(resource, other.getResource());
+                && Objects.equals(resource, other.getResource())
+                && Objects.equals(domain, other.getDomain());
     }
 
     @Override

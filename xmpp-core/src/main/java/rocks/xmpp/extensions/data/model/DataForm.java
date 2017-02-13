@@ -132,7 +132,7 @@ public final class DataForm implements Comparable<DataForm> {
             this.instructions.addAll(builder.instructions);
         }
         if (builder.pages != null) {
-            this.pages.addAll(pages);
+            this.pages.addAll(builder.pages);
         }
         if (builder.reportedFields != null && !builder.reportedFields.isEmpty()) {
             this.reportedFields = new ArrayList<>();

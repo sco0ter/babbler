@@ -231,9 +231,9 @@ public abstract class XmppSession implements AutoCloseable {
 
         if (configuration.getDebugger() != null) {
             try {
-                this.debugger = configuration.getDebugger().newInstance();
+                this.debugger = configuration.getDebugger().getConstructor().newInstance();
                 this.debugger.initialize(this);
-            } catch (InstantiationException | IllegalAccessException e) {
+            } catch (ReflectiveOperationException  e) {
                 throw new RuntimeException(e);
             }
         }

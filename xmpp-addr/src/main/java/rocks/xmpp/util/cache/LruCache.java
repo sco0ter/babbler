@@ -80,6 +80,7 @@ public final class LruCache<K, V> implements Map<K, V> {
         return map.containsValue(value);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public final V get(final Object key) {
         final V v = map.get(key);

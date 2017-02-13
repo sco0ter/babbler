@@ -82,7 +82,7 @@ final class ScramServer extends ScramBase implements SaslServer {
     @Override
     public final byte[] evaluateResponse(byte[] response) throws SaslException {
 
-        String clientMessage = new String(response);
+        String clientMessage = new String(response, StandardCharsets.UTF_8);
         Map<Character, String> attributes = getAttributes(clientMessage);
         String cnonce = attributes.get('r');
 

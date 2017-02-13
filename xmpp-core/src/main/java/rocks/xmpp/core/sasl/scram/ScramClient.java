@@ -66,7 +66,7 @@ public final class ScramClient extends ScramBase implements SaslClient {
 
         // authzID can only be encoded in UTF8 - RFC 2222
         if (authorizationId != null) {
-            this.authorizationId = new String(authorizationId.getBytes(StandardCharsets.UTF_8));
+            this.authorizationId = new String(authorizationId.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
         }
         this.gs2Header = GS2_CBIND_FLAG + ',' + (authorizationId != null ? "a=" + authorizationId : "") + ',';
     }

@@ -98,6 +98,7 @@ public final class CompressionManager extends StreamFeatureNegotiator {
      *
      * @return True, because compression needs a stream restart after feature negotiation.
      */
+    @Override
     public final boolean needsRestart() {
         return true;
     }

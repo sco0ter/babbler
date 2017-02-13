@@ -523,6 +523,7 @@ public final class XmppClient extends XmppSession {
      *
      * @return The connected resource.
      */
+    @Override
     public final Jid getConnectedResource() {
         return connectedResource;
     }

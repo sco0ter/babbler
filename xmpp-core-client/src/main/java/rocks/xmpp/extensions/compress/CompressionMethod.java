@@ -64,6 +64,7 @@ public interface CompressionMethod {
      * The "gzip" compression method.
      */
     CompressionMethod GZIP = new CompressionMethod() {
+        @Override
         public String getName() {
             return "gzip";
         }

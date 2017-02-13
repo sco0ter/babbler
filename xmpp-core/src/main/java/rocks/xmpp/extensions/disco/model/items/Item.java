@@ -80,6 +80,7 @@ public final class Item implements ResultSetItem {
      *
      * @return The id.
      */
+    @Override
     public final String getId() {
         return id;
     }

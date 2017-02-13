@@ -116,6 +116,8 @@ public final class StreamFeaturesManager extends Manager {
                         streamFeatureNegotiators.clear();
                     }
                     break;
+                default:
+                    break;
             }
         });
     }

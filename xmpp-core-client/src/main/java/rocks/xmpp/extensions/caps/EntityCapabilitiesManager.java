@@ -207,6 +207,8 @@ public final class EntityCapabilitiesManager extends Manager {
                         handleEntityCaps(serverCapabilities, xmppSession.getDomain());
                     }
                     break;
+                default:
+                    break;
             }
         });
     }

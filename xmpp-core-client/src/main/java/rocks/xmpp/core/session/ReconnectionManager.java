@@ -117,6 +117,8 @@ final class ReconnectionManager extends Manager {
                     cancel();
                     scheduledExecutorService.shutdown();
                     break;
+                default:
+                    break;
             }
         });
     }

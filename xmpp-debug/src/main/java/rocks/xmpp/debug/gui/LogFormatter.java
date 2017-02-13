@@ -39,7 +39,7 @@ import java.util.logging.SimpleFormatter;
  */
 final class LogFormatter extends SimpleFormatter {
     @Override
-    public String format(LogRecord record) {
+    public synchronized String format(LogRecord record) {
         StringBuilder sb = new StringBuilder();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
 

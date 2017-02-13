@@ -67,8 +67,8 @@ public class DnsMessageTest {
     @Test
     public void parseCompressedDomainName() {
         byte pointer = 0;
-        pointer |= 1 << 7;
-        pointer |= 1 << 6;
+        pointer |= (byte) (pointer | 1 << 7);
+        pointer |= (byte) (pointer | 1 << 6);
 
         byte[] test = new byte[]{1, 'F', 3, 'I', 'S', 'I', 4, 'A', 'R', 'P', 'A', 0,
                 3, 'F', 'O', 'O', pointer, 0, pointer, 16, 0

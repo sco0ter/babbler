@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.jingle.apps.filetransfer.model.errors;
 
+import rocks.xmpp.util.Strings;
+
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -46,6 +48,6 @@ public abstract class FileTransferError {
 
     @Override
     public final String toString() {
-        return "File transfer error: " + getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase();
+        return "File transfer error: " + Strings.toDash(getClass().getSimpleName());
     }
 }

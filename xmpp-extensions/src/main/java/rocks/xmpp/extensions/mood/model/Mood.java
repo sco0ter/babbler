@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.mood.model;
 
+import rocks.xmpp.util.Strings;
+
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
@@ -312,7 +314,7 @@ public final class Mood {
 
         @Override
         public final String toString() {
-            return getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
+            return Strings.toUnderscore(getClass().getSimpleName());
         }
     }
 

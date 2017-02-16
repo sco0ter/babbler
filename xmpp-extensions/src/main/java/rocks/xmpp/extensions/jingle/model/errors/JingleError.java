@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.jingle.model.errors;
 
+import rocks.xmpp.util.Strings;
+
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -34,6 +36,6 @@ abstract class JingleError {
 
     @Override
     public String toString() {
-        return "Jingle error: " + getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase();
+        return "Jingle error: " + Strings.toDash(getClass().getSimpleName());
     }
 }

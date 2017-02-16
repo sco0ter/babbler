@@ -25,6 +25,7 @@
 package rocks.xmpp.core.sasl.model;
 
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.util.Strings;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -436,7 +437,7 @@ public final class Failure implements StreamElement {
 
         @Override
         public final String toString() {
-            return getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase();
+            return Strings.toDash(getClass().getSimpleName());
         }
     }
 

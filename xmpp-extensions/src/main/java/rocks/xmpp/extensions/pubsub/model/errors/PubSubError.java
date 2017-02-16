@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.pubsub.model.errors;
 
 import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
+import rocks.xmpp.util.Strings;
 
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -150,6 +151,6 @@ public abstract class PubSubError {
 
     @Override
     public String toString() {
-        return "PubSub error: " + getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase();
+        return "PubSub error: " + Strings.toDash(getClass().getSimpleName());
     }
 }

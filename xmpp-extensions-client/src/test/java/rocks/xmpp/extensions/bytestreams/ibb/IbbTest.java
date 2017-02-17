@@ -33,8 +33,13 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
+import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.Duration;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -80,5 +85,50 @@ public class IbbTest extends BaseTest {
         if (!rejected) {
             Assert.fail("Should have been rejected");
         }
+    }
+
+    @Test
+    public void testIbbInputStream() throws IOException {
+        MockServer mockServer = new MockServer();
+        final XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
+        IbbSession ibbSession = new IbbSession("1", xmppSession1, ROMEO, 4096, Duration.ofSeconds(5), xmppSession1.getManager(InBandByteStreamManager.class));
+        IbbInputStream ibbInputStream = (IbbInputStream) ibbSession.getInputStream();
+
+        IbbSession ibbSession2 = new IbbSession("1", xmppSession1, ROMEO, 4096, Duration.ofSeconds(5), xmppSession1.getManager(InBandByteStreamManager.class));
+        IbbInputStream ibbInputStream2 = (IbbInputStream) ibbSession2.getInputStream();
+
+
+        Random random = new Random();
+
+        for (int i = 0; i < 1000; i++) {
+            byte[] b = new byte[4096];
+            random.nextBytes(b);
+            InBandByteStream.Data data = new InBandByteStream.Data(b, "1", i);
+            ibbInputStream.queue.offer(data);
+            ibbInputStream2.queue.offer(data);
+        }
+
+        int len;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        while ((len = ibbInputStream.read()) > -1) {
+            outputStream.write(len);
+            if (ibbInputStream.queue.isEmpty()) {
+                ibbInputStream.close();
+            }
+        }
+
+
+        byte[] buffer = new byte[8048];
+        ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream();
+        while ((len = ibbInputStream2.read(buffer)) > -1) {
+            outputStream2.write(buffer, 0, len);
+            if (ibbInputStream2.queue.isEmpty()) {
+                ibbInputStream2.close();
+            }
+        }
+
+        byte[] array1 = outputStream.toByteArray();
+        Assert.assertEquals(array1.length, 4096000);
+        Assert.assertEquals(array1, outputStream2.toByteArray());
     }
 }

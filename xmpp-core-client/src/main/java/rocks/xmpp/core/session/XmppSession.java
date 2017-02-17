@@ -941,10 +941,13 @@ public abstract class XmppSession implements AutoCloseable {
                     }
                 });
                 // The stanza has been successfully sent. Don't track it any longer, unless the connection supports acknowledgements.
-                if (element instanceof Stanza && !getActiveConnection().isUsingAcknowledgements()) {
-                    Stanza st = (Stanza) element;
-                    removeFromQueue(st);
-                    stanzaTrackingMap.remove(st);
+                if (element instanceof Stanza) {
+                    Connection connection = getActiveConnection();
+                    if (connection == null || !connection.isUsingAcknowledgements()) {
+                        Stanza st = (Stanza) element;
+                        removeFromQueue(st);
+                        stanzaTrackingMap.remove(st);
+                    }
                 }
             } else {
                 sendFailedListeners.forEach(listener -> {

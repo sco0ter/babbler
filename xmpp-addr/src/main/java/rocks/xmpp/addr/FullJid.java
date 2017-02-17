@@ -61,9 +61,16 @@ final class FullJid implements Jid {
     private static final IDNProfile IDN_PROFILE = new IDNProfile();
 
     /**
+     * Whenever dots are used as label separators, the following characters MUST be recognized as dots: U+002E (full stop), U+3002 (ideographic full stop), U+FF0E (fullwidth full stop), U+FF61 (halfwidth ideographic full stop).
+     */
+    private static final String DOTS = "[\\.\u3002\uFF0E\uFF61]";
+
+    /**
      * Label separators for domain labels, which should be mapped to "." (dot): IDEOGRAPHIC FULL STOP character (U+3002)
      */
-    private static final Pattern LABEL_SEPARATOR = Pattern.compile("\u3002");
+    private static final Pattern LABEL_SEPARATOR = Pattern.compile(DOTS);
+
+    private static final Pattern LABEL_SEPARATOR_FINAL = Pattern.compile(DOTS + "$");
 
     /**
      * Caches the escaped JIDs.
@@ -110,7 +117,7 @@ final class FullJid implements Jid {
         // constructing an XMPP URI or IRI [RFC5122].  In particular, such a
         // character MUST be stripped before any other canonicalization steps
         // are taken.
-        final String strDomain = Objects.requireNonNull(domain).toString().replaceAll("\\.$", "");
+        final String strDomain = LABEL_SEPARATOR_FINAL.matcher(Objects.requireNonNull(domain)).replaceAll("");
         final String unescapedLocalPart;
 
         if (doUnescape) {

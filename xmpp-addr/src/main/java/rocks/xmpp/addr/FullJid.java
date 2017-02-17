@@ -29,7 +29,6 @@ import rocks.xmpp.precis.PrecisProfiles;
 import rocks.xmpp.util.cache.LruCache;
 
 import java.net.IDN;
-import java.nio.charset.StandardCharsets;
 import java.text.Collator;
 import java.text.Normalizer;
 import java.util.Map;
@@ -302,13 +301,12 @@ final class FullJid implements Jid {
      * @return The escaped local part or null.
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
-    private static String escape(CharSequence localPart) {
+    private static String escape(final CharSequence localPart) {
         if (localPart != null) {
-            Matcher matcher = ESCAPE_PATTERN.matcher(localPart);
-            StringBuffer sb = new StringBuffer();
+            final Matcher matcher = ESCAPE_PATTERN.matcher(localPart);
+            final StringBuffer sb = new StringBuffer();
             while (matcher.find()) {
-                String match = matcher.group();
-                matcher.appendReplacement(sb, String.format("\\\\%x", match.getBytes(StandardCharsets.UTF_8)[0]));
+                matcher.appendReplacement(sb, "\\\\" + Integer.toHexString(matcher.group().charAt(0)));
             }
             matcher.appendTail(sb);
             return sb.toString();
@@ -316,18 +314,16 @@ final class FullJid implements Jid {
         return null;
     }
 
-    private static String unescape(CharSequence localPart) {
+    private static String unescape(final CharSequence localPart) {
         if (localPart != null) {
-            Matcher matcher = UNESCAPE_PATTERN.matcher(localPart);
-            StringBuffer sb = new StringBuffer();
+            final Matcher matcher = UNESCAPE_PATTERN.matcher(localPart);
+            final StringBuffer sb = new StringBuffer();
             while (matcher.find()) {
-                String match = matcher.group(1);
-                int num = Integer.parseInt(match, 16);
-                String value = String.valueOf((char) num);
-                if (value.equals("\\")) {
+                final char c = (char) Integer.parseInt(matcher.group(1), 16);
+                if (c == '\\') {
                     matcher.appendReplacement(sb, "\\\\");
                 } else {
-                    matcher.appendReplacement(sb, value);
+                    matcher.appendReplacement(sb, String.valueOf(c));
                 }
             }
             matcher.appendTail(sb);

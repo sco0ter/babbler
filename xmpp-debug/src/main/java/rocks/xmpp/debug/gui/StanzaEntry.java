@@ -77,9 +77,9 @@ final class StanzaEntry {
     }
 
     public boolean isError() {
-        return stanza instanceof IQ && ((IQ) stanza).getType() == IQ.Type.ERROR
-                || stanza instanceof Message && ((Message) stanza).getType() == Message.Type.ERROR
-                || stanza instanceof Presence && ((Presence) stanza).getType() == Presence.Type.ERROR
+        return (stanza instanceof IQ && ((IQ) stanza).getType() == IQ.Type.ERROR)
+                || (stanza instanceof Message && ((Message) stanza).getType() == Message.Type.ERROR)
+                || (stanza instanceof Presence && ((Presence) stanza).getType() == Presence.Type.ERROR)
                 || stanza instanceof StreamError;
     }
 

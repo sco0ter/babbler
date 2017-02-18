@@ -243,7 +243,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
             isSelfPresence = mucUser.getStatusCodes().contains(Status.SELF_PRESENCE) || nicknameChanged;
         }
         String usedNick = nick != null ? nick : currentNick;
-        return isSelfPresence || usedNick != null && presence.getFrom() != null && usedNick.equals(presence.getFrom().getResource());
+        return isSelfPresence || (usedNick != null && presence.getFrom() != null && usedNick.equals(presence.getFrom().getResource()));
     }
 
     /**

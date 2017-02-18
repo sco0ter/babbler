@@ -279,7 +279,7 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
     }
 
     private boolean shouldWriteNamespace(String namespaceURI) {
-        return !Collections.disjoint(namespaces, PREFIXED_NAMESPACES) || StreamFeatures.NAMESPACE.equals(namespaceURI) && writeStreamNamespace;
+        return !Collections.disjoint(namespaces, PREFIXED_NAMESPACES) || (StreamFeatures.NAMESPACE.equals(namespaceURI) && writeStreamNamespace);
     }
 
     private boolean shouldWriteNamespacePrefix(String namespaceURI) {

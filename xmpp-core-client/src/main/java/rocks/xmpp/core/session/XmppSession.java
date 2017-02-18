@@ -257,8 +257,8 @@ public abstract class XmppSession implements AutoCloseable {
             return true;
         }
         Jid toBare = stanza.getTo().asBareJid();
-        return connectedResource != null && toBare.equals(connectedResource.asBareJid())
-                || domain != null && (toBare.equals(domain) || toBare.toString().endsWith("." + domain.toEscapedString()));
+        return (connectedResource != null && toBare.equals(connectedResource.asBareJid()))
+                || (domain != null && (toBare.equals(domain) || toBare.toString().endsWith('.' + domain.toEscapedString())));
     }
 
     protected static void throwAsXmppExceptionIfNotNull(Throwable e) throws XmppException {

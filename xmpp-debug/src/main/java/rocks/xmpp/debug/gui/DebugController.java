@@ -358,7 +358,7 @@ public final class DebugController implements Initializable {
                                     IQ selectedIQ = (IQ) selectedStanza;
                                     IQ otherIQ = (IQ) otherStanza;
                                     if (((selectedIQ.isRequest() && otherIQ.isResponse())
-                                            || selectedIQ.isResponse() && otherIQ.isRequest())) {
+                                            || (selectedIQ.isResponse() && otherIQ.isRequest()))) {
                                         // Add the highlighted items.
                                         viewModel.highlightedItems.add(entry);
                                     }
@@ -574,11 +574,11 @@ public final class DebugController implements Initializable {
     }
 
     private boolean isVisible(StanzaEntry stanzaEntry) {
-        return (cbInbound.isSelected() && stanzaEntry.isInbound()
-                || cbOutbound.isSelected() && !stanzaEntry.isInbound())
+        return ((cbInbound.isSelected() && stanzaEntry.isInbound())
+                || (cbOutbound.isSelected() && !stanzaEntry.isInbound()))
                 && (searchField.getText() == null || searchField.getText().equals("")
-                || stanzaEntry.getXml().contains(searchField.getText()) && !cbIgnoreCase.isSelected()
-                || containsIgnoreCase(stanzaEntry.getXml(), searchField.getText()) && cbIgnoreCase.isSelected());
+                || (stanzaEntry.getXml().contains(searchField.getText()) && !cbIgnoreCase.isSelected())
+                || (containsIgnoreCase(stanzaEntry.getXml(), searchField.getText()) && cbIgnoreCase.isSelected()));
     }
 
 

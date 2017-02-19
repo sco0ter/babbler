@@ -33,7 +33,6 @@ import rocks.xmpp.core.stream.model.StreamElement;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 
 /**
@@ -74,7 +73,7 @@ public final class TestXmppSession extends XmppSession {
             }
 
             @Override
-            public void connect(Jid from, String namespace, Consumer<Jid> onConnected) throws IOException {
+            public void connect(Jid from, String namespace) throws IOException {
             }
 
             @Override

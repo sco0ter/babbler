@@ -52,7 +52,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -158,11 +157,12 @@ public final class TcpConnection extends Connection {
      * If a proxy has been specified, the connection is established through this proxy.<br>
      * </p>
      *
-     * @param from The optional 'from' attribute in the stream header.
+     * @param from      The optional 'from' attribute in the stream header.
+     * @param namespace The content namespace, e.g. "jabber:client".
      * @throws IOException If the underlying socket throws an exception.
      */
     @Override
-    public final synchronized void connect(Jid from, String namespace, Consumer<Jid> onStreamOpened) throws IOException {
+    public final synchronized void connect(Jid from, String namespace) throws IOException {
 
         if (socket != null) {
             if (!socket.isClosed() && socket.isConnected()) {
@@ -203,7 +203,7 @@ public final class TcpConnection extends Connection {
         xmppStreamWriter.openStream(outputStream, from);
 
         // Start reading from the input stream.
-        xmppStreamReader = new XmppStreamReader(namespace, this, this.xmppSession, onStreamOpened);
+        xmppStreamReader = new XmppStreamReader(namespace, this, this.xmppSession);
         xmppStreamReader.startReading(inputStream);
     }
 

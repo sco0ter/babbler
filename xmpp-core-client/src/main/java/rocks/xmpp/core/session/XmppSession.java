@@ -28,6 +28,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.session.debug.XmppDebugger;
+import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
@@ -233,7 +234,7 @@ public abstract class XmppSession implements AutoCloseable {
             try {
                 this.debugger = configuration.getDebugger().getConstructor().newInstance();
                 this.debugger.initialize(this);
-            } catch (ReflectiveOperationException  e) {
+            } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -347,7 +348,7 @@ public abstract class XmppSession implements AutoCloseable {
         });
     }
 
-    protected final void tryConnect(Jid from, String namespace, Consumer<Jid> onStreamOpened) throws XmppException {
+    protected final void tryConnect(Jid from, String namespace) throws XmppException {
 
         // Close any previous connection, which might still be open.
         try {
@@ -361,7 +362,7 @@ public abstract class XmppSession implements AutoCloseable {
             while (connectionIterator.hasNext()) {
                 Connection connection = connectionIterator.next();
                 try {
-                    connection.connect(from, namespace, onStreamOpened);
+                    connection.connect(from, namespace);
                     activeConnection = connection;
                     break;
                 } catch (IOException e) {
@@ -839,15 +840,6 @@ public abstract class XmppSession implements AutoCloseable {
     }
 
     /**
-     * Sets the XMPP service domain. This should only be set by a connection implementation.
-     *
-     * @param xmppServiceDomain The XMPP service domain.
-     */
-    protected final void setXmppServiceDomain(Jid xmppServiceDomain) {
-        this.xmppServiceDomain = xmppServiceDomain;
-    }
-
-    /**
      * Sends an XML element to the server, usually a stanza, i.e. a message, presence or IQ.
      *
      * @param element The XML element.
@@ -1204,6 +1196,8 @@ public abstract class XmppSession implements AutoCloseable {
                 XmppUtils.notifyEventListeners(inboundPresenceListeners, new PresenceEvent(this, (Presence) element, true));
                 streamManager.incrementInboundStanzaCount();
             });
+        } else if (element instanceof SessionOpen) {
+            this.xmppServiceDomain = ((SessionOpen) element).getFrom();
         } else if (element instanceof StreamFeatures) {
             streamFeaturesManager.processFeatures((StreamFeatures) element);
         } else if (element instanceof StreamError) {

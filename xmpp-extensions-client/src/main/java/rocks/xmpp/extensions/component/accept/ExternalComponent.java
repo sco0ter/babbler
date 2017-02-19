@@ -29,6 +29,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
+import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
@@ -119,7 +120,7 @@ public final class ExternalComponent extends XmppSession {
                         exception = null;
                         streamHeaderReceived = false;
 
-                        tryConnect(from, "jabber:component:accept", this::onStreamOpened);
+                        tryConnect(from, "jabber:component:accept");
                         logger.fine("Negotiating stream, waiting until handshake is ready to be negotiated.");
 
                         lock.lock();
@@ -205,6 +206,15 @@ public final class ExternalComponent extends XmppSession {
         } else {
             super.handleElement(element);
         }
+        if (element instanceof SessionOpen) {
+            streamHeaderReceived = true;
+            lock.lock();
+            try {
+                streamOpened.signalAll();
+            } finally {
+                lock.unlock();
+            }
+        }
         return false;
     }
 
@@ -218,17 +228,6 @@ public final class ExternalComponent extends XmppSession {
         lock.lock();
         try {
             handshakeReceived.signalAll();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private void onStreamOpened(Jid domain) {
-        setXmppServiceDomain(domain);
-        streamHeaderReceived = true;
-        lock.lock();
-        try {
-            streamOpened.signalAll();
         } finally {
             lock.unlock();
         }

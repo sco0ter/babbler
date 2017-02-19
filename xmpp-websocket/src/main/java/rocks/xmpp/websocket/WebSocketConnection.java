@@ -78,7 +78,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Consumer;
 
 /**
  * An XMPP WebSocket connection method.
@@ -199,7 +198,7 @@ public final class WebSocketConnection extends Connection {
     }
 
     @Override
-    public final void connect(final Jid from, final String namespace, final Consumer<Jid> onStreamOpened) throws IOException {
+    public final void connect(final Jid from, final String namespace) throws IOException {
 
         try {
             final URI path;
@@ -334,7 +333,6 @@ public final class WebSocketConnection extends Connection {
                             }
                             if (element instanceof Open) {
                                 Open open = (Open) element;
-                                onStreamOpened.accept(open.getFrom());
                                 synchronized (WebSocketConnection.this) {
                                     streamId = open.getId();
                                 }

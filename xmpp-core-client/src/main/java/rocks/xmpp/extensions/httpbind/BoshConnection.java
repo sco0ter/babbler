@@ -71,7 +71,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -170,8 +169,6 @@ public final class BoshConnection extends Connection {
      * Guarded by "this".
      */
     private URL url;
-
-    private Consumer<Jid> onStreamOpened;
 
     BoshConnection(XmppSession xmppSession, BoshConnectionConfiguration configuration) {
         super(xmppSession, configuration);
@@ -273,11 +270,12 @@ public final class BoshConnection extends Connection {
     /**
      * Connects to the BOSH server.
      *
-     * @param from The optional 'from' attribute in the initial BOSH session creation request.
+     * @param from      The optional 'from' attribute in the initial BOSH session creation request.
+     * @param namespace The content namespace, e.g. "jabber:client".
      * @throws IOException If a connection could not be established.
      */
     @Override
-    public final synchronized void connect(Jid from, String namespace, Consumer<Jid> onStreamOpened) throws IOException {
+    public final synchronized void connect(Jid from, String namespace) throws IOException {
 
         if (sessionId != null) {
             // Already connected.
@@ -312,7 +310,6 @@ public final class BoshConnection extends Connection {
         this.sessionId = null;
         this.authId = null;
         this.requestCount.set(0);
-        this.onStreamOpened = onStreamOpened;
 
         // Set the initial request id with a large random number.
         // The largest possible number for a RID is (2^53)-1
@@ -394,9 +391,7 @@ public final class BoshConnection extends Connection {
                         }
                     }
                 }
-                if (responseBody.getFrom() != null) {
-                    onStreamOpened.accept(responseBody.getFrom());
-                }
+                xmppSession.handleElement(responseBody);
             }
         }
 

@@ -54,6 +54,21 @@ import java.util.Objects;
  */
 public final class StreamHeader implements SessionOpen {
 
+    /**
+     * http://etherx.jabber.org/streams
+     */
+    public static final String STREAM_NAMESPACE = "http://etherx.jabber.org/streams";
+
+    /**
+     * The default namespace prefix "stream".
+     */
+    public static final String STREAM_NAMESPACE_PREFIX = "stream";
+
+    /**
+     * The local name of the stream header.
+     */
+    public static final String LOCAL_NAME = "stream";
+
     private final Jid from;
 
     private final Jid to;
@@ -172,7 +187,7 @@ public final class StreamHeader implements SessionOpen {
      */
     public final void writeTo(final XMLStreamWriter writer) throws XMLStreamException {
         writer.writeStartDocument(StandardCharsets.UTF_8.name(), "1.0");
-        writer.writeStartElement("stream", "stream", StreamFeatures.NAMESPACE);
+        writer.writeStartElement(STREAM_NAMESPACE_PREFIX, LOCAL_NAME, STREAM_NAMESPACE);
 
         if (from != null) {
             writer.writeAttribute("from", from.toString());
@@ -188,7 +203,7 @@ public final class StreamHeader implements SessionOpen {
             writer.writeAttribute(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI, "lang", lang.toLanguageTag());
         }
         writer.writeNamespace(XMLConstants.DEFAULT_NS_PREFIX, contentNamespace);
-        writer.writeNamespace("stream", StreamFeatures.NAMESPACE);
+        writer.writeNamespace(STREAM_NAMESPACE_PREFIX, STREAM_NAMESPACE);
 
         for (QName qName : additionalNamespaces) {
             writer.writeNamespace(qName.getPrefix(), qName.getNamespaceURI());
@@ -254,7 +269,7 @@ public final class StreamHeader implements SessionOpen {
 
     @Override
     public final String toString() {
-        final StringBuilder sb = new StringBuilder("<stream:stream");
+        final StringBuilder sb = new StringBuilder("<").append(STREAM_NAMESPACE_PREFIX).append(":").append(LOCAL_NAME);
         if (from != null) {
             sb.append(" from=\"").append(from).append('"');
         }
@@ -273,7 +288,7 @@ public final class StreamHeader implements SessionOpen {
         }
         sb.append(" xmlns=\"")
                 .append(contentNamespace)
-                .append("\" xmlns:stream=\"").append(StreamFeatures.NAMESPACE).append('"');
+                .append("\" xmlns:").append(STREAM_NAMESPACE_PREFIX).append("=\"").append(STREAM_NAMESPACE).append('"');
 
         for (QName qName : additionalNamespaces) {
             sb.append(" xmlns:").append(qName.getPrefix()).append("=\"").append(qName.getNamespaceURI()).append('"');

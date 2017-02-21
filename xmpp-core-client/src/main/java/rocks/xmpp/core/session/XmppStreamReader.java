@@ -30,7 +30,7 @@ import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamError;
-import rocks.xmpp.core.stream.model.StreamFeatures;
+import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.util.XmppUtils;
 
@@ -121,7 +121,7 @@ final class XmppStreamReader {
                         }
                         if (xmlEvent.isStartElement()) {
                             StartElement startElement = xmlEvent.asStartElement();
-                            if ("stream".equals(startElement.getName().getLocalPart()) && StreamFeatures.NAMESPACE.equals(startElement.getName().getNamespaceURI())) {
+                            if (StreamHeader.LOCAL_NAME.equals(startElement.getName().getLocalPart()) && StreamHeader.STREAM_NAMESPACE.equals(startElement.getName().getNamespaceURI())) {
                                 Attribute idAttribute = startElement.getAttributeByName(STREAM_ID);
                                 if (idAttribute != null) {
                                     synchronized (connection) {

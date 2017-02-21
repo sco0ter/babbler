@@ -25,6 +25,7 @@
 package rocks.xmpp.util;
 
 import rocks.xmpp.core.stream.model.StreamFeatures;
+import rocks.xmpp.core.stream.model.StreamHeader;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
@@ -279,10 +280,10 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
     }
 
     private boolean shouldWriteNamespace(String namespaceURI) {
-        return !Collections.disjoint(namespaces, PREFIXED_NAMESPACES) || (StreamFeatures.NAMESPACE.equals(namespaceURI) && writeStreamNamespace);
+        return !Collections.disjoint(namespaces, PREFIXED_NAMESPACES) || (StreamHeader.STREAM_NAMESPACE.equals(namespaceURI) && writeStreamNamespace);
     }
 
     private boolean shouldWriteNamespacePrefix(String namespaceURI) {
-        return shouldWriteNamespace(namespaceURI) || StreamFeatures.NAMESPACE.equals(namespaceURI);
+        return shouldWriteNamespace(namespaceURI) || StreamHeader.STREAM_NAMESPACE.equals(namespaceURI);
     }
 }

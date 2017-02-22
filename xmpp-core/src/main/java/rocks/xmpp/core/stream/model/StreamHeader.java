@@ -69,6 +69,11 @@ public final class StreamHeader implements SessionOpen {
      */
     public static final String LOCAL_NAME = "stream";
 
+    /**
+     * The closing stream tag {@code </stream:stream>}.
+     */
+    public static final String CLOSING_STREAM_TAG = "</" + StreamHeader.STREAM_NAMESPACE_PREFIX + ':' + StreamHeader.LOCAL_NAME + '>';
+
     private final Jid from;
 
     private final Jid to;

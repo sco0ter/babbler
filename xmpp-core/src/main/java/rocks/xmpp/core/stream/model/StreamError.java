@@ -64,10 +64,44 @@ public final class StreamError implements StreamElement {
         this.extension = null;
     }
 
+    /**
+     * Creates a stream error with only a condition.
+     *
+     * @param condition The non-null condition.
+     */
     public StreamError(Condition condition) {
         this(condition, null, null, null);
     }
 
+    /**
+     * Creates a stream error with a condition and a descriptive text.
+     *
+     * @param condition The non-null condition.
+     * @param text      The text.
+     * @param language  May be null, but it should be present.
+     */
+    public StreamError(Condition condition, String text, Locale language) {
+        this(condition, text, language, null);
+    }
+
+    /**
+     * Creates a stream error with a condition, optional text and an extension.
+     *
+     * @param condition The non-null condition.
+     * @param extension The application-specific error extension.
+     */
+    public StreamError(Condition condition, Object extension) {
+        this(condition, null, null, extension);
+    }
+
+    /**
+     * Creates a stream error with a condition, optional text and an extension.
+     *
+     * @param condition The non-null condition.
+     * @param text      The text.
+     * @param language  May be null, but it should be present.
+     * @param extension The application-specific error extension.
+     */
     public StreamError(Condition condition, String text, Locale language, Object extension) {
         this.condition = Objects.requireNonNull(condition);
         this.text = text != null ? new Text(text, language) : null;

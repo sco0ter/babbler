@@ -109,6 +109,7 @@ final class XmppStreamReader {
                     XMLEvent startDocument = null;
                     xmlEventReader = xmppSession.getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
                     XMLEvent xmlEvent;
+                    StreamErrorException streamError = null;
                     while (!doRestart && (xmlEvent = xmlEventReader.peek()) != null) {
                         StringWriter stringWriter = null;
                         if (debugger != null) {
@@ -117,6 +118,7 @@ final class XmppStreamReader {
                                 startDocument = xmlEvent;
                             }
                         }
+
                         if (xmlEvent.isStartElement()) {
                             StartElement startElement = xmlEvent.asStartElement();
                             if ("stream".equals(startElement.getName().getLocalPart()) && StreamFeatures.NAMESPACE.equals(startElement.getName().getNamespaceURI())) {
@@ -153,6 +155,8 @@ final class XmppStreamReader {
                                 // Keep the reader open and only delegate the exception to the session and let it decide what to do with it.
                                 try {
                                     doRestart = xmppSession.handleElement(object);
+                                } catch (StreamErrorException e) {
+                                    streamError = e;
                                 } catch (XmppException e) {
                                     xmppSession.notifyException(e);
                                 }
@@ -168,8 +172,10 @@ final class XmppStreamReader {
                             }
                         }
                     }
-
                     xmlEventReader.close();
+                    if (streamError != null) {
+                        throw streamError;
+                    }
                     if (!doRestart && xmppSession.getStatus() != XmppSession.Status.CLOSING) {
                         // The server initiated a graceful disconnect by sending <stream:stream/> without an stream error.
                         // In this case we want to reconnect, therefore throw an exception as if a stream error has occurred.

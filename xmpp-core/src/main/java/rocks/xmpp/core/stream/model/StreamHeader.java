@@ -72,7 +72,12 @@ public final class StreamHeader implements SessionOpen {
     /**
      * The closing stream tag {@code </stream:stream>}.
      */
-    public static final String CLOSING_STREAM_TAG = "</" + StreamHeader.STREAM_NAMESPACE_PREFIX + ':' + StreamHeader.LOCAL_NAME + '>';
+    public static final StreamElement CLOSING_STREAM_TAG = new StreamElement() {
+        @Override
+        public String toString() {
+            return "</" + StreamHeader.STREAM_NAMESPACE_PREFIX + ':' + StreamHeader.LOCAL_NAME + '>';
+        }
+    };
 
     private final Jid from;
 

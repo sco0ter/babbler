@@ -30,14 +30,14 @@ import rocks.xmpp.core.stream.model.errors.Condition;
 
 /**
  * Represents a stream error.
- * This exception is thrown if client receives a stream error.
- * <p>
- * This class is immutable.
  *
  * @author Christian Schudt
+ * @see StreamError
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
  */
 public final class StreamErrorException extends XmppException {
+
+    private static final long serialVersionUID = -6169260329712442144L;
 
     private final StreamError streamError;
 
@@ -47,7 +47,17 @@ public final class StreamErrorException extends XmppException {
      * @param streamError The underlying stream error.
      */
     public StreamErrorException(StreamError streamError) {
-        super(streamError.toString());
+        this(streamError, null);
+    }
+
+    /**
+     * Constructs a stream error exception with a cause.
+     *
+     * @param streamError The underlying stream error.
+     * @param cause       The cause.
+     */
+    public StreamErrorException(StreamError streamError, Throwable cause) {
+        super(streamError.toString(), cause);
         this.streamError = streamError;
     }
 

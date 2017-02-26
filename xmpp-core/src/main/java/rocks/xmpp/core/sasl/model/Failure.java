@@ -24,17 +24,15 @@
 
 package rocks.xmpp.core.sasl.model;
 
+import rocks.xmpp.core.Text;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.util.Strings;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -66,6 +64,7 @@ public final class Failure implements StreamElement {
     })
     private final Condition condition;
 
+    @XmlElement(namespace = "urn:ietf:params:xml:ns:xmpp-sasl")
     private final Text text;
 
     /**
@@ -106,7 +105,7 @@ public final class Failure implements StreamElement {
      */
     public final String getText() {
         if (text != null) {
-            return text.text;
+            return text.getText();
         }
         return null;
     }
@@ -118,7 +117,7 @@ public final class Failure implements StreamElement {
      */
     public final Locale getLanguage() {
         if (text != null) {
-            return text.lang;
+            return text.getLanguage();
         }
         return null;
     }
@@ -438,28 +437,6 @@ public final class Failure implements StreamElement {
         @Override
         public final String toString() {
             return Strings.toDash(getClass().getSimpleName());
-        }
-    }
-
-    /**
-     * The text element of the failure.
-     */
-    private static final class Text {
-
-        @XmlValue
-        private final String text;
-
-        @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-        private final Locale lang;
-
-        private Text() {
-            this.text = null;
-            this.lang = null;
-        }
-
-        private Text(final String text, final Locale lang) {
-            this.text = text;
-            this.lang = lang;
         }
     }
 }

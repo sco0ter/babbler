@@ -8,7 +8,8 @@ Reduces GC pressure and increase performance.
 * Add low-level support for [XEP-0258: Security Labels in XMPP](http://www.xmpp.org/extensions/xep-0258.html)
 * Add low-level support for [XEP-0264: Jingle Content Thumbnails](http://www.xmpp.org/extensions/xep-0264.html)
 * Add low-level support for [XEP-0352: Client State Indication](http://www.xmpp.org/extensions/xep-0352.html)
-* Add a class `StreamHeader` which represents the stream header and checks for the rules in RFC 6120. 
+* Add a class `StreamHeader` which represents the stream header and checks for the rules in RFC 6120.
+* Refactor Text classes from the `urn:ietf:params:xml:ns:xmpp-stanzas`, `urn:ietf:params:xml:ns:xmpp-streams` and `urn:ietf:params:xml:ns:xmpp-sasl` namespaces into one common `rocks.xmpp.core.Text` class (API change).
 * Add `putExtension()` and `addExtensions()` methods to Stanza.
 * XEP-0033: Extended Stanza Addressing: Implement reply handling, add `delivered` attribute, add varargs constructor.
 * XEP-0045: Revoking admin status should result in mere membership, rather than no affiliation at all.

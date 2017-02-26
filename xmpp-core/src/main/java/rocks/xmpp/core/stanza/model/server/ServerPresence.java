@@ -25,9 +25,9 @@
 package rocks.xmpp.core.stanza.model.server;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Text;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.Text;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;

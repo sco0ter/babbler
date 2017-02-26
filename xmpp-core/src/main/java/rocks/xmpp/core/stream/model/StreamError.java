@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.stream.model;
 
-import rocks.xmpp.core.stanza.model.Text;
+import rocks.xmpp.core.Text;
 import rocks.xmpp.core.stream.model.errors.Condition;
 
 import javax.xml.bind.annotation.XmlAnyElement;

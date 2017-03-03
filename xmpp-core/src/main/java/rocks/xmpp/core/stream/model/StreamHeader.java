@@ -33,11 +33,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Represents the XMPP stream header.
@@ -49,10 +50,14 @@ import java.util.Objects;
  * streamHeader.writeTo(xmlStreamWriter);
  * }
  * </pre>
+ * The {@code toString()} method of this class returns the XML string of the stream header,
+ * which is emphasized by the implementation of the {@link CharSequence} interface.
+ * <p>
+ * This class is immutable.
  *
  * @author Christian Schudt
  */
-public final class StreamHeader implements SessionOpen {
+public final class StreamHeader implements SessionOpen, CharSequence {
 
     /**
      * http://etherx.jabber.org/streams
@@ -70,7 +75,7 @@ public final class StreamHeader implements SessionOpen {
     public static final String LOCAL_NAME = "stream";
 
     /**
-     * The closing stream tag {@code </stream:stream>}.
+     * The closing stream tag {@code </stream:stream>}. The {@code toString()} method returns the XML string.
      */
     public static final StreamElement CLOSING_STREAM_TAG = new StreamElement() {
         @Override
@@ -104,7 +109,23 @@ public final class StreamHeader implements SessionOpen {
         this.id = id;
         this.lang = lang;
         this.contentNamespace = contentNamespace;
-        this.additionalNamespaces.addAll(Arrays.asList(additionalNamespaces));
+        if (additionalNamespaces.length > 0) {
+            Set<String> prefixes = new HashSet<>();
+            Set<String> namespaces = new HashSet<>();
+            for (QName additionalNamespace : additionalNamespaces) {
+                if ((additionalNamespace.getNamespaceURI() == null || XMLConstants.NULL_NS_URI.equals(additionalNamespace.getNamespaceURI())
+                        || (additionalNamespace.getPrefix() == null || XMLConstants.DEFAULT_NS_PREFIX.equals(additionalNamespace.getPrefix())))) {
+                    throw new IllegalArgumentException("Namespace URI and prefix must not be empty.");
+                }
+                if (!prefixes.add(additionalNamespace.getPrefix())) {
+                    throw new IllegalArgumentException("Duplicate prefix " + additionalNamespace.getPrefix());
+                }
+                if (!namespaces.add(additionalNamespace.getNamespaceURI())) {
+                    throw new IllegalArgumentException("Duplicate namespace " + additionalNamespace.getNamespaceURI());
+                }
+                this.additionalNamespaces.add(additionalNamespace);
+            }
+        }
     }
 
     /**
@@ -113,7 +134,7 @@ public final class StreamHeader implements SessionOpen {
      * @param from                 The XMPP identity of the principal controlling the client, i.e., a JID of the form {@code localpart@domainpart>}.
      * @param to                   A domainpart that the initiating entity knows or expects the receiving entity to service.
      * @param lang                 An entity's preferred or default language for any human-readable XML character data to be sent over the stream.
-     * @param additionalNamespaces Any optional additional namespace declarations.
+     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a namespace URI and a prefix set.
      * @return The stream header.
      */
     public static StreamHeader initialClientToServer(Jid from, Jid to, Locale lang, QName... additionalNamespaces) {
@@ -129,7 +150,7 @@ public final class StreamHeader implements SessionOpen {
      * @param to                   A domainpart that the initiating entity knows or expects the receiving entity to service.
      * @param lang                 An entity's preferred or default language for any human-readable XML character data to be sent over the stream.
      * @param contentNamespace     The content namespace.
-     * @param additionalNamespaces Any optional additional namespace declarations.
+     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a namespace URI and a prefix set.
      * @return The stream header.
      */
     public static StreamHeader initialClientToServer(Jid from, Jid to, Locale lang, String contentNamespace, QName... additionalNamespaces) {
@@ -145,7 +166,7 @@ public final class StreamHeader implements SessionOpen {
      * @param to                   The bare JID specified in the 'from' attribute of the initial stream header
      * @param id                   A unique identifier for the stream, called a "stream ID".
      * @param lang                 An entity's preferred or default language for any human-readable XML character data to be sent over the stream.
-     * @param additionalNamespaces Any optional additional namespace declarations.
+     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a namespace URI and a prefix set.
      * @return The stream header.
      */
     public static StreamHeader responseClientToServer(Jid from, Jid to, String id, Locale lang, QName... additionalNamespaces) {
@@ -162,7 +183,7 @@ public final class StreamHeader implements SessionOpen {
      * @param from                 One of the configured FQDNs of the server, i.e., a JID of the form {@code <domainpart>}.
      * @param to                   A domainpart that the initiating entity knows or expects the receiving entity to service.
      * @param lang                 An entity's preferred or default language for any human-readable XML character data to be sent over the stream.
-     * @param additionalNamespaces Any optional additional namespace declarations.
+     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a namespace URI and a prefix set.
      * @return The stream header.
      */
     public static StreamHeader initialServerToServer(Jid from, Jid to, Locale lang, QName... additionalNamespaces) {
@@ -178,7 +199,7 @@ public final class StreamHeader implements SessionOpen {
      * @param to                   The domainpart specified in the 'from' attribute of the initial stream header.
      * @param id                   A unique identifier for the stream, called a "stream ID".
      * @param lang                 An entity's preferred or default language for any human-readable XML character data to be sent over the stream.
-     * @param additionalNamespaces Any optional additional namespace declarations.
+     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a namespace URI and a prefix set.
      * @return The stream header.
      */
     public static StreamHeader responseServerToServer(Jid from, Jid to, String id, Locale lang, QName... additionalNamespaces) {
@@ -278,8 +299,23 @@ public final class StreamHeader implements SessionOpen {
     }
 
     @Override
+    public final int length() {
+        return toString().length();
+    }
+
+    @Override
+    public final char charAt(int i) {
+        return toString().charAt(i);
+    }
+
+    @Override
+    public final CharSequence subSequence(int i, int i1) {
+        return toString().subSequence(i, i1);
+    }
+
+    @Override
     public final String toString() {
-        final StringBuilder sb = new StringBuilder("<").append(STREAM_NAMESPACE_PREFIX).append(":").append(LOCAL_NAME);
+        final StringBuilder sb = new StringBuilder("<?xml version='1.0' encoding='UTF-8'?><").append(STREAM_NAMESPACE_PREFIX).append(":").append(LOCAL_NAME);
         if (from != null) {
             sb.append(" from=\"").append(from).append('"');
         }
@@ -287,12 +323,9 @@ public final class StreamHeader implements SessionOpen {
             sb.append(" to=\"").append(to).append('"');
         }
         if (id != null) {
-            sb.append(" to=\"").append(id).append('"');
+            sb.append(" id=\"").append(id).append('"');
         }
         sb.append(" version=\"1.0\"");
-        if (id != null) {
-            sb.append(" to=\"").append(id).append('"');
-        }
         if (lang != null) {
             sb.append(" xml:lang=\"").append(lang.toLanguageTag()).append('"');
         }

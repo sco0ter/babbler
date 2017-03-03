@@ -41,6 +41,7 @@ import rocks.xmpp.dns.TxtRecord;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.CompletionStages;
 import rocks.xmpp.websocket.model.Close;
 import rocks.xmpp.websocket.model.Open;
 
@@ -58,6 +59,7 @@ import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URI;
@@ -72,12 +74,11 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * An XMPP WebSocket connection method.
@@ -97,16 +98,11 @@ public final class WebSocketConnection extends Connection {
 
     private final WebSocketConnectionConfiguration connectionConfiguration;
 
-    private final Lock lock = new ReentrantLock();
-
-    private final Condition closeReceived = lock.newCondition();
-
     private final Set<String> pings = new CopyOnWriteArraySet<>();
 
-    /**
-     * Guarded by "this".
-     */
-    private boolean closedByServer;
+    private final AtomicBoolean closed = new AtomicBoolean(false);
+
+    private CompletableFuture<Void> closeReceived;
 
     /**
      * Guarded by "this".
@@ -128,7 +124,17 @@ public final class WebSocketConnection extends Connection {
      */
     private Throwable exception;
 
-    private ScheduledThreadPoolExecutor executorService;
+    private ScheduledExecutorService executorService;
+
+    /**
+     * Guarded by "this".
+     */
+    private Future<?> pingFuture;
+
+    /**
+     * Guarded by "this".
+     */
+    private Future<?> pongFuture;
 
     WebSocketConnection(XmppSession xmppSession, WebSocketConnectionConfiguration connectionConfiguration) {
         super(xmppSession, connectionConfiguration);
@@ -208,12 +214,10 @@ public final class WebSocketConnection extends Connection {
                     return;
                 }
                 this.exception = null;
-                this.closedByServer = false;
-                this.executorService = new ScheduledThreadPoolExecutor(1);
-                this.executorService.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+                this.executorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("WebSocket send thread"));
 
                 if (connectionConfiguration.getPingInterval() != null && !connectionConfiguration.getPingInterval().isNegative() && !connectionConfiguration.getPingInterval().isZero()) {
-                    this.executorService.scheduleAtFixedRate(() -> {
+                    pingFuture = this.executorService.scheduleAtFixedRate(() -> {
                         // Send a WebSocket ping in an interval.
                         synchronized (this) {
                             try {
@@ -223,7 +227,7 @@ public final class WebSocketConnection extends Connection {
                                         // Send the ping with the UUID as application data, so that we can match it to the pong.
                                         session.getBasicRemote().sendPing(ByteBuffer.wrap(uuid.getBytes(StandardCharsets.UTF_8)));
                                         // Later check if the ping has been answered by a pong.
-                                        this.executorService.schedule(() -> {
+                                        pongFuture = this.executorService.schedule(() -> {
                                             if (pings.remove(uuid)) {
                                                 // Ping has not been removed by a corresponding pong (still unanswered).
                                                 // Notify the session with an exception.
@@ -306,6 +310,7 @@ public final class WebSocketConnection extends Connection {
             streamFeaturesManager.addFeatureNegotiator(streamManager);
             streamManager.reset();
 
+            closeReceived = new CompletableFuture<>();
             final Session session = client.connectToServer(new Endpoint() {
                 @Override
                 public void onOpen(Session session, EndpointConfig config) {
@@ -337,16 +342,14 @@ public final class WebSocketConnection extends Connection {
                                     streamId = open.getId();
                                 }
                             } else if (element instanceof Close) {
+                                CompletableFuture<Void> future;
                                 synchronized (WebSocketConnection.this) {
-                                    closedByServer = true;
+                                    future = closeReceived;
+                                }
+                                if (future != null) {
+                                    future.complete(null);
                                 }
                                 close();
-                                lock.lock();
-                                try {
-                                    closeReceived.signalAll();
-                                } finally {
-                                    lock.unlock();
-                                }
                             }
                             if (xmppSession.handleElement(element)) {
                                 restartStream();
@@ -386,6 +389,7 @@ public final class WebSocketConnection extends Connection {
                     throw exception instanceof IOException ? (IOException) exception : new IOException(exception);
                 }
             }
+            closed.set(false);
         } catch (DeploymentException | URISyntaxException e) {
             throw new IOException(e);
         }
@@ -407,26 +411,52 @@ public final class WebSocketConnection extends Connection {
     }
 
     @Override
-    public final synchronized void close() throws Exception {
+    public final void close() throws Exception {
         try {
-            if (session != null && session.isOpen()) {
-                send(new Close());
-
-                lock.lock();
-                try {
-                    if (!closedByServer) {
-                        closeReceived.await(500, TimeUnit.MILLISECONDS);
-                    }
-                } finally {
-                    lock.unlock();
+            // Prevent that the connection is closed twice.
+            if (closed.compareAndSet(false, true)) {
+                Session session;
+                synchronized (this) {
+                    session = this.session;
                 }
-                executorService.shutdown();
-                executorService = null;
-                session.close();
-                pings.clear();
+                if (session != null && session.isOpen()) {
+                    send(new Close());
+
+                    CompletableFuture<Void> future;
+                    synchronized (this) {
+                        future = closeReceived;
+                    }
+                    if (future != null) {
+                        // Wait until we receive the "close" frame from the server, then close the session.
+                        future.runAfterEither(CompletionStages.timeoutAfter(500, TimeUnit.MILLISECONDS), () -> {
+                            try {
+                                session.close();
+                            } catch (IOException e) {
+                                throw new UncheckedIOException(e);
+                            }
+                        });
+                    } else {
+                        session.close();
+                    }
+                }
             }
         } finally {
             streamFeaturesManager.removeFeatureNegotiator(streamManager);
+            pings.clear();
+            synchronized (this) {
+                if (executorService != null) {
+                    executorService.shutdown();
+                    executorService = null;
+                }
+                if (pingFuture != null) {
+                    pingFuture.cancel(false);
+                    pingFuture = null;
+                }
+                if (pongFuture != null) {
+                    pongFuture.cancel(false);
+                    pongFuture = null;
+                }
+            }
         }
     }
 

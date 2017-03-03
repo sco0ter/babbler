@@ -1274,13 +1274,15 @@ public abstract class XmppSession implements AutoCloseable {
     }
 
     private void closeAndNullifyConnection() throws Exception {
-        synchronized (connections) {
-            if (activeConnection != null) {
-                try {
-                    activeConnection.close();
-                } finally {
-                    activeConnection = null;
-                }
+
+        try {
+            Connection connection = getActiveConnection();
+            if (connection != null) {
+                connection.close();
+            }
+        } finally {
+            synchronized (connections) {
+                activeConnection = null;
             }
         }
     }

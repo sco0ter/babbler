@@ -40,6 +40,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -92,8 +93,7 @@ public class FileTransferIT extends IntegrationTest {
     private void testFileTransfer() throws XmppException, IOException, InterruptedException, TimeoutException, ExecutionException {
         // The data we want to send (representing a file).
         byte[] data = new byte[]{1, 2, 3, 4};
-        Lock lock = new ReentrantLock();
-        Condition transferCompleted = lock.newCondition();
+        CompletableFuture<Void> transferCompleted = new CompletableFuture<>();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Consumer<FileTransferOfferEvent> listener = e -> {
@@ -106,12 +106,7 @@ public class FileTransferIT extends IntegrationTest {
                 fileTransfer.addFileTransferStatusListener(ev -> {
                     System.out.println(ev.getStatus());
                     if (ev.getStatus() == FileTransfer.Status.COMPLETED) {
-                        lock.lock();
-                        try {
-                            transferCompleted.signal();
-                        } finally {
-                            lock.unlock();
-                        }
+                        transferCompleted.complete(null);
                     }
                 });
                 fileTransfer.transfer();
@@ -124,13 +119,7 @@ public class FileTransferIT extends IntegrationTest {
             fileTransferManagers[1].addFileTransferOfferListener(listener);
             FileTransfer fileTransfer = fileTransferManagers[0].offerFile(new ByteArrayInputStream(data), "test.txt", data.length, Instant.now(), "Description", xmppSession[1].getConnectedResource(), Duration.ofSeconds(12)).get();
             fileTransfer.transfer();
-
-            lock.lock();
-            try {
-                transferCompleted.await(5, TimeUnit.SECONDS);
-            } finally {
-                lock.unlock();
-            }
+            transferCompleted.get(5, TimeUnit.SECONDS);
             Assert.assertEquals(outputStream.toByteArray(), data);
         } finally {
             fileTransferManagers[1].removeFileTransferOfferListener(listener);

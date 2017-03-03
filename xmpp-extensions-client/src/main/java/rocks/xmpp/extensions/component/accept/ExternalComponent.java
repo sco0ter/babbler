@@ -40,10 +40,8 @@ import rocks.xmpp.extensions.component.accept.model.ComponentMessage;
 import rocks.xmpp.extensions.component.accept.model.ComponentPresence;
 import rocks.xmpp.extensions.component.accept.model.Handshake;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -57,17 +55,13 @@ public final class ExternalComponent extends XmppSession {
 
     private static final Logger logger = Logger.getLogger(ExternalComponent.class.getName());
 
-    private final Lock lock = new ReentrantLock();
+    private volatile CompletableFuture<Void> streamOpened;
 
-    private final Condition streamOpened = lock.newCondition();
-
-    private final Condition handshakeReceived = lock.newCondition();
+    private volatile CompletableFuture<Void> handshakeReceived;
 
     private final String sharedSecret;
 
     private volatile Jid connectedResource;
-
-    private volatile boolean streamHeaderReceived;
 
     private ExternalComponent(String componentName, String sharedSecret, XmppSessionConfiguration configuration, String hostname, int port) {
         super(componentName, configuration, TcpConnectionConfiguration.builder().hostname(hostname).port(port).build());
@@ -113,25 +107,15 @@ public final class ExternalComponent extends XmppSession {
 
                 updateStatus(Status.CONNECTING);
                 synchronized (this) {
-
+                    streamOpened = new CompletableFuture<>();
                     // Double-checked locking: Recheck connected status. In a multi-threaded environment multiple threads could have passed the first check.
                     if (!checkConnected()) {
                         // Reset
                         exception = null;
-                        streamHeaderReceived = false;
 
                         tryConnect(from, "jabber:component:accept");
                         logger.fine("Negotiating stream, waiting until handshake is ready to be negotiated.");
-
-                        lock.lock();
-                        try {
-                            if (!streamHeaderReceived) {
-                                streamOpened.await(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
-                            }
-                        } finally {
-                            lock.unlock();
-                        }
-
+                        streamOpened.get(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
                         // Wait shortly to see if the server will respond with a <conflict/>, <host-unknown/> or other stream error.
                         Thread.sleep(20);
 
@@ -167,19 +151,15 @@ public final class ExternalComponent extends XmppSession {
             }
             updateStatus(Status.AUTHENTICATING);
             synchronized (this) {
+                handshakeReceived = new CompletableFuture<>();
                 if (checkAuthenticated()) {
                     // Silently return, when we are already authenticated.
                     return;
                 }
                 // Send the <handshake/> element.
                 send(Handshake.create(getActiveConnection().getStreamId(), sharedSecret));
-                lock.lock();
-                try {
-                    // Wait for the <handshake/> element to be received from the server.
-                    handshakeReceived.await(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
-                } finally {
-                    lock.unlock();
-                }
+                // Wait for the <handshake/> element to be received from the server.
+                handshakeReceived.get(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
             }
             // Authentication succeeded, update the status.
             updateStatus(Status.AUTHENTICATED);
@@ -207,12 +187,10 @@ public final class ExternalComponent extends XmppSession {
             super.handleElement(element);
         }
         if (element instanceof SessionOpen) {
-            streamHeaderReceived = true;
-            lock.lock();
-            try {
-                streamOpened.signalAll();
-            } finally {
-                lock.unlock();
+            CompletableFuture<Void> future = streamOpened;
+            if (future != null) {
+                future.complete(null);
+                streamOpened = null;
             }
         }
         return false;
@@ -225,11 +203,10 @@ public final class ExternalComponent extends XmppSession {
     }
 
     private void releaseLock() {
-        lock.lock();
-        try {
-            handshakeReceived.signalAll();
-        } finally {
-            lock.unlock();
+        CompletableFuture<Void> future = handshakeReceived;
+        if (future != null) {
+            future.complete(null);
+            handshakeReceived = null;
         }
     }
 

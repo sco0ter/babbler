@@ -35,11 +35,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt
@@ -58,8 +57,7 @@ public class InBandByteStreamIT extends IntegrationTest {
         xmppSession2.connect();
         xmppSession2.login(USER_2, PASSWORD_2);
 
-        final Lock lock = new ReentrantLock();
-        final Condition condition = lock.newCondition();
+        final CompletableFuture<Void> condition = new CompletableFuture<>();
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         InBandByteStreamManager inBandBytestreamManager2 = xmppSession2.getManager(InBandByteStreamManager.class);
@@ -87,12 +85,7 @@ public class InBandByteStreamIT extends IntegrationTest {
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         } finally {
-                            lock.lock();
-                            try {
-                                condition.signal();
-                            } finally {
-                                lock.unlock();
-                            }
+                            condition.complete(null);
                         }
                     }
                 }.start();
@@ -108,15 +101,14 @@ public class InBandByteStreamIT extends IntegrationTest {
         os.flush();
         os.close();
 
-        lock.lock();
         try {
             if (outputStream.toByteArray().length == 0) {
-                condition.await(5, TimeUnit.SECONDS);
+                condition.get(5, TimeUnit.SECONDS);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        } finally {
-            lock.unlock();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
         }
         Assert.assertEquals(outputStream.toByteArray(), new byte[]{1, 2, 3, 4});
     }

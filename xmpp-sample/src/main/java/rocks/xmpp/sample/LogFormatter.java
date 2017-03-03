@@ -37,7 +37,7 @@ import java.util.logging.SimpleFormatter;
  */
 public class LogFormatter extends SimpleFormatter {
     @Override
-    public String format(LogRecord record) {
+    public synchronized String format(LogRecord record) {
         StringBuilder sb = new StringBuilder();
         DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
         LocalDateTime resultDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(record.getMillis()), ZoneId.systemDefault());

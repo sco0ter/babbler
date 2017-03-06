@@ -432,11 +432,15 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param status The status.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#changepres">7.7 Changing Availability Status</a>
      */
-    public synchronized void changeAvailabilityStatus(Presence.Show show, String status) {
-        if (!entered) {
-            throw new IllegalStateException("You must have entered the room to change the availability status.");
+    public void changeAvailabilityStatus(Presence.Show show, String status) {
+        Presence presence;
+        synchronized (this) {
+            if (!entered) {
+                throw new IllegalStateException("You must have entered the room to change the availability status.");
+            }
+            presence = new Presence(roomJid.withResource(nick), show, status);
         }
-        xmppSession.send(new Presence(roomJid.withResource(nick), show, status));
+        xmppSession.send(presence);
     }
 
     /**

@@ -900,17 +900,17 @@ public abstract class XmppSession implements AutoCloseable {
                     }
                 }
             }
-            synchronized (connections) {
-                if (activeConnection == null) {
-                    IllegalStateException ise = new IllegalStateException("Session is not connected to server (status: " + getStatus() + ')');
-                    Throwable cause = exception;
-                    if (cause != null) {
-                        ise.initCause(cause);
-                    }
-                    throw ise;
-                } else {
-                    sendFuture = activeConnection.send(element);
+
+            Connection connection = getActiveConnection();
+            if (connection == null) {
+                IllegalStateException ise = new IllegalStateException("Session is not connected to server (status: " + getStatus() + ')');
+                Throwable cause = exception;
+                if (cause != null) {
+                    ise.initCause(cause);
                 }
+                throw ise;
+            } else {
+                sendFuture = connection.send(element);
             }
         } catch (Exception e) {
             sendFuture = new CompletableFuture<>();

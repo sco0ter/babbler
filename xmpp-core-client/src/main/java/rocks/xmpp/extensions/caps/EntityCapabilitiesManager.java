@@ -185,6 +185,7 @@ public final class EntityCapabilitiesManager extends Manager {
 
             // http://xmpp.org/extensions/xep-0115.html#advertise:
             // "If the supported features change during a generating entity's presence session (e.g., a user installs an updated version of a client plugin), the application MUST recompute the verification string and SHOULD send a new presence broadcast."
+            Presence lastPresence = null;
             synchronized (publishedNodes) {
                 if (capsSent) {
                     // Whenever the verification string has changed, publish the info node.
@@ -192,9 +193,11 @@ public final class EntityCapabilitiesManager extends Manager {
 
                     // Resend presence. This manager will add the caps extension later.
                     PresenceManager presenceManager = xmppSession.getManager(PresenceManager.class);
-                    Presence lastPresence = presenceManager.getLastSentPresence();
-                    xmppSession.send(new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null));
+                    lastPresence = presenceManager.getLastSentPresence();
                 }
+            }
+            if (lastPresence != null) {
+                xmppSession.send(new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null));
             }
         });
         xmppSession.addSessionStatusListener(e -> {

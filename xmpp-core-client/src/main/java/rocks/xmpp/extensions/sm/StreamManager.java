@@ -103,10 +103,12 @@ public final class StreamManager extends StreamFeatureNegotiator {
                     if (sessionStatusEvent.getStatus() == XmppSession.Status.CLOSING) {
                         // When the client closes the session, acknowledge the receipt stanza count to the server,
                         // so that the server won't resend them (store them offline).
-                        synchronized (this) {
-                            if (enabled != null) {
-                                xmppSession.send(new StreamManagement.Answer(inboundCount));
+                        if (isActive()) {
+                            StreamManagement.Answer answer;
+                            synchronized (this) {
+                                answer = new StreamManagement.Answer(inboundCount);
                             }
+                            xmppSession.send(answer);
                         }
                     }
                 }
@@ -150,9 +152,11 @@ public final class StreamManager extends StreamFeatureNegotiator {
             // Return Status.INCOMPLETE here, so that SM negotiation can be renegotiated normally.
         } else if (element instanceof StreamManagement.Request) {
             // Server wants to know how many stanzas we have received.
+            StreamManagement.Answer answer;
             synchronized (this) {
-                xmppSession.send(new StreamManagement.Answer(inboundCount));
+                answer = new StreamManagement.Answer(inboundCount);
             }
+            xmppSession.send(answer);
         } else if (element instanceof StreamManagement.Answer) {
             StreamManagement.Answer answer = (StreamManagement.Answer) element;
             // When receiving an <a/> element with an 'h' attribute,
@@ -290,14 +294,15 @@ public final class StreamManager extends StreamFeatureNegotiator {
             return new AsyncResult<>(CompletableFuture.completedFuture(false));
         }
         CompletableFuture<Boolean> future = new CompletableFuture<>();
+        StreamManagement.Resume resume;
         synchronized (this) {
-
             resumeFuture = future;
             // The <resume/> element MUST include a 'previd' attribute whose value is the SM-ID of the former stream and
             // MUST include an 'h' attribute that identifies the sequence number of the last handled stanza
             // sent over the former stream from the server to the client
-            xmppSession.send(new StreamManagement.Resume(inboundCount, getStreamManagementId()));
+            resume = new StreamManagement.Resume(inboundCount, getStreamManagementId());
         }
+        xmppSession.send(resume);
         return new AsyncResult<>(future);
     }
 }

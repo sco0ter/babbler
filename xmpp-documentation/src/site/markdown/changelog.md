@@ -1,6 +1,15 @@
 # Changelog
 ---
 
+### Version 0.7.4
+
+* Resolve rare deadlock when using Stream Management
+* Rework how WebSocket connections are closed
+* Don't let a stream error close the stream immediately, but instead wait for the closing stream element and then close the connection.
+* Increase performance of IBB stream
+* Prevent rare, but possible `NullPointerException` after sending stanzas.
+* Fix error when using pages (XEP-0141) within data forms (XEP-0004)
+
 ### Version 0.7.3 (2017-02-09)
 
 * Use single equals sign ("=") for zero-length data in SASL, as per RFC 6120 § 6.4.2

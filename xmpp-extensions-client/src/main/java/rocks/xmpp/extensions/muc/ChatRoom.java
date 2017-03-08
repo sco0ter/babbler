@@ -63,7 +63,6 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -71,6 +70,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 
@@ -89,7 +89,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
 
     private final Set<Consumer<OccupantEvent>> occupantListeners = new CopyOnWriteArraySet<>();
 
-    private final Map<String, Occupant> occupantMap = new HashMap<>();
+    private final Map<String, Occupant> occupantMap = new ConcurrentHashMap<>();
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
@@ -226,9 +226,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         synchronized (this) {
             entered = false;
             nick = null;
-            multiUserChatManager.roomExited(this);
-            occupantMap.clear();
         }
+        multiUserChatManager.roomExited(this);
+        occupantMap.clear();
     }
 
     private synchronized boolean isSelfPresence(Presence presence, final String currentNick) {
@@ -346,25 +346,25 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param history  The history.
      * @return The async result with the self-presence returned by the chat room.
      */
-    public synchronized AsyncResult<Presence> enter(final String nick, String password, DiscussionHistory history) {
+    public final AsyncResult<Presence> enter(final String nick, final String password, final DiscussionHistory history) {
         Objects.requireNonNull(nick, "nick must not be null.");
-
-        if (entered) {
-            throw new IllegalStateException("You already entered this room.");
+        synchronized (this) {
+            if (entered) {
+                throw new IllegalStateException("You already entered this room.");
+            }
+            this.nick = nick;
         }
         xmppSession.addInboundMessageListener(messageListener);
         xmppSession.addInboundPresenceListener(presenceListener);
 
         final Presence enterPresence = new Presence(roomJid.withResource(nick));
         enterPresence.getExtensions().add(Muc.withPasswordAndHistory(password, history));
-        this.nick = nick;
         return xmppSession.sendAndAwaitPresence(enterPresence, presence -> {
             Jid room = presence.getFrom().asBareJid();
             return room.equals(roomJid) && isSelfPresence(presence, nick);
         }).whenComplete((presence, e) -> {
             if (e != null) {
-                xmppSession.removeInboundMessageListener(messageListener);
-                xmppSession.removeInboundPresenceListener(presenceListener);
+                userHasExited();
             } else {
                 multiUserChatManager.roomEntered(this, nick);
                 synchronized (this) {
@@ -416,11 +416,10 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @return The async result with the presence returned by the chat room.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#changenick">7.6 Changing Nickname</a>
      */
-    public synchronized AsyncResult<Presence> changeNickname(String newNickname) {
-        if (!entered) {
+    public final AsyncResult<Presence> changeNickname(String newNickname) {
+        if (!hasEntered()) {
             throw new IllegalStateException("You must have entered the room to change your nickname.");
         }
-
         final Presence changeNickNamePresence = new Presence(roomJid.withResource(newNickname));
         return xmppSession.sendAndAwaitPresence(changeNickNamePresence, presence -> presence.getFrom().equals(changeNickNamePresence.getTo()));
     }
@@ -561,14 +560,14 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#exit">7.14 Exiting a Room</a>
      */
-    public synchronized AsyncResult<Void> exit(String message) {
+    public final AsyncResult<Void> exit(String message) {
 
-        if (!entered) {
+        if (!hasEntered()) {
             return new AsyncResult<>(CompletableFuture.completedFuture(null));
         }
         // Store the current nick, to determine self-presence (because nick gets null before determining self-presence).
-        final String usedNick = nick;
-        return xmppSession.sendAndAwaitPresence(new Presence(roomJid.withResource(nick), Presence.Type.UNAVAILABLE, message), presence -> {
+        final String usedNick = getNick();
+        return xmppSession.sendAndAwaitPresence(new Presence(roomJid.withResource(usedNick), Presence.Type.UNAVAILABLE, message), presence -> {
             Jid room = presence.getFrom().asBareJid();
             return !presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence, usedNick);
         }).handle((result, throwable) -> {

@@ -279,6 +279,7 @@ public final class DebugController implements Initializable {
                                 break;
                             case DND:
                                 circlePresence.getStyleClass().add(CSS_DND);
+                                break;
                             default:
                                 circlePresence.getStyleClass().add(CSS_AVAILABLE);
                                 break;

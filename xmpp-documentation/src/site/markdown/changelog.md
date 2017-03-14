@@ -1,7 +1,7 @@
 # Changelog
 ---
 
-### Version 0.7.4
+### Version 0.7.4 (2017-03-14)
 
 * Resolve rare deadlock when using Stream Management
 * Rework how WebSocket connections are closed
@@ -9,6 +9,7 @@
 * Increase performance of IBB stream
 * Prevent rare, but possible `NullPointerException` after sending stanzas.
 * Fix error when using pages (XEP-0141) within data forms (XEP-0004)
+* Reset nick to `null`, if entering a chat room fails
 
 ### Version 0.7.3 (2017-02-09)
 

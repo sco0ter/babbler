@@ -116,6 +116,7 @@ import rocks.xmpp.extensions.si.model.StreamInitiation;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
+import rocks.xmpp.extensions.spoiler.model.Spoiler;
 import rocks.xmpp.extensions.time.EntityTimeManager;
 import rocks.xmpp.extensions.time.model.EntityTime;
 import rocks.xmpp.extensions.tune.model.Tune;
@@ -341,7 +342,10 @@ public final class ExtensionModule implements Module {
                 Extension.of(Json.class),
 
                 // XEP-0352: Client State Indication
-                Extension.of(ClientState.class)
+                Extension.of(ClientState.class),
+
+                // XEP-0382: Spoiler Messages
+                Extension.of(Spoiler.NAMESPACE, false, Spoiler.class)
         );
     }
 }

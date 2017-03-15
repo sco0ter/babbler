@@ -114,6 +114,7 @@ import rocks.xmpp.extensions.shim.model.Headers;
 import rocks.xmpp.extensions.si.StreamInitiationManager;
 import rocks.xmpp.extensions.si.model.StreamInitiation;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
+import rocks.xmpp.extensions.sid.model.StanzaId;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.extensions.time.EntityTimeManager;
@@ -341,7 +342,10 @@ public final class ExtensionModule implements Module {
                 Extension.of(Json.class),
 
                 // XEP-0352: Client State Indication
-                Extension.of(ClientState.class)
+                Extension.of(ClientState.class),
+
+                // XEP-0359: Unique and Stable Stanza IDs
+                Extension.of(StanzaId.NAMESPACE, true, StanzaId.class)
         );
     }
 }

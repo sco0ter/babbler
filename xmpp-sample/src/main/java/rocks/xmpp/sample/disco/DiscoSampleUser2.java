@@ -63,7 +63,7 @@ public class DiscoSampleUser2 {
 
                 ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
 
-                ItemNode itemNode = serviceDiscoveryManager.discoverItems(xmppSession.getDomain().withLocal("111").withResource("disco"), ResultSetManagement.forLimit(10)).get();
+                ItemNode itemNode = serviceDiscoveryManager.discoverItems(xmppSession.getDomain().withLocal("111").withResource("disco"), ResultSetManagement.forFirstPage(10)).get();
 
                 serviceDiscoveryManager.discoverItems(xmppSession.getDomain().withLocal("111").withResource("disco"), ResultSetManagement.forNextPage(10, itemNode.getResultSetManagement().getLastItem()));
 

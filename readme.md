@@ -12,7 +12,6 @@ Since this project is quite young, the API might change. Comments on the API are
 | Blog                            | [blog.xmpp.rocks](http://blog.xmpp.rocks)                                                                                                                                           |
 | Documentation                   | [docs.xmpp.rocks](http://docs.xmpp.rocks)                                                                                                                                           |
 | Mailing List                    | [groups.xmpp.rocks](http://groups.xmpp.rocks)                                                                                                                                       |
-| Build Status                    | [![Build Status](https://drone.io/bitbucket.org/sco0ter/babbler/status.png)](https://drone.io/bitbucket.org/sco0ter/babbler/latest)                                                 |
 | Latest Version in Maven Central | [![Maven Central](http://img.shields.io/maven-central/v/rocks.xmpp/xmpp-core-client.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/rocks.xmpp/xmpp-core-client)  |
 | License                         | [![License](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://bitbucket.org/sco0ter/babbler/src/master/LICENSE.txt)                                              |
 
@@ -23,12 +22,12 @@ Since this project is quite young, the API might change. Comments on the API are
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-core-client</artifactId>
-    <version>0.7.0</version>
+    <version>0.7.4</version>
 </dependency>
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-extensions-client</artifactId>
-    <version>0.7.0</version>
+    <version>0.7.4</version>
 </dependency>
 ```
 
@@ -56,12 +55,12 @@ Development snapshots are available on OSS Sonatype nexus:
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-core-client</artifactId>
-    <version>0.7.0-SNAPSHOT</version>
+    <version>0.8.0-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-extensions-client</artifactId>
-    <version>0.7.0-SNAPSHOT</version>
+    <version>0.8.0-SNAPSHOT</version>
 </dependency>
 ```
 

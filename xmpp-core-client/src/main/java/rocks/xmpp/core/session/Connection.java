@@ -29,8 +29,7 @@ import rocks.xmpp.core.stream.model.StreamElement;
 
 import java.io.IOException;
 import java.net.Proxy;
-import java.util.concurrent.Future;
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * The base connection class which provides hostname, port and proxy information.
@@ -38,6 +37,8 @@ import java.util.function.Consumer;
  * @author Christian Schudt
  */
 public abstract class Connection implements AutoCloseable {
+
+    private final ConnectionConfiguration connectionConfiguration;
 
     protected final XmppSession xmppSession;
 
@@ -62,6 +63,16 @@ public abstract class Connection implements AutoCloseable {
         this.hostname = connectionConfiguration.getHostname();
         this.port = connectionConfiguration.getPort();
         this.proxy = connectionConfiguration.getProxy();
+        this.connectionConfiguration = connectionConfiguration;
+    }
+
+    /**
+     * Gets the configuration for this connection.
+     *
+     * @return The configuration.
+     */
+    public final ConnectionConfiguration getConfiguration() {
+        return connectionConfiguration;
     }
 
     /**
@@ -106,17 +117,16 @@ public abstract class Connection implements AutoCloseable {
      * @param streamElement The element.
      * @return The future representing the send process and which allows to cancel it.
      */
-    public abstract Future<?> send(StreamElement streamElement);
+    public abstract CompletableFuture<Void> send(StreamElement streamElement);
 
     /**
      * Connects to the server and provides an optional 'from' attribute.
      *
-     * @param from           The 'from' attribute.
-     * @param namespace      The content namespace, e.g. "jabber:client".
-     * @param onStreamOpened The callback which gets notified when the stream gets opened, i.e. when the server has responded with a stream header. The parameter of the consumer is the stream id.
+     * @param from      The 'from' attribute.
+     * @param namespace The content namespace, e.g. "jabber:client".
      * @throws IOException If no connection could be established, e.g. due to unknown host.
      */
-    public abstract void connect(Jid from, String namespace, Consumer<Jid> onStreamOpened) throws IOException;
+    public abstract void connect(Jid from, String namespace) throws IOException;
 
     /**
      * Indicates whether this connection is secured by TLS/SSL.

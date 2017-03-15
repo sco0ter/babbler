@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model.errors;
 
 import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.util.Strings;
 
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlValue;
@@ -307,6 +308,6 @@ public abstract class Condition {
 
     @Override
     public final String toString() {
-        return getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase();
+        return Strings.toDash(getClass().getSimpleName());
     }
 }

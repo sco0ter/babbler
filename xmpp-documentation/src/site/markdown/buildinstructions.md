@@ -30,7 +30,7 @@ In order to build the project you need to run the following common Maven command
 
 Make sure you use Java 8.
 
-This will build all the modules, run the tests and merge the core and client modules into one jar file (via the maven-assembly-plugin).
+This will build all the modules, run the tests and merge the core and client modules into one jar file (via the maven-shade-plugin).
 You will find everything you need in the `target` folder of the `xmpp-documentation` module. The assembled jar file is called "babbler-{version}.jar".
 
 ## Generating the Documentation

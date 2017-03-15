@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.activity.model;
 
+import rocks.xmpp.util.Strings;
+
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
@@ -119,7 +121,7 @@ public abstract class SpecificActivity {
 
     @Override
     public final String toString() {
-        return getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
+        return Strings.toUnderscore(getClass().getSimpleName());
     }
 
     /**

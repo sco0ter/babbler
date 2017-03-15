@@ -41,13 +41,6 @@ final class ResourceRecord {
     private final String name;
 
     /**
-     * two octets containing one of the RR type codes.  This
-     * field specifies the meaning of the data in the RDATA
-     * field.
-     */
-    private final Type type;
-
-    /**
      * two octets which specify the class of the data in the
      * RDATA field.
      */
@@ -66,7 +59,11 @@ final class ResourceRecord {
 
     ResourceRecord(final ByteBuffer data) {
         this.name = parse(data);
-        this.type = Type.valueOf(data.getShort() & 0xFFFF);
+        /*
+        two octets containing one of the RR type codes.  This
+        field specifies the meaning of the data in the RDATA field.
+        */
+        Type type = Type.valueOf(data.getShort() & 0xFFFF);
         this.clazz = Class.valueOf(data.getShort() & 0xFFFF);
         this.ttl = data.getInt() & 0xFFFFFFFFL;
         int resourceDataLength = data.getShort() & 0xFFFF;

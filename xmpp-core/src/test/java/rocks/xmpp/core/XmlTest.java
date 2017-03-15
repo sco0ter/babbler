@@ -24,12 +24,14 @@
 
 package rocks.xmpp.core;
 
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.core.stanza.model.client.ClientPresence;
+import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.bind.JAXBContext;
@@ -41,26 +43,26 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
  */
 public abstract class XmlTest {
 
-    private static final String START_STREAM = "<?xml version='1.0' encoding='UTF-8'?><stream:stream xmlns:stream=\"http://etherx.jabber.org/streams\" xmlns=\"${namespace}\" from=\"localhost\" id=\"55aa4529\" xml:lang=\"en\" version=\"1.0\">";
+    private static final Jid FROM = Jid.ofDomain("localhost");
 
-    private static final String END_STREAM = "</stream:stream>";
+    public static final XMLInputFactory INPUT_FACTORY = XMLInputFactory.newFactory();
 
-    private static final XMLInputFactory INPUT_FACTORY = XMLInputFactory.newFactory();
+    public static final XMLOutputFactory OUTPUT_FACTORY = XMLOutputFactory.newFactory();
 
-    private static final XMLOutputFactory OUTPUT_FACTORY = XMLOutputFactory.newFactory();
+    private final Unmarshaller unmarshaller;
 
-    private Unmarshaller unmarshaller;
-
-    private Marshaller marshaller;
+    private final Marshaller marshaller;
 
     private final String namespace;
 
@@ -76,14 +78,16 @@ public abstract class XmlTest {
         this.namespace = namespace;
     }
 
-
     private XMLEventReader getStream(String stanza) throws XMLStreamException {
-        XMLEventReader xmlEventReader = INPUT_FACTORY.createXMLEventReader(new StringReader(START_STREAM.replace("${namespace}", namespace) + stanza + END_STREAM));
+        String stream = StreamHeader.responseClientToServer(FROM, null, "1", Locale.ENGLISH) + stanza + StreamHeader.CLOSING_STREAM_TAG;
+        Reader reader = new StringReader(stream);
+        XMLEventReader xmlEventReader = INPUT_FACTORY.createXMLEventReader(reader);
         xmlEventReader.nextEvent();
         xmlEventReader.nextEvent();
         return xmlEventReader;
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> T unmarshal(String xml, Class<T> type) throws XMLStreamException, JAXBException {
         Class<?> clazz = type;
         if (type == Message.class) {

@@ -42,6 +42,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.time.Instant;
@@ -68,12 +69,12 @@ public final class OutOfBandFileTransferManager extends Manager implements FileT
             @Override
             protected IQ processRequest(IQ iq) {
                 OobIQ oobIQ = iq.getExtension(OobIQ.class);
-                final URL url = oobIQ.getUrl();
+                final URI uri = oobIQ.getUri();
                 final String description = oobIQ.getDescription();
                 try {
                     HttpURLConnection connection = null;
                     try {
-                        URLConnection urlConnection = url.openConnection();
+                        URLConnection urlConnection = uri.toURL().openConnection();
 
                         // Get the header information like file length and content type.
                         if (urlConnection instanceof HttpURLConnection) {
@@ -90,7 +91,7 @@ public final class OutOfBandFileTransferManager extends Manager implements FileT
                             lastModified = connection.getLastModified();
 
                             final Instant date = lastModified > 0 ? Instant.ofEpochMilli(lastModified) : null;
-                            final String name = url.toString();
+                            final String name = uri.toString();
                             fileTransferManager.fileTransferOffered(iq, null, mimeType, null, new FileTransferOffer() {
                                 @Override
                                 public long getSize() {

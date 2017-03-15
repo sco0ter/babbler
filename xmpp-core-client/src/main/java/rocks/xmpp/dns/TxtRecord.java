@@ -54,7 +54,7 @@ public final class TxtRecord implements Comparable<TxtRecord> {
             final byte[] characterString = new byte[l];
             data.get(characterString);
             sb.append(new String(characterString, StandardCharsets.UTF_8));
-            i += l + 1;
+            i = (short) (i + (l + 1));
         }
         this.txt = sb.toString();
     }

@@ -28,10 +28,6 @@ import javafx.animation.PauseTransition;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.TextArea;
 import javafx.util.Duration;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
@@ -46,6 +42,8 @@ import rocks.xmpp.extensions.chatstates.model.ChatState;
  * If you clear the text area, the state becomes {@linkplain ChatState#ACTIVE active} again, after the specified delay.
  * <p>
  * When losing focus, the state will become {@linkplain ChatState#INACTIVE inactive} after the delay (which means, if you refocus before the delay time is up, it will stay active).
+ * <p>
+ * Clearing the text area immediately sets the state to {@linkplain ChatState#INACTIVE active} (if focused) or {@linkplain ChatState#INACTIVE inactive} (if not focused).
  *
  * @author Christian Schudt
  * @see ChatState
@@ -61,54 +59,50 @@ public class ChatStateTextArea extends TextArea {
         // This is the initial state.
         chatState.set(ChatState.INACTIVE);
 
-        focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean
-                    aBoolean2) {
-                if (aBoolean2) {
-                    if (getText().isEmpty()) {
-                        // If we have received focus in an empty text field, immediately transition to "active".
-                        chatState.set(ChatState.ACTIVE);
-                        pauseTransition.stop();
-                    } else {
-                        // If we have received focus in an non-empty text field, transition to "paused".
-                        chatState.set(ChatState.PAUSED);
-                        // Start the timer, which will automatically transition to the next state.
-                        pauseTransition.playFromStart();
-                    }
+        focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                if (getText().isEmpty()) {
+                    // If we have received focus in an empty text field, immediately transition to "active".
+                    chatState.set(ChatState.ACTIVE);
+                    pauseTransition.stop();
                 } else {
+                    // If we have received focus in an non-empty text field, transition to "paused".
+                    chatState.set(ChatState.PAUSED);
+                    // Start the timer, which will automatically transition to the next state.
                     pauseTransition.playFromStart();
                 }
-            }
-        });
-
-        textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observableValue, String s, String s2) {
-                if (isFocused()) {
-                    // We are in "composing" state.
-                    chatState.set(ChatState.COMPOSING);
-                }
-                // Restart the timer.
+            } else {
                 pauseTransition.playFromStart();
             }
         });
 
-        pauseTransition.setOnFinished(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                // When the time is up, switch to "paused", if there's any text, otherwise to active.
-                if (isFocused()) {
-                    if (getText() != null && !getText().isEmpty()) {
-                        chatState.set(ChatState.PAUSED);
-                    } else {
-                        chatState.set(ChatState.ACTIVE);
-                    }
+        textProperty().addListener((observable, oldValue, newValue) -> {
+            if (isFocused()) {
+                // We are in "composing" state.
+                chatState.set(ChatState.COMPOSING);
+            }
+            // Restart the timer.
+            pauseTransition.playFromStart();
+        });
+
+        pauseTransition.setOnFinished(e -> {
+            // When the time is up, switch to "paused", if there's any text, otherwise to active.
+            if (isFocused()) {
+                if (getText() != null && !getText().isEmpty()) {
+                    chatState.set(ChatState.PAUSED);
                 } else {
-                    chatState.set(ChatState.INACTIVE);
+                    chatState.set(ChatState.ACTIVE);
                 }
+            } else {
+                chatState.set(ChatState.INACTIVE);
             }
         });
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        chatState.set(isFocused() ? ChatState.ACTIVE : ChatState.INACTIVE);
     }
 
     /**

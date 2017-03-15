@@ -55,6 +55,15 @@ public final class Challenge implements StreamElement {
     }
 
     /**
+     * Creates the challenge.
+     *
+     * @param value The challenge data.
+     */
+    public Challenge(final byte[] value) {
+        this.value = value;
+    }
+
+    /**
      * Gets the value, i.e. the challenge.
      *
      * @return The challenge.

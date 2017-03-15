@@ -29,12 +29,17 @@ import rocks.xmpp.addr.Jid;
 import java.time.Instant;
 
 /**
- * Represents the {@code <subscription/>} element, which is used in both 'pubsub' and 'pubsub#owner' namespace.
+ * Represents the {@code <subscription/>} element, which is used in 'pubsub', 'pubsub#event' and 'pubsub#owner' namespace.
  *
  * @author Christian Schudt
  */
 public interface Subscription {
 
+    /**
+     * Gets the subscriber.
+     *
+     * @return The subscriber.
+     */
     Jid getJid();
 
     /**
@@ -44,6 +49,11 @@ public interface Subscription {
      */
     String getNode();
 
+    /**
+     * Gets the subscription id, which is used to differentiate between multiple subscriptions for the same entity.
+     *
+     * @return The subscription id.
+     */
     String getSubId();
 
     /**
@@ -53,9 +63,25 @@ public interface Subscription {
      */
     SubscriptionState getSubscriptionState();
 
+    /**
+     * Gets the expiry of the subscription.
+     *
+     * @return The expiry.
+     * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-leases">12.18 Time-Based Subscriptions (Leases)</a>
+     */
     Instant getExpiry();
 
+    /**
+     * Indicates if subscription configuration is required.
+     *
+     * @return True, if subscription configuration is required.
+     */
     boolean isConfigurationRequired();
 
+    /**
+     * Indicates if subscription options are supported (but not necessarily required).
+     *
+     * @return True, if subscription options are supported (but not necessarily required).
+     */
     boolean isConfigurationSupported();
 }

@@ -51,8 +51,9 @@ import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.List;
-import java.util.concurrent.Future;
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The default TCP socket connection as described in <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">TCP Binding</a>.
@@ -65,6 +66,14 @@ import java.util.function.Consumer;
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">3.  TCP Binding</a>
  */
 public final class TcpConnection extends Connection {
+
+    private static final Logger logger = Logger.getLogger(TcpConnection.class.getName());
+
+    private final StreamFeaturesManager streamFeaturesManager;
+
+    private final SecurityManager securityManager;
+
+    private final CompressionManager compressionManager;
 
     final StreamManager streamManager;
 
@@ -104,20 +113,17 @@ public final class TcpConnection extends Connection {
     TcpConnection(XmppSession xmppSession, TcpConnectionConfiguration configuration) {
         super(xmppSession, configuration);
         this.tcpConnectionConfiguration = configuration;
-        streamManager = xmppSession.getManager(StreamManager.class);
-    }
-
-    void initialize() {
-        StreamFeaturesManager streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
-        streamFeaturesManager.addFeatureNegotiator(new SecurityManager(xmppSession, () -> {
+        this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
+        this.streamManager = xmppSession.getManager(StreamManager.class);
+        this.securityManager = new SecurityManager(xmppSession, () -> {
             try {
                 secureConnection();
+                logger.log(Level.FINE, "Connection has been secured via TLS.");
             } catch (Exception e) {
                 throw new StreamNegotiationException(e);
             }
-        }, tcpConnectionConfiguration.isSecure()));
-
-        final CompressionManager compressionManager = xmppSession.getManager(CompressionManager.class);
+        }, tcpConnectionConfiguration.isSecure());
+        this.compressionManager = xmppSession.getManager(CompressionManager.class);
         compressionManager.getConfiguredCompressionMethods().addAll(tcpConnectionConfiguration.getCompressionMethods());
         compressionManager.addFeatureListener(() -> {
             CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
@@ -140,8 +146,6 @@ public final class TcpConnection extends Connection {
                 throw new StreamNegotiationException(e);
             }
         });
-        streamFeaturesManager.addFeatureNegotiator(compressionManager);
-        streamFeaturesManager.addFeatureNegotiator(streamManager);
     }
 
     /**
@@ -153,11 +157,12 @@ public final class TcpConnection extends Connection {
      * If a proxy has been specified, the connection is established through this proxy.<br>
      * </p>
      *
-     * @param from The optional 'from' attribute in the stream header.
+     * @param from      The optional 'from' attribute in the stream header.
+     * @param namespace The content namespace, e.g. "jabber:client".
      * @throws IOException If the underlying socket throws an exception.
      */
     @Override
-    public final synchronized void connect(Jid from, String namespace, Consumer<Jid> onStreamOpened) throws IOException {
+    public final synchronized void connect(Jid from, String namespace) throws IOException {
 
         if (socket != null) {
             if (!socket.isClosed() && socket.isConnected()) {
@@ -184,6 +189,12 @@ public final class TcpConnection extends Connection {
         }
 
         this.from = from;
+
+        streamFeaturesManager.addFeatureNegotiator(securityManager);
+        streamFeaturesManager.addFeatureNegotiator(compressionManager);
+        streamFeaturesManager.addFeatureNegotiator(streamManager);
+        streamManager.reset();
+
         outputStream = new BufferedOutputStream(socket.getOutputStream());
         inputStream = new BufferedInputStream(socket.getInputStream());
         // Start writing to the output stream.
@@ -192,7 +203,7 @@ public final class TcpConnection extends Connection {
         xmppStreamWriter.openStream(outputStream, from);
 
         // Start reading from the input stream.
-        xmppStreamReader = new XmppStreamReader(namespace, this, this.xmppSession, onStreamOpened);
+        xmppStreamReader = new XmppStreamReader(namespace, this, this.xmppSession);
         xmppStreamReader.startReading(inputStream);
     }
 
@@ -270,10 +281,10 @@ public final class TcpConnection extends Connection {
     }
 
     @Override
-    public final synchronized Future<?> send(StreamElement element) {
-        return xmppStreamWriter.send(element, () -> {
+    public final synchronized CompletableFuture<Void> send(StreamElement element) {
+        return xmppStreamWriter.send(element).thenRun(() -> {
             if (element instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) element)) {
-                xmppStreamWriter.send(StreamManagement.REQUEST, null);
+                send(StreamManagement.REQUEST);
             }
         });
     }
@@ -308,6 +319,10 @@ public final class TcpConnection extends Connection {
         inputStream = null;
         outputStream = null;
         streamId = null;
+
+        streamFeaturesManager.removeFeatureNegotiator(securityManager);
+        streamFeaturesManager.removeFeatureNegotiator(compressionManager);
+        streamFeaturesManager.removeFeatureNegotiator(streamManager);
 
         // We have sent a </stream:stream> to close the stream and waited for a server response, which also closes the stream by sending </stream:stream>.
         // Now close the socket.

@@ -36,7 +36,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code http://jabber.org/protocol/muc#user} namespace.
@@ -56,7 +58,7 @@ import java.util.List;
 @XmlRootElement(name = "x")
 public final class MucUser {
 
-    private final List<Status> status = new ArrayList<>();
+    private final Set<Status> status = new HashSet<>();
 
     private final List<Invite> invite = new ArrayList<>();
 
@@ -372,8 +374,8 @@ public final class MucUser {
      *
      * @return The status codes.
      */
-    public List<Status> getStatusCodes() {
-        return Collections.unmodifiableList(status);
+    public Set<Status> getStatusCodes() {
+        return Collections.unmodifiableSet(status);
     }
 
     /**

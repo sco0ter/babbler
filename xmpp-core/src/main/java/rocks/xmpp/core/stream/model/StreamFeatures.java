@@ -44,6 +44,7 @@ public final class StreamFeatures implements StreamElement {
     /**
      * http://etherx.jabber.org/streams
      */
+    @Deprecated
     public static final String NAMESPACE = "http://etherx.jabber.org/streams";
 
     @XmlAnyElement(lax = true)

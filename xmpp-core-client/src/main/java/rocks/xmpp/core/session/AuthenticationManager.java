@@ -44,8 +44,10 @@ import java.security.Security;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages SASL authentication as described in <a href="http://xmpp.org/rfcs/rfc6120.html#sasl">SASL Negotiation</a>.
@@ -55,6 +57,8 @@ import java.util.List;
  * @author Christian Schudt
  */
 final class AuthenticationManager extends StreamFeatureNegotiator {
+
+    private static final Logger logger = Logger.getLogger(AuthenticationManager.class.getName());
 
     static {
         // The SunSASL Provider only supports: "PLAIN", "CRAM-MD5", "DIGEST-MD5", "GSSAPI", "EXTERNAL".
@@ -114,13 +118,13 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
                     throw new StreamNegotiationException("Server doesn't support any of the requested SASL mechanisms: " + mechanisms + ".");
                 }
                 successData = null;
-                saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[clientMechanisms.size()]), authorizationId, "xmpp", xmppSession.getDomain().toString(), new HashMap<>(), callbackHandler);
+                saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[clientMechanisms.size()]), authorizationId, "xmpp", xmppSession.getActiveConnection().getHostname(), Collections.emptyMap(), callbackHandler);
 
                 if (saslClient == null) {
                     throw new SaslException("No SASL client found for mechanisms: " + clientMechanisms);
                 }
 
-                byte[] initialResponse = new byte[0];
+                byte[] initialResponse = null;
                 if (saslClient.hasInitialResponse()) {
                     initialResponse = saslClient.evaluateChallenge(new byte[0]);
                 }
@@ -133,31 +137,44 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
     }
 
     @Override
-    public final Status processNegotiation(Object element) throws StreamNegotiationException {
+    public final synchronized Status processNegotiation(Object element) throws StreamNegotiationException {
         try {
-            synchronized (this) {
-                if (element instanceof Mechanisms) {
-                    supportedMechanisms.clear();
-                    supportedMechanisms.addAll(((Mechanisms) element).getMechanisms());
-                } else if (element instanceof Challenge) {
-                    xmppSession.send(new Response(saslClient.evaluateChallenge(((Challenge) element).getValue())));
-                } else if (element instanceof Failure) {
-                    Failure authenticationFailure = (Failure) element;
-                    String failureText = saslClient.getMechanismName() + " authentication failed with condition " + authenticationFailure.toString();
-                    if (authenticationFailure.getText() != null) {
-                        failureText += " (" + authenticationFailure.getText() + ')';
-                    }
-                    throw new AuthenticationException(failureText, authenticationFailure);
-                } else if (element instanceof Success) {
-                    successData = ((Success) element).getAdditionalData();
-                    if (!saslClient.isComplete()) {
-                        saslClient.evaluateChallenge(successData);
-                    }
-                    return Status.SUCCESS;
+            if (element instanceof Mechanisms) {
+                supportedMechanisms.clear();
+                supportedMechanisms.addAll(((Mechanisms) element).getMechanisms());
+            } else if (element instanceof Challenge) {
+                xmppSession.send(new Response(saslClient.evaluateChallenge(((Challenge) element).getValue())));
+            } else if (element instanceof Failure) {
+                Failure authenticationFailure = (Failure) element;
+                String failureText = saslClient.getMechanismName() + " authentication failed with condition " + authenticationFailure.toString();
+                if (authenticationFailure.getText() != null) {
+                    failureText += " (" + authenticationFailure.getText() + ')';
                 }
+                throw new AuthenticationException(failureText, authenticationFailure);
+            } else if (element instanceof Success) {
+                successData = ((Success) element).getAdditionalData();
+                if (!saslClient.isComplete()) {
+                    saslClient.evaluateChallenge(successData);
+                }
+                try {
+                    saslClient.dispose();
+                    saslClient = null;
+                } catch (SaslException e) {
+                    logger.log(Level.WARNING, e.getMessage(), e);
+                }
+                return Status.SUCCESS;
             }
         } catch (SaslException e) {
-            throw new AuthenticationException(e.getMessage());
+            AuthenticationException authenticationException = new AuthenticationException(e.getMessage());
+            try {
+                if (saslClient != null) {
+                    saslClient.dispose();
+                    saslClient = null;
+                }
+            } catch (SaslException disposeException) {
+                authenticationException.addSuppressed(disposeException);
+            }
+            throw authenticationException;
         }
 
         return Status.INCOMPLETE;

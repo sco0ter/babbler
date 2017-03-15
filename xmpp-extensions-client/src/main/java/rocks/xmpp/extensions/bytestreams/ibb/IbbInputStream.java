@@ -56,7 +56,7 @@ final class IbbInputStream extends InputStream {
     /**
      * Guarded by "this"
      */
-    private int n = 0;
+    private int n = -1;
 
     /**
      * Guarded by "this"
@@ -69,25 +69,53 @@ final class IbbInputStream extends InputStream {
     }
 
     @Override
-    public int read() throws IOException {
+    public int read(byte[] b, int off, int len) throws IOException {
+        if (!fillBuffer()) {
+            return -1;
+        }
+        synchronized (this) {
+            int limit = buffer.length - n;
+            if (len > limit) {
+                len = limit;
+            }
 
+            System.arraycopy(buffer, n, b, off, len);
+            n += len;
+        }
+        return len;
+    }
+
+    @Override
+    public int read() throws IOException {
+        if (!fillBuffer()) {
+            return -1;
+        }
+        synchronized (this) {
+            // Store the nth byte (as int) of the buffer. Then increment n.
+            // Also convert the signed int value into an unsigned int by applying the & 0xFF bit operator.
+            return (int) buffer[n++] & 0xFF;
+        }
+    }
+
+    private boolean fillBuffer() throws IOException {
+
+        long timeout;
+        synchronized (this) {
+            if (closed && queue.isEmpty()) {
+                return false;
+            }
+            timeout = readTimeout;
+        }
         // If the buffer is empty, retrieve the next data packet and load it into the buffer.
-        if (n == 0) {
+        if (n == -1 || n >= buffer.length) {
             try {
-                long timeout;
-                synchronized (this) {
-                    if (closed && queue.isEmpty()) {
-                        return -1;
-                    }
-                    timeout = readTimeout;
-                }
                 InBandByteStream.Data data = null;
                 if (timeout <= 0) {
                     while (data == null || data.getSequence() == -1) {
                         synchronized (this) {
                             // If the stream has been closed and there's no more data to process, return -1.
                             if (closed && queue.isEmpty()) {
-                                return -1;
+                                return false;
                             }
                         }
                         // Let's see, if there's some data for me.
@@ -98,7 +126,7 @@ final class IbbInputStream extends InputStream {
                     if (data == null || data.getSequence() == -1) {
                         synchronized (this) {
                             if (closed && queue.isEmpty()) {
-                                return -1;
+                                return false;
                             } else {
                                 throw new SocketTimeoutException();
                             }
@@ -108,6 +136,7 @@ final class IbbInputStream extends InputStream {
                 synchronized (this) {
                     // Assign the new buffer.
                     buffer = data.getBytes();
+                    n = 0;
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -116,17 +145,7 @@ final class IbbInputStream extends InputStream {
                 throw ie;
             }
         }
-
-        synchronized (this) {
-            // Store the nth byte (as int) of the buffer. Then increment n.
-            // Also convert the signed int value into an unsigned int by applying the & 0xFF bit operator.
-            int b = (int) buffer[n++] & 0xFF;
-            // If n is bigger than the buffer, reset n to 0 so that a new packet will be retrieved during the next read.
-            if (n >= buffer.length) {
-                n = 0;
-            }
-            return b;
-        }
+        return true;
     }
 
     @Override

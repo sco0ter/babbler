@@ -27,11 +27,12 @@ package rocks.xmpp.core.stanza;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Text;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.Presence;
-import rocks.xmpp.core.stanza.model.Text;
 import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.util.ComparableTestHelper;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -291,7 +292,6 @@ public class PresenceTest extends XmlTest {
         Presence presenceXa = new Presence(Presence.Show.XA, (byte) 1);
         Presence presenceChat = new Presence(Presence.Show.CHAT, (byte) 1);
 
-
         Presence presencePrio1 = new Presence((byte) 1);
         Presence presencePrio2 = new Presence((byte) 2);
         Presence presencePrio1Unavailble = new Presence(Presence.Type.UNAVAILABLE, (byte) 1);
@@ -318,5 +318,6 @@ public class PresenceTest extends XmlTest {
         Assert.assertEquals(list.get(6), presenceUnavailable);
         Assert.assertEquals(list.get(7), presencePrio1Unavailble);
 
+        ComparableTestHelper.checkCompareToContract(list);
     }
 }

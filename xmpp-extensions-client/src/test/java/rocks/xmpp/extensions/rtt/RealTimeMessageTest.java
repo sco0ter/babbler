@@ -37,9 +37,7 @@ import java.util.List;
 public class RealTimeMessageTest {
 
     private static void applyActionElements(InboundRealTimeMessage realTimeMessage, List<? extends RealTimeText.Action> actions) {
-        for (RealTimeText.Action action : actions) {
-            realTimeMessage.applyActionElement(action);
-        }
+        actions.forEach(realTimeMessage::applyActionElement);
     }
 
     @Test

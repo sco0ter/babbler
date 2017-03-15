@@ -54,7 +54,7 @@ public class OccupantTest {
         presence2.addExtension(MucUser.withItem(Affiliation.OWNER, Role.PARTICIPANT));
         Occupant occupant2 = new Occupant(presence2, true);
 
-        Presence presence2a = new Presence();
+        Presence presence2a = new Presence(Presence.Show.AWAY);
         presence2a.setFrom(Jid.of("room@conference/thirdwitch"));
         presence2a.addExtension(MucUser.withItem(Affiliation.OWNER, Role.VISITOR));
         Occupant occupant2a = new Occupant(presence2a, true);
@@ -107,14 +107,13 @@ public class OccupantTest {
 
         Assert.assertEquals(iterator.next(), occupant1);
         Assert.assertEquals(iterator.next(), occupant2);
-        Assert.assertEquals(iterator.next(), occupant2a);
         Assert.assertEquals(iterator.next(), occupant2b);
+        Assert.assertEquals(iterator.next(), occupant2a);
         Assert.assertEquals(iterator.next(), occupant3);
         Assert.assertEquals(iterator.next(), occupant4);
+        Assert.assertEquals(iterator.next(), occupant6);
         Assert.assertEquals(iterator.next(), occupant5);
         Assert.assertEquals(iterator.next(), occupant5a);
-        Assert.assertEquals(iterator.next(), occupant6);
-
 
     }
 }

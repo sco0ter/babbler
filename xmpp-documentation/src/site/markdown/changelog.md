@@ -1,6 +1,75 @@
 # Changelog
 ---
 
+## Version 0.8.0-SNAPSHOT
+
+* Make `Jid` class an interface. Full JIDs and bare JIDs now share the same instance. No new instances need to be created when calling `asBareJid()`, the interface just returns a different view on the full JID.
+Reduces GC pressure and increase performance.
+* Add low-level support for [XEP-0258: Security Labels in XMPP](http://www.xmpp.org/extensions/xep-0258.html)
+* Add low-level support for [XEP-0264: Jingle Content Thumbnails](http://www.xmpp.org/extensions/xep-0264.html)
+* Add low-level support for [XEP-0352: Client State Indication](http://www.xmpp.org/extensions/xep-0352.html)
+* Add a class `StreamHeader` which represents the stream header and checks for the rules in RFC 6120.
+* Refactor Text classes from the `urn:ietf:params:xml:ns:xmpp-stanzas`, `urn:ietf:params:xml:ns:xmpp-streams` and `urn:ietf:params:xml:ns:xmpp-sasl` namespaces into one common `rocks.xmpp.core.Text` class (API change).
+* Add `putExtension()` and `addExtensions()` methods to Stanza.
+* XEP-0033: Extended Stanza Addressing: Implement reply handling, add `delivered` attribute, add varargs constructor.
+* XEP-0045: Revoking admin status should result in mere membership, rather than no affiliation at all.
+* XEP-0059: Add `nextPage()` and `previousPage()` method to result set management. Also refine the naming of the RSM methods.
+* XEP-0085: Add `isSupported` method for Chat State Notifications (either discover implicit support or else use service discovery)
+* XEP-0096: Only return a single value during SI FileTransfer negotiation.
+
+### Version 0.7.3 (2017-02-09)
+
+* Use single equals sign ("=") for zero-length data in SASL, as per RFC 6120 § 6.4.2
+* Allow configuring a custom stream host and skip proxy discovery then for SI file transfer.
+* Implement WebSocket pings/pongs.
+* Fix WebSocket's proxy URI construction.
+* Use connect timeout for WebSocket connections.
+* XEP-0198: Send an ack right before gracefully closing the stream (i.e. update to version 1.5.2).
+* MUC Room "enter" events should fire for oneself entering the room as well.
+* Use `java.text.Collator` for String-based default comparison.
+* XEP-0066: Use URI instead of URL.
+* Fix XMPP Ping in External Components, which broke the connection.
+* `Jid.asBareJid` returns `this` if it is already bare, reducing GC pressure.
+* `connect()` method should not throw `CancellationException`
+* Check if the connection has been secured (if configured) before starting to authenticate.
+
+### Version 0.7.2 (2016-09-08)
+
+* Fix reconnection issue, when using multiple connection methods per session.
+* Improve and fix stanza acknowledging and Stream Management
+    * Add Delayed Delivery (XEP-0203) extension to stanzas, which are resent automatically later (when reconnected again)
+    * Always resent all unacknowledged stanzas after login, not only after stream resumption.
+    * Highlight StreamManagement's request / answer pairs in VisualDebugger.
+    * Update XEP-0198 Stream Management to version 1.5 (respect the 'h' attribute in the `failed` element)
+* Wait for the roster response before sending initial presence during login, to prevent receiving presence information from yet unknown contacts.
+* Make sure asynchronous method calls do not block (affected only few methods for avatars and entity capabilities)
+* Use the hostname instead of the domain for SASL clients (i.e. use the `Sasl.createSaslClient` API correctly as per the documentation, may affect DIGEST-MD5 authentication).
+* Call `SaslClient.dispose()` when SASL authentication has completed.
+* Include the requesting IQ in `NoResponseException`, when doing IQ queries.
+* XEP-0184: Add the sender of a receipt to the MessageDeliveryEvent.
+* Allow event consumption for outbound stanzas, which prevents the stanza to be sent.
+* Make stream feature negotiation more stable.
+* Minor graphical fixes in VisualDebugger.
+* Add API to include the hash and mime type in File Transfer offers.
+* Add API to create a chat session with a thread id.
+* Immediately complete (IQ-)queries if sending failed and don't wait on the timeout.
+
+### Version 0.7.1 (2016-08-09)
+
+* Discovering services should not fail immediately if one sub-query fails.
+* Make sure abnormal WebSocket disconnections trigger the reconnection.
+* Make sure RECONNECTION_SUCCEEDED event is triggered for external components.
+* Add listeners to listen for successful or failed send operations.
+* Add public constructor for the SASL challenge class.
+* Add public constructors to SASL Failure class.
+* Make sure to not write `XMLConstants.XML_NS_URI` to XML elements (FasterXML Aalto's XMLStreamWriter implementation writes it)
+* Add `DataForm.Field#getValue()` and implement `toString()` method.
+* Add convenient API to compare two MUC affiliations and roles (i.e. `Affiliation.OWNER.isHigherThan(Affiliation.ADMIN)`)
+* Compare presences of MUC occupants in the Occupant's `Comparable` implementation.
+* Minor performance improvement by using a `ListIterator` in collection based result sets.
+* Discover PubSub services by identity, not by feature name (it's more reliable)
+* Add `nextPage()` and `previousPage()` method and refine the naming of other methods in result set management (e.g. having `forCount()` and `forItemCount()` was confusing)
+
 ## Version 0.7.0 (2016-06-05)
 
 * Add support for [XEP-0198: Stream Management](http://www.xmpp.org/extensions/xep-0198.html)

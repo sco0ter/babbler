@@ -65,8 +65,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -95,7 +93,7 @@ public final class AvatarManager extends Manager {
      */
     private final Map<Jid, String> userHashes = new ConcurrentHashMap<>();
 
-    private final ConcurrentHashMap<Jid, Lock> requestingAvatarLocks = new ConcurrentHashMap<>();
+    private final Map<Jid, AsyncResult<byte[]>> avatarRequests = new ConcurrentHashMap<>();
 
     private final Set<Consumer<AvatarChangeEvent>> avatarChangeListeners = new CopyOnWriteArraySet<>();
 
@@ -200,7 +198,9 @@ public final class AvatarManager extends Manager {
                     // Load my own avatar in order to advertise an image.
                     getAvatarByVCard(xmppSession.getConnectedResource().asBareJid()).whenComplete((avatarResult, ex) -> {
                         if (ex == null) {
-                            // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
+                            notifyListeners(xmppSession.getConnectedResource().asBareJid(), avatarResult);
+
+			    // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
                             Presence lastPresence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
                             Presence presence1;
                             if (lastPresence != null) {
@@ -345,27 +345,21 @@ public final class AvatarManager extends Manager {
     }
 
     private AsyncResult<byte[]> getAvatarByVCard(Jid contact) {
-        Lock lock = new ReentrantLock();
-        Lock existingLock = requestingAvatarLocks.putIfAbsent(contact, lock);
-        if (existingLock != null) {
-            lock = existingLock;
-        }
 
-        lock.lock();
-        try {
-            // Let's see, if there's a stored image already.
-            String hash = userHashes.get(contact);
-            // "" means, the user is known to have no avatar. Therefore don't try to load anything.
-            if (!"".equals(hash)) {
-                if (hash != null) {
-                    byte[] imageData = loadFromCache(hash);
-                    if (imageData != null) {
-                        return new AsyncResult<>(CompletableFuture.completedFuture(imageData));
-                    }
+        // Let's see, if there's a stored image already.
+        String hash = userHashes.get(contact);
+        // "" means, the user is known to have no avatar. Therefore don't try to load anything.
+        if (!"".equals(hash)) {
+            if (hash != null) {
+                byte[] imageData = loadFromCache(hash);
+                if (imageData != null) {
+                    return new AsyncResult<>(CompletableFuture.completedFuture(imageData));
                 }
+            }
+
+            return avatarRequests.computeIfAbsent(contact, key -> {
 
                 VCardManager vCardManager = xmppSession.getManager(VCardManager.class);
-
                 // Load the vCard for that user
                 AsyncResult<VCard> vCard;
 
@@ -374,16 +368,15 @@ public final class AvatarManager extends Manager {
                 } else {
                     vCard = vCardManager.getVCard(contact);
                 }
-                return vCard.thenApply(result -> {
+                return vCard.handle((result, exc) -> {
                     // If there's no avatar for that user, create an empty avatar and load it.
                     byte[] avatar = new byte[0];
                     String hash1 = "";
                     // If the user has no vCard (e.g. server returned <item-not-found/> or <service-unavailable/>),
                     // the user also has no avatar obviously.
-                    VCard vCardResult = result != null ? result : null;
-                    if (vCardResult != null) {
+                    if (result != null) {
                         // And check if it has a photo.
-                        VCard.Image image = vCardResult.getPhoto();
+                        VCard.Image image = result.getPhoto();
                         if (image != null && image.getValue() != null) {
                             hash1 = XmppUtils.hash(image.getValue());
                             avatar = image.getValue();
@@ -393,13 +386,12 @@ public final class AvatarManager extends Manager {
                     if (!Arrays.equals(avatar, new byte[0])) {
                         storeToCache(hash, avatar);
                     }
+                    avatarRequests.remove(contact);
                     return avatar;
                 });
-            }
-        } finally {
-            lock.unlock();
-            requestingAvatarLocks.remove(contact);
+            });
         }
+
         return new AsyncResult<>(CompletableFuture.completedFuture(new byte[0]));
     }
 
@@ -607,6 +599,7 @@ public final class AvatarManager extends Manager {
      */
     @SuppressWarnings("serial")
     static final class ConversionException extends Exception {
+
         public ConversionException() {
             // Intentionally left blank.
         }
@@ -619,7 +612,7 @@ public final class AvatarManager extends Manager {
     @Override
     protected void dispose() {
         avatarChangeListeners.clear();
-        requestingAvatarLocks.clear();
+        avatarRequests.clear();
         nonConformingResources.clear();
         userHashes.clear();
     }

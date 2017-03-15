@@ -93,6 +93,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      *
      * @return The size.
      */
+    @Override
     public final long getSize() {
         return size != null ? size : 0;
     }
@@ -102,6 +103,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      *
      * @return The file name.
      */
+    @Override
     public final String getName() {
         return name;
     }
@@ -111,6 +113,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      *
      * @return The date.
      */
+    @Override
     public final Instant getDate() {
         return date;
     }
@@ -120,6 +123,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      *
      * @return The MD5 sum.
      */
+    @Override
     public final List<Hash> getHashes() {
         if (hash != null) {
             // XEP-0096 seem to be hex encoded, while XEP-300 are base64 encoded. Convert from hex to byte array.
@@ -134,6 +138,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      *
      * @return The description.
      */
+    @Override
     public final String getDescription() {
         return desc;
     }
@@ -143,6 +148,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      *
      * @return The range.
      */
+    @Override
     public final Range getRange() {
         return range;
     }
@@ -175,6 +181,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
          *
          * @return The offset.
          */
+        @Override
         public final long getOffset() {
             return offset;
         }
@@ -184,6 +191,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
          *
          * @return The length.
          */
+        @Override
         public final long getLength() {
             return length;
         }

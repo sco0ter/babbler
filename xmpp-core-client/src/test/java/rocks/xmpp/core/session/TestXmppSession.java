@@ -28,24 +28,17 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.SameThreadExecutorService;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
-import java.util.function.Consumer;
 
 
 /**
  * @author Christian Schudt
  */
 public final class TestXmppSession extends XmppSession {
-
-    private final MockServer mockServer;
 
     private final Jid connectedResource;
 
@@ -61,6 +54,13 @@ public final class TestXmppSession extends XmppSession {
         super(null, configuration);
         connectedResource = jid;
 
+        addSendSucceededListener(element -> {
+            if (mockServer != null && element instanceof Stanza) {
+                ((Stanza) element).setFrom(connectedResource);
+                mockServer.receive((Stanza) element);
+            }
+        });
+
         activeConnection = new Connection(null, TcpConnectionConfiguration.builder().build()) {
 
             @Override
@@ -68,12 +68,12 @@ public final class TestXmppSession extends XmppSession {
             }
 
             @Override
-            public Future<?> send(StreamElement clientStreamElement) {
+            public CompletableFuture<Void> send(StreamElement clientStreamElement) {
                 return CompletableFuture.completedFuture(null);
             }
 
             @Override
-            public void connect(Jid from, String namespace, Consumer<Jid> onConnected) throws IOException {
+            public void connect(Jid from, String namespace) throws IOException {
             }
 
             @Override
@@ -96,7 +96,6 @@ public final class TestXmppSession extends XmppSession {
             }
         };
         stanzaListenerExecutor = iqHandlerExecutor = new SameThreadExecutorService();
-        this.mockServer = mockServer;
         mockServer.registerConnection(this);
 
         // Auto-connect
@@ -106,42 +105,6 @@ public final class TestXmppSession extends XmppSession {
     @Override
     public void connect(Jid from) throws XmppException {
 
-    }
-
-    @Override
-    public Future<?> send(StreamElement element) {
-        Future<?> future = super.send(element);
-        if (mockServer != null && element instanceof Stanza) {
-            ((Stanza) element).setFrom(connectedResource);
-            mockServer.receive((Stanza) element);
-
-        }
-        return future;
-    }
-
-    @Override
-    public final SendTask<IQ> sendIQ(final IQ stanza) {
-        super.send(stanza);
-        if (mockServer != null) {
-            stanza.setFrom(connectedResource);
-            mockServer.receive(stanza);
-        }
-        return null;
-    }
-
-    @Override
-    public final SendTask<Message> sendMessage(final Message stanza) {
-        SendTask<Message> result = trackAndSend(stanza);
-        if (mockServer != null) {
-            stanza.setFrom(connectedResource);
-            mockServer.receive(stanza);
-        }
-        return result;
-    }
-
-    @Override
-    public final SendTask<Presence> sendPresence(final Presence stanza) {
-        return trackAndSend(stanza);
     }
 
     @Override

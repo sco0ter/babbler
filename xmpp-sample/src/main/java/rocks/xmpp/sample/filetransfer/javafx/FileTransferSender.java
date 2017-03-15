@@ -89,6 +89,8 @@ public class FileTransferSender extends Application {
                 case FAILED:
                     task.getException().printStackTrace();
                     break;
+                default:
+                    break;
             }
         });
 
@@ -143,6 +145,8 @@ public class FileTransferSender extends Application {
                             e.printStackTrace();
                             break;
                         case SUCCEEDED:
+                            break;
+                        default:
                             break;
                     }
                 });

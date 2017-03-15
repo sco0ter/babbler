@@ -27,38 +27,78 @@ package rocks.xmpp.core.stanza.model;
 import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.annotation.XmlTransient;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
 /**
+ * A stanza which is extensible (can have more than one extension), i.e. {@link Message} and {@link Presence}.
+ *
  * @author Christian Schudt
  */
 @XmlTransient
-abstract class ExtensibleStanza extends Stanza {
+public abstract class ExtensibleStanza extends Stanza {
 
     ExtensibleStanza(Jid to, Jid from, String id, Locale language, Collection<?> extensions, StanzaError error) {
         super(to, from, id, language, extensions, error);
     }
 
     /**
-     * Adds an extension.
+     * Adds an extension to this stanza.
      *
      * @param extension The extension.
-     * @return If the extension was added.
+     * @return Whether the extension was added.
      */
     public final boolean addExtension(Object extension) {
-        return getExtensions().add(extension);
+        return extension != null && getExtensions().add(extension);
+    }
+
+    /**
+     * Adds extensions to this stanza.
+     *
+     * @param extensions The extensions.
+     * @since 0.8.0
+     */
+    public final void addExtensions(Object... extensions) {
+        addExtensions(Arrays.asList(extensions));
+    }
+
+    /**
+     * Adds extensions to this stanza.
+     *
+     * @param extensions The extensions.
+     * @since 0.8.0
+     */
+    public final void addExtensions(Collection<Object> extensions) {
+        if (extensions != null) {
+            extensions.forEach(this::addExtension);
+        }
     }
 
     /**
      * Removes all extensions of the given type.
      *
      * @param clazz The extension class.
-     * @return If the extension could be removed.
+     * @return Whether the extension could be removed.
      */
     public final boolean removeExtension(Class<?> clazz) {
-        return getExtensions().removeIf(extension -> clazz.isAssignableFrom(extension.getClass()));
+        return getExtensions().removeIf(extension -> clazz != null && clazz.isAssignableFrom(extension.getClass()));
+    }
+
+    /**
+     * Replaces an existing extension of the same type or adds the extension, if it doesn't exist yet.
+     * <p>
+     * This is useful, if you want to make sure, that a stanza only has one extension of a specific type.
+     *
+     * @param extension The extension.
+     * @since 0.8.0
+     */
+    public final void putExtension(Object extension) {
+        if (extension != null) {
+            removeExtension(extension.getClass());
+        }
+        addExtension(extension);
     }
 
     /**

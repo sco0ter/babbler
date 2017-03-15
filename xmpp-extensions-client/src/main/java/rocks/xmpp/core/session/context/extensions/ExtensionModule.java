@@ -49,6 +49,7 @@ import rocks.xmpp.extensions.component.accept.model.ComponentIQ;
 import rocks.xmpp.extensions.component.accept.model.ComponentMessage;
 import rocks.xmpp.extensions.component.accept.model.ComponentPresence;
 import rocks.xmpp.extensions.component.accept.model.Handshake;
+import rocks.xmpp.extensions.csi.model.ClientState;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
@@ -108,6 +109,7 @@ import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rtt.RealTimeTextManager;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
 import rocks.xmpp.extensions.search.model.Search;
+import rocks.xmpp.extensions.seclabel.model.SecurityLabel;
 import rocks.xmpp.extensions.shim.HeaderManager;
 import rocks.xmpp.extensions.shim.model.Headers;
 import rocks.xmpp.extensions.si.StreamInitiationManager;
@@ -306,6 +308,9 @@ public final class ExtensionModule implements Module {
                 // XEP-0249: Direct MUC Invitations
                 Extension.of(DirectInvitation.NAMESPACE, MultiUserChatManager.class, true, DirectInvitation.class),
 
+                // XEP-0258: Security Labels in XMPP
+                Extension.of(SecurityLabel.NAMESPACE, false, SecurityLabel.class),
+
                 // XEP-0260: Jingle SOCKS5 Bytestreams Transport Method
                 Extension.of(S5bTransportMethod.NAMESPACE, null, false, S5bTransportMethod.class),
 
@@ -337,7 +342,10 @@ public final class ExtensionModule implements Module {
                 Extension.of(Idle.NAMESPACE, true, Idle.class),
 
                 // XEP-0335: JSON Containers
-                Extension.of(Json.class)
+                Extension.of(Json.class),
+
+                // XEP-0352: Client State Indication
+                Extension.of(ClientState.class)
         );
     }
 }

@@ -29,8 +29,10 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.client.ClientPresence;
+import rocks.xmpp.extensions.muc.model.Affiliation;
 import rocks.xmpp.extensions.muc.model.DiscussionHistory;
 import rocks.xmpp.extensions.muc.model.Muc;
+import rocks.xmpp.extensions.muc.model.Role;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -92,5 +94,21 @@ public class MultiUserChatTest extends XmlTest {
         presence.addExtension(Muc.withHistory(DiscussionHistory.since(now)));
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence><x xmlns=\"http://jabber.org/protocol/muc\"><history since=\"" + now.toString() + "\"></history></x></presence>");
+    }
+
+    @Test
+    public void testAffiliation() {
+        Assert.assertTrue(Affiliation.OWNER.isHigherThan(Affiliation.ADMIN));
+        Assert.assertTrue(Affiliation.OWNER.isHigherThan(Affiliation.MEMBER));
+        Assert.assertTrue(Affiliation.ADMIN.isHigherThan(Affiliation.MEMBER));
+        Assert.assertTrue(Affiliation.MEMBER.isHigherThan(Affiliation.NONE));
+        Assert.assertTrue(Affiliation.NONE.isHigherThan(Affiliation.OUTCAST));
+    }
+
+    @Test
+    public void testRole() {
+        Assert.assertTrue(Role.MODERATOR.isHigherThan(Role.PARTICIPANT));
+        Assert.assertTrue(Role.PARTICIPANT.isHigherThan(Role.VISITOR));
+        Assert.assertTrue(Role.VISITOR.isHigherThan(Role.NONE));
     }
 }

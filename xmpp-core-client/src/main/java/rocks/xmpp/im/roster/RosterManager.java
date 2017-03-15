@@ -62,8 +62,10 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * This class manages the roster (aka contact or buddy list).
@@ -600,11 +602,9 @@ public final class RosterManager extends Manager {
                 completionStages.add(updateContact(contact.withGroups(newGroups)));
             }
         }
-        for (ContactGroup subGroup : contactGroup.getGroups()) {
-            completionStages.add(replaceGroupName(subGroup, name, index));
-        }
+        completionStages.addAll(contactGroup.getGroups().stream().map(subGroup -> replaceGroupName(subGroup, name, index)).collect(Collectors.toList()));
         return new AsyncResult<>(CompletableFuture.allOf(completionStages.stream()
-                .map(stage -> stage.toCompletableFuture())
+                .map(CompletionStage::toCompletableFuture)
                 .toArray(CompletableFuture<?>[]::new)));
     }
 

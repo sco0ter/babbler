@@ -25,7 +25,6 @@
 package rocks.xmpp.util;
 
 import javax.xml.bind.DatatypeConverter;
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -92,9 +91,8 @@ public final class XmppUtils {
      * @param contentNamespace    The content namspace, e.g. "jabber:client".
      * @param writeStreamNamepace If the stream namespace ('http://etherx.jabber.org/streams') should be written to the root element. This is usually only the case when writing the initial BOSH response with stream features.
      * @return The prefix-free canonicalization writer.
-     * @throws XMLStreamException Thrown by {@link javax.xml.stream.XMLStreamWriter}.
      */
-    public static XMLStreamWriter createXmppStreamWriter(XMLStreamWriter xmlStreamWriter, String contentNamespace, boolean writeStreamNamepace) throws XMLStreamException {
+    public static XMLStreamWriter createXmppStreamWriter(XMLStreamWriter xmlStreamWriter, String contentNamespace, boolean writeStreamNamepace) {
         return new PrefixFreeCanonicalizationWriter(xmlStreamWriter, contentNamespace, writeStreamNamepace);
     }
 
@@ -104,10 +102,9 @@ public final class XmppUtils {
      * @param xmlStreamWriter  The underlying XML stream writer.
      * @param contentNamespace The content namspace, e.g. "jabber:client".
      * @return The prefix-free canonicalization writer.
-     * @throws XMLStreamException Thrown by {@link javax.xml.stream.XMLStreamWriter}.
      * @see #createXmppStreamWriter(XMLStreamWriter, String, boolean)
      */
-    public static XMLStreamWriter createXmppStreamWriter(XMLStreamWriter xmlStreamWriter, String contentNamespace) throws XMLStreamException {
+    public static XMLStreamWriter createXmppStreamWriter(XMLStreamWriter xmlStreamWriter, String contentNamespace) {
         return createXmppStreamWriter(xmlStreamWriter, contentNamespace, false);
     }
 
@@ -118,10 +115,9 @@ public final class XmppUtils {
      *
      * @param xmlStreamWriter The underlying XML stream writer.
      * @return The prefix-free canonicalization writer.
-     * @throws XMLStreamException Thrown by {@link javax.xml.stream.XMLStreamWriter}.
      * @see #createXmppStreamWriter(XMLStreamWriter, String, boolean)
      */
-    public static XMLStreamWriter createXmppStreamWriter(XMLStreamWriter xmlStreamWriter) throws XMLStreamException {
+    public static XMLStreamWriter createXmppStreamWriter(XMLStreamWriter xmlStreamWriter) {
         return createXmppStreamWriter(xmlStreamWriter, "jabber:client");
     }
 

@@ -25,6 +25,7 @@
 package rocks.xmpp.util;
 
 import rocks.xmpp.core.stream.model.StreamFeatures;
+import rocks.xmpp.core.stream.model.StreamHeader;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
@@ -36,7 +37,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.HashSet;
 
 /**
  * Writes XML in a prefix-free canonicalization form.
@@ -58,8 +58,6 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
      */
     private final String contentNamespace;
 
-    private final Collection<String> currentNamespaceUris = new HashSet<>();
-
     private final Deque<String> namespaces = new ArrayDeque<>();
 
     private final XMLStreamWriter xsw;
@@ -68,9 +66,9 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
 
     private String defaultNS;
 
-    PrefixFreeCanonicalizationWriter(final XMLStreamWriter xsw, final String contentNamespace, boolean writeStreamNamespace) throws XMLStreamException {
+    PrefixFreeCanonicalizationWriter(final XMLStreamWriter xsw, final String contentNamespace, final boolean writeStreamNamespace) {
         this.xsw = xsw;
-        this.defaultNS = this.contentNamespace = contentNamespace;
+        this.defaultNS = this.contentNamespace = contentNamespace == null ? XMLConstants.NULL_NS_URI : contentNamespace;
         this.writeStreamNamespace = writeStreamNamespace;
     }
 
@@ -81,7 +79,7 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
     }
 
     @Override
-    public void writeStartElement(String namespaceURI, String localName) throws XMLStreamException {
+    public final void writeStartElement(final String namespaceURI, final String localName) throws XMLStreamException {
         pushNamespaceUri(namespaceURI);
         xsw.writeStartElement(namespaceURI, localName);
     }
@@ -101,7 +99,6 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
     @Override
     public final void writeEmptyElement(final String namespaceURI, final String localName) throws XMLStreamException {
         pushNamespaceUri(namespaceURI);
-        currentNamespaceUris.clear();
         xsw.writeEmptyElement(namespaceURI, localName);
     }
 
@@ -118,12 +115,10 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
     }
 
     private void writeDefaultNamespaceIfNecessary(final String namespaceURI) throws XMLStreamException {
-        if (namespaceURI != null && namespaceURI.length() > 0) {
-            // If the namespace is not the current namespace, write it.
-            if (!namespaceURI.equals(defaultNS)) {
-                writeDefaultNamespace(namespaceURI);
-                defaultNS = namespaceURI;
-            }
+        // If the namespace is not the current namespace, write it.
+        if (namespaceURI != null && !XMLConstants.NULL_NS_URI.equals(namespaceURI) && !defaultNS.equals(namespaceURI)) {
+            xsw.writeDefaultNamespace(namespaceURI);
+            defaultNS = namespaceURI;
         }
     }
 
@@ -162,7 +157,7 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
     public final void writeAttribute(final String prefix, final String namespaceURI, final String localName, final String value) throws XMLStreamException {
         // If an attribute has an extra namespace, we need to write that namespace to the element.
         // Do it only once for each element.
-        if (currentNamespaceUris.add(namespaceURI)) {
+        if (!XMLConstants.XML_NS_URI.equals(namespaceURI) && getNamespaceContext().getPrefix(namespaceURI) == null) {
             xsw.writeNamespace(prefix, namespaceURI);
         }
         xsw.writeAttribute(prefix, namespaceURI, localName, value);
@@ -273,7 +268,6 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
 
     private void pushNamespaceUri(final String namespaceUri) {
         namespaces.addFirst(namespaceUri);
-        currentNamespaceUris.clear();
     }
 
     private void popNamespaceUri() {
@@ -286,10 +280,10 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
     }
 
     private boolean shouldWriteNamespace(String namespaceURI) {
-        return !Collections.disjoint(namespaces, PREFIXED_NAMESPACES) || StreamFeatures.NAMESPACE.equals(namespaceURI) && writeStreamNamespace;
+        return !Collections.disjoint(namespaces, PREFIXED_NAMESPACES) || (StreamHeader.STREAM_NAMESPACE.equals(namespaceURI) && writeStreamNamespace);
     }
 
     private boolean shouldWriteNamespacePrefix(String namespaceURI) {
-        return shouldWriteNamespace(namespaceURI) || StreamFeatures.NAMESPACE.equals(namespaceURI);
+        return shouldWriteNamespace(namespaceURI) || StreamHeader.STREAM_NAMESPACE.equals(namespaceURI);
     }
 }

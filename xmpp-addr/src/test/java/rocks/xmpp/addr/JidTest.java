@@ -27,9 +27,19 @@ package rocks.xmpp.addr;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.precis.PrecisProfiles;
+import rocks.xmpp.util.ComparableTestHelper;
 
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
@@ -37,7 +47,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  */
 public class JidTest {
 
-    public static void main(String[] args) {
+    public static void main2(String[] args) {
         // Showcases the performance differences between
         // ConcurrentLinkedDeque and ConcurrentLinkedQueue
         // (for the static Jid cache)
@@ -336,8 +346,10 @@ public class JidTest {
     @Test
     public void testWithResource() {
         Jid jid = Jid.of("test@domain");
-        Jid withReource = jid.withResource("resource");
-        Assert.assertEquals(withReource, Jid.of("test@domain/resource"));
+        Jid withResource = jid.withResource("resource");
+        Jid withResourceBare = jid.asBareJid().withResource("resource");
+        Assert.assertEquals(withResource, Jid.of("test@domain/resource"));
+        Assert.assertEquals(withResource, withResourceBare);
     }
 
     @Test
@@ -345,13 +357,16 @@ public class JidTest {
         Jid jid = Jid.of("test@domain/resource");
         Jid withLocal = jid.withLocal("newLocal");
         Assert.assertEquals(withLocal, Jid.of("newLocal@domain/resource"));
+        Assert.assertEquals(jid.asBareJid().withLocal("newLocal"), Jid.of("newLocal@domain"));
     }
 
     @Test
     public void testAtSubdomain() {
         Jid jid = Jid.of("test@domain/resource");
         Jid atSubdomain = jid.atSubdomain("sub");
+        Jid bareSubdomain = jid.asBareJid().atSubdomain("sub");
         Assert.assertEquals(atSubdomain, Jid.of("test@sub.domain/resource"));
+        Assert.assertEquals(bareSubdomain, Jid.of("test@sub.domain"));
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
@@ -439,7 +454,7 @@ public class JidTest {
     @Test
     public void testComparable() {
         List<Jid> jids = new ArrayList<>();
-
+        Locale.setDefault(Locale.GERMAN);
         Jid jid1 = Jid.of("aaa");
         Jid jid2 = Jid.of("a@aaa");
         Jid jid3 = Jid.of("b@aaa");
@@ -448,6 +463,7 @@ public class JidTest {
         Jid jid6 = Jid.of("a@bbb");
         Jid jid7 = Jid.of("a@ccc");
         Jid jid8 = Jid.of("b@ccc");
+        Jid jid9 = Jid.of("ä@aaa");
 
         jids.add(jid1);
         jids.add(jid2);
@@ -457,25 +473,36 @@ public class JidTest {
         jids.add(jid6);
         jids.add(jid7);
         jids.add(jid8);
+        jids.add(jid9);
 
         Collections.shuffle(jids);
         jids.sort(null);
 
         Assert.assertEquals(jids.get(0), jid1);
         Assert.assertEquals(jids.get(1), jid2);
-        Assert.assertEquals(jids.get(2), jid3);
-        Assert.assertEquals(jids.get(3), jid4);
-        Assert.assertEquals(jids.get(4), jid5);
-        Assert.assertEquals(jids.get(5), jid6);
-        Assert.assertEquals(jids.get(6), jid7);
-        Assert.assertEquals(jids.get(7), jid8);
+        Assert.assertEquals(jids.get(2), jid9);
+        Assert.assertEquals(jids.get(3), jid3);
+        Assert.assertEquals(jids.get(4), jid4);
+        Assert.assertEquals(jids.get(5), jid5);
+        Assert.assertEquals(jids.get(6), jid6);
+        Assert.assertEquals(jids.get(7), jid7);
+        Assert.assertEquals(jids.get(8), jid8);
+
+        ComparableTestHelper.checkCompareToContract(jids);
+        Assert.assertTrue(ComparableTestHelper.isConsistentWithEquals(jids));
     }
 
+    @Test
+    public void testComparableFullJidBareJid() {
+        Jid jid = Jid.of("a@aaa/resource");
+        Jid bareJid = jid.asBareJid();
+        Assert.assertTrue(bareJid.compareTo(jid) != 0);
+    }
 
     @Test
     public void testSerialization() throws IOException, ClassNotFoundException {
 
-        Jid jid = Jid.of("local@domain/resource");
+        Jid jid = Jid.of("local@domain/resource").asBareJid();
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try (ObjectOutputStream out = new ObjectOutputStream(byteArrayOutputStream)) {
@@ -518,5 +545,13 @@ public class JidTest {
         Jid jid = Jid.ofEscaped("99999_contains_both_-_dash_and_–_emdash@conf.hipchat.com");
         Assert.assertEquals(jid.getLocal(), "99999_contains_both_-_dash_and_–_emdash");
         Assert.assertEquals(jid.getDomain(), "conf.hipchat.com");
+    }
+
+    @Test
+    public void testBareJidToFullJid() {
+        Jid fullJid = Jid.of("test@test.com/foo");
+        Jid fullJid2 = fullJid.asBareJid().withResource("bar");
+        Assert.assertEquals(fullJid2.toString(), "test@test.com/bar");
+        Assert.assertEquals(fullJid2.asBareJid().toString(), "test@test.com");
     }
 }

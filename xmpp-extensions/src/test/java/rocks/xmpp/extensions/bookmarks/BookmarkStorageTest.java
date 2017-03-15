@@ -35,7 +35,6 @@ import rocks.xmpp.extensions.bookmarks.model.WebPageBookmark;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * @author Christian Schudt
@@ -68,6 +67,6 @@ public class BookmarkStorageTest extends XmlTest {
 
         WebPageBookmark bookmark2 = (WebPageBookmark) bookmarkStorage.getBookmarks().get(1);
         Assert.assertEquals(bookmark2.getName(), "Complete Works of Shakespeare");
-        Assert.assertEquals(bookmark2.getUrl().toString(), new URL("http://the-tech.mit.edu/Shakespeare/").toString());
+        Assert.assertEquals(bookmark2.getUrl().toString(), "http://the-tech.mit.edu/Shakespeare/");
     }
 }

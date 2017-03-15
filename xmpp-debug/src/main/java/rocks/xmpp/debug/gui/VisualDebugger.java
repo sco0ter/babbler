@@ -28,6 +28,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.embed.swing.JFXPanel;
+import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
@@ -52,9 +53,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
@@ -70,8 +70,6 @@ public final class VisualDebugger implements XmppDebugger {
     static {
         initializeLogging();
     }
-
-    private static final Map<Tab, Consumer<SessionStatusEvent>> CONNECTION_LISTENER_MAP = new HashMap<>();
 
     private static final Queue<LogRecord> LOG_RECORDS = new ArrayDeque<>();
 
@@ -94,6 +92,8 @@ public final class VisualDebugger implements XmppDebugger {
     private ByteArrayOutputStream outputStreamInbound;
 
     private ByteArrayOutputStream outputStreamOutbound;
+
+    private final AtomicBoolean initialized = new AtomicBoolean(true);
 
     private static void initializeLogging() {
 
@@ -170,7 +170,8 @@ public final class VisualDebugger implements XmppDebugger {
                     debugController.viewModel.server.set(xmppSession.getActiveConnection().getHostname());
                     debugController.viewModel.port.set(xmppSession.getActiveConnection().getPort());
                     title.set(xmppSession.getDomain() != null ? xmppSession.getDomain().toString() : "...");
-                } else {
+                }
+                if (!xmppSession.isConnected()) {
                     debugController.viewModel.presence.set(null);
                 }
                 debugController.viewModel.status.set(e.getStatus());
@@ -207,12 +208,14 @@ public final class VisualDebugger implements XmppDebugger {
                     stage.getIcons().addAll(new Image(getClass().getResource("xmpp.png").toExternalForm()));
                     stage.setOnHidden(event -> {
                         for (Tab tab : tabPane.getTabs()) {
-                            xmppSession.removeSessionStatusListener(CONNECTION_LISTENER_MAP.remove(tab));
+                            // Trigger the setOnClosed event handler.
+                            Event.fireEvent(tab, new Event(Tab.CLOSED_EVENT));
                         }
 
                         tabPane.getTabs().clear();
                         stage = null;
                         tabPane = null;
+                        LOG_RECORDS.clear();
                     });
                     stage.setScene(scene);
                 }
@@ -223,11 +226,11 @@ public final class VisualDebugger implements XmppDebugger {
                 final Tab tab = new Tab(xmppSession.getDomain() != null ? xmppSession.getDomain().toString() : "...");
                 tab.setContent(debugView);
                 tab.textProperty().bind(title);
-                CONNECTION_LISTENER_MAP.put(tab, connectionListener);
 
                 tab.setOnClosed(event -> {
-                    xmppSession.removeSessionStatusListener(CONNECTION_LISTENER_MAP.remove(tab));
+                    xmppSession.removeSessionStatusListener(connectionListener);
                     xmppSession.removeOutboundPresenceListener(presenceListener);
+                    initialized.set(false);
                 });
 
                 tabPane.getTabs().add(tab);
@@ -240,6 +243,10 @@ public final class VisualDebugger implements XmppDebugger {
 
     @Override
     public void writeStanza(final String xml, final Object stanza) {
+        if (!initialized.get()) {
+            // If the tab is closed, don't log anything.
+            return;
+        }
         final String outbound;
         if (outputStreamOutbound != null) {
             outputStreamOutbound.write((int) '\n');
@@ -260,6 +267,10 @@ public final class VisualDebugger implements XmppDebugger {
 
     @Override
     public void readStanza(final String xml, final Object stanza) {
+        if (!initialized.get()) {
+            // If the tab is closed, don't log anything.
+            return;
+        }
         final String inbound;
         if (outputStreamInbound != null) {
             outputStreamInbound.write((int) '\n');

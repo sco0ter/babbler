@@ -124,8 +124,8 @@ public class MultiUserChatUserTest extends XmlTest {
         Assert.assertNotNull(mucUser);
         Assert.assertNotNull(mucUser.getItem());
         Assert.assertEquals(mucUser.getStatusCodes().size(), 2);
-        Assert.assertEquals(mucUser.getStatusCodes().get(0).getCode(), 110);
-        Assert.assertEquals(mucUser.getStatusCodes().get(1).getCode(), 210);
+        Assert.assertTrue(mucUser.getStatusCodes().contains(Status.SELF_PRESENCE));
+        Assert.assertTrue(mucUser.getStatusCodes().contains(Status.SERVICE_HAS_ASSIGNED_OR_MODIFIED_NICK));
     }
 
     @Test

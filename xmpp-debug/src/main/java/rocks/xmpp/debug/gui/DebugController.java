@@ -52,6 +52,8 @@ import org.xml.sax.SAXParseException;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.Stanza;
+import rocks.xmpp.extensions.sm.model.StreamManagement;
 
 import javax.xml.bind.DataBindingException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -74,6 +76,8 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -96,6 +100,8 @@ public final class DebugController implements Initializable {
     private static final String CSS_UNAVAILABLE = "unavailable";
 
     private static final String CSS_AWAY = "away";
+
+    private static final String CSS_DND = "dnd";
 
     final DebugViewModel viewModel;
 
@@ -261,14 +267,18 @@ public final class DebugController implements Initializable {
         circlePresence.setRadius(10);
         circlePresence.getStyleClass().addAll(CSS_PRESENCE, CSS_UNAVAILABLE);
         viewModel.presence.addListener((observable, oldValue, newValue) -> {
-            circlePresence.getStyleClass().removeAll(CSS_UNAVAILABLE, CSS_AVAILABLE);
+            circlePresence.getStyleClass().removeAll(CSS_UNAVAILABLE, CSS_AVAILABLE, CSS_AWAY, CSS_DND);
             Presence presence = viewModel.presence.get();
             if (presence != null) {
                 if (presence.isAvailable()) {
                     if (presence.getShow() != null) {
                         switch (presence.getShow()) {
                             case AWAY:
+                            case XA:
                                 circlePresence.getStyleClass().add(CSS_AWAY);
+                                break;
+                            case DND:
+                                circlePresence.getStyleClass().add(CSS_DND);
                                 break;
                             default:
                                 circlePresence.getStyleClass().add(CSS_AVAILABLE);
@@ -284,22 +294,6 @@ public final class DebugController implements Initializable {
                 circlePresence.getStyleClass().add(CSS_UNAVAILABLE);
             }
         });
-//        circlePresence.fillProperty().bind(new ObjectBinding<Paint>() {
-//            {
-//                super.bind(viewModel.presence);
-//            }
-//
-//            @Override
-//            protected Paint computeValue() {
-//                if (viewModel.presence.get() != null) {
-//                    if (viewModel.presence.get().isAvailable()) {
-//                        return Color.GREEN;
-//                    }
-//                    return Color.GRAY;
-//                }
-//                return Color.GRAY;
-//            }
-//        });
 
         filteredList = new FilteredList<>(viewModel.stanzas, this::isVisible);
 
@@ -348,19 +342,58 @@ public final class DebugController implements Initializable {
                         stanzaView.setText(newValue.getXml());
                     }
                 }
-
+                List<StanzaEntry> outBoundRequests = new ArrayList<>();
+                List<StanzaEntry> outBoundAnswers = new ArrayList<>();
+                List<StanzaEntry> inBoundRequests = new ArrayList<>();
+                List<StanzaEntry> inBoundAnswers = new ArrayList<>();
+                int answerIndex = -1;
+                int requestIndex = -1;
                 // Add the highlighted items.
-                stanzaTableView.getItems().stream().filter(entry -> newValue.getStanza() instanceof IQ && entry.getStanza() instanceof IQ).forEach(entry -> {
-                    IQ selectedIQ = (IQ) newValue.getStanza();
-                    IQ otherIQ = (IQ) entry.getStanza();
-                    if (otherIQ.getId() != null && otherIQ.getId().equals(selectedIQ.getId())
-                            && ((selectedIQ.isRequest() && otherIQ.isResponse())
-                            || selectedIQ.isResponse() && otherIQ.isRequest())
-                            && newValue.isInbound() != entry.isInbound()) {
-                        // Add the highlighted items.
-                        viewModel.highlightedItems.add(entry);
+                for (StanzaEntry entry : stanzaTableView.getItems()) {
+                    if (newValue.isInbound() != entry.isInbound()) {
+                        if (newValue.getStanza() instanceof Stanza && entry.getStanza() instanceof Stanza) {
+                            Stanza selectedStanza = (Stanza) newValue.getStanza();
+                            Stanza otherStanza = (Stanza) entry.getStanza();
+                            if (otherStanza.getId() != null && otherStanza.getId().equals(selectedStanza.getId())) {
+                                if (selectedStanza instanceof IQ && otherStanza instanceof IQ) {
+                                    IQ selectedIQ = (IQ) selectedStanza;
+                                    IQ otherIQ = (IQ) otherStanza;
+                                    if (((selectedIQ.isRequest() && otherIQ.isResponse())
+                                            || (selectedIQ.isResponse() && otherIQ.isRequest()))) {
+                                        // Add the highlighted items.
+                                        viewModel.highlightedItems.add(entry);
+                                    }
+                                } else {
+                                    viewModel.highlightedItems.add(entry);
+                                }
+                            }
+                        }
                     }
-                });
+                    if (entry.getStanza() instanceof StreamManagement.Answer) {
+                        List<StanzaEntry> answers = entry.isInbound() ? inBoundAnswers : outBoundAnswers;
+                        answers.add(entry);
+                        if (newValue == entry) {
+                            answerIndex = (newValue.isInbound() ? inBoundAnswers.size() : outBoundAnswers.size()) - 1;
+                        }
+                    }
+                    if (entry.getStanza() == StreamManagement.REQUEST) {
+                        List<StanzaEntry> requests = entry.isInbound() ? inBoundRequests : outBoundRequests;
+                        requests.add(entry);
+                        if (newValue == entry) {
+                            requestIndex = (newValue.isInbound() ? inBoundRequests.size() : outBoundRequests.size()) - 1;
+                        }
+                    }
+                }
+
+                List<StanzaEntry> requests = newValue.isInbound() ? outBoundRequests : inBoundRequests;
+                if (answerIndex > -1 && answerIndex < requests.size()) {
+                    viewModel.highlightedItems.add(requests.get(answerIndex));
+                }
+                List<StanzaEntry> answers = newValue.isInbound() ? outBoundAnswers : inBoundAnswers;
+                if (requestIndex > -1 && requestIndex < answers.size()) {
+                    viewModel.highlightedItems.add(answers.get(requestIndex));
+                }
+
                 // Workaround to refresh table:
                 // http://stackoverflow.com/questions/11065140/javafx-2-1-tableview-refresh-items
                 stanzaTableView.getColumns().get(0).setVisible(false);
@@ -542,11 +575,11 @@ public final class DebugController implements Initializable {
     }
 
     private boolean isVisible(StanzaEntry stanzaEntry) {
-        return (cbInbound.isSelected() && stanzaEntry.isInbound()
-                || cbOutbound.isSelected() && !stanzaEntry.isInbound())
+        return ((cbInbound.isSelected() && stanzaEntry.isInbound())
+                || (cbOutbound.isSelected() && !stanzaEntry.isInbound()))
                 && (searchField.getText() == null || searchField.getText().equals("")
-                || stanzaEntry.getXml().contains(searchField.getText()) && !cbIgnoreCase.isSelected()
-                || containsIgnoreCase(stanzaEntry.getXml(), searchField.getText()) && cbIgnoreCase.isSelected());
+                || (stanzaEntry.getXml().contains(searchField.getText()) && !cbIgnoreCase.isSelected())
+                || (containsIgnoreCase(stanzaEntry.getXml(), searchField.getText()) && cbIgnoreCase.isSelected()));
     }
 
 

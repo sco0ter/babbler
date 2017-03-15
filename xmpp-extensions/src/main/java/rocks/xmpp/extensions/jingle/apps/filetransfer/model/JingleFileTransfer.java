@@ -87,6 +87,7 @@ public final class JingleFileTransfer extends ApplicationFormat {
 
         private final long size;
 
+        @XmlElementRef
         private final Thumbnail thumbnail;
 
         private File() {

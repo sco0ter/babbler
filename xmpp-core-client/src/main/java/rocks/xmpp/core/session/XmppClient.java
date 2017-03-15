@@ -34,7 +34,6 @@ import rocks.xmpp.core.stanza.StanzaException;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
-import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.core.stanza.model.client.ClientPresence;
@@ -42,25 +41,21 @@ import rocks.xmpp.core.stream.StreamErrorException;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.subscription.PresenceManager;
-import rocks.xmpp.util.XmppUtils;
-import rocks.xmpp.util.concurrent.AsyncResult;
 
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.sasl.RealmCallback;
-import java.time.Duration;
-import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Queue;
-import java.util.concurrent.Future;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -138,27 +133,13 @@ public final class XmppClient extends XmppSession {
     private volatile boolean anonymous;
 
     /**
-     * Creates a session with the specified service domain, by using the default configuration.
-     *
-     * @param xmppServiceDomain        The service domain.
-     * @param connectionConfigurations The connection configurations.
-     * @deprecated Use {@link #create(String, ConnectionConfiguration...)}
-     */
-    @Deprecated
-    public XmppClient(String xmppServiceDomain, ConnectionConfiguration... connectionConfigurations) {
-        this(xmppServiceDomain, XmppSessionConfiguration.getDefault(), connectionConfigurations);
-    }
-
-    /**
      * Creates a session with the specified service domain by using a configuration.
      *
      * @param xmppServiceDomain        The service domain.
      * @param configuration            The configuration.
      * @param connectionConfigurations The connection configurations.
-     * @deprecated Use {@link #create(String, XmppSessionConfiguration, ConnectionConfiguration...)}
      */
-    @Deprecated
-    public XmppClient(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
+    private XmppClient(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
         super(xmppServiceDomain, configuration, connectionConfigurations);
 
         authenticationManager = new AuthenticationManager(this);
@@ -235,23 +216,35 @@ public final class XmppClient extends XmppSession {
                 // Reset
                 exception = null;
 
-                tryConnect(from, "jabber:client", this::setXmppServiceDomain);
+                tryConnect(from, "jabber:client");
 
                 logger.fine("Negotiating stream, waiting until SASL is ready to be negotiated.");
 
+                // Check if connecting failed with an exception.
+                throwAsXmppExceptionIfNotNull(exception);
+
                 // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
                 try {
-                    streamFeaturesManager.awaitNegotiation(Mechanisms.class, Duration.ofSeconds(10));
+                    streamFeaturesManager.awaitNegotiation(Mechanisms.class).get(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                } catch (TimeoutException e) {
+                    throw new NoResponseException("Timeout while waiting on advertised authentication mechanisms.");
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw e;
+                } catch (CancellationException e) {
+                    throwAsXmppExceptionIfNotNull(exception != null ? exception : e);
                 }
-
                 // Check if stream negotiation threw any exception.
                 throwAsXmppExceptionIfNotNull(exception);
 
                 logger.fine("Stream negotiated until SASL, now ready to login.");
             }
+
+            // If a secure connection has been configured, but hasn't been negotiated for some reason (e.g. MitM attack), throw an exception.
+            if (!activeConnection.isSecure() && activeConnection.getConfiguration().isSecure()) {
+                throw new StreamNegotiationException("Transport Layer Security has been configured, but hasn't been negotiated.");
+            }
+
             // Don't call listeners from within synchronized blocks to avoid possible deadlocks.
             updateStatus(Status.CONNECTING, Status.CONNECTED);
 
@@ -259,7 +252,6 @@ public final class XmppClient extends XmppSession {
             if (wasLoggedIn) {
                 logger.fine("Was already logged in. Re-login automatically with known credentials.");
                 login(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
-                XmppUtils.notifyEventListeners(connectionListeners, new ConnectionEvent(this, ConnectionEvent.Type.RECONNECTION_SUCCEEDED, null, Duration.ZERO));
             }
 
         } catch (Throwable e) {
@@ -388,7 +380,7 @@ public final class XmppClient extends XmppSession {
             lastAuthorizationId = authorizationId;
             lastCallbackHandler = callbackHandler;
             try {
-
+                long timeout = configuration.getDefaultResponseTimeout().toMillis();
                 logger.fine("Starting SASL negotiation (authentication).");
                 if (callbackHandler == null) {
                     authenticationManager.startAuthentication(mechanisms, null, null);
@@ -397,25 +389,25 @@ public final class XmppClient extends XmppSession {
                 }
 
                 // Negotiate all pending features until <bind/> would be negotiated.
-                streamFeaturesManager.awaitNegotiation(Bind.class, configuration.getDefaultResponseTimeout());
-
+                try {
+                    streamFeaturesManager.awaitNegotiation(Bind.class).get(timeout, TimeUnit.MILLISECONDS);
+                } catch (TimeoutException e) {
+                    throw new NoResponseException("Timeout while waiting on resource binding feature.");
+                }
                 // Check if stream feature negotiation failed with an exception.
                 throwAsXmppExceptionIfNotNull(exception);
 
                 // Stream resumption.
-                StreamManager streamManager = getManager(StreamManager.class);
-                if (streamManager.resume()) {
-                    updateStatus(Status.AUTHENTICATED);
-                    // Copy the unacknowledged stanzas.
-                    Queue<Stanza> toBeResent = new ArrayDeque<>(getUnacknowledgedStanzas());
-                    // Then clear the queue.
-                    getUnacknowledgedStanzas().clear();
-
-                    // Then resend everything, which the server didn't acknowledge.
-                    for (Stanza stanza : toBeResent) {
-                        send(stanza);
+                try {
+                    StreamManager streamManager = getManager(StreamManager.class);
+                    if (streamManager.resume().getResult(timeout, TimeUnit.MILLISECONDS)) {
+                        logger.fine("Stream resumed.");
+                        updateStatus(Status.AUTHENTICATED);
+                        afterLogin();
+                        return authenticationManager.getSuccessData();
                     }
-                    return authenticationManager.getSuccessData();
+                } catch (TimeoutException e) {
+                    logger.warning("Could not resume stream due to timeout.");
                 }
 
                 // Then negotiate resource binding manually.
@@ -423,8 +415,11 @@ public final class XmppClient extends XmppSession {
 
                 // Proceed with any outstanding stream features which are negotiated after resource binding, e.g. XEP-0198
                 // and wait until all features have been negotiated.
-                streamFeaturesManager.completeNegotiation(configuration.getDefaultResponseTimeout());
-
+                try {
+                    streamFeaturesManager.completeNegotiation().get(timeout * 2, TimeUnit.MILLISECONDS);
+                } catch (TimeoutException e) {
+                    throw new NoResponseException("Timeout while waiting on stream feature negotiation to finish.");
+                }
                 // Check again, if stream feature negotiation failed with an exception.
                 throwAsXmppExceptionIfNotNull(exception);
 
@@ -434,20 +429,26 @@ public final class XmppClient extends XmppSession {
                 RosterManager rosterManager = getManager(RosterManager.class);
                 if (callbackHandler != null && rosterManager.isEnabled() && rosterManager.isRetrieveRosterOnLogin()) {
                     logger.fine("Retrieving roster on login (as per configuration).");
-                    rosterManager.requestRoster();
+                    try {
+                        rosterManager.requestRoster().getResult(timeout, TimeUnit.MILLISECONDS);
+                    } catch (TimeoutException e) {
+                        logger.warning("Could not retrieve roster in time.");
+                    }
                 }
                 PresenceManager presenceManager = getManager(PresenceManager.class);
                 if (presenceManager.getLastSentPresence() != null) {
                     // After retrieving the roster, resend the last presence, if any (in reconnection case).
+                    // Note, that this will also rejoin any Multi-User Chats on reconnection.
+                    // It's important to first rejoin them, before resending unacknowledged MUC messages.
                     presenceManager.getLastSentPresences().forEach(presence -> {
                         presence.getExtensions().clear();
-                        send(presence);
+                        send(presence, false);
                     });
                 } else if (configuration.getInitialPresence() != null) {
                     // Or send initial presence
                     Presence initialPresence = configuration.getInitialPresence().get();
                     if (initialPresence != null) {
-                        send(initialPresence);
+                        send(initialPresence, false);
                     }
                 }
             } catch (InterruptedException e) {
@@ -455,12 +456,18 @@ public final class XmppClient extends XmppSession {
                 // Revert status
                 updateStatus(previousStatus, e);
                 throwAsXmppExceptionIfNotNull(e);
+            } catch (CancellationException e) {
+                Throwable cause = exception != null ? exception : e;
+                // Revert status
+                updateStatus(previousStatus, cause);
+                throwAsXmppExceptionIfNotNull(cause);
             } catch (Throwable e) {
                 // Revert status
                 updateStatus(previousStatus, e);
                 throwAsXmppExceptionIfNotNull(e);
             }
             logger.fine("Login successful.");
+            afterLogin();
             return authenticationManager.getSuccessData();
         }
     }
@@ -476,7 +483,12 @@ public final class XmppClient extends XmppSession {
         logger.log(Level.FINE, "Negotiating resource binding, resource: {0}.", resource);
 
         // Bind the resource
-        IQ result = query(IQ.set(new Bind(this.resource))).getResult();
+        IQ result;
+        try {
+            result = query(IQ.set(new Bind(this.resource))).getResult(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            throw new NoResponseException("Could not bind resource due to timeout.");
+        }
 
         Bind bindResult = result.getExtension(Bind.class);
         this.connectedResource = bindResult.getJid();
@@ -487,7 +499,6 @@ public final class XmppClient extends XmppSession {
         // "If, before completing the resource binding step, the client attempts to send an XML stanza to an entity other
         // than the server itself or the client's account, the server MUST NOT process the stanza
         // and MUST close the stream with a <not-authorized/> stream error."
-        wasLoggedIn = true;
 
         // Deprecated method of session binding, according to the <a href="http://xmpp.org/rfcs/rfc3921.html#session">old specification</a>
         // This is no longer used, according to the <a href="http://xmpp.org/rfcs/rfc6120.html">updated specification</a>.
@@ -512,6 +523,7 @@ public final class XmppClient extends XmppSession {
      *
      * @return The connected resource.
      */
+    @Override
     public final Jid getConnectedResource() {
         return connectedResource;
     }
@@ -526,48 +538,14 @@ public final class XmppClient extends XmppSession {
     }
 
     @Override
-    public final Future<?> send(StreamElement element) {
-        StreamElement e;
+    protected final StreamElement prepareElement(StreamElement element) {
         if (element instanceof Message) {
-            e = ClientMessage.from((Message) element);
+            element = ClientMessage.from((Message) element);
         } else if (element instanceof Presence) {
-            e = ClientPresence.from((Presence) element);
+            element = ClientPresence.from((Presence) element);
         } else if (element instanceof IQ) {
-            e = ClientIQ.from((IQ) element);
-        } else {
-            e = element;
+            element = ClientIQ.from((IQ) element);
         }
-        return super.send(e);
-    }
-
-    @Override
-    public final SendTask<IQ> sendIQ(final IQ iq) {
-        return trackAndSend(ClientIQ.from(iq));
-    }
-
-    @Override
-    public final SendTask<Message> sendMessage(final Message message) {
-        return trackAndSend(ClientMessage.from(message));
-    }
-
-    @Override
-    public final SendTask<Presence> sendPresence(final Presence presence) {
-        return trackAndSend(ClientPresence.from(presence));
-    }
-
-    /**
-     * Determines support of another XMPP entity for a given feature.
-     * <p>
-     * Note that if you want to determine support of another client, you have to provide that client's full JID (user@domain/resource).
-     * If you want to determine the server's capabilities provide only the domain JID of the server.
-     * </p>
-     * This method uses cached information and the presence based entity capabilities (XEP-0115) to determine support. Only if no information is available an explicit service discovery request is made.
-     *
-     * @param feature The feature, usually defined by an XMPP Extension Protocol, e.g. "urn:xmpp:ping".
-     * @param jid     The XMPP entity.
-     * @return True, if the XMPP entity supports the given feature; otherwise false.
-     */
-    public final AsyncResult<Boolean> isSupported(String feature, Jid jid) {
-        return getManager(EntityCapabilitiesManager.class).isSupported(feature, jid);
+        return element;
     }
 }

@@ -25,6 +25,10 @@
 package rocks.xmpp.extensions.oob.model.x;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.UncheckedIOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -43,20 +47,38 @@ public final class OobX {
      */
     public static final String NAMESPACE = "jabber:x:oob";
 
-    private final URL url;
+    /**
+     * XEP-0066: All of these usages are allowed by the existing OOB namespaces, as long as the value of the <url/> element is a valid URI
+     */
+    private final URI url;
 
     private final String desc;
 
     private OobX() {
-        this(null);
+        this((URI) null);
     }
 
+    @Deprecated
     public OobX(URL url) {
         this(url, null);
     }
 
+    @Deprecated
     public OobX(URL url, String description) {
-        this.url = url;
+        try {
+            this.url = url.toURI();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        this.desc = description;
+    }
+
+    public OobX(URI uri) {
+        this(uri, null);
+    }
+
+    public OobX(URI uri, String description) {
+        this.url = uri;
         this.desc = description;
     }
 
@@ -65,7 +87,21 @@ public final class OobX {
      *
      * @return The URL.
      */
+    @Deprecated
     public final URL getUrl() {
+        try {
+            return url.toURL();
+        } catch (MalformedURLException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    /**
+     * Gets the URI.
+     *
+     * @return The URI.
+     */
+    public final URI getUri() {
         return url;
     }
 

@@ -55,19 +55,12 @@ import static rocks.xmpp.core.session.ReconnectionStrategy.truncatedBinaryExpone
  * The fifth attempt chooses a random number between 0 and 1860.<br>
  * <p>
  * Generally speaking it is <code>2^attempt * 60</code> seconds.
- * <p>
- * You can also {@linkplain #setReconnectionStrategy(ReconnectionStrategy) set} your own reconnection strategy.
- * </p>
- * <p>
- * Use {@link #getNextReconnectionAttempt()} if you want to find out, when the next reconnection attempt will happen.
- * </p>
  * This class is unconditionally thread-safe.
- * @deprecated The only useful API here was {@link #setReconnectionStrategy(ReconnectionStrategy)}, use {@link rocks.xmpp.core.session.XmppSessionConfiguration.Builder#reconnectionStrategy(ReconnectionStrategy)} instead.
+ *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">3.3.  Reconnection</a>
  */
-@Deprecated
-public final class ReconnectionManager extends Manager {
+final class ReconnectionManager extends Manager {
 
     private static final Logger logger = Logger.getLogger(ReconnectionManager.class.getName());
 
@@ -124,6 +117,8 @@ public final class ReconnectionManager extends Manager {
                     cancel();
                     scheduledExecutorService.shutdown();
                     break;
+                default:
+                    break;
             }
         });
     }
@@ -169,35 +164,6 @@ public final class ReconnectionManager extends Manager {
                 }
             }, 0, 1, TimeUnit.SECONDS);
         }
-    }
-
-    /**
-     * Gets the reconnection strategy.
-     *
-     * @return The reconnection strategy.
-     */
-    public final synchronized ReconnectionStrategy getReconnectionStrategy() {
-        return reconnectionStrategy;
-    }
-
-    /**
-     * Sets the reconnection strategy.
-     *
-     * @param reconnectionStrategy The reconnection strategy.
-     * @deprecated Use {@link rocks.xmpp.core.session.XmppSessionConfiguration.Builder#reconnectionStrategy(ReconnectionStrategy)}
-     */
-    @Deprecated
-    public final synchronized void setReconnectionStrategy(ReconnectionStrategy reconnectionStrategy) {
-        this.reconnectionStrategy = reconnectionStrategy;
-    }
-
-    /**
-     * Gets the date of the next reconnection attempt.
-     *
-     * @return The next reconnection attempt or null if there is none.
-     */
-    public final synchronized Instant getNextReconnectionAttempt() {
-        return nextReconnectionAttempt;
     }
 
     @Override

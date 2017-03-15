@@ -39,6 +39,8 @@ abstract class StanzaEvent<S extends Stanza> extends EventObject {
 
     private final boolean inbound;
 
+    private boolean consumed;
+
     StanzaEvent(Object source, S stanza, boolean inbound) {
         super(source);
         this.stanza = stanza;
@@ -52,6 +54,26 @@ abstract class StanzaEvent<S extends Stanza> extends EventObject {
      */
     public final boolean isInbound() {
         return inbound;
+    }
+
+    /**
+     * Marks this event as consumed.
+     * For outbound stanzas, consuming this event cancels sending the stanza.
+     *
+     * @see #isConsumed()
+     */
+    public final void consume() {
+        this.consumed = true;
+    }
+
+    /**
+     * Indicates, whether this event has been consumed.
+     *
+     * @return True, if this event has been consumed.
+     * @see #consume()
+     */
+    public final boolean isConsumed() {
+        return consumed;
     }
 
     @Override

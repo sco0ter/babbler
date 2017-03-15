@@ -24,17 +24,17 @@
 
 package rocks.xmpp.core.sasl.model;
 
+import rocks.xmpp.core.Text;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.util.Strings;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <failure/>} element, which indicates a SASL failure.
@@ -64,6 +64,7 @@ public final class Failure implements StreamElement {
     })
     private final Condition condition;
 
+    @XmlElement(namespace = "urn:ietf:params:xml:ns:xmpp-sasl")
     private final Text text;
 
     /**
@@ -72,6 +73,20 @@ public final class Failure implements StreamElement {
     private Failure() {
         this.condition = null;
         this.text = null;
+    }
+
+    public Failure(Condition condition) {
+        this.condition = Objects.requireNonNull(condition);
+        this.text = null;
+    }
+
+    public Failure(Condition condition, String text, Locale locale) {
+        this.condition = Objects.requireNonNull(condition);
+        if (text != null) {
+            this.text = new Text(text, locale);
+        } else {
+            this.text = null;
+        }
     }
 
     /**
@@ -90,7 +105,7 @@ public final class Failure implements StreamElement {
      */
     public final String getText() {
         if (text != null) {
-            return text.text;
+            return text.getText();
         }
         return null;
     }
@@ -102,7 +117,7 @@ public final class Failure implements StreamElement {
      */
     public final Locale getLanguage() {
         if (text != null) {
-            return text.lang;
+            return text.getLanguage();
         }
         return null;
     }
@@ -421,24 +436,7 @@ public final class Failure implements StreamElement {
 
         @Override
         public final String toString() {
-            return getClass().getSimpleName().replaceAll("([a-z])([A-Z]+)", "$1-$2").toLowerCase();
-        }
-    }
-
-    /**
-     * The text element of the failure.
-     */
-    private static final class Text {
-
-        @XmlValue
-        private final String text;
-
-        @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
-        private final Locale lang;
-
-        private Text() {
-            this.text = null;
-            this.lang = null;
+            return Strings.toDash(getClass().getSimpleName());
         }
     }
 }

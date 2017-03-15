@@ -37,17 +37,18 @@ import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
-import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
 import rocks.xmpp.extensions.muc.model.Actor;
 import rocks.xmpp.extensions.muc.model.Affiliation;
 import rocks.xmpp.extensions.muc.model.DiscussionHistory;
+import rocks.xmpp.extensions.muc.model.Item;
 import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.extensions.muc.model.MucFeature;
 import rocks.xmpp.extensions.muc.model.RequestVoice;
 import rocks.xmpp.extensions.muc.model.Role;
 import rocks.xmpp.extensions.muc.model.RoomConfiguration;
 import rocks.xmpp.extensions.muc.model.RoomInfo;
+import rocks.xmpp.extensions.muc.model.RoomRegistration;
 import rocks.xmpp.extensions.muc.model.admin.MucAdmin;
 import rocks.xmpp.extensions.muc.model.owner.MucOwner;
 import rocks.xmpp.extensions.muc.model.user.Decline;
@@ -59,9 +60,9 @@ import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -69,6 +70,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 
@@ -87,7 +89,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
 
     private final Set<Consumer<OccupantEvent>> occupantListeners = new CopyOnWriteArraySet<>();
 
-    private final Map<String, Occupant> occupantMap = new HashMap<>();
+    private final Map<String, Occupant> occupantMap = new ConcurrentHashMap<>();
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
@@ -153,17 +155,14 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                         boolean isSelfPresence = isSelfPresence(presence, nick);
                         Occupant occupant = new Occupant(presence, isSelfPresence);
                         if (presence.isAvailable()) {
-                            Occupant previousOccupant = occupantMap.put(nick, occupant);
-                            OccupantEvent.Type type;
+                            final Occupant previousOccupant = occupantMap.put(nick, occupant);
+                            final OccupantEvent.Type type;
                             // A new occupant entered the room.
-                            if (previousOccupant == null) {
-                                // Only notify about "joins", if it's not our own join and we are already in the room.
-                                if (!isSelfPresence && hasEntered()) {
-                                    type = OccupantEvent.Type.ENTERED;
-                                } else {
-                                    type = OccupantEvent.Type.STATUS_CHANGED;
-                                }
+                            if (previousOccupant == null && (isSelfPresence || hasEntered())) {
+                                // Only notify about "joins", if it's either our own join, or another occupant joining after we have already joined.
+                                type = OccupantEvent.Type.ENTERED;
                             } else {
+                                // For existing occupants (before we joined), always dispatch a status change event.
                                 type = OccupantEvent.Type.STATUS_CHANGED;
                             }
                             XmppUtils.notifyEventListeners(occupantListeners, new OccupantEvent(ChatRoom.this, occupant, type, null, null, null));
@@ -227,9 +226,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         synchronized (this) {
             entered = false;
             nick = null;
-            multiUserChatManager.roomExited(this);
-            occupantMap.clear();
         }
+        multiUserChatManager.roomExited(this);
+        occupantMap.clear();
     }
 
     private synchronized boolean isSelfPresence(Presence presence, final String currentNick) {
@@ -244,7 +243,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
             isSelfPresence = mucUser.getStatusCodes().contains(Status.SELF_PRESENCE) || nicknameChanged;
         }
         String usedNick = nick != null ? nick : currentNick;
-        return isSelfPresence || usedNick != null && presence.getFrom() != null && usedNick.equals(presence.getFrom().getResource());
+        return isSelfPresence || (usedNick != null && presence.getFrom() != null && usedNick.equals(presence.getFrom().getResource()));
     }
 
     /**
@@ -347,25 +346,25 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param history  The history.
      * @return The async result with the self-presence returned by the chat room.
      */
-    public synchronized AsyncResult<Presence> enter(final String nick, String password, DiscussionHistory history) {
+    public final AsyncResult<Presence> enter(final String nick, final String password, final DiscussionHistory history) {
         Objects.requireNonNull(nick, "nick must not be null.");
-
-        if (entered) {
-            throw new IllegalStateException("You already entered this room.");
+        synchronized (this) {
+            if (entered) {
+                throw new IllegalStateException("You already entered this room.");
+            }
+            this.nick = nick;
         }
         xmppSession.addInboundMessageListener(messageListener);
         xmppSession.addInboundPresenceListener(presenceListener);
 
         final Presence enterPresence = new Presence(roomJid.withResource(nick));
         enterPresence.getExtensions().add(Muc.withPasswordAndHistory(password, history));
-        this.nick = nick;
         return xmppSession.sendAndAwaitPresence(enterPresence, presence -> {
             Jid room = presence.getFrom().asBareJid();
             return room.equals(roomJid) && isSelfPresence(presence, nick);
         }).whenComplete((presence, e) -> {
             if (e != null) {
-                xmppSession.removeInboundMessageListener(messageListener);
-                xmppSession.removeInboundPresenceListener(presenceListener);
+                userHasExited();
             } else {
                 multiUserChatManager.roomEntered(this, nick);
                 synchronized (this) {
@@ -417,11 +416,10 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @return The async result with the presence returned by the chat room.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#changenick">7.6 Changing Nickname</a>
      */
-    public synchronized AsyncResult<Presence> changeNickname(String newNickname) {
-        if (!entered) {
+    public final AsyncResult<Presence> changeNickname(String newNickname) {
+        if (!hasEntered()) {
             throw new IllegalStateException("You must have entered the room to change your nickname.");
         }
-
         final Presence changeNickNamePresence = new Presence(roomJid.withResource(newNickname));
         return xmppSession.sendAndAwaitPresence(changeNickNamePresence, presence -> presence.getFrom().equals(changeNickNamePresence.getTo()));
     }
@@ -433,11 +431,15 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param status The status.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#changepres">7.7 Changing Availability Status</a>
      */
-    public synchronized void changeAvailabilityStatus(Presence.Show show, String status) {
-        if (!entered) {
-            throw new IllegalStateException("You must have entered the room to change the availability status.");
+    public void changeAvailabilityStatus(Presence.Show show, String status) {
+        Presence presence;
+        synchronized (this) {
+            if (!entered) {
+                throw new IllegalStateException("You must have entered the room to change the availability status.");
+            }
+            presence = new Presence(roomJid.withResource(nick), show, status);
         }
-        xmppSession.send(new Presence(roomJid.withResource(nick), show, status));
+        xmppSession.send(presence);
     }
 
     /**
@@ -477,7 +479,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      *
      * @return The async result with the data form.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
-     * @see rocks.xmpp.extensions.muc.model.RoomRegistration
+     * @see RoomRegistration
      */
     public AsyncResult<DataForm> getRegistrationForm() {
         return xmppSession.query(IQ.get(roomJid, Registration.empty())).thenApply(result -> {
@@ -495,7 +497,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param registration The registration.
      * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
-     * @see rocks.xmpp.extensions.muc.model.RoomRegistration
+     * @see RoomRegistration
      */
     public AsyncResult<IQ> register(Registration registration) {
         Objects.requireNonNull(registration, "registration must not be null.");
@@ -558,14 +560,14 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @return The async result.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#exit">7.14 Exiting a Room</a>
      */
-    public synchronized AsyncResult<Void> exit(String message) {
+    public final AsyncResult<Void> exit(String message) {
 
-        if (!entered) {
+        if (!hasEntered()) {
             return new AsyncResult<>(CompletableFuture.completedFuture(null));
         }
         // Store the current nick, to determine self-presence (because nick gets null before determining self-presence).
-        final String usedNick = nick;
-        return xmppSession.sendAndAwaitPresence(new Presence(roomJid.withResource(nick), Presence.Type.UNAVAILABLE, message), presence -> {
+        final String usedNick = getNick();
+        return xmppSession.sendAndAwaitPresence(new Presence(roomJid.withResource(usedNick), Presence.Type.UNAVAILABLE, message), presence -> {
             Jid room = presence.getFrom().asBareJid();
             return !presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence, usedNick);
         }).handle((result, throwable) -> {
@@ -743,7 +745,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     /**
-     * Revokes a user's admin status. The new status of the user will be 'none'.
+     * Revokes a user's admin status. The new status of the user will be 'member'.
      * Note that you must be an owner of the room.
      *
      * @param user   The user.
@@ -753,7 +755,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see #grantAdminStatus(Jid, String)
      */
     public final AsyncResult<IQ> revokeAdminStatus(Jid user, String reason) {
-        return changeAffiliation(Affiliation.NONE, user, reason);
+        return changeAffiliation(Affiliation.MEMBER, user, reason);
     }
 
     /**
@@ -853,7 +855,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @return The async result with the owners.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
-    public AsyncResult<List<? extends rocks.xmpp.extensions.muc.model.Item>> getOwners() {
+    public AsyncResult<List<Item>> getOwners() {
         return getByAffiliation(Affiliation.OWNER);
     }
 
@@ -863,7 +865,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @return The async result with the outcasts.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
-    public AsyncResult<List<? extends rocks.xmpp.extensions.muc.model.Item>> getOutcasts() {
+    public AsyncResult<List<Item>> getOutcasts() {
         return getByAffiliation(Affiliation.OUTCAST);
     }
 
@@ -873,7 +875,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @return The async result with the admins.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
-    public AsyncResult<List<? extends rocks.xmpp.extensions.muc.model.Item>> getAdmins() {
+    public AsyncResult<List<Item>> getAdmins() {
         return getByAffiliation(Affiliation.ADMIN);
     }
 
@@ -889,11 +891,11 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @return The async result with the members.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
-    public AsyncResult<List<? extends rocks.xmpp.extensions.muc.model.Item>> getMembers() {
+    public AsyncResult<List<Item>> getMembers() {
         return getByAffiliation(Affiliation.MEMBER);
     }
 
-    private AsyncResult<List<? extends rocks.xmpp.extensions.muc.model.Item>> getByAffiliation(Affiliation affiliation) {
+    private AsyncResult<List<Item>> getByAffiliation(Affiliation affiliation) {
         return xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(affiliation, null, null))).thenApply(result -> {
             MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
             return mucAdmin.getItems();
@@ -906,24 +908,11 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @return The async result with the moderators.
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymod">9.8 Modifying the Moderator List</a>
      */
-    public AsyncResult<List<rocks.xmpp.extensions.muc.model.Item>> getModerators() {
+    public AsyncResult<List<Item>> getModerators() {
         return xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Role.MODERATOR, null, null))).thenApply(result -> {
             MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
             return mucAdmin.getItems();
         });
-    }
-
-    /**
-     * Creates an instant room.
-     *
-     * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-instant">10.1.2 Creating an Instant Room</a>
-     * @deprecated This method is flawed. Simply enter the room.
-     */
-    @Deprecated
-    public synchronized AsyncResult<IQ> createRoom() {
-        return enter(nick).thenCompose(presence ->
-                xmppSession.query(IQ.set(roomJid, MucOwner.withConfiguration(new DataForm(DataForm.Type.SUBMIT)))));
     }
 
     /**
@@ -975,7 +964,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     public AsyncResult<List<String>> discoverOccupants() {
         return serviceDiscoveryManager.discoverItems(roomJid).thenApply(itemNode -> {
             List<String> occupants = new ArrayList<>();
-            List<Item> items = itemNode.getItems();
+            List<rocks.xmpp.extensions.disco.model.items.Item> items = itemNode.getItems();
             items.stream().filter(item -> item.getJid() != null).forEach(item -> {
                 String nickname = item.getJid().getResource();
                 if (nickname != null) {
@@ -1008,15 +997,15 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
 
     /**
      * Gets the configuration form for the room.
-     * You can wrap the form into {@link rocks.xmpp.extensions.muc.model.RoomConfiguration} for easier processing.
+     * You can wrap the form into {@link RoomConfiguration} for easier processing.
      * <p>
      * Use this method if you want to create a reserved room or configure an existing room.
      * </p>
      *
      * @return The async result with the configuration form.
-     * @see rocks.xmpp.extensions.muc.model.RoomConfiguration
+     * @see RoomConfiguration
      * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
-     * @see #configure(rocks.xmpp.extensions.muc.model.RoomConfiguration)
+     * @see #configure(RoomConfiguration)
      */
     public AsyncResult<DataForm> getConfigurationForm() {
         return xmppSession.query(IQ.get(roomJid, MucOwner.empty())).thenApply(result -> {
@@ -1118,7 +1107,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
             int result;
             // First compare name.
             if (name != null) {
-                result = o.name != null ? name.compareTo(o.name) : -1;
+                result = o.name != null ? Collator.getInstance().compare(name, o.name) : -1;
             } else {
                 result = o.name != null ? 1 : 0;
             }

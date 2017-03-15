@@ -29,8 +29,10 @@ import rocks.xmpp.addr.Jid;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * A stanza which is extensible (can have more than one extension), i.e. {@link Message} and {@link Presence}.
@@ -108,5 +110,21 @@ public abstract class ExtensibleStanza extends Stanza {
      */
     public final List<Object> getExtensions() {
         return extensions;
+    }
+
+    /**
+     * Gets the extensions of the given type. The returned list is unmodifiable.
+     *
+     * @param <T>   The extension type.
+     * @param clazz The extension class.
+     * @return The unmodifiable list of extensions which are of the given type.
+     * @since 0.8.0
+     */
+    @SuppressWarnings("unchecked")
+    public final <T> List<T> getExtensions(Class<T> clazz) {
+        return Collections.unmodifiableList(this.extensions.stream()
+                .filter(extension -> clazz.isAssignableFrom(extension.getClass()))
+                .map(extension -> (T) extension)
+                .collect(Collectors.toList()));
     }
 }

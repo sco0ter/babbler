@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2017 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -54,7 +54,7 @@ public class MessageArchiveManagementTest extends XmlTest {
     @Test
     public void unmarshalMamQuery() throws XMLStreamException, JAXBException {
         String xml = "<iq type='set' id='juliet1'>\n" +
-                "  <query xmlns='urn:xmpp:mam:1' queryid='f27' />\n" +
+                "  <query xmlns='urn:xmpp:mam:2' queryid='f27' />\n" +
                 "</iq>";
         IQ iq = unmarshal(xml, IQ.class);
         MessageArchive.Query mam = iq.getExtension(MessageArchive.Query.class);
@@ -65,7 +65,7 @@ public class MessageArchiveManagementTest extends XmlTest {
     @Test
     public void unmarshalMamResult() throws XMLStreamException, JAXBException {
         String xml = "<message id='aeb213' to='juliet@capulet.lit/chamber'>\n" +
-                "  <result xmlns='urn:xmpp:mam:1' queryid='f27' id='28482-98726-73623'>\n" +
+                "  <result xmlns='urn:xmpp:mam:2' queryid='f27' id='28482-98726-73623'>\n" +
                 "    <forwarded xmlns='urn:xmpp:forward:0'>\n" +
                 "      <delay xmlns='urn:xmpp:delay' stamp='2010-07-10T23:08:25Z'/>\n" +
                 "      <message xmlns='jabber:client' from=\"witch@shakespeare.lit\" to=\"macbeth@shakespeare.lit\">\n" +
@@ -73,11 +73,12 @@ public class MessageArchiveManagementTest extends XmlTest {
                 "      </message>\n" +
                 "    </forwarded>\n" +
                 "  </result>\n" +
-                "</message>";
+                "</message>\n";
         Message message = unmarshal(xml, Message.class);
         MessageArchive.Result mam = message.getExtension(MessageArchive.Result.class);
-
         Assert.assertNotNull(mam);
+        Assert.assertEquals(mam.getId(), "28482-98726-73623");
+        Assert.assertEquals(mam.getQueryId(), "f27");;
         Assert.assertNotNull(mam.getForwarded());
         Assert.assertNotNull(mam.getForwarded().getDelayedDelivery());
         Assert.assertEquals(mam.getForwarded().getDelayedDelivery().getTimeStamp(), OffsetDateTime.of(2010, 7, 10, 23, 8, 25, 0, ZoneOffset.UTC).toInstant());
@@ -87,7 +88,7 @@ public class MessageArchiveManagementTest extends XmlTest {
     @Test
     public void unmarshalQueryWithDataForm() throws XMLStreamException, JAXBException {
         String xml = "<iq type='set' id='juliet1'>\n" +
-                "  <query xmlns='urn:xmpp:mam:1'>\n" +
+                "  <query xmlns='urn:xmpp:mam:2'>\n" +
                 "    <x xmlns='jabber:x:data' type='submit'>\n" +
                 "      <field var='FORM_TYPE' type='hidden'>\n" +
                 "        <value>urn:xmpp:mam:1</value>\n" +
@@ -111,7 +112,7 @@ public class MessageArchiveManagementTest extends XmlTest {
     @Test
     public void unmarshalFin() throws XMLStreamException, JAXBException {
         String xml = "<iq type='result' id='u29303'>\n" +
-                "  <fin xmlns='urn:xmpp:mam:1' complete='true'>\n" +
+                "  <fin xmlns='urn:xmpp:mam:2' complete='true'>\n" +
                 "    <set xmlns='http://jabber.org/protocol/rsm'>\n" +
                 "      <first index='0'>23452-4534-1</first>\n" +
                 "      <last>390-2342-22</last>\n" +
@@ -131,24 +132,24 @@ public class MessageArchiveManagementTest extends XmlTest {
     public void marshalFin() throws XMLStreamException, JAXBException {
         MessageArchive.Fin fin = new MessageArchive.Fin(ResultSetManagement.forCount(1), true);
         String xml = marshal(fin);
-        Assert.assertEquals(xml, "<fin xmlns=\"urn:xmpp:mam:1\" complete=\"true\"><set xmlns=\"http://jabber.org/protocol/rsm\"><count>1</count></set></fin>");
+        Assert.assertEquals(xml, "<fin xmlns=\"urn:xmpp:mam:2\" complete=\"true\"><set xmlns=\"http://jabber.org/protocol/rsm\"><count>1</count></set></fin>");
     }
 
     @Test
     public void marshalPrefs() throws XMLStreamException, JAXBException {
         MessageArchive.Preferences preferences = new MessageArchive.Preferences();
-        Assert.assertEquals(marshal(preferences), "<prefs xmlns=\"urn:xmpp:mam:1\"></prefs>");
+        Assert.assertEquals(marshal(preferences), "<prefs xmlns=\"urn:xmpp:mam:2\"></prefs>");
         Assert.assertTrue(preferences.getAlways().isEmpty());
         Assert.assertTrue(preferences.getNever().isEmpty());
 
         MessageArchive.Preferences preferences2 = new MessageArchive.Preferences(MessageArchive.Preferences.Default.ALWAYS, Collections.singleton(Jid.of("romeo@montague.lit")), Collections.emptyList());
-        Assert.assertEquals(marshal(preferences2), "<prefs xmlns=\"urn:xmpp:mam:1\" default=\"always\"><always><jid>romeo@montague.lit</jid></always><never></never></prefs>");
+        Assert.assertEquals(marshal(preferences2), "<prefs xmlns=\"urn:xmpp:mam:2\" default=\"always\"><always><jid>romeo@montague.lit</jid></always><never></never></prefs>");
     }
 
     @Test
     public void unmarshalPrefs() throws XMLStreamException, JAXBException {
         String xml = "<iq type='result' id='juliet3'>\n" +
-                "  <prefs xmlns='urn:xmpp:mam:1' default='roster'>\n" +
+                "  <prefs xmlns='urn:xmpp:mam:2' default='roster'>\n" +
                 "    <always>\n" +
                 "      <jid>romeo@montague.lit</jid>\n" +
                 "      <jid>juliet@montague.lit</jid>\n" +
@@ -175,6 +176,6 @@ public class MessageArchiveManagementTest extends XmlTest {
                 .end(start)
                 .build();
         String xml = marshal(configuration.getDataForm());
-        Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"hidden\" var=\"FORM_TYPE\"><value>urn:xmpp:mam:1</value></field><field type=\"jid-single\" var=\"with\"><value>test</value></field><field type=\"text-single\" var=\"start\"><value>" + start + "</value></field><field type=\"text-single\" var=\"end\"><value>" + start + "</value></field></x>");
+        Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"hidden\" var=\"FORM_TYPE\"><value>urn:xmpp:mam:2</value></field><field type=\"jid-single\" var=\"with\"><value>test</value></field><field type=\"text-single\" var=\"start\"><value>" + start + "</value></field><field type=\"text-single\" var=\"end\"><value>" + start + "</value></field></x>");
     }
 }

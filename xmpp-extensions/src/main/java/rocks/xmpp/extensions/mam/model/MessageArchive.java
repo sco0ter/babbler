@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2017 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,7 +52,7 @@ public abstract class MessageArchive {
     /**
      * urn:xmpp:mam:1
      */
-    public static final String NAMESPACE = "urn:xmpp:mam:1";
+    public static final String NAMESPACE = "urn:xmpp:mam:2";
 
     @XmlRootElement
     public static final class Query extends MessageArchive {

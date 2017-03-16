@@ -39,11 +39,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
@@ -581,5 +579,23 @@ public class JidTest {
         Assert.assertEquals(jid3.hashCode(), jid4.hashCode());
         jids.add(jid3);
         Assert.assertTrue(jids.contains(jid4));
+    }
+
+    @Test
+    public void testUnicodeDomainName() {
+        // Example from: https://tools.ietf.org/html/rfc5122#section-2.7.3
+        Jid jid = Jid.of("ji\u0159i@\u010Dechy.example/v Praze");
+        Assert.assertEquals(jid.getLocal(), "ji\u0159i");
+        Assert.assertEquals(jid.getDomain(), "\u010Dechy.example");
+        Assert.assertEquals(jid.getResource(), "v Praze");
+
+        Jid jid2 = jid.withLocal("test");
+        Assert.assertEquals(jid2.getDomain(), "\u010Dechy.example");
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void testInvalidUnicodeDomainName() {
+        // Example from: https://tools.ietf.org/html/rfc5122#section-2.7.3
+        Jid.ofDomain("_\u010Dechy.example");
     }
 }

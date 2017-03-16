@@ -52,9 +52,7 @@ final class FullJid extends AbstractJid {
 
     private static final Pattern UNESCAPE_PATTERN = Pattern.compile("\\\\(20|22|26|27|2f|3a|3c|3e|40|5c)");
 
-    private static final String DOMAIN_PART = "((?:(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9]))+)";
-
-    private static final Pattern JID = Pattern.compile("^((.*?)@)?" + DOMAIN_PART + "(/(.*))?$");
+    private static final Pattern JID = Pattern.compile("^((.*?)@)?([^/@]+)(/(.*))?$");
 
     private static final IDNProfile IDN_PROFILE = new IDNProfile();
 
@@ -108,14 +106,6 @@ final class FullJid extends AbstractJid {
         final String enforcedDomainPart;
         final String enforcedResource;
 
-        // If the domainpart includes a final character considered to be a label
-        // separator (dot) by [RFC1034], this character MUST be stripped from
-        // the domainpart before the JID of which it is a part is used for the
-        // purpose of routing an XML stanza, comparing against another JID, or
-        // constructing an XMPP URI or IRI [RFC5122].  In particular, such a
-        // character MUST be stripped before any other canonicalization steps
-        // are taken.
-        final String strDomain = LABEL_SEPARATOR_FINAL.matcher(Objects.requireNonNull(domain)).replaceAll("");
         final String unescapedLocalPart;
 
         if (doUnescape) {
@@ -127,6 +117,15 @@ final class FullJid extends AbstractJid {
         // Escape the local part, so that disallowed characters like the space characters pass the UsernameCaseMapped profile.
         final String escapedLocalPart = escape(unescapedLocalPart);
         if (enforceAndValidate) {
+            // If the domainpart includes a final character considered to be a label
+            // separator (dot) by [RFC1034], this character MUST be stripped from
+            // the domainpart before the JID of which it is a part is used for the
+            // purpose of routing an XML stanza, comparing against another JID, or
+            // constructing an XMPP URI or IRI [RFC5122].  In particular, such a
+            // character MUST be stripped before any other canonicalization steps
+            // are taken.
+            // Also validate, that the domain name can be converted to ASCII, i.e. validate the domain name (e.g. must not start with "_").
+            final String strDomain = IDN.toASCII(LABEL_SEPARATOR_FINAL.matcher(Objects.requireNonNull(domain)).replaceAll(""), IDN.USE_STD3_ASCII_RULES);
             enforcedLocalPart = escapedLocalPart != null ? PrecisProfiles.USERNAME_CASE_MAPPED.enforce(escapedLocalPart) : null;
             enforcedResource = resource != null ? PrecisProfiles.OPAQUE_STRING.enforce(resource) : null;
             // See https://tools.ietf.org/html/rfc5895#section-2
@@ -138,7 +137,7 @@ final class FullJid extends AbstractJid {
         } else {
             enforcedLocalPart = escapedLocalPart != null ? escapedLocalPart : null;
             enforcedResource = resource != null ? resource.toString() : null;
-            enforcedDomainPart = strDomain;
+            enforcedDomainPart = domain.toString();
         }
 
         this.local = unescape(enforcedLocalPart);
@@ -212,7 +211,7 @@ final class FullJid extends AbstractJid {
 
         Matcher matcher = JID.matcher(jid);
         if (matcher.matches()) {
-            Jid jidValue = new FullJid(matcher.group(2), matcher.group(3), matcher.group(8), doUnescape, enforceAndValidate, null);
+            Jid jidValue = new FullJid(matcher.group(2), matcher.group(3), matcher.group(5), doUnescape, enforceAndValidate, null);
             if (doUnescape) {
                 UNESCAPED_CACHE.put(jid, jidValue);
             } else {

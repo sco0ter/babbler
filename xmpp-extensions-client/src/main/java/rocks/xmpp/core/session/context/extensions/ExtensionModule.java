@@ -124,6 +124,7 @@ import rocks.xmpp.extensions.vcard.temp.VCardManager;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
 import rocks.xmpp.extensions.version.SoftwareVersionManager;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
+import rocks.xmpp.extensions.xhtmlim.model.Html;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -209,6 +210,9 @@ public final class ExtensionModule implements Module {
 
                 // XEP-0070: Verifying HTTP Requests via XMPP
                 Extension.of(ConfirmationRequest.NAMESPACE, HttpAuthenticationManager.class, false, ConfirmationRequest.class),
+
+                // XEP-0071: XHTML-IM
+                Extension.of(Html.NAMESPACE, false, Html.class),
 
                 // XEP-0077: In-Band Registration
                 Extension.of(Registration.NAMESPACE, RegistrationManager.class, false, RegisterFeature.class, Registration.class),

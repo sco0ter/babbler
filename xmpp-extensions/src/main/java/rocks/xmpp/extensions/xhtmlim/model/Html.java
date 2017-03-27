@@ -51,6 +51,7 @@ import java.util.Objects;
  * This class is immutable.
  *
  * @author Christian Schudt
+ * @see <a href="https://xmpp.org/extensions/xep-0071.html">XEP-0071: XHTML-IM</a>
  */
 @XmlRootElement
 public final class Html {

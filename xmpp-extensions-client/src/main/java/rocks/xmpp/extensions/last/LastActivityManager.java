@@ -73,7 +73,7 @@ import java.util.function.Supplier;
  * <pre>
  * <code>
  * LastActivityManager lastActivityManager = xmppSession.getManager(LastActivityManager.class);
- * LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.of("juliet@example.com/balcony"));
+ * LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.of("juliet@example.com/balcony")).getResult();
  * </code>
  * </pre>
  *

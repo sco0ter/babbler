@@ -213,8 +213,11 @@ final class XmppStreamReader {
             executorService.shutdown();
             // Wait for the closing </stream> element to be received.
             try {
-                executorService.awaitTermination(250, TimeUnit.MILLISECONDS);
+                if (!executorService.awaitTermination(250, TimeUnit.MILLISECONDS)) {
+                    executorService.shutdownNow();
+                }
             } catch (InterruptedException e) {
+                executorService.shutdownNow();
                 Thread.currentThread().interrupt();
             }
         }

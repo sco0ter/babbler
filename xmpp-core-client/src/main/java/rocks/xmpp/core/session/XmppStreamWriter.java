@@ -249,8 +249,12 @@ final class XmppStreamWriter {
             executor.shutdown();
             try {
                 // Wait for the closing stream element to be sent before we can close the socket.
-                executor.awaitTermination(50, TimeUnit.MILLISECONDS);
+                if (!executor.awaitTermination(50, TimeUnit.MILLISECONDS)) {
+                    executor.shutdownNow();
+                }
             } catch (InterruptedException e) {
+                // (Re-)Cancel if current thread also interrupted
+                executor.shutdownNow();
                 Thread.currentThread().interrupt();
             }
         }

@@ -156,7 +156,7 @@ public final class EntityCapabilitiesManager extends Manager {
                     // Get the last generated verification string here.
                     Deque<Verification> verifications = new ArrayDeque<>(publishedNodes.values());
                     Verification verification = verifications.getLast();
-                    presence.addExtension(new EntityCapabilities(getNode(), verification.hashAlgorithm, verification.verificationString));
+                    presence.putExtension(new EntityCapabilities(getNode(), verification.hashAlgorithm, verification.verificationString));
                     capsSent = true;
                 }
             }

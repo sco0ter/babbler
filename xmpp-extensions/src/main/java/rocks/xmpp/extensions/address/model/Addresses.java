@@ -173,8 +173,7 @@ public final class Addresses {
         if (!containsOriginalSender) {
             addressList.add(0, new Address(Address.Type.TO, sender));
         }
-        reply.removeExtension(Addresses.class);
-        reply.addExtension(new Addresses(addressList));
+        reply.putExtension(new Addresses(addressList));
         return true;
     }
 }

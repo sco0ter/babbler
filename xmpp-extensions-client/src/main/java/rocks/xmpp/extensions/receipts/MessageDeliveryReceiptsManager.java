@@ -118,7 +118,7 @@ public final class MessageDeliveryReceiptsManager extends Manager {
             if (!predicate.test(message)) {
                 return;
             }
-            message.addExtension(MessageDeliveryReceipts.REQUEST);
+            message.putExtension(MessageDeliveryReceipts.REQUEST);
         };
     }
 

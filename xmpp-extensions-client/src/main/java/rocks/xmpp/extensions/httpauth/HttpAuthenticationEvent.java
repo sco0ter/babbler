@@ -93,7 +93,7 @@ public final class HttpAuthenticationEvent extends EventObject {
         } else if (stanza instanceof Message) {
             // If the user wishes to confirm the request, the <message/> response stanza SHOULD be of type "normal", MUST mirror the <thread/> ID (if provided by the XMPP Server), and MUST contain the original <confirm/> child element
             Message m = new Message(getRequester(), Message.Type.NORMAL, null, null, ((Message) stanza).getThread());
-            m.addExtension(confirmationRequest);
+            m.putExtension(confirmationRequest);
             xmppSession.send(m);
         }
     }

@@ -70,7 +70,7 @@ public final class StanzaForwardingManager extends Manager {
      */
     public void forwardMessage(Message message, Jid to) {
         Message outerMessage = new Message(to, message.getType());
-        outerMessage.addExtension(new Forwarded(message, new DelayedDelivery(Instant.now())));
+        outerMessage.putExtension(new Forwarded(message, new DelayedDelivery(Instant.now())));
         xmppSession.send(outerMessage);
     }
 }

@@ -193,7 +193,7 @@ public final class AvatarManager extends Manager {
 
                 if (myHash == null) {
                     // 2. If a client is not yet ready to advertise an image, it MUST send an empty update child element:
-                    presence.addExtension(new AvatarUpdate());
+                    presence.putExtension(new AvatarUpdate());
 
                     // Load my own avatar in order to advertise an image.
                     getAvatarByVCard(xmppSession.getConnectedResource().asBareJid()).whenComplete((avatarResult, ex) -> {
@@ -215,7 +215,7 @@ public final class AvatarManager extends Manager {
                         }
                     });
                 } else if (!presence.hasExtension(AvatarUpdate.class)) {
-                    presence.addExtension(new AvatarUpdate(myHash));
+                    presence.putExtension(new AvatarUpdate(myHash));
                 }
             }
         };

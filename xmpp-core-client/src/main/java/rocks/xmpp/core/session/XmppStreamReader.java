@@ -99,6 +99,7 @@ final class XmppStreamReader {
             executorService.execute(() -> {
                 boolean doRestart = false;
                 XMLEventReader xmlEventReader = null;
+                StreamErrorException streamError = null;
                 try {
 
                     InputStream xmppInputStream = null;
@@ -111,7 +112,7 @@ final class XmppStreamReader {
                     XMLEvent startDocument = null;
                     xmlEventReader = xmppSession.getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
                     XMLEvent xmlEvent;
-                    StreamErrorException streamError = null;
+
                     while (!doRestart && (xmlEvent = xmlEventReader.peek()) != null) {
                         StringWriter stringWriter = null;
                         if (debugger != null) {
@@ -215,7 +216,13 @@ final class XmppStreamReader {
                             executorService.shutdown();
                         }
                     }
-                    xmppSession.notifyException(e);
+                    if (streamError != null) {
+                        // Recheck if there was a stream error. In this case don't report the original exception, but the stream error.
+                        // This may happen, if the server doesn't gracefully close the stream after sending a stream error.
+                        xmppSession.notifyException(streamError);
+                    } else {
+                        xmppSession.notifyException(e);
+                    }
                 } finally {
                     if (xmlEventReader != null) {
                         try {

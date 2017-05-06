@@ -152,6 +152,20 @@ public final class Contact implements Comparable<Contact> {
     }
 
     /**
+     * Creates an identical contact with only the name changed.
+     */
+    public Contact withName(String name) {
+	return new Contact(jid, name, ask, approved, subscription, group);
+    }
+
+    /**
+     * Creates an identical contact without name.
+     */
+    public Contact withoutName() {
+	return new Contact(jid, null, ask, approved, subscription, group);
+    }
+
+    /**
      * Creates an identical contact with only the groups changed.
      * @param groups the new groups.
      * @return a new contact with only the groups changed.

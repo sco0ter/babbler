@@ -36,10 +36,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
@@ -553,5 +557,26 @@ public class JidTest {
         Jid fullJid2 = fullJid.asBareJid().withResource("bar");
         Assert.assertEquals(fullJid2.toString(), "test@test.com/bar");
         Assert.assertEquals(fullJid2.asBareJid().toString(), "test@test.com");
+    }
+
+    @Test
+    public void testHashEquality() {
+        Jid jid1 = Jid.of("test@test.com/foo").asBareJid();
+        Jid jid2 = Jid.of("test@test.com/foo");
+        Assert.assertFalse(jid1.equals(jid2));
+        Assert.assertFalse(jid2.equals(jid1));
+        Assert.assertNotEquals(jid1.hashCode(), jid2.hashCode());
+        Set<Jid> jids = new HashSet<>();
+        jids.add(jid1);
+        Assert.assertFalse(jids.contains(jid2));
+
+        Jid jid3 = Jid.of("test@test.com/foo").asBareJid();
+        Jid jid4 = Jid.of("test@test.com");
+
+        Assert.assertTrue(jid3.equals(jid4));
+        Assert.assertTrue(jid4.equals(jid3));
+        Assert.assertEquals(jid3.hashCode(), jid4.hashCode());
+        jids.add(jid3);
+        Assert.assertTrue(jids.contains(jid4));
     }
 }

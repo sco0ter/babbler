@@ -237,12 +237,13 @@ final class FullJid implements Jid {
                     Jid other = (Jid) o;
 
                     return Objects.equals(FullJid.this.local, other.getLocal())
-                            && Objects.equals(FullJid.this.domain, other.getDomain());
+                            && Objects.equals(FullJid.this.domain, other.getDomain())
+                            && other.getResource() == null;
                 }
 
                 @Override
                 public final int hashCode() {
-                    return Objects.hash(FullJid.this.local, FullJid.this.domain);
+                    return Objects.hash(FullJid.this.local, FullJid.this.domain, null);
                 }
             };
         }

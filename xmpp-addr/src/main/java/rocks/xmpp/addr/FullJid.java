@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2017 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -161,6 +161,11 @@ final class FullJid extends AbstractJid {
                 }
 
                 @Override
+                public String getEscapedLocal() {
+                    return FullJid.this.getEscapedLocal();
+                }
+
+                @Override
                 public String getDomain() {
                     return FullJid.this.getDomain();
                 }
@@ -168,11 +173,6 @@ final class FullJid extends AbstractJid {
                 @Override
                 public String getResource() {
                     return null;
-                }
-
-                @Override
-                public String toEscapedString() {
-                    return AbstractJid.toString(FullJid.this.escapedLocal, FullJid.this.domain, null);
                 }
             };
         }
@@ -323,6 +323,11 @@ final class FullJid extends AbstractJid {
         return local;
     }
 
+    @Override
+    public String getEscapedLocal() {
+        return escapedLocal;
+    }
+
     /**
      * Gets the domain part.
      * <blockquote>
@@ -359,17 +364,6 @@ final class FullJid extends AbstractJid {
     @Override
     public final String getResource() {
         return resource;
-    }
-
-    /**
-     * Returns the JID in escaped form as described in <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>.
-     *
-     * @return The escaped JID.
-     * @see #toString()
-     */
-    @Override
-    public final String toEscapedString() {
-        return toString(escapedLocal, domain, resource);
     }
 
     /**

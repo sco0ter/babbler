@@ -211,6 +211,8 @@ public class JidTest {
         Jid jid = Jid.of("d'artagnan@musketeers.lit");
         Assert.assertEquals(jid.toString(), "d'artagnan@musketeers.lit");
         Assert.assertEquals(jid.toEscapedString(), "d\\27artagnan@musketeers.lit");
+        Assert.assertEquals(jid.getLocal(), "d'artagnan");
+        Assert.assertEquals(jid.getEscapedLocal(), "d\\27artagnan");
 
         Jid jid2 = Jid.of("d\\27artagnan@musketeers.lit");
         Assert.assertEquals(jid2.toString(), "d\\27artagnan@musketeers.lit");
@@ -218,6 +220,7 @@ public class JidTest {
 
         Jid jid3 = Jid.of("treville\\40musketeers.lit@smtp.gascon.fr");
         Assert.assertEquals(jid3.getLocal(), "treville\\40musketeers.lit");
+        Assert.assertEquals(jid3.getEscapedLocal(), "treville\\5c40musketeers.lit");
         Assert.assertEquals(jid3.toString(), "treville\\40musketeers.lit@smtp.gascon.fr");
         Assert.assertEquals(jid3.toEscapedString(), "treville\\5c40musketeers.lit@smtp.gascon.fr");
 

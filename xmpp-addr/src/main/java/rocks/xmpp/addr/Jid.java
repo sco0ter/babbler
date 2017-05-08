@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2017 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -229,8 +229,18 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
      * </blockquote>
      *
      * @return The local part or null.
+     * @see #getEscapedLocal()
      */
     String getLocal();
+
+    /**
+     * Gets the escaped local part of the JID.
+     *
+     * @return The escaped local part or null.
+     * @see #getLocal()
+     * @since 0.8.0
+     */
+    String getEscapedLocal();
 
     /**
      * Gets the domain part.

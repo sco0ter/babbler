@@ -349,7 +349,7 @@ public class JidTest {
 
     @Test
     public void testWithResource() {
-        Jid jid = Jid.of("test@domain");
+        Jid jid = Jid.of("test@domain/test");
         Jid withResource = jid.withResource("resource");
         Jid withResourceBare = jid.asBareJid().withResource("resource");
         Assert.assertEquals(withResource, Jid.of("test@domain/resource"));

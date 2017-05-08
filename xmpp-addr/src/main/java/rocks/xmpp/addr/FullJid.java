@@ -29,7 +29,6 @@ import rocks.xmpp.precis.PrecisProfiles;
 import rocks.xmpp.util.cache.LruCache;
 
 import java.net.IDN;
-import java.text.Collator;
 import java.text.Normalizer;
 import java.util.Map;
 import java.util.Objects;
@@ -44,7 +43,7 @@ import java.util.regex.Pattern;
  * @author Christian Schudt
  * @see <a href="https://tools.ietf.org/html/rfc7622">RFC 7622 - Extensible Messaging and Presence Protocol (XMPP): Address Format</a>
  */
-final class FullJid implements Jid {
+final class FullJid extends AbstractJid {
 
     /**
      * Escapes all disallowed characters and also backslash, when followed by a defined hex code for escaping. See 4. Business Rules.
@@ -149,36 +148,11 @@ final class FullJid implements Jid {
         if (bareJid != null) {
             this.bareJid = bareJid;
         } else {
-            this.bareJid = isBareJid() ? this : new Jid() {
-
-                @Override
-                public boolean isFullJid() {
-                    return false;
-                }
-
-                @Override
-                public boolean isBareJid() {
-                    return true;
-                }
+            this.bareJid = isBareJid() ? this : new AbstractJid() {
 
                 @Override
                 public Jid asBareJid() {
                     return this;
-                }
-
-                @Override
-                public Jid withLocal(CharSequence local) {
-                    return FullJid.this.withLocal(local).asBareJid();
-                }
-
-                @Override
-                public Jid withResource(CharSequence resource) {
-                    return FullJid.this.withResource(resource);
-                }
-
-                @Override
-                public Jid atSubdomain(CharSequence subdomain) {
-                    return FullJid.this.atSubdomain(subdomain).asBareJid();
                 }
 
                 @Override
@@ -198,52 +172,7 @@ final class FullJid implements Jid {
 
                 @Override
                 public String toEscapedString() {
-                    return FullJid.toString(FullJid.this.escapedLocal, FullJid.this.domain, null);
-                }
-
-                @Override
-                public int length() {
-                    return toString().length();
-                }
-
-                @Override
-                public char charAt(int i) {
-                    return toString().charAt(i);
-                }
-
-                @Override
-                public CharSequence subSequence(int i, int i1) {
-                    return toString().subSequence(i, i1);
-                }
-
-                @Override
-                public int compareTo(Jid jid) {
-                    return FullJid.compare(this, jid);
-                }
-
-                @Override
-                public final String toString() {
-                    return FullJid.toString(FullJid.this.local, FullJid.this.domain, null);
-                }
-
-                @Override
-                public final boolean equals(Object o) {
-                    if (o == this) {
-                        return true;
-                    }
-                    if (!(o instanceof Jid)) {
-                        return false;
-                    }
-                    Jid other = (Jid) o;
-
-                    return Objects.equals(FullJid.this.local, other.getLocal())
-                            && Objects.equals(FullJid.this.domain, other.getDomain())
-                            && other.getResource() == null;
-                }
-
-                @Override
-                public final int hashCode() {
-                    return Objects.hash(FullJid.this.local, FullJid.this.domain, null);
+                    return AbstractJid.toString(FullJid.this.escapedLocal, FullJid.this.domain, null);
                 }
             };
         }
@@ -360,32 +289,6 @@ final class FullJid implements Jid {
     }
 
     /**
-     * Checks if the JID is a full JID.
-     * <blockquote>
-     * <p>The term "full JID" refers to an XMPP address of the form &lt;localpart@domainpart/resourcepart&gt; (for a particular authorized client or device associated with an account) or of the form &lt;domainpart/resourcepart&gt; (for a particular resource or script associated with a server).</p>
-     * </blockquote>
-     *
-     * @return True, if the JID is a full JID; otherwise false.
-     */
-    @Override
-    public final boolean isFullJid() {
-        return resource != null;
-    }
-
-    /**
-     * Checks if the JID is a bare JID.
-     * <blockquote>
-     * <p>The term "bare JID" refers to an XMPP address of the form &lt;localpart@domainpart&gt; (for an account at a server) or of the form &lt;domainpart&gt; (for a server).</p>
-     * </blockquote>
-     *
-     * @return True, if the JID is a bare JID; otherwise false.
-     */
-    @Override
-    public final boolean isBareJid() {
-        return resource == null;
-    }
-
-    /**
      * Converts this JID into a bare JID, i.e. removes the resource part.
      * <blockquote>
      * <p>The term "bare JID" refers to an XMPP address of the form &lt;localpart@domainpart&gt; (for an account at a server) or of the form &lt;domainpart&gt; (for a server).</p>
@@ -397,52 +300,6 @@ final class FullJid implements Jid {
     @Override
     public final Jid asBareJid() {
         return bareJid;
-    }
-
-    /**
-     * Creates a new JID with a new local part and the same domain and resource part of the current JID.
-     *
-     * @param local The local part.
-     * @return The JID with a new local part.
-     * @throws IllegalArgumentException If the local is not a valid local part.
-     * @see #withResource(CharSequence)
-     */
-    @Override
-    public final Jid withLocal(CharSequence local) {
-        if (Objects.equals(local, this.local)) {
-            return this;
-        }
-        return new FullJid(local, domain, resource, false, true, null);
-    }
-
-    /**
-     * Creates a new full JID with a resource and the same local and domain part of the current JID.
-     *
-     * @param resource The resource.
-     * @return The full JID with a resource.
-     * @throws IllegalArgumentException If the resource is not a valid resource part.
-     * @see #asBareJid()
-     * @see #withLocal(CharSequence)
-     */
-    @Override
-    public final Jid withResource(CharSequence resource) {
-        if (Objects.equals(resource, this.resource)) {
-            return this;
-        }
-        return new FullJid(local, domain, resource, false, true, bareJid);
-    }
-
-    /**
-     * Creates a new JID at a subdomain and at the same domain as this JID.
-     *
-     * @param subdomain The subdomain.
-     * @return The JID at a subdomain.
-     * @throws NullPointerException     If subdomain is null.
-     * @throws IllegalArgumentException If subdomain is not a valid subdomain name.
-     */
-    @Override
-    public final Jid atSubdomain(CharSequence subdomain) {
-        return new FullJid(local, Objects.requireNonNull(subdomain) + "." + domain, resource, false, true, null);
     }
 
     /**
@@ -513,117 +370,6 @@ final class FullJid implements Jid {
     @Override
     public final String toEscapedString() {
         return toString(escapedLocal, domain, resource);
-    }
-
-    @Override
-    public final int length() {
-        return toString().length();
-    }
-
-    @Override
-    public final char charAt(int index) {
-        return toString().charAt(index);
-    }
-
-    @Override
-    public final CharSequence subSequence(int start, int end) {
-        return toString().subSequence(start, end);
-    }
-
-    /**
-     * Returns the JID in its string representation, i.e. [ localpart "@" ] domainpart [ "/" resourcepart ].
-     *
-     * @return The JID.
-     * @see #toEscapedString()
-     */
-    @Override
-    public final String toString() {
-        return toString(local, domain, resource);
-    }
-
-    private static String toString(String local, String domain, String resource) {
-        StringBuilder sb = new StringBuilder();
-        if (local != null) {
-            sb.append(local).append('@');
-        }
-        sb.append(domain);
-        if (resource != null) {
-            sb.append('/').append(resource);
-        }
-        return sb.toString();
-    }
-
-    @Override
-    public final boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof Jid)) {
-            return false;
-        }
-        Jid other = (Jid) o;
-
-        return Objects.equals(local, other.getLocal())
-                && Objects.equals(resource, other.getResource())
-                && Objects.equals(domain, other.getDomain());
-    }
-
-    @Override
-    public final int hashCode() {
-        return Objects.hash(local, domain, resource);
-    }
-
-    /**
-     * Compares this JID with another JID. First domain parts are compared. If these are equal, local parts are compared
-     * and if these are equal, too, resource parts are compared.
-     *
-     * @param o The other JID.
-     * @return The comparison result.
-     */
-    @Override
-    public final int compareTo(Jid o) {
-        return compare(this, o);
-    }
-
-    private static int compare(Jid o1, Jid o2) {
-
-        if (o1 == o2) {
-            return 0;
-        }
-
-        if (o2 != null) {
-            final Collator collator = Collator.getInstance();
-            int result;
-            // First compare domain parts.
-            if (o1.getDomain() != null) {
-                result = o2.getDomain() != null ? collator.compare(o1.getDomain(), o2.getDomain()) : -1;
-            } else {
-                result = o2.getDomain() != null ? 1 : 0;
-            }
-            // If the domains are equal, compare local parts.
-            if (result == 0) {
-                if (o1.getLocal() != null) {
-                    // If this local part is not null, but the other is null, move this down (1).
-                    result = o2.getLocal() != null ? collator.compare(o1.getLocal(), o2.getLocal()) : 1;
-                } else {
-                    // If this local part is null, but the other is not, move this up (-1).
-                    result = o2.getLocal() != null ? -1 : 0;
-                }
-            }
-            // If the local parts are equal, compare resource parts.
-            if (result == 0) {
-                if (o1.getResource() != null) {
-                    // If this resource part is not null, but the other is null, move this down (1).
-                    return o2.getResource() != null ? collator.compare(o1.getResource(), o2.getResource()) : 1;
-                } else {
-                    // If this resource part is null, but the other is not, move this up (-1).
-                    return o2.getResource() != null ? -1 : 0;
-                }
-            }
-            return result;
-        } else {
-            return -1;
-        }
     }
 
     /**

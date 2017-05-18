@@ -35,7 +35,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 import static java.util.Objects.requireNonNull;
 
@@ -50,8 +49,6 @@ import static java.util.Objects.requireNonNull;
  * </p>
  */
 public final class ChatSession extends Chat implements AutoCloseable {
-
-    private static final Logger LOGGER = Logger.getLogger(ChatSession.class.getName());
 
     private final Set<Consumer<ChatPartnerEvent>> chatPartnerListeners = new CopyOnWriteArraySet<>();
 

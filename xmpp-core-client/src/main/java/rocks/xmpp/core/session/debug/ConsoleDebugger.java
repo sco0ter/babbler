@@ -37,18 +37,21 @@ import java.io.OutputStream;
  */
 public final class ConsoleDebugger implements XmppDebugger {
 
+    private XmppSession xmppSession;
+
     @Override
     public void initialize(XmppSession xmppSession) {
+        this.xmppSession = xmppSession;
     }
 
     @Override
     public void writeStanza(String xml, Object stanza) {
-        System.out.println("OUT: " + xml);
+        System.out.println("OUT (" + xmppSession.getActiveConnection().getStreamId() + "): " + xml);
     }
 
     @Override
     public void readStanza(String xml, Object stanza) {
-        System.out.println("IN : " + xml);
+        System.out.println("IN  (" + xmppSession.getActiveConnection().getStreamId() + "): " + xml);
     }
 
     @Override

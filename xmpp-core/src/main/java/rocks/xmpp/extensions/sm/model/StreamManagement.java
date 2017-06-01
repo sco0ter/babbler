@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <sm/>} element in the {@code urn:xmpp:sm:3} namespace.
@@ -137,6 +138,11 @@ public final class StreamManagement extends StreamFeature {
 
         private static Request create() {
             return REQUEST;
+        }
+
+        @Override
+        public final String toString(){
+            return "Stream Management Request";
         }
     }
 
@@ -296,7 +302,12 @@ public final class StreamManagement extends StreamFeature {
         }
 
         public Answer(long h) {
-            super(h);
+            super(Objects.requireNonNull(h));
+        }
+
+        @Override
+        public final String toString() {
+            return "Stream Management Answer: " + getLastHandledStanza();
         }
     }
 

@@ -42,9 +42,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.time.Duration;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -61,7 +60,7 @@ import java.util.function.Consumer;
  */
 public final class PingManager extends Manager {
 
-    private final ScheduledExecutorService scheduledExecutorService;
+    private final ScheduledThreadPoolExecutor scheduledExecutorService;
 
     /**
      * guarded by "this"
@@ -88,7 +87,8 @@ public final class PingManager extends Manager {
      */
     private PingManager(final XmppSession xmppSession) {
         super(xmppSession, true);
-        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Scheduled Ping Thread"));
+        scheduledExecutorService = new ScheduledThreadPoolExecutor(1, XmppUtils.createNamedThreadFactory("XMPP Scheduled Ping Thread"));
+        scheduledExecutorService.setRemoveOnCancelPolicy(true);
 
         this.iqHandler = new AbstractIQHandler(IQ.Type.GET) {
             @Override
@@ -230,7 +230,7 @@ public final class PingManager extends Manager {
         // Shutdown the ping executor service and cancel the next ping.
         synchronized (this) {
             cancelNextPing();
-            scheduledExecutorService.shutdown();
+            scheduledExecutorService.shutdownNow();
         }
     }
 }

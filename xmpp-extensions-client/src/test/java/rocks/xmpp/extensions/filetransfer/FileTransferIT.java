@@ -40,13 +40,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 /**
@@ -63,11 +61,11 @@ public class FileTransferIT extends IntegrationTest {
         XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                 .debugger(ConsoleDebugger.class)
                 .build();
-        xmppSession[0] = XmppClient.create(DOMAIN, configuration, TcpConnectionConfiguration.getDefault());
+        xmppSession[0] = XmppClient.create(DOMAIN, TcpConnectionConfiguration.getDefault());
         xmppSession[0].connect();
         xmppSession[0].login(USER_1, PASSWORD_1);
 
-        xmppSession[1] = XmppClient.create(DOMAIN, TcpConnectionConfiguration.getDefault());
+        xmppSession[1] = XmppClient.create(DOMAIN, configuration, TcpConnectionConfiguration.getDefault());
         xmppSession[1].connect();
         xmppSession[1].login(USER_2, PASSWORD_2);
 
@@ -92,7 +90,10 @@ public class FileTransferIT extends IntegrationTest {
 
     private void testFileTransfer() throws XmppException, IOException, InterruptedException, TimeoutException, ExecutionException {
         // The data we want to send (representing a file).
-        byte[] data = new byte[]{1, 2, 3, 4};
+        byte[] data = new byte[40960]; // 40 KB, should be splitted into 4 chunks.
+        Random random = new Random();
+        random.nextBytes(data);
+
         CompletableFuture<Void> transferCompleted = new CompletableFuture<>();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -101,10 +102,10 @@ public class FileTransferIT extends IntegrationTest {
                 FileTransfer fileTransfer = e.accept(outputStream).get();
                 Assert.assertEquals(e.getDescription(), "Description");
                 Assert.assertEquals(e.getName(), "test.txt");
-                Assert.assertEquals(e.getSize(), 4);
+                Assert.assertEquals(e.getSize(), 40960);
 
                 fileTransfer.addFileTransferStatusListener(ev -> {
-                    System.out.println(ev.getStatus());
+                    System.out.println(ev.getStatus() + ", " + fileTransfer.isDone());
                     if (ev.getStatus() == FileTransfer.Status.COMPLETED) {
                         transferCompleted.complete(null);
                     }
@@ -118,6 +119,9 @@ public class FileTransferIT extends IntegrationTest {
             // Let the receiver listen for incoming file transfers.
             fileTransferManagers[1].addFileTransferOfferListener(listener);
             FileTransfer fileTransfer = fileTransferManagers[0].offerFile(new ByteArrayInputStream(data), "test.txt", data.length, Instant.now(), "Description", xmppSession[1].getConnectedResource(), Duration.ofSeconds(12)).get();
+            fileTransfer.addFileTransferStatusListener(ev -> {
+                System.out.println(ev.getStatus() + ", " + fileTransfer.isDone());
+            });
             fileTransfer.transfer();
             transferCompleted.get(5, TimeUnit.SECONDS);
             Assert.assertEquals(outputStream.toByteArray(), data);

@@ -33,7 +33,10 @@ import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
+import rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager;
+import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
+import rocks.xmpp.extensions.rtt.InboundRealTimeMessage;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -77,6 +80,15 @@ public class FileTransferIT extends IntegrationTest {
     public void testInBandFileTransfer() throws XmppException, IOException, InterruptedException, TimeoutException, ExecutionException {
         // Disable SOCKS 5 transfer method, so that IBB will be used.
         xmppSession[1].disableFeature(Socks5ByteStream.NAMESPACE);
+        xmppSession[0].getManager(InBandByteStreamManager.class).setStanzaType(InBandByteStream.Open.StanzaType.IQ);
+        testFileTransfer();
+    }
+
+    @Test
+    public void testInBandFileTransferWithMessages() throws XmppException, IOException, InterruptedException, TimeoutException, ExecutionException {
+        // Disable SOCKS 5 transfer method, so that IBB will be used.
+        xmppSession[1].disableFeature(Socks5ByteStream.NAMESPACE);
+        xmppSession[0].getManager(InBandByteStreamManager.class).setStanzaType(InBandByteStream.Open.StanzaType.MESSAGE);
         testFileTransfer();
     }
 
@@ -90,7 +102,7 @@ public class FileTransferIT extends IntegrationTest {
 
     private void testFileTransfer() throws XmppException, IOException, InterruptedException, TimeoutException, ExecutionException {
         // The data we want to send (representing a file).
-        byte[] data = new byte[40960]; // 40 KB, should be splitted into 4 chunks.
+        byte[] data = new byte[40960]; // 40 KB, should be splitted into 10 chunks.
         Random random = new Random();
         random.nextBytes(data);
 
@@ -120,7 +132,7 @@ public class FileTransferIT extends IntegrationTest {
             fileTransferManagers[1].addFileTransferOfferListener(listener);
             FileTransfer fileTransfer = fileTransferManagers[0].offerFile(new ByteArrayInputStream(data), "test.txt", data.length, Instant.now(), "Description", xmppSession[1].getConnectedResource(), Duration.ofSeconds(12)).get();
             fileTransfer.addFileTransferStatusListener(ev -> {
-                System.out.println(ev.getStatus() + ", " + fileTransfer.isDone());
+                //System.out.println(ev.getStatus() + ", " + fileTransfer.isDone());
             });
             fileTransfer.transfer();
             transferCompleted.get(5, TimeUnit.SECONDS);

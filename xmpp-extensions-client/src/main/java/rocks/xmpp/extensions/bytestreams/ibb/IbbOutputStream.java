@@ -24,11 +24,13 @@
 
 package rocks.xmpp.extensions.bytestreams.ibb;
 
-import rocks.xmpp.core.XmppException;
-
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * An output stream implementation for in-band bytestreams.
@@ -80,8 +82,13 @@ final class IbbOutputStream extends OutputStream {
             return;
         }
         try {
-            ibbSession.send(Arrays.copyOf(buffer, n)).getResult();
-        } catch (XmppException e) {
+            ibbSession.send(Arrays.copyOf(buffer, n)).get(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new InterruptedIOException();
+        } catch (ExecutionException e) {
+            throw new IOException(e.getCause());
+        } catch (TimeoutException e) {
             throw new IOException(e);
         } finally {
             n = 0;

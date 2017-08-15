@@ -30,6 +30,7 @@ import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
+import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.concurrent.CompletableFuture;
@@ -45,17 +46,20 @@ final class IbbEvent extends ByteStreamEvent {
 
     private final int blockSize;
 
-    public IbbEvent(Object source, String sessionId, XmppSession xmppSession, IQ iq, int blockSize) {
+    private final InBandByteStream.Open.StanzaType stanzaType;
+
+    IbbEvent(Object source, String sessionId, XmppSession xmppSession, IQ iq, int blockSize, InBandByteStream.Open.StanzaType stanzaType) {
         super(source, sessionId);
         this.xmppSession = xmppSession;
         this.iq = iq;
         this.blockSize = blockSize;
+        this.stanzaType = stanzaType;
     }
 
     @Override
     public final AsyncResult<ByteStreamSession> accept() {
         xmppSession.send(iq.createResult());
-        return new AsyncResult<>(CompletableFuture.completedFuture(xmppSession.getManager(InBandByteStreamManager.class).createSession(iq.getFrom(), getSessionId(), blockSize)));
+        return new AsyncResult<>(CompletableFuture.completedFuture(xmppSession.getManager(InBandByteStreamManager.class).createSession(iq.getFrom(), getSessionId(), blockSize, stanzaType)));
     }
 
     @Override

@@ -69,6 +69,9 @@ public final class InBandByteStreamManager extends ByteStreamManager {
 
     private final Consumer<MessageEvent> messageListener;
 
+    // Guarded by "this"
+    private InBandByteStream.Open.StanzaType stanzaType = InBandByteStream.Open.StanzaType.IQ;
+
     private InBandByteStreamManager(final XmppSession xmppSession) {
         super(xmppSession);
         openIQHandler = new AbstractIQHandler(IQ.Type.SET) {
@@ -80,7 +83,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
                 } else {
                     // Somebody wants to create a IBB session with me.
                     // Notify the listeners.
-                    XmppUtils.notifyEventListeners(byteStreamListeners, new IbbEvent(InBandByteStreamManager.this, open.getSessionId(), xmppSession, iq, open.getBlockSize()));
+                    XmppUtils.notifyEventListeners(byteStreamListeners, new IbbEvent(InBandByteStreamManager.this, open.getSessionId(), xmppSession, iq, open.getBlockSize(), open.getStanzaType()));
                     return null;
                 }
             }
@@ -166,13 +169,14 @@ public final class InBandByteStreamManager extends ByteStreamManager {
     /**
      * Creates an in-band byte stream session.
      *
-     * @param receiver  The receiver.
-     * @param sessionId The session id.
-     * @param blockSize The block size.
+     * @param receiver   The receiver.
+     * @param sessionId  The session id.
+     * @param blockSize  The block size.
+     * @param stanzaType The stanza type.
      * @return The in-band byte stream session.
      */
-    IbbSession createSession(Jid receiver, final String sessionId, int blockSize) {
-        IbbSession ibbSession = new IbbSession(sessionId, xmppSession, receiver, blockSize, xmppSession.getConfiguration().getDefaultResponseTimeout(), this);
+    IbbSession createSession(Jid receiver, final String sessionId, int blockSize, InBandByteStream.Open.StanzaType stanzaType) {
+        IbbSession ibbSession = new IbbSession(sessionId, xmppSession, receiver, blockSize, xmppSession.getConfiguration().getDefaultResponseTimeout(), this, stanzaType);
         ibbSessionMap.put(ibbSession.getSessionId(), ibbSession);
         return ibbSession;
     }
@@ -189,8 +193,26 @@ public final class InBandByteStreamManager extends ByteStreamManager {
         if (blockSize > 65535) {
             throw new IllegalArgumentException("blockSize must not be greater than 65535.");
         }
-        IbbSession ibbSession = createSession(receiver, sessionId, blockSize);
+        IbbSession ibbSession = createSession(receiver, sessionId, blockSize, getStanzaType());
         return ibbSession.open().thenApply(result -> ibbSession);
+    }
+
+    /**
+     * Sets the stanza type, which is used to send data chunks. It is recommended to leave this on the default ({@link rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream.Open.StanzaType#IQ}).
+     *
+     * @param stanzaType The stanza type.
+     */
+    public synchronized final void setStanzaType(InBandByteStream.Open.StanzaType stanzaType) {
+        this.stanzaType = stanzaType;
+    }
+
+    /**
+     * Gets the stanza type.
+     *
+     * @return The stanza type.
+     */
+    public synchronized final InBandByteStream.Open.StanzaType getStanzaType() {
+        return stanzaType;
     }
 
     @Override

@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core;
 
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.util.ComparableTestHelper;
 

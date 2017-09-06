@@ -82,6 +82,22 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <!-- Nothing to compile -->
+                <configuration>
+                    <skipIfEmpty>true</skipIfEmpty>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <!-- Nothing to install -->
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <executions>
                     <!-- Run shade goal on package phase -->
@@ -93,6 +109,9 @@
                         <configuration>
                             <finalName>babbler-${project.version}</finalName>
                             <artifactSet>
+                                <excludes>
+                                    <exclude>rocks.xmpp:xmpp-documentation</exclude>
+                                </excludes>
                                 <includes>
                                     <include>rocks.xmpp:precis</include>
                                     <include>rocks.xmpp:xmpp-addr</include>

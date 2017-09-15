@@ -12,7 +12,7 @@ Here's a simple example, which allows one entity to request the sum of two integ
 First write your payload class and annotate it with JAXB annotations. Make sure to mark it with `@XmlRootElement`:
 
 ```java
-@XmlRootElement(name = "addition", namespace = "http://xmpp.rocks")
+@XmlRootElement(name = "addition")
 public final class Addition {
 
     @XmlElement(name = "summand1")
@@ -56,6 +56,21 @@ public final class Addition {
     }
 }
 ```
+
+Then create a _package-info.java_ in the same package as your JAXB annotated class:
+
+```
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSchema(namespace = "http://xmpp.rocks", elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.sample.customiq;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;
+```
+
+This is important, because you need to assigns your own XML namespace for your class and all its elements.
 
 ## Registering Your Class
 

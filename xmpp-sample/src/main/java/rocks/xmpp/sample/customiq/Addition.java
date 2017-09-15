@@ -34,7 +34,7 @@ import java.util.Objects;
  *
  * @author Christian Schudt
  */
-@XmlRootElement(name = "addition", namespace = "rocks:xmpp:sample")
+@XmlRootElement(name = "addition")
 public final class Addition {
 
     @XmlElement(name = "summand1")

@@ -55,7 +55,7 @@ public class PingManagerTest extends BaseTest {
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
         connection2.getManager(PingManager.class).setEnabled(false);
         PingManager pingManager = connection1.getManager(PingManager.class);
-        Assert.assertFalse(pingManager.ping(JULIET).get());
+        Assert.assertTrue(pingManager.ping(JULIET).get());
     }
 
     @Test

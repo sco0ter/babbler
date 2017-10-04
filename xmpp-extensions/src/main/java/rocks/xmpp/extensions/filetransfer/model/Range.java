@@ -22,62 +22,28 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.filetransfer;
-
-import rocks.xmpp.extensions.hashes.model.Hash;
-
-import java.time.Instant;
-import java.util.List;
+package rocks.xmpp.extensions.filetransfer.model;
 
 /**
- * An interface for file transfer requests, which covers XEP-0066, XEP-0096 and XEP-0234.
+ * An interface for ranged file transfers, which covers both XEP-0096 and XEP-0234.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
- * @see <a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a>
+ * @see <a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transferr</a>
  * @see <a href="http://xmpp.org/extensions/xep-0234.html">XEP-0234: Jingle File Transfer</a>
  */
-public interface FileTransferOffer {
+public interface Range {
 
     /**
-     * Gets the size, in bytes, of the data to be sent.
+     * Gets the position, in bytes, to start transferring the file data from. This defaults to zero (0) if not specified.
      *
-     * @return The size.
+     * @return The offset.
      */
-    long getSize();
+    long getOffset();
 
     /**
-     * Gets the name of the file that the Sender wishes to send.
+     * Gets the number of bytes to retrieve starting at offset. This defaults to the length of the file from offset to the end.
      *
-     * @return The file name.
+     * @return The length.
      */
-    String getName();
-
-    /**
-     * Gets the last modification time of the file.
-     *
-     * @return The date.
-     */
-    Instant getDate();
-
-    /**
-     * Gets the hashes of the file contents.
-     *
-     * @return The hashes.
-     */
-    List<Hash> getHashes();
-
-    /**
-     * Gets a sender-generated description of the file.
-     *
-     * @return The description.
-     */
-    String getDescription();
-
-    /**
-     * Gets the range.
-     *
-     * @return The range.
-     */
-    Range getRange();
+    long getLength();
 }

@@ -141,12 +141,22 @@ public final class PingManager extends Manager {
                     // Rethrow any RuntimeException, mainly CancellationException
                     throw (RuntimeException) e;
                 }
-                // If we pinged a full JID and the resource if offline, the server will respond on behalf of the user with <service-unavailable/>.
-                // In this case we want to return false, because the intended recipient is unavailable.
-                // If we pinged a bare JID, the server will respond. If it returned a <service-unavailable/> error, it just means it doesn't understand the ping protocol.
-                // Nonetheless an error response is still a valid pong, hence always return true in this case.
-                // If any other error is returned, most likely <remote-server-not-found/>, <remote-server-timeout/>, <gone/> return false.
-                return cause instanceof StanzaException && (jid == null || jid.isBareJid()) && ((StanzaException) cause).getCondition() == Condition.SERVICE_UNAVAILABLE;
+                if (cause instanceof StanzaException) {
+
+                    if (jid != null && jid.isFullJid()) {
+                        Jid from = ((StanzaException) cause).getStanza().getFrom();
+                        // If we pinged a full JID and the resource if offline, the server will respond on behalf of the user with <service-unavailable/>.
+                        // In this case we want to return false, because the intended recipient is unavailable.
+                        // If the response came from the full JID, the recipient is online, even if it returned an error.
+                        return from != null && from.isFullJid() && from.equals(jid);
+                    } else {
+                        // If we pinged a bare JID, the server will respond. If it returned a <service-unavailable/> or <feature-not-implemented/> error, it just means it doesn't understand the ping protocol.
+                        // Nonetheless an error response is still a valid pong, hence always return true in this case.
+                        // If any other error is returned, most likely <remote-server-not-found/>, <remote-server-timeout/>, <gone/> return false.
+                        Condition condition = ((StanzaException) cause).getCondition();
+                        return condition == Condition.SERVICE_UNAVAILABLE || condition == Condition.FEATURE_NOT_IMPLEMENTED;
+                    }
+                }
             }
             return true;
         });

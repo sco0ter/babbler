@@ -125,6 +125,8 @@ public final class XmppSessionConfiguration {
 
     private final ReconnectionStrategy reconnectionStrategy;
 
+    private final String nameServer;
+
     /**
      * Creates a configuration for an {@link XmppSession}. If you want to add custom classes to the {@link JAXBContext}, you can pass them as parameters.
      *
@@ -140,6 +142,7 @@ public final class XmppSessionConfiguration {
         this.xmlOutputFactory = XMLOutputFactory.newFactory();
         this.language = builder.language != null ? builder.language : Locale.getDefault();
         this.reconnectionStrategy = builder.reconnectionStrategy;
+        this.nameServer = builder.nameServer;
         this.extensions = new HashSet<>();
 
         // Find all modules, then add all extension from each module.
@@ -289,6 +292,15 @@ public final class XmppSessionConfiguration {
         return reconnectionStrategy;
     }
 
+    /**
+     * Gets the name server used for resolving DNS SRV and TXT records during connecting.
+     *
+     * @return The name server.
+     */
+    public final String getNameServer() {
+        return nameServer;
+    }
+
     final Collection<Extension> getExtensions() {
         return extensions;
     }
@@ -329,6 +341,8 @@ public final class XmppSessionConfiguration {
         private Locale language;
 
         private ReconnectionStrategy reconnectionStrategy;
+
+        private String nameServer;
 
         /**
          * The default preferred SASL mechanisms.
@@ -455,6 +469,21 @@ public final class XmppSessionConfiguration {
          */
         public final Builder reconnectionStrategy(ReconnectionStrategy reconnectionStrategy) {
             this.reconnectionStrategy = reconnectionStrategy;
+            return this;
+        }
+
+        /**
+         * Sets the name server used for resolving DNS SRV and TXT records during connecting.
+         * <p>
+         * For Oracle JDK, you could use one of {@code sun.net.dns.ResolverConfiguration.open().nameservers()}.
+         * <p>
+         * If no name server is set, Google DNS Server (8.8.8.8) is used.
+         *
+         * @param nameServer The name server.
+         * @return The builder.
+         */
+        public final Builder nameServer(String nameServer) {
+            this.nameServer = nameServer;
             return this;
         }
 

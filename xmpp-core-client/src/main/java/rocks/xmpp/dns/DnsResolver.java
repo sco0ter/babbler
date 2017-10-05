@@ -57,31 +57,43 @@ public final class DnsResolver {
      * <p>
      * The service is "xmpp-client", the protocol is "tcp", resulting in a query of {@code _xmpp-client._tcp.domain}.
      *
-     * @param service The service, usually "xmpp-client" or "xmpps-client".
-     * @param domain  The domain.
-     * @param timeout The timeout.
+     * @param service    The service, usually "xmpp-client" or "xmpps-client".
+     * @param domain     The domain.
+     * @param nameServer The name server.
+     * @param timeout    The timeout.
      * @return The DNS SRV records.
      * @throws IOException If a timeout occurs or no connection to the DNS server can be established.
      * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">RFC 6120 3.2.1.  Preferred Process: SRV Lookup</a>
      */
+    public static List<SrvRecord> resolveSRV(CharSequence service, CharSequence domain, String nameServer, long timeout) throws IOException {
+        return resolve("_" + service + "._tcp.", domain, ResourceRecord.Type.SRV, nameServer, timeout, resourceRecord -> (SrvRecord) resourceRecord.data);
+    }
+
+    @Deprecated
     public static List<SrvRecord> resolveSRV(CharSequence service, CharSequence domain, long timeout) throws IOException {
-        return resolve("_" + service + "._tcp.", domain, ResourceRecord.Type.SRV, timeout, resourceRecord -> (SrvRecord) resourceRecord.data);
+        return resolveSRV(service, domain, null, timeout);
     }
 
     /**
      * Resolves DNS TXT records for the given domain.
      *
-     * @param domain  The domain.
-     * @param timeout The timeout.
+     * @param domain     The domain.
+     * @param nameServer The name server.
+     * @param timeout    The timeout.
      * @return The DNS SRV records.
      * @throws IOException If a timeout occurs or no connection to the DNS server can be established.
      * @see <a href="http://xmpp.org/extensions/xep-0156.html">XEP-0156: Discovering Alternative XMPP Connection Methods</a>
      */
-    public static List<TxtRecord> resolveTXT(CharSequence domain, long timeout) throws IOException {
-        return resolve("_xmppconnect.", domain, ResourceRecord.Type.TXT, timeout, resourceRecord -> (TxtRecord) resourceRecord.data);
+    public static List<TxtRecord> resolveTXT(CharSequence domain, String nameServer, long timeout) throws IOException {
+        return resolve("_xmppconnect.", domain, ResourceRecord.Type.TXT, nameServer, timeout, resourceRecord -> (TxtRecord) resourceRecord.data);
     }
 
-    private static <T> List<T> resolve(String prefix, CharSequence domain, ResourceRecord.Type type, long timeout, Function<ResourceRecord, T> mapper) throws IOException {
+    @Deprecated
+    public static List<TxtRecord> resolveTXT(CharSequence domain, long timeout) throws IOException {
+        return resolveTXT(domain, null, timeout);
+    }
+
+    private static <T> List<T> resolve(String prefix, CharSequence domain, ResourceRecord.Type type, String nameServer, long timeout, Function<ResourceRecord, T> mapper) throws IOException {
         try {
             // Ensure a timeout > 0 in order to not block infinitely.
             long t = timeout <= 0 ? 1000 : timeout;
@@ -92,7 +104,7 @@ public final class DnsResolver {
                      Selector selector = Selector.open()) {
                     channel.configureBlocking(false);
                     // 8.8.8.8 = Google DNS service
-                    channel.connect(new InetSocketAddress("8.8.8.8", 53));
+                    channel.connect(new InetSocketAddress(nameServer == null ? "8.8.8.8" : nameServer, 53));
                     channel.register(selector, SelectionKey.OP_READ);
                     channel.write(ByteBuffer.wrap(message.toByteArray()));
 

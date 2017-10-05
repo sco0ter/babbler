@@ -69,8 +69,6 @@ final class Message {
 
     private final List<ResourceRecord> nameServers = new ArrayList<>();
 
-    private final List<ResourceRecord> additionalRecords = new ArrayList<>();
-
     Message(ByteBuffer data) {
 
         this.id = data.getShort();
@@ -95,9 +93,8 @@ final class Message {
         for (short i = 0; i < this.nameServerCount; i++) {
             this.nameServers.add(new ResourceRecord(data));
         }
-        for (short i = 0; i < this.additionalRecordsCount; i++) {
-            this.additionalRecords.add(new ResourceRecord(data));
-        }
+        // Parsing additional records has caused problems for some answers.
+        // We don't need it anyway for SRV and TXT, so ignore them.
     }
 
     Message(Question... question) {
@@ -256,6 +253,6 @@ final class Message {
      * @return The additional resource records.
      */
     public final List<ResourceRecord> getAdditionalRecords() {
-        return Collections.unmodifiableList(additionalRecords);
+        return Collections.emptyList();
     }
 }

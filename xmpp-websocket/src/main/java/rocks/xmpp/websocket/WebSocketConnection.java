@@ -146,10 +146,10 @@ public final class WebSocketConnection extends Connection {
         this.streamManager = xmppSession.getManager(StreamManager.class);
     }
 
-    private static String findWebSocketEndpoint(String xmppServiceDomain, long timeout) {
+    private static String findWebSocketEndpoint(String xmppServiceDomain, String nameServer, long timeout) {
 
         try {
-            List<TxtRecord> txtRecords = DnsResolver.resolveTXT(xmppServiceDomain, timeout);
+            List<TxtRecord> txtRecords = DnsResolver.resolveTXT(xmppServiceDomain, nameServer, timeout);
             for (TxtRecord txtRecord : txtRecords) {
                 Map<String, String> attributes = txtRecord.asAttributes();
                 String url = attributes.get("_xmpp-client-websocket");
@@ -253,7 +253,7 @@ public final class WebSocketConnection extends Connection {
                         uri = new URI(protocol, null, getHostname(), targetPort, connectionConfiguration.getPath(), null, null);
                     } else if (xmppSession.getDomain() != null) {
                         // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
-                        String resolvedUrl = findWebSocketEndpoint(xmppSession.getDomain().toString(), connectionConfiguration.getConnectTimeout());
+                        String resolvedUrl = findWebSocketEndpoint(xmppSession.getDomain().toString(), xmppSession.getConfiguration().getNameServer(), connectionConfiguration.getConnectTimeout());
                         if (resolvedUrl != null) {
                             uri = new URI(resolvedUrl);
                         } else {

@@ -108,4 +108,9 @@ final class Question {
 
         return Arrays.equals(toByteArray(), other.toByteArray());
     }
+
+    @Override
+    public final String toString() {
+        return domain + ' ' + type + ' ' + clazz;
+    }
 }

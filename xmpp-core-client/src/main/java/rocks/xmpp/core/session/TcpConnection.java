@@ -348,7 +348,7 @@ public final class TcpConnection extends Connection {
         //
         //   * Service of "xmpp-client" (for client-to-server connections) or "xmpp-server" (for server-to-server connections)
         try {
-            final List<SrvRecord> srvRecords = DnsResolver.resolveSRV("xmpp-client", xmppServiceDomain, tcpConnectionConfiguration.getConnectTimeout());
+            final List<SrvRecord> srvRecords = DnsResolver.resolveSRV("xmpp-client", xmppServiceDomain, xmppSession.getConfiguration().getNameServer(), tcpConnectionConfiguration.getConnectTimeout());
 
             // 3. If a response is received, it will contain one or more combinations of a port and FDQN, each of which is weighted and prioritized as described in [DNS-SRV].
             // Sort the entries, so that the best one is tried first.
@@ -378,7 +378,7 @@ public final class TcpConnection extends Connection {
             if (!srvRecords.isEmpty()) {
                 throw new IOException("Could not connect to any host.", ex);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             // Unable to resolve the domain, try fallback.
             return false;
         }

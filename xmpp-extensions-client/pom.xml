@@ -64,6 +64,23 @@
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
             </plugin>
+
+            <!-- Define JPMS module name -->
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <configuration>
+                            <archive>
+                                <manifestEntries>
+                                    <Automatic-Module-Name>rocks.xmpp.extensions.client</Automatic-Module-Name>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <dependencies>

@@ -59,11 +59,21 @@
                 </configuration>
             </plugin>
 
-            <!-- Create test jar -->
+            <!-- Create test jar / Define JPMS module name -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <configuration>
+                            <archive>
+                                <manifestEntries>
+                                    <Automatic-Module-Name>rocks.xmpp.core</Automatic-Module-Name>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
                     <execution>
                         <goals>
                             <goal>test-jar</goal>

@@ -3,6 +3,7 @@
 
 ## Version 0.8.0-SNAPSHOT
 
+* Works as [JPMS modules](jpms.md) on Java 9 *and* as conventional JAR library on Java 8
 * Make `Jid` class an interface. Full JIDs and bare JIDs now share the same instance. No new instances need to be created when calling `asBareJid()`, the interface just returns a different view on the full JID.
 Reduces GC pressure and increase performance.
 * Add low-level support for [XEP-0258: Security Labels in XMPP](http://www.xmpp.org/extensions/xep-0258.html)

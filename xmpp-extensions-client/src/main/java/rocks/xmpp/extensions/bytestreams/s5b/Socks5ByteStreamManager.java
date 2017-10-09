@@ -97,7 +97,8 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
         for (StreamHost streamHost : streamHosts) {
             try {
                 Socket socket = new Socket();
-                socket.connect(new InetSocketAddress(streamHost.getHostname(), streamHost.getPort()));
+                // Try to connect to each host for max "duration" / "streamhosts.size()", so that the total session creation takes no longer than "duration".
+                socket.connect(new InetSocketAddress(streamHost.getHostname(), streamHost.getPort()), (int) (timeout.toMillis() / streamHosts.size()));
                 // If the Target is able to open a TCP socket on a StreamHost/Requester, it MUST use the SOCKS5 protocol to establish a SOCKS5 connection.
                 Socks5Protocol.establishClientConnection(socket, Socks5ByteStream.hash(sessionId, requester, target), 0);
                 socketUsed = socket;

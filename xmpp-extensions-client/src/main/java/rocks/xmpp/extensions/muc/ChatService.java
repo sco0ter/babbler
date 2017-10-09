@@ -73,9 +73,10 @@ public final class ChatService implements Comparable<ChatService> {
         return serviceDiscoveryManager.discoverItems(serviceAddress).thenApply(itemNode -> {
             List<ChatRoom> chatRooms = new ArrayList<>();
             for (Item item : itemNode.getItems()) {
-                ChatRoom chatRoom = new ChatRoom(item.getJid(), item.getName(), xmppSession, serviceDiscoveryManager, multiUserChatManager);
-                chatRoom.initialize();
-                chatRooms.add(chatRoom);
+                if (item.getJid() != null && item.getJid().getLocal() != null) {
+                    ChatRoom chatRoom = new ChatRoom(item.getJid(), item.getName(), xmppSession, serviceDiscoveryManager, multiUserChatManager);
+                    chatRooms.add(chatRoom);
+                }
             }
             return chatRooms;
         });
@@ -88,9 +89,7 @@ public final class ChatService implements Comparable<ChatService> {
      * @return The chat room.
      */
     public ChatRoom createRoom(String room) {
-        ChatRoom chatRoom = new ChatRoom(serviceAddress.withLocal(room), null, xmppSession, serviceDiscoveryManager, multiUserChatManager);
-        chatRoom.initialize();
-        return chatRoom;
+        return new ChatRoom(serviceAddress.withLocal(room), null, xmppSession, serviceDiscoveryManager, multiUserChatManager);
     }
 
     /**

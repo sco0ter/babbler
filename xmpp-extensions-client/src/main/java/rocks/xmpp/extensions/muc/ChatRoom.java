@@ -208,18 +208,6 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         };
     }
 
-    void initialize() {
-        xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.CLOSED) {
-                invitationDeclineListeners.clear();
-                subjectChangeListeners.clear();
-                occupantListeners.clear();
-                inboundMessageListeners.clear();
-                occupantMap.clear();
-            }
-        });
-    }
-
     private void userHasExited() {
         xmppSession.removeInboundMessageListener(messageListener);
         xmppSession.removeInboundPresenceListener(presenceListener);

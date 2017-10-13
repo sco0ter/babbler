@@ -43,7 +43,7 @@ import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
 import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 import rocks.xmpp.extensions.filetransfer.FileTransferNegotiator;
-import rocks.xmpp.extensions.filetransfer.FileTransferOffer;
+import rocks.xmpp.extensions.filetransfer.model.FileTransferOffer;
 import rocks.xmpp.extensions.si.model.StreamInitiation;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 import rocks.xmpp.util.concurrent.AsyncResult;

@@ -26,6 +26,8 @@ package rocks.xmpp.extensions.filetransfer;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.extensions.filetransfer.model.FileTransferOffer;
+import rocks.xmpp.extensions.filetransfer.model.Range;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.util.concurrent.AsyncResult;
 

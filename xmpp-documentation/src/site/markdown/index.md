@@ -32,6 +32,7 @@ On this site you learn about some general design considerations, a brief user gu
 * [JAXB][JAXB] (XML binding) in the background, in order to make it **robust**, **easy to use** and easy to extend (e.g. writing custom protocol extensions)
 * Good documentation
 * Very liberal **MIT license**
+* Works as [JPMS](jpms.md) module on **Java 9** *and* as conventional library JAR on Java 8
 
 
 [JAXB]: http://en.wikipedia.org/wiki/Java_Architecture_for_XML_Binding "Java Architecture for XML Binding"

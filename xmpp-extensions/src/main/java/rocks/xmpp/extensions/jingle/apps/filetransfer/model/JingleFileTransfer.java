@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.jingle.apps.filetransfer.model;
 
-import rocks.xmpp.extensions.filetransfer.FileTransferOffer;
-import rocks.xmpp.extensions.filetransfer.Range;
+import rocks.xmpp.extensions.filetransfer.model.FileTransferOffer;
+import rocks.xmpp.extensions.filetransfer.model.Range;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.errors.FileTransferError;
 import rocks.xmpp.extensions.jingle.apps.model.ApplicationFormat;

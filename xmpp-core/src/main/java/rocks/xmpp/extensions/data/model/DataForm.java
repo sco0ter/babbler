@@ -313,7 +313,7 @@ public final class DataForm implements Comparable<DataForm> {
      * @return The reported fields.
      */
     public final List<Field> getReportedFields() {
-        return Collections.unmodifiableList(reportedFields);
+        return Collections.unmodifiableList(reportedFields == null ? Collections.emptyList() : reportedFields);
     }
 
     /**

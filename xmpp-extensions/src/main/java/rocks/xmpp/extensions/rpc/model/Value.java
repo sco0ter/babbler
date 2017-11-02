@@ -299,6 +299,6 @@ public final class Value {
 
     @Override
     public final String toString() {
-        return value.toString();
+        return String.valueOf(value);
     }
 }

@@ -99,4 +99,121 @@ public class RpcMethodResponseTest extends XmlTest {
         Assert.assertEquals(rpc.getMethodResponse().getFault().getFaultCode(), 4);
         Assert.assertEquals(rpc.getMethodResponse().getFault().getFaultString(), "Too many parameters.");
     }
+
+    @Test
+    public void unmarshal() throws JAXBException, XMLStreamException {
+        String xml = "<query xmlns='jabber:iq:rpc'><methodResponse>\n" +
+                "   <params>\n" +
+                "      <param>\n" +
+                "         <value>\n" +
+                "            <struct>\n" +
+                "               <member>\n" +
+                "                  <name>username</name>\n" +
+                "                  <value>\n" +
+                "                     <string>xxx</string>\n" +
+                "                  </value>\n" +
+                "               </member>\n" +
+                "               <member>\n" +
+                "                  <name>branch_id</name>\n" +
+                "                  <value>\n" +
+                "                     <string>40277</string>\n" +
+                "                  </value>\n" +
+                "               </member>\n" +
+                "               <member>\n" +
+                "                  <name>first_name</name>\n" +
+                "                  <value>\n" +
+                "                     <string>xxx API</string>\n" +
+                "                  </value>\n" +
+                "               </member>\n" +
+                "               <member>\n" +
+                "                  <name>last_name</name>\n" +
+                "                  <value>\n" +
+                "                     <string>Test User</string>\n" +
+                "                  </value>\n" +
+                "               </member>\n" +
+                "               <member>\n" +
+                "                  <name>user_id</name>\n" +
+                "                  <value>\n" +
+                "                     <string>115524</string>\n" +
+                "                  </value>\n" +
+                "               </member>\n" +
+                "               <member>\n" +
+                "                  <name>xxx</name>\n" +
+                "                  <value />\n" +
+                "               </member>\n" +
+                "               <member>\n" +
+                "                  <name>reseller_id</name>\n" +
+                "                  <value>\n" +
+                "                     <string>43</string>\n" +
+                "                  </value>\n" +
+                "               </member>\n" +
+                "               <member>\n" +
+                "                  <name>role_id</name>\n" +
+                "                  <value>\n" +
+                "                     <string>1</string>\n" +
+                "                  </value>\n" +
+                "               </member>\n" +
+                "               <member>\n" +
+                "                  <name>organization_id</name>\n" +
+                "                  <value>\n" +
+                "                     <string>44316</string>\n" +
+                "                  </value>\n" +
+                "               </member>\n" +
+                "               <member>\n" +
+                "                  <name>call_center_agents</name>\n" +
+                "                  <value>\n" +
+                "                     <array>\n" +
+                "                        <data>\n" +
+                "                           <value>\n" +
+                "                              <string>22873</string>\n" +
+                "                           </value>\n" +
+                "                        </data>\n" +
+                "                     </array>\n" +
+                "                  </value>\n" +
+                "               </member>\n" +
+                "               <member>\n" +
+                "                  <name>extensions</name>\n" +
+                "                  <value>\n" +
+                "                     <array>\n" +
+                "                        <data>\n" +
+                "                           <value>\n" +
+                "                              <string>496187</string>\n" +
+                "                           </value>\n" +
+                "                           <value>\n" +
+                "                              <string>496528</string>\n" +
+                "                           </value>\n" +
+                "                        </data>\n" +
+                "                     </array>\n" +
+                "                  </value>\n" +
+                "               </member>\n" +
+                "               <member>\n" +
+                "                  <name>primary_extension</name>\n" +
+                "                  <value>\n" +
+                "                     <string>496528</string>\n" +
+                "                  </value>\n" +
+                "               </member>\n" +
+                "               <member>\n" +
+                "                  <name>customer_id</name>\n" +
+                "                  <value>\n" +
+                "                     <string>45132</string>\n" +
+                "                  </value>\n" +
+                "               </member>\n" +
+                "               <member>\n" +
+                "                  <name>email</name>\n" +
+                "                  <value>\n" +
+                "                     <string>xxx@xxx</string>\n" +
+                "                  </value>\n" +
+                "               </member>\n" +
+                "            </struct>\n" +
+                "         </value>\n" +
+                "      </param>\n" +
+                "   </params>\n" +
+                "</methodResponse></query>";
+
+        Rpc rpc = unmarshal(xml, Rpc.class);
+
+        Assert.assertNotNull(rpc);
+        Assert.assertNotNull(rpc.getMethodResponse());
+        Assert.assertNotNull(rpc.toString());
+    }
 }

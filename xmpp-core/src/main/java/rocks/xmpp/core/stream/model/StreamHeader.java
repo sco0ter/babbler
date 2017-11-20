@@ -101,6 +101,7 @@ public final class StreamHeader implements SessionOpen, CharSequence {
      * @param to                   The 'to' attribute.
      * @param id                   The 'id' attribute specifies a unique identifier for the stream, called a "stream ID".
      * @param lang                 The 'xml:lang' attribute specifies an entity's preferred or default language for any human-readable XML character data to be sent over the stream.
+     * @param contentNamespace     The content namespace.
      * @param additionalNamespaces Any optional additional namespace declarations.
      */
     private StreamHeader(Jid from, Jid to, String id, Locale lang, String contentNamespace, QName... additionalNamespaces) {
@@ -126,6 +127,22 @@ public final class StreamHeader implements SessionOpen, CharSequence {
                 this.additionalNamespaces.add(additionalNamespace);
             }
         }
+    }
+
+    /**
+     * Creates a stream header. In contrary to the other factory methods, this one does not perform any logical checks on the input parameters,
+     * i.e. it does not distinguish between client-to-server, server-to-server, initiating and responding entity.
+     *
+     * @param from                 The XMPP identity of the principal controlling the client, i.e., a JID of the form {@code localpart@domainpart>}.
+     * @param to                   A domainpart that the initiating entity knows or expects the receiving entity to service.
+     * @param id                   The stream id.
+     * @param lang                 An entity's preferred or default language for any human-readable XML character data to be sent over the stream.
+     * @param contentNamespace     The content namespace.
+     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a namespace URI and a prefix set.
+     * @return The stream header.
+     */
+    public static StreamHeader create(Jid from, Jid to, String id, Locale lang, String contentNamespace, QName... additionalNamespaces) {
+        return new StreamHeader(from, to, id, lang, contentNamespace, additionalNamespaces);
     }
 
     /**
@@ -286,6 +303,16 @@ public final class StreamHeader implements SessionOpen, CharSequence {
     @Override
     public final Locale getLanguage() {
         return lang;
+    }
+
+    /**
+     * Gets the content namespace, i.e. the namespace which has no prefix.
+     *
+     * @return The content namespace.
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-ns-xmpp">4.8.3.  XMPP Content Namespaces</a>
+     */
+    public final String getContentNamespace() {
+        return contentNamespace;
     }
 
     /**

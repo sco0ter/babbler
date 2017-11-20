@@ -30,7 +30,7 @@ import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.model.Session;
-import rocks.xmpp.core.stanza.StanzaException;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
@@ -269,7 +269,7 @@ public final class XmppClient extends XmppSession {
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
-     * @throws StanzaException            If the server returned a stanza error during resource binding or roster retrieval.
+     * @throws StanzaErrorException            If the server returned a stanza error during resource binding or roster retrieval.
      * @throws XmppException              If the login failed, due to another error.
      */
     public final byte[] login(String user, String password) throws XmppException {
@@ -287,7 +287,7 @@ public final class XmppClient extends XmppSession {
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
-     * @throws StanzaException            If the server returned a stanza error during resource binding or roster retrieval.
+     * @throws StanzaErrorException            If the server returned a stanza error during resource binding or roster retrieval.
      * @throws XmppException              If the login failed, due to another error.
      */
     public final byte[] login(String user, String password, String resource) throws XmppException {
@@ -306,7 +306,7 @@ public final class XmppClient extends XmppSession {
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
-     * @throws StanzaException            If the server returned a stanza error during resource binding or roster retrieval.
+     * @throws StanzaErrorException            If the server returned a stanza error during resource binding or roster retrieval.
      * @throws XmppException              If the login failed, due to another error.
      */
     public final byte[] login(String authorizationId, final String user, final String password, String resource) throws XmppException {
@@ -338,7 +338,7 @@ public final class XmppClient extends XmppSession {
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
-     * @throws StanzaException            If the server returned a stanza error during resource binding or roster retrieval.
+     * @throws StanzaErrorException            If the server returned a stanza error during resource binding or roster retrieval.
      * @throws XmppException              If the login failed, due to another error.
      */
     public final byte[] login(String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
@@ -353,7 +353,7 @@ public final class XmppClient extends XmppSession {
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
-     * @throws StanzaException            If the server returned a stanza error during resource binding.
+     * @throws StanzaErrorException            If the server returned a stanza error during resource binding.
      * @throws XmppException              If the login failed, due to another error.
      */
     public final byte[] loginAnonymously() throws XmppException {

@@ -28,7 +28,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.StanzaException;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
@@ -141,7 +141,7 @@ public final class FileTransferManager extends Manager {
         return xmppSession.query(IQ.set(recipient, new OobIQ(uri, description)), timeout).handle((iq, e) -> {
             if (e != null) {
                 if (e instanceof CompletionException) {
-                    if (e.getCause() instanceof StanzaException && ((StanzaException) e.getCause()).getCondition() == Condition.NOT_ACCEPTABLE) {
+                    if (e.getCause() instanceof StanzaErrorException && ((StanzaErrorException) e.getCause()).getCondition() == Condition.NOT_ACCEPTABLE) {
                         throw new CompletionException(new FileTransferRejectedException());
                     } else {
                         throw (CompletionException) e;
@@ -287,7 +287,7 @@ public final class FileTransferManager extends Manager {
                 return this.streamInitiationManager.initiateStream(recipient, fileTransfer, mType, timeout, sessionId).handle((byteStreamSession, e) -> {
                     if (e != null) {
                         if (e instanceof CompletionException) {
-                            if (e.getCause() instanceof StanzaException && ((StanzaException) e.getCause()).getCondition() == Condition.FORBIDDEN) {
+                            if (e.getCause() instanceof StanzaErrorException && ((StanzaErrorException) e.getCause()).getCondition() == Condition.FORBIDDEN) {
                                 throw new CompletionException(new FileTransferRejectedException());
                             } else {
                                 throw (CompletionException) e;

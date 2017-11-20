@@ -22,21 +22,19 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.stanza;
+package rocks.xmpp.core.stanza.model;
 
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
 /**
- * A stanza exception represents a {@linkplain rocks.xmpp.core.stanza.model.StanzaError stanza error}.
+ * A stanza exception represents a {@linkplain StanzaError stanza error}.
  * It should be thrown, if a request (e.g. an IQ stanza) returned a stanza error.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a>
  */
-public final class StanzaException extends XmppException {
+public final class StanzaErrorException extends XmppException {
 
     private final Stanza stanza;
 
@@ -45,7 +43,7 @@ public final class StanzaException extends XmppException {
      *
      * @param stanza The underlying stanza.
      */
-    public StanzaException(Stanza stanza) {
+    public StanzaErrorException(Stanza stanza) {
         super(stanza.getError().toString());
         this.stanza = stanza;
     }

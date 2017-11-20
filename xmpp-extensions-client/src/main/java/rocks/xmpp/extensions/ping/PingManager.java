@@ -33,7 +33,7 @@ import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.StanzaException;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.ping.model.Ping;
@@ -141,10 +141,10 @@ public final class PingManager extends Manager {
                     // Rethrow any RuntimeException, mainly CancellationException
                     throw (RuntimeException) e;
                 }
-                if (cause instanceof StanzaException) {
+                if (cause instanceof StanzaErrorException) {
 
                     if (jid != null && jid.isFullJid()) {
-                        Jid from = ((StanzaException) cause).getStanza().getFrom();
+                        Jid from = ((StanzaErrorException) cause).getStanza().getFrom();
                         // If we pinged a full JID and the resource if offline, the server will respond on behalf of the user with <service-unavailable/>.
                         // In this case we want to return false, because the intended recipient is unavailable.
                         // If the response came from the full JID, the recipient is online, even if it returned an error.
@@ -153,7 +153,7 @@ public final class PingManager extends Manager {
                         // If we pinged a bare JID, the server will respond. If it returned a <service-unavailable/> or <feature-not-implemented/> error, it just means it doesn't understand the ping protocol.
                         // Nonetheless an error response is still a valid pong, hence always return true in this case.
                         // If any other error is returned, most likely <remote-server-not-found/>, <remote-server-timeout/>, <gone/> return false.
-                        Condition condition = ((StanzaException) cause).getCondition();
+                        Condition condition = ((StanzaErrorException) cause).getCondition();
                         return condition == Condition.SERVICE_UNAVAILABLE || condition == Condition.FEATURE_NOT_IMPLEMENTED;
                     }
                 }

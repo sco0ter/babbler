@@ -28,7 +28,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.StanzaException;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
@@ -313,7 +313,7 @@ public final class EntityCapabilitiesManager extends Manager {
                     if (e == null) {
                         return infoNode.getFeatures().contains(feature);
                     } else {
-                        if (e.getCause() instanceof StanzaException) {
+                        if (e.getCause() instanceof StanzaErrorException) {
                             return false;
                         }
                         throw (CompletionException) e;

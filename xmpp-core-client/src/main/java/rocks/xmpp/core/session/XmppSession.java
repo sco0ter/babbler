@@ -33,7 +33,7 @@ import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.StanzaException;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.ExtensibleStanza;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.IQ.Type;
@@ -807,7 +807,7 @@ public abstract class XmppSession implements AutoCloseable {
             S st = stanzaMapper.apply(e);
             if (filter.test(st)) {
                 if (st.getError() != null) {
-                    completableFuture.completeExceptionally(new StanzaException(st));
+                    completableFuture.completeExceptionally(new StanzaErrorException(st));
                 }
                 completableFuture.complete(st);
             }

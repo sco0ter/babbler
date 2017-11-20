@@ -31,7 +31,7 @@ import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.StanzaException;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
@@ -91,7 +91,7 @@ public class StreamInitiationManagerTest extends BaseTest {
         try {
             streamInitiationManager1.initiateStream(JULIET, new SIFileTransferOffer("Filename", 123), "image/type", Duration.ofSeconds(2)).get();
         } catch (ExecutionException e) {
-            if (!(((StanzaException) e.getCause()).getCondition() == Condition.FORBIDDEN)) {
+            if (!(((StanzaErrorException) e.getCause()).getCondition() == Condition.FORBIDDEN)) {
                 Assert.fail();
             } else {
                 return;

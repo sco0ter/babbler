@@ -50,7 +50,7 @@
     <dependencies>
         <dependency>
             <groupId>rocks.xmpp</groupId>
-            <artifactId>xmpp-core-client</artifactId>
+            <artifactId>xmpp-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

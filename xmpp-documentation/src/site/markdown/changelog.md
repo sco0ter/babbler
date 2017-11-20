@@ -12,6 +12,7 @@ Reduces GC pressure and increase performance.
 * Add a class `StreamHeader` which represents the stream header and checks for the rules in RFC 6120.
 * Refactor Text classes from the `urn:ietf:params:xml:ns:xmpp-stanzas`, `urn:ietf:params:xml:ns:xmpp-streams` and `urn:ietf:params:xml:ns:xmpp-sasl` namespaces into one common `rocks.xmpp.core.Text` class (API change).
 * Add `putExtension()` and `addExtensions()` methods to Stanza.
+* Move `rocks.xmpp.core.stream.StreamErrorException` to `rocks.xmpp.core.stream.model.StreamErrorException`
 * XEP-0033: Extended Stanza Addressing: Implement reply handling, add `delivered` attribute, add varargs constructor.
 * XEP-0045: Revoking admin status should result in mere membership, rather than no affiliation at all.
 * XEP-0059: Add `nextPage()` and `previousPage()` method to result set management. Also refine the naming of the RSM methods.

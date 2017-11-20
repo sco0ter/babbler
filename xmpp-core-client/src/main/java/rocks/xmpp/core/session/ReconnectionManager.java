@@ -25,7 +25,7 @@
 package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.stream.StreamErrorException;
+import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.util.XmppUtils;
 

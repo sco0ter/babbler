@@ -22,10 +22,9 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.stream;
+package rocks.xmpp.core.stream.model;
 
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.errors.Condition;
 
 /**

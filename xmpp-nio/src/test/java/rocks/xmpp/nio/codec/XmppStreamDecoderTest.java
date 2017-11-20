@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.sasl.model.Auth;
 import rocks.xmpp.core.sasl.model.Response;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
-import rocks.xmpp.core.stream.StreamErrorException;
+import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.core.stream.model.errors.Condition;
 

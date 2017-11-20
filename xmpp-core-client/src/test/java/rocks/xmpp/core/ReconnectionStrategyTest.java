@@ -27,7 +27,7 @@ package rocks.xmpp.core;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.session.ReconnectionStrategy;
-import rocks.xmpp.core.stream.StreamErrorException;
+import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.errors.Condition;
 

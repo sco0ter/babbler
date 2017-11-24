@@ -71,13 +71,19 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>rocks.xmpp</groupId>
-            <artifactId>xmpp-core-client</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>xmpp-addr</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>xmpp-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>xmpp-core-client</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

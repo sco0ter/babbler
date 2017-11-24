@@ -135,39 +135,46 @@
 
     <dependencies>
         <dependency>
-            <groupId>rocks.xmpp</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>xmpp-addr</artifactId>
             <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>rocks.xmpp</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>xmpp-core</artifactId>
             <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>rocks.xmpp</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>xmpp-extensions</artifactId>
             <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>rocks.xmpp</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>xmpp-core-client</artifactId>
             <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>rocks.xmpp</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>xmpp-extensions-client</artifactId>
             <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>rocks.xmpp</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>xmpp-websocket</artifactId>
             <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>rocks.xmpp</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>xmpp-fx</artifactId>
             <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 </project>

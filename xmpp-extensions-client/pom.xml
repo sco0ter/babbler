@@ -85,12 +85,22 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>rocks.xmpp</groupId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>xmpp-addr</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>xmpp-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>xmpp-core-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>rocks.xmpp</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>xmpp-extensions</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -99,7 +109,7 @@
             <artifactId>testng</artifactId>
         </dependency>
         <dependency>
-            <groupId>rocks.xmpp</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>xmpp-core-client</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>

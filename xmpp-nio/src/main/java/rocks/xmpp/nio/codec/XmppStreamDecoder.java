@@ -29,8 +29,8 @@ import com.fasterxml.aalto.AsyncXMLInputFactory;
 import com.fasterxml.aalto.AsyncXMLStreamReader;
 import com.fasterxml.aalto.stax.InputFactoryImpl;
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.core.stream.model.errors.Condition;
 
@@ -40,13 +40,12 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -62,22 +61,15 @@ public final class XmppStreamDecoder {
 
     private static final AsyncXMLInputFactory XML_INPUT_FACTORY = new InputFactoryImpl();
 
-    private AsyncXMLStreamReader<AsyncByteBufferFeeder> xmlStreamReader;
-
     private final Unmarshaller unmarshaller;
 
-    private byte[] xmlStream = new byte[0];
+    private final StringBuilder xmlStream = new StringBuilder();
 
-    private byte[] streamHeader;
+    private AsyncXMLStreamReader<AsyncByteBufferFeeder> xmlStreamReader;
+
+    private String streamHeader;
 
     private long elementEnd;
-
-    private static byte[] concat(byte[] a, byte[] b) {
-        byte[] c = new byte[a.length + b.length];
-        System.arraycopy(a, 0, c, 0, a.length);
-        System.arraycopy(b, 0, c, a.length, b.length);
-        return c;
-    }
 
     /**
      * Creates the decoder.
@@ -96,13 +88,10 @@ public final class XmppStreamDecoder {
      * @param out The output list, any decoded elements must be put into this list.
      * @throws StreamErrorException If parsing XML fails or any other stream error occurred (e.g. invalid XML).
      */
-    public final synchronized void decode(final ByteBuffer in, final List<Object> out) throws StreamErrorException {
+    public final synchronized void decode(final ByteBuffer in, final Collection<Object> out) throws StreamErrorException {
 
-        // Read the bytes from the buffer.
-        final byte[] bytes = new byte[in.limit()];
-        in.get(bytes);
-
-        xmlStream = concat(xmlStream, bytes);
+        // Append the buffer to stream
+        xmlStream.append(StandardCharsets.UTF_8.decode(in));
 
         // Rewind the buffer, so that it can be read again by the XMLStreamReader.
         in.rewind();
@@ -144,9 +133,9 @@ public final class XmppStreamDecoder {
                             final String lang = xmlStreamReader.getAttributeValue(XMLConstants.XML_NS_URI, "lang");
                             final String contentNamespace = xmlStreamReader.getNamespaceURI(XMLConstants.DEFAULT_NS_PREFIX);
                             final List<QName> additionalNamespaces = new ArrayList<>();
+
                             int namespaceCount = xmlStreamReader.getNamespaceCount();
                             if (namespaceCount > 2) {
-
                                 for (int i = 0; i < namespaceCount; i++) {
                                     String namespace = xmlStreamReader.getNamespaceURI(i);
                                     if (!StreamHeader.STREAM_NAMESPACE.equals(namespace) && !Objects.equals(namespace, contentNamespace)) {
@@ -166,10 +155,10 @@ public final class XmppStreamDecoder {
                             out.add(header);
                             elementEnd = xmlStreamReader.getLocationInfo().getEndingByteOffset();
                             // Store the stream header so that it can be reused while unmarshalling further bytes.
-                            streamHeader = Arrays.copyOfRange(xmlStream, 0, (int) elementEnd);
+                            streamHeader = xmlStream.substring(0, (int) elementEnd);
                             // Copy the rest of the stream.
                             // From now on, only store the XML stream without the stream header.
-                            xmlStream = Arrays.copyOfRange(xmlStream, streamHeader.length, xmlStream.length);
+                            xmlStream.delete(0, (int) elementEnd);
                         }
                         break;
                     case XMLStreamConstants.END_ELEMENT:
@@ -191,21 +180,17 @@ public final class XmppStreamDecoder {
                                 elementEnd = end;
 
                                 // Get the element from the stream.
-                                final byte[] element = Arrays.copyOfRange(xmlStream, 0, elementLength);
-                                xmlStream = Arrays.copyOfRange(xmlStream, elementLength, xmlStream.length);
+                                final String element = xmlStream.substring(0, elementLength);
+                                xmlStream.delete(0, elementLength);
 
                                 // Create a partial stream, which always consists of the stream header (to have namespace declarations)
                                 // and the current element.
                                 // Add one more byte to prevent EOF Exception.
-                                final byte[] partialStream = new byte[streamHeader.length + element.length + 1];
-                                // Copy the stream header into the partial stream.
-                                System.arraycopy(streamHeader, 0, partialStream, 0, streamHeader.length);
-                                // Copy the element into the partial stream.
-                                System.arraycopy(element, 0, partialStream, streamHeader.length, element.length);
-
+                                String partialStream = streamHeader + element + ' ';
                                 XMLStreamReader reader = null;
-                                try (InputStream inputStream = new ByteArrayInputStream(partialStream)) {
-                                    reader = XML_INPUT_FACTORY.createXMLStreamReader(inputStream);
+
+                                try (Reader stringReader = new StringReader(partialStream)) {
+                                    reader = XML_INPUT_FACTORY.createXMLStreamReader(stringReader);
                                     // Move the reader to the stream header (<stream:stream>)
                                     reader.next();
                                     // Move the reader to the next element after the stream header.
@@ -216,9 +201,7 @@ public final class XmppStreamDecoder {
                                         t = reader.next();
                                     }
                                     out.add(unmarshaller.unmarshal(reader));
-                                } catch (IOException e) {
-                                    // Should never happen, ByteArrayInputStream#close() does not throw IOException.
-                                    throw new UncheckedIOException(e);
+
                                 } finally {
                                     if (reader != null) {
                                         reader.close();
@@ -242,6 +225,8 @@ public final class XmppStreamDecoder {
             throw new StreamErrorException(new StreamError(Condition.NOT_WELL_FORMED), e);
         } catch (Exception e) {
             throw new StreamErrorException(new StreamError(Condition.INTERNAL_SERVER_ERROR), e);
+        } finally {
+            xmlStream.trimToSize();
         }
     }
 

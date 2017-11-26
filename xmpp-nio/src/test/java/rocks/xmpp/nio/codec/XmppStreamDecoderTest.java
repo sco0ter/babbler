@@ -29,16 +29,20 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.sasl.model.Auth;
 import rocks.xmpp.core.sasl.model.Response;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.core.stream.model.errors.Condition;
 
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author Christian Schudt
@@ -85,6 +89,39 @@ public class XmppStreamDecoderTest {
         out.clear();
         decoder.decode(buf6, out);
 
+    }
+
+    @Test(enabled = false)
+    public void testPerformance() throws JAXBException, StreamErrorException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(Auth.class, Response.class, ClientIQ.class, ClientMessage.class);
+        XmppStreamDecoder decoder = new XmppStreamDecoder(jaxbContext.createUnmarshaller());
+
+        ByteBuffer buf1 = ByteBuffer.wrap("<?xml version='1.0' encoding='UTF-8'?><stream:stream to=\"localhost\" version=\"1.0\" xml:lang=\"de-DE\" xml".getBytes(StandardCharsets.UTF_8));
+        ByteBuffer buf2 = ByteBuffer.wrap("ns=\"jabber:client\" xmlns:stream=\"http://etherx.jabber.org/stream".getBytes(StandardCharsets.UTF_8));
+        ByteBuffer buf3 = ByteBuffer.wrap("s\" xmlns:foo=\"bar\">  <auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"SCRA".getBytes(StandardCharsets.UTF_8));
+        ByteBuffer buf4 = ByteBuffer.wrap("M-SHA-1\">biwsbj1hZG1pbixyPTUyZm1vUjMybmFhOUlGd0dtYWloWVE9PQ==</auth>  <response".getBytes(StandardCharsets.UTF_8));
+        ByteBuffer buf5 = ByteBuffer.wrap("   xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\">biwsbj1hZG1pbixyPWRBMEUyTjhmQ0QycUVxNjZ5V0VHemc9PQ==</response> <".getBytes(StandardCharsets.UTF_8));
+        ByteBuffer buf6 = ByteBuffer.wrap("iq></iq> ".getBytes(StandardCharsets.UTF_8));
+
+        List<Object> out = new ArrayList<>();
+        decoder.decode(buf1, out);
+        decoder.decode(buf2, out);
+        decoder.decode(buf3, out);
+        decoder.decode(buf4, out);
+        decoder.decode(buf5, out);
+        decoder.decode(buf6, out);
+
+        byte[] bytes = new byte[1024];
+        Random random = new Random();
+        random.nextBytes(bytes);
+        String randomString = DatatypeConverter.printBase64Binary(bytes);
+        long now = System.currentTimeMillis();
+        for (int i = 0; i < 100000; i++) {
+            out.clear();
+            ByteBuffer byteBuffer = ByteBuffer.wrap(("<message>" + randomString + "</message>").getBytes(StandardCharsets.UTF_8));
+            decoder.decode(byteBuffer, out);
+        }
+        System.out.println(System.currentTimeMillis() - now);
     }
 
     @Test(expectedExceptions = StreamErrorException.class)

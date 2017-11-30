@@ -49,11 +49,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Decodes a stream of byte buffers to XMPP elements.
  * <p>
- * This class is thread-safe.
+ * Decoding is thread-safe, as long as the supplied {@link Unmarshaller} is not shared by another thread, e.g. if a {@linkplain ThreadLocal thread-local} {@link Unmarshaller} is supplied.
+ * <p>
+ * Stream restarts can be achieved by using the {@link #restart()} methods. Decoding and restarts are thread-safe, i.e. can be called by different threads.
  *
  * @author Christian Schudt
  */
@@ -61,7 +64,7 @@ public final class XmppStreamDecoder {
 
     private static final AsyncXMLInputFactory XML_INPUT_FACTORY = new InputFactoryImpl();
 
-    private final Unmarshaller unmarshaller;
+    private final Supplier<Unmarshaller> unmarshaller;
 
     private final StringBuilder xmlStream = new StringBuilder();
 
@@ -72,11 +75,13 @@ public final class XmppStreamDecoder {
     private long elementEnd;
 
     /**
-     * Creates the decoder.
+     * Creates the XMPP decoder.
+     * <p>
+     * Because {@link Unmarshaller} is not thread-safe, it is recommended to pass a {@code ThreadLocal<Unmarshaller>} to this constructor, which ensures thread-safety during unmarshalling.
      *
-     * @param unmarshaller The unmarshaller which will convert XML to objects.
+     * @param unmarshaller Supplies the unmarshaller which will convert XML to objects.
      */
-    public XmppStreamDecoder(final Unmarshaller unmarshaller) {
+    public XmppStreamDecoder(final Supplier<Unmarshaller> unmarshaller) {
         this.unmarshaller = unmarshaller;
         this.restart();
     }
@@ -85,7 +90,7 @@ public final class XmppStreamDecoder {
      * Decodes a stream of byte buffers to XMPP elements.
      *
      * @param in  The byte buffer which was read from the channel. It must be ready to read, i.e. flipped.
-     * @param out The output list, any decoded elements must be put into this list.
+     * @param out The output list, any decoded elements are put into this list.
      * @throws StreamErrorException If parsing XML fails or any other stream error occurred (e.g. invalid XML).
      */
     public final synchronized void decode(final ByteBuffer in, final Collection<Object> out) throws StreamErrorException {
@@ -200,7 +205,7 @@ public final class XmppStreamDecoder {
                                     while (reader.hasNext() && t != XMLStreamConstants.START_ELEMENT) {
                                         t = reader.next();
                                     }
-                                    out.add(unmarshaller.unmarshal(reader));
+                                    out.add(unmarshaller.get().unmarshal(reader));
 
                                 } finally {
                                     if (reader != null) {
@@ -234,6 +239,7 @@ public final class XmppStreamDecoder {
      * Restarts the stream, i.e. a new reader will be created.
      */
     public final synchronized void restart() {
+        xmlStream.setLength(0);
         xmlStreamReader = XML_INPUT_FACTORY.createAsyncForByteBuffer();
         elementEnd = 0;
     }

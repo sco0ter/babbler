@@ -34,9 +34,11 @@ import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.core.stream.model.errors.Condition;
 
+import javax.xml.bind.DataBindingException;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -48,12 +50,29 @@ import java.util.Random;
  * @author Christian Schudt
  */
 public class XmppStreamDecoderTest {
+    
+    private static final JAXBContext JAXB_CONTEXT;
+
+    static {
+        try {
+            JAXB_CONTEXT = JAXBContext.newInstance(Auth.class, Response.class, ClientIQ.class, ClientMessage.class);
+        } catch (JAXBException e) {
+            throw new DataBindingException(e);
+        }
+    }
+
+    private static final ThreadLocal<Unmarshaller> UNMARSHALLER = ThreadLocal.withInitial(() -> {
+        try {
+            return JAXB_CONTEXT.createUnmarshaller();
+        } catch (JAXBException e) {
+            throw new DataBindingException(e);
+        }
+    });
 
     @Test
     public void testValidXml() throws Exception {
 
-        JAXBContext jaxbContext = JAXBContext.newInstance(Auth.class, Response.class, ClientIQ.class);
-        XmppStreamDecoder decoder = new XmppStreamDecoder(jaxbContext.createUnmarshaller());
+        XmppStreamDecoder decoder = new XmppStreamDecoder(UNMARSHALLER::get);
 
         ByteBuffer buf1 = ByteBuffer.wrap("<?xml version='1.0' encoding='UTF-8'?><stream:stream to=\"localhost\" version=\"1.0\" xml:lang=\"de-DE\" xml".getBytes(StandardCharsets.UTF_8));
         ByteBuffer buf2 = ByteBuffer.wrap("ns=\"jabber:client\" xmlns:stream=\"http://etherx.jabber.org/stream".getBytes(StandardCharsets.UTF_8));
@@ -91,10 +110,9 @@ public class XmppStreamDecoderTest {
 
     }
 
-    @Test(enabled = false)
-    public void testPerformance() throws JAXBException, StreamErrorException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(Auth.class, Response.class, ClientIQ.class, ClientMessage.class);
-        XmppStreamDecoder decoder = new XmppStreamDecoder(jaxbContext.createUnmarshaller());
+    @Test(enabled = true)
+    public void testPerformance() throws StreamErrorException {
+        XmppStreamDecoder decoder = new XmppStreamDecoder(UNMARSHALLER::get);
 
         ByteBuffer buf1 = ByteBuffer.wrap("<?xml version='1.0' encoding='UTF-8'?><stream:stream to=\"localhost\" version=\"1.0\" xml:lang=\"de-DE\" xml".getBytes(StandardCharsets.UTF_8));
         ByteBuffer buf2 = ByteBuffer.wrap("ns=\"jabber:client\" xmlns:stream=\"http://etherx.jabber.org/stream".getBytes(StandardCharsets.UTF_8));
@@ -126,7 +144,7 @@ public class XmppStreamDecoderTest {
 
     @Test(expectedExceptions = StreamErrorException.class)
     public void testNotWellFormed() throws Exception {
-        XmppStreamDecoder decoder = new XmppStreamDecoder(JAXBContext.newInstance().createUnmarshaller());
+        XmppStreamDecoder decoder = new XmppStreamDecoder(UNMARSHALLER::get);
 
         ByteBuffer buf1 = ByteBuffer.wrap("<?xml version='1.0' encoding='UTF-8'?><stream:stream to=\"localhost version=\"1.0\" xml:lang=\"de-DE\" xml".getBytes(StandardCharsets.UTF_8));
 

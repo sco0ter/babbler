@@ -36,6 +36,12 @@ requires rocks.xmpp.fx;
 ```
 requires rocks.xmpp.websocket;
 ```
+
+### Non-Blocking I/O (Optional)
+
+```
+requires rocks.xmpp.nio;
+```
  
 ### Samples (Optional)
 

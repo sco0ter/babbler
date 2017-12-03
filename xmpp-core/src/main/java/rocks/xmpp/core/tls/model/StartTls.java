@@ -73,6 +73,11 @@ public final class StartTls extends StreamFeature implements StreamElement {
     }
 
     @Override
+    public final boolean requiresRestart() {
+        return true;
+    }
+
+    @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder("StartTLS");
         if (isMandatory()) {

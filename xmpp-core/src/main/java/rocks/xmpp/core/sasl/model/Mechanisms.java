@@ -82,6 +82,11 @@ public final class Mechanisms extends StreamFeature {
     }
 
     @Override
+    public final boolean requiresRestart() {
+        return true;
+    }
+
+    @Override
     public final String toString() {
         return "SASL mechanisms: " + mechanism;
     }

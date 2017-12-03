@@ -48,13 +48,12 @@ public final class StreamFeatures implements StreamElement {
     public static final String NAMESPACE = "http://etherx.jabber.org/streams";
 
     @XmlAnyElement(lax = true)
-    @SuppressWarnings("unused")
     private final List<Object> features = new ArrayList<>();
 
     private StreamFeatures() {
     }
 
-    public StreamFeatures(Collection<Object> features) {
+    public StreamFeatures(Collection<StreamFeature> features) {
         this.features.addAll(features);
     }
 

@@ -55,6 +55,15 @@ public abstract class StreamFeature implements Comparable<StreamFeature> {
     }
 
     /**
+     * If this feature requires a stream restart after it has been negotiated.
+     *
+     * @return True, if a stream restart is required.
+     */
+    public boolean requiresRestart() {
+        return false;
+    }
+
+    /**
      * Compares two features by their priority and mandatory-to-negotiate flag.
      * <blockquote>
      * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-negotiation-features">4.3.2.  Stream Features Format</a></cite></p>

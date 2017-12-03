@@ -68,6 +68,11 @@ public final class CompressionFeature extends StreamFeature {
     }
 
     @Override
+    public boolean requiresRestart() {
+        return true;
+    }
+
+    @Override
     public final String toString() {
         return "Stream Compression";
     }

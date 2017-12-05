@@ -323,7 +323,7 @@ final class FullJid extends AbstractJid {
     }
 
     @Override
-    public String getEscapedLocal() {
+    public final String getEscapedLocal() {
         return escapedLocal;
     }
 

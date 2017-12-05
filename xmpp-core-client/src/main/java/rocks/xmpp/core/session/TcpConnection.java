@@ -79,7 +79,7 @@ public final class TcpConnection extends Connection {
 
     private final CompressionManager compressionManager;
 
-    final StreamManager streamManager;
+    private final StreamManager streamManager;
 
     private final TcpConnectionConfiguration tcpConnectionConfiguration;
 

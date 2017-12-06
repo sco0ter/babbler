@@ -76,7 +76,7 @@ public interface CompressionMethod {
 
         @Override
         public OutputStream compress(OutputStream outputStream) throws IOException {
-            return new GZIPOutputStream(outputStream);
+            return new GZIPOutputStream(outputStream, true);
         }
     };
 
@@ -98,7 +98,7 @@ public interface CompressionMethod {
 
         @Override
         public OutputStream compress(OutputStream outputStream) throws IOException {
-            return new DeflaterOutputStream(outputStream, new Deflater(Deflater.DEFAULT_COMPRESSION, true));
+            return new DeflaterOutputStream(outputStream, new Deflater(Deflater.DEFAULT_COMPRESSION, true), true);
         }
     };
 

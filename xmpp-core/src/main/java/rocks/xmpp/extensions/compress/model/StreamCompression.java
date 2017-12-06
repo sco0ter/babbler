@@ -42,7 +42,7 @@ import java.util.Objects;
  */
 @XmlTransient
 @XmlSeeAlso({CompressionFeature.class, StreamCompression.Compress.class, StreamCompression.Compressed.class, StreamCompression.Failure.class})
-public abstract class StreamCompression {
+public abstract class StreamCompression implements StreamElement {
 
     /**
      * http://jabber.org/protocol/compress
@@ -67,7 +67,7 @@ public abstract class StreamCompression {
      * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
      */
     @XmlRootElement
-    public static final class Failure extends StreamCompression implements StreamElement {
+    public static final class Failure extends StreamCompression {
 
         @XmlElements({@XmlElement(name = "setup-failed", type = SetupFailed.class),
                 @XmlElement(name = "processing-failed", type = ProcessingFailed.class),
@@ -214,7 +214,7 @@ public abstract class StreamCompression {
      */
     @XmlRootElement
     @XmlType(factoryMethod = "create")
-    static final class Compressed extends StreamCompression implements StreamElement {
+    static final class Compressed extends StreamCompression {
         private Compressed() {
         }
 

@@ -114,19 +114,12 @@ public abstract class StreamCompression implements StreamElement {
              */
             public static final Condition UNSUPPORTED_METHOD = new UnsupportedMethod();
 
-            private final String name;
-
             private Condition() {
-                this.name = null;
-            }
-
-            private Condition(String name) {
-                this.name = name;
             }
 
             @Override
             public final String toString() {
-                return name;
+                return getClass().getName();
             }
         }
 
@@ -136,7 +129,6 @@ public abstract class StreamCompression implements StreamElement {
         @XmlType(factoryMethod = "create")
         private static final class SetupFailed extends Condition {
             private SetupFailed() {
-                super("setup-failed");
             }
 
             private static SetupFailed create() {
@@ -150,7 +142,6 @@ public abstract class StreamCompression implements StreamElement {
         @XmlType(factoryMethod = "create")
         private static final class ProcessingFailed extends Condition {
             private ProcessingFailed() {
-                super("processing-failed");
             }
 
             private static ProcessingFailed create() {
@@ -164,7 +155,6 @@ public abstract class StreamCompression implements StreamElement {
         @XmlType(factoryMethod = "create")
         private static final class UnsupportedMethod extends Condition {
             private UnsupportedMethod() {
-                super("unsupported-method");
             }
 
             private static UnsupportedMethod create() {

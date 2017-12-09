@@ -232,6 +232,8 @@ public final class XmppStreamDecoder {
             throw new StreamErrorException(new StreamError(Condition.INTERNAL_SERVER_ERROR), e);
         } finally {
             xmlStream.trimToSize();
+            // Set the new position to the limit, the feeder doesn't do that for us.
+            in.position(in.limit());
         }
     }
 

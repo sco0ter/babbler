@@ -382,33 +382,15 @@ public class JidTest {
 
     @Test
     public void testLocalPart() {
-        // Some examples from http://tools.ietf.org/html/rfc3454#appendix-B.2
-        String s = "\u0149@domain";
-        Assert.assertEquals(Jid.of(s).getLocal(), "\u02BC\u006E");
 
-        String s1 = "ß@domain";
-        Assert.assertEquals(Jid.of(s1).getLocal(), "ss");
+        String s = "fussball@domain";
+        Assert.assertEquals(Jid.of(s).getLocal(), "fussball");
+
+        String s1 = "fu\u00DFball@domain";
+        Assert.assertEquals(Jid.of(s1).getLocal(), "fu\u00DFball");
 
         String s2 = "\u03B0@domain";
         Assert.assertEquals(Jid.of(s2).getLocal(), PrecisProfiles.USERNAME_CASE_MAPPED.enforce("\u03B0"));
-
-        String s3 = "\u01E0@domain";
-        Assert.assertEquals(Jid.of(s3).getLocal(), "\u01E1");
-
-        String s4 = "\u0226@domain";
-        Assert.assertEquals(Jid.of(s4).getLocal(), "\u0227");
-
-        String s6 = "\u0480@domain";
-        Assert.assertEquals(Jid.of(s6).getLocal(), "\u0481");
-
-        String s7 = "\u0587@domain";
-        Assert.assertEquals(Jid.of(s7).getLocal(), "\u0565\u0582");
-
-        String s8 = "\u1F52@domain";
-        Assert.assertEquals(Jid.of(s8).getLocal(), PrecisProfiles.USERNAME_CASE_MAPPED.enforce("\u1F52"));
-
-        String s9 = "UPPERCASE@domain";
-        Assert.assertEquals(Jid.of(s9).getLocal(), "uppercase");
     }
 
     @Test

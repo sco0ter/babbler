@@ -34,7 +34,7 @@
     </parent>
     <artifactId>xmpp-addr</artifactId>
     <name>XMPP.rocks - Address Format (RFC 7622)</name>
-    <description>XMPP adress format, i.e. Jabber ID</description>
+    <description>XMPP address format, i.e. Jabber ID</description>
     <build>
         <plugins>
             <!-- Generate a sources.jar, so that it can be used by JavaDoc plugin -->

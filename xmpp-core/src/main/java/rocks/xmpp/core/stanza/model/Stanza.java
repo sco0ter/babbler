@@ -260,6 +260,33 @@ public abstract class Stanza implements StreamElement {
      */
     public abstract Stanza createError(Condition condition);
 
+    /**
+     * Checks if a stanza is addressed either to itself or to the server. This is useful to check, if it's allowed to send a stanza before stream negotiation has completed.
+     * <p>
+     * <blockquote>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-negotiation-complete">4.3.5.  Completion of Stream Negotiation</a></cite></p>
+     * <div>
+     * The initiating entity MUST NOT attempt to send XML stanzas to entities other than itself (i.e., the client's connected resource or any other authenticated resource of the client's account) or the server to which it is connected until stream negotiation has been completed.
+     * </div>
+     * </blockquote>
+     *
+     * @param stanza            The stanza.
+     * @param domain            The domain.
+     * @param connectedResource The connected resource.
+     * @return True, if the stanza is addressed to itself or to the server.
+     */
+    public static boolean isToItselfOrServer(final Stanza stanza, final CharSequence domain, final Jid connectedResource) {
+        if (stanza instanceof Presence && stanza.getTo() == null) {
+            return false;
+        }
+        if (stanza.getTo() == null) {
+            return true;
+        }
+        final Jid toBare = stanza.getTo().asBareJid();
+        return (connectedResource != null && toBare.equals(connectedResource.asBareJid()))
+                || (domain != null && (toBare.equals(domain) || toBare.toString().endsWith("." + domain)));
+    }
+
     @Override
     public synchronized String toString() {
         StringBuilder sb = new StringBuilder();

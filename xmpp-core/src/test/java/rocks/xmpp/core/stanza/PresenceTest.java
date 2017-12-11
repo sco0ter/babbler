@@ -29,7 +29,10 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Text;
 import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.util.ComparableTestHelper;
@@ -319,5 +322,48 @@ public class PresenceTest extends XmlTest {
         Assert.assertEquals(list.get(7), presencePrio1Unavailble);
 
         ComparableTestHelper.checkCompareToContract(list);
+    }
+
+    @Test
+    public void testIfStanzaIsToItselfOrServer() {
+        Jid domain = Jid.ofDomain("domain");
+        Jid connectedResource = Jid.of("user@domain/resource");
+
+        // To itself
+        Assert.assertTrue(Stanza.isToItselfOrServer(new Message(), null, null));
+
+        // To itself
+        Assert.assertTrue(Stanza.isToItselfOrServer(new Message(), domain, null));
+
+        // Other server
+        Assert.assertFalse(Stanza.isToItselfOrServer(new Message(Jid.of("to@domain123")), domain, null));
+
+        // Same bare JID as connected resource
+        Assert.assertTrue(Stanza.isToItselfOrServer(new Message(Jid.of("user@domain/res2")), domain, connectedResource));
+
+        // To subdomain, allow that too
+        Assert.assertTrue(Stanza.isToItselfOrServer(new Message(Jid.ofDomain("sub.domain")), domain, connectedResource));
+
+        // To others
+        Assert.assertFalse(Stanza.isToItselfOrServer(new Presence(), domain, null));
+
+        // To itself
+        Assert.assertTrue(Stanza.isToItselfOrServer(new Presence(connectedResource), domain, connectedResource));
+
+        // To server
+        Assert.assertTrue(Stanza.isToItselfOrServer(new Presence(domain), domain, connectedResource));
+
+        // To others
+        Assert.assertFalse(Stanza.isToItselfOrServer(new Presence(), null, null));
+
+        // To others
+        Assert.assertFalse(Stanza.isToItselfOrServer(new Presence(), null, connectedResource));
+
+        // To itself
+        Assert.assertTrue(Stanza.isToItselfOrServer(new IQ(connectedResource, IQ.Type.GET, null), domain, connectedResource));
+
+        // To itself
+        Assert.assertTrue(Stanza.isToItselfOrServer(new IQ((Jid) null, IQ.Type.GET, null), domain, connectedResource));
+
     }
 }

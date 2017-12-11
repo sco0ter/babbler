@@ -33,19 +33,19 @@ import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.ExtensibleStanza;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.IQ.Type;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
@@ -248,18 +248,6 @@ public abstract class XmppSession implements AutoCloseable {
         }
 
         configuration.getExtensions().forEach(serviceDiscoveryManager::registerFeature);
-    }
-
-    static boolean isSentToUserOrServer(Stanza stanza, Jid domain, Jid connectedResource) {
-        if (stanza instanceof Presence) {
-            return false;
-        }
-        if (stanza.getTo() == null) {
-            return true;
-        }
-        Jid toBare = stanza.getTo().asBareJid();
-        return (connectedResource != null && toBare.equals(connectedResource.asBareJid()))
-                || (domain != null && (toBare.equals(domain) || toBare.toString().endsWith('.' + domain.toEscapedString())));
     }
 
     protected static void throwAsXmppExceptionIfNotNull(Throwable e) throws XmppException {
@@ -877,7 +865,7 @@ public abstract class XmppSession implements AutoCloseable {
                 // If resource binding has not completed and it's tried to send a stanza which doesn't serve the purpose
                 // of resource binding, throw an exception, because otherwise the server will terminate the connection with a stream error.
                 if (!EnumSet.of(Status.AUTHENTICATED, Status.CLOSING, Status.DISCONNECTED).contains(getStatus())
-                        && !isSentToUserOrServer(stanza, getDomain(), getConnectedResource())) {
+                        && !Stanza.isToItselfOrServer(stanza, getDomain(), getConnectedResource())) {
                     throw new IllegalStateException("Cannot send stanzas before resource binding has completed.");
                 }
                 if (stanza instanceof Message) {

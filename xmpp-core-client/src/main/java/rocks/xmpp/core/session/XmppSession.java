@@ -354,6 +354,11 @@ public abstract class XmppSession implements AutoCloseable {
                     activeConnection = connection;
                     break;
                 } catch (IOException e) {
+                    try {
+                        connection.close();
+                    } catch (Exception e1) {
+                        e.addSuppressed(e1);
+                    }
                     if (connectionIterator.hasNext()) {
                         logger.log(Level.WARNING, "{0} failed to connect. Trying alternative connection.", connection);
                         logger.log(Level.FINE, e.getMessage(), e);

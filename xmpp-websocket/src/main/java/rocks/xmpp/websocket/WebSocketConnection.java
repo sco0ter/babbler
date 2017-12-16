@@ -216,34 +216,7 @@ public final class WebSocketConnection extends Connection {
                     return;
                 }
                 this.exception = null;
-                this.executorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("WebSocket send thread"));
 
-                if (connectionConfiguration.getPingInterval() != null && !connectionConfiguration.getPingInterval().isNegative() && !connectionConfiguration.getPingInterval().isZero()) {
-                    pingFuture = this.executorService.scheduleAtFixedRate(() -> {
-                        // Send a WebSocket ping in an interval.
-                        synchronized (this) {
-                            try {
-                                if (session != null && session.isOpen()) {
-                                    String uuid = UUID.randomUUID().toString();
-                                    if (pings.add(uuid)) {
-                                        // Send the ping with the UUID as application data, so that we can match it to the pong.
-                                        session.getBasicRemote().sendPing(ByteBuffer.wrap(uuid.getBytes(StandardCharsets.UTF_8)));
-                                        // Later check if the ping has been answered by a pong.
-                                        pongFuture = this.executorService.schedule(() -> {
-                                            if (pings.remove(uuid)) {
-                                                // Ping has not been removed by a corresponding pong (still unanswered).
-                                                // Notify the session with an exception.
-                                                xmppSession.notifyException(new XmppException("No WebSocket pong received in time."));
-                                            }
-                                        }, xmppSession.getConfiguration().getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
-                                    }
-                                }
-                            } catch (IOException e) {
-                                xmppSession.notifyException(e);
-                            }
-                        }
-                    }, 0, connectionConfiguration.getPingInterval().toMillis(), TimeUnit.MILLISECONDS);
-                }
                 if (uri == null) {
                     String protocol = connectionConfiguration.isSecure() ? "wss" : "ws";
                     // If no port has been configured, use the default ports.
@@ -330,6 +303,7 @@ public final class WebSocketConnection extends Connection {
                                 exception.addSuppressed(e);
                             }
                         }
+                        WebSocketConnection.this.executorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("WebSocket send thread"));
                     }
 
                     session.addMessageHandler(String.class, message -> {
@@ -391,6 +365,33 @@ public final class WebSocketConnection extends Connection {
                 if (exception != null) {
                     throw exception instanceof IOException ? (IOException) exception : new IOException(exception);
                 }
+
+                if (connectionConfiguration.getPingInterval() != null && !connectionConfiguration.getPingInterval().isNegative() && !connectionConfiguration.getPingInterval().isZero()) {
+                    pingFuture = this.executorService.scheduleAtFixedRate(() -> {
+                        // Send a WebSocket ping in an interval.
+                        synchronized (this) {
+                            try {
+                                if (this.session != null && this.session.isOpen()) {
+                                    String uuid = UUID.randomUUID().toString();
+                                    if (pings.add(uuid)) {
+                                        // Send the ping with the UUID as application data, so that we can match it to the pong.
+                                        this.session.getBasicRemote().sendPing(ByteBuffer.wrap(uuid.getBytes(StandardCharsets.UTF_8)));
+                                        // Later check if the ping has been answered by a pong.
+                                        pongFuture = this.executorService.schedule(() -> {
+                                            if (pings.remove(uuid)) {
+                                                // Ping has not been removed by a corresponding pong (still unanswered).
+                                                // Notify the session with an exception.
+                                                xmppSession.notifyException(new XmppException("No WebSocket pong received in time."));
+                                            }
+                                        }, xmppSession.getConfiguration().getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                                    }
+                                }
+                            } catch (IOException e) {
+                                xmppSession.notifyException(e);
+                            }
+                        }
+                    }, 0, connectionConfiguration.getPingInterval().toMillis(), TimeUnit.MILLISECONDS);
+                }
             }
             closed.set(false);
         } catch (DeploymentException | URISyntaxException e) {
@@ -449,6 +450,15 @@ public final class WebSocketConnection extends Connection {
             synchronized (this) {
                 if (executorService != null) {
                     executorService.shutdown();
+                    try {
+                        if (!executorService.awaitTermination(50, TimeUnit.MILLISECONDS)) {
+                            executorService.shutdownNow();
+                        }
+                    } catch (InterruptedException e) {
+                        // (Re-)Cancel if current thread also interrupted
+                        executorService.shutdownNow();
+                        Thread.currentThread().interrupt();
+                    }
                     executorService = null;
                 }
                 if (pingFuture != null) {

@@ -29,6 +29,7 @@ import rocks.xmpp.precis.PrecisProfiles;
 import rocks.xmpp.util.cache.LruCache;
 
 import java.net.IDN;
+import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.Map;
 import java.util.Objects;
@@ -281,8 +282,8 @@ final class FullJid extends AbstractJid {
             if (value.length() == 0) {
                 throw new IllegalArgumentException(part + " must not be empty.");
             }
-            if (value.length() > 1023) {
-                throw new IllegalArgumentException(part + " must not be greater than 1023 characters.");
+            if (value.toString().getBytes(StandardCharsets.UTF_8).length > 1023) {
+                throw new IllegalArgumentException(part + " must not be greater than 1023 bytes.");
             }
         }
     }

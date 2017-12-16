@@ -63,6 +63,29 @@ import java.io.Serializable;
 public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
 
     /**
+     * The maximal length of a full JID, which is 3071.
+     * <blockquote>
+     * <p><cite><a href="https://tools.ietf.org/html/rfc7622#section-3.1">3.1.  Fundamentals</a></cite></p>
+     * <p>Each allowable portion of a JID (localpart, domainpart, and
+     * resourcepart) is 1 to 1023 octets in length, resulting in a maximum
+     * total size (including the '@' and '/' separators) of 3071 octets.
+     * </p>
+     * </blockquote>
+     * Note that the length is based on bytes, not characters.
+     *
+     * @see #MAX_BARE_JID_LENGTH
+     */
+    int MAX_FULL_JID_LENGTH = 3071;
+
+    /**
+     * The maximal length of a bare JID, which is 2047 (1023 + 1 + 1023).
+     * Note that the length is based on bytes, not characters.
+     *
+     * @see #MAX_FULL_JID_LENGTH
+     */
+    int MAX_BARE_JID_LENGTH = 2047;
+
+    /**
      * The service discovery feature used for determining support of JID escaping (<code>jid\20escaping</code>).
      */
     String ESCAPING_FEATURE = "jid\\20escaping";

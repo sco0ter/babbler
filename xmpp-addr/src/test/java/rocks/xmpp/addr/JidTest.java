@@ -451,7 +451,8 @@ public class JidTest {
         Jid jid7 = Jid.of("a@ccc");
         Jid jid8 = Jid.of("b@ccc");
         Jid jid9 = Jid.of("ä@aaa");
-
+        Jid malformedJid1 = new MalformedJid("malformed1", null);
+        Jid malformedJid2 = new MalformedJid("malformed2", null);
         jids.add(jid1);
         jids.add(jid2);
         jids.add(jid3);
@@ -461,7 +462,8 @@ public class JidTest {
         jids.add(jid7);
         jids.add(jid8);
         jids.add(jid9);
-
+        jids.add(malformedJid1);
+        jids.add(malformedJid2);
         Collections.shuffle(jids);
         jids.sort(null);
 
@@ -474,7 +476,9 @@ public class JidTest {
         Assert.assertEquals(jids.get(6), jid6);
         Assert.assertEquals(jids.get(7), jid7);
         Assert.assertEquals(jids.get(8), jid8);
-
+        Assert.assertEquals(jids.get(9), malformedJid1);
+        Assert.assertEquals(jids.get(10), malformedJid2);
+        
         ComparableTestHelper.checkCompareToContract(jids);
         Assert.assertTrue(ComparableTestHelper.isConsistentWithEquals(jids));
     }

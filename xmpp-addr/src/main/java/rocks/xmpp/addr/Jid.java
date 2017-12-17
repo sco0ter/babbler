@@ -138,9 +138,6 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
      * Creates a JID from a escaped JID string. The format must be
      * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>
      * This method should be used, when parsing JIDs from the XMPP stream.
-     * <p>
-     * Note, that validation and enforcement is skipped when using this method, because it's expected,
-     * that JID strings passed to this method are already enforced.
      *
      * @param jid The JID.
      * @return The JID.
@@ -149,7 +146,7 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
     static Jid ofEscaped(CharSequence jid) {
-        return FullJid.of(jid.toString(), true, false);
+        return FullJid.of(jid.toString(), true, true);
     }
 
     /**

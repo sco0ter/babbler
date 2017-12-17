@@ -32,15 +32,19 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 final class JidAdapter extends XmlAdapter<String, Jid> {
 
     @Override
-    public Jid unmarshal(String v) throws Exception {
+    public Jid unmarshal(String v) {
         if (v != null) {
-            return Jid.ofEscaped(v);
+            try {
+                return Jid.ofEscaped(v);
+            } catch (Exception e) {
+                return new MalformedJid(v, e);
+            }
         }
         return null;
     }
 
     @Override
-    public String marshal(Jid v) throws Exception {
+    public String marshal(Jid v) {
         if (v != null) {
             return v.toEscapedString();
         }

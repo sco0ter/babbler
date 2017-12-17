@@ -154,7 +154,7 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
     static Jid of(CharSequence jid) {
-        return FullJid.of(jid.toString(), false, true);
+        return FullJid.of(jid.toString(), false);
     }
 
     /**
@@ -169,7 +169,7 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
     static Jid ofEscaped(CharSequence jid) {
-        return FullJid.of(jid.toString(), true, true);
+        return FullJid.of(jid.toString(), true);
     }
 
     /**

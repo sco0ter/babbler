@@ -99,10 +99,10 @@ final class FullJid extends AbstractJid {
      * @param resource The resource part.
      */
     FullJid(CharSequence local, CharSequence domain, CharSequence resource) {
-        this(local, domain, resource, false, true, null);
+        this(local, domain, resource, false, null);
     }
 
-    FullJid(final CharSequence local, final CharSequence domain, final CharSequence resource, final boolean doUnescape, final boolean enforceAndValidate, Jid bareJid) {
+    private FullJid(final CharSequence local, final CharSequence domain, final CharSequence resource, final boolean doUnescape, Jid bareJid) {
         final String enforcedLocalPart;
         final String enforcedDomainPart;
         final String enforcedResource;
@@ -117,29 +117,24 @@ final class FullJid extends AbstractJid {
 
         // Escape the local part, so that disallowed characters like the space characters pass the UsernameCaseMapped profile.
         final String escapedLocalPart = escape(unescapedLocalPart);
-        if (enforceAndValidate) {
-            // If the domainpart includes a final character considered to be a label
-            // separator (dot) by [RFC1034], this character MUST be stripped from
-            // the domainpart before the JID of which it is a part is used for the
-            // purpose of routing an XML stanza, comparing against another JID, or
-            // constructing an XMPP URI or IRI [RFC5122].  In particular, such a
-            // character MUST be stripped before any other canonicalization steps
-            // are taken.
-            // Also validate, that the domain name can be converted to ASCII, i.e. validate the domain name (e.g. must not start with "_").
-            final String strDomain = IDN.toASCII(LABEL_SEPARATOR_FINAL.matcher(Objects.requireNonNull(domain)).replaceAll(""), IDN.USE_STD3_ASCII_RULES);
-            enforcedLocalPart = escapedLocalPart != null ? PrecisProfiles.USERNAME_CASE_MAPPED.enforce(escapedLocalPart) : null;
-            enforcedResource = resource != null ? PrecisProfiles.OPAQUE_STRING.enforce(resource) : null;
-            // See https://tools.ietf.org/html/rfc5895#section-2
-            enforcedDomainPart = IDN_PROFILE.enforce(strDomain);
 
-            validateLength(enforcedLocalPart, "local");
-            validateLength(enforcedResource, "resource");
-            validateDomain(strDomain);
-        } else {
-            enforcedLocalPart = escapedLocalPart != null ? escapedLocalPart : null;
-            enforcedResource = resource != null ? resource.toString() : null;
-            enforcedDomainPart = domain.toString();
-        }
+        // If the domainpart includes a final character considered to be a label
+        // separator (dot) by [RFC1034], this character MUST be stripped from
+        // the domainpart before the JID of which it is a part is used for the
+        // purpose of routing an XML stanza, comparing against another JID, or
+        // constructing an XMPP URI or IRI [RFC5122].  In particular, such a
+        // character MUST be stripped before any other canonicalization steps
+        // are taken.
+        // Also validate, that the domain name can be converted to ASCII, i.e. validate the domain name (e.g. must not start with "_").
+        final String strDomain = IDN.toASCII(LABEL_SEPARATOR_FINAL.matcher(Objects.requireNonNull(domain)).replaceAll(""), IDN.USE_STD3_ASCII_RULES);
+        enforcedLocalPart = escapedLocalPart != null ? PrecisProfiles.USERNAME_CASE_MAPPED.enforce(escapedLocalPart) : null;
+        enforcedResource = resource != null ? PrecisProfiles.OPAQUE_STRING.enforce(resource) : null;
+        // See https://tools.ietf.org/html/rfc5895#section-2
+        enforcedDomainPart = IDN_PROFILE.enforce(strDomain);
+
+        validateLength(enforcedLocalPart, "local");
+        validateLength(enforcedResource, "resource");
+        validateDomain(strDomain);
 
         this.local = unescape(enforcedLocalPart);
         this.escapedLocal = enforcedLocalPart;
@@ -160,7 +155,7 @@ final class FullJid extends AbstractJid {
                     if (Objects.equals(local, this.getLocal())) {
                         return this;
                     }
-                    return new FullJid(local, getDomain(), getResource(), false, true, null);
+                    return new FullJid(local, getDomain(), getResource(), false, null);
                 }
 
                 @Override
@@ -168,12 +163,12 @@ final class FullJid extends AbstractJid {
                     if (Objects.equals(resource, this.getResource())) {
                         return this;
                     }
-                    return new FullJid(getLocal(), getDomain(), resource, false, true, asBareJid());
+                    return new FullJid(getLocal(), getDomain(), resource, false, asBareJid());
                 }
 
                 @Override
                 public Jid atSubdomain(CharSequence subdomain) {
-                    return new FullJid(getLocal(), Objects.requireNonNull(subdomain) + "." + getDomain(), getResource(), false, true, null);
+                    return new FullJid(getLocal(), Objects.requireNonNull(subdomain) + "." + getDomain(), getResource(), false, null);
                 }
 
                 @Override
@@ -203,15 +198,14 @@ final class FullJid extends AbstractJid {
      * Creates a JID from a string. The format must be
      * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>
      *
-     * @param jid                The JID.
-     * @param doUnescape         If the jid parameter will be unescaped.
-     * @param enforceAndValidate If the JID should be enforced and validated.
+     * @param jid        The JID.
+     * @param doUnescape If the jid parameter will be unescaped.
      * @return The JID.
      * @throws NullPointerException     If the jid is null.
      * @throws IllegalArgumentException If the jid could not be parsed or is not valid.
      * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
-    static Jid of(String jid, final boolean doUnescape, final boolean enforceAndValidate) {
+    static Jid of(String jid, final boolean doUnescape) {
         Objects.requireNonNull(jid, "jid must not be null.");
 
         jid = jid.trim();
@@ -233,7 +227,7 @@ final class FullJid extends AbstractJid {
 
         Matcher matcher = JID.matcher(jid);
         if (matcher.matches()) {
-            Jid jidValue = new FullJid(matcher.group(2), matcher.group(3), matcher.group(5), doUnescape, enforceAndValidate, null);
+            Jid jidValue = new FullJid(matcher.group(2), matcher.group(3), matcher.group(5), doUnescape, null);
             if (doUnescape) {
                 UNESCAPED_CACHE.put(jid, jidValue);
             } else {
@@ -400,7 +394,7 @@ final class FullJid extends AbstractJid {
         if (Objects.equals(local, this.getLocal())) {
             return this;
         }
-        return new FullJid(local, getDomain(), getResource(), false, true, null);
+        return new FullJid(local, getDomain(), getResource(), false, null);
     }
 
     /**
@@ -417,7 +411,7 @@ final class FullJid extends AbstractJid {
         if (Objects.equals(resource, this.getResource())) {
             return this;
         }
-        return new FullJid(getLocal(), getDomain(), resource, false, true, asBareJid());
+        return new FullJid(getLocal(), getDomain(), resource, false, asBareJid());
     }
 
     /**
@@ -430,7 +424,7 @@ final class FullJid extends AbstractJid {
      */
     @Override
     public final Jid atSubdomain(CharSequence subdomain) {
-        return new FullJid(getLocal(), Objects.requireNonNull(subdomain) + "." + getDomain(), getResource(), false, true, null);
+        return new FullJid(getLocal(), Objects.requireNonNull(subdomain) + "." + getDomain(), getResource(), false, null);
     }
 
     /**

@@ -156,6 +156,27 @@ final class FullJid extends AbstractJid {
                 }
 
                 @Override
+                public Jid withLocal(CharSequence local) {
+                    if (Objects.equals(local, this.getLocal())) {
+                        return this;
+                    }
+                    return new FullJid(local, getDomain(), getResource(), false, true, null);
+                }
+
+                @Override
+                public Jid withResource(CharSequence resource) {
+                    if (Objects.equals(resource, this.getResource())) {
+                        return this;
+                    }
+                    return new FullJid(getLocal(), getDomain(), resource, false, true, asBareJid());
+                }
+
+                @Override
+                public Jid atSubdomain(CharSequence subdomain) {
+                    return new FullJid(getLocal(), Objects.requireNonNull(subdomain) + "." + getDomain(), getResource(), false, true, null);
+                }
+
+                @Override
                 public String getLocal() {
                     return FullJid.this.getLocal();
                 }
@@ -364,6 +385,52 @@ final class FullJid extends AbstractJid {
     @Override
     public final String getResource() {
         return resource;
+    }
+
+    /**
+     * Creates a new JID with a new local part and the same domain and resource part of the current JID.
+     *
+     * @param local The local part.
+     * @return The JID with a new local part.
+     * @throws IllegalArgumentException If the local is not a valid local part.
+     * @see #withResource(CharSequence)
+     */
+    @Override
+    public final Jid withLocal(CharSequence local) {
+        if (Objects.equals(local, this.getLocal())) {
+            return this;
+        }
+        return new FullJid(local, getDomain(), getResource(), false, true, null);
+    }
+
+    /**
+     * Creates a new full JID with a resource and the same local and domain part of the current JID.
+     *
+     * @param resource The resource.
+     * @return The full JID with a resource.
+     * @throws IllegalArgumentException If the resource is not a valid resource part.
+     * @see #asBareJid()
+     * @see #withLocal(CharSequence)
+     */
+    @Override
+    public final Jid withResource(CharSequence resource) {
+        if (Objects.equals(resource, this.getResource())) {
+            return this;
+        }
+        return new FullJid(getLocal(), getDomain(), resource, false, true, asBareJid());
+    }
+
+    /**
+     * Creates a new JID at a subdomain and at the same domain as this JID.
+     *
+     * @param subdomain The subdomain.
+     * @return The JID at a subdomain.
+     * @throws NullPointerException     If subdomain is null.
+     * @throws IllegalArgumentException If subdomain is not a valid subdomain name.
+     */
+    @Override
+    public final Jid atSubdomain(CharSequence subdomain) {
+        return new FullJid(getLocal(), Objects.requireNonNull(subdomain) + "." + getDomain(), getResource(), false, true, null);
     }
 
     /**

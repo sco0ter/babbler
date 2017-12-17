@@ -391,7 +391,7 @@ public class Message extends ExtensibleStanza {
 
     @Override
     public final Message createError(StanzaError error) {
-        return new Message(getFrom(), Type.ERROR, getBodies(), getSubjects(), getThread(), getParentThread(), getId(), getTo(), getLanguage(), getExtensions(), getError());
+        return new Message(getFrom(), Type.ERROR, getBodies(), getSubjects(), getThread(), getParentThread(), getId(), getTo(), getLanguage(), getExtensions(), error);
     }
 
     @Override

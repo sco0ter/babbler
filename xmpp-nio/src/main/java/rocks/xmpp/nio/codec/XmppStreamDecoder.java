@@ -185,8 +185,10 @@ public final class XmppStreamDecoder {
                                 elementEnd = end;
 
                                 // Get the element from the stream.
-                                final String element = xmlStream.substring(0, elementLength);
-                                xmlStream.delete(0, elementLength);
+                                byte[] bytes = xmlStream.toString().getBytes(StandardCharsets.UTF_8);
+                                final String element = new String(bytes, 0, elementLength, StandardCharsets.UTF_8);
+
+                                xmlStream.delete(0, element.length());
 
                                 // Create a partial stream, which always consists of the stream header (to have namespace declarations)
                                 // and the current element.

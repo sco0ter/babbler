@@ -32,100 +32,74 @@ package rocks.xmpp.addr;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-jid-malformed">RFC 6120, 8.3.3.8.  jid-malformed</a>
  */
-public final class MalformedJid implements Jid {
+public final class MalformedJid extends AbstractJid {
 
-    private static final long serialVersionUID = -1563072620243158894L;
+    private static final long serialVersionUID = -2896737611021417985L;
 
-    private final String malformedJid;
+    private final String localPart;
+
+    private final String domainPart;
+
+    private final String resourcePart;
 
     private final Throwable cause;
 
-    MalformedJid(final String jid, final Throwable cause) {
-        this.malformedJid = jid;
+    static MalformedJid of(final String jid, final Throwable cause) {
+        // Do some basic parsing without any further checks or validation.
+        final StringBuilder sb = new StringBuilder(jid);
+        // 1.  Remove any portion from the first '/' character to the end of the
+        // string (if there is a '/' character present).
+        final int indexOfResourceDelimiter = jid.indexOf('/');
+        final String resourcePart;
+        if (indexOfResourceDelimiter > -1) {
+            resourcePart = sb.substring(indexOfResourceDelimiter + 1);
+            sb.delete(indexOfResourceDelimiter, sb.length());
+        } else {
+            resourcePart = null;
+        }
+        // 2.  Remove any portion from the beginning of the string to the first
+        // '@' character (if there is an '@' character present).
+        final int indexOfAt = jid.indexOf('@');
+        final String localPart;
+        if (indexOfAt > -1) {
+            localPart = sb.substring(0, indexOfAt);
+            sb.delete(0, indexOfAt + 1);
+        } else {
+            localPart = null;
+        }
+        return new MalformedJid(localPart, sb.toString(), resourcePart, cause);
+    }
+
+    private MalformedJid(final String localPart, final String domainPart, final String resourcePart, final Throwable cause) {
+        this.localPart = localPart;
+        this.domainPart = domainPart;
+        this.resourcePart = resourcePart;
         this.cause = cause;
     }
 
     @Override
-    public final boolean isFullJid() {
-        return false;
-    }
-
-    @Override
-    public final boolean isBareJid() {
-        return false;
-    }
-
-    @Override
     public final Jid asBareJid() {
-        return this;
-    }
-
-    @Override
-    public final Jid withLocal(CharSequence local) {
-        return this;
-    }
-
-    @Override
-    public final Jid withResource(CharSequence resource) {
-        return this;
-    }
-
-    @Override
-    public final Jid atSubdomain(CharSequence subdomain) {
-        return this;
+        return new MalformedJid(localPart, domainPart, null, cause);
     }
 
     @Override
     public final String getLocal() {
-        return null;
+        return localPart;
     }
 
     @Override
     public final String getEscapedLocal() {
-        return null;
+        return localPart;
     }
 
     @Override
     public final String getDomain() {
-        return null;
+        return domainPart;
     }
 
     @Override
     public final String getResource() {
-        return null;
-    }
-
-    @Override
-    public final String toEscapedString() {
-        return toString();
-    }
-
-    @Override
-    public final int length() {
-        return malformedJid.length();
-    }
-
-    @Override
-    public final char charAt(int index) {
-        return malformedJid.charAt(index);
-    }
-
-    @Override
-    public final CharSequence subSequence(int start, int end) {
-        return malformedJid.subSequence(start, end);
-    }
-
-    @Override
-    public final int compareTo(Jid o) {
-        if (o instanceof MalformedJid) {
-            return malformedJid.compareTo(((MalformedJid) o).malformedJid);
-        }
-        return 1;
-    }
-
-    @Override
-    public final String toString() {
-        return malformedJid;
+        return resourcePart;
     }
 
     /**

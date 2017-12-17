@@ -37,7 +37,7 @@ final class JidAdapter extends XmlAdapter<String, Jid> {
             try {
                 return Jid.ofEscaped(v);
             } catch (Exception e) {
-                return new MalformedJid(v, e);
+                return MalformedJid.of(v, e);
             }
         }
         return null;

@@ -451,8 +451,8 @@ public class JidTest {
         Jid jid7 = Jid.of("a@ccc");
         Jid jid8 = Jid.of("b@ccc");
         Jid jid9 = Jid.of("ä@aaa");
-        Jid malformedJid1 = new MalformedJid("malformed1", null);
-        Jid malformedJid2 = new MalformedJid("malformed2", null);
+        Jid malformedJid1 = MalformedJid.of("malformed1", null);
+        Jid malformedJid2 = MalformedJid.of("malformed2", null);
         jids.add(jid1);
         jids.add(jid2);
         jids.add(jid3);
@@ -533,9 +533,14 @@ public class JidTest {
 
     @Test
     public void testBadCodePoints() {
-        Jid jid = Jid.ofEscaped("99999_contains_both_-_dash_and_–_emdash@conf.hipchat.com");
+        Jid jid = MalformedJid.of("99999_contains_both_-_dash_and_–_emdash@conf.hipchat.com/resource", null);
         Assert.assertEquals(jid.getLocal(), "99999_contains_both_-_dash_and_–_emdash");
         Assert.assertEquals(jid.getDomain(), "conf.hipchat.com");
+        Assert.assertEquals(jid.getResource(), "resource");
+        Assert.assertTrue(jid.isFullJid());
+        Jid bareJid = jid.asBareJid();
+        Assert.assertTrue(bareJid instanceof MalformedJid);
+        Assert.assertTrue(bareJid.isBareJid());
     }
 
     @Test

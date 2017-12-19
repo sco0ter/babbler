@@ -448,6 +448,14 @@ public final class WebSocketConnection extends Connection {
             streamFeaturesManager.removeFeatureNegotiator(streamManager);
             pings.clear();
             synchronized (this) {
+                if (pingFuture != null) {
+                    pingFuture.cancel(false);
+                    pingFuture = null;
+                }
+                if (pongFuture != null) {
+                    pongFuture.cancel(false);
+                    pongFuture = null;
+                }
                 if (executorService != null) {
                     executorService.shutdown();
                     try {
@@ -460,14 +468,6 @@ public final class WebSocketConnection extends Connection {
                         Thread.currentThread().interrupt();
                     }
                     executorService = null;
-                }
-                if (pingFuture != null) {
-                    pingFuture.cancel(false);
-                    pingFuture = null;
-                }
-                if (pongFuture != null) {
-                    pongFuture.cancel(false);
-                    pongFuture = null;
                 }
             }
         }

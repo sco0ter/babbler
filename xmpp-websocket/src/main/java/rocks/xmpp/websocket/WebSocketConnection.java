@@ -42,6 +42,8 @@ import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.CompletionStages;
+import rocks.xmpp.websocket.codec.XmppWebSocketDecoder;
+import rocks.xmpp.websocket.codec.XmppWebSocketEncoder;
 import rocks.xmpp.websocket.model.Close;
 import rocks.xmpp.websocket.model.Open;
 
@@ -55,10 +57,9 @@ import javax.websocket.MessageHandler;
 import javax.websocket.PongMessage;
 import javax.websocket.Session;
 import javax.websocket.SessionException;
-import javax.xml.stream.XMLStreamWriter;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -79,6 +80,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /**
  * An XMPP WebSocket connection method.
@@ -171,31 +174,16 @@ public final class WebSocketConnection extends Connection {
         // Note: The TyrusFuture returned by session.getAsyncRemote().sendText() is not cancellable.
         // Therefore use our own future with the BasicRemote.
         return CompletableFuture.runAsync(() -> {
-            try (StringWriter writer = new StringWriter()) {
-                XMLStreamWriter xmlStreamWriter = null;
-                try {
-                    xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(writer), null);
-                    xmppSession.createMarshaller().marshal(streamElement, xmlStreamWriter);
-                    xmlStreamWriter.flush();
-                    String xml = writer.toString();
-                    if (streamElement instanceof Stanza) {
-                        // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowleged" queue.
-                        this.streamManager.markUnacknowledged((Stanza) streamElement);
-                    }
-
-                    session.getBasicRemote().sendText(xml);
-                    if (streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement)) {
-                        send(StreamManagement.REQUEST);
-                    }
-                    if (debugger != null) {
-                        debugger.writeStanza(xml, streamElement);
-                    }
-
-                } finally {
-                    if (xmlStreamWriter != null) {
-                        xmlStreamWriter.close();
-                    }
+            try {
+                if (streamElement instanceof Stanza) {
+                    // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowledged" queue.
+                    this.streamManager.markUnacknowledged((Stanza) streamElement);
                 }
+                session.getBasicRemote().sendObject(streamElement);
+                if (streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement)) {
+                    send(StreamManagement.REQUEST);
+                }
+
             } catch (Exception e) {
                 xmppSession.notifyException(e);
                 throw new CompletionException(e);
@@ -241,27 +229,35 @@ public final class WebSocketConnection extends Connection {
                 path = uri;
             }
             final AtomicBoolean handshakeSucceeded = new AtomicBoolean();
-            final ClientEndpointConfig clientEndpointConfig = ClientEndpointConfig.Builder.create().configurator(new ClientEndpointConfig.Configurator() {
-                @Override
-                public void beforeRequest(Map<String, List<String>> headers) {
-                    // During the WebSocket handshake, the client MUST include the value
-                    // 'xmpp' in the list of protocols for the 'Sec-WebSocket-Protocol'
-                    // header.
-                    headers.put("Sec-WebSocket-Protocol", Collections.singletonList("xmpp"));
-                }
+            final ClientEndpointConfig clientEndpointConfig = ClientEndpointConfig.Builder.create()
+                    .encoders(Collections.singletonList(XmppWebSocketEncoder.class))
+                    .decoders(Collections.singletonList(XmppWebSocketDecoder.class))
+                    .configurator(new ClientEndpointConfig.Configurator() {
+                        @Override
+                        public void beforeRequest(Map<String, List<String>> headers) {
+                            // During the WebSocket handshake, the client MUST include the value
+                            // 'xmpp' in the list of protocols for the 'Sec-WebSocket-Protocol'
+                            // header.
+                            headers.put("Sec-WebSocket-Protocol", Collections.singletonList("xmpp"));
+                        }
 
-                @Override
-                public void afterResponse(HandshakeResponse response) {
-                    // If a client receives a handshake response that does not include
-                    // 'xmpp' in the 'Sec-WebSocket-Protocol' header, then an XMPP
-                    // subprotocol WebSocket connection was not established and the client
-                    // MUST close the WebSocket connection.
-                    List<String> responseHeader = response.getHeaders().get("Sec-WebSocket-Protocol");
-                    if (responseHeader != null && responseHeader.contains("xmpp")) {
-                        handshakeSucceeded.set(true);
-                    }
-                }
-            }).build();
+                        @Override
+                        public void afterResponse(HandshakeResponse response) {
+                            // If a client receives a handshake response that does not include
+                            // 'xmpp' in the 'Sec-WebSocket-Protocol' header, then an XMPP
+                            // subprotocol WebSocket connection was not established and the client
+                            // MUST close the WebSocket connection.
+                            List<String> responseHeader = response.getHeaders().get("Sec-WebSocket-Protocol");
+                            if (responseHeader != null && responseHeader.contains("xmpp")) {
+                                handshakeSucceeded.set(true);
+                            }
+                        }
+                    }).build();
+            clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.MARSHALLER, (Supplier<Marshaller>) xmppSession::createMarshaller);
+            clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.UNMARSHALLER, (Supplier<Unmarshaller>) xmppSession::createUnmarshaller);
+            clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.ON_WRITE, (BiConsumer<String, StreamElement>) debugger::writeStanza);
+            clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.ON_READ, (BiConsumer<String, StreamElement>) debugger::readStanza);
+            clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.XML_OUTPUT_FACTORY, xmppSession.getConfiguration().getXmlOutputFactory());
 
             final ClientManager client = ClientManager.createClient(JdkClientContainer.class.getName());
             if (connectionConfiguration.getSSLContext() != null) {
@@ -304,12 +300,8 @@ public final class WebSocketConnection extends Connection {
                         WebSocketConnection.this.executorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("WebSocket send thread"));
                     }
 
-                    session.addMessageHandler(String.class, message -> {
+                    session.addMessageHandler(StreamElement.class, element -> {
                         try {
-                            Object element = xmppSession.createUnmarshaller().unmarshal(new StringReader(message));
-                            if (debugger != null) {
-                                debugger.readStanza(message, element);
-                            }
                             if (element instanceof Open) {
                                 Open open = (Open) element;
                                 synchronized (WebSocketConnection.this) {

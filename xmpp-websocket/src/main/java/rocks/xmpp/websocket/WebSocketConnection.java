@@ -57,6 +57,7 @@ import javax.websocket.MessageHandler;
 import javax.websocket.PongMessage;
 import javax.websocket.Session;
 import javax.websocket.SessionException;
+import javax.websocket.server.HandshakeRequest;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
@@ -232,22 +233,15 @@ public final class WebSocketConnection extends Connection {
             final ClientEndpointConfig clientEndpointConfig = ClientEndpointConfig.Builder.create()
                     .encoders(Collections.singletonList(XmppWebSocketEncoder.class))
                     .decoders(Collections.singletonList(XmppWebSocketDecoder.class))
+                    .preferredSubprotocols(Collections.singletonList("xmpp"))
                     .configurator(new ClientEndpointConfig.Configurator() {
-                        @Override
-                        public void beforeRequest(Map<String, List<String>> headers) {
-                            // During the WebSocket handshake, the client MUST include the value
-                            // 'xmpp' in the list of protocols for the 'Sec-WebSocket-Protocol'
-                            // header.
-                            headers.put("Sec-WebSocket-Protocol", Collections.singletonList("xmpp"));
-                        }
-
                         @Override
                         public void afterResponse(HandshakeResponse response) {
                             // If a client receives a handshake response that does not include
                             // 'xmpp' in the 'Sec-WebSocket-Protocol' header, then an XMPP
                             // subprotocol WebSocket connection was not established and the client
                             // MUST close the WebSocket connection.
-                            List<String> responseHeader = response.getHeaders().get("Sec-WebSocket-Protocol");
+                            List<String> responseHeader = response.getHeaders().get(HandshakeRequest.SEC_WEBSOCKET_PROTOCOL);
                             if (responseHeader != null && responseHeader.contains("xmpp")) {
                                 handshakeSucceeded.set(true);
                             }

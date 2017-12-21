@@ -82,6 +82,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -415,13 +416,14 @@ public final class WebSocketConnection extends Connection {
                     }
                     if (future != null) {
                         // Wait until we receive the "close" frame from the server, then close the session.
-                        future.runAfterEither(CompletionStages.timeoutAfter(500, TimeUnit.MILLISECONDS), () -> {
-                            try {
-                                session.close();
-                            } catch (IOException e) {
-                                throw new UncheckedIOException(e);
-                            }
-                        });
+                        future.applyToEither(CompletionStages.timeoutAfter(500, TimeUnit.MILLISECONDS), Function.identity())
+                                .whenComplete((aVoid, throwable) -> {
+                                    try {
+                                        session.close();
+                                    } catch (IOException e) {
+                                        throw new UncheckedIOException(e);
+                                    }
+                                });
                     } else {
                         session.close();
                     }

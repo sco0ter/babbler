@@ -384,7 +384,7 @@ public final class AvatarManager extends Manager {
                     }
                     userHashes.put(contact, hash1);
                     if (!Arrays.equals(avatar, new byte[0])) {
-                        storeToCache(hash, avatar);
+                        storeToCache(hash1, avatar);
                     }
                     avatarRequests.remove(contact);
                     return avatar;

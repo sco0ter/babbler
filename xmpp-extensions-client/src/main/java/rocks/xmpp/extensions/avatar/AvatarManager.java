@@ -24,6 +24,31 @@
 
 package rocks.xmpp.extensions.avatar;
 
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.imageio.ImageIO;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
@@ -48,29 +73,6 @@ import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.cache.DirectoryCache;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static java.util.Objects.requireNonNull;
-import static java.util.Optional.ofNullable;
 
 /**
  * This class manages avatar updates as described in <a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a> and <a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>.
@@ -103,6 +105,8 @@ public final class AvatarManager extends Manager {
 
     private final Map<String, byte[]> avatarCache;
 
+    private final Map<String, byte[]> hashesLocalStore;
+
     private final Consumer<PresenceEvent> inboundPresenceListener;
 
     private final Consumer<PresenceEvent> outboundPresenceListener;
@@ -114,6 +118,9 @@ public final class AvatarManager extends Manager {
 
         vCardManager = xmppSession.getManager(VCardManager.class);
         avatarCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("avatars")) : null;
+        hashesLocalStore = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("userhashes")) : null;
+
+        restoreUserHashes();
 
         inboundPresenceListener = e -> {
             final Presence presence = e.getPresence();
@@ -416,6 +423,14 @@ public final class AvatarManager extends Manager {
         }
     }
 
+    private final void backupUserHashes() {
+        this.userHashes.forEach((jid, hash) -> this.hashesLocalStore.put(jid + ".userhash", hash.getBytes(StandardCharsets.UTF_16)));
+    }
+
+    private final void restoreUserHashes() {
+        this.hashesLocalStore.forEach((jid, hash) -> this.userHashes.put(Jid.of(jid.replace(".userhash", "")), new String(hash, StandardCharsets.UTF_16)));
+    }
+
     /**
      * Gets the user avatar from the user's vCard.
      *
@@ -611,6 +626,8 @@ public final class AvatarManager extends Manager {
 
     @Override
     protected void dispose() {
+        backupUserHashes();
+
         avatarChangeListeners.clear();
         avatarRequests.clear();
         nonConformingResources.clear();

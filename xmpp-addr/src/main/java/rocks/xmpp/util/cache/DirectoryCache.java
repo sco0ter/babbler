@@ -26,17 +26,21 @@ package rocks.xmpp.util.cache;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.DirectoryStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A simple directory based cache for caching of persistent items like avatars or entity capabilities.
@@ -53,24 +57,16 @@ public final class DirectoryCache implements Map<String, byte[]> {
 
     @Override
     public final int size() {
-        final int[] size = {0};
-        try {
-            Files.walkFileTree(cacheDirectory, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    size[0]++;
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+        try (final Stream<Path> files = cacheContent()) {
+            return (int) Math.min(files.count(), Integer.MAX_VALUE);
         }
-        return size[0];
     }
 
     @Override
     public final boolean isEmpty() {
-        return size() == 0;
+        try (final Stream<Path> files = cacheContent()) {
+            return files.findAny().map(file -> Boolean.FALSE).orElse(Boolean.TRUE);
+        }
     }
 
     @Override
@@ -85,32 +81,29 @@ public final class DirectoryCache implements Map<String, byte[]> {
 
     @Override
     public final byte[] get(final Object key) {
-        if (key != null && !key.toString().isEmpty()) {
-            Path file = cacheDirectory.resolve(key.toString());
-            if (Files.isReadable(file)) {
-                try {
-                    return Files.readAllBytes(file);
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
+        return Optional.ofNullable(key).map(Object::toString).filter(((Predicate<String>) String::isEmpty).negate()).map(cacheDirectory::resolve).filter(Files::isReadable).map(file -> {
+            try {
+                return Files.readAllBytes(file);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
             }
-        }
-        return null;
+        }).orElse(null);
     }
 
     @Override
     public final byte[] put(String key, byte[] value) {
         // Make sure the directory exists.
         byte[] data = get(key);
-        try {
-            if (Files.notExists(cacheDirectory)) {
-                Files.createDirectories(cacheDirectory);
+        if (!Arrays.equals(data, value))
+            try {
+                if (Files.notExists(cacheDirectory)) {
+                    Files.createDirectories(cacheDirectory);
+                }
+                Path file = cacheDirectory.resolve(key);
+                Files.write(file, value);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
             }
-            Path file = cacheDirectory.resolve(key);
-            Files.write(file, value);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
         return data;
     }
 
@@ -127,9 +120,7 @@ public final class DirectoryCache implements Map<String, byte[]> {
 
     @Override
     public final void putAll(Map<? extends String, ? extends byte[]> m) {
-        for (Map.Entry<? extends String, ? extends byte[]> entry : m.entrySet()) {
-            put(entry.getKey(), entry.getValue());
-        }
+        m.forEach(this::put);
     }
 
     @Override
@@ -158,15 +149,11 @@ public final class DirectoryCache implements Map<String, byte[]> {
 
     @Override
     public final Set<String> keySet() {
-        Set<String> fileNames = new HashSet<>();
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(cacheDirectory)) {
-            for (Path path : directoryStream) {
-                fileNames.add(path.getFileName().toString());
-            }
+        try (final Stream<Path> files = Files.list(cacheDirectory)) {
+            return Collections.unmodifiableSet(files.map(Path::getFileName).map(Path::toString).collect(Collectors.toSet()));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        return Collections.unmodifiableSet(fileNames);
     }
 
     @Override
@@ -178,4 +165,27 @@ public final class DirectoryCache implements Map<String, byte[]> {
     public final Set<Entry<String, byte[]>> entrySet() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public final void forEach(final BiConsumer<? super String, ? super byte[]> action) {
+        if (Files.exists(cacheDirectory))
+            try (final Stream<Path> files = cacheContent().filter(Files::isReadable)) {
+                files.forEach(file -> {
+                    try {
+                        action.accept(file.getFileName().toString(), Files.readAllBytes(file));
+                    } catch (final IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                });
+            }
+    }
+
+    private final Stream<Path> cacheContent() {
+        try {
+            return Files.walk(cacheDirectory).filter(Files::isRegularFile);
+        } catch (final IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
 }

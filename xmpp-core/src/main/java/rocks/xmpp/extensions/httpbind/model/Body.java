@@ -43,6 +43,8 @@ import java.util.Locale;
 /**
  * The implementation of the {@code <body/>} element in the {@code http://jabber.org/protocol/httpbind} namespace.
  * <p>
+ * The natural ordering of this class is ordering by request ids (RID).
+ * <p>
  * This class is immutable.
  *
  * @author Christian Schudt
@@ -51,7 +53,7 @@ import java.util.Locale;
  * @see <a href="http://xmpp.org/extensions/xep-0124.html#schema">XML Schema</a>
  */
 @XmlRootElement
-public final class Body implements SessionOpen {
+public final class Body implements SessionOpen, Comparable<Body> {
 
     /**
      * http://jabber.org/protocol/httpbind
@@ -559,6 +561,48 @@ public final class Body implements SessionOpen {
      */
     public final Boolean getRestartLogic() {
         return restartlogic;
+    }
+
+    /**
+     * Compares this body with another body by using the {@linkplain #getRid() request id}.
+     * Null bodies are sorted last, while null RIDs are sorted first (as it may indicate a session creation request).
+     *
+     * @param o The body.
+     * @return The comparison result.
+     */
+    @Override
+    public final int compareTo(final Body o) {
+        if (o == null) {
+            return -1;
+        }
+        if (rid != null) {
+            if (o.rid != null) {
+                return rid.compareTo(o.rid);
+            } else {
+                return 1;
+            }
+        } else {
+            if (o.rid != null) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+    }
+
+    @Override
+    public final String toString() {
+        final StringBuilder sb = new StringBuilder();
+        if (rid != null) {
+            sb.append("RID: ").append(rid).append("; ");
+        }
+        if (sid != null) {
+            sb.append("SID: ").append(sid).append("; ");
+        }
+        if (wait != null) {
+            sb.append("Wait: ").append(wait);
+        }
+        return sb.toString();
     }
 
     /**

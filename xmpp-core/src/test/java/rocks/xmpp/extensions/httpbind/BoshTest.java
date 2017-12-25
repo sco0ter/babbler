@@ -34,10 +34,14 @@ import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.im.roster.model.Roster;
+import rocks.xmpp.util.ComparableTestHelper;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Christian Schudt
@@ -188,5 +192,25 @@ public class BoshTest extends XmlTest {
                 .wrappedObjects(Arrays.asList(iq, ClientPresence.from(new Presence()))).build();
 
         Assert.assertEquals(marshal(body), "<body xmlns=\"http://jabber.org/protocol/httpbind\"><iq xmlns=\"jabber:client\" id=\"1\" type=\"get\"><query xmlns=\"jabber:iq:roster\"></query></iq><presence xmlns=\"jabber:client\"></presence></body>");
+    }
+
+    @Test
+    public void testComparable() {
+        Body bodyNoRid1 = Body.builder().build();
+        Body bodyNoRid2 = Body.builder().build();
+        Body body1 = Body.builder().requestId(1).build();
+        Body body2 = Body.builder().requestId(2).build();
+
+        List<Body> bodies = new ArrayList<>();
+        bodies.add(bodyNoRid1);
+        bodies.add(bodyNoRid2);
+        bodies.add(body1);
+        bodies.add(body2);
+        Collections.shuffle(bodies);
+        bodies.sort(null);
+        
+        Assert.assertSame(bodies.get(2), body1);
+        Assert.assertSame(bodies.get(3), body2);
+        ComparableTestHelper.checkCompareToContract(bodies);
     }
 }

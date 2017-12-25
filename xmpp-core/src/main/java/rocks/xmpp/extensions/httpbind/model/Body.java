@@ -517,7 +517,7 @@ public final class Body implements SessionOpen {
      * @return The 'version' attribute value.
      */
     public final String getVersion() {
-        return version;
+        return ver;
     }
 
     /**

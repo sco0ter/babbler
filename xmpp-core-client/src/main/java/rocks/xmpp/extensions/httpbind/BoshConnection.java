@@ -626,7 +626,7 @@ public final class BoshConnection extends Connection {
                                         ((httpBindExecutor == null || httpBindExecutor.isShutdown())
                                                 || (requestCount.get() > 0
                                                 && body.getPause() == null
-                                                && (body.getRestart() == null || !body.getRestart()) && sessionId != null && elementsToSend.isEmpty()))) {
+                                                && !body.isRestart() && sessionId != null && elementsToSend.isEmpty()))) {
                                     return;
                                 }
                                 // Clear everything after the elements have been sent.

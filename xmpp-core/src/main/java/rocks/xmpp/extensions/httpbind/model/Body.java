@@ -579,8 +579,8 @@ public final class Body implements SessionOpen, Comparable<Body> {
      *
      * @return The 'restart' attribute value.
      */
-    public final Boolean getRestart() {
-        return restart;
+    public final boolean isRestart() {
+        return restart != null && restart;
     }
 
     /**
@@ -588,8 +588,8 @@ public final class Body implements SessionOpen, Comparable<Body> {
      *
      * @return The 'restartlogic' attribute value.
      */
-    public final Boolean getRestartLogic() {
-        return restartlogic;
+    public final boolean isRestartLogic() {
+        return restartlogic != null && restartlogic;
     }
 
     /**

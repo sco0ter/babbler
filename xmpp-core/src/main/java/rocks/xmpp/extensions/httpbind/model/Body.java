@@ -33,12 +33,17 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * The implementation of the {@code <body/>} element in the {@code http://jabber.org/protocol/httpbind} namespace.
@@ -86,7 +91,8 @@ public final class Body implements SessionOpen, Comparable<Body> {
     private final String authid;
 
     @XmlAttribute
-    private final String charsets;
+    @XmlJavaTypeAdapter(CharsetAdapter.class)
+    private final List<Charset> charsets;
 
     @XmlAttribute
     private final Condition condition;
@@ -223,7 +229,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
         this.accept = builder.accept;
         this.ack = builder.ack;
         this.authid = builder.authId;
-        this.charsets = builder.charsets;
+        this.charsets = builder.charsets != null ? Arrays.asList(builder.charsets) : null;
         this.condition = builder.condition;
         this.content = builder.content;
         this.from = builder.from;
@@ -296,6 +302,8 @@ public final class Body implements SessionOpen, Comparable<Body> {
      * When responding to a request that it has been holding, if the connection manager finds it has already received another request with a higher 'rid' attribute (typically while it was holding the first request), then it MAY acknowledge the reception to the client. The connection manager MAY set the 'ack' attribute of any response to the value of the highest 'rid' attribute it has received in the case where it has also received all requests with lower 'rid' values.</p>
      *
      * @return The acknowledged request.
+     * @see #getReport()
+     * @see #getTime()
      */
     public final Long getAck() {
         return ack;
@@ -316,14 +324,15 @@ public final class Body implements SessionOpen, Comparable<Body> {
      *
      * @return The available charsets.
      */
-    public final String getCharsets() {
-        return charsets;
+    public final List<Charset> getCharsets() {
+        return charsets != null ? charsets : Collections.emptyList();
     }
 
     /**
      * Gets a terminal binding condition.
      *
      * @return The condition.
+     * @see #getType()
      * @see <a href="https://xmpp.org/extensions/xep-0124.html#errorstatus-terminal">17.2 Terminal Binding Conditions</a>
      */
     public final Condition getCondition() {
@@ -333,7 +342,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
     /**
      * Some clients are constrained to only accept HTTP responses with specific Content-Types (e.g., "text/html"). The {@code <body/>} element of the first request MAY possess a 'content' attribute. This specifies the value of the HTTP Content-Type header that MUST appear in all the connection manager's responses during the session. If the client request does not possess a 'content' attribute, then the HTTP Content-Type header of responses MUST be "text/xml; charset=utf-8".
      *
-     * @return The content.
+     * @return The content type.
      */
     public final String getContent() {
         return content;
@@ -354,6 +363,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
      * The client SHOULD set the 'hold' attribute to a value of "1".
      *
      * @return The 'hold' attribute.
+     * @see #getRequests()
      */
     public final Short getHold() {
         return hold;
@@ -366,6 +376,8 @@ public final class Body implements SessionOpen, Comparable<Body> {
      * The length of this period (in seconds) is specified by the 'inactivity' attribute in the session creation response.
      *
      * @return The length in seconds.
+     * @see #getPause()
+     * @see #getMaxPause()
      * @see <a href="https://xmpp.org/extensions/xep-0124.html#inactive">10. Inactivity</a>
      */
     public final Integer getInactivity() {
@@ -408,6 +420,8 @@ public final class Body implements SessionOpen, Comparable<Body> {
      * If a client encounters an exceptional temporary situation during which it will be unable to send requests to the connection manager for a period of time greater than the maximum inactivity period (e.g., while a runtime environment changes from one web page to another), and if the connection manager included a 'maxpause' attribute in its Session Creation Response, then the client MAY request a temporary increase to the maximum inactivity period by including a 'pause' attribute in a request.</p>
      *
      * @return The 'pause' attribute value.
+     * @see #getMaxPause()
+     * @see #getInactivity()
      */
     public final Integer getPause() {
         return pause;
@@ -428,6 +442,8 @@ public final class Body implements SessionOpen, Comparable<Body> {
      * Upon reception of a response with 'report' and 'time' attributes, if the client has still not received the response associated with the request identifier specified by the 'report' attribute, then it MAY choose to resend the request associated with the missing response.
      *
      * @return The 'report' attribute value.
+     * @see #getTime()
+     * @see #getAck()
      */
     public final Long getReport() {
         return report;
@@ -437,6 +453,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
      * This attribute enables the connection manager to limit the number of simultaneous requests the client makes (see Overactivity and Polling Sessions). The RECOMMENDED values are either "2" or one more than the value of the 'hold' attribute specified in the session request.
      *
      * @return The 'requests' attribute value.
+     * @see #getHold()
      */
     public final Short getRequests() {
         return requests;
@@ -494,6 +511,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
      *
      * @return The 'time' attribute value.
      * @see #getReport()
+     * @see #getAck()
      */
     public final Integer getTime() {
         return time;
@@ -508,6 +526,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
      * The type of the body.
      *
      * @return The type.
+     * @see #getCondition()
      */
     public final Type getType() {
         return type;
@@ -716,7 +735,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
 
         private String authId;
 
-        private String charsets;
+        private Charset[] charsets;
 
         private Condition condition;
 
@@ -821,7 +840,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
          * @param charsets The 'charsets' attribute.
          * @return The builder.
          */
-        public final Builder charsets(String charsets) {
+        public final Builder charsets(Charset... charsets) {
             this.charsets = charsets;
             return this;
         }
@@ -1120,6 +1139,25 @@ public final class Body implements SessionOpen, Comparable<Body> {
          */
         public final Body build() {
             return new Body(this);
+        }
+    }
+
+    private static final class CharsetAdapter extends XmlAdapter<String, List<Charset>> {
+
+        @Override
+        public final List<Charset> unmarshal(final String charsets) throws Exception {
+            if (charsets != null) {
+                return Collections.unmodifiableList(Arrays.stream(charsets.split(" ")).map(Charset::forName).collect(Collectors.toList()));
+            }
+            return null;
+        }
+
+        @Override
+        public final String marshal(final List<Charset> charsets) throws Exception {
+            if (charsets != null && !charsets.isEmpty()) {
+                return String.join(" ", charsets.stream().map(c -> (CharSequence) c.name())::iterator);
+            }
+            return null;
         }
     }
 }

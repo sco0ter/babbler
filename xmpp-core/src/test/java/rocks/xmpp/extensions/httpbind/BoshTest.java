@@ -38,6 +38,7 @@ import rocks.xmpp.util.ComparableTestHelper;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -177,12 +178,14 @@ public class BoshTest extends XmlTest {
 
     @Test
     public void unmarshalUndefinedCondition() throws XMLStreamException, JAXBException {
-        String xml = "<body type='terminate'\n" +
+        String xml = "<body charsets='ISO_8859-1 ISO-2022-JP'" +
+                "      type='terminate'\n" +
                 "      condition='undefined-condition'\n" +
                 "      xmlns='http://jabber.org/protocol/httpbind'/>";
         Body body = unmarshal(xml, Body.class);
         Assert.assertEquals(body.getType(), Body.Type.TERMINATE);
         Assert.assertEquals(body.getCondition(), Body.Condition.UNDEFINED_CONDITION);
+        Assert.assertEquals(body.getCharsets().size(), 2);
     }
 
     @Test
@@ -193,6 +196,15 @@ public class BoshTest extends XmlTest {
 
         Assert.assertEquals(marshal(body), "<body xmlns=\"http://jabber.org/protocol/httpbind\"><iq xmlns=\"jabber:client\" id=\"1\" type=\"get\"><query xmlns=\"jabber:iq:roster\"></query></iq><presence xmlns=\"jabber:client\"></presence></body>");
     }
+
+    @Test
+    public void marshalBodyWithCharsets() throws XMLStreamException, JAXBException {
+        Body body = Body.builder()
+                .charsets(Charset.forName("ISO_8859-1"), Charset.forName("ISO-2022-JP")).build();
+
+        Assert.assertEquals(marshal(body), "<body xmlns=\"http://jabber.org/protocol/httpbind\" charsets=\"ISO-8859-1 ISO-2022-JP\"></body>");
+    }
+
 
     @Test
     public void testComparable() {
@@ -208,7 +220,7 @@ public class BoshTest extends XmlTest {
         bodies.add(body2);
         Collections.shuffle(bodies);
         bodies.sort(null);
-        
+
         Assert.assertSame(bodies.get(2), body1);
         Assert.assertSame(bodies.get(3), body2);
         ComparableTestHelper.checkCompareToContract(bodies);

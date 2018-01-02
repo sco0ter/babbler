@@ -650,7 +650,7 @@ public final class BoshConnection extends Connection {
                         httpConnection.setDoOutput(true);
                         httpConnection.setRequestMethod("POST");
                         // If the connection manager does not respond in time, throw a SocketTimeoutException, which terminates the connection.
-                        httpConnection.setReadTimeout((boshConnectionConfiguration.getWait() + 5) * 1000);
+                        httpConnection.setReadTimeout(((int) boshConnectionConfiguration.getWait().getSeconds() + 5) * 1000);
 
                         requestCount.getAndIncrement();
                         try {

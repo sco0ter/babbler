@@ -39,6 +39,7 @@ import rocks.xmpp.util.ComparableTestHelper;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -179,6 +180,8 @@ public class BoshTest extends XmlTest {
     @Test
     public void unmarshalUndefinedCondition() throws XMLStreamException, JAXBException {
         String xml = "<body charsets='ISO_8859-1 ISO-2022-JP'" +
+                "      inactivity='86400'\n" +
+                "      time='1000'\n" +
                 "      type='terminate'\n" +
                 "      condition='undefined-condition'\n" +
                 "      xmlns='http://jabber.org/protocol/httpbind'/>";
@@ -186,6 +189,8 @@ public class BoshTest extends XmlTest {
         Assert.assertEquals(body.getType(), Body.Type.TERMINATE);
         Assert.assertEquals(body.getCondition(), Body.Condition.UNDEFINED_CONDITION);
         Assert.assertEquals(body.getCharsets().size(), 2);
+        Assert.assertEquals(body.getInactivity(), Duration.ofDays(1));
+        Assert.assertEquals(body.getTime(), Duration.ofSeconds(1));
     }
 
     @Test
@@ -198,13 +203,19 @@ public class BoshTest extends XmlTest {
     }
 
     @Test
-    public void marshalBodyWithCharsets() throws XMLStreamException, JAXBException {
+    public void marshalBody() throws XMLStreamException, JAXBException {
         Body body = Body.builder()
-                .charsets(Charset.forName("ISO_8859-1"), Charset.forName("ISO-2022-JP")).build();
+                .charsets(Charset.forName("ISO_8859-1"), Charset.forName("ISO-2022-JP"))
+                .inactivity(Duration.ofDays(1))
+                .maxPause(Duration.ofHours(1))
+                .pause(Duration.ofSeconds(2))
+                .polling(Duration.ofMinutes(1))
+                .time(Duration.ofSeconds(1))
+                .wait(Duration.ofMinutes(2))
+                .build();
 
-        Assert.assertEquals(marshal(body), "<body xmlns=\"http://jabber.org/protocol/httpbind\" charsets=\"ISO-8859-1 ISO-2022-JP\"></body>");
+        Assert.assertEquals(marshal(body), "<body xmlns=\"http://jabber.org/protocol/httpbind\" charsets=\"ISO-8859-1 ISO-2022-JP\" inactivity=\"86400\" maxpause=\"3600\" pause=\"2\" polling=\"60\" time=\"1000\" wait=\"120\"></body>");
     }
-
 
     @Test
     public void testComparable() {

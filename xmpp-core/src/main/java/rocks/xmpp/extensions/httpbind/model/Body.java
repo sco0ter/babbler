@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -113,28 +114,33 @@ public final class Body implements SessionOpen, Comparable<Body> {
      * This attribute specifies the longest allowable inactivity period (in seconds). This enables the client to ensure that the periods with no requests pending are never too long (see Polling Sessions and Inactivity).
      */
     @XmlAttribute
-    private final Integer inactivity;
+    @XmlJavaTypeAdapter(SecondsAdapter.class)
+    private final Duration inactivity;
 
     @XmlAttribute
     private final String key;
 
     /**
-     * If the connection manager supports session pausing (see Inactivity) then it SHOULD advertise that to the client by including a 'maxpause' attribute in the session creation response element. The value of the attribute indicates the maximum length of a temporary session pause (in seconds) that a client can request.
+     * If the connection manager supports session pausing (see Inactivity) then it SHOULD advertise that to the client by including a 'maxpause' attribute in the session creation response element.
+     * The value of the attribute indicates the maximum length of a temporary session pause (in seconds) that a client can request.
      */
     @XmlAttribute
-    private final Integer maxpause;
+    @XmlJavaTypeAdapter(SecondsAdapter.class)
+    private final Duration maxpause;
 
     @XmlAttribute
     private final String newkey;
 
     @XmlAttribute
-    private final Integer pause;
+    @XmlJavaTypeAdapter(SecondsAdapter.class)
+    private final Duration pause;
 
     /**
      * This attribute specifies the shortest allowable polling interval (in seconds). This enables the client to not send empty request elements more often than desired (see Polling Sessions and Overactivity).
      */
     @XmlAttribute
-    private final Integer polling;
+    @XmlJavaTypeAdapter(SecondsAdapter.class)
+    private final Duration polling;
 
     @XmlAttribute
     private final Long report;
@@ -158,7 +164,8 @@ public final class Body implements SessionOpen, Comparable<Body> {
     private final String stream;
 
     @XmlAttribute
-    private final Integer time;
+    @XmlJavaTypeAdapter(MillisecondsAdapter.class)
+    private final Duration time;
 
     /**
      * This attribute communicates the identity of the backend server to which the client is attempting to connect.
@@ -176,7 +183,8 @@ public final class Body implements SessionOpen, Comparable<Body> {
     private final String ver;
 
     @XmlAttribute
-    private final Integer wait;
+    @XmlJavaTypeAdapter(SecondsAdapter.class)
+    private final Duration wait;
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
     private final Locale lang;
@@ -375,12 +383,12 @@ public final class Body implements SessionOpen, Comparable<Body> {
      * In any case, if no requests are being held, the client MUST make a new request before the maximum inactivity period has expired.
      * The length of this period (in seconds) is specified by the 'inactivity' attribute in the session creation response.
      *
-     * @return The length in seconds.
+     * @return The inactivity period or null.
      * @see #getPause()
      * @see #getMaxPause()
      * @see <a href="https://xmpp.org/extensions/xep-0124.html#inactive">10. Inactivity</a>
      */
-    public final Integer getInactivity() {
+    public final Duration getInactivity() {
         return inactivity;
     }
 
@@ -396,13 +404,15 @@ public final class Body implements SessionOpen, Comparable<Body> {
     }
 
     /**
-     * If the connection manager supports session pausing (see Inactivity) then it SHOULD advertise that to the client by including a 'maxpause' attribute in the session creation response element. The value of the attribute indicates the maximum length of a temporary session pause (in seconds) that a client can request.
+     * If the connection manager supports session pausing (see Inactivity)
+     * then it SHOULD advertise that to the client by including a 'maxpause' attribute in the session creation response element.
+     * The value of the attribute indicates the maximum length of a temporary session pause (in seconds) that a client can request.
      *
-     * @return The maximal pause in seconds.
+     * @return The maximal pause or null.
      * @see #getPause()
      * @see #getInactivity()
      */
-    public final Integer getMaxPause() {
+    public final Duration getMaxPause() {
         return maxpause;
     }
 
@@ -423,16 +433,16 @@ public final class Body implements SessionOpen, Comparable<Body> {
      * @see #getMaxPause()
      * @see #getInactivity()
      */
-    public final Integer getPause() {
+    public final Duration getPause() {
         return pause;
     }
 
     /**
      * This attribute specifies the shortest allowable polling interval (in seconds). This enables the client to not send empty request elements more often than desired.
      *
-     * @return The 'polling' attribute value.
+     * @return The 'polling' attribute value or null.
      */
-    public final Integer getPolling() {
+    public final Duration getPolling() {
         return polling;
     }
 
@@ -513,7 +523,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
      * @see #getReport()
      * @see #getAck()
      */
-    public final Integer getTime() {
+    public final Duration getTime() {
         return time;
     }
 
@@ -546,7 +556,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
      *
      * @return The 'wait' attribute value.
      */
-    public final Integer getWait() {
+    public final Duration getWait() {
         return wait;
     }
 
@@ -745,17 +755,17 @@ public final class Body implements SessionOpen, Comparable<Body> {
 
         private Short hold;
 
-        private Integer inactivity;
+        private Duration inactivity;
 
         private String key;
 
-        private Integer maxPause;
+        private Duration maxPause;
 
         private String newKey;
 
-        private Integer pause;
+        private Duration pause;
 
-        private Integer polling;
+        private Duration polling;
 
         private Long report;
 
@@ -769,7 +779,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
 
         private String stream;
 
-        private Integer time;
+        private Duration time;
 
         private Jid to;
 
@@ -777,7 +787,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
 
         private String version;
 
-        private Integer wait;
+        private Duration wait;
 
         private Locale language;
 
@@ -895,7 +905,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
          * @param inactivity The 'inactivity' attribute.
          * @return The builder.
          */
-        public final Builder inactivity(int inactivity) {
+        public final Builder inactivity(Duration inactivity) {
             this.inactivity = inactivity;
             return this;
         }
@@ -917,7 +927,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
          * @param maxPause The 'maxpause' attribute.
          * @return The builder.
          */
-        public final Builder maxPause(int maxPause) {
+        public final Builder maxPause(Duration maxPause) {
             this.maxPause = maxPause;
             return this;
         }
@@ -939,7 +949,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
          * @param pause The 'pause' attribute.
          * @return The builder.
          */
-        public final Builder pause(int pause) {
+        public final Builder pause(Duration pause) {
             this.pause = pause;
             return this;
         }
@@ -950,7 +960,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
          * @param polling The 'polling' attribute.
          * @return The builder.
          */
-        public final Builder polling(int polling) {
+        public final Builder polling(Duration polling) {
             this.polling = polling;
             return this;
         }
@@ -1027,7 +1037,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
          * @param time The 'time' attribute.
          * @return The builder.
          */
-        public final Builder time(int time) {
+        public final Builder time(Duration time) {
             this.time = time;
             return this;
         }
@@ -1071,7 +1081,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
          * @param wait The 'wait' attribute.
          * @return The builder.
          */
-        public final Builder wait(int wait) {
+        public final Builder wait(Duration wait) {
             this.wait = wait;
             return this;
         }
@@ -1156,6 +1166,44 @@ public final class Body implements SessionOpen, Comparable<Body> {
         public final String marshal(final List<Charset> charsets) throws Exception {
             if (charsets != null && !charsets.isEmpty()) {
                 return String.join(" ", charsets.stream().map(c -> (CharSequence) c.name())::iterator);
+            }
+            return null;
+        }
+    }
+
+    private static final class SecondsAdapter extends XmlAdapter<Integer, Duration> {
+
+        @Override
+        public final Duration unmarshal(final Integer v) throws Exception {
+            if (v != null) {
+                return Duration.ofSeconds(v);
+            }
+            return null;
+        }
+
+        @Override
+        public final Integer marshal(final Duration v) throws Exception {
+            if (v != null) {
+                return (int) Math.min(v.getSeconds(), Integer.MAX_VALUE);
+            }
+            return null;
+        }
+    }
+
+    private static final class MillisecondsAdapter extends XmlAdapter<Integer, Duration> {
+
+        @Override
+        public final Duration unmarshal(final Integer v) throws Exception {
+            if (v != null) {
+                return Duration.ofMillis(v);
+            }
+            return null;
+        }
+
+        @Override
+        public final Integer marshal(final Duration v) throws Exception {
+            if (v != null) {
+                return (int) Math.min(v.toMillis(), Integer.MAX_VALUE);
             }
             return null;
         }

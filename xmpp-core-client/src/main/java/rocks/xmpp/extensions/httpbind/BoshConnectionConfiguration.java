@@ -28,6 +28,8 @@ import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 
+import java.time.Duration;
+
 /**
  * A configuration for a BOSH connection.
  * It allows you to configure basic connection settings like hostname and port, but also BOSH specific settings like the wait interval, a route or the use of a key sequencing mechanism.
@@ -53,7 +55,7 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
 
     private static volatile BoshConnectionConfiguration defaultConfiguration;
 
-    private final int wait;
+    private final Duration wait;
 
     private final String path;
 
@@ -116,7 +118,7 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
      *
      * @return The wait time.
      */
-    public final int getWait() {
+    public final Duration getWait() {
         return wait;
     }
 
@@ -157,7 +159,7 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
      */
     public static final class Builder extends ConnectionConfiguration.Builder<Builder> {
 
-        private int wait;
+        private Duration wait;
 
         private String path;
 
@@ -183,14 +185,28 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
         }
 
         /**
-         * Sets the longest time (in seconds) that the connection manager is allowed to wait before responding to any request during the session.
+         * Sets the longest time that the connection manager is allowed to wait before responding to any request during the session.
          *
          * @param wait The time in seconds.
          * @return The builder.
          * @see <a href="http://xmpp.org/extensions/xep-0124.html#session-request">7.1 Session Creation Request</a>
          */
-        public Builder wait(int wait) {
+        public Builder wait(Duration wait) {
             this.wait = wait;
+            return this;
+        }
+
+        /**
+         * Sets the longest time (in seconds) that the connection manager is allowed to wait before responding to any request during the session.
+         *
+         * @param wait The time in seconds.
+         * @return The builder.
+         * @see <a href="http://xmpp.org/extensions/xep-0124.html#session-request">7.1 Session Creation Request</a>
+         * @deprecated Use {@link #wait(Duration)}
+         */
+        @Deprecated
+        public Builder wait(int wait) {
+            this.wait = Duration.ofSeconds(wait);
             return this;
         }
 

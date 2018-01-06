@@ -141,12 +141,6 @@ public final class BoshConnection extends Connection {
     private CompressionMethod requestCompressionMethod;
 
     /**
-     * The "Content-Encoding" header which is set during requests. It's only set, if the server included an "accept" attribute.
-     * Guarded by "this".
-     */
-    private String requestContentEncoding;
-
-    /**
      * Guarded by "this".
      */
     private long highestReceivedRid;
@@ -313,6 +307,8 @@ public final class BoshConnection extends Connection {
         this.from = from;
         this.sessionId = null;
         this.authId = null;
+        this.usingAcknowledgments = false;
+        this.requestCompressionMethod = null;
         this.requestCount.set(0);
 
         // Set the initial request id with a large random number.
@@ -388,8 +384,7 @@ public final class BoshConnection extends Connection {
                     String[] serverAcceptedEncodings = responseBody.getAccept().split(",", 16);
                     // Let's see if we can compress the contents for the server by choosing a known compression method.
                     for (String serverAcceptedEncoding : serverAcceptedEncodings) {
-                        requestCompressionMethod = compressionMethods.get(serverAcceptedEncoding);
-                        requestContentEncoding = serverAcceptedEncoding;
+                        requestCompressionMethod = compressionMethods.get(serverAcceptedEncoding.trim().toLowerCase());
                         if (requestCompressionMethod != null) {
                             break;
                         }
@@ -497,9 +492,8 @@ public final class BoshConnection extends Connection {
                 }
                 sessionId = null;
                 authId = null;
-                requestContentEncoding = null;
+                requestCompressionMethod = null;
                 keySequence.clear();
-                requestContentEncoding = null;
             }
         }));
         return future;
@@ -667,8 +661,8 @@ public final class BoshConnection extends Connection {
                         }
 
                         // If we can compress, tell the server about it.
-                        if (requestCompressionMethod != null && requestContentEncoding != null) {
-                            httpConnection.setRequestProperty("Content-Encoding", requestContentEncoding);
+                        if (requestCompressionMethod != null) {
+                            httpConnection.setRequestProperty("Content-Encoding", requestCompressionMethod.getName());
                         }
 
                         httpConnection.setDoOutput(true);

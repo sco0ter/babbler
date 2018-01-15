@@ -30,6 +30,7 @@ import rocks.xmpp.core.sasl.model.Auth;
 import rocks.xmpp.core.sasl.model.Response;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
+import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.core.stream.model.errors.Condition;
@@ -45,12 +46,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.BiConsumer;
 
 /**
  * @author Christian Schudt
  */
 public class XmppStreamDecoderTest {
-    
+
     private static final JAXBContext JAXB_CONTEXT;
 
     static {
@@ -82,15 +84,16 @@ public class XmppStreamDecoderTest {
         ByteBuffer buf6 = ByteBuffer.wrap("iq></iq> ".getBytes(StandardCharsets.UTF_8));
 
         List<Object> out = new ArrayList<>();
-        decoder.decode(buf1, out);
+        BiConsumer<String, StreamElement> consumer = (s, streamElement) -> out.add(streamElement);
+        decoder.decode(buf1, consumer);
         Assert.assertEquals(out.size(), 0);
 
         out.clear();
-        decoder.decode(buf2, out);
+        decoder.decode(buf2, consumer);
         Assert.assertEquals(out.size(), 0);
 
         out.clear();
-        decoder.decode(buf3, out);
+        decoder.decode(buf3, consumer);
         Assert.assertEquals(out.size(), 1);
         Assert.assertTrue(out.get(0) instanceof StreamHeader);
         Assert.assertEquals(((StreamHeader) out.get(0)).getContentNamespace(), "jabber:client");
@@ -98,15 +101,15 @@ public class XmppStreamDecoderTest {
         Assert.assertEquals(((StreamHeader) out.get(0)).getAdditionalNamespaces().get(0), new QName("bar", "", "foo"));
 
         out.clear();
-        decoder.decode(buf4, out);
+        decoder.decode(buf4, consumer);
         Assert.assertEquals(out.size(), 1);
 
         out.clear();
-        decoder.decode(buf5, out);
+        decoder.decode(buf5, consumer);
         Assert.assertEquals(out.size(), 1);
 
         out.clear();
-        decoder.decode(buf6, out);
+        decoder.decode(buf6, consumer);
 
     }
 
@@ -122,12 +125,13 @@ public class XmppStreamDecoderTest {
         ByteBuffer buf6 = ByteBuffer.wrap("iq></iq> ".getBytes(StandardCharsets.UTF_8));
 
         List<Object> out = new ArrayList<>();
-        decoder.decode(buf1, out);
-        decoder.decode(buf2, out);
-        decoder.decode(buf3, out);
-        decoder.decode(buf4, out);
-        decoder.decode(buf5, out);
-        decoder.decode(buf6, out);
+        BiConsumer<String, StreamElement> consumer = (s, streamElement) -> out.add(streamElement);
+        decoder.decode(buf1, consumer);
+        decoder.decode(buf2, consumer);
+        decoder.decode(buf3, consumer);
+        decoder.decode(buf4, consumer);
+        decoder.decode(buf5, consumer);
+        decoder.decode(buf6, consumer);
 
         byte[] bytes = new byte[1024];
         Random random = new Random();
@@ -137,7 +141,7 @@ public class XmppStreamDecoderTest {
         for (int i = 0; i < 100000; i++) {
             out.clear();
             ByteBuffer byteBuffer = ByteBuffer.wrap(("<message>" + randomString + "</message>").getBytes(StandardCharsets.UTF_8));
-            decoder.decode(byteBuffer, out);
+            decoder.decode(byteBuffer, consumer);
         }
         System.out.println(System.currentTimeMillis() - now);
     }
@@ -148,9 +152,10 @@ public class XmppStreamDecoderTest {
 
         ByteBuffer buf1 = ByteBuffer.wrap("<?xml version='1.0' encoding='UTF-8'?><stream:stream to=\"localhost version=\"1.0\" xml:lang=\"de-DE\" xml".getBytes(StandardCharsets.UTF_8));
 
-        List<Object> out = new ArrayList<>();
+        BiConsumer<String, StreamElement> consumer = (s, streamElement) -> {
+        };
         try {
-            decoder.decode(buf1, out);
+            decoder.decode(buf1, consumer);
         } catch (StreamErrorException e) {
             Assert.assertTrue(e.getError().getCondition() == Condition.NOT_WELL_FORMED);
             throw e;

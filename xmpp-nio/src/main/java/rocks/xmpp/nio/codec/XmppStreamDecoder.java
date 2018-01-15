@@ -29,6 +29,7 @@ import com.fasterxml.aalto.AsyncXMLInputFactory;
 import com.fasterxml.aalto.AsyncXMLStreamReader;
 import com.fasterxml.aalto.stax.InputFactoryImpl;
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamHeader;
@@ -45,10 +46,10 @@ import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 /**
@@ -90,10 +91,10 @@ public final class XmppStreamDecoder {
      * Decodes a stream of byte buffers to XMPP elements.
      *
      * @param in  The byte buffer which was read from the channel. It must be ready to read, i.e. flipped.
-     * @param out The output list, any decoded elements are put into this list.
+     * @param out Consumes any decoded elements as string and as unmarshalled object.
      * @throws StreamErrorException If parsing XML fails or any other stream error occurred (e.g. invalid XML).
      */
-    public final synchronized void decode(final ByteBuffer in, final Collection<Object> out) throws StreamErrorException {
+    public final synchronized void decode(final ByteBuffer in, final BiConsumer<String, StreamElement> out) throws StreamErrorException {
 
         // Append the buffer to stream
         xmlStream.append(StandardCharsets.UTF_8.decode(in));
@@ -149,6 +150,13 @@ public final class XmppStreamDecoder {
                                 }
                             }
 
+                            elementEnd = xmlStreamReader.getLocationInfo().getEndingByteOffset();
+                            // Store the stream header so that it can be reused while unmarshalling further bytes.
+                            streamHeader = xmlStream.substring(0, (int) elementEnd);
+                            // Copy the rest of the stream.
+                            // From now on, only store the XML stream without the stream header.
+                            xmlStream.delete(0, (int) elementEnd);
+                            
                             final StreamHeader header = StreamHeader.create(
                                     from != null ? Jid.ofEscaped(from) : null,
                                     to != null ? Jid.ofEscaped(to) : null,
@@ -157,13 +165,7 @@ public final class XmppStreamDecoder {
                                     contentNamespace,
                                     additionalNamespaces.toArray(new QName[additionalNamespaces.size()]));
 
-                            out.add(header);
-                            elementEnd = xmlStreamReader.getLocationInfo().getEndingByteOffset();
-                            // Store the stream header so that it can be reused while unmarshalling further bytes.
-                            streamHeader = xmlStream.substring(0, (int) elementEnd);
-                            // Copy the rest of the stream.
-                            // From now on, only store the XML stream without the stream header.
-                            xmlStream.delete(0, (int) elementEnd);
+                            out.accept(streamHeader, header);
                         }
                         break;
                     case XMLStreamConstants.END_ELEMENT:
@@ -172,7 +174,7 @@ public final class XmppStreamDecoder {
 
                             if (xmlStreamReader.getDepth() == 1) {
                                 // The client has sent the closing </stream:stream> element.
-                                out.add(StreamHeader.CLOSING_STREAM_TAG);
+                                out.accept(xmlStream.toString(), StreamHeader.CLOSING_STREAM_TAG);
                             } else {
                                 // A full XML element has been read from the channel.
                                 // Now we can unmarshal it.
@@ -207,8 +209,7 @@ public final class XmppStreamDecoder {
                                     while (reader.hasNext() && t != XMLStreamConstants.START_ELEMENT) {
                                         t = reader.next();
                                     }
-                                    out.add(unmarshaller.get().unmarshal(reader));
-
+                                    out.accept(element, (StreamElement) unmarshaller.get().unmarshal(reader));
                                 } finally {
                                     if (reader != null) {
                                         reader.close();

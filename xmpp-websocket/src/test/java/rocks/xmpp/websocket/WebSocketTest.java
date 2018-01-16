@@ -61,7 +61,7 @@ public class WebSocketTest extends XmlTest {
     @Test
     public void marshalOpen() throws XMLStreamException, JAXBException {
         Open open = new Open(Jid.of("test"), Locale.ENGLISH);
-        Assert.assertEquals(marshal(open), "<open xmlns=\"urn:ietf:params:xml:ns:xmpp-framing\" version=\"1.0\" to=\"test\" xml:lang=\"en\"></open>");
+        Assert.assertEquals(marshal(open), "<open xmlns=\"urn:ietf:params:xml:ns:xmpp-framing\" to=\"test\" xml:lang=\"en\" version=\"1.0\"></open>");
     }
 
     @Test

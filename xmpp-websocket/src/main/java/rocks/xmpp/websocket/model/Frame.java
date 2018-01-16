@@ -42,9 +42,6 @@ import java.util.Locale;
 abstract class Frame implements StreamElement {
 
     @XmlAttribute
-    private final String version;
-
-    @XmlAttribute
     private final Jid to;
 
     @XmlAttribute
@@ -55,6 +52,9 @@ abstract class Frame implements StreamElement {
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
     private final Locale lang;
+
+    @XmlAttribute
+    private final String version;
 
     Frame(Jid to, Jid from, String id, Locale language, String version) {
         this.to = to;

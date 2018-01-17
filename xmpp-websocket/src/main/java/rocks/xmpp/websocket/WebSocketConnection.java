@@ -76,6 +76,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -204,6 +205,7 @@ public final class WebSocketConnection extends Connection {
                     return;
                 }
                 this.exception = null;
+                this.closeReceived = new CompletableFuture<>();
 
                 if (uri == null) {
                     String protocol = connectionConfiguration.isSecure() ? "wss" : "ws";
@@ -274,7 +276,6 @@ public final class WebSocketConnection extends Connection {
             streamFeaturesManager.addFeatureNegotiator(streamManager);
             streamManager.reset();
 
-            closeReceived = new CompletableFuture<>();
             final Session session = client.connectToServer(new Endpoint() {
                 @Override
                 public void onOpen(Session session, EndpointConfig config) {
@@ -311,8 +312,7 @@ public final class WebSocketConnection extends Connection {
                                     future.complete(null);
                                 }
                                 close();
-                            }
-                            if (xmppSession.handleElement(element)) {
+                            } else if (xmppSession.handleElement(element)) {
                                 restartStream();
                             }
                         } catch (Exception e) {
@@ -401,61 +401,77 @@ public final class WebSocketConnection extends Connection {
     @Override
     public final void close() throws Exception {
         try {
-            // Prevent that the connection is closed twice.
-            if (closed.compareAndSet(false, true)) {
-                Session session;
-                synchronized (this) {
-                    session = this.session;
-                }
-                if (session != null && session.isOpen()) {
-                    send(new Close());
-
-                    CompletableFuture<Void> future;
-                    synchronized (this) {
-                        future = closeReceived;
-                    }
-                    if (future != null) {
-                        // Wait until we receive the "close" frame from the server, then close the session.
-                        future.applyToEither(CompletionStages.timeoutAfter(500, TimeUnit.MILLISECONDS), Function.identity())
-                                .whenComplete((aVoid, throwable) -> {
-                                    try {
-                                        session.close();
-                                    } catch (IOException e) {
-                                        throw new UncheckedIOException(e);
-                                    }
-                                });
-                    } else {
-                        session.close();
-                    }
-                }
+            closeAsync().get();
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof Exception) {
+                throw (Exception) e.getCause();
+            } else {
+                throw e;
             }
-        } finally {
-            streamFeaturesManager.removeFeatureNegotiator(streamManager);
-            pings.clear();
-            synchronized (this) {
-                if (pingFuture != null) {
-                    pingFuture.cancel(false);
-                    pingFuture = null;
-                }
-                if (pongFuture != null) {
-                    pongFuture.cancel(false);
-                    pongFuture = null;
-                }
-                if (executorService != null) {
-                    executorService.shutdown();
-                    try {
-                        if (!executorService.awaitTermination(50, TimeUnit.MILLISECONDS)) {
-                            executorService.shutdownNow();
-                        }
-                    } catch (InterruptedException e) {
-                        // (Re-)Cancel if current thread also interrupted
-                        executorService.shutdownNow();
-                        Thread.currentThread().interrupt();
-                    }
-                    executorService = null;
-                }
-            }
+        } catch (InterruptedException e) {
+            // Implementers of AutoCloseable are strongly advised to not have the close method throw InterruptedException.
+            Thread.currentThread().interrupt();
         }
+    }
+
+    private Future<Void> closeAsync() {
+        // Prevent that the connection is closed twice.
+        if (closed.compareAndSet(false, true)) {
+            final CompletableFuture<Void> ioFuture;
+            final Session session;
+            synchronized (this) {
+                session = this.session;
+            }
+            if (session != null && session.isOpen()) {
+                final CompletableFuture<Void> closeFuture;
+                synchronized (this) {
+                    closeFuture = closeReceived;
+                }
+
+                // After we've send the "close" frame, wait until we receive the "close" frame from the server, then close the session.
+                ioFuture = send(new Close())
+                        .thenCompose(v -> closeFuture.applyToEither(CompletionStages.timeoutAfter(500, TimeUnit.MILLISECONDS), Function.identity()))
+                        .whenComplete((aVoid, throwable) -> {
+                            try {
+                                session.close();
+                            } catch (IOException e) {
+                                throw new UncheckedIOException(e);
+                            }
+                        });
+            } else {
+                // Session already closed, we won't send anything.
+                ioFuture = CompletableFuture.completedFuture(null);
+            }
+
+            return ioFuture.whenComplete((aVoid1, throwable1) -> {
+                streamFeaturesManager.removeFeatureNegotiator(streamManager);
+                pings.clear();
+                synchronized (this) {
+                    if (pingFuture != null) {
+                        pingFuture.cancel(false);
+                        pingFuture = null;
+                    }
+                    if (pongFuture != null) {
+                        pongFuture.cancel(false);
+                        pongFuture = null;
+                    }
+                    if (executorService != null) {
+                        executorService.shutdown();
+                        try {
+                            if (!executorService.awaitTermination(50, TimeUnit.MILLISECONDS)) {
+                                executorService.shutdownNow();
+                            }
+                        } catch (InterruptedException e) {
+                            // (Re-)Cancel if current thread also interrupted
+                            executorService.shutdownNow();
+                            Thread.currentThread().interrupt();
+                        }
+                        executorService = null;
+                    }
+                }
+            });
+        }
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

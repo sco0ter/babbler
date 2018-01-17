@@ -180,6 +180,7 @@ public final class DirectoryCache implements Map<String, byte[]> {
             }
     }
 
+    @SuppressWarnings("StreamResourceLeak")
     private final Stream<Path> cacheContent() {
         try {
             return Files.walk(cacheDirectory).filter(Files::isRegularFile);

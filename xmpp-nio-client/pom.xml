@@ -2,7 +2,7 @@
 <!--
   ~ The MIT License (MIT)
   ~
-  ~ Copyright (c) 2014-2016 Christian Schudt
+  ~ Copyright (c) 2014-2018 Christian Schudt
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,8 @@
         <artifactId>root</artifactId>
         <version>0.8.0-SNAPSHOT</version>
     </parent>
-    <artifactId>xmpp-sample</artifactId>
-    <name>XMPP.rocks - Samples</name>
+    <artifactId>xmpp-nio-client</artifactId>
+    <name>XMPP.rocks - NIO client</name>
     <build>
         <plugins>
             <!-- Skip site generation -->
@@ -54,7 +54,7 @@
                         <configuration>
                             <archive>
                                 <manifestEntries>
-                                    <Automatic-Module-Name>rocks.xmpp.sample</Automatic-Module-Name>
+                                    <Automatic-Module-Name>rocks.xmpp.nio.client</Automatic-Module-Name>
                                 </manifestEntries>
                             </archive>
                         </configuration>
@@ -81,23 +81,18 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-extensions</artifactId>
+            <artifactId>xmpp-nio</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-extensions-client</artifactId>
-            <version>${project.version}</version>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler</artifactId>
+            <version>4.1.19.Final</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-debug</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-nio-client</artifactId>
-            <version>${project.version}</version>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec</artifactId>
+            <version>4.1.19.Final</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
@@ -105,9 +100,14 @@
             <version>4.1.19.Final</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-websocket-client</artifactId>
-            <version>${project.version}</version>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>4.1.19.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-common</artifactId>
+            <version>4.1.19.Final</version>
         </dependency>
     </dependencies>
 </project>

@@ -24,6 +24,7 @@
 
 package rocks.xmpp.sample;
 
+import io.netty.channel.nio.NioEventLoopGroup;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
@@ -31,7 +32,8 @@ import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
-import rocks.xmpp.extensions.search.SearchManager;
+import rocks.xmpp.extensions.sm.model.StreamManagement;
+import rocks.xmpp.nio.netty.client.NettyTcpConnectionConfiguration;
 import rocks.xmpp.websocket.WebSocketConnectionConfiguration;
 
 import javax.net.ssl.SSLContext;
@@ -42,8 +44,6 @@ import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -65,47 +65,68 @@ public class SampleApplication {
         // Create a "main application" thread, which keeps the JVM running.
         Executors.newFixedThreadPool(1).execute(() -> {
             try {
-
-                TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
-                        .hostname("localhost") // The hostname.
-                        .port(5222) // The XMPP default port.
-                        .sslContext(getTrustAllSslContext()) // Use an SSL context, which trusts every server. Only use it for testing!
-                        .secure(true) // We want to negotiate a TLS connection.
-                        .build();
-
-                BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()
-                        .hostname("localhost")
-                        .port(7070)
-                                //.sslContext(getTrustAllSslContext())
-                        .secure(false)
-                        .build();
-                WebSocketConnectionConfiguration webSocketConfiguration = WebSocketConnectionConfiguration.builder()
-                        .hostname("localhost")
-                        .port(7070)
-                                //.sslContext(getTrustAllSslContext())
-                        .secure(false)
-                        .build();
+                NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup(1);
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                         .debugger(ConsoleDebugger.class)
+                        .authenticationMechanisms("PLAIN")
                         .build();
+                long now = System.currentTimeMillis();
+                for (int i = 0; i < 100; i++) {
+                    TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+                            .hostname("localhost") // The hostname.
+                            .port(5222) // The XMPP default port.
+                            .sslContext(getTrustAllSslContext()) // Use an SSL context, which trusts every server. Only use it for testing!
+                            .secure(true) // We want to negotiate a TLS connection.
+                            .build();
 
-                XmppClient xmppClient = XmppClient.create("localhost", configuration, tcpConfiguration);
+                    BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()
+                            .hostname("localhost")
+                            .port(7070)
+                            //.sslContext(getTrustAllSslContext())
+                            .secure(false)
+                            .build();
+                    WebSocketConnectionConfiguration webSocketConfiguration = WebSocketConnectionConfiguration.builder()
+                            .hostname("localhost")
+                            .port(7070)
+                            //.sslContext(getTrustAllSslContext())
+                            .secure(false)
+                            .build();
 
-                // Listen for inbound messages.
-                xmppClient.addInboundMessageListener(e -> logger.info("Received: " + e.getMessage()));
+                    NettyTcpConnectionConfiguration nettyTcpConnectionConfiguration = NettyTcpConnectionConfiguration.builder()
+                            .hostname("localhost")
+                            .port(5222)
+                            .sslContext(getTrustAllSslContext())
+                            .secure(true)
+                            .hostnameVerifier((s, sslSession) -> true)
+                            .eventLoopGroup(eventLoopGroup)
+                            .build();
 
-                // Listen for inbound presence.
-                xmppClient.addInboundPresenceListener(e -> logger.info("Received: " + e.getPresence()));
 
-                // Connect
-                xmppClient.connect();
-                // Login
-                xmppClient.login("admin", "admin", "xmpp");
+                    XmppClient xmppClient = XmppClient.create("localhost", configuration, nettyTcpConnectionConfiguration);
 
-                // Send a message to myself, which is caught by the listener above.
-                xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
+                    // Listen for inbound messages.
+                    xmppClient.addInboundMessageListener(e -> logger.info("Received: " + e.getMessage()));
 
-                logger.info(xmppClient.getActiveConnection().toString());
+                    // Listen for inbound presence.
+                    xmppClient.addInboundPresenceListener(e -> logger.info("Received: " + e.getPresence()));
+                    xmppClient.enableFeature(StreamManagement.NAMESPACE);
+                    // Connect
+                    xmppClient.connect();
+                    // Login
+                    xmppClient.login("admin", "admin");
+
+                    // Send a message to myself, which is caught by the listener above.
+                    xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
+                    xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
+                    xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
+
+                    now = System.currentTimeMillis();
+                    xmppClient.close();
+                    System.out.println(System.currentTimeMillis() - now);
+                    //logger.info(xmppClient.getActiveConnection().toString());
+                }
+                long time = System.currentTimeMillis() - now;
+                int i = 0;
             } catch (XmppException | GeneralSecurityException e) {
                 e.printStackTrace();
             }

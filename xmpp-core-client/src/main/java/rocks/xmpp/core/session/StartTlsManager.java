@@ -37,7 +37,7 @@ import rocks.xmpp.core.tls.model.StartTls;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tls">STARTTLS Negotiation</a>
  */
-final class StartTlsManager extends StreamFeatureNegotiator {
+public final class StartTlsManager extends StreamFeatureNegotiator {
 
     private final boolean isSecure;
 

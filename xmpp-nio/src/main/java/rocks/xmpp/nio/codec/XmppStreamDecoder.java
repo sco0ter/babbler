@@ -174,7 +174,7 @@ public final class XmppStreamDecoder {
 
                             if (xmlStreamReader.getDepth() == 1) {
                                 // The client has sent the closing </stream:stream> element.
-                                out.accept(xmlStream.toString(), StreamHeader.CLOSING_STREAM_TAG);
+                                out.accept(xmlStream.toString().trim(), StreamHeader.CLOSING_STREAM_TAG);
                             } else {
                                 // A full XML element has been read from the channel.
                                 // Now we can unmarshal it.

@@ -147,7 +147,7 @@ public final class OutOfBandFileTransferManager extends Manager implements FileT
             try {
                 URL url = new URL(fileTransferOffer.getName());
                 URLConnection urlConnection = url.openConnection();
-                final FileTransfer fileTransfer = new FileTransfer(iq.getId(), urlConnection.getInputStream(), outputStream, fileTransferOffer.getSize());
+                final FileTransfer fileTransfer = new FileTransfer(xmppSession, iq.getId(), urlConnection.getInputStream(), outputStream, fileTransferOffer.getSize());
                 fileTransfer.addFileTransferStatusListener(new Consumer<FileTransferStatusEvent>() {
                     @Override
                     public void accept(FileTransferStatusEvent e) {

@@ -348,7 +348,7 @@ public final class BoshConnection extends Connection {
 
         // Threads created by this thread pool, will be used to do simultaneous requests.
         // Even in the unusual case, where the connection manager allows for more requests, two are enough.
-        httpBindExecutor = Executors.newFixedThreadPool(2, XmppUtils.createNamedThreadFactory("XMPP BOSH Request Thread"));
+        httpBindExecutor = Executors.newFixedThreadPool(2, xmppSession.getConfiguration().getThreadFactory("XMPP BOSH Request Thread"));
 
         // Send the initial request.
         sendNewRequest(body, false);

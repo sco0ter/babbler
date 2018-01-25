@@ -86,13 +86,13 @@ public final class RealTimeTextManager extends Manager {
                         if (realTimeMessage != null) {
                             realTimeMessage.reset(rtt.getSequence(), rtt.getId());
                         } else {
-                            realTimeMessage = new InboundRealTimeMessage(message.getFrom(), rtt.getSequence(), rtt.getId());
+                            realTimeMessage = new InboundRealTimeMessage(xmppSession, message.getFrom(), rtt.getSequence(), rtt.getId());
                             realTimeMessageMap.put(trackingKey, realTimeMessage);
                             XmppUtils.notifyEventListeners(inboundRealTimeMessageListeners, new RealTimeMessageEvent(RealTimeTextManager.this, realTimeMessage));
                         }
                         realTimeMessage.processActions(rtt.getActions(), false);
                     } else if (rtt.getEvent() == RealTimeText.Event.NEW) {
-                        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(message.getFrom(), rtt.getSequence(), rtt.getId());
+                        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(xmppSession, message.getFrom(), rtt.getSequence(), rtt.getId());
                         InboundRealTimeMessage oldRealTimeMessage = realTimeMessageMap.put(trackingKey, realTimeMessage);
                         if (oldRealTimeMessage != null) {
                             oldRealTimeMessage.complete();

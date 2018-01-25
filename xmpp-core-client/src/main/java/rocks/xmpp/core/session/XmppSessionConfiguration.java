@@ -26,6 +26,7 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBContext;
@@ -46,6 +47,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.Supplier;
 
 /**
@@ -127,6 +129,8 @@ public final class XmppSessionConfiguration {
 
     private final String nameServer;
 
+    private final ThreadFactory threadFactory;
+
     /**
      * Creates a configuration for an {@link XmppSession}. If you want to add custom classes to the {@link JAXBContext}, you can pass them as parameters.
      *
@@ -143,6 +147,7 @@ public final class XmppSessionConfiguration {
         this.language = builder.language != null ? builder.language : Locale.getDefault();
         this.reconnectionStrategy = builder.reconnectionStrategy;
         this.nameServer = builder.nameServer;
+        this.threadFactory = builder.threadFactory;
         this.extensions = new HashSet<>();
 
         // Find all modules, then add all extension from each module.
@@ -301,6 +306,19 @@ public final class XmppSessionConfiguration {
         return nameServer;
     }
 
+    /**
+     * Gets the thread factory for the session.
+     *
+     * @param name The default thread name.
+     * @return The thread factory. Never null.
+     */
+    public final ThreadFactory getThreadFactory(final String name) {
+        if (threadFactory != null) {
+            return threadFactory;
+        }
+        return XmppUtils.createNamedThreadFactory(name);
+    }
+
     final Collection<Extension> getExtensions() {
         return extensions;
     }
@@ -343,6 +361,8 @@ public final class XmppSessionConfiguration {
         private ReconnectionStrategy reconnectionStrategy;
 
         private String nameServer;
+
+        private ThreadFactory threadFactory;
 
         /**
          * The default preferred SASL mechanisms.
@@ -484,6 +504,20 @@ public final class XmppSessionConfiguration {
          */
         public final Builder nameServer(String nameServer) {
             this.nameServer = nameServer;
+            return this;
+        }
+
+        /**
+         * Sets a custom thread factory.
+         * <p>
+         * This is useful in managed environments where the thread creation should be managed by a container,
+         * e.g. <code>javax.enterprise.concurrent.ManagedThreadFactory</code>
+         *
+         * @param threadFactory The thread factory.
+         * @return The builder.
+         */
+        public final Builder threadFactory(final ThreadFactory threadFactory) {
+            this.threadFactory = threadFactory;
             return this;
         }
 

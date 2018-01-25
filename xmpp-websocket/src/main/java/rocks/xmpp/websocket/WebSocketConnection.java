@@ -40,7 +40,6 @@ import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.TxtRecord;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.CompletionStages;
 import rocks.xmpp.websocket.codec.XmppWebSocketDecoder;
 import rocks.xmpp.websocket.codec.XmppWebSocketEncoder;
@@ -293,7 +292,7 @@ public final class WebSocketConnection extends Connection {
                                 exception.addSuppressed(e);
                             }
                         }
-                        WebSocketConnection.this.executorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("WebSocket send thread"));
+                        WebSocketConnection.this.executorService = Executors.newSingleThreadScheduledExecutor(xmppSession.getConfiguration().getThreadFactory("WebSocket Send Thread"));
                     }
 
                     session.addMessageHandler(StreamElement.class, element -> {

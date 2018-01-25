@@ -94,7 +94,7 @@ final class ReconnectionManager extends Manager {
                     // -> max. ~ 5 minutes
                     truncatedBinaryExponentialBackoffStrategy(10, 5));
         }
-        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("XMPP Reconnection Thread"));
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(xmppSession.getConfiguration().getThreadFactory("XMPP Reconnection Thread"));
     }
 
     @Override

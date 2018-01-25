@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.rtt;
 
-
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
 import rocks.xmpp.util.XmppUtils;
 
@@ -56,42 +56,46 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
 
     private final Set<Consumer<RealTimeTextChangeEvent>> textChangeListeners = new CopyOnWriteArraySet<>();
 
-    InboundRealTimeMessage(Jid contact, int sequence, String id) {
+    InboundRealTimeMessage(XmppSession xmppSession, Jid contact, int sequence, String id) {
         this.from = contact;
         this.sequence.set(sequence);
         this.sb = new StringBuilder();
         this.id = id;
 
-        processActionsExecutor = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Real-time Text Processing Thread"));
-        processActionsExecutor.execute(() -> {
-                    try {
-                        RealTimeText.Action action;
-                        // Periodically poll for new action elements until the message is complete.
-                        while ((action = actions.poll(700, TimeUnit.MILLISECONDS)) != null || !complete) {
-                            if (action != null) {
-                                if (action instanceof RealTimeText.WaitInterval) {
-                                    Long ms = ((RealTimeText.WaitInterval) action).getMilliSeconds();
-                                    if (ms != null) {
-                                        if (ms == Integer.MIN_VALUE) {
-                                            // "Poison" element to break the blocking queue immediately.
-                                            break;
+        if (xmppSession != null) {
+            processActionsExecutor = Executors.newSingleThreadExecutor(xmppSession.getConfiguration().getThreadFactory("Real-time Text Processing Thread"));
+            processActionsExecutor.execute(() -> {
+                        try {
+                            RealTimeText.Action action;
+                            // Periodically poll for new action elements until the message is complete.
+                            while ((action = actions.poll(700, TimeUnit.MILLISECONDS)) != null || !complete) {
+                                if (action != null) {
+                                    if (action instanceof RealTimeText.WaitInterval) {
+                                        Long ms = ((RealTimeText.WaitInterval) action).getMilliSeconds();
+                                        if (ms != null) {
+                                            if (ms == Integer.MIN_VALUE) {
+                                                // "Poison" element to break the blocking queue immediately.
+                                                break;
+                                            }
+                                            // Wait the amount of ms, until it's waken up by new incoming RTT actions.
+                                            // See 7.4 Receiving Real-Time Text
+                                            synchronized (actions) {
+                                                actions.wait(ms);
+                                            }
                                         }
-                                        // Wait the amount of ms, until it's waken up by new incoming RTT actions.
-                                        // See 7.4 Receiving Real-Time Text
-                                        synchronized (actions) {
-                                            actions.wait(ms);
-                                        }
+                                    } else {
+                                        applyActionElement(action);
                                     }
-                                } else {
-                                    applyActionElement(action);
                                 }
                             }
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
                         }
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
                     }
-                }
-        );
+            );
+        } else {
+            processActionsExecutor = null;
+        }
     }
 
     /**

@@ -65,7 +65,7 @@ public class RealTimeMessageTest {
         Assert.assertEquals((long) ((RealTimeText.InsertText) actionList2.get(1)).getPosition(), 2);
         Assert.assertEquals(((RealTimeText.InsertText) actionList2.get(1)).getText(), "de");
 
-        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, 0, null);
+        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, null, 0, null);
         realTimeMessage.applyActionElement(new RealTimeText.InsertText("abcd11"));
         applyActionElements(realTimeMessage, actionList2);
         Assert.assertEquals(realTimeMessage.getText(), "abde11");
@@ -79,7 +79,7 @@ public class RealTimeMessageTest {
         Assert.assertEquals((int) ((RealTimeText.EraseText) actionList2.get(0)).getPosition(), 9);
         Assert.assertEquals((int) ((RealTimeText.EraseText) actionList2.get(0)).getNumberOfCharacters(), 4);
 
-        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, 0, null);
+        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, null, 0, null);
         realTimeMessage.applyActionElement(new RealTimeText.InsertText("Hello Bob, this is Alice!"));
         applyActionElements(realTimeMessage, actionList2);
         Assert.assertEquals(realTimeMessage.getText(), "Hello, this is Alice!");
@@ -93,7 +93,7 @@ public class RealTimeMessageTest {
         Assert.assertEquals(((RealTimeText.InsertText) actionList2.get(0)).getPosition(), null);
         Assert.assertEquals(((RealTimeText.InsertText) actionList2.get(0)).getText(), "aa");
 
-        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, 0, null);
+        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, null, 0, null);
         realTimeMessage.applyActionElement(new RealTimeText.InsertText("a"));
         applyActionElements(realTimeMessage, actionList2);
         Assert.assertEquals(realTimeMessage.getText(), "aaa");
@@ -107,7 +107,7 @@ public class RealTimeMessageTest {
         Assert.assertEquals(((RealTimeText.EraseText) actionList2.get(0)).getPosition(), null);
         Assert.assertEquals((int) ((RealTimeText.EraseText) actionList2.get(0)).getNumberOfCharacters(), 2);
 
-        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, 0, null);
+        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, null, 0, null);
         realTimeMessage.applyActionElement(new RealTimeText.InsertText("fefefefe"));
         applyActionElements(realTimeMessage, actionList2);
         Assert.assertEquals(realTimeMessage.getText(), "fefefe");
@@ -121,7 +121,7 @@ public class RealTimeMessageTest {
         Assert.assertEquals((int) ((RealTimeText.InsertText) actionList2.get(0)).getPosition(), 5);
         Assert.assertEquals(((RealTimeText.InsertText) actionList2.get(0)).getText(), " Bob");
 
-        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, 0, null);
+        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, null, 0, null);
         realTimeMessage.applyActionElement(new RealTimeText.InsertText("Hello, this is Alice!"));
         applyActionElements(realTimeMessage, actionList2);
         Assert.assertEquals(realTimeMessage.getText(), "Hello Bob, this is Alice!");
@@ -135,7 +135,7 @@ public class RealTimeMessageTest {
         Assert.assertEquals((int) ((RealTimeText.EraseText) actionList2.get(0)).getPosition(), 8);
         Assert.assertNull(((RealTimeText.EraseText) actionList2.get(0)).getNumberOfCharacters());
 
-        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, 0, null);
+        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, null, 0, null);
         realTimeMessage.applyActionElement(new RealTimeText.InsertText("abbbbbbbaaaaaaaaaaaa"));
         applyActionElements(realTimeMessage, actionList2);
         Assert.assertEquals(realTimeMessage.getText(), "abbbbbbaaaaaaaaaaaa");
@@ -149,7 +149,7 @@ public class RealTimeMessageTest {
         Assert.assertEquals((int) ((RealTimeText.InsertText) actionList.get(0)).getPosition(), 5);
         Assert.assertEquals(((RealTimeText.InsertText) actionList.get(0)).getText(), "b");
 
-        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, 0, null);
+        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, null, 0, null);
         realTimeMessage.applyActionElement(new RealTimeText.InsertText("1\uDBFF\uDFFC23\uDBFF\uDFFCa"));
         applyActionElements(realTimeMessage, actionList);
         Assert.assertEquals(realTimeMessage.getText(), "1\uDBFF\uDFFC23\uDBFF\uDFFCba");
@@ -163,7 +163,7 @@ public class RealTimeMessageTest {
         Assert.assertEquals((int) ((RealTimeText.EraseText) actionList.get(0)).getPosition(), 6);
         Assert.assertEquals(((RealTimeText.EraseText) actionList.get(0)).getNumberOfCharacters(), Integer.valueOf(5));
 
-        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, 0, null);
+        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, null, 0, null);
         realTimeMessage.applyActionElement(new RealTimeText.InsertText("a\uDBFF\uDFFCb\uDBFF\uDFFCc\uDBFF\uDFFCd"));
         applyActionElements(realTimeMessage, actionList);
         Assert.assertEquals(realTimeMessage.getText(), "ad");
@@ -217,7 +217,7 @@ public class RealTimeMessageTest {
     public void testApplyActions1() {
         RealTimeText.InsertText insertText = new RealTimeText.InsertText("Hello Bob, this is Alice!");
         RealTimeText.EraseText eraseText = new RealTimeText.EraseText(4, 9);
-        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, 0, null);
+        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, null, 0, null);
         applyActionElements(realTimeMessage, Arrays.asList(insertText, eraseText));
         Assert.assertEquals(realTimeMessage.getText(), "Hello, this is Alice!");
     }
@@ -226,7 +226,7 @@ public class RealTimeMessageTest {
     public void testApplyActions2() {
         RealTimeText.InsertText insertText1 = new RealTimeText.InsertText("Hello, this is Alice!");
         RealTimeText.InsertText insertText2 = new RealTimeText.InsertText(" Bob", 5);
-        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, 0, null);
+        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, null, 0, null);
         applyActionElements(realTimeMessage, Arrays.asList(insertText1, insertText2));
         Assert.assertEquals(realTimeMessage.getText(), "Hello Bob, this is Alice!");
     }
@@ -236,7 +236,7 @@ public class RealTimeMessageTest {
         RealTimeText.InsertText insertText1 = new RealTimeText.InsertText("Hello Bob, tihsd is Alice!");
         RealTimeText.EraseText eraseText = new RealTimeText.EraseText(5, 16);
         RealTimeText.InsertText insertText2 = new RealTimeText.InsertText("this", 11);
-        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, 0, null);
+        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, null, 0, null);
         applyActionElements(realTimeMessage, Arrays.asList(insertText1, eraseText, insertText2));
         Assert.assertEquals(realTimeMessage.getText(), "Hello Bob, this is Alice!");
     }
@@ -250,7 +250,7 @@ public class RealTimeMessageTest {
         RealTimeText.InsertText insertText3 = new RealTimeText.InsertText(" World");
         RealTimeText.EraseText eraseText3 = new RealTimeText.EraseText(3, 8);
         RealTimeText.InsertText insertText4 = new RealTimeText.InsertText(" there,", 5);
-        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, 0, null);
+        InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, null, 0, null);
         applyActionElements(realTimeMessage, Arrays.asList(insertText1, eraseText1, insertText2, eraseText2, insertText3, eraseText3, insertText4));
         Assert.assertEquals(realTimeMessage.getText(), "Hello there, World");
     }

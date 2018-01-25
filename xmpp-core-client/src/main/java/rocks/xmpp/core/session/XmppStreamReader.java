@@ -89,7 +89,7 @@ final class XmppStreamReader {
         this.debugger = xmppSession.getDebugger();
         this.marshaller = xmppSession.createMarshaller();
         this.unmarshaller = xmppSession.createUnmarshaller();
-        this.executorService = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("XMPP Reader Thread"));
+        this.executorService = Executors.newSingleThreadExecutor(xmppSession.getConfiguration().getThreadFactory("XMPP Reader Thread"));
         this.namespace = namespace;
     }
 

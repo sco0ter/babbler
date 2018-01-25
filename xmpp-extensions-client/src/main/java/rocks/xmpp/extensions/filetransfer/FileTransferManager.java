@@ -77,12 +77,13 @@ public final class FileTransferManager extends Manager {
 
     private final Set<Consumer<FileTransferOfferEvent>> fileTransferOfferListeners = new CopyOnWriteArraySet<>();
 
-    private final ExecutorService fileTransferOfferExecutor = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("File Transfer Offer Thread"));
+    private final ExecutorService fileTransferOfferExecutor;
 
     private FileTransferManager(final XmppSession xmppSession) {
         super(xmppSession, true);
         this.streamInitiationManager = xmppSession.getManager(StreamInitiationManager.class);
         this.entityCapabilitiesManager = xmppSession.getManager(EntityCapabilitiesManager.class);
+        this.fileTransferOfferExecutor = Executors.newCachedThreadPool(xmppSession.getConfiguration().getThreadFactory("File Transfer Offer Thread"));
     }
 
     /**
@@ -302,7 +303,7 @@ public final class FileTransferManager extends Manager {
                     } catch (IOException e1) {
                         throw new CompletionException(e1);
                     }
-                    return new FileTransfer(byteStreamSession.getSessionId(), source, outputStream, fileSize);
+                    return new FileTransfer(xmppSession, byteStreamSession.getSessionId(), source, outputStream, fileSize);
                 });
             });
         });

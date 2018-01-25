@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.filetransfer;
 
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.util.XmppUtils;
 
 import java.io.IOException;
@@ -64,12 +65,12 @@ public final class FileTransfer {
 
     private volatile long bytesTransferred;
 
-    public FileTransfer(String sessionId, InputStream inputStream, OutputStream outputStream, long length) {
+    public FileTransfer(XmppSession xmppSession, String sessionId, InputStream inputStream, OutputStream outputStream, long length) {
         this.inputStream = inputStream;
         this.outputStream = outputStream;
         this.length = length;
         this.sessionId = sessionId;
-        this.executorService = Executors.newSingleThreadExecutor();
+        this.executorService = Executors.newSingleThreadExecutor(xmppSession.getConfiguration().getThreadFactory("File Transfer Thread"));
     }
 
     /**

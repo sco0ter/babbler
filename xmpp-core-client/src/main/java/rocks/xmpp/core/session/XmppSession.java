@@ -211,23 +211,20 @@ public abstract class XmppSession implements AutoCloseable {
     protected XmppSession(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
         this.xmppServiceDomain = xmppServiceDomain != null && !xmppServiceDomain.isEmpty() ? Jid.of(xmppServiceDomain) : null;
         this.configuration = configuration;
-        this.stanzaListenerExecutor = Executors.newSingleThreadExecutor(XmppUtils.createNamedThreadFactory("Stanza Listener Thread"));
-        this.iqHandlerExecutor = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("IQ Handler Thread"));
+        this.stanzaListenerExecutor = Executors.newSingleThreadExecutor(configuration.getThreadFactory("Stanza Listener Thread"));
+        this.iqHandlerExecutor = Executors.newCachedThreadPool(configuration.getThreadFactory("IQ Handler Thread"));
         this.serviceDiscoveryManager = getManager(ServiceDiscoveryManager.class);
         this.streamFeaturesManager = getManager(StreamFeaturesManager.class);
 
         // Add a shutdown hook, which will gracefully close the connection, when the JVM is halted.
-        shutdownHook = new Thread() {
-            @Override
-            public void run() {
-                shutdownHook = null;
-                try {
-                    close();
-                } catch (XmppException e) {
-                    logger.log(Level.WARNING, e.getMessage(), e);
-                }
+        shutdownHook = configuration.getThreadFactory("Shutdown Hook").newThread(() -> {
+            shutdownHook = null;
+            try {
+                close();
+            } catch (XmppException e) {
+                logger.log(Level.WARNING, e.getMessage(), e);
             }
-        };
+        });
         Runtime.getRuntime().addShutdownHook(shutdownHook);
 
         if (configuration.getDebugger() != null) {

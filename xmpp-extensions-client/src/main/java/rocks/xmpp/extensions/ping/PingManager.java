@@ -87,7 +87,7 @@ public final class PingManager extends Manager {
      */
     private PingManager(final XmppSession xmppSession) {
         super(xmppSession, true);
-        scheduledExecutorService = new ScheduledThreadPoolExecutor(1, XmppUtils.createNamedThreadFactory("XMPP Scheduled Ping Thread"));
+        scheduledExecutorService = new ScheduledThreadPoolExecutor(1, xmppSession.getConfiguration().getThreadFactory("XMPP Scheduled Ping Thread"));
         scheduledExecutorService.setRemoveOnCancelPolicy(true);
 
         this.iqHandler = new AbstractIQHandler(IQ.Type.GET) {

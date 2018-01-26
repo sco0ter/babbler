@@ -49,6 +49,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Socket;
@@ -56,6 +57,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -82,6 +86,8 @@ public final class TcpConnection extends Connection {
     private final StreamManager streamManager;
 
     private final TcpConnectionConfiguration tcpConnectionConfiguration;
+
+    private final AtomicBoolean closed = new AtomicBoolean(false);
 
     /**
      * The stream id, which is assigned by the server.
@@ -200,7 +206,6 @@ public final class TcpConnection extends Connection {
         }
 
         this.from = from;
-
         streamFeaturesManager.addFeatureNegotiator(securityManager);
         streamFeaturesManager.addFeatureNegotiator(compressionManager);
         streamFeaturesManager.addFeatureNegotiator(streamManager);
@@ -216,6 +221,7 @@ public final class TcpConnection extends Connection {
         // Start reading from the input stream.
         xmppStreamReader = new XmppStreamReader(namespace, this, this.xmppSession);
         xmppStreamReader.startReading(inputStream);
+        closed.set(false);
     }
 
     @Override
@@ -312,38 +318,72 @@ public final class TcpConnection extends Connection {
      * After that it shuts down the reader and awaits shortly for any stanzas from the server and the server gracefully closing the stream with {@code </stream:stream>}.
      * Eventually the socket is closed.
      *
-     * @throws IOException If the socket throws an I/O exception.
+     * @throws Exception If the socket throws an I/O exception.
      */
     @Override
-    public final synchronized void close() throws Exception {
-        // This call closes the stream and waits until everything has been sent to the server.
-        if (xmppStreamWriter != null) {
-            xmppStreamWriter.shutdown();
-            xmppStreamWriter = null;
-        }
-        // This call shuts down the reader and waits for a </stream> response from the server, if it hasn't already shut down before by the server.
-        if (xmppStreamReader != null) {
-            xmppStreamReader.shutdown();
-            xmppStreamReader = null;
-        }
-
-        inputStream = null;
-        outputStream = null;
-        streamId = null;
-
-        streamFeaturesManager.removeFeatureNegotiator(securityManager);
-        streamFeaturesManager.removeFeatureNegotiator(compressionManager);
-        streamFeaturesManager.removeFeatureNegotiator(streamManager);
-
-        // We have sent a </stream:stream> to close the stream and waited for a server response, which also closes the stream by sending </stream:stream>.
-        // Now close the socket.
-        if (socket != null) {
-            try {
-                socket.close();
-            } finally {
-                socket = null;
+    public final void close() throws Exception {
+        try {
+            closeAsync().get();
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof Exception) {
+                throw (Exception) e.getCause();
+            } else {
+                throw e;
             }
+        } catch (InterruptedException e) {
+            // Implementers of AutoCloseable are strongly advised to not have the close method throw InterruptedException.
+            Thread.currentThread().interrupt();
         }
+    }
+
+    private synchronized CompletableFuture<Void> closeAsync() {
+        if (closed.compareAndSet(false, true)) {
+
+            final XmppStreamWriter writer;
+            final XmppStreamReader reader;
+
+            synchronized (this) {
+                writer = xmppStreamWriter;
+                reader = xmppStreamReader;
+            }
+            final CompletableFuture<Void> writeFuture;
+            if (writer != null) {
+                writeFuture = writer.shutdown();
+            } else {
+                writeFuture = CompletableFuture.completedFuture(null);
+            }
+            // This call closes the stream and waits until everything has been sent to the server.
+            return writeFuture.handle((aVoid, throwable) -> {
+                // This call shuts down the reader and waits for a </stream> response from the server, if it hasn't already shut down before by the server.
+                if (reader != null) {
+                    return reader.shutdown();
+                }
+                return CompletableFuture.<Void>completedFuture(null);
+            }).thenCompose(Function.identity())
+                    .whenComplete((aVoid, throwable) -> {
+                        streamFeaturesManager.removeFeatureNegotiator(securityManager);
+                        streamFeaturesManager.removeFeatureNegotiator(compressionManager);
+                        streamFeaturesManager.removeFeatureNegotiator(streamManager);
+                        synchronized (this) {
+                            inputStream = null;
+                            outputStream = null;
+                            streamId = null;
+                            
+                            // We have sent a </stream:stream> to close the stream and waited for a server response, which also closes the stream by sending </stream:stream>.
+                            // Now close the socket.
+                            if (socket != null) {
+                                try {
+                                    socket.close();
+                                } catch (IOException e) {
+                                    throw new UncheckedIOException(e);
+                                } finally {
+                                    socket = null;
+                                }
+                            }
+                        }
+                    });
+        }
+        return CompletableFuture.completedFuture(null);
     }
 
     /**

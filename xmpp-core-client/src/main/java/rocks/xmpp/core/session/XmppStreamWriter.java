@@ -42,7 +42,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -111,7 +110,7 @@ final class XmppStreamWriter {
         }
     }
 
-    synchronized CompletableFuture<Void> send(final StreamElement clientStreamElement) {
+    CompletableFuture<Void> send(final StreamElement clientStreamElement) {
         Objects.requireNonNull(clientStreamElement);
         return CompletableFuture.runAsync(() -> {
             try {
@@ -140,45 +139,43 @@ final class XmppStreamWriter {
         }, executor);
     }
 
-    synchronized void openStream(final OutputStream outputStream, final Jid from) {
-        if (!executor.isShutdown()) {
-            executor.execute(() -> {
-                try {
+    void openStream(final OutputStream outputStream, final Jid from) {
+        executor.execute(() -> {
+            try {
 
-                    OutputStream xmppOutputStream = null;
-                    if (debugger != null) {
-                        byteArrayOutputStream = new ByteArrayOutputStream();
-                        xmppOutputStream = XmppUtils.createBranchedOutputStream(outputStream, byteArrayOutputStream);
-                        OutputStream debuggerOutputStream = debugger.createOutputStream(xmppOutputStream);
-                        if (debuggerOutputStream != null) {
-                            xmppOutputStream = debuggerOutputStream;
-                        }
+                OutputStream xmppOutputStream = null;
+                if (debugger != null) {
+                    byteArrayOutputStream = new ByteArrayOutputStream();
+                    xmppOutputStream = XmppUtils.createBranchedOutputStream(outputStream, byteArrayOutputStream);
+                    OutputStream debuggerOutputStream = debugger.createOutputStream(xmppOutputStream);
+                    if (debuggerOutputStream != null) {
+                        xmppOutputStream = debuggerOutputStream;
                     }
-                    if (xmppOutputStream == null) {
-                        xmppOutputStream = outputStream;
-                    }
-                    xmlStreamWriter = xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(xmppOutputStream, "UTF-8");
-
-                    prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, namespace);
-                    streamOpened = false;
-
-                    StreamHeader streamHeader = StreamHeader.initialClientToServer(from, xmppSession.getDomain(), xmppSession.getConfiguration().getLanguage(), namespace);
-                    streamHeader.writeTo(xmlStreamWriter);
-
-                    if (debugger != null) {
-                        debugger.writeStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8).trim(), null);
-                        byteArrayOutputStream.reset();
-                    }
-                    streamOpened = true;
-                } catch (Exception e) {
-                    notifyException(e);
                 }
-            });
-        }
+                if (xmppOutputStream == null) {
+                    xmppOutputStream = outputStream;
+                }
+                xmlStreamWriter = xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(xmppOutputStream, "UTF-8");
+
+                prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, namespace);
+                streamOpened = false;
+
+                StreamHeader streamHeader = StreamHeader.initialClientToServer(from, xmppSession.getDomain(), xmppSession.getConfiguration().getLanguage(), namespace);
+                streamHeader.writeTo(xmlStreamWriter);
+
+                if (debugger != null) {
+                    debugger.writeStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8).trim(), null);
+                    byteArrayOutputStream.reset();
+                }
+                streamOpened = true;
+            } catch (Exception e) {
+                notifyException(e);
+            }
+        });
     }
 
-    private void closeStream() {
-        executor.execute(() -> {
+    private CompletableFuture<Void> closeStream() {
+        return CompletableFuture.runAsync(() -> {
             if (streamOpened) {
                 // Close the stream.
                 try {
@@ -194,7 +191,7 @@ final class XmppStreamWriter {
                     notifyException(e);
                 }
             }
-        });
+        }, executor);
     }
 
     /**
@@ -225,15 +222,9 @@ final class XmppStreamWriter {
     /**
      * Closes the stream by sending a closing {@code </stream:stream>} to the server.
      * This method waits until this task is completed, but not more than 0.25 seconds.
-     * <p>
-     * Make sure to synchronize this method.
-     * Otherwise multiple threads could call {@link #closeStream()} which may result in a {@link RejectedExecutionException}, if it has been shutdown by another thread in the meantime.
      */
-    synchronized void shutdown() {
-        // If the writer is still active, close the stream and afterwards shutdown the writer.
-        if (!executor.isShutdown()) {
-            // Send the closing stream tag.
-            closeStream();
+    CompletableFuture<Void> shutdown() {
+        return closeStream().whenComplete((aVoid, throwable) -> {
             executor.shutdown();
             try {
                 // Wait for the closing stream element to be sent before we can close the socket.
@@ -245,6 +236,6 @@ final class XmppStreamWriter {
                 executor.shutdownNow();
                 Thread.currentThread().interrupt();
             }
-        }
+        });
     }
 }

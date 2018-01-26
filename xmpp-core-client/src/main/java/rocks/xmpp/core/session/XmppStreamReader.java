@@ -28,8 +28,8 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.SessionOpen;
-import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.util.XmppUtils;
@@ -48,6 +48,7 @@ import javax.xml.stream.events.XMLEvent;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -93,157 +94,152 @@ final class XmppStreamReader {
         this.namespace = namespace;
     }
 
-    synchronized void startReading(final InputStream inputStream) {
+    void startReading(final InputStream inputStream) {
 
-        if (!executorService.isShutdown()) {
-            executorService.execute(() -> {
-                boolean doRestart = false;
-                XMLEventReader xmlEventReader = null;
-                StreamErrorException streamError = null;
-                try {
+        executorService.execute(() -> {
+            boolean doRestart = false;
+            XMLEventReader xmlEventReader = null;
+            StreamErrorException streamError = null;
+            try {
 
-                    InputStream xmppInputStream = null;
+                InputStream xmppInputStream = null;
+                if (debugger != null) {
+                    xmppInputStream = debugger.createInputStream(inputStream);
+                }
+                if (xmppInputStream == null) {
+                    xmppInputStream = inputStream;
+                }
+                XMLEvent startDocument = null;
+                xmlEventReader = xmppSession.getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
+                XMLEvent xmlEvent;
+
+                while (!doRestart && (xmlEvent = xmlEventReader.peek()) != null) {
+                    StringWriter stringWriter = null;
                     if (debugger != null) {
-                        xmppInputStream = debugger.createInputStream(inputStream);
-                    }
-                    if (xmppInputStream == null) {
-                        xmppInputStream = inputStream;
-                    }
-                    XMLEvent startDocument = null;
-                    xmlEventReader = xmppSession.getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
-                    XMLEvent xmlEvent;
-
-                    while (!doRestart && (xmlEvent = xmlEventReader.peek()) != null) {
-                        StringWriter stringWriter = null;
-                        if (debugger != null) {
-                            stringWriter = new StringWriter();
-                            if (xmlEvent.isStartDocument()) {
-                                startDocument = xmlEvent;
-                            }
+                        stringWriter = new StringWriter();
+                        if (xmlEvent.isStartDocument()) {
+                            startDocument = xmlEvent;
                         }
+                    }
 
-                        if (xmlEvent.isStartElement()) {
-                            StartElement startElement = xmlEvent.asStartElement();
-                            if (StreamHeader.LOCAL_NAME.equals(startElement.getName().getLocalPart()) && StreamHeader.STREAM_NAMESPACE.equals(startElement.getName().getNamespaceURI())) {
-                                Attribute idAttribute = startElement.getAttributeByName(STREAM_ID);
-                                if (idAttribute != null) {
-                                    synchronized (connection) {
-                                        connection.streamId = idAttribute.getValue();
-                                    }
-                                }
-                                final Attribute fromAttribute = startElement.getAttributeByName(FROM);
-                                final Attribute toAttribute = startElement.getAttributeByName(TO);
-                                final Attribute langAttribute = startElement.getAttributeByName(LANG);
-                                final Jid from = fromAttribute != null ? Jid.ofEscaped(fromAttribute.getValue()) : null;
-                                final Jid to = toAttribute != null ? Jid.ofEscaped(toAttribute.getValue()) : null;
-                                final String id = idAttribute != null ? idAttribute.getValue() : null;
-                                final Locale lang = langAttribute != null ? Locale.forLanguageTag(langAttribute.getValue()) : null;
-                                SessionOpen streamHeader = new SessionOpen() {
-                                    @Override
-                                    public Jid getFrom() {
-                                        return from;
-                                    }
-
-                                    @Override
-                                    public Jid getTo() {
-                                        return to;
-                                    }
-
-                                    @Override
-                                    public String getId() {
-                                        return id;
-                                    }
-
-                                    @Override
-                                    public Locale getLanguage() {
-                                        return lang;
-                                    }
-                                };
-
-                                if (debugger != null) {
-                                    XMLEventWriter writer = xmppSession.getConfiguration().getXmlOutputFactory().createXMLEventWriter(stringWriter);
-                                    writer.add(startDocument);
-                                    writer.add(xmlEvent);
-                                    writer.flush();
-                                    debugger.readStanza(stringWriter.append('>').toString(), null);
-                                    // Close the writer after the string has been created, otherwise some XMLEventWriters write the closing tag (</stream:stream>)
-                                    writer.close();
-                                }
-                                xmppSession.handleElement(streamHeader);
-                                xmlEventReader.nextEvent();
-                            } else {
-                                Object object = unmarshaller.unmarshal(xmlEventReader);
-                                if (debugger != null) {
-                                    // Marshal the inbound stanza. The byteArrayOutputStream cannot be used for that, even if we reset() it, because it could already contain the next stanza.
-                                    XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(stringWriter), namespace);
-                                    marshaller.marshal(object, xmlStreamWriter);
-                                    xmlStreamWriter.flush();
-                                    debugger.readStanza(stringWriter.toString(), object);
-                                }
-                                // Keep the reader open and only delegate the exception to the session and let it decide what to do with it.
-                                try {
-                                    doRestart = xmppSession.handleElement(object);
-                                } catch (StreamErrorException e) {
-                                    streamError = e;
-                                } catch (XmppException e) {
-                                    xmppSession.notifyException(e);
+                    if (xmlEvent.isStartElement()) {
+                        StartElement startElement = xmlEvent.asStartElement();
+                        if (StreamHeader.LOCAL_NAME.equals(startElement.getName().getLocalPart()) && StreamHeader.STREAM_NAMESPACE.equals(startElement.getName().getNamespaceURI())) {
+                            Attribute idAttribute = startElement.getAttributeByName(STREAM_ID);
+                            if (idAttribute != null) {
+                                synchronized (connection) {
+                                    connection.streamId = idAttribute.getValue();
                                 }
                             }
-                        } else {
-                            xmlEventReader.nextEvent();
-                        }
-                        if (xmlEvent.isEndElement()) {
-                            // The stream gets closed with </stream:stream>
+                            final Attribute fromAttribute = startElement.getAttributeByName(FROM);
+                            final Attribute toAttribute = startElement.getAttributeByName(TO);
+                            final Attribute langAttribute = startElement.getAttributeByName(LANG);
+                            final Jid from = fromAttribute != null ? Jid.ofEscaped(fromAttribute.getValue()) : null;
+                            final Jid to = toAttribute != null ? Jid.ofEscaped(toAttribute.getValue()) : null;
+                            final String id = idAttribute != null ? idAttribute.getValue() : null;
+                            final Locale lang = langAttribute != null ? Locale.forLanguageTag(langAttribute.getValue()) : null;
+                            SessionOpen streamHeader = new SessionOpen() {
+                                @Override
+                                public Jid getFrom() {
+                                    return from;
+                                }
+
+                                @Override
+                                public Jid getTo() {
+                                    return to;
+                                }
+
+                                @Override
+                                public String getId() {
+                                    return id;
+                                }
+
+                                @Override
+                                public Locale getLanguage() {
+                                    return lang;
+                                }
+                            };
+
                             if (debugger != null) {
-                                QName qName = xmlEvent.asEndElement().getName();
-                                debugger.readStanza("</" + qName.getPrefix() + ':' + qName.getLocalPart() + '>', null);
+                                XMLEventWriter writer = xmppSession.getConfiguration().getXmlOutputFactory().createXMLEventWriter(stringWriter);
+                                writer.add(startDocument);
+                                writer.add(xmlEvent);
+                                writer.flush();
+                                debugger.readStanza(stringWriter.append('>').toString(), null);
+                                // Close the writer after the string has been created, otherwise some XMLEventWriters write the closing tag (</stream:stream>)
+                                writer.close();
+                            }
+                            xmppSession.handleElement(streamHeader);
+                            xmlEventReader.nextEvent();
+                        } else {
+                            Object object = unmarshaller.unmarshal(xmlEventReader);
+                            if (debugger != null) {
+                                // Marshal the inbound stanza. The byteArrayOutputStream cannot be used for that, even if we reset() it, because it could already contain the next stanza.
+                                XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(stringWriter), namespace);
+                                marshaller.marshal(object, xmlStreamWriter);
+                                xmlStreamWriter.flush();
+                                debugger.readStanza(stringWriter.toString(), object);
+                            }
+                            // Keep the reader open and only delegate the exception to the session and let it decide what to do with it.
+                            try {
+                                doRestart = xmppSession.handleElement(object);
+                            } catch (StreamErrorException e) {
+                                streamError = e;
+                            } catch (XmppException e) {
+                                xmppSession.notifyException(e);
                             }
                         }
-                    }
-                    xmlEventReader.close();
-                    if (streamError != null) {
-                        throw streamError;
-                    }
-                    if (!doRestart && xmppSession.getStatus() != XmppSession.Status.CLOSING) {
-                        // The server initiated a graceful disconnect by sending <stream:stream/> without an stream error.
-                        // In this case we want to reconnect, therefore throw an exception as if a stream error has occurred.
-                        throw new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, "Stream closed by server", Locale.ENGLISH, null));
-                    }
-                } catch (Exception e) {
-                    synchronized (XmppStreamReader.this) {
-                        if (!executorService.isShutdown()) {
-                            // shutdown the service, but don't await termination, in order to not block the reader thread.
-                            executorService.shutdown();
-                        }
-                    }
-                    if (streamError != null) {
-                        // Recheck if there was a stream error. In this case don't report the original exception, but the stream error.
-                        // This may happen, if the server doesn't gracefully close the stream after sending a stream error.
-                        xmppSession.notifyException(streamError);
                     } else {
-                        xmppSession.notifyException(e);
+                        xmlEventReader.nextEvent();
                     }
-                } finally {
-                    if (xmlEventReader != null) {
-                        try {
-                            xmlEventReader.close();
-                        } catch (XMLStreamException e) {
-                            xmppSession.notifyException(e);
+                    if (xmlEvent.isEndElement()) {
+                        // The stream gets closed with </stream:stream>
+                        if (debugger != null) {
+                            QName qName = xmlEvent.asEndElement().getName();
+                            debugger.readStanza("</" + qName.getPrefix() + ':' + qName.getLocalPart() + '>', null);
                         }
-                    }
-                    if (doRestart) {
-                        connection.restartStream();
                     }
                 }
-            });
-        }
+                xmlEventReader.close();
+                if (streamError != null) {
+                    throw streamError;
+                }
+                if (!doRestart && xmppSession.getStatus() != XmppSession.Status.CLOSING) {
+                    // The server initiated a graceful disconnect by sending <stream:stream/> without an stream error.
+                    // In this case we want to reconnect, therefore throw an exception as if a stream error has occurred.
+                    throw new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, "Stream closed by server", Locale.ENGLISH, null));
+                }
+            } catch (Exception e) {
+                // shutdown the service, but don't await termination, in order to not block the reader thread.
+                executorService.shutdown();
+
+                if (streamError != null) {
+                    // Recheck if there was a stream error. In this case don't report the original exception, but the stream error.
+                    // This may happen, if the server doesn't gracefully close the stream after sending a stream error.
+                    xmppSession.notifyException(streamError);
+                } else {
+                    xmppSession.notifyException(e);
+                }
+            } finally {
+                if (xmlEventReader != null) {
+                    try {
+                        xmlEventReader.close();
+                    } catch (XMLStreamException e) {
+                        xmppSession.notifyException(e);
+                    }
+                }
+                if (doRestart) {
+                    connection.restartStream();
+                }
+            }
+        });
     }
 
     /**
      * Shuts down the executor and waits maximal 0.5 seconds for the reader thread to finish, i.e. when the server sends a {@code </stream:stream>} response.
      */
-    synchronized void shutdown() {
-        if (!executorService.isShutdown()) {
+    CompletableFuture<Void> shutdown() {
+        return CompletableFuture.runAsync(() -> {
             executorService.shutdown();
             // Wait for the closing </stream> element to be received.
             try {
@@ -254,6 +250,6 @@ final class XmppStreamReader {
                 executorService.shutdownNow();
                 Thread.currentThread().interrupt();
             }
-        }
+        });
     }
 }

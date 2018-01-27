@@ -30,7 +30,7 @@
     <parent>
         <groupId>rocks.xmpp</groupId>
         <artifactId>root</artifactId>
-        <version>0.7.5</version>
+        <version>0.7.6-SNAPSHOT</version>
     </parent>
     <artifactId>xmpp-fx</artifactId>
     <name>XMPP.rocks - JavaFX Controls</name>

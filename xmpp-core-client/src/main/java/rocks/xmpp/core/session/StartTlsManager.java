@@ -37,11 +37,11 @@ import rocks.xmpp.core.tls.model.StartTls;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tls">STARTTLS Negotiation</a>
  */
-final class SecurityManager extends StreamFeatureNegotiator {
+final class StartTlsManager extends StreamFeatureNegotiator {
 
     private final boolean isSecure;
 
-    public SecurityManager(XmppSession xmppSession, StreamFeatureListener streamFeatureListener, boolean isSecure) {
+    public StartTlsManager(XmppSession xmppSession, StreamFeatureListener streamFeatureListener, boolean isSecure) {
         super(xmppSession, StartTls.class);
         this.isSecure = isSecure;
         addFeatureListener(streamFeatureListener);

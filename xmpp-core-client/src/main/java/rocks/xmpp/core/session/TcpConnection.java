@@ -79,7 +79,7 @@ public final class TcpConnection extends Connection {
 
     private final StreamFeaturesManager streamFeaturesManager;
 
-    private final SecurityManager securityManager;
+    private final StartTlsManager securityManager;
 
     private final CompressionManager compressionManager;
 
@@ -125,7 +125,7 @@ public final class TcpConnection extends Connection {
         this.tcpConnectionConfiguration = configuration;
         this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         this.streamManager = xmppSession.getManager(StreamManager.class);
-        this.securityManager = new SecurityManager(xmppSession, () -> {
+        this.securityManager = new StartTlsManager(xmppSession, () -> {
             try {
                 secureConnection();
                 logger.log(Level.FINE, "Connection has been secured via TLS.");

@@ -29,13 +29,27 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>rocks.xmpp</groupId>
-        <artifactId>root</artifactId>
+        <artifactId>xmpp-websocket</artifactId>
         <version>0.8.0-SNAPSHOT</version>
     </parent>
-    <artifactId>xmpp-sample</artifactId>
-    <name>XMPP.rocks - Samples</name>
+    <artifactId>xmpp-websocket-core</artifactId>
+    <name>XMPP.rocks - WebSocket (RFC 7395) - Core</name>
+    <description>XMPP Subprotocol for WebSocket - Codecs and XMPP frames shared by client and server</description>
     <build>
         <plugins>
+            <!-- Generate a sources.jar, so that it can be used by JavaDoc plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Skip site generation -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -45,8 +59,9 @@
                 </configuration>
             </plugin>
 
-            <!-- Define JPMS module name -->
+            <!-- Create test jar / Define JPMS module name -->
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
@@ -54,14 +69,27 @@
                         <configuration>
                             <archive>
                                 <manifestEntries>
-                                    <Automatic-Module-Name>rocks.xmpp.sample</Automatic-Module-Name>
+                                    <Automatic-Module-Name>rocks.xmpp.websocket.core</Automatic-Module-Name>
                                 </manifestEntries>
                             </archive>
                         </configuration>
                     </execution>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
+
+            <!-- Deploy this artifact -->
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+            </plugin>
+
         </plugins>
+
     </build>
     <dependencies>
         <dependency>
@@ -75,29 +103,21 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-core-client</artifactId>
-            <version>${project.version}</version>
+            <groupId>javax.websocket</groupId>
+            <artifactId>javax.websocket-api</artifactId>
+            <version>1.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-extensions</artifactId>
+            <artifactId>xmpp-core</artifactId>
             <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-extensions-client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-debug</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-websocket-client</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
         </dependency>
     </dependencies>
 </project>

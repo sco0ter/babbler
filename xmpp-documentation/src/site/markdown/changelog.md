@@ -19,6 +19,30 @@ Reduces GC pressure and increase performance.
 * XEP-0085: Add `isSupported` method for Chat State Notifications (either discover implicit support or else use service discovery)
 * XEP-0096: Only return a single value during SI FileTransfer negotiation.
 
+### Version 0.7.5 (2018-01-27)
+
+* Add stream ID to ConsoleDebugger output ([Issue #105](https://bitbucket.org/sco0ter/babbler/issues/105)).
+* Improve CustomIQ example and documentation ([Issue #112](https://bitbucket.org/sco0ter/babbler/issues/112)).
+* PingManager: Make exception for feature-not-implemented ([Issue #113](https://bitbucket.org/sco0ter/babbler/issues/113)).
+* Allow configuration of custom name server for DNS SRV resolution.
+* MUC service discovery should handle items with non-room JIDs ([Issue #106](https://bitbucket.org/sco0ter/babbler/issues/106)).
+* Connecting to stream hosts should not exceed configured response timeout ([Issue #111](https://bitbucket.org/sco0ter/babbler/issues/111)).
+* Fixed DataForm.getReportedFields() to work when null.
+* Fix NullPointerException in RPC Value class ([Issue #117](https://bitbucket.org/sco0ter/babbler/issues/117)).
+* Fix memory leak on WebSocket connection failure ([Issue #122](https://bitbucket.org/sco0ter/babbler/issues/122))
+* Ensure WebSocket session is closed, if server does not respond with `<close/>` element.
+* Store avatar image using correct hash code.
+
+### Version 0.7.4 (2017-03-14)
+
+* Resolve rare deadlock when using Stream Management
+* Rework how WebSocket connections are closed
+* Don't let a stream error close the stream immediately, but instead wait for the closing stream element and then close the connection.
+* Increase performance of IBB stream
+* Prevent rare, but possible `NullPointerException` after sending stanzas.
+* Fix error when using pages (XEP-0141) within data forms (XEP-0004)
+* Reset nick to `null`, if entering a chat room fails
+
 ### Version 0.7.3 (2017-02-09)
 
 * Use single equals sign ("=") for zero-length data in SASL, as per RFC 6120 § 6.4.2

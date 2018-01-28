@@ -263,17 +263,39 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.10.4</version>
+                    <version>3.0.0</version>
                     <configuration>
-                        <additionalparam>
-                            -Xdoclint:none
-                            -group "XMPP Address Format (RFC 7622)" rocks.xmpp.addr*
-                            -group "XMPP Core (RFC 6120)" rocks.xmpp.core*
-                            -group "XMPP Instant Messaging and Presence (RFC 6121)" rocks.xmpp.im*
-                            -group "XMPP Extensions" rocks.xmpp.extensions*
-                            -group "XMPP WebSocket Support (RFC 7395)" rocks.xmpp.websocket*
-                            -group "JavaFX Controls Useful for XMPP Clients" rocks.xmpp.javafx*
-                        </additionalparam>
+                        <doclint>none</doclint>
+                        <groups>
+                            <group>
+                                <title>XMPP Address Format (RFC 7622)</title>
+                                <packages>rocks.xmpp.addr*</packages>
+                            </group>
+                            <group>
+                                <title>XMPP Core (RFC 6120)</title>
+                                <packages>rocks.xmpp.core*</packages>
+                            </group>
+                            <group>
+                                <title>XMPP Instant Messaging and Presence (RFC 6121)</title>
+                                <packages>rocks.xmpp.im*</packages>
+                            </group>
+                            <group>
+                                <title>XMPP Extensions</title>
+                                <packages>rocks.xmpp.extensions*</packages>
+                            </group>
+                            <group>
+                                <title>XMPP WebSocket Support (RFC 7395)</title>
+                                <packages>rocks.xmpp.websocket*</packages>
+                            </group>
+                            <group>
+                                <title>XMPP NIO Connection Support</title>
+                                <packages>rocks.xmpp.nio*</packages>
+                            </group>
+                            <group>
+                                <title>JavaFX Controls Useful for XMPP Clients</title>
+                                <packages>rocks.xmpp.javafx*</packages>
+                            </group>
+                        </groups>
                         <quiet>true</quiet>
                         <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
                         <includeDependencySources>true</includeDependencySources>
@@ -390,7 +412,7 @@
                                     <goal>jar</goal>
                                 </goals>
                                 <configuration>
-                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                    <doclint>none</doclint>
                                     <quiet>true</quiet>
                                     <includeDependencySources>true</includeDependencySources>
                                     <includeTransitiveDependencySources>false</includeTransitiveDependencySources>

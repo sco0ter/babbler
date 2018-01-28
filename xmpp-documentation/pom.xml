@@ -74,6 +74,11 @@
                         </reports>
                     </reportSet>
                 </reportSets>
+                <configuration>
+                    <includes>
+                        <include>rocks.xmpp:*</include>
+                    </includes>
+                </configuration>
             </plugin>
         </plugins>
     </reporting>
@@ -166,7 +171,31 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-websocket</artifactId>
+            <artifactId>xmpp-websocket-core</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>xmpp-nio-codec</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>xmpp-nio-netty-codec</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>xmpp-nio-netty-client</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>xmpp-websocket-client</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>

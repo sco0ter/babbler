@@ -29,22 +29,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>rocks.xmpp</groupId>
-        <artifactId>root</artifactId>
+        <artifactId>xmpp-nio</artifactId>
         <version>0.8.0-SNAPSHOT</version>
     </parent>
-    <artifactId>xmpp-nio-client</artifactId>
-    <name>XMPP.rocks - NIO client</name>
+    <artifactId>xmpp-nio-codec</artifactId>
+    <name>XMPP.rocks - NIO Codec</name>
+    <description>
+        A codec for XMPP using plain java.nio.ByteBuffer.
+        The intention is that this codec can ba reused by different NIO implementations.
+    </description>
     <build>
         <plugins>
-            <!-- Skip site generation -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-
             <!-- Define JPMS module name -->
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -54,13 +49,23 @@
                         <configuration>
                             <archive>
                                 <manifestEntries>
-                                    <Automatic-Module-Name>rocks.xmpp.nio.client</Automatic-Module-Name>
+                                    <Automatic-Module-Name>rocks.xmpp.nio.codec</Automatic-Module-Name>
                                 </manifestEntries>
                             </archive>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Skip site generation -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
     <dependencies>
@@ -75,39 +80,18 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-core-client</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.fasterxml</groupId>
+            <artifactId>aalto-xml</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-nio</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>stax2-api</artifactId>
+            <version>4.0.0</version>
         </dependency>
         <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-handler</artifactId>
-            <version>4.1.19.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-codec</artifactId>
-            <version>4.1.19.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-transport</artifactId>
-            <version>4.1.19.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-buffer</artifactId>
-            <version>4.1.19.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-common</artifactId>
-            <version>4.1.19.Final</version>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
         </dependency>
     </dependencies>
 </project>

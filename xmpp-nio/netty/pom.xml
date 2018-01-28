@@ -29,15 +29,46 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>rocks.xmpp</groupId>
-        <artifactId>root</artifactId>
+        <artifactId>xmpp-nio</artifactId>
         <version>0.8.0-SNAPSHOT</version>
     </parent>
-    <artifactId>xmpp-nio</artifactId>
-    <name>XMPP.rocks - NIO</name>
-    <description>Everything related to Java NIO is found in this module.</description>
+    <artifactId>xmpp-nio-netty</artifactId>
+    <name>XMPP.rocks - NIO (Netty Implementation)</name>
     <packaging>pom</packaging>
     <modules>
         <module>codec</module>
-        <module>netty</module>
+        <module>client</module>
     </modules>
+    <properties>
+        <io.netty.version>4.1.19.Final</io.netty.version>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec</artifactId>
+                <version>${io.netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport</artifactId>
+                <version>${io.netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-buffer</artifactId>
+                <version>${io.netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-handler</artifactId>
+                <version>${io.netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-common</artifactId>
+                <version>${io.netty.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

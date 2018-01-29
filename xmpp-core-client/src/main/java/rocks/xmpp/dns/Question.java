@@ -64,7 +64,7 @@ final class Question {
         final String asciiDomain = IDN.toASCII(domain);
 
         // https://tools.ietf.org/html/rfc3490#section-3.1
-        final String[] labels = asciiDomain.split("[\u002E\u3002\uFF0E\uFF61]");
+        final String[] labels = asciiDomain.split("[\u002E\u3002\uFF0E\uFF61]", 127);
 
         // a domain name represented as a sequence of labels, where
         // each label consists of a length octet followed by that

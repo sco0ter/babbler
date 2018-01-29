@@ -121,7 +121,7 @@ abstract class ScramBase {
      */
     static Map<Character, String> getAttributes(String str) {
         Map<Character, String> map = new HashMap<>();
-        String[] parts = str.split(",");
+        String[] parts = str.split(",", 8);
         for (String part : parts) {
             if (part.length() > 1) {
                 map.put(part.charAt(0), part.substring(2));

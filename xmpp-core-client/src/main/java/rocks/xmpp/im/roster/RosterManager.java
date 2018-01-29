@@ -62,7 +62,6 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -249,7 +248,7 @@ public final class RosterManager extends Manager {
                     for (String group : contact.getGroups()) {
                         String[] nestedGroups;
                         if (groupDelimiter != null && !groupDelimiter.isEmpty()) {
-                            nestedGroups = group.split(groupDelimiter);
+                            nestedGroups = group.split(groupDelimiter, 255);
                         } else {
                             nestedGroups = new String[]{group};
                         }
@@ -580,7 +579,7 @@ public final class RosterManager extends Manager {
         // Update each contact in this group with the new group name.
         String newName = name;
         if (groupDelimiter != null && !groupDelimiter.isEmpty()) {
-            String[] groups = contactGroup.getFullName().split(groupDelimiter);
+            String[] groups = contactGroup.getFullName().split(groupDelimiter, 255);
             if (index < groups.length) {
                 groups[index] = name;
             }

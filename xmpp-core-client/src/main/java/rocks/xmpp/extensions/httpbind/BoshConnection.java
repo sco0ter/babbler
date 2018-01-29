@@ -382,7 +382,7 @@ public final class BoshConnection extends Connection {
                 if (responseBody.getAccept() != null) {
                     // After receiving a session creation response with an 'accept' attribute,
                     // clients MAY include an HTTP Content-Encoding header in subsequent requests (indicating one of the encodings specified in the 'accept' attribute) and compress the bodies of the requests accordingly.
-                    String[] serverAcceptedEncodings = responseBody.getAccept().split(",");
+                    String[] serverAcceptedEncodings = responseBody.getAccept().split(",", 16);
                     // Let's see if we can compress the contents for the server by choosing a known compression method.
                     for (String serverAcceptedEncoding : serverAcceptedEncodings) {
                         requestCompressionMethod = compressionMethods.get(serverAcceptedEncoding);

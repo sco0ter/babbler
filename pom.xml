@@ -298,7 +298,7 @@
                         </groups>
                         <quiet>true</quiet>
                         <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
-                        <includeDependencySources>true</includeDependencySources>
+                        <includeDependencySources>false</includeDependencySources>
                         <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
                         <nodeprecated>false</nodeprecated>
                         <nodeprecatedlist>false</nodeprecatedlist>
@@ -411,20 +411,6 @@
                                 <goals>
                                     <goal>jar</goal>
                                 </goals>
-                                <configuration>
-                                    <doclint>none</doclint>
-                                    <quiet>true</quiet>
-                                    <includeDependencySources>true</includeDependencySources>
-                                    <includeTransitiveDependencySources>false</includeTransitiveDependencySources>
-                                    <nodeprecated>false</nodeprecated>
-                                    <nodeprecatedlist>false</nodeprecatedlist>
-                                    <author>false</author>
-                                    <notimestamp>true</notimestamp>
-                                    <doctitle>Babbler ${project.version}</doctitle>
-                                    <windowtitle>Babbler ${project.version}</windowtitle>
-                                    <docfilessubdirs>true</docfilessubdirs>
-                                    <show>public</show>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

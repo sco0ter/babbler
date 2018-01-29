@@ -262,7 +262,6 @@ public abstract class Stanza implements StreamElement {
 
     /**
      * Checks if a stanza is addressed either to itself or to the server. This is useful to check, if it's allowed to send a stanza before stream negotiation has completed.
-     * <p>
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-negotiation-complete">4.3.5.  Completion of Stream Negotiation</a></cite></p>
      * <div>

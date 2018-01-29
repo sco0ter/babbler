@@ -253,6 +253,7 @@ public final class StreamFeaturesManager extends Manager {
      * Waits until the given feature will be negotiated. If the feature has already been negotiated it immediately returns.
      *
      * @param streamFeature The stream feature class.
+     * @return The future which is complete when the negotiation of the stream feature is completed.
      */
     public final Future<Void> awaitNegotiation(Class<? extends StreamFeature> streamFeature) {
         return featureNegotiationStartedFutures.computeIfAbsent(streamFeature, k -> new CompletableFuture<>());
@@ -261,6 +262,7 @@ public final class StreamFeaturesManager extends Manager {
     /**
      * Negotiates all pending features, if any, and waits until all features have been negotiated.
      *
+     * @return The future which is complete when all pending features have been negotiated.
      * @throws StreamNegotiationException If the stream negotiation failed.
      */
     public final synchronized Future<Void> completeNegotiation() throws StreamNegotiationException {

@@ -75,9 +75,7 @@
                     </reportSet>
                 </reportSets>
                 <configuration>
-                    <includes>
-                        <include>rocks.xmpp:*</include>
-                    </includes>
+                    <includeDependencySources>true</includeDependencySources>
                 </configuration>
             </plugin>
         </plugins>

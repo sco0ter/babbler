@@ -200,9 +200,9 @@ public final class Catalog {
          * Gets the selector.
          * <blockquote>
          * <p>Items in the catalog may contain a selector= attribute. The value of this attribute represents the item's placement in a hierarchical organization of the items. If one item has a selector= attribute, all items should have a selector= attribute. The value of the selector= attribute conforms to the selector-value ABNF production:</p>
-         * <p><code>selector-value = (<item>"|")*<item></code></p>
-         * <p>where <item/> is a sequence of characters not including "|".</p>
-         * <p>A value of "X|Y|Z" indicates that this item is "Z" in the the "Y" subset of the "X" subset of items. This information may be used, for instance, in generating label selection menus in graphical user interfaces.         * </p>
+         * <p>{@code selector-value = (<item>"|")*<item>}</p>
+         * <p>where {@code <item/>} is a sequence of characters not including "|".</p>
+         * <p>A value of "X|Y|Z" indicates that this item is "Z" in the the "Y" subset of the "X" subset of items. This information may be used, for instance, in generating label selection menus in graphical user interfaces.</p>
          * </blockquote>
          *
          * @return The selector.

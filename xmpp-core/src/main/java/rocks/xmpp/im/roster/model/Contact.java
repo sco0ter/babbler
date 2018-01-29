@@ -144,6 +144,7 @@ public final class Contact implements Comparable<Contact> {
 
     /**
      * Creates a new contact to send to the server for removal.
+     *
      * @param jid Jid of the contact to be removed.
      * @return a contact with only the Jid and {@link Subscription#REMOVE} set.
      */
@@ -153,20 +154,26 @@ public final class Contact implements Comparable<Contact> {
 
     /**
      * Creates an identical contact with only the name changed.
+     *
+     * @param name The name.
+     * @return A new contact object with only the name changed.
      */
     public Contact withName(String name) {
-	return new Contact(jid, name, ask, approved, subscription, group);
+        return new Contact(jid, name, ask, approved, subscription, group);
     }
 
     /**
      * Creates an identical contact without name.
+     *
+     * @return A new contact object with only the name changed.
      */
     public Contact withoutName() {
-	return new Contact(jid, null, ask, approved, subscription, group);
+        return new Contact(jid, null, ask, approved, subscription, group);
     }
 
     /**
      * Creates an identical contact with only the groups changed.
+     *
      * @param groups the new groups.
      * @return a new contact with only the groups changed.
      */
@@ -176,6 +183,7 @@ public final class Contact implements Comparable<Contact> {
 
     /**
      * Creates an identical contact with only the groups changed.
+     *
      * @param groups the new groups.
      * @return a new contact with only the groups changed.
      */
@@ -185,6 +193,7 @@ public final class Contact implements Comparable<Contact> {
 
     /**
      * Creates an identical contact without groups.
+     *
      * @return a new contact with no groups.
      */
     public Contact withoutGroups() {

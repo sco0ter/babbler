@@ -43,9 +43,9 @@ final class Question {
 
     private final ResourceRecord.Type type;
 
-    private final ResourceRecord.Class clazz;
+    private final ResourceRecord.Classification clazz;
 
-    Question(String domain, ResourceRecord.Type type, ResourceRecord.Class clazz) {
+    Question(String domain, ResourceRecord.Type type, ResourceRecord.Classification clazz) {
         this.domain = domain;
         this.type = type;
         this.clazz = clazz;
@@ -54,7 +54,7 @@ final class Question {
     Question(ByteBuffer data) {
         this.domain = ResourceRecord.parse(data);
         this.type = ResourceRecord.Type.valueOf(data.getShort()& 0xFFFF);
-        this.clazz = ResourceRecord.Class.valueOf(data.getShort()& 0xFFFF);
+        this.clazz = ResourceRecord.Classification.valueOf(data.getShort() & 0xFFFF);
     }
 
     final byte[] toByteArray() {

@@ -97,7 +97,7 @@ public final class DnsResolver {
         try {
             // Ensure a timeout > 0 in order to not block infinitely.
             long t = timeout <= 0 ? 1000 : timeout;
-            Question question = new Question(prefix + domain, type, ResourceRecord.Class.IN);
+            Question question = new Question(prefix + domain, type, ResourceRecord.Classification.IN);
             return CACHE.computeIfAbsent(question, key -> {
                 final Message message = new Message(question);
                 try (DatagramChannel channel = DatagramChannel.open();

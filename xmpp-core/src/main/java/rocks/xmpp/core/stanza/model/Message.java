@@ -60,7 +60,7 @@ public class Message extends ExtensibleStanza {
     @XmlAttribute
     private Type type;
 
-    private Thread thread;
+    private ThreadElement thread;
 
     public Message() {
         this(null);
@@ -165,7 +165,7 @@ public class Message extends ExtensibleStanza {
             this.subject.addAll(subjects);
         }
         if (thread != null || parentThread != null) {
-            this.thread = new Thread(thread, parentThread);
+            this.thread = new ThreadElement(thread, parentThread);
         } else {
             this.thread = null;
         }
@@ -360,7 +360,7 @@ public class Message extends ExtensibleStanza {
      * @see #getThread()
      */
     public final synchronized void setThread(String thread) {
-        this.thread = thread != null ? new Thread(thread, null) : null;
+        this.thread = thread != null ? new ThreadElement(thread, null) : null;
     }
 
     /**
@@ -386,7 +386,7 @@ public class Message extends ExtensibleStanza {
      * @see #getParentThread()
      */
     public final synchronized void setParentThread(String parent) {
-        this.thread = new Thread(thread != null ? thread.value : null, parent);
+        this.thread = new ThreadElement(thread != null ? thread.value : null, parent);
     }
 
     @Override
@@ -457,7 +457,7 @@ public class Message extends ExtensibleStanza {
      * <p>The primary use of the XMPP {@code <thread/>} element is to uniquely identify a conversation thread or "chat session" between two entities instantiated by {@code <message/>} stanzas of type 'chat'. However, the XMPP {@code <thread/>} element MAY also be used to uniquely identify an analogous thread between two entities instantiated by {@code <message/>} stanzas of type 'headline' or 'normal', or among multiple entities in the context of a multi-user chat room instantiated by {@code <message/>} stanzas of type 'groupchat'. It MAY also be used for {@code <message/>} stanzas not related to a human conversation, such as a game session or an interaction between plugins. The {@code <thread/>} element is not used to identify individual messages, only conversations or messaging sessions.</p>
      * </blockquote>
      */
-    private static final class Thread {
+    private static final class ThreadElement {
 
         @XmlAttribute
         private final String parent;
@@ -465,11 +465,11 @@ public class Message extends ExtensibleStanza {
         @XmlValue
         private final String value;
 
-        private Thread() {
+        private ThreadElement() {
             this(null, null);
         }
 
-        private Thread(String value, String parent) {
+        private ThreadElement(String value, String parent) {
             this.value = value;
             this.parent = parent;
         }

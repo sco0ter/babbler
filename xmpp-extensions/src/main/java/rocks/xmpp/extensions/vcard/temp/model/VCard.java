@@ -2060,10 +2060,10 @@ public final class VCard {
         }
     }
 
-    private static final class ClassificationAdapter extends XmlAdapter<Class, Classification> {
+    private static final class ClassificationAdapter extends XmlAdapter<ClassElement, Classification> {
 
         @Override
-        public Classification unmarshal(Class v) throws Exception {
+        public Classification unmarshal(ClassElement v) throws Exception {
             if (v != null) {
                 if (v._public != null) {
                     return Classification.PUBLIC;
@@ -2077,9 +2077,9 @@ public final class VCard {
         }
 
         @Override
-        public Class marshal(Classification v) throws Exception {
+        public ClassElement marshal(Classification v) throws Exception {
             if (v != null) {
-                Class cl = new Class();
+                ClassElement cl = new ClassElement();
                 switch (v) {
                     case PUBLIC:
                         cl._public = "";
@@ -2097,7 +2097,7 @@ public final class VCard {
         }
     }
 
-    private static final class Class {
+    private static final class ClassElement {
         @XmlElement(name = "PUBLIC")
         private String _public;
 

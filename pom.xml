@@ -194,7 +194,6 @@
                     <target>8</target>
                     <showWarnings>true</showWarnings>
                     <compilerArgs>
-                        <arg>-Xep:JavaLangClash:OFF</arg>
                         <arg>-Xep:FutureReturnValueIgnored:OFF</arg>
                     </compilerArgs>
                 </configuration>

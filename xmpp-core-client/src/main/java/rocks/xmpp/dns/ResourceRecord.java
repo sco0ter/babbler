@@ -44,7 +44,7 @@ final class ResourceRecord {
      * two octets which specify the class of the data in the
      * RDATA field.
      */
-    private final Class clazz;
+    private final Classification clazz;
 
     /**
      * a 32 bit unsigned integer that specifies the time
@@ -64,7 +64,7 @@ final class ResourceRecord {
         field specifies the meaning of the data in the RDATA field.
         */
         Type type = Type.valueOf(data.getShort() & 0xFFFF);
-        this.clazz = Class.valueOf(data.getShort() & 0xFFFF);
+        this.clazz = Classification.valueOf(data.getShort() & 0xFFFF);
         this.ttl = data.getInt() & 0xFFFFFFFFL;
         int resourceDataLength = data.getShort() & 0xFFFF;
         if (type != null) {
@@ -150,7 +150,7 @@ final class ResourceRecord {
         return sb.toString();
     }
 
-    enum Class {
+    enum Classification {
         /**
          * the Internet
          */
@@ -174,12 +174,12 @@ final class ResourceRecord {
 
         final int value;
 
-        Class(int value) {
+        Classification(int value) {
             this.value = value;
         }
 
-        static Class valueOf(int value) {
-            for (Class v : values()) {
+        static Classification valueOf(int value) {
+            for (Classification v : values()) {
                 if (v.value == value) {
                     return v;
                 }

@@ -36,6 +36,7 @@ import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
+import rocks.xmpp.util.concurrent.CompletionStages;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.xml.bind.DatatypeConverter;
@@ -67,10 +68,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -409,7 +413,7 @@ public final class BoshConnection extends Connection {
         } else if (responseBody.getType() == Body.Type.ERROR) {
             // In any response it sends to the client, the connection manager MAY return a recoverable error by setting a 'type' attribute of the <body/> element to "error". These errors do not imply that the HTTP session is terminated.
             // If it decides to recover from the error, then the client MUST repeat the HTTP request that resulted in the error, as well as all the preceding HTTP requests that have not received responses. The content of these requests MUST be identical to the <body/> elements of the original requests. This enables the connection manager to recover a session after the previous request was lost due to a communication failure.
-            unacknowledgedRequests.entrySet().forEach(bodyBuilder -> sendNewRequest(bodyBuilder.getValue(), true));
+            unacknowledgedRequests.forEach((key, value) -> sendNewRequest(value, true));
         }
 
         for (Object wrappedObject : responseBody.getWrappedObjects()) {
@@ -458,32 +462,68 @@ public final class BoshConnection extends Connection {
      * </ol>
      */
     @Override
-    public final void close() {
-        synchronized (this) {
-            if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
-                if (getSessionId() != null) {
-                    // Terminate the BOSH session.
-                    Body.Builder bodyBuilder = Body.builder()
-                            .sessionId(sessionId)
-                            .type(Body.Type.TERMINATE);
-
-                    sendNewRequest(bodyBuilder, false);
-                }
-                // and then shut it down.
-                shutdown();
+    public final void close() throws Exception {
+        try {
+            closeAsync().get();
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof Exception) {
+                throw (Exception) e.getCause();
+            } else {
+                throw e;
             }
-            sessionId = null;
-            authId = null;
-            requestContentEncoding = null;
-            keySequence.clear();
-            requestContentEncoding = null;
+        } catch (InterruptedException e) {
+            // Implementers of AutoCloseable are strongly advised to not have the close method throw InterruptedException.
+            Thread.currentThread().interrupt();
         }
+    }
+
+    private synchronized CompletableFuture<Void> closeAsync() {
+        final CompletableFuture<Void> future;
+        if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
+            if (getSessionId() != null) {
+                // Terminate the BOSH session.
+                Body.Builder bodyBuilder = Body.builder()
+                        .sessionId(sessionId)
+                        .type(Body.Type.TERMINATE);
+
+                future = sendNewRequest(bodyBuilder, false)
+                        .applyToEither(CompletionStages.timeoutAfter(500, TimeUnit.MILLISECONDS), Function.identity())
+                        .exceptionally(exc -> null);
+            } else {
+                future = CompletableFuture.completedFuture(null);
+            }
+            httpBindExecutor.shutdown();
+        } else {
+            future = CompletableFuture.completedFuture(null);
+        }
+        future.whenComplete(((aVoid, throwable) -> {
+            synchronized (this) {
+                if (httpBindExecutor != null) {
+                    // and then shut it down.
+                    httpBindExecutor.shutdown();
+                    try {
+                        if (!httpBindExecutor.awaitTermination(50, TimeUnit.MILLISECONDS)) {
+                            httpBindExecutor.shutdownNow();
+                        }
+                    } catch (InterruptedException e) {
+                        // (Re-)Cancel if current thread also interrupted
+                        httpBindExecutor.shutdownNow();
+                        Thread.currentThread().interrupt();
+                    }
+                }
+                sessionId = null;
+                authId = null;
+                requestContentEncoding = null;
+                keySequence.clear();
+                requestContentEncoding = null;
+            }
+        }));
+        return future;
     }
 
     private synchronized void shutdown() {
         if (httpBindExecutor != null) {
             httpBindExecutor.shutdown();
-            httpBindExecutor = null;
         }
     }
 
@@ -789,7 +829,11 @@ public final class BoshConnection extends Connection {
                         } finally {
                             // As soon as the client receives a response from the connection manager it sends another request, thereby ensuring that the connection manager is (almost) always holding a request that it can use to "push" data to the client.
                             if (requestCount.decrementAndGet() == 0 && responseReceived) {
-                                sendNewRequest(Body.builder().sessionId(sessionId), false);
+                                synchronized (this) {
+                                    if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
+                                        sendNewRequest(Body.builder().sessionId(sessionId), false);
+                                    }
+                                }
                             }
                         }
                     } catch (Exception e) {

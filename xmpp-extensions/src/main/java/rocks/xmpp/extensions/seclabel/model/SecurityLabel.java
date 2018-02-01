@@ -121,7 +121,7 @@ public final class SecurityLabel {
      * </p>
      * </blockquote>
      */
-    public final static class DisplayMarking {
+    public static final class DisplayMarking {
 
         @XmlAttribute(name = "bgcolor")
         private final String bgcolor;

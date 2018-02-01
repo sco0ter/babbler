@@ -1427,25 +1427,25 @@ public abstract class XmppSession implements AutoCloseable {
      * The following chart illustrates the valid status transitions:
      * </p>
      * <pre>
-     * &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500; INITIAL
-     * &#x2502;          &#x2502;
-     * &#x2502;          &#x25BC;
-     * &#x251C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500; CONNECTING &#x25C4;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
-     * &#x2502;          &#x2502;               &#x2502;
-     * &#x2502;          &#x25BC;               &#x2502;
-     * &#x251C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500; CONNECTED &#x2500;&#x2500;&#x2500;&#x25BA; DISCONNECTED
-     * &#x2502;          &#x2502;               &#9650;
-     * &#x2502;          &#x25BC;               &#x2502;
-     * &#x251C;&#x2500;&#x2500;&#x2500; AUTHENTICATING        &#x2502;
-     * &#x2502;          &#x2502;               &#x2502;
-     * &#x2502;          &#x25BC;               &#x2502;
-     * &#x251C;&#x2500;&#x2500;&#x2500; AUTHENTICATED &#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;
-     * &#x2502;          &#x2502;
-     * &#x2502;          &#x25BC;
-     * &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x25BA; CLOSING
-     * &nbsp;          &#x2502;
-     * &nbsp;          &#x25BC;
-     * &nbsp;       CLOSED
+     * ┌────── INITIAL
+     * │          │
+     * │          ▼
+     * │      CONNECTING ◄────────┐
+     * │          │               │
+     * │          ▼               │
+     * │      CONNECTED ───► DISCONNECTED
+     * │          │               ▲
+     * │          ▼               │
+     * │    AUTHENTICATING        │
+     * │          │               │
+     * │          ▼               │
+     * │    AUTHENTICATED ────────┘
+     * │          │
+     * │          ▼
+     * └─────► CLOSING
+     *            │
+     *            ▼
+     *         CLOSED
      * </pre>
      */
     public enum Status {

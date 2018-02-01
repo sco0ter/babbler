@@ -264,7 +264,6 @@
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>3.0.0</version>
                     <configuration>
-                        <doclint>none</doclint>
                         <groups>
                             <group>
                                 <title>XMPP Address Format (RFC 7622)</title>

@@ -83,7 +83,7 @@ final class IbbSession extends ByteStreamSession {
         this.stanzaType = stanzaType;
     }
 
-    synchronized final boolean dataReceived(InBandByteStream.Data data) {
+    final synchronized boolean dataReceived(InBandByteStream.Data data) {
         if (inboundSequence++ == data.getSequence()) {
             inputStream.queue.offer(data);
             return true;
@@ -97,7 +97,7 @@ final class IbbSession extends ByteStreamSession {
     }
 
     @Override
-    public synchronized final OutputStream getOutputStream() throws IOException {
+    public final synchronized OutputStream getOutputStream() throws IOException {
         if (closed) {
             throw new IOException("IBB session is closed.");
         }
@@ -105,7 +105,7 @@ final class IbbSession extends ByteStreamSession {
     }
 
     @Override
-    public synchronized final InputStream getInputStream() throws IOException {
+    public final synchronized InputStream getInputStream() throws IOException {
         if (closed) {
             throw new IOException("IBB session is closed.");
         }

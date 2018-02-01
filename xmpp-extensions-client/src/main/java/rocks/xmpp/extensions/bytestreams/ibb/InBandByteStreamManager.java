@@ -202,7 +202,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
      *
      * @param stanzaType The stanza type.
      */
-    public synchronized final void setStanzaType(InBandByteStream.Open.StanzaType stanzaType) {
+    public final synchronized void setStanzaType(InBandByteStream.Open.StanzaType stanzaType) {
         this.stanzaType = stanzaType;
     }
 
@@ -211,7 +211,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
      *
      * @return The stanza type.
      */
-    public synchronized final InBandByteStream.Open.StanzaType getStanzaType() {
+    public final synchronized InBandByteStream.Open.StanzaType getStanzaType() {
         return stanzaType;
     }
 

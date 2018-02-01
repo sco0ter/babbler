@@ -204,7 +204,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
      *
      * @param text The text.
      */
-    public synchronized final void update(CharSequence text) {
+    public final synchronized void update(CharSequence text) {
         if (complete) {
             throw new IllegalStateException("Real-time message is already completed.");
         }
@@ -230,7 +230,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
      *
      * @see <a href="http://www.xmpp.org/extensions/xep-0301.html#message_refresh">4.7.3 Message Refresh</a>
      */
-    public synchronized final void reset() {
+    public final synchronized void reset() {
         reset(null, text);
     }
 
@@ -242,7 +242,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
      * @param text The text to reset this message to.
      * @see <a href="http://www.xmpp.org/extensions/xep-0301.html#usage_with_last_message_correction">7.5.3 Usage with Last Message Correction</a>
      */
-    public synchronized final void reset(String id, CharSequence text) {
+    public final synchronized void reset(String id, CharSequence text) {
         // Senders clients need to transmit a Message Refresh when transmitting <rtt/> for a different message than the previously transmitted <rtt/> (i.e., the value of the 'id' attribute changes, 'id' becomes included, or 'id' becomes not included). This keeps real-time text synchronized when beginning to edit a previously delivered message versus continuing to compose a new message.
         this.id = id;
         this.text = text;
@@ -255,7 +255,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
     }
 
     @Override
-    public synchronized final String getText() {
+    public final synchronized String getText() {
         return text != null ? text.toString() : "";
     }
 

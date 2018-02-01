@@ -75,7 +75,7 @@ abstract class RealTimeMessage {
         return sequence.get();
     }
 
-    public synchronized final String getId() {
+    public final synchronized String getId() {
         return id;
     }
 

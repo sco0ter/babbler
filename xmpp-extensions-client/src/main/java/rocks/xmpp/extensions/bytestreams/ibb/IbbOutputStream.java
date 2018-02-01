@@ -64,7 +64,7 @@ final class IbbOutputStream extends OutputStream {
     }
 
     @Override
-    public synchronized void write(int b) throws IOException {
+    public final synchronized void write(int b) throws IOException {
         buffer[n++] = (byte) b;
         if (n == buffer.length) {
             flush();
@@ -72,7 +72,7 @@ final class IbbOutputStream extends OutputStream {
     }
 
     @Override
-    public synchronized final void flush() throws IOException {
+    public final synchronized void flush() throws IOException {
         super.flush();
         if (closed) {
             throw new IOException("Stream is closed.");

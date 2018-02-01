@@ -212,7 +212,7 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
     }
 
     @Override
-    public synchronized final String getText() {
+    public final synchronized String getText() {
         return sb.toString();
     }
 

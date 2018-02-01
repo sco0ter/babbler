@@ -250,22 +250,7 @@ public final class NettyTcpConnection extends Connection {
     }
 
     @Override
-    public final void close() throws Exception {
-        try {
-            closeAsync().get();
-        } catch (ExecutionException e) {
-            if (e.getCause() instanceof Exception) {
-                throw (Exception) e.getCause();
-            } else {
-                throw e;
-            }
-        } catch (InterruptedException e) {
-            // Implementers of AutoCloseable are strongly advised to not have the close method throw InterruptedException.
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    private synchronized CompletableFuture<Void> closeAsync() {
+    public final synchronized CompletableFuture<Void> closeAsync() {
         if (closed.compareAndSet(false, true)) {
             final CompletableFuture<Void> closeFuture = closeReceived;
 

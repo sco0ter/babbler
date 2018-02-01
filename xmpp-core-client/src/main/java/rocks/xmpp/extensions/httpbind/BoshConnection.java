@@ -68,7 +68,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -462,22 +461,7 @@ public final class BoshConnection extends Connection {
      * </ol>
      */
     @Override
-    public final void close() throws Exception {
-        try {
-            closeAsync().get();
-        } catch (ExecutionException e) {
-            if (e.getCause() instanceof Exception) {
-                throw (Exception) e.getCause();
-            } else {
-                throw e;
-            }
-        } catch (InterruptedException e) {
-            // Implementers of AutoCloseable are strongly advised to not have the close method throw InterruptedException.
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    private synchronized CompletableFuture<Void> closeAsync() {
+    public final synchronized CompletableFuture<Void> closeAsync() {
         final CompletableFuture<Void> future;
         if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
             if (getSessionId() != null) {

@@ -92,7 +92,8 @@ public final class TestXmppSession extends XmppSession {
             }
 
             @Override
-            public void close() throws IOException {
+            public CompletableFuture<Void> closeAsync() {
+                return CompletableFuture.completedFuture(null);
             }
         };
         stanzaListenerExecutor = iqHandlerExecutor = new SameThreadExecutorService();

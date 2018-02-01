@@ -30,6 +30,7 @@ import rocks.xmpp.core.stream.model.StreamElement;
 import java.io.IOException;
 import java.net.Proxy;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * The base connection class which provides hostname, port and proxy information.
@@ -154,4 +155,39 @@ public abstract class Connection implements AutoCloseable {
      * @see <a href="http://xmpp.org/extensions/xep-0124.html#ack">XEP-0124 § 9. Acknowledgements</a>
      */
     public abstract boolean isUsingAcknowledgements();
+
+    /**
+     * Closes the connection. This method blocks until everything is closed.
+     *
+     * @throws Exception If the async close failed.
+     * @see #closeAsync()
+     */
+    @Override
+    public final void close() throws Exception {
+        try {
+            closeAsync().get();
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof Exception) {
+                throw (Exception) e.getCause();
+            } else {
+                throw e;
+            }
+        } catch (InterruptedException e) {
+            // Implementers of AutoCloseable are strongly advised to not have the close method throw InterruptedException.
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Asynchronously closes the connection.
+     * <p>
+     * Closing usually involves a round-trip with the peer on the XMPP layer first by sending a closing stream element,
+     * then waiting on the response and then closing the underlying transport layer.
+     * <p>
+     * Implementations wait a maximum of 500ms for the XMPP level close.
+     *
+     * @return The future, which is complete, when the connection is closed.
+     * @see #close()
+     */
+    public abstract CompletableFuture<Void> closeAsync();
 }

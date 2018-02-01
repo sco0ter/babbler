@@ -57,7 +57,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -317,26 +316,9 @@ public final class TcpConnection extends Connection {
      * It first sends a {@code </stream:stream>}, then shuts down the writer so that no more stanzas can be sent.
      * After that it shuts down the reader and awaits shortly for any stanzas from the server and the server gracefully closing the stream with {@code </stream:stream>}.
      * Eventually the socket is closed.
-     *
-     * @throws Exception If the socket throws an I/O exception.
      */
     @Override
-    public final void close() throws Exception {
-        try {
-            closeAsync().get();
-        } catch (ExecutionException e) {
-            if (e.getCause() instanceof Exception) {
-                throw (Exception) e.getCause();
-            } else {
-                throw e;
-            }
-        } catch (InterruptedException e) {
-            // Implementers of AutoCloseable are strongly advised to not have the close method throw InterruptedException.
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    private synchronized CompletableFuture<Void> closeAsync() {
+    public final synchronized CompletableFuture<Void> closeAsync() {
         if (closed.compareAndSet(false, true)) {
 
             final XmppStreamWriter writer;
@@ -368,7 +350,7 @@ public final class TcpConnection extends Connection {
                             inputStream = null;
                             outputStream = null;
                             streamId = null;
-                            
+
                             // We have sent a </stream:stream> to close the stream and waited for a server response, which also closes the stream by sending </stream:stream>.
                             // Now close the socket.
                             if (socket != null) {

@@ -75,9 +75,7 @@ public final class NettyTcpConnection extends Connection {
 
     private static final Logger logger = Logger.getLogger(NettyTcpConnection.class.getName());
 
-    private final NettyXmppEncoder xmppNettyEncoder;
-
-    private final NettyXmppDecoder xmppNettyDecoder;
+    private NettyXmppDecoder xmppNettyDecoder;
 
     private final StreamFeaturesManager streamFeaturesManager;
 
@@ -107,8 +105,6 @@ public final class NettyTcpConnection extends Connection {
     NettyTcpConnection(final XmppSession xmppSession, final NettyTcpConnectionConfiguration connectionConfiguration) {
         super(xmppSession, connectionConfiguration);
 
-        this.xmppNettyDecoder = new NettyXmppDecoder(this::onRead, xmppSession::createUnmarshaller, xmppSession::notifyException);
-        this.xmppNettyEncoder = new NettyXmppEncoder(xmppSession.getDebugger()::writeStanza, xmppSession::createMarshaller, xmppSession::notifyException);
 
         this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         this.streamManager = xmppSession.getManager(StreamManager.class);
@@ -183,6 +179,8 @@ public final class NettyTcpConnection extends Connection {
         try {
             final ChannelFuture channelFuture;
 
+            this.xmppNettyDecoder = new NettyXmppDecoder(this::onRead, xmppSession::createUnmarshaller, xmppSession::notifyException);
+
             closeReceived = new CompletableFuture<>();
             closed.set(false);
             final Bootstrap b = new Bootstrap();
@@ -192,12 +190,12 @@ public final class NettyTcpConnection extends Connection {
             b.handler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 public final void initChannel(final SocketChannel ch) throws Exception {
+                    final NettyXmppEncoder xmppNettyEncoder = new NettyXmppEncoder(xmppSession.getDebugger()::writeStanza, xmppSession::createMarshaller, xmppSession::notifyException);
                     ch.pipeline().addLast(xmppNettyEncoder, xmppNettyDecoder);
                 }
             });
             channelFuture = b.connect(getHostname(), getPort());
             this.channel = channelFuture.channel();
-
             channelFuture.get();
 
             this.from = from;
@@ -281,7 +279,7 @@ public final class NettyTcpConnection extends Connection {
                         }
                         return completableFuture;
                     })
-                    // Then compose this future with the returned channel future, kind of flat mapping it.
+                            // Then compose this future with the returned channel future, kind of flat mapping it.
                     .thenCompose(Function.identity());
         }
         return CompletableFuture.completedFuture(null);

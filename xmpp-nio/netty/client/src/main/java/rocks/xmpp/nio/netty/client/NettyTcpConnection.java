@@ -31,6 +31,8 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.proxy.HttpProxyHandler;
+import io.netty.handler.proxy.Socks5ProxyHandler;
 import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.JdkSslContext;
 import io.netty.handler.ssl.SslContext;
@@ -58,6 +60,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
 import java.io.IOException;
+import java.net.Proxy;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.concurrent.CompletableFuture;
@@ -190,6 +193,14 @@ public final class NettyTcpConnection extends Connection {
             b.handler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 public final void initChannel(final SocketChannel ch) throws Exception {
+                    Proxy proxy = getConfiguration().getProxy();
+                    if (proxy != null) {
+                        if (proxy.type() == Proxy.Type.SOCKS) {
+                            ch.pipeline().addFirst(new Socks5ProxyHandler(getConfiguration().getProxy().address()));
+                        } else if (proxy.type() == Proxy.Type.HTTP) {
+                            ch.pipeline().addFirst(new HttpProxyHandler(getConfiguration().getProxy().address()));
+                        }
+                    }
                     final NettyXmppEncoder xmppNettyEncoder = new NettyXmppEncoder(xmppSession.getDebugger()::writeStanza, xmppSession::createMarshaller, xmppSession::notifyException);
                     ch.pipeline().addLast(xmppNettyEncoder, xmppNettyDecoder);
                 }

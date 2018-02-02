@@ -36,7 +36,6 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.net.URL;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -120,11 +119,11 @@ public final class BookmarkManager extends Manager {
 
     @SuppressWarnings("unchecked")
     private <T extends Bookmark> AsyncResult<List<T>> getBookmarks(Class<T> clazz) {
-        return privateDataManager.getData(BookmarkStorage.class).thenApply(bookmarkStorage -> {
-            List<T> bookmarks = new ArrayList<>();
-            bookmarks.addAll(bookmarkStorage.getBookmarks().stream().filter(bookmark -> bookmark.getClass() == clazz).map(bookmark -> (T) bookmark).collect(Collectors.toList()));
-            bookmarks.sort(null);
-            return bookmarks;
-        });
+        return privateDataManager.getData(BookmarkStorage.class)
+                .thenApply(bookmarkStorage -> bookmarkStorage.getBookmarks()
+                        .stream()
+                        .filter(bookmark -> bookmark.getClass() == clazz)
+                        .map(bookmark -> (T) bookmark).sorted()
+                        .collect(Collectors.toList()));
     }
 }

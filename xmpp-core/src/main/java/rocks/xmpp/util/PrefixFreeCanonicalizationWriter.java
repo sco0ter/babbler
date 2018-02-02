@@ -24,7 +24,6 @@
 
 package rocks.xmpp.util;
 
-import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.stream.model.StreamHeader;
 
 import javax.xml.XMLConstants;

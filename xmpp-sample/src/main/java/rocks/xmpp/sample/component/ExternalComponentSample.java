@@ -84,14 +84,12 @@ public class ExternalComponentSample {
                     @Override
                     protected IQ processRequest(IQ iq) {
 
-                        Collection<LanguageTranslation.Translation> translations = new ArrayDeque<>();
                         LanguageTranslation translation = iq.getExtension(LanguageTranslation.class);
 
-                        translations.addAll(translation.getTranslations().stream()
+                        Collection<LanguageTranslation.Translation> translations = translation.getTranslations().stream()
                                 .map(t -> LanguageTranslation.Translation.forDestinationLanguage(t.getDestinationLanguage())
                                         .withSourceLanguage(translation.getSourceLanguage())
-                                        .withTranslatedText("HALLO"))
-                                .collect(Collectors.toList()));
+                                        .withTranslatedText("HALLO")).collect(Collectors.toCollection(ArrayDeque::new));
                         LanguageTranslation languageTranslation = new LanguageTranslation(translations);
                         return iq.createResult(languageTranslation);
                     }

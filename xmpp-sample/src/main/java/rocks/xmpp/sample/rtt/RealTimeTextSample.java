@@ -85,9 +85,7 @@ public class RealTimeTextSample extends Application {
         realTimeMessage = realTimeTextManager.createRealTimeMessage(chat);
 
         TextArea textArea = new TextArea();
-        textArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            realTimeMessage.update(newValue);
-        });
+        textArea.textProperty().addListener((observable, oldValue, newValue) -> realTimeMessage.update(newValue));
         final Label label = new Label();
 
         // Upon receiving a RTT message, display it.

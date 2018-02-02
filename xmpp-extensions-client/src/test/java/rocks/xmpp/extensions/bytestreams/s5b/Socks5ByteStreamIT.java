@@ -67,28 +67,25 @@ public class Socks5ByteStreamIT extends IntegrationTest {
             try {
                 s5bSession = e.accept().get();
 
-                new Thread() {
-                    @Override
-                    public void run() {
+                new Thread(() -> {
 
-                        InputStream inputStream;
-                        try {
-                            inputStream = s5bSession.getInputStream();
-                            int b;
-                            while ((b = inputStream.read()) > -1) {
-                                outputStream.write(b);
-                            }
-                            outputStream.flush();
-                            outputStream.close();
-                            inputStream.close();
-
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        } finally {
-                            condition.complete(null);
+                    InputStream inputStream;
+                    try {
+                        inputStream = s5bSession.getInputStream();
+                        int b;
+                        while ((b = inputStream.read()) > -1) {
+                            outputStream.write(b);
                         }
+                        outputStream.flush();
+                        outputStream.close();
+                        inputStream.close();
+
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    } finally {
+                        condition.complete(null);
                     }
-                }.start();
+                }).start();
             } catch (InterruptedException | ExecutionException e1) {
                 Assert.fail(e1.getMessage(), e1);
             }

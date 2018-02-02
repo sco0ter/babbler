@@ -33,11 +33,10 @@ import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.ping.model.Ping;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.time.Duration;

@@ -37,7 +37,6 @@ import rocks.xmpp.extensions.pubsub.model.PubSub;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * @author Christian Schudt

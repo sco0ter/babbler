@@ -31,8 +31,6 @@
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = Thumbnail.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.jingle.thumbs.model;
 
-import rocks.xmpp.extensions.jingle.model.Jingle;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;

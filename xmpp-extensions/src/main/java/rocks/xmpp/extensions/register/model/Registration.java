@@ -589,13 +589,13 @@ public final class Registration {
         }
 
         /**
-         * Sets the web registration URL.
+         * Sets the web registration URI.
          *
-         * @param url The url.
+         * @param uri The uri.
          * @return The builder.
          */
-        public Builder webRegistration(URL url) {
-            this.oobX = new OobX(url);
+        public Builder webRegistration(URI uri) {
+            this.oobX = new OobX(uri);
             return this;
         }
 

@@ -36,7 +36,6 @@ import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
-import rocks.xmpp.extensions.rtt.InboundRealTimeMessage;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

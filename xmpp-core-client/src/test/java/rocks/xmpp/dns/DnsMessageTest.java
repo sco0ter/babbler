@@ -39,8 +39,8 @@ import java.util.concurrent.ExecutionException;
 public class DnsMessageTest {
 
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
-        List<?> answers = DnsResolver.resolveTXT("jabber.ru", 1122);
-        List<?> answers2 = DnsResolver.resolveSRV("xmpp-client", "jabber.ru", 1122);
+        List<?> answers = DnsResolver.resolveTXT("jabber.ru", "8.8.8.8", 1122);
+        List<?> answers2 = DnsResolver.resolveSRV("xmpp-client", "jabber.ru", "8.8.8.8", 1122);
         System.out.println(answers);
         System.out.println(answers2);
     }

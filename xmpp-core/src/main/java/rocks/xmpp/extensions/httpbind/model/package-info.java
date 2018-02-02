@@ -31,10 +31,11 @@
  * XEP-0206 defines how the Bidirectional-streams Over Synchronous HTTP (BOSH) technology can be used to transport XMPP stanzas. The result is an HTTP binding for XMPP communications that is useful in situations where a device or client is unable to maintain a long-lived TCP connection to an XMPP server.
  * </p>
  */
-// Some server BOSH implementations require the prefix to be "xmpp" for namespace "urn:xmpp:xbosh"
 @XmlAccessorType(XmlAccessType.FIELD)
+// Some server BOSH implementations require the prefix to be "xmpp" for namespace "urn:xmpp:xbosh"
 @XmlSchema(namespace = Body.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED, xmlns = {@XmlNs(prefix = "xmpp", namespaceURI = Body.XBOSH_NAMESPACE)})
-@XmlJavaTypeAdapter(value = LocaleAdapter.class, type = Locale.class) package rocks.xmpp.extensions.httpbind.model;
+@XmlJavaTypeAdapter(value = LocaleAdapter.class, type = Locale.class)
+package rocks.xmpp.extensions.httpbind.model;
 
 import rocks.xmpp.util.adapters.LocaleAdapter;
 

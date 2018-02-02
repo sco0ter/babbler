@@ -147,9 +147,7 @@ public final class JingleManager extends Manager {
                     // return <item-not-found/> and <unknown-session/>
                     return iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND, new UnknownSession()));
                 } else {
-                    ForkJoinPool.commonPool().execute(() -> {
-                        XmppUtils.notifyEventListeners(jingleSession.jingleListeners, new JingleEvent(JingleManager.this, xmppSession, iq, jingle));
-                    });
+                    ForkJoinPool.commonPool().execute(() -> XmppUtils.notifyEventListeners(jingleSession.jingleListeners, new JingleEvent(JingleManager.this, xmppSession, iq, jingle)));
                     // Immediately return a result, before sending a session-accept.
                     return iq.createResult();
                 }

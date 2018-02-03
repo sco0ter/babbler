@@ -125,8 +125,8 @@ public final class Registration {
     }
 
     private Registration(Builder builder) {
-        this.registered = null;
-        this.instructions = null;
+        this.registered = builder.registered ? "" : null;
+        this.instructions = builder.instructions;
         this.username = builder.username;
         this.nick = builder.nickname;
         this.password = builder.password;
@@ -371,6 +371,15 @@ public final class Registration {
     }
 
     /**
+     * Indicates whether the account is to be removed.
+     *
+     * @return True, if the account is to be removed.
+     */
+    public boolean isRemove() {
+        return remove != null;
+    }
+
+    /**
      * A builder to build a registration.
      */
     public static final class Builder {
@@ -408,6 +417,8 @@ public final class Registration {
         private DataForm dataForm;
 
         private OobX oobX;
+
+        private boolean registered;
 
         private Builder() {
         }
@@ -596,6 +607,17 @@ public final class Registration {
          */
         public Builder webRegistration(URI uri) {
             this.oobX = new OobX(uri);
+            return this;
+        }
+
+        /**
+         * Marks the registration as registered.
+         *
+         * @param registered True, if registered.
+         * @return The builder.
+         */
+        public Builder registered(boolean registered) {
+            this.registered = registered;
             return this;
         }
 

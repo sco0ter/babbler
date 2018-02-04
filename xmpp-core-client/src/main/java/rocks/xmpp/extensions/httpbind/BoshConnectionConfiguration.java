@@ -169,7 +169,7 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
 
         private Builder() {
             // default values
-            wait(60);
+            wait(Duration.ofMinutes(1));
             path("/http-bind/");
         }
 

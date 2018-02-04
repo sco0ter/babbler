@@ -35,7 +35,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
 
 /**
  * The implementation of the {@code <sm/>} element in the {@code urn:xmpp:sm:3} namespace.

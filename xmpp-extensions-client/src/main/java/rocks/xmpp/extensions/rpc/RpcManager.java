@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * This manager allows you to call remote procedures and handle inbound calls, if enabled.

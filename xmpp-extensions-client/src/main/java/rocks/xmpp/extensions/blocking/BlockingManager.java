@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * This manager allows to block communications with contacts.

@@ -68,7 +68,7 @@
                         <center>
                             <HBox spacing="10" alignment="CENTER">
                                 <padding>
-                                    <Insets left="10" top="0" bottom="0" right="10"/>
+                                    <Insets left="10" right="10"/>
                                 </padding>
                                 <TextField fx:id="searchField" promptText="Search..." HBox.hgrow="ALWAYS"
                                            maxWidth="Infinity"/>
@@ -116,11 +116,11 @@
             </padding>
             <VBox spacing="10" alignment="CENTER">
                 <padding>
-                    <Insets bottom="0" top="0" left="00" right="10"/>
+                    <Insets right="10"/>
                 </padding>
                 <BorderPane>
                     <padding>
-                        <Insets bottom="0" top="0" left="10" right="0"/>
+                        <Insets left="10"/>
                     </padding>
                     <left>
                         <Label text="Outbound" BorderPane.alignment="CENTER"/>
@@ -134,11 +134,11 @@
             </VBox>
             <VBox spacing="10" alignment="CENTER">
                 <padding>
-                    <Insets bottom="0" top="0" left="10" right="0"/>
+                    <Insets left="10"/>
                 </padding>
                 <BorderPane>
                     <padding>
-                        <Insets bottom="0" top="0" left="10" right="0"/>
+                        <Insets left="10"/>
                     </padding>
                     <left>
                         <Label text="Inbound" BorderPane.alignment="CENTER"/>

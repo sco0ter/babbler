@@ -35,8 +35,6 @@ abstract class RealTimeMessage {
 
     volatile boolean complete;
 
-    volatile boolean active = true;
-
     final AtomicInteger sequence = new AtomicInteger();
 
     protected String id;
@@ -48,15 +46,6 @@ abstract class RealTimeMessage {
      */
     public final boolean isComplete() {
         return complete;
-    }
-
-    /**
-     * Indicates whether this real-time message is active.
-     *
-     * @return True, if the message is active.
-     */
-    public final boolean isActive() {
-        return active;
     }
 
     /**

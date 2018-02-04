@@ -116,7 +116,7 @@ public class RosterTest extends XmlTest {
         Roster roster = iq.getExtension(Roster.class);
         Assert.assertNotNull(roster);
         Assert.assertEquals(roster.getContacts().get(0).getSubscription(), Contact.Subscription.REMOVE);
-        Assert.assertFalse(roster.getContacts().get(0).isPending());
+        Assert.assertFalse(roster.getContacts().get(0).isPendingOut());
         Assert.assertFalse(roster.getContacts().get(0).isApproved());
     }
 
@@ -136,7 +136,7 @@ public class RosterTest extends XmlTest {
         Assert.assertNotNull(iq);
         Roster roster = iq.getExtension(Roster.class);
         Assert.assertNotNull(roster);
-        Assert.assertTrue(roster.getContacts().get(0).isPending());
+        Assert.assertTrue(roster.getContacts().get(0).isPendingOut());
 
     }
 

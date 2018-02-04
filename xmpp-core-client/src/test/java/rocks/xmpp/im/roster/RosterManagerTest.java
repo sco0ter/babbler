@@ -182,7 +182,7 @@ public class RosterManagerTest extends BaseTest {
         List<Contact> contacts = new ArrayList<>(groups.get(0).getContacts());
         Assert.assertEquals(groups.get(0).getContacts().size(), 2);
         Assert.assertEquals(contacts.get(1).getSubscription(), Contact.Subscription.TO);
-        Assert.assertTrue(contacts.get(1).isPending());
+        Assert.assertTrue(contacts.get(1).isPendingOut());
         Assert.assertEquals(groups.get(1).getContacts().size(), 1);
 
         Roster roster4 = new Roster(new Contact(Jid.of("contact3@domain"), "", false, null, Contact.Subscription.REMOVE, Collections.emptyList()));

@@ -48,7 +48,7 @@ import java.util.Objects;
  * <p>
  * This class is immutable.
  */
-public final class Contact implements Comparable<Contact> {
+public final class Contact implements RosterItem, Comparable<Contact> {
 
     @XmlAttribute
     private final Boolean approved;
@@ -119,6 +119,15 @@ public final class Contact implements Comparable<Contact> {
      */
     public Contact(Jid jid, String name, Collection<String> groups) {
         this(jid, name, null, null, null, groups);
+    }
+
+    /**
+     * Creates a new contact from a roster item.
+     *
+     * @param rosterItem The roster item.
+     */
+    public Contact(RosterItem rosterItem) {
+        this(rosterItem.getJid(), rosterItem.getName(), rosterItem.isPendingOut(), rosterItem.isApproved(), rosterItem.getSubscription(), rosterItem.getGroups());
     }
 
     /**
@@ -205,6 +214,7 @@ public final class Contact implements Comparable<Contact> {
      *
      * @return The JID.
      */
+    @Override
     public final Jid getJid() {
         return jid;
     }
@@ -219,6 +229,7 @@ public final class Contact implements Comparable<Contact> {
      *
      * @return The name.
      */
+    @Override
     public final String getName() {
         return name;
     }
@@ -228,17 +239,25 @@ public final class Contact implements Comparable<Contact> {
      *
      * @return The subscription attribute.
      */
+    @Override
     public final Subscription getSubscription() {
         return subscription;
     }
 
     /**
-     * Gets the groups of the contact.
+     * Gets the pending state of the contact.
+     * <blockquote>
+     * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#roster-syntax-items-ask">2.1.2.2.  Ask Attribute</a></cite></p>
+     * <p>The 'ask' attribute of the {@code <item/>} element with a value of "subscribe" is used to signal various subscription sub-states that include a "Pending Out" aspect as described under Section 3.1.2.</p>
+     * <p>A server SHOULD include the 'ask' attribute to inform the client of "Pending Out" sub-states. A client MUST NOT include the 'ask' attribute in the roster sets it sends to the server, but instead MUST use presence stanzas of type "subscribe" and "unsubscribe" to manage such sub-states as described under Section 3.1.2. </p>
+     * </blockquote>
      *
-     * @return The groups.
+     * @return True, if a subscription request for the contact is pending, i.e. the contact has not yet approved or denied a subscription request.
+     * @deprecated Use {@link #isPendingOut()}
      */
-    public final List<String> getGroups() {
-        return Collections.unmodifiableList(group);
+    @Deprecated
+    public final boolean isPending() {
+        return isPendingOut();
     }
 
     /**
@@ -251,8 +270,20 @@ public final class Contact implements Comparable<Contact> {
      *
      * @return True, if a subscription request for the contact is pending, i.e. the contact has not yet approved or denied a subscription request.
      */
-    public final boolean isPending() {
+    @Override
+    public final boolean isPendingOut() {
         return ask != null && ask;
+    }
+
+    /**
+     * Roster items on the XMPP layer don't have a notion of a "Pending In" subscription state, therefore this methods always returns false.
+     * Pending-in subscription states are not represented in the user's roster at all.
+     *
+     * @return Always <code>false</code>.
+     */
+    @Override
+    public final boolean isPendingIn() {
+        return false;
     }
 
     /**
@@ -264,8 +295,19 @@ public final class Contact implements Comparable<Contact> {
      *
      * @return True, if the contact is pre approved.
      */
+    @Override
     public final boolean isApproved() {
         return approved != null && approved;
+    }
+
+    /**
+     * Gets the groups of the contact.
+     *
+     * @return The groups.
+     */
+    @Override
+    public final List<String> getGroups() {
+        return Collections.unmodifiableList(group);
     }
 
     @Override
@@ -334,7 +376,7 @@ public final class Contact implements Comparable<Contact> {
                 }
             }
             if (result == 0) {
-                return Boolean.compare(isPending(), o.isPending());
+                return Boolean.compare(isPendingOut(), o.isPendingOut());
             }
             return result;
         } else {
@@ -354,34 +396,6 @@ public final class Contact implements Comparable<Contact> {
     /**
      * The implementation of the 'subscription' attribute.
      */
-    @XmlEnum
-    public enum Subscription {
-        /**
-         * The user and the contact have subscriptions to each other's presence (also called a "mutual subscription").
-         */
-        @XmlEnumValue("both")
-        BOTH,
-        /**
-         * The contact has a subscription to the user's presence, but the user does not have a subscription to the contact's presence.
-         */
-        @XmlEnumValue("from")
-        FROM,
-        /**
-         * The user has a subscription to the contact's presence, but the contact does not have a subscription to the user's presence.
-         */
-        @XmlEnumValue("to")
-        TO,
-        /**
-         * The user does not have a subscription to the contact's presence, and the contact does not have a subscription to the user's presence; this is the default value, so if the subscription attribute is not included then the state is to be understood as "none".
-         */
-        @XmlEnumValue("none")
-        NONE,
-        /**
-         * At any time, a client can delete an item from his or her roster by sending a roster set and specifying a value of "remove" for the 'subscription' attribute.
-         */
-        @XmlEnumValue("remove")
-        REMOVE
-    }
 
     @XmlEnum
     private enum Ask {

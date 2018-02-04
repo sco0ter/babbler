@@ -117,7 +117,7 @@ public class JingleTest extends XmlTest {
         Assert.assertNotNull(jingle);
         Assert.assertEquals(jingle.getAction(), Jingle.Action.SESSION_TERMINATE);
         Assert.assertNotNull(jingle.getReason());
-        Assert.assertNotNull(jingle.getReason().getType() instanceof Jingle.Reason.Success);
+        Assert.assertTrue(jingle.getReason().getType() instanceof Jingle.Reason.Success);
         Assert.assertEquals(jingle.getReason().getText(), "Sorry, gotta go!");
         Assert.assertEquals(jingle.getSessionId(), "a73sjjvkla37jfea");
     }

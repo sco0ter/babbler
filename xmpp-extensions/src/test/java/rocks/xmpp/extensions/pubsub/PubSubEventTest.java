@@ -172,7 +172,7 @@ public class PubSubEventTest extends XmlTest {
         Assert.assertNotNull(message);
         Event event = message.getExtension(Event.class);
         Assert.assertNotNull(event);
-        Assert.assertNotNull(event.isPurge());
+        Assert.assertTrue(event.isPurge());
         Assert.assertEquals(event.getNode(), "princely_musings");
     }
 

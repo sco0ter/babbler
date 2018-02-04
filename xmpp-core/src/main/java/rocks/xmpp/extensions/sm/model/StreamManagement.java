@@ -302,7 +302,7 @@ public final class StreamManagement extends StreamFeature {
         }
 
         public Answer(long h) {
-            super(Objects.requireNonNull(h));
+            super(h);
         }
 
         @Override

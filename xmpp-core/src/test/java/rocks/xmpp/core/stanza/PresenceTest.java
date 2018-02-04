@@ -83,7 +83,7 @@ public class PresenceTest extends XmlTest {
         Assert.assertEquals(presence.getFrom().toString(), "juliet@example.com");
         Assert.assertEquals(presence.getType(), Presence.Type.ERROR);
         Assert.assertNotNull(presence.getError());
-        Assert.assertNotNull(presence.getError().getCondition() == Condition.REMOTE_SERVER_NOT_FOUND);
+        Assert.assertTrue(presence.getError().getCondition() == Condition.REMOTE_SERVER_NOT_FOUND);
     }
 
     @Test

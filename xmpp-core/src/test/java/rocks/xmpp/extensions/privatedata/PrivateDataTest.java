@@ -37,7 +37,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class PrivateDataTest extends XmlTest {
-    protected PrivateDataTest() throws JAXBException, XMLStreamException {
+    protected PrivateDataTest() throws JAXBException {
         super(PrivateData.class, RosterDelimiter.class);
     }
 

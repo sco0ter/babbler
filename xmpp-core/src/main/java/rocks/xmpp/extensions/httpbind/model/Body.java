@@ -1155,7 +1155,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
     private static final class CharsetAdapter extends XmlAdapter<String, List<Charset>> {
 
         @Override
-        public final List<Charset> unmarshal(final String charsets) throws Exception {
+        public final List<Charset> unmarshal(final String charsets) {
             if (charsets != null) {
                 return Collections.unmodifiableList(Arrays.stream(charsets.split(" ")).map(Charset::forName).collect(Collectors.toList()));
             }
@@ -1163,7 +1163,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
         }
 
         @Override
-        public final String marshal(final List<Charset> charsets) throws Exception {
+        public final String marshal(final List<Charset> charsets) {
             if (charsets != null && !charsets.isEmpty()) {
                 return String.join(" ", charsets.stream().map(c -> (CharSequence) c.name())::iterator);
             }
@@ -1174,7 +1174,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
     private static final class SecondsAdapter extends XmlAdapter<Integer, Duration> {
 
         @Override
-        public final Duration unmarshal(final Integer v) throws Exception {
+        public final Duration unmarshal(final Integer v) {
             if (v != null) {
                 return Duration.ofSeconds(v);
             }
@@ -1182,7 +1182,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
         }
 
         @Override
-        public final Integer marshal(final Duration v) throws Exception {
+        public final Integer marshal(final Duration v) {
             if (v != null) {
                 return (int) Math.min(v.getSeconds(), Integer.MAX_VALUE);
             }
@@ -1193,7 +1193,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
     private static final class MillisecondsAdapter extends XmlAdapter<Integer, Duration> {
 
         @Override
-        public final Duration unmarshal(final Integer v) throws Exception {
+        public final Duration unmarshal(final Integer v) {
             if (v != null) {
                 return Duration.ofMillis(v);
             }
@@ -1201,7 +1201,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
         }
 
         @Override
-        public final Integer marshal(final Duration v) throws Exception {
+        public final Integer marshal(final Duration v) {
             if (v != null) {
                 return (int) Math.min(v.toMillis(), Integer.MAX_VALUE);
             }

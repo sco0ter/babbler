@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 final class EmptyResponseAdapter extends XmlAdapter<String, byte[]> {
 
     @Override
-    public final byte[] unmarshal(final String s) throws Exception {
+    public final byte[] unmarshal(final String s) {
         if (s == null || s.isEmpty()) {
             return null;
         }
@@ -29,7 +29,7 @@ final class EmptyResponseAdapter extends XmlAdapter<String, byte[]> {
     }
 
     @Override
-    public final String marshal(final byte[] bytes) throws Exception {
+    public final String marshal(final byte[] bytes) {
         if (bytes == null) {
             return null;
         }

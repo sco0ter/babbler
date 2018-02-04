@@ -43,7 +43,7 @@ import java.time.Instant;
  */
 public class MultiUserChatTest extends XmlTest {
 
-    protected MultiUserChatTest() throws JAXBException, XMLStreamException {
+    protected MultiUserChatTest() throws JAXBException {
         super(ClientPresence.class, Muc.class);
     }
 

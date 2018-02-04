@@ -33,12 +33,12 @@ import java.time.ZoneOffset;
 public final class ZoneOffsetAdapter extends XmlAdapter<String, ZoneOffset> {
 
     @Override
-    public final ZoneOffset unmarshal(String v) throws Exception {
+    public final ZoneOffset unmarshal(String v) {
         return v != null ? ZoneOffset.of(v) : null;
     }
 
     @Override
-    public final String marshal(ZoneOffset v) throws Exception {
+    public final String marshal(ZoneOffset v) {
         return v != null ? v.toString() : null;
     }
 }

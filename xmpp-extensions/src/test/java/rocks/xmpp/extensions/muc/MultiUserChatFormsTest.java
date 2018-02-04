@@ -49,12 +49,12 @@ import java.util.Locale;
  * @author Christian Schudt
  */
 public class MultiUserChatFormsTest extends XmlTest {
-    protected MultiUserChatFormsTest() throws JAXBException, XMLStreamException {
+    protected MultiUserChatFormsTest() throws JAXBException {
         super(DataForm.class);
     }
 
     @Test
-    public void testRequestVoiceForm() throws JAXBException, XMLStreamException, MalformedURLException {
+    public void testRequestVoiceForm() throws JAXBException, XMLStreamException {
 
         RequestVoice requestVoice = RequestVoice.builder()
                 .jid(Jid.of("hag66@shakespeare.lit/pda"))

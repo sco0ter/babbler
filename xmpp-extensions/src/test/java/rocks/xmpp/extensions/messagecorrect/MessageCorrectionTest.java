@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class MessageCorrectionTest extends XmlTest {
-    protected MessageCorrectionTest() throws JAXBException, XMLStreamException {
+    protected MessageCorrectionTest() throws JAXBException {
         super(ClientMessage.class, Replace.class);
     }
 

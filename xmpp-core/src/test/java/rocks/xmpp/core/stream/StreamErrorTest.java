@@ -40,7 +40,7 @@ import java.util.Locale;
  */
 public class StreamErrorTest extends XmlTest {
 
-    protected StreamErrorTest() throws JAXBException, XMLStreamException {
+    protected StreamErrorTest() throws JAXBException {
         super(StreamError.class);
     }
 

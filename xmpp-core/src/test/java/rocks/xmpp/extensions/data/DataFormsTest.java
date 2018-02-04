@@ -43,7 +43,7 @@ import java.util.List;
  */
 public class DataFormsTest extends XmlTest {
 
-    protected DataFormsTest() throws JAXBException, XMLStreamException {
+    protected DataFormsTest() throws JAXBException {
         super(DataForm.class);
     }
 

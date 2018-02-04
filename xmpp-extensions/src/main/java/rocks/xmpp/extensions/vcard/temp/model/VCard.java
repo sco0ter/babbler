@@ -2044,7 +2044,7 @@ public final class VCard {
     private static final class LocalDateAdapter extends XmlAdapter<String, LocalDate> {
 
         @Override
-        public LocalDate unmarshal(final String v) throws Exception {
+        public LocalDate unmarshal(final String v) {
             if (v != null) {
                 return LocalDate.parse(v);
             }
@@ -2052,7 +2052,7 @@ public final class VCard {
         }
 
         @Override
-        public String marshal(final LocalDate v) throws Exception {
+        public String marshal(final LocalDate v) {
             if (v != null) {
                 return v.toString();
             }
@@ -2063,7 +2063,7 @@ public final class VCard {
     private static final class ClassificationAdapter extends XmlAdapter<ClassElement, Classification> {
 
         @Override
-        public Classification unmarshal(ClassElement v) throws Exception {
+        public Classification unmarshal(ClassElement v) {
             if (v != null) {
                 if (v._public != null) {
                     return Classification.PUBLIC;
@@ -2077,7 +2077,7 @@ public final class VCard {
         }
 
         @Override
-        public ClassElement marshal(Classification v) throws Exception {
+        public ClassElement marshal(Classification v) {
             if (v != null) {
                 ClassElement cl = new ClassElement();
                 switch (v) {

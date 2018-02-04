@@ -50,7 +50,7 @@ import java.util.List;
  */
 public class BoshTest extends XmlTest {
 
-    protected BoshTest() throws JAXBException, XMLStreamException {
+    protected BoshTest() throws JAXBException {
         super(ClientIQ.class, Roster.class, ClientPresence.class, Body.class);
     }
 

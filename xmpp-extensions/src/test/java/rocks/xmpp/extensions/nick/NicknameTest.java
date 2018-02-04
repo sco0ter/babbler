@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class NicknameTest extends XmlTest {
-    protected NicknameTest() throws JAXBException, XMLStreamException {
+    protected NicknameTest() throws JAXBException {
         super(ClientPresence.class, Nickname.class);
     }
 

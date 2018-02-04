@@ -37,7 +37,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class DataFormsValidateTest extends XmlTest {
-    protected DataFormsValidateTest() throws JAXBException, XMLStreamException {
+    protected DataFormsValidateTest() throws JAXBException {
         super(DataForm.class, Validation.class);
     }
 

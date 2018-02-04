@@ -42,7 +42,7 @@ import java.net.URI;
  */
 public class PubSubEventTest extends XmlTest {
 
-    protected PubSubEventTest() throws JAXBException, XMLStreamException {
+    protected PubSubEventTest() throws JAXBException {
         super(ClientMessage.class, Event.class);
     }
 

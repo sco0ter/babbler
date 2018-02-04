@@ -33,19 +33,18 @@ import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.net.MalformedURLException;
 
 /**
  * @author Christian Schudt
  */
 public class HttpAuthTest extends XmlTest {
 
-    protected HttpAuthTest() throws JAXBException, XMLStreamException {
+    protected HttpAuthTest() throws JAXBException {
         super(ClientIQ.class, ConfirmationRequest.class);
     }
 
     @Test
-    public void unmarshalConfirm() throws JAXBException, XMLStreamException, MalformedURLException {
+    public void unmarshalConfirm() throws JAXBException, XMLStreamException {
         String xml = "<iq type='get' \n" +
                 "    from='files.shakespeare.lit' \n" +
                 "    to='juliet@capulet.com/balcony' \n" +

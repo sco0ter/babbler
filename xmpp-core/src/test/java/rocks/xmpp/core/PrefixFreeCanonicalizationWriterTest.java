@@ -43,7 +43,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayDeque;
@@ -98,7 +97,7 @@ public class PrefixFreeCanonicalizationWriterTest {
     }
 
     @Test
-    public void testTwoElementsWithSameNamespace() throws XMLStreamException, JAXBException, IOException {
+    public void testTwoElementsWithSameNamespace() throws XMLStreamException, JAXBException {
 
         Writer writer = new StringWriter();
 

@@ -34,12 +34,12 @@ import java.time.OffsetDateTime;
 public final class InstantAdapter extends XmlAdapter<String, Instant> {
 
     @Override
-    public final Instant unmarshal(String v) throws Exception {
+    public final Instant unmarshal(String v) {
         return v != null ? OffsetDateTime.parse(v).toInstant() : null;
     }
 
     @Override
-    public final String marshal(Instant v) throws Exception {
+    public final String marshal(Instant v) {
         return v != null ? v.toString() : null;
     }
 }

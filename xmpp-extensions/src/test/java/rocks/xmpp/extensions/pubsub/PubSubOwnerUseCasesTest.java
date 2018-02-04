@@ -44,7 +44,7 @@ import java.net.URI;
  */
 public class PubSubOwnerUseCasesTest extends XmlTest {
 
-    protected PubSubOwnerUseCasesTest() throws JAXBException, XMLStreamException {
+    protected PubSubOwnerUseCasesTest() throws JAXBException {
         super(ClientIQ.class, PubSub.class, PubSubOwner.class);
     }
 

@@ -37,7 +37,6 @@ import rocks.xmpp.extensions.langtrans.model.LanguageTranslation;
 import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
 import rocks.xmpp.extensions.muc.model.Muc;
 
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Locale;
@@ -48,7 +47,7 @@ import java.util.stream.Collectors;
  * @author Christian Schudt
  */
 public class ExternalComponentSample {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         Executors.newFixedThreadPool(1).execute(() -> {
             try {

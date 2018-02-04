@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class HashTest extends XmlTest {
 
-    protected HashTest() throws JAXBException, XMLStreamException {
+    protected HashTest() throws JAXBException {
         super(Hash.class);
     }
 

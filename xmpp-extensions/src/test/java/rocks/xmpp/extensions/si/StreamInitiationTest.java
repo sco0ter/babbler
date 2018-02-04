@@ -40,7 +40,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class StreamInitiationTest extends XmlTest {
-    protected StreamInitiationTest() throws JAXBException, XMLStreamException {
+    protected StreamInitiationTest() throws JAXBException {
         super(ClientIQ.class, StreamInitiation.class);
     }
 

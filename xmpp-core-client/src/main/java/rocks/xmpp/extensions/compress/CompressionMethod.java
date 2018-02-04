@@ -50,12 +50,12 @@ public interface CompressionMethod {
         }
 
         @Override
-        public InputStream decompress(InputStream inputStream) throws IOException {
+        public InputStream decompress(InputStream inputStream) {
             return new InflaterInputStream(inputStream);
         }
 
         @Override
-        public OutputStream compress(OutputStream outputStream) throws IOException {
+        public OutputStream compress(OutputStream outputStream) {
             return new DeflaterOutputStream(outputStream, true);
         }
     };
@@ -90,14 +90,14 @@ public interface CompressionMethod {
         }
 
         @Override
-        public InputStream decompress(InputStream inputStream) throws IOException {
+        public InputStream decompress(InputStream inputStream) {
             // See http://stackoverflow.com/a/3932260
             // Seems like most (web)server implement deflate in a wrong way.
             return new InflaterInputStream(inputStream, new Inflater(true));
         }
 
         @Override
-        public OutputStream compress(OutputStream outputStream) throws IOException {
+        public OutputStream compress(OutputStream outputStream) {
             return new DeflaterOutputStream(outputStream, new Deflater(Deflater.DEFAULT_COMPRESSION, true), true);
         }
     };

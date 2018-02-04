@@ -395,12 +395,12 @@ public final class Contact implements Comparable<Contact> {
     private static final class PendingAdapter extends XmlAdapter<Ask, Boolean> {
 
         @Override
-        public Boolean unmarshal(Ask v) throws Exception {
+        public Boolean unmarshal(Ask v) {
             return v == Ask.SUBSCRIBE;
         }
 
         @Override
-        public Ask marshal(Boolean v) throws Exception {
+        public Ask marshal(Boolean v) {
             return v != null && v ? Ask.SUBSCRIBE : null;
         }
     }

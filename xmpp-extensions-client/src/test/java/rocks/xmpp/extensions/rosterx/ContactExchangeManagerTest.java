@@ -70,7 +70,7 @@ public class ContactExchangeManagerTest extends BaseTest {
     }
 
     @Test
-    public void testRosterItemAdditionWhenContactAlreadyExists() throws Exception {
+    public void testRosterItemAdditionWhenContactAlreadyExists() {
 
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
@@ -95,7 +95,7 @@ public class ContactExchangeManagerTest extends BaseTest {
     }
 
     @Test
-    public void testRosterItemDeletionWhenContactDoesNotExist() throws Exception {
+    public void testRosterItemDeletionWhenContactDoesNotExist() {
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
@@ -108,7 +108,7 @@ public class ContactExchangeManagerTest extends BaseTest {
     }
 
     @Test
-    public void testRosterItemDeletionWhenContactDoesExistButNotInSpecifiedGroup() throws Exception {
+    public void testRosterItemDeletionWhenContactDoesExistButNotInSpecifiedGroup() {
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
@@ -121,7 +121,7 @@ public class ContactExchangeManagerTest extends BaseTest {
     }
 
     @Test
-    public void testRosterItemDeletionWhenContactDoesExistInSpecifiedGroup() throws Exception {
+    public void testRosterItemDeletionWhenContactDoesExistInSpecifiedGroup() {
 
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
@@ -138,7 +138,7 @@ public class ContactExchangeManagerTest extends BaseTest {
     }
 
     @Test
-    public void testRosterItemDeletionWhenNoGroupSpecified() throws Exception {
+    public void testRosterItemDeletionWhenNoGroupSpecified() {
 
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
@@ -152,7 +152,7 @@ public class ContactExchangeManagerTest extends BaseTest {
     }
 
     @Test
-    public void testRosterItemModificationIfContactDoesExist() throws Exception {
+    public void testRosterItemModificationIfContactDoesExist() {
 
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
@@ -170,7 +170,7 @@ public class ContactExchangeManagerTest extends BaseTest {
     }
 
     @Test
-    public void testRosterItemModification() throws Exception {
+    public void testRosterItemModification() {
 
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
@@ -185,7 +185,7 @@ public class ContactExchangeManagerTest extends BaseTest {
     }
 
     @Test
-    public void testRosterItemApproval() throws Exception {
+    public void testRosterItemApproval() {
 
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 

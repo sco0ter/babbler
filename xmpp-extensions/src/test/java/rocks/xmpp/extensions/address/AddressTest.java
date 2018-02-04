@@ -44,7 +44,7 @@ import java.util.List;
  */
 public class AddressTest extends XmlTest {
 
-    protected AddressTest() throws JAXBException, XMLStreamException {
+    protected AddressTest() throws JAXBException {
         super(Addresses.class, Roster.class);
     }
 
@@ -66,7 +66,7 @@ public class AddressTest extends XmlTest {
     }
 
     @Test
-    public void testWithoutBlindCarbonCopies() throws JAXBException, XMLStreamException {
+    public void testWithoutBlindCarbonCopies() {
         List<Address> addressList = new ArrayList<>();
         addressList.add(new Address(Address.Type.BCC, Jid.of("jer@jabber.org/Home")));
         addressList.add(new Address(Address.Type.TO, Jid.of("hildjj@jabber.org/Work"), "description", "node"));
@@ -80,7 +80,7 @@ public class AddressTest extends XmlTest {
     }
 
     @Test
-    public void testDelivered() throws JAXBException, XMLStreamException {
+    public void testDelivered() {
         Address address = new Address(Address.Type.CC, Jid.of("jer@jabber.org/Home"), new Roster(), new Roster());
         Address delivered = address.delivered();
         Assert.assertEquals(address.getType(), delivered.getType());
@@ -93,7 +93,7 @@ public class AddressTest extends XmlTest {
     }
 
     @Test
-    public void testReplyHandling() throws JAXBException, XMLStreamException {
+    public void testReplyHandling() {
         List<Address> addressList = new ArrayList<>();
         addressList.add(new Address(Address.Type.CC, Jid.of("jer@jabber.org/Home")));
         addressList.add(new Address(Address.Type.TO, Jid.of("hildjj@jabber.org/Work"), "description", "node"));

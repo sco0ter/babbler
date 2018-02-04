@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class MessageDeliveryReceiptsTest extends XmlTest {
-    protected MessageDeliveryReceiptsTest() throws JAXBException, XMLStreamException {
+    protected MessageDeliveryReceiptsTest() throws JAXBException {
         super(ClientMessage.class, MessageDeliveryReceipts.class);
     }
 

@@ -40,7 +40,7 @@ import java.util.Locale;
  */
 public class GeoLocationTest extends XmlTest {
 
-    protected GeoLocationTest() throws JAXBException, XMLStreamException {
+    protected GeoLocationTest() throws JAXBException {
         super(GeoLocation.class);
     }
 

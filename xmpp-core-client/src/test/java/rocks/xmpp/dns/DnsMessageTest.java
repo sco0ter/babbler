@@ -31,14 +31,13 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 /**
  * @author Christian Schudt
  */
 public class DnsMessageTest {
 
-    public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
+    public static void main(String[] args) throws IOException {
         List<?> answers = DnsResolver.resolveTXT("jabber.ru", "8.8.8.8", 1122);
         List<?> answers2 = DnsResolver.resolveSRV("xmpp-client", "jabber.ru", "8.8.8.8", 1122);
         System.out.println(answers);

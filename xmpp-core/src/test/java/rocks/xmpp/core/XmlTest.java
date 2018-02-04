@@ -66,11 +66,11 @@ public abstract class XmlTest {
 
     private final String namespace;
 
-    protected XmlTest(Class<?>... context) throws JAXBException, XMLStreamException {
+    protected XmlTest(Class<?>... context) throws JAXBException {
         this("jabber:client", context);
     }
 
-    protected XmlTest(String namespace, Class<?>... context) throws JAXBException, XMLStreamException {
+    protected XmlTest(String namespace, Class<?>... context) throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(context);
         unmarshaller = jaxbContext.createUnmarshaller();
         marshaller = jaxbContext.createMarshaller();

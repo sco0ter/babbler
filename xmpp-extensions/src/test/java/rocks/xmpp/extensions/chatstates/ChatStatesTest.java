@@ -39,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class ChatStatesTest extends XmlTest {
 
-    protected ChatStatesTest() throws JAXBException, XMLStreamException {
+    protected ChatStatesTest() throws JAXBException {
         super(ClientMessage.class, ChatState.class);
     }
 

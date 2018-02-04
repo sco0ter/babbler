@@ -34,7 +34,6 @@ import rocks.xmpp.extensions.muc.ChatService;
 import rocks.xmpp.extensions.muc.MultiUserChatManager;
 import rocks.xmpp.extensions.muc.OccupantEvent;
 
-import java.io.IOException;
 import java.util.concurrent.Executors;
 
 /**
@@ -42,7 +41,7 @@ import java.util.concurrent.Executors;
  */
 public class MucSampleUser2 {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         Executors.newFixedThreadPool(1).execute(() -> {
             try {

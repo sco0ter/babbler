@@ -34,7 +34,6 @@ import rocks.xmpp.extensions.vcard.temp.model.VCard;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.time.Month;
 
@@ -42,12 +41,12 @@ import java.time.Month;
  * @author Christian Schudt
  */
 public class VCardTest extends XmlTest {
-    protected VCardTest() throws JAXBException, XMLStreamException {
+    protected VCardTest() throws JAXBException {
         super(ClientIQ.class, VCard.class);
     }
 
     @Test
-    public void unmarshalVCardResponse() throws XMLStreamException, JAXBException, MalformedURLException {
+    public void unmarshalVCardResponse() throws XMLStreamException, JAXBException {
         String xml = "<iq id='v1'\n" +
                 "    to='stpeter@jabber.org/roundabout'\n" +
                 "    type='result'>\n" +

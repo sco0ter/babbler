@@ -38,13 +38,12 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.transform.TransformerException;
 
 /**
  * @author Christian Schudt
  */
 public class HtmlTest extends XmlTest {
-    protected HtmlTest() throws JAXBException, XMLStreamException {
+    protected HtmlTest() throws JAXBException {
         super(ClientIQ.class, Html.class);
     }
 
@@ -60,7 +59,7 @@ public class HtmlTest extends XmlTest {
     }
 
     @Test
-    public void marshalHtmlWithDocument() throws JAXBException, XMLStreamException, ParserConfigurationException, TransformerException {
+    public void marshalHtmlWithDocument() throws JAXBException, XMLStreamException, ParserConfigurationException {
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = dbf.newDocumentBuilder();

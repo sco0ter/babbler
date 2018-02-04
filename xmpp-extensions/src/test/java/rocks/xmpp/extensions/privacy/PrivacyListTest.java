@@ -46,7 +46,7 @@ import java.util.List;
  */
 public class PrivacyListTest extends XmlTest {
 
-    protected PrivacyListTest() throws JAXBException, XMLStreamException {
+    protected PrivacyListTest() throws JAXBException {
         super(ClientIQ.class, Privacy.class);
     }
 

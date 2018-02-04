@@ -38,7 +38,7 @@ import java.net.URI;
  */
 public class TuneTest extends XmlTest {
 
-    protected TuneTest() throws JAXBException, XMLStreamException {
+    protected TuneTest() throws JAXBException {
         super(Tune.class);
     }
 

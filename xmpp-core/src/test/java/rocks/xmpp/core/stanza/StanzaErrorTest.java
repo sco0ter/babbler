@@ -48,7 +48,7 @@ import java.util.Locale;
  */
 public class StanzaErrorTest extends XmlTest {
 
-    public StanzaErrorTest() throws JAXBException, XMLStreamException {
+    public StanzaErrorTest() throws JAXBException {
         super(ClientIQ.class, ClientMessage.class, ClientPresence.class, StanzaError.class);
     }
 

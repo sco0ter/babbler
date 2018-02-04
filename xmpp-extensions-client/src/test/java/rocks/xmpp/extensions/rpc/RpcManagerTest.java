@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -76,7 +75,7 @@ public class RpcManagerTest extends BaseTest {
     }
 
     @Test
-    public void testRpcException() throws XmppException {
+    public void testRpcException() {
         MockServer mockServer = new MockServer();
 
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);

@@ -37,7 +37,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class SubscriptionPreapprovalTest extends XmlTest {
 
-    protected SubscriptionPreapprovalTest() throws JAXBException, XMLStreamException {
+    protected SubscriptionPreapprovalTest() throws JAXBException {
         super(SubscriptionPreApproval.class);
     }
 

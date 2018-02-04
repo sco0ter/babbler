@@ -37,7 +37,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class MoodTest extends XmlTest {
 
-    protected MoodTest() throws JAXBException, XMLStreamException {
+    protected MoodTest() throws JAXBException {
         super(Mood.class);
     }
 

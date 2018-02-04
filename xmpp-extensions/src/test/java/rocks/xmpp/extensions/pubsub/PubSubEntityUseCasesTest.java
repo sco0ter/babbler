@@ -42,7 +42,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class PubSubEntityUseCasesTest extends XmlTest {
 
-    protected PubSubEntityUseCasesTest() throws JAXBException, XMLStreamException {
+    protected PubSubEntityUseCasesTest() throws JAXBException {
         super(ClientIQ.class, PubSub.class);
     }
 

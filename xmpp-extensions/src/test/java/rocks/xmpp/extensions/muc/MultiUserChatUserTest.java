@@ -45,7 +45,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class MultiUserChatUserTest extends XmlTest {
-    protected MultiUserChatUserTest() throws JAXBException, XMLStreamException {
+    protected MultiUserChatUserTest() throws JAXBException {
         super(ClientPresence.class, ClientMessage.class, MucUser.class);
     }
 

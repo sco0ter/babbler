@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class RtpErrorsTest extends XmlTest {
-    protected RtpErrorsTest() throws JAXBException, XMLStreamException {
+    protected RtpErrorsTest() throws JAXBException {
         super(Rtp.class);
     }
 

@@ -114,7 +114,7 @@ public class ScramClientTest {
 
 
     @Test
-    public void testClientServer() throws SaslException, ClassNotFoundException {
+    public void testClientServer() throws SaslException {
         XmppClient.create(null);
 
         SaslClient saslClient = Sasl.createSaslClient(new String[]{"SCRAM-SHA-1"}, "authzid", "xmpp", "servername", null, callbacks -> {

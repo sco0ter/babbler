@@ -48,7 +48,7 @@ import java.util.Locale;
  * @author Christian Schudt
  */
 public class ServiceDiscoveryTest extends XmlTest {
-    protected ServiceDiscoveryTest() throws JAXBException, XMLStreamException {
+    protected ServiceDiscoveryTest() throws JAXBException {
         super(ClientIQ.class, ItemDiscovery.class, InfoDiscovery.class);
     }
 

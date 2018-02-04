@@ -43,7 +43,7 @@ import java.util.Arrays;
  */
 public class MultiUserChatAdminTest extends XmlTest {
 
-    protected MultiUserChatAdminTest() throws JAXBException, XMLStreamException {
+    protected MultiUserChatAdminTest() throws JAXBException {
         super(ClientIQ.class, MucAdmin.class);
     }
 

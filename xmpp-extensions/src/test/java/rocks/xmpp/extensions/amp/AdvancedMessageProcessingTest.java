@@ -47,7 +47,7 @@ import java.util.Collections;
  */
 public class AdvancedMessageProcessingTest extends XmlTest {
 
-    protected AdvancedMessageProcessingTest() throws JAXBException, XMLStreamException {
+    protected AdvancedMessageProcessingTest() throws JAXBException {
         super(ClientMessage.class, AdvancedMessageProcessing.class);
     }
 

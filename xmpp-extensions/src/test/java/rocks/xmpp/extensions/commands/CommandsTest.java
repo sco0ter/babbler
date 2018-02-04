@@ -42,7 +42,7 @@ import java.util.Collections;
  * @author Christian Schudt
  */
 public class CommandsTest extends XmlTest {
-    protected CommandsTest() throws JAXBException, XMLStreamException {
+    protected CommandsTest() throws JAXBException {
         super(ClientIQ.class, Command.class, DataForm.class);
     }
 

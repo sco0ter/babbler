@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
@@ -42,7 +41,7 @@ import java.util.concurrent.ExecutionException;
 public class HeadersManagerTest extends BaseTest {
 
     @Test
-    public void testServiceDiscoveryIfHeadersAreDisabled() throws XmppException, InterruptedException {
+    public void testServiceDiscoveryIfHeadersAreDisabled() throws InterruptedException {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(JULIET, mockServer);
         TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);
@@ -64,7 +63,7 @@ public class HeadersManagerTest extends BaseTest {
     }
 
     @Test
-    public void testServiceDiscoveryIfHeadersAreEnabled() throws XmppException, InterruptedException {
+    public void testServiceDiscoveryIfHeadersAreEnabled() throws InterruptedException {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(JULIET, mockServer);
         TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);

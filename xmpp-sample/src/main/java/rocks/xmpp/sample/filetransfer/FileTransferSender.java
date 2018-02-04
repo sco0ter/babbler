@@ -31,7 +31,6 @@ import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.concurrent.Executors;
@@ -41,7 +40,7 @@ import java.util.concurrent.Executors;
  */
 public class FileTransferSender {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         Executors.newFixedThreadPool(1).execute(() -> {
             try {

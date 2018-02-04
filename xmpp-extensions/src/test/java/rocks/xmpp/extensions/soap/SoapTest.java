@@ -51,7 +51,7 @@ import javax.xml.transform.dom.DOMSource;
  */
 public class SoapTest extends XmlTest {
 
-    protected SoapTest() throws JAXBException, XMLStreamException {
+    protected SoapTest() throws JAXBException {
         super(ClientMessage.class, ClientIQ.class);
     }
 

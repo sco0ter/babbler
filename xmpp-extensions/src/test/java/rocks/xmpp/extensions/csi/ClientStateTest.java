@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class ClientStateTest extends XmlTest {
 
-    protected ClientStateTest() throws JAXBException, XMLStreamException {
+    protected ClientStateTest() throws JAXBException {
         super(ClientState.class);
     }
 

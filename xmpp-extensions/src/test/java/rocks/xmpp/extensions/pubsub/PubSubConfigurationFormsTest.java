@@ -56,7 +56,7 @@ import java.util.Locale;
  */
 public class PubSubConfigurationFormsTest extends XmlTest {
 
-    protected PubSubConfigurationFormsTest() throws JAXBException, XMLStreamException {
+    protected PubSubConfigurationFormsTest() throws JAXBException {
         super(DataForm.class);
     }
 
@@ -244,7 +244,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
     }
 
     @Test
-    public void testSubscribeOptions() throws JAXBException, XMLStreamException, MalformedURLException {
+    public void testSubscribeOptions() throws JAXBException, XMLStreamException {
         SubscribeOptions subscribeOptions1 = SubscribeOptions.builder()
                 .deliver(true)
                 .digest(true)

@@ -37,7 +37,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class CompressionTest extends XmlTest {
-    protected CompressionTest() throws JAXBException, XMLStreamException {
+    protected CompressionTest() throws JAXBException {
         super(StreamCompression.class);
     }
 

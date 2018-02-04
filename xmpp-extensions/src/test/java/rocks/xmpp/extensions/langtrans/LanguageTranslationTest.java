@@ -43,7 +43,7 @@ import java.util.Locale;
  * @author Christian Schudt
  */
 public class LanguageTranslationTest extends XmlTest {
-    protected LanguageTranslationTest() throws JAXBException, XMLStreamException {
+    protected LanguageTranslationTest() throws JAXBException {
         super(ClientMessage.class, ClientIQ.class, LanguageTranslation.class);
     }
 

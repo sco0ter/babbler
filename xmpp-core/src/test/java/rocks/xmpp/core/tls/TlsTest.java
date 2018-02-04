@@ -39,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class TlsTest extends XmlTest {
 
-    protected TlsTest() throws JAXBException, XMLStreamException {
+    protected TlsTest() throws JAXBException {
         super(StartTls.class, Proceed.class, Failure.class);
     }
 

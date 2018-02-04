@@ -39,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class PingTest extends XmlTest {
 
-    protected PingTest() throws JAXBException, XMLStreamException {
+    protected PingTest() throws JAXBException {
         super(ClientIQ.class, Ping.class);
     }
 

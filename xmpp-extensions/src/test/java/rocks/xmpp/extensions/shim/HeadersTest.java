@@ -44,7 +44,7 @@ import java.util.Map;
  */
 public class HeadersTest extends XmlTest {
 
-    protected HeadersTest() throws JAXBException, XMLStreamException {
+    protected HeadersTest() throws JAXBException {
         super(ClientMessage.class, Headers.class);
     }
 

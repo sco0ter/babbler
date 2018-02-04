@@ -36,18 +36,17 @@ import rocks.xmpp.extensions.pubsub.model.PubSub;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.net.MalformedURLException;
 
 /**
  * @author Christian Schudt
  */
 public class AvatarTest extends XmlTest {
-    protected AvatarTest() throws JAXBException, XMLStreamException {
+    protected AvatarTest() throws JAXBException {
         super(ClientIQ.class, PubSub.class, AvatarData.class, AvatarMetadata.class);
     }
 
     @Test
-    public void unmarshalAvatar() throws XMLStreamException, JAXBException, MalformedURLException {
+    public void unmarshalAvatar() throws XMLStreamException, JAXBException {
         String xml = "<iq type='set' from='juliet@capulet.lit/chamber' id='publish3'>\n" +
                 "  <pubsub xmlns='http://jabber.org/protocol/pubsub'>\n" +
                 "    <publish node='urn:xmpp:avatar:metadata'>\n" +

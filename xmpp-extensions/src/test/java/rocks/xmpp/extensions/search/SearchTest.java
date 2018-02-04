@@ -41,7 +41,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class SearchTest extends XmlTest {
 
-    protected SearchTest() throws JAXBException, XMLStreamException {
+    protected SearchTest() throws JAXBException {
         super(ClientIQ.class, Search.class);
     }
 

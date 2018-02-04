@@ -47,7 +47,7 @@ import java.util.Locale;
  * @author Christian Schudt
  */
 public class EntityCapabilitiesManagerTest extends XmlTest {
-    protected EntityCapabilitiesManagerTest() throws JAXBException, XMLStreamException {
+    protected EntityCapabilitiesManagerTest() throws JAXBException {
         super(EntityCapabilities.class);
     }
 
@@ -65,7 +65,7 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
     }
 
     @Test
-    public void testSortIdentities() throws XMLStreamException, JAXBException {
+    public void testSortIdentities() {
 
         Identity identity1 = Identity.ofCategoryAndType("AAA", "aaa").withName("name1", Locale.ENGLISH);
         Identity identity2 = Identity.ofCategoryAndType("AAA", "aaa").withName("name2", Locale.GERMAN);
@@ -94,7 +94,7 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
     }
 
     @Test
-    public void testSortDataForms() throws XMLStreamException, JAXBException {
+    public void testSortDataForms() {
 
         DataForm dataForm1 = new DataForm(DataForm.Type.FORM, Arrays.asList(DataForm.Field.builder().var("ccc").type(DataForm.Field.Type.BOOLEAN).build(),
                 DataForm.Field.builder().var("FORM_TYPE").value("aaa").type(DataForm.Field.Type.HIDDEN).build()));
@@ -118,7 +118,7 @@ public class EntityCapabilitiesManagerTest extends XmlTest {
     }
 
     @Test
-    public void testSortDataFormFields() throws XMLStreamException, JAXBException {
+    public void testSortDataFormFields() {
 
         List<DataForm.Field> dataFields = new ArrayList<>();
         DataForm.Field field1 = DataForm.Field.builder().var("ccc").type(DataForm.Field.Type.BOOLEAN).value("ccc").build();

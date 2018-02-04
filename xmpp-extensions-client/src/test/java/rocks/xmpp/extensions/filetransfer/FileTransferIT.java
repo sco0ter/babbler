@@ -39,7 +39,6 @@ import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Random;
@@ -76,7 +75,7 @@ public class FileTransferIT extends IntegrationTest {
     }
 
     @Test
-    public void testInBandFileTransfer() throws XmppException, IOException, InterruptedException, TimeoutException, ExecutionException {
+    public void testInBandFileTransfer() throws InterruptedException, TimeoutException, ExecutionException {
         // Disable SOCKS 5 transfer method, so that IBB will be used.
         xmppSession[1].disableFeature(Socks5ByteStream.NAMESPACE);
         xmppSession[0].getManager(InBandByteStreamManager.class).setStanzaType(InBandByteStream.Open.StanzaType.IQ);
@@ -84,7 +83,7 @@ public class FileTransferIT extends IntegrationTest {
     }
 
     @Test
-    public void testInBandFileTransferWithMessages() throws XmppException, IOException, InterruptedException, TimeoutException, ExecutionException {
+    public void testInBandFileTransferWithMessages() throws InterruptedException, TimeoutException, ExecutionException {
         // Disable SOCKS 5 transfer method, so that IBB will be used.
         xmppSession[1].disableFeature(Socks5ByteStream.NAMESPACE);
         xmppSession[0].getManager(InBandByteStreamManager.class).setStanzaType(InBandByteStream.Open.StanzaType.MESSAGE);
@@ -92,14 +91,14 @@ public class FileTransferIT extends IntegrationTest {
     }
 
     @Test
-    public void testSocks5FileTransfer() throws XmppException, IOException, InterruptedException, TimeoutException, ExecutionException {
+    public void testSocks5FileTransfer() throws InterruptedException, TimeoutException, ExecutionException {
         // Enable SOCKS 5 transfer method.
         xmppSession[1].enableFeature(Socks5ByteStream.NAMESPACE);
         testFileTransfer();
     }
 
 
-    private void testFileTransfer() throws XmppException, IOException, InterruptedException, TimeoutException, ExecutionException {
+    private void testFileTransfer() throws InterruptedException, TimeoutException, ExecutionException {
         // The data we want to send (representing a file).
         byte[] data = new byte[40960]; // 40 KB, should be splitted into 10 chunks.
         Random random = new Random();

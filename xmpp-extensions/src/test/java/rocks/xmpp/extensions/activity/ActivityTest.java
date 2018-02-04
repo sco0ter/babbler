@@ -39,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class ActivityTest extends XmlTest {
 
-    protected ActivityTest() throws JAXBException, XMLStreamException {
+    protected ActivityTest() throws JAXBException {
         super(Activity.class);
     }
 

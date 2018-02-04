@@ -37,7 +37,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class ComponentTest extends XmlTest {
-    protected ComponentTest() throws JAXBException, XMLStreamException {
+    protected ComponentTest() throws JAXBException {
         super("jabber:component:accept", ComponentMessage.class, Handshake.class);
     }
 

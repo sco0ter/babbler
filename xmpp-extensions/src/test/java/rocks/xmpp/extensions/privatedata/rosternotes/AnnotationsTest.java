@@ -40,7 +40,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class AnnotationsTest extends XmlTest {
-    protected AnnotationsTest() throws JAXBException, XMLStreamException {
+    protected AnnotationsTest() throws JAXBException {
         super(ClientIQ.class, PrivateData.class, Annotation.class);
     }
 

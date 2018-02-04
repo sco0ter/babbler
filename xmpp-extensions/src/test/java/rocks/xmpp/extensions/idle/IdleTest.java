@@ -43,7 +43,7 @@ import java.time.OffsetDateTime;
  */
 public class IdleTest extends XmlTest {
 
-    protected IdleTest() throws JAXBException, XMLStreamException {
+    protected IdleTest() throws JAXBException {
         super(ClientPresence.class, Idle.class, LastActivity.class, DelayedDelivery.class);
     }
 

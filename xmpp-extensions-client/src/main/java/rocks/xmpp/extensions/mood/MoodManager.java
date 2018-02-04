@@ -24,10 +24,8 @@
 
 package rocks.xmpp.extensions.mood;
 
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.extensions.mood.model.Mood;
 import rocks.xmpp.extensions.pubsub.PubSubManager;
 
@@ -47,10 +45,8 @@ public final class MoodManager extends Manager {
      * Publishes a mood to the personal eventing service.
      *
      * @param mood The mood.
-     * @throws StanzaErrorException If the entity returned a stanza error.
-     * @throws rocks.xmpp.core.session.NoResponseException  If the entity did not respond.
      */
-    public void publish(Mood mood) throws XmppException {
+    public void publish(Mood mood) {
         pubSubManager.createPersonalEventingService().node(Mood.NAMESPACE).publish(mood);
     }
 }

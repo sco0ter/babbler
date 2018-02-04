@@ -30,7 +30,6 @@ import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.debug.gui.VisualDebugger;
 
-import java.io.IOException;
 import java.util.concurrent.Executors;
 
 /**
@@ -38,7 +37,7 @@ import java.util.concurrent.Executors;
  */
 public class GeolocationPublisher {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         Executors.newFixedThreadPool(1).execute(() -> {
             try {

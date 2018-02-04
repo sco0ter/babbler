@@ -39,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class LastActivityTest extends XmlTest {
 
-    protected LastActivityTest() throws JAXBException, XMLStreamException {
+    protected LastActivityTest() throws JAXBException {
         super(ClientIQ.class, LastActivity.class);
     }
 

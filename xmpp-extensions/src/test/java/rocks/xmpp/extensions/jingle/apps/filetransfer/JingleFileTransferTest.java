@@ -43,7 +43,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class JingleFileTransferTest extends XmlTest {
-    protected JingleFileTransferTest() throws JAXBException, XMLStreamException {
+    protected JingleFileTransferTest() throws JAXBException {
         super(Hash.class, Jingle.class, JingleFileTransfer.class, S5bTransportMethod.class, ClientIQ.class);
     }
 

@@ -147,7 +147,7 @@ public final class XmppClient extends XmppSession {
         streamFeaturesManager.addFeatureNegotiator(authenticationManager);
         streamFeaturesManager.addFeatureNegotiator(new StreamFeatureNegotiator(this, Bind.class) {
             @Override
-            public Status processNegotiation(Object element) throws StreamNegotiationException {
+            public Status processNegotiation(Object element) {
                 // Resource binding will be negotiated manually
                 return Status.INCOMPLETE;
             }

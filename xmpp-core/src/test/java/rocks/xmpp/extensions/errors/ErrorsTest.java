@@ -43,7 +43,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class ErrorsTest extends XmlTest {
-    protected ErrorsTest() throws JAXBException, XMLStreamException {
+    protected ErrorsTest() throws JAXBException {
         super(ClientIQ.class, ClientMessage.class, StanzaTooBig.class, TooManyStanzas.class, ResourceLimitExceeded.class);
     }
 

@@ -39,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class RosterItemExchangeTest extends XmlTest {
-    protected RosterItemExchangeTest() throws JAXBException, XMLStreamException {
+    protected RosterItemExchangeTest() throws JAXBException {
         super(ClientMessage.class, ContactExchange.class);
     }
 

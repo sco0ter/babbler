@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.sm;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
-import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
@@ -120,7 +119,7 @@ public final class StreamManager extends StreamFeatureNegotiator {
     }
 
     @Override
-    public final Status processNegotiation(Object element) throws StreamNegotiationException {
+    public final Status processNegotiation(Object element) {
         if (!isEnabled()) {
             return Status.IGNORE;
         }

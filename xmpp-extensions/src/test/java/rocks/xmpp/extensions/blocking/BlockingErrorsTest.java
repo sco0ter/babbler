@@ -39,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class BlockingErrorsTest extends XmlTest {
 
-    protected BlockingErrorsTest() throws JAXBException, XMLStreamException {
+    protected BlockingErrorsTest() throws JAXBException {
         super(ClientMessage.class, Blocked.class);
     }
 

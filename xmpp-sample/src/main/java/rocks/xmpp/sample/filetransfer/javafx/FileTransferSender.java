@@ -56,7 +56,7 @@ public class FileTransferSender extends Application {
     private final ObjectProperty<XmppSession> xmppSession = new SimpleObjectProperty<>();
 
     @Override
-    public void start(final Stage primaryStage) throws Exception {
+    public void start(final Stage primaryStage) {
 
         final Task<XmppSession> task = new Task<XmppSession>() {
             @Override

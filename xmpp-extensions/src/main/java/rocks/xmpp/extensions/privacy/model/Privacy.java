@@ -161,7 +161,7 @@ public final class Privacy {
     private static final class ActiveNameAdapter extends XmlAdapter<Active, String> {
 
         @Override
-        public final String unmarshal(Active v) throws Exception {
+        public final String unmarshal(Active v) {
             if (v != null) {
                 return v.name;
             }
@@ -169,7 +169,7 @@ public final class Privacy {
         }
 
         @Override
-        public final Active marshal(String v) throws Exception {
+        public final Active marshal(String v) {
             if (v != null) {
                 Active active = new Active();
                 active.name = v.isEmpty() ? null : v;
@@ -182,7 +182,7 @@ public final class Privacy {
     private static final class DefaultNameAdapter extends XmlAdapter<Default, String> {
 
         @Override
-        public final String unmarshal(Default v) throws Exception {
+        public final String unmarshal(Default v) {
             if (v != null) {
                 return v.name;
             }
@@ -190,7 +190,7 @@ public final class Privacy {
         }
 
         @Override
-        public final Default marshal(String v) throws Exception {
+        public final Default marshal(String v) {
             if (v != null) {
                 Default def = new Default();
                 def.name = v.isEmpty() ? null : v;

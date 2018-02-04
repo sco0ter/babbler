@@ -32,7 +32,6 @@ import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
-import java.io.IOException;
 import java.util.concurrent.Executors;
 
 /**
@@ -40,7 +39,7 @@ import java.util.concurrent.Executors;
  */
 public class CustomIQHandlerResponder {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         Executors.newFixedThreadPool(1).execute(() -> {
             try {

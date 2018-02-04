@@ -39,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class InbandByteStreamsTransportMethodTest extends XmlTest {
-    protected InbandByteStreamsTransportMethodTest() throws JAXBException, XMLStreamException {
+    protected InbandByteStreamsTransportMethodTest() throws JAXBException {
         super(Jingle.class, InBandByteStreamsTransportMethod.class, Rtp.class);
     }
 

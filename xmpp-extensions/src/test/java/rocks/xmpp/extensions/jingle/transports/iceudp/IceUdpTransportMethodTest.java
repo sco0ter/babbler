@@ -41,7 +41,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class IceUdpTransportMethodTest extends XmlTest {
-    protected IceUdpTransportMethodTest() throws JAXBException, XMLStreamException {
+    protected IceUdpTransportMethodTest() throws JAXBException {
         super(ClientIQ.class, Jingle.class, Rtp.class, IceUdpTransportMethod.class);
     }
 

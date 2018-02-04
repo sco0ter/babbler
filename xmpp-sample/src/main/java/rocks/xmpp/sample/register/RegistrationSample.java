@@ -30,12 +30,11 @@ import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.extensions.register.RegistrationManager;
 import rocks.xmpp.extensions.register.model.Registration;
 
-import java.io.IOException;
 import java.util.concurrent.Executors;
 
 public class RegistrationSample {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         Executors.newFixedThreadPool(1).execute(() -> {
             try {

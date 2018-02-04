@@ -40,7 +40,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class PubSubPublisherUseCasesTest extends XmlTest {
 
-    protected PubSubPublisherUseCasesTest() throws JAXBException, XMLStreamException {
+    protected PubSubPublisherUseCasesTest() throws JAXBException {
         super(ClientIQ.class, PubSub.class);
     }
 

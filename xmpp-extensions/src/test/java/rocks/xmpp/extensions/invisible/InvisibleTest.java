@@ -37,7 +37,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class InvisibleTest extends XmlTest {
 
-    protected InvisibleTest() throws JAXBException, XMLStreamException {
+    protected InvisibleTest() throws JAXBException {
         super(InvisibleCommand.class);
     }
 

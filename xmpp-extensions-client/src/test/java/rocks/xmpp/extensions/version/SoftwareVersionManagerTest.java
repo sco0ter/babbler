@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
@@ -41,7 +40,7 @@ import java.util.concurrent.ExecutionException;
 public class SoftwareVersionManagerTest extends BaseTest {
 
     @Test
-    public void testSoftwareVersionManager() throws XmppException, ExecutionException, InterruptedException {
+    public void testSoftwareVersionManager() throws ExecutionException, InterruptedException {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         new TestXmppSession(JULIET, mockServer);
@@ -55,7 +54,7 @@ public class SoftwareVersionManagerTest extends BaseTest {
     }
 
     @Test
-    public void testSoftwareVersionManagerIfDisabled() throws XmppException {
+    public void testSoftwareVersionManagerIfDisabled() {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);

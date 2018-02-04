@@ -43,7 +43,7 @@ import java.util.List;
  * @author Christian Schudt
  */
 public class S5bTransportMethodTest extends XmlTest {
-    protected S5bTransportMethodTest() throws JAXBException, XMLStreamException {
+    protected S5bTransportMethodTest() throws JAXBException {
         super(Jingle.class, S5bTransportMethod.class, Rtp.class);
     }
 

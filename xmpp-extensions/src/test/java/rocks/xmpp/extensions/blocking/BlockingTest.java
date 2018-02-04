@@ -43,7 +43,7 @@ import java.util.Collection;
  * @author Christian Schudt
  */
 public class BlockingTest extends XmlTest {
-    protected BlockingTest() throws JAXBException, XMLStreamException {
+    protected BlockingTest() throws JAXBException {
         super(ClientIQ.class, BlockList.class);
     }
 

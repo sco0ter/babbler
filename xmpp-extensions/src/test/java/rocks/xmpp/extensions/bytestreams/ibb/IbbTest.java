@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class IbbTest extends XmlTest {
-    protected IbbTest() throws JAXBException, XMLStreamException {
+    protected IbbTest() throws JAXBException {
         super(ClientIQ.class, InBandByteStream.class);
     }
 

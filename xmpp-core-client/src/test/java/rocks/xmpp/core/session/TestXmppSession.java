@@ -27,11 +27,9 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.SameThreadExecutorService;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
 
-import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -73,7 +71,7 @@ public final class TestXmppSession extends XmppSession {
             }
 
             @Override
-            public void connect(Jid from, String namespace) throws IOException {
+            public void connect(Jid from, String namespace) {
             }
 
             @Override
@@ -104,7 +102,7 @@ public final class TestXmppSession extends XmppSession {
     }
 
     @Override
-    public void connect(Jid from) throws XmppException {
+    public void connect(Jid from) {
 
     }
 

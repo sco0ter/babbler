@@ -41,7 +41,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class SoapFaultTest extends XmlTest {
 
-    protected SoapFaultTest() throws JAXBException, XMLStreamException {
+    protected SoapFaultTest() throws JAXBException {
         super(DataEncodingUnknown.class, MustUnderstand.class, Receiver.class, Sender.class, VersionMismatch.class);
     }
 

@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class RealTimeTextTest extends XmlTest {
-    protected RealTimeTextTest() throws JAXBException, XMLStreamException {
+    protected RealTimeTextTest() throws JAXBException {
         super(ClientMessage.class, RealTimeText.class);
     }
 

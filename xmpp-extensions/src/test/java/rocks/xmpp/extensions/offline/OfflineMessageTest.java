@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class OfflineMessageTest extends XmlTest {
-    protected OfflineMessageTest() throws JAXBException, XMLStreamException {
+    protected OfflineMessageTest() throws JAXBException {
         super(ClientIQ.class, OfflineMessage.class);
     }
 

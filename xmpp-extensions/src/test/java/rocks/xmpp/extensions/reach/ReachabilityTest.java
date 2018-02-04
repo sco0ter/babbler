@@ -41,7 +41,7 @@ import java.util.Locale;
  */
 public class ReachabilityTest extends XmlTest {
 
-    protected ReachabilityTest() throws JAXBException, XMLStreamException {
+    protected ReachabilityTest() throws JAXBException {
         super(Reachability.class);
     }
 

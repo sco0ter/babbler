@@ -52,7 +52,7 @@ public final class SameThreadExecutorService extends AbstractExecutorService {
     }
 
     @Override
-    public boolean awaitTermination(long theTimeout, TimeUnit theUnit) throws InterruptedException {
+    public boolean awaitTermination(long theTimeout, TimeUnit theUnit) {
         shutdown(); // TODO ok to call shutdown? what if the client never called shutdown???
         return terminated;
     }

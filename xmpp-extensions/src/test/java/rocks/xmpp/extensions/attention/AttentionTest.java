@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class AttentionTest extends XmlTest {
-    protected AttentionTest() throws JAXBException, XMLStreamException {
+    protected AttentionTest() throws JAXBException {
         super(ClientMessage.class, Attention.class);
     }
 

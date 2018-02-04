@@ -43,7 +43,7 @@ import java.util.List;
  */
 public class RosterTest extends XmlTest {
 
-    protected RosterTest() throws JAXBException, XMLStreamException {
+    protected RosterTest() throws JAXBException {
         super(ClientIQ.class, Roster.class);
     }
 
@@ -169,7 +169,7 @@ public class RosterTest extends XmlTest {
     }
 
     @Test
-    public void testContactEquality() throws XMLStreamException, JAXBException {
+    public void testContactEquality() {
 
         Contact contact1 = new Contact(Jid.of("node1@domain"), "name", false, null, Contact.Subscription.FROM, Arrays.asList("group2", "group1"));
         Contact contact2 = new Contact(Jid.of("node1@domain"), "name", false, null, Contact.Subscription.FROM, Arrays.asList("group1", "group2"));

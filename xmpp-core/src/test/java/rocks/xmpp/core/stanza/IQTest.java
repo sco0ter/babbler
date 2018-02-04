@@ -41,7 +41,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class IQTest extends XmlTest {
 
-    protected IQTest() throws JAXBException, XMLStreamException {
+    protected IQTest() throws JAXBException {
         super(ClientIQ.class);
     }
 
@@ -116,7 +116,7 @@ public class IQTest extends XmlTest {
     }
 
     @Test
-    public void testResultIQ() throws JAXBException, XMLStreamException {
+    public void testResultIQ() {
         IQ iq = new IQ(Jid.ofLocalAndDomain("to", "domain"), IQ.Type.GET, null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null);
         IQ result = iq.createResult();
         Assert.assertEquals(result.getType(), IQ.Type.RESULT);

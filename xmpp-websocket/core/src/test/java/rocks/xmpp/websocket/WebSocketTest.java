@@ -41,7 +41,7 @@ import java.util.Locale;
  */
 public class WebSocketTest extends XmlTest {
 
-    protected WebSocketTest() throws JAXBException, XMLStreamException {
+    protected WebSocketTest() throws JAXBException {
         super(Open.class, Close.class);
     }
 

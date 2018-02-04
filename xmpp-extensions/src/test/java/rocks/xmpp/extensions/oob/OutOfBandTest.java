@@ -41,7 +41,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class OutOfBandTest extends XmlTest {
-    protected OutOfBandTest() throws JAXBException, XMLStreamException {
+    protected OutOfBandTest() throws JAXBException {
         super(ClientIQ.class, ClientMessage.class, OobIQ.class, OobX.class);
     }
 

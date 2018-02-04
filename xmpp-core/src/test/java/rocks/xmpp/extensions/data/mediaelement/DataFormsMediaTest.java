@@ -38,7 +38,7 @@ import java.net.URI;
  * @author Christian Schudt
  */
 public class DataFormsMediaTest extends XmlTest {
-    protected DataFormsMediaTest() throws JAXBException, XMLStreamException {
+    protected DataFormsMediaTest() throws JAXBException {
         super(DataForm.class, Media.class);
     }
 

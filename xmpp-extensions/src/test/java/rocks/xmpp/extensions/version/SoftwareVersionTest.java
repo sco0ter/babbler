@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class SoftwareVersionTest extends XmlTest {
-    protected SoftwareVersionTest() throws JAXBException, XMLStreamException {
+    protected SoftwareVersionTest() throws JAXBException {
         super(ClientIQ.class, SoftwareVersion.class);
     }
 

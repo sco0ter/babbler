@@ -39,10 +39,8 @@ import rocks.xmpp.websocket.WebSocketConnectionConfiguration;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.Executors;
 import java.util.logging.ConsoleHandler;
@@ -58,7 +56,7 @@ public class SampleApplication {
 
     private static Logger logger = Logger.getLogger(SampleApplication.class.getName());
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         configureLogging();
 
@@ -153,11 +151,11 @@ public class SampleApplication {
         sslContext.init(null, new TrustManager[]{
                 new X509TrustManager() {
                     @Override
-                    public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                    public void checkClientTrusted(X509Certificate[] x509Certificates, String s) {
                     }
 
                     @Override
-                    public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+                    public void checkServerTrusted(X509Certificate[] x509Certificates, String s) {
                     }
 
                     @Override

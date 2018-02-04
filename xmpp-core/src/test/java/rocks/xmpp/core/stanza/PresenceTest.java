@@ -49,7 +49,7 @@ import java.util.Locale;
  * @author Christian Schudt
  */
 public class PresenceTest extends XmlTest {
-    protected PresenceTest() throws JAXBException, XMLStreamException {
+    protected PresenceTest() throws JAXBException {
         super(ClientPresence.class);
     }
 
@@ -261,7 +261,7 @@ public class PresenceTest extends XmlTest {
     }
 
     @Test
-    public void testIsAvailable() throws JAXBException, XMLStreamException {
+    public void testIsAvailable() {
         Presence presence1 = new Presence();
         Assert.assertTrue(presence1.isAvailable());
 

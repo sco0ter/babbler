@@ -25,7 +25,6 @@
 package rocks.xmpp.core.sasl.anonymous;
 
 import javax.security.sasl.SaslClient;
-import javax.security.sasl.SaslException;
 
 /**
  * The client implementation of the "ANONYMOUS" SASL mechanism.
@@ -45,7 +44,7 @@ public final class AnonymousSaslClient implements SaslClient {
     }
 
     @Override
-    public final byte[] evaluateChallenge(byte[] challenge) throws SaslException {
+    public final byte[] evaluateChallenge(byte[] challenge) {
         return new byte[0];
     }
 
@@ -55,12 +54,12 @@ public final class AnonymousSaslClient implements SaslClient {
     }
 
     @Override
-    public final byte[] unwrap(byte[] incoming, int offset, int len) throws SaslException {
+    public final byte[] unwrap(byte[] incoming, int offset, int len) {
         return new byte[0];
     }
 
     @Override
-    public final byte[] wrap(byte[] outgoing, int offset, int len) throws SaslException {
+    public final byte[] wrap(byte[] outgoing, int offset, int len) {
         return new byte[0];
     }
 
@@ -70,6 +69,6 @@ public final class AnonymousSaslClient implements SaslClient {
     }
 
     @Override
-    public final void dispose() throws SaslException {
+    public final void dispose() {
     }
 }

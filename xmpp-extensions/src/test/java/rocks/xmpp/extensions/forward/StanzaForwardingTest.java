@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class StanzaForwardingTest extends XmlTest {
-    protected StanzaForwardingTest() throws JAXBException, XMLStreamException {
+    protected StanzaForwardingTest() throws JAXBException {
         super(ClientMessage.class, Forwarded.class);
     }
 

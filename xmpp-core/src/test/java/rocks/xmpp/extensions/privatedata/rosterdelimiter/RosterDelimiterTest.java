@@ -40,7 +40,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class RosterDelimiterTest extends XmlTest {
 
-    protected RosterDelimiterTest() throws JAXBException, XMLStreamException {
+    protected RosterDelimiterTest() throws JAXBException {
         super(ClientIQ.class, PrivateData.class, RosterDelimiter.class);
     }
 

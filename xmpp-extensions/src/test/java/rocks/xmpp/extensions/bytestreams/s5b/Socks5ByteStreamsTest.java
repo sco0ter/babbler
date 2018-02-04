@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class Socks5ByteStreamsTest extends XmlTest {
-    protected Socks5ByteStreamsTest() throws JAXBException, XMLStreamException {
+    protected Socks5ByteStreamsTest() throws JAXBException {
         super(ClientIQ.class, Socks5ByteStream.class);
     }
 

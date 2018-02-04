@@ -192,7 +192,7 @@ public final class NettyTcpConnection extends Connection {
             b.option(ChannelOption.SO_KEEPALIVE, true);
             b.handler(new ChannelInitializer<SocketChannel>() {
                 @Override
-                public final void initChannel(final SocketChannel ch) throws Exception {
+                public final void initChannel(final SocketChannel ch) {
                     Proxy proxy = getConfiguration().getProxy();
                     if (proxy != null) {
                         if (proxy.type() == Proxy.Type.SOCKS) {

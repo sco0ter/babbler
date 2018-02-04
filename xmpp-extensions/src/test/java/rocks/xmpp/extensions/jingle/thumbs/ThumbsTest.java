@@ -38,7 +38,7 @@ import java.net.URI;
  * @author Christian Schudt
  */
 public class ThumbsTest extends XmlTest {
-    protected ThumbsTest() throws JAXBException, XMLStreamException {
+    protected ThumbsTest() throws JAXBException {
         super(ClientIQ.class, Thumbnail.class);
     }
 

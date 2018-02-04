@@ -29,7 +29,6 @@ import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.extensions.httpbind.BoshConnection;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
-import java.io.IOException;
 import java.util.concurrent.Executors;
 
 /**
@@ -37,7 +36,7 @@ import java.util.concurrent.Executors;
  */
 public class HttpPreBindSample {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         Executors.newFixedThreadPool(1).execute(() -> {
             BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()

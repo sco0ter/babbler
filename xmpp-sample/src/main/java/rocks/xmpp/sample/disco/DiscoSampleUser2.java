@@ -32,7 +32,6 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
-import java.io.IOException;
 import java.util.concurrent.Executors;
 
 /**
@@ -40,7 +39,7 @@ import java.util.concurrent.Executors;
  */
 public class DiscoSampleUser2 {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         Executors.newFixedThreadPool(1).execute(() -> {
             try {

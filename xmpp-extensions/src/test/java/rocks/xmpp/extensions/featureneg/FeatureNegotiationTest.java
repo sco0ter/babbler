@@ -39,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class FeatureNegotiationTest extends XmlTest {
 
-    protected FeatureNegotiationTest() throws JAXBException, XMLStreamException {
+    protected FeatureNegotiationTest() throws JAXBException {
         super(ClientIQ.class, FeatureNegotiation.class);
     }
 

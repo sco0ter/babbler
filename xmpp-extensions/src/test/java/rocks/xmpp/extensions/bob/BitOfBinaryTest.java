@@ -40,7 +40,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class BitOfBinaryTest extends XmlTest {
 
-    protected BitOfBinaryTest() throws JAXBException, XMLStreamException {
+    protected BitOfBinaryTest() throws JAXBException {
         super(ClientIQ.class, Data.class);
     }
 

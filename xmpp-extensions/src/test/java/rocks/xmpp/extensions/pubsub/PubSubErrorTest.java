@@ -61,7 +61,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class PubSubErrorTest extends XmlTest {
 
-    protected PubSubErrorTest() throws JAXBException, XMLStreamException {
+    protected PubSubErrorTest() throws JAXBException {
         super(ClientIQ.class, PubSub.class);
     }
 

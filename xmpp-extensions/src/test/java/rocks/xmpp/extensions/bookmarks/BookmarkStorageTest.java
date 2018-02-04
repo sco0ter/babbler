@@ -34,18 +34,17 @@ import rocks.xmpp.extensions.bookmarks.model.WebPageBookmark;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.net.MalformedURLException;
 
 /**
  * @author Christian Schudt
  */
 public class BookmarkStorageTest extends XmlTest {
-    protected BookmarkStorageTest() throws JAXBException, XMLStreamException {
+    protected BookmarkStorageTest() throws JAXBException {
         super(BookmarkStorage.class);
     }
 
     @Test
-    public void unmarshalBookmarks() throws XMLStreamException, JAXBException, MalformedURLException {
+    public void unmarshalBookmarks() throws XMLStreamException, JAXBException {
         String xml = "<storage xmlns='storage:bookmarks'>\n" +
                 "      <conference name='Council of Oberon' \n" +
                 "                  autojoin='true'\n" +

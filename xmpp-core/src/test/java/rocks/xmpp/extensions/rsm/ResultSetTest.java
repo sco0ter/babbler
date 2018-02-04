@@ -36,7 +36,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class ResultSetTest extends XmlTest {
-    protected ResultSetTest() throws JAXBException, XMLStreamException {
+    protected ResultSetTest() throws JAXBException {
         super(ResultSetManagement.class);
     }
 

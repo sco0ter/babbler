@@ -30,7 +30,6 @@ import rocks.xmpp.core.sasl.scram.ScramClient;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.sasl.SaslClient;
 import javax.security.sasl.SaslClientFactory;
-import javax.security.sasl.SaslException;
 import java.util.Map;
 
 /**
@@ -43,7 +42,7 @@ import java.util.Map;
  */
 public final class XmppSaslClientFactory implements SaslClientFactory {
     @Override
-    public final SaslClient createSaslClient(String[] mechanisms, String authorizationId, String protocol, String serverName, Map<String, ?> props, CallbackHandler cbh) throws SaslException {
+    public final SaslClient createSaslClient(String[] mechanisms, String authorizationId, String protocol, String serverName, Map<String, ?> props, CallbackHandler cbh) {
 
         for (String mechanism : mechanisms) {
             if ("ANONYMOUS".equals(mechanism)) {

@@ -41,7 +41,7 @@ import java.util.concurrent.Executors;
  */
 public class FileTransferReceiver {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         Executors.newFixedThreadPool(1).execute(() -> {
             try {

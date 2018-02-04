@@ -43,7 +43,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class PubSubSubscriberUseCasesTest extends XmlTest {
 
-    protected PubSubSubscriberUseCasesTest() throws JAXBException, XMLStreamException {
+    protected PubSubSubscriberUseCasesTest() throws JAXBException {
         super(ClientIQ.class, PubSub.class, AvatarData.class);
     }
 

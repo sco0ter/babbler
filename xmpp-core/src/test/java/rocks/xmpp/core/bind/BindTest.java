@@ -39,12 +39,12 @@ import javax.xml.stream.XMLStreamException;
  */
 public class BindTest extends XmlTest {
 
-    protected BindTest() throws JAXBException, XMLStreamException {
+    protected BindTest() throws JAXBException {
         super(ClientIQ.class, Bind.class);
     }
 
     @Test
-    public void testBind() throws XMLStreamException, JAXBException, NoSuchFieldException {
+    public void testBind() throws XMLStreamException, JAXBException {
         String xml = "<iq id='wy2xa82b4' type='set'>\n" +
                 "     <bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>\n" +
                 "       <resource>balcony</resource>\n" +

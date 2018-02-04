@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
@@ -50,7 +49,7 @@ import java.util.concurrent.ExecutionException;
 public class StreamInitiationManagerTest extends BaseTest {
 
     @Test
-    public void testStreamInitiationWithAcceptance() throws XmppException, IOException, ExecutionException, InterruptedException {
+    public void testStreamInitiationWithAcceptance() throws IOException, ExecutionException, InterruptedException {
 
         MockServer mockServer = new MockServer();
 
@@ -72,7 +71,7 @@ public class StreamInitiationManagerTest extends BaseTest {
     }
 
     @Test
-    public void testStreamInitiationWithRejection() throws XmppException, IOException, InterruptedException, ExecutionException {
+    public void testStreamInitiationWithRejection() throws InterruptedException {
 
         MockServer mockServer = new MockServer();
 

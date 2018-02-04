@@ -43,7 +43,7 @@ import java.util.Locale;
  */
 public class SaslTest extends XmlTest {
 
-    protected SaslTest() throws JAXBException, XMLStreamException {
+    protected SaslTest() throws JAXBException {
         super(Auth.class, Challenge.class, Response.class, Success.class, Abort.class, Failure.class);
     }
 

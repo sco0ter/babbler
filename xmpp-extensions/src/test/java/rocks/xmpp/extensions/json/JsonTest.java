@@ -36,7 +36,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class JsonTest extends XmlTest {
-    protected JsonTest() throws JAXBException, XMLStreamException {
+    protected JsonTest() throws JAXBException {
         super(Json.class);
     }
 

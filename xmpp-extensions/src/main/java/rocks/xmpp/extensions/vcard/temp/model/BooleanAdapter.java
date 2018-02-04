@@ -32,12 +32,12 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 final class BooleanAdapter extends XmlAdapter<String, Boolean> {
 
     @Override
-    public Boolean unmarshal(String v) throws Exception {
+    public Boolean unmarshal(String v) {
         return v != null;
     }
 
     @Override
-    public String marshal(Boolean v) throws Exception {
+    public String marshal(Boolean v) {
         return (v != null && v) ? "" : null;
     }
 }

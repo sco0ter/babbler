@@ -39,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class DirectInvitationTest extends XmlTest {
-    protected DirectInvitationTest() throws JAXBException, XMLStreamException {
+    protected DirectInvitationTest() throws JAXBException {
         super(ClientMessage.class, DirectInvitation.class);
     }
 

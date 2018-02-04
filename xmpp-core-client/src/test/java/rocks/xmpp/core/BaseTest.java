@@ -29,10 +29,8 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt
@@ -54,7 +52,7 @@ public class BaseTest {
     }
 
     @BeforeClass
-    public void setupMarshaller() throws JAXBException, XMLStreamException {
+    public void setupMarshaller() {
         marshaller = xmppSession.createMarshaller();
         unmarshaller = xmppSession.createUnmarshaller();
     }

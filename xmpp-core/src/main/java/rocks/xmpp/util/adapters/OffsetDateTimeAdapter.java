@@ -35,12 +35,12 @@ import java.time.OffsetDateTime;
 public final class OffsetDateTimeAdapter extends XmlAdapter<String, OffsetDateTime> {
 
     @Override
-    public final OffsetDateTime unmarshal(String value) throws Exception {
+    public final OffsetDateTime unmarshal(String value) {
         return value != null ? OffsetDateTime.parse(value) : null;
     }
 
     @Override
-    public final String marshal(OffsetDateTime value) throws Exception {
+    public final String marshal(OffsetDateTime value) {
         return value != null ? value.toString() : null;
     }
 }

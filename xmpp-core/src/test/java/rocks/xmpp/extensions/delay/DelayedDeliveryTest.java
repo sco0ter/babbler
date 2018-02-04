@@ -40,7 +40,7 @@ import java.time.Instant;
  * @author Christian Schudt
  */
 public class DelayedDeliveryTest extends XmlTest {
-    protected DelayedDeliveryTest() throws JAXBException, XMLStreamException {
+    protected DelayedDeliveryTest() throws JAXBException {
         super(ClientMessage.class, DelayedDelivery.class);
     }
 

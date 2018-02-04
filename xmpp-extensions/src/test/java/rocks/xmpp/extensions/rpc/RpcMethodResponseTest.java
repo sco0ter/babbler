@@ -39,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class RpcMethodResponseTest extends XmlTest {
 
-    protected RpcMethodResponseTest() throws JAXBException, XMLStreamException {
+    protected RpcMethodResponseTest() throws JAXBException {
         super(ClientIQ.class, Rpc.class);
     }
 

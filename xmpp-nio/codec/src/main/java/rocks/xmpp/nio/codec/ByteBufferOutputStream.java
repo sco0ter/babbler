@@ -24,7 +24,6 @@
 
 package rocks.xmpp.nio.codec;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
@@ -46,7 +45,7 @@ final class ByteBufferOutputStream extends OutputStream {
     }
 
     @Override
-    public final void write(final int b) throws IOException {
+    public final void write(final int b) {
         if (!buffer.hasRemaining()) {
             ensureCapacity(buffer.limit() + 1);
         }
@@ -54,7 +53,7 @@ final class ByteBufferOutputStream extends OutputStream {
     }
 
     @Override
-    public final void write(final byte[] b, final int off, final int len) throws IOException {
+    public final void write(final byte[] b, final int off, final int len) {
         if (off < 0 || off > b.length || len < 0 || off + len - b.length > 0) {
             throw new IndexOutOfBoundsException();
         }

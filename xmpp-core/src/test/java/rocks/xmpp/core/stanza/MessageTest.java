@@ -48,7 +48,7 @@ import java.util.Locale;
  */
 public class MessageTest extends XmlTest {
 
-    protected MessageTest() throws JAXBException, XMLStreamException {
+    protected MessageTest() throws JAXBException {
         super(ClientMessage.class);
     }
 

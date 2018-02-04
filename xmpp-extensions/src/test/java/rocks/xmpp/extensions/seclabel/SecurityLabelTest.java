@@ -44,7 +44,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class SecurityLabelTest extends XmlTest {
 
-    protected SecurityLabelTest() throws JAXBException, XMLStreamException {
+    protected SecurityLabelTest() throws JAXBException {
         super(ClientIQ.class, ClientMessage.class, SecurityLabel.class);
     }
 

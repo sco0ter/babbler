@@ -43,7 +43,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class MultiUserChatOwnerTest extends XmlTest {
-    protected MultiUserChatOwnerTest() throws JAXBException, XMLStreamException {
+    protected MultiUserChatOwnerTest() throws JAXBException {
         super(ClientIQ.class, MucOwner.class, MucAdmin.class);
     }
 

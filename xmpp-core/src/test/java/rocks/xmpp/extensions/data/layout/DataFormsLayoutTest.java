@@ -37,7 +37,7 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class DataFormsLayoutTest extends XmlTest {
-    protected DataFormsLayoutTest() throws JAXBException, XMLStreamException {
+    protected DataFormsLayoutTest() throws JAXBException {
         super(DataForm.class, Page.class);
     }
 

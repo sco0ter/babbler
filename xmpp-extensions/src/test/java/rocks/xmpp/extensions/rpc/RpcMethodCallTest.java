@@ -45,7 +45,7 @@ import java.util.Map;
  */
 public class RpcMethodCallTest extends XmlTest {
 
-    protected RpcMethodCallTest() throws JAXBException, XMLStreamException {
+    protected RpcMethodCallTest() throws JAXBException {
         super(ClientIQ.class, Rpc.class);
     }
 

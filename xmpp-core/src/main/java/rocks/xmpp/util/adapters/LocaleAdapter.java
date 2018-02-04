@@ -34,12 +34,12 @@ import java.util.Locale;
  */
 public final class LocaleAdapter extends XmlAdapter<String, Locale> {
     @Override
-    public final Locale unmarshal(String v) throws Exception {
+    public final Locale unmarshal(String v) {
         return v != null ? Locale.forLanguageTag(v) : null;
     }
 
     @Override
-    public final String marshal(Locale v) throws Exception {
+    public final String marshal(Locale v) {
         return v != null ? v.toLanguageTag() : null;
     }
 }

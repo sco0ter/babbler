@@ -44,7 +44,7 @@ import java.time.ZoneOffset;
  */
 public class EntityTimeTest extends XmlTest {
 
-    protected EntityTimeTest() throws JAXBException, XMLStreamException {
+    protected EntityTimeTest() throws JAXBException {
         super(ClientIQ.class, EntityTime.class);
     }
 
@@ -75,7 +75,7 @@ public class EntityTimeTest extends XmlTest {
     }
 
     @Test
-    public void testZoneOffsetAdapter() throws Exception {
+    public void testZoneOffsetAdapter() {
         ZoneOffsetAdapter adapter = new ZoneOffsetAdapter();
         ZoneOffset zoneOffset = ZoneOffset.of("-08:00");
         String str = adapter.marshal(zoneOffset);

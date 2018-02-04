@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
@@ -40,7 +39,7 @@ import java.util.concurrent.ExecutionException;
 public class PingManagerTest extends BaseTest {
 
     @Test
-    public void testPing() throws XmppException {
+    public void testPing() {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         new TestXmppSession(JULIET, mockServer);
@@ -49,7 +48,7 @@ public class PingManagerTest extends BaseTest {
     }
 
     @Test
-    public void testPingIfDisabled() throws XmppException, ExecutionException, InterruptedException {
+    public void testPingIfDisabled() throws ExecutionException, InterruptedException {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);

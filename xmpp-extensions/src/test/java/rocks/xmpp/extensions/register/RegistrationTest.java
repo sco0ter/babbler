@@ -35,13 +35,12 @@ import rocks.xmpp.extensions.register.model.feature.RegisterFeature;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.net.MalformedURLException;
 
 /**
  * @author Christian Schudt
  */
 public class RegistrationTest extends XmlTest {
-    protected RegistrationTest() throws JAXBException, XMLStreamException {
+    protected RegistrationTest() throws JAXBException {
         super(ClientIQ.class, Registration.class, RegisterFeature.class);
     }
 
@@ -155,7 +154,7 @@ public class RegistrationTest extends XmlTest {
     }
 
     @Test
-    public void unmarshalWebRegistration() throws XMLStreamException, JAXBException, MalformedURLException {
+    public void unmarshalWebRegistration() throws XMLStreamException, JAXBException {
         String xml = "<iq type='result'\n" +
                 "    from='contests.shakespeare.lit'\n" +
                 "    to='juliet@capulet.com/balcony'\n" +

@@ -53,9 +53,9 @@ import java.util.function.Consumer;
  */
 public class FileTransferIT extends IntegrationTest {
 
-    private XmppClient[] xmppSession = new XmppClient[2];
+    private final XmppClient[] xmppSession = new XmppClient[2];
 
-    private FileTransferManager[] fileTransferManagers = new FileTransferManager[2];
+    private final FileTransferManager[] fileTransferManagers = new FileTransferManager[2];
 
     @BeforeClass
     public void before() throws XmppException {

@@ -230,7 +230,7 @@ public final class Rtp extends ApplicationFormat {
      */
     public static final class PayloadType {
 
-        private List<Parameter> parameter = new ArrayList<>();
+        private final List<Parameter> parameter = new ArrayList<>();
 
         @XmlAttribute
         private int channels = 1;

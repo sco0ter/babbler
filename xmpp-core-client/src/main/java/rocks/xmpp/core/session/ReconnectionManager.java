@@ -66,7 +66,7 @@ final class ReconnectionManager extends Manager {
 
     private final ScheduledExecutorService scheduledExecutorService;
 
-    private ReconnectionStrategy reconnectionStrategy;
+    private final ReconnectionStrategy reconnectionStrategy;
 
     private ScheduledFuture<?> scheduledReconnectingInterval;
 

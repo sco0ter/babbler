@@ -46,11 +46,11 @@ import java.util.function.Consumer;
  */
 public class MultiUserChatIT extends IntegrationTest {
 
-    private ChatRoom[] chatRoom = new ChatRoom[2];
+    private final ChatRoom[] chatRoom = new ChatRoom[2];
 
-    private XmppClient[] xmppSession = new XmppClient[2];
+    private final XmppClient[] xmppSession = new XmppClient[2];
 
-    private MultiUserChatManager[] multiUserChatManager = new MultiUserChatManager[2];
+    private final MultiUserChatManager[] multiUserChatManager = new MultiUserChatManager[2];
 
     @BeforeClass
     public void before() throws XmppException, ExecutionException, InterruptedException {

@@ -54,7 +54,7 @@ import java.util.logging.Logger;
  */
 public class SampleApplication {
 
-    private static Logger logger = Logger.getLogger(SampleApplication.class.getName());
+    private static final Logger logger = Logger.getLogger(SampleApplication.class.getName());
 
     public static void main(String[] args) {
 

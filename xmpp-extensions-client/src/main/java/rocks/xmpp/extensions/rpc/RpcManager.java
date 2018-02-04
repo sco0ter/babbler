@@ -35,6 +35,7 @@ import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rpc.model.Value;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionException;
 import java.util.logging.Level;
@@ -72,7 +73,7 @@ public final class RpcManager extends Manager {
                 }
                 if (rpcHandler1 != null) {
                     final Rpc.MethodCall methodCall = rpc.getMethodCall();
-                    final List<Value> parameters = methodCall.getParameters().stream().collect(Collectors.toList());
+                    final List<Value> parameters = new ArrayList<>(methodCall.getParameters());
 
                     try {
                         Value value = rpcHandler1.process(iq.getFrom(), methodCall.getMethodName(), parameters);

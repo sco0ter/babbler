@@ -31,6 +31,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -107,7 +108,7 @@ public final class Value {
     private Value(Collection<Value> list) {
         if (list != null) {
             ArrayType arrayType = new ArrayType();
-            arrayType.values.addAll(list.stream().collect(Collectors.toList()));
+            arrayType.values.addAll(new ArrayList<>(list));
             this.value = arrayType;
         } else {
             this.value = null;
@@ -275,7 +276,7 @@ public final class Value {
     public final List<Value> getAsArray() {
         if (value instanceof ArrayType) {
             ArrayType arrayType = (ArrayType) value;
-            return arrayType.values.stream().collect(Collectors.toList());
+            return new ArrayList<>(arrayType.values);
         }
         return null;
     }

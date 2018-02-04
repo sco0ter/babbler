@@ -154,7 +154,7 @@ public final class BlockingManager extends Manager {
             BlockList blockList = result.getExtension(BlockList.class);
             synchronized (blockedContacts) {
                 if (blockList != null) {
-                    blockedContacts.addAll(blockList.getItems().stream().collect(Collectors.toList()));
+                    blockedContacts.addAll(new ArrayList<>(blockList.getItems()));
                 }
             }
             return blockedContacts;

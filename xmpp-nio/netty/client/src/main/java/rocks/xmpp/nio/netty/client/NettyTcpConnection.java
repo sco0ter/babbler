@@ -108,7 +108,6 @@ public final class NettyTcpConnection extends Connection {
     NettyTcpConnection(final XmppSession xmppSession, final NettyTcpConnectionConfiguration connectionConfiguration) {
         super(xmppSession, connectionConfiguration);
 
-
         this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         this.streamManager = xmppSession.getManager(StreamManager.class);
         this.startTlsManager = new StartTlsManager(xmppSession, () -> {
@@ -294,5 +293,20 @@ public final class NettyTcpConnection extends Connection {
                     .thenCompose(Function.identity());
         }
         return CompletableFuture.completedFuture(null);
+    }
+
+    @Override
+    public final synchronized String toString() {
+        StringBuilder sb = new StringBuilder("TCP NIO connection");
+        if (hostname != null) {
+            sb.append(" to ").append(hostname).append(':').append(port);
+        }
+        if (streamId != null) {
+            sb.append(" (").append(streamId).append(')');
+        }
+        if (from != null) {
+            sb.append(", from: ").append(from);
+        }
+        return sb.toString();
     }
 }

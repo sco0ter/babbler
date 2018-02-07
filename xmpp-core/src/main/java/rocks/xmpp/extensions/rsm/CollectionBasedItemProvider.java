@@ -37,7 +37,7 @@ final class CollectionBasedItemProvider<T extends ResultSetItem> implements Resu
 
     private final Collection<T> items;
 
-    public CollectionBasedItemProvider(final Collection<T> items) {
+    CollectionBasedItemProvider(final Collection<T> items) {
         this.items = Objects.requireNonNull(items);
     }
 

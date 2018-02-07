@@ -2,7 +2,7 @@
 <!--
   ~ The MIT License (MIT)
   ~
-  ~ Copyright (c) 2014-2016 Christian Schudt
+  ~ Copyright (c) 2014-2018 Christian Schudt
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -29,15 +29,16 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>rocks.xmpp</groupId>
-        <artifactId>root</artifactId>
+        <artifactId>xmpp-core</artifactId>
         <version>0.8.0-SNAPSHOT</version>
     </parent>
-    <artifactId>xmpp-core-client</artifactId>
-    <name>XMPP.rocks - Core (RFC 6120 / 6121) (Client)</name>
-    <description>Core XMPP client logic</description>
+    <artifactId>xmpp-core-common</artifactId>
+    <name>XMPP.rocks - Core (RFC 6120 / 6121) - Common</name>
+    <description>XMPP core functionality (TLS, SASL, resource binding, stanzas, errors) that are common for clients and
+        servers.
+    </description>
     <build>
         <plugins>
-
             <!-- Generate a sources.jar, so that it can be used by JavaDoc plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -51,6 +52,15 @@
                 </executions>
             </plugin>
 
+            <!-- Skip site generation -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
             <!-- Create test jar / Define JPMS module name -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -61,7 +71,7 @@
                         <configuration>
                             <archive>
                                 <manifestEntries>
-                                    <Automatic-Module-Name>rocks.xmpp.core.client</Automatic-Module-Name>
+                                    <Automatic-Module-Name>rocks.xmpp.core</Automatic-Module-Name>
                                 </manifestEntries>
                             </archive>
                         </configuration>
@@ -72,36 +82,11 @@
                         </goals>
                         <configuration>
                             <includes>
-                                <include>rocks/xmpp/core/BaseTest.class</include>
-                                <include>rocks/xmpp/core/session/TestXmppSession*</include>
-                                <include>rocks/xmpp/core/SameThreadExecutorService.class</include>
-                                <include>rocks/xmpp/core/MockServer.class</include>
-                                <include>rocks/xmpp/core/IntegrationTest.class</include>
+                                <include>rocks/xmpp/core/XmlTest.class</include>
                             </includes>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!-- Skip site generation -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-
-            <!-- Deploy this artifact -->
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-            </plugin>
-
-            <!-- Runs the integration tests -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
             </plugin>
         </plugins>
 
@@ -113,13 +98,15 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>xmpp-addr</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

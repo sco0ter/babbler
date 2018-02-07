@@ -70,7 +70,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-core</artifactId>
+            <artifactId>xmpp-core-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

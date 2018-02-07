@@ -41,7 +41,7 @@ import io.netty.util.concurrent.Future;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Connection;
-import rocks.xmpp.core.session.StartTlsManager;
+import rocks.xmpp.core.tls.client.StartTlsManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;

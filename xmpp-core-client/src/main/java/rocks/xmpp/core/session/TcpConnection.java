@@ -32,6 +32,7 @@ import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.errors.Condition;
+import rocks.xmpp.core.tls.client.StartTlsManager;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.SrvRecord;
 import rocks.xmpp.extensions.compress.CompressionManager;

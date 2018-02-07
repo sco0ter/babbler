@@ -22,8 +22,9 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.session;
+package rocks.xmpp.core.tls.client;
 
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.StreamFeatureListener;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;

@@ -42,6 +42,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 /**
  * Manages the various features, which are advertised during stream negotiation.
@@ -131,6 +132,14 @@ public final class StreamFeaturesManager extends Manager {
     public final Map<Class<? extends StreamFeature>, StreamFeature> getFeatures() {
         // return defensive copies of mutable internal fields
         return Collections.unmodifiableMap((HashMap<Class<? extends StreamFeature>, StreamFeature>) advertisedFeatures.clone());
+    }
+
+    @SuppressWarnings("unchecked")
+    public final <T> List<T> getFeatures(Class<T> clazz) {
+        return Collections.unmodifiableList(this.advertisedFeatures.values().stream()
+                .filter(extension -> clazz.isAssignableFrom(extension.getClass()))
+                .map(extension -> (T) extension)
+                .collect(Collectors.toList()));
     }
 
     /**

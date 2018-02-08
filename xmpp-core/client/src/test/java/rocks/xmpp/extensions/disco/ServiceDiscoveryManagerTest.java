@@ -34,7 +34,8 @@ import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
-import rocks.xmpp.extensions.caps.model.EntityCapabilities;
+import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
+import rocks.xmpp.extensions.caps2.model.EntityCapabilities2;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
@@ -302,20 +303,21 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         XmppClient xmppClient1 = XmppClient.create("domain", configuration1);
         // By default XEP-0115 Entity Capabilities should be enabled.
         Assert.assertTrue(xmppClient1.getManager(EntityCapabilitiesManager.class).isEnabled());
-        Assert.assertTrue(xmppClient1.getEnabledFeatures().contains(EntityCapabilities.NAMESPACE));
+        Assert.assertTrue(xmppClient1.getEnabledFeatures().contains(EntityCapabilities1.NAMESPACE));
         // By default also reconnection should be enabled.
         Assert.assertTrue(xmppClient1.getManager(RosterManager.class).isEnabled());
 
         XmppSessionConfiguration configuration2 = XmppSessionConfiguration.builder()
                 // We override the default context with a disabled EntityCapabilitiesManager
                 .extensions(
-                        Extension.of(EntityCapabilities.NAMESPACE, EntityCapabilitiesManager.class, false, EntityCapabilities.class),
+                        Extension.of(EntityCapabilities1.NAMESPACE, EntityCapabilitiesManager.class, false, EntityCapabilities1.class),
+                        Extension.of(EntityCapabilities2.NAMESPACE, EntityCapabilitiesManager.class, false, EntityCapabilities2.class),
                         Extension.of(Roster.NAMESPACE, RosterManager.class, false))
                 .build();
 
         XmppClient xmppClient2 = XmppClient.create("domain", configuration2);
         Assert.assertFalse(xmppClient2.getManager(EntityCapabilitiesManager.class).isEnabled());
-        Assert.assertFalse(xmppClient2.getEnabledFeatures().contains(EntityCapabilities.NAMESPACE));
+        Assert.assertFalse(xmppClient2.getEnabledFeatures().contains(EntityCapabilities1.NAMESPACE));
 
         // Reconnection should now be disabled.
         Assert.assertFalse(xmppClient2.getManager(RosterManager.class).isEnabled());

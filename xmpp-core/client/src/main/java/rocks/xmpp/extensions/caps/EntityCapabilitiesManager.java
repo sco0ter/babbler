@@ -32,19 +32,21 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
+import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
+import rocks.xmpp.extensions.caps2.model.EntityCapabilities2;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.hashes.model.Hash;
+import rocks.xmpp.extensions.hashes.model.Hashed;
 import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.cache.DirectoryCache;
 import rocks.xmpp.util.cache.LruCache;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -52,8 +54,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,9 +91,7 @@ public final class EntityCapabilitiesManager extends Manager {
 
     private static final String DEFAULT_NODE = "http://xmpp.rocks";
 
-    private static final String HASH_ALGORITHM = "sha-1";
-
-    // Cache up to 100 verification strings in memory.
+    // Cache up to 100 capability hashes in memory.
     private static final Map<Hash, InfoNode> CAPS_CACHE = new LruCache<>(100);
 
     // Cache the capabilities of an entity.
@@ -98,7 +101,7 @@ public final class EntityCapabilitiesManager extends Manager {
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
-    private final Map<String, Hash> publishedNodes;
+    private final Map<InfoNode, Collection<EntityCapabilities>> publishedNodes;
 
     private final DirectoryCache directoryCapsCache;
 
@@ -123,12 +126,12 @@ public final class EntityCapabilitiesManager extends Manager {
         directoryCapsCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("caps")) : null;
         // no need for a synchronized map, since access to this is already synchronized by this class.
 
-        publishedNodes = new LinkedHashMap<String, Hash>(10, 0.75F, false) {
+        publishedNodes = new LinkedHashMap<InfoNode, Collection<EntityCapabilities>>(10, 0.75F, false) {
             @Override
-            protected boolean removeEldestEntry(Map.Entry<String, Hash> eldest) {
+            protected boolean removeEldestEntry(Map.Entry<InfoNode, Collection<EntityCapabilities>> eldest) {
                 if (size() > 10) {
                     // Remove old published nodes as well, they are no longer needed.
-                    serviceDiscoveryManager.removeInfoNode(eldest.getKey());
+                    serviceDiscoveryManager.removeInfoNode(eldest.getKey().getNode());
                     return true;
                 }
                 return false;
@@ -138,10 +141,8 @@ public final class EntityCapabilitiesManager extends Manager {
         this.inboundPresenceListener = e -> {
             final Presence presence = e.getPresence();
             if (!presence.getFrom().equals(xmppSession.getConnectedResource())) {
-                final EntityCapabilities entityCapabilities = presence.getExtension(EntityCapabilities.class);
-                if (entityCapabilities != null) {
-                    handleEntityCaps(entityCapabilities, presence.getFrom());
-                }
+                final List<EntityCapabilities> entityCapabilities = presence.getExtensions(EntityCapabilities.class);
+                processNextEntityCaps(entityCapabilities.iterator(), presence.getFrom());
             }
         };
 
@@ -155,9 +156,11 @@ public final class EntityCapabilitiesManager extends Manager {
                     }
                     // a client SHOULD include entity capabilities with every presence notification it sends.
                     // Get the last generated verification string here.
-                    Deque<Hash> verifications = new ArrayDeque<>(publishedNodes.values());
-                    Hash verification = verifications.getLast();
-                    presence.putExtension(new EntityCapabilities(getNode(), verification.getHashAlgorithm(), DatatypeConverter.printBase64Binary(verification.getHashValue())));
+                    Deque<Collection<EntityCapabilities>> publishedEntityCaps = new ArrayDeque<>(publishedNodes.values());
+                    Collection<EntityCapabilities> lastPublishedEntityCaps = publishedEntityCaps.getLast();
+                    for (EntityCapabilities entityCapabilities : lastPublishedEntityCaps) {
+                        presence.putExtension(entityCapabilities);
+                    }
                     capsSent = true;
                 }
             }
@@ -205,11 +208,9 @@ public final class EntityCapabilitiesManager extends Manager {
             switch (e.getStatus()) {
                 case AUTHENTICATED:
                     // As soon as we are authenticated, check if the server has advertised Entity Capabilities in its stream features.
-                    EntityCapabilities serverCapabilities = (EntityCapabilities) xmppSession.getManager(StreamFeaturesManager.class).getFeatures().get(EntityCapabilities.class);
+                    List<EntityCapabilities> serverCapabilities = xmppSession.getManager(StreamFeaturesManager.class).getFeatures(EntityCapabilities.class);
                     // If yes, treat it as other caps.
-                    if (serverCapabilities != null) {
-                        handleEntityCaps(serverCapabilities, xmppSession.getDomain());
-                    }
+                    processNextEntityCaps(serverCapabilities.iterator(), xmppSession.getDomain());
                     break;
                 default:
                     break;
@@ -218,38 +219,50 @@ public final class EntityCapabilitiesManager extends Manager {
     }
 
     private void publishCapsNode() {
+
+        final InfoDiscovery infoDiscovery = new InfoDiscovery(serviceDiscoveryManager.getIdentities(), serviceDiscoveryManager.getFeatures(), serviceDiscoveryManager.getExtensions());
+        final Collection<EntityCapabilities> caps = new ArrayList<>();
+
         try {
-            MessageDigest messageDigest = MessageDigest.getInstance(HASH_ALGORITHM);
+            EntityCapabilities entityCapabilities1 = new EntityCapabilities1(getNode(), infoDiscovery, MessageDigest.getInstance("sha-1"));
+            EntityCapabilities entityCapabilities2 = new EntityCapabilities2(infoDiscovery, MessageDigest.getInstance("sha-256"));
+            caps.add(entityCapabilities1);
+            caps.add(entityCapabilities2);
 
-            final InfoDiscovery infoDiscovery = new InfoDiscovery(serviceDiscoveryManager.getIdentities(), serviceDiscoveryManager.getFeatures(), serviceDiscoveryManager.getExtensions());
-            Hash hash = new Hash(DatatypeConverter.parseBase64Binary(EntityCapabilities.getVerificationString(infoDiscovery, messageDigest)), HASH_ALGORITHM);
-            // Cache our own capabilities.
-            writeToCache(hash, infoDiscovery);
+            publishedNodes.put(infoDiscovery, caps);
+            for (EntityCapabilities entityCapabilities : caps) {
 
-            final String node = getNode() + '#' + DatatypeConverter.printBase64Binary(hash.getHashValue());
+                Set<Hashed> capabilityHashSet = entityCapabilities.getCapabilityHashSet();
+                for (Hashed hashed : capabilityHashSet) {
 
-            publishedNodes.put(node, hash);
-            serviceDiscoveryManager.addInfoNode(new InfoNode() {
-                @Override
-                public String getNode() {
-                    return node;
+                    // Cache our own capabilities.
+                    writeToCache(Hash.from(hashed), infoDiscovery);
+
+                    final String node = entityCapabilities.createCapabilityHashNode(hashed);
+
+                    serviceDiscoveryManager.addInfoNode(new InfoNode() {
+                        @Override
+                        public String getNode() {
+                            return node;
+                        }
+
+                        @Override
+                        public Set<Identity> getIdentities() {
+                            return infoDiscovery.getIdentities();
+                        }
+
+                        @Override
+                        public Set<String> getFeatures() {
+                            return infoDiscovery.getFeatures();
+                        }
+
+                        @Override
+                        public List<DataForm> getExtensions() {
+                            return infoDiscovery.getExtensions();
+                        }
+                    });
                 }
-
-                @Override
-                public Set<Identity> getIdentities() {
-                    return infoDiscovery.getIdentities();
-                }
-
-                @Override
-                public Set<String> getFeatures() {
-                    return infoDiscovery.getFeatures();
-                }
-
-                @Override
-                public List<DataForm> getExtensions() {
-                    return infoDiscovery.getExtensions();
-                }
-            });
+            }
         } catch (NoSuchAlgorithmException e) {
             logger.log(Level.WARNING, e.getMessage(), e);
         }
@@ -372,26 +385,39 @@ public final class EntityCapabilitiesManager extends Manager {
         return null;
     }
 
-    private void handleEntityCaps(final EntityCapabilities entityCapabilities, final Jid entity) {
-        Hash hash = new Hash(entityCapabilities.getHashValue(), entityCapabilities.getHashAlgorithm());
-        // Check if the verification string is already known.
-        InfoNode infoNode = readFromCache(hash);
-        if (entityCapabilities.getHashAlgorithm() != null && infoNode != null) {
-            // If its known, just update the information for this entity.
-            ENTITY_CAPABILITIES.put(entity, infoNode);
-        } else {
+    private void processNextEntityCaps(final Iterator<EntityCapabilities> entityCapabilities, final Jid entity) {
+        if (entityCapabilities.hasNext()) {
+            final EntityCapabilities caps = entityCapabilities.next();
+            processNextHash(entityCapabilities, caps.getCapabilityHashSet().iterator(), entity, caps);
+        }
+    }
+
+    private void processNextHash(final Iterator<EntityCapabilities> entityCapabilities, final Iterator<Hashed> hashedIterator, final Jid entity, final EntityCapabilities caps) {
+        if (hashedIterator.hasNext()) {
             // 1. Verify that the <c/> element includes a 'hash' attribute. If it does not, ignore the 'ver'
-            final String hashAlgorithm = entityCapabilities.getHashAlgorithm();
-            if (hashAlgorithm != null) {
-                String nodeToDiscover = entityCapabilities.getNode() + '#' + entityCapabilities.getVerificationString();
+            final Hashed hashed = hashedIterator.next();
+            if (hashed.getHashAlgorithm() == null) {
+                return;
+            }
+            final Hash hash = Hash.from(hashed);
+            // Check if the hash is already known.
+            final InfoNode infoNode = readFromCache(hash);
+
+            if (infoNode != null) {
+                // If its known, just update the information for this entity.
+                ENTITY_CAPABILITIES.put(entity, infoNode);
+            } else {
+                final String nodeToDiscover = caps.createCapabilityHashNode(hash);
                 try {
                     // 3. If the value of the 'hash' attribute matches one of the processing application's supported hash functions, validate the verification string by doing the following:
-                    final MessageDigest messageDigest = MessageDigest.getInstance(entityCapabilities.getHashAlgorithm());
+                    final MessageDigest messageDigest = MessageDigest.getInstance(hash.getHashAlgorithm());
 
                     // 3.1 Send a service discovery information request to the generating entity.
                     // 3.2 Receive a service discovery information response from the generating entity.
                     serviceDiscoveryManager.discoverInformation(entity, nodeToDiscover).whenComplete((infoDiscovery, e1) -> {
+                        processNextHash(entityCapabilities, hashedIterator, entity, caps);
                         if (e1 != null) {
+                            processNextHash(entityCapabilities, hashedIterator, entity, caps);
                             logger.log(Level.WARNING, e1, () -> "Failed to discover information for entity '" + entity + "' for node '" + nodeToDiscover + "'");
                         } else {
                             // 3.3 If the response includes more than one service discovery identity with the same category/type/lang/name, consider the entire response to be ill-formed.
@@ -423,11 +449,13 @@ public final class EntityCapabilitiesManager extends Manager {
                             }
 
                             // 3.7 If the response is considered well-formed, reconstruct the hash by using the service discovery information response to generate a local hash in accordance with the Generation Method).
-                            String verificationString = EntityCapabilities.getVerificationString(infoDiscovery, messageDigest);
-
+                            final byte[] verificationString = caps.createVerificationString(infoDiscovery);
+                            final byte[] computedHash = messageDigest.digest(verificationString);
                             // 3.8 If the values of the received and reconstructed hashes match, the processing application MUST consider the result to be valid and SHOULD globally cache the result for all JabberIDs with which it communicates.
-                            if (verificationString.equals(entityCapabilities.getVerificationString())) {
-                                writeToCache(new Hash(entityCapabilities.getHashValue(), hashAlgorithm), infoDiscovery);
+                            if (Arrays.equals(computedHash, hash.getHashValue())) {
+                                writeToCache(hash, infoDiscovery);
+                            } else {
+                                processNextHash(entityCapabilities, hashedIterator, entity, caps);
                             }
                             ENTITY_CAPABILITIES.put(entity, infoDiscovery);
                         }
@@ -445,8 +473,14 @@ public final class EntityCapabilitiesManager extends Manager {
                             ENTITY_CAPABILITIES.put(entity, result);
                         }
                     });
+
+                    // Additionally try next hash.
+                    processNextHash(entityCapabilities, hashedIterator, entity, caps);
                 }
             }
+        } else {
+            // No more hashes, try next entity capabilities, if present.
+            processNextEntityCaps(entityCapabilities, entity);
         }
     }
 }

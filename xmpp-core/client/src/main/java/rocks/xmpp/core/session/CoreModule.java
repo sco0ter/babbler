@@ -35,7 +35,8 @@ import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.tls.model.StartTls;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
-import rocks.xmpp.extensions.caps.model.EntityCapabilities;
+import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
+import rocks.xmpp.extensions.caps2.model.EntityCapabilities2;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
 import rocks.xmpp.extensions.data.layout.model.Page;
 import rocks.xmpp.extensions.data.mediaelement.model.Media;
@@ -95,7 +96,7 @@ public final class CoreModule implements Module {
                 Extension.of(Jid.ESCAPING_FEATURE, true),
 
                 // XEP-0115: Entity Capabilities
-                Extension.of(EntityCapabilities.NAMESPACE, EntityCapabilitiesManager.class, true, EntityCapabilities.class),
+                Extension.of(EntityCapabilities1.NAMESPACE, EntityCapabilitiesManager.class, true, EntityCapabilities1.class),
 
                 // XEP-0122: Data Forms Validation
                 Extension.of(Validation.NAMESPACE, false, Validation.class),
@@ -114,6 +115,9 @@ public final class CoreModule implements Module {
 
                 // XEP-0221: Data Forms Media Element
                 Extension.of(Media.class),
+
+                // XEP-0390 Entity Capabilities 2.0
+                Extension.of(EntityCapabilities2.NAMESPACE, EntityCapabilitiesManager.class, true, EntityCapabilities2.class),
 
                 Extension.of(PresenceManager.class, true),
 

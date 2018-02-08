@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.caps;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.extensions.caps.model.EntityCapabilities;
+import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
@@ -48,7 +48,7 @@ import java.util.Locale;
  */
 public class EntityCapabilitiesTest extends XmlTest {
     protected EntityCapabilitiesTest() throws JAXBException {
-        super(EntityCapabilities.class);
+        super(EntityCapabilities1.class);
     }
 
     @Test
@@ -57,9 +57,9 @@ public class EntityCapabilitiesTest extends XmlTest {
                 "     hash='sha-1'\n" +
                 "     node='http://code.google.com/p/exodus'\n" +
                 "     ver='QgayPKawpkPSDYmwT/WM94uAlu0='/>\n";
-        EntityCapabilities entityCapabilities = unmarshal(xml, EntityCapabilities.class);
+        EntityCapabilities1 entityCapabilities = unmarshal(xml, EntityCapabilities1.class);
         Assert.assertNotNull(entityCapabilities);
-        Assert.assertEquals(entityCapabilities.getHashingAlgorithm(), "sha-1");
+        Assert.assertEquals(entityCapabilities.getHashAlgorithm(), "sha-1");
         Assert.assertEquals(entityCapabilities.getNode(), "http://code.google.com/p/exodus");
         Assert.assertEquals(entityCapabilities.getVerificationString(), "QgayPKawpkPSDYmwT/WM94uAlu0=");
     }
@@ -160,8 +160,8 @@ public class EntityCapabilitiesTest extends XmlTest {
         features.add("http://jabber.org/protocol/caps");
 
         InfoNode infoNode = new InfoDiscovery(identities, features);
-        String verificationString = EntityCapabilities.getVerificationString(infoNode, MessageDigest.getInstance("sha-1"));
-        Assert.assertEquals(verificationString, "QgayPKawpkPSDYmwT/WM94uAlu0=");
+        EntityCapabilities1 entityCaps = new EntityCapabilities1("", infoNode, MessageDigest.getInstance("sha-1"));
+        Assert.assertEquals(entityCaps.getVerificationString(), "QgayPKawpkPSDYmwT/WM94uAlu0=");
     }
 
     /**
@@ -190,9 +190,9 @@ public class EntityCapabilitiesTest extends XmlTest {
                 DataForm.Field.builder().var("software_version").value("0.11").type(DataForm.Field.Type.TEXT_SINGLE).build()
 
         ));
-        InfoDiscovery infoDiscovery = new InfoDiscovery(identities, features, Collections.singleton(dataForm));
-        String verificationString = EntityCapabilities.getVerificationString(infoDiscovery, MessageDigest.getInstance("sha-1"));
-        Assert.assertEquals(verificationString, "dsMdhhH+tbCICmoptvSp3x+DafI=");
+        InfoDiscovery infoNode = new InfoDiscovery(identities, features, Collections.singleton(dataForm));
+        EntityCapabilities1 entityCaps = new EntityCapabilities1("", infoNode, MessageDigest.getInstance("sha-1"));
+        Assert.assertEquals(entityCaps.getVerificationString(), "dsMdhhH+tbCICmoptvSp3x+DafI=");
     }
 
     @Test
@@ -218,9 +218,9 @@ public class EntityCapabilitiesTest extends XmlTest {
                 DataForm.Field.builder().var("aaa").type(DataForm.Field.Type.BOOLEAN).build()
         ));
 
-        InfoDiscovery infoDiscovery = new InfoDiscovery(identities, features, Arrays.asList(dataForm1, dataForm2, dataForm3));
-        String verificationString = EntityCapabilities.getVerificationString(infoDiscovery, MessageDigest.getInstance("sha-1"));
-        Assert.assertEquals(verificationString, "EwaG/3/PLTavYdlrevpQmoqM3nw=");
+        InfoDiscovery infoNode = new InfoDiscovery(identities, features, Arrays.asList(dataForm1, dataForm2, dataForm3));
+        EntityCapabilities1 entityCaps = new EntityCapabilities1("", infoNode, MessageDigest.getInstance("sha-1"));
+        Assert.assertEquals(entityCaps.getVerificationString(), "EwaG/3/PLTavYdlrevpQmoqM3nw=");
     }
 
     @Test
@@ -241,7 +241,7 @@ public class EntityCapabilitiesTest extends XmlTest {
         features.add("http://jabber.org/protocol/caps");
 
         InfoNode infoNode = new InfoDiscovery(identities, features);
-        String verificationString = EntityCapabilities.getVerificationString(infoNode, MessageDigest.getInstance("sha-1"));
-        Assert.assertEquals(verificationString, "40K55pBx86cs2cR44flP35MpLCk=");
+        EntityCapabilities1 entityCaps = new EntityCapabilities1("", infoNode, MessageDigest.getInstance("sha-1"));
+        Assert.assertEquals(entityCaps.getVerificationString(), "40K55pBx86cs2cR44flP35MpLCk=");
     }
 }

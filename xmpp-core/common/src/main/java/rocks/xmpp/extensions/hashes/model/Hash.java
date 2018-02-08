@@ -68,8 +68,15 @@ public final class Hash implements Hashed {
      * @param algorithm The hash algorithm.
      */
     public Hash(byte[] value, String algorithm) {
-        this.value = Objects.requireNonNull(value);
+        this.value = Arrays.copyOf(Objects.requireNonNull(value), value.length);
         this.algo = Objects.requireNonNull(algorithm);
+    }
+
+    public static Hash from(final Hashed hashed) {
+        if (hashed instanceof Hash) {
+            return (Hash) hashed;
+        }
+        return new Hash(hashed.getHashValue(), hashed.getHashAlgorithm());
     }
 
     /**

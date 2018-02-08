@@ -33,10 +33,13 @@ import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.extensions.caps.model.EntityCapabilities;
+import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
+import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -238,15 +241,15 @@ public class MessageTest extends XmlTest {
     }
 
     @Test
-    public void testRemoveExtension() {
+    public void testRemoveExtension() throws NoSuchAlgorithmException {
         Message message = new Message();
-        message.addExtension(new EntityCapabilities("node", "hash", "ver"));
-        message.addExtension(new EntityCapabilities("node", "hash", "ver"));
+        message.addExtension(new EntityCapabilities1("node", new InfoDiscovery(), MessageDigest.getInstance("sha-1")));
+        message.addExtension(new EntityCapabilities1("node", new InfoDiscovery(), MessageDigest.getInstance("sha-1")));
         Assert.assertEquals(message.getExtensions().size(), 2);
-        message.putExtension(new EntityCapabilities("node", "hash", "ver"));
+        message.putExtension(new EntityCapabilities1("node", new InfoDiscovery(), MessageDigest.getInstance("sha-1")));
         Assert.assertEquals(message.getExtensions().size(), 1);
         message.removeExtension(null);
-        message.removeExtension(EntityCapabilities.class);
+        message.removeExtension(EntityCapabilities1.class);
 
         Assert.assertTrue(message.getExtensions().isEmpty());
     }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,51 +24,25 @@
 
 package rocks.xmpp.extensions.hashes.model;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlValue;
 import java.util.Objects;
 
 /**
- * This class represents a hash value in conjunction with its algorithm.
- * <p>
- * This class is immutable.
- *
  * @author Christian Schudt
- * @see <a href="https://xmpp.org/extensions/xep-0300.html">XEP-0300: Use of Cryptographic Hash Functions in XMPP</a>
- * @see <a href="https://xmpp.org/extensions/xep-0300.html#schema">XML Schema</a>
  */
-@XmlRootElement
-@XmlSeeAlso(HashUsed.class)
-public final class Hash implements Hashed {
-
-    /**
-     * urn:xmpp:hashes:2
-     */
-    public static final String NAMESPACE = "urn:xmpp:hashes:2";
-
-    @XmlValue
-    private final byte[] value;
+@XmlRootElement(name = "hash-used")
+public final class HashUsed {
 
     @XmlAttribute
     private final String algo;
 
-    private Hash() {
-        this.value = null;
+    private HashUsed() {
         this.algo = null;
     }
 
-    /**
-     * Creates hash value.
-     *
-     * @param value     The hash value.
-     * @param algorithm The hash algorithm.
-     */
-    public Hash(byte[] value, String algorithm) {
-        this.value = Objects.requireNonNull(value);
-        this.algo = Objects.requireNonNull(algorithm);
+    public HashUsed(final String algo) {
+        this.algo = Objects.requireNonNull(algo);
     }
 
     /**
@@ -76,23 +50,7 @@ public final class Hash implements Hashed {
      *
      * @return The hash algorithm.
      */
-    @Override
     public final String getHashAlgorithm() {
         return algo;
-    }
-
-    /**
-     * Gets the hash value.
-     *
-     * @return The hash value.
-     */
-    @Override
-    public final byte[] getHashValue() {
-        return value;
-    }
-
-    @Override
-    public final String toString() {
-        return "Hash (" + algo + "): " + DatatypeConverter.printBase64Binary(value);
     }
 }

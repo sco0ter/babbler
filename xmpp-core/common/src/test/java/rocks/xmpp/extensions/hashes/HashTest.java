@@ -28,6 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.hashes.model.Hash;
+import rocks.xmpp.extensions.hashes.model.HashUsed;
 
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
@@ -44,10 +45,18 @@ public class HashTest extends XmlTest {
 
     @Test
     public void unmarshalHash() throws JAXBException, XMLStreamException {
-        String xml = "<hash xmlns='urn:xmpp:hashes:1' algo='sha-1'>2AfMGH8O7UNPTvUVAM9aK13mpCY=</hash>\n";
+        String xml = "<hash xmlns='urn:xmpp:hashes:2' algo='sha-1'>2AfMGH8O7UNPTvUVAM9aK13mpCY=</hash>\n";
         Hash hash = unmarshal(xml, Hash.class);
         Assert.assertNotNull(hash);
         Assert.assertEquals(hash.getHashAlgorithm(), "sha-1");
         Assert.assertEquals(DatatypeConverter.printBase64Binary(hash.getHashValue()), "2AfMGH8O7UNPTvUVAM9aK13mpCY=");
+    }
+
+    @Test
+    public void unmarshalHashUsed() throws JAXBException, XMLStreamException {
+        String xml = "<hash-used xmlns='urn:xmpp:hashes:2' algo='sha-1'/>";
+        HashUsed hashUsed = unmarshal(xml, HashUsed.class);
+        Assert.assertNotNull(hashUsed);
+        Assert.assertEquals(hashUsed.getHashAlgorithm(), "sha-1");
     }
 }

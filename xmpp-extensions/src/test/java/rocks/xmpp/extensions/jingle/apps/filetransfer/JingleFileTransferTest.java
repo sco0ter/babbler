@@ -57,7 +57,7 @@ public class JingleFileTransferTest extends XmlTest {
                 "          <name>test.txt</name>\n" +
                 "          <range/>\n" +
                 "          <size>1022</size>\n" +
-                "          <hash xmlns='urn:xmpp:hashes:1' algo='sha-1'>552da749930852c69ae5d2141d3766b1</hash>\n" +
+                "          <hash xmlns='urn:xmpp:hashes:2' algo='sha-1'>552da749930852c69ae5d2141d3766b1</hash>\n" +
                 "        </file>\n" +
                 "      </description>\n";
 
@@ -79,7 +79,7 @@ public class JingleFileTransferTest extends XmlTest {
                 "              creator='initiator' \n" +
                 "              name='a-file-offer'>\n" +
                 "      <file>\n" +
-                "        <hash xmlns='urn:xmpp:hashes:1' \n" +
+                "        <hash xmlns='urn:xmpp:hashes:2' \n" +
                 "              algo='sha-1'>552da749930852c69ae5d2141d3766b1</hash>\n" +
                 "      </file>\n" +
                 "    </checksum>\n\n" +
@@ -160,7 +160,7 @@ public class JingleFileTransferTest extends XmlTest {
                 "          <media-type>image/jpeg</media-type>\n" +
                 "          <name>image.jpg</name>\n" +
                 "          <size>3032449</size>\n" +
-                "          <hash xmlns='urn:xmpp:hashes:1' algo='sha-1'>552da749930852c69ae5d2141d3766b1</hash>\n" +
+                "          <hash xmlns='urn:xmpp:hashes:2' algo='sha-1'>552da749930852c69ae5d2141d3766b1</hash>\n" +
                 "          <desc>This is a test. If this were a real file...</desc>\n" +
                 "          <thumbnail xmlns='urn:xmpp:thumbs:1'\n" +
                 "                     uri='cid:sha1+ffd7c8d28e9c5e82afea41f97108c6b4@bob.xmpp.org'\n" +

@@ -28,6 +28,7 @@ import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.util.Strings;
 
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -38,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * The implementation of the {@code <c/>} element in the {@code http://jabber.org/protocol/caps}.
@@ -98,8 +98,8 @@ public final class EntityCapabilities extends StreamFeature {
      */
     public static String getVerificationString(InfoNode infoNode, MessageDigest messageDigest) {
 
-        Set<Identity> identities = new TreeSet<>(infoNode.getIdentities());
-        Set<String> features = new TreeSet<>(infoNode.getFeatures());
+        Set<Identity> identities = infoNode.getIdentities();
+        Set<String> features = infoNode.getFeatures();
         List<DataForm> dataForms = new ArrayList<>(infoNode.getExtensions());
 
         // 1. Initialize an empty string S.
@@ -166,7 +166,7 @@ public final class EntityCapabilities extends StreamFeature {
                         sb.append(field.getVar()).append('<');
 
                         // 7.3.2. Sort values by the XML character data of the <value/> element.
-                        values.sort(null);
+                        values.sort((s, t1) -> Strings.compareUnsignedBytes(s, t1, StandardCharsets.UTF_8));
                     }
                     // 7.1. Append the XML character data of the FORM_TYPE field's <value/> element, followed by the '<' character.
                     // 7.3.3. For each <value/> element, append the XML character data, followed by the '<' character.

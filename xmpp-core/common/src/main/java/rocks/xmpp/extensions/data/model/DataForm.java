@@ -28,6 +28,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.data.layout.model.Page;
 import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.validate.model.Validation;
+import rocks.xmpp.util.Strings;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -37,6 +38,7 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -370,7 +372,7 @@ public final class DataForm implements Comparable<DataForm> {
         } else if (fto == null) {
             return -1;
         } else {
-            return ft.compareTo(fto);
+            return Strings.compareUnsignedBytes(ft, fto, StandardCharsets.UTF_8);
         }
     }
 
@@ -659,7 +661,7 @@ public final class DataForm implements Comparable<DataForm> {
             } else if (o.var == null) {
                 return 1;
             } else {
-                return var.compareTo(o.var);
+                return Strings.compareUnsignedBytes(var, o.var, StandardCharsets.UTF_8);
             }
         }
 

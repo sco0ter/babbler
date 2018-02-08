@@ -24,7 +24,10 @@
 
 package rocks.xmpp.extensions.disco.model.info;
 
+import rocks.xmpp.util.Strings;
+
 import javax.xml.bind.annotation.XmlAttribute;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
@@ -107,7 +110,7 @@ final class Feature implements Comparable<Feature> {
             } else if (var == null) {
                 return -1;
             } else {
-                return var.compareTo(o.var);
+                return Strings.compareUnsignedBytes(var, o.var, StandardCharsets.UTF_8);
             }
         }
     }

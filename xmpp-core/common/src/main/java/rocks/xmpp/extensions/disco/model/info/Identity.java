@@ -24,8 +24,11 @@
 
 package rocks.xmpp.extensions.disco.model.info;
 
+import rocks.xmpp.util.Strings;
+
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -898,7 +901,7 @@ public final class Identity implements Comparable<Identity> {
             } else if (o.category == null) {
                 result = 1;
             } else {
-                result = category.compareTo(o.category);
+                result = Strings.compareUnsignedBytes(category, o.category, StandardCharsets.UTF_8);
             }
 
             if (result == 0) {
@@ -909,7 +912,7 @@ public final class Identity implements Comparable<Identity> {
                 } else if (o.type == null) {
                     result = 1;
                 } else {
-                    result = type.compareTo(o.type);
+                    result = Strings.compareUnsignedBytes(type, o.type, StandardCharsets.UTF_8);
                 }
             }
 
@@ -921,7 +924,7 @@ public final class Identity implements Comparable<Identity> {
                 } else if (o.lang == null) {
                     result = 1;
                 } else {
-                    result = lang.toLanguageTag().compareTo(o.lang.toLanguageTag());
+                    result = Strings.compareUnsignedBytes(lang.toLanguageTag(), o.lang.toLanguageTag(), StandardCharsets.UTF_8);
                 }
             }
 
@@ -933,7 +936,7 @@ public final class Identity implements Comparable<Identity> {
                 } else if (o.name == null) {
                     return 1;
                 } else {
-                    return name.compareTo(o.name);
+                    return Strings.compareUnsignedBytes(name, o.name, StandardCharsets.UTF_8);
                 }
             }
         }

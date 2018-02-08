@@ -1,5 +1,6 @@
 package rocks.xmpp.util;
 
+import java.nio.charset.Charset;
 import java.util.regex.Pattern;
 
 /**
@@ -50,5 +51,27 @@ public final class Strings {
             return null;
         }
         return CAMEL_CASE.matcher(str).replaceAll("$1_$2").toLowerCase();
+    }
+
+    /**
+     * Compares two string by comparing their byte arrays.
+     * The "i;octet" collation is described in <a href="https://tools.ietf.org/html/rfc4790#section-9.3.1">9.3.1.  Octet Collation Description</a>.
+     *
+     * @param s1      The first byte array.
+     * @param s2      The second byte array.
+     * @param charset The charset.
+     * @return The comparison result.
+     */
+    public static int compareUnsignedBytes(final String s1, final String s2, final Charset charset) {
+        final byte[] o1 = s1.getBytes(charset), o2 = s2.getBytes(charset);
+        final int length = Math.min(o1.length, o2.length);
+        for (int i = 0; i < length; i++) {
+            int a = o1[i] & 0xff;
+            int b = o2[i] & 0xff;
+            if (a != b) {
+                return a - b;
+            }
+        }
+        return o1.length - o2.length;
     }
 }

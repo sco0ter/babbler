@@ -47,7 +47,7 @@ public class HashTest extends XmlTest {
         String xml = "<hash xmlns='urn:xmpp:hashes:1' algo='sha-1'>2AfMGH8O7UNPTvUVAM9aK13mpCY=</hash>\n";
         Hash hash = unmarshal(xml, Hash.class);
         Assert.assertNotNull(hash);
-        Assert.assertEquals(hash.getAlgorithm(), "sha-1");
-        Assert.assertEquals(DatatypeConverter.printBase64Binary(hash.getValue()), "2AfMGH8O7UNPTvUVAM9aK13mpCY=");
+        Assert.assertEquals(hash.getHashAlgorithm(), "sha-1");
+        Assert.assertEquals(DatatypeConverter.printBase64Binary(hash.getHashValue()), "2AfMGH8O7UNPTvUVAM9aK13mpCY=");
     }
 }

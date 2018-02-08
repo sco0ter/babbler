@@ -28,8 +28,8 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stream.StreamFeaturesManager;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 import rocks.xmpp.extensions.data.model.DataForm;
@@ -372,20 +372,20 @@ public final class EntityCapabilitiesManager extends Manager {
     }
 
     private void handleEntityCaps(final EntityCapabilities entityCapabilities, final Jid entity) {
-        Verification verification = new Verification(entityCapabilities.getHashingAlgorithm(), entityCapabilities.getVerificationString());
+        Verification verification = new Verification(entityCapabilities.getHashAlgorithm(), entityCapabilities.getVerificationString());
         // Check if the verification string is already known.
         InfoNode infoNode = readFromCache(verification);
-        if (entityCapabilities.getHashingAlgorithm() != null && infoNode != null) {
+        if (entityCapabilities.getHashAlgorithm() != null && infoNode != null) {
             // If its known, just update the information for this entity.
             ENTITY_CAPABILITIES.put(entity, infoNode);
         } else {
             // 1. Verify that the <c/> element includes a 'hash' attribute. If it does not, ignore the 'ver'
-            final String hashAlgorithm = entityCapabilities.getHashingAlgorithm();
+            final String hashAlgorithm = entityCapabilities.getHashAlgorithm();
             if (hashAlgorithm != null) {
                 String nodeToDiscover = entityCapabilities.getNode() + '#' + entityCapabilities.getVerificationString();
                 try {
                     // 3. If the value of the 'hash' attribute matches one of the processing application's supported hash functions, validate the verification string by doing the following:
-                    final MessageDigest messageDigest = MessageDigest.getInstance(entityCapabilities.getHashingAlgorithm());
+                    final MessageDigest messageDigest = MessageDigest.getInstance(entityCapabilities.getHashAlgorithm());
 
                     // 3.1 Send a service discovery information request to the generating entity.
                     // 3.2 Receive a service discovery information response from the generating entity.

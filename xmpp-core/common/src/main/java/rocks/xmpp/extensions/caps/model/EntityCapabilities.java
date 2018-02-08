@@ -28,6 +28,7 @@ import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.hashes.model.Hashed;
 import rocks.xmpp.util.Strings;
 
 import javax.xml.bind.DatatypeConverter;
@@ -36,6 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -50,7 +52,7 @@ import java.util.Set;
  * @see <a href="http://xmpp.org/extensions/xep-0115.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "c")
-public final class EntityCapabilities extends StreamFeature {
+public final class EntityCapabilities extends StreamFeature implements Hashed {
 
     /**
      * http://jabber.org/protocol/caps
@@ -188,7 +190,13 @@ public final class EntityCapabilities extends StreamFeature {
      *
      * @return The verification string.
      */
+    @Deprecated
     public final String getHashingAlgorithm() {
+        return hash;
+    }
+
+    @Override
+    public final String getHashAlgorithm() {
         return hash;
     }
 
@@ -212,6 +220,11 @@ public final class EntityCapabilities extends StreamFeature {
      */
     public final String getVerificationString() {
         return ver;
+    }
+
+    @Override
+    public final byte[] getHashValue() {
+        return Base64.getDecoder().decode(ver);
     }
 
     @Override

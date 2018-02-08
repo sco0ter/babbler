@@ -40,7 +40,7 @@ import java.util.Objects;
  * @see <a href="http://xmpp.org/extensions/xep-0300.html#schema">XML Schema</a>
  */
 @XmlRootElement
-public final class Hash {
+public final class Hash implements Hashed {
 
     /**
      * urn:xmpp:hashes:1
@@ -74,7 +74,8 @@ public final class Hash {
      *
      * @return The hash algorithm.
      */
-    public final String getAlgorithm() {
+    @Override
+    public final String getHashAlgorithm() {
         return algo;
     }
 
@@ -83,7 +84,8 @@ public final class Hash {
      *
      * @return The hash value.
      */
-    public final byte[] getValue() {
+    @Override
+    public final byte[] getHashValue() {
         return value;
     }
 

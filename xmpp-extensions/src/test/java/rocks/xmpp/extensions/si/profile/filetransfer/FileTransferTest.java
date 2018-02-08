@@ -56,8 +56,8 @@ public class FileTransferTest extends XmlTest {
         Assert.assertEquals(fileTransfer.getName(), "test.txt");
         Assert.assertEquals(fileTransfer.getSize(), 1022);
         Assert.assertEquals(fileTransfer.getHashes().size(), 1);
-        Assert.assertEquals(fileTransfer.getHashes().get(0).getAlgorithm(), "md5");
-        Assert.assertEquals(new BigInteger(1, fileTransfer.getHashes().get(0).getValue()).toString(16), "552da749930852c69ae5d2141d3766b1");
+        Assert.assertEquals(fileTransfer.getHashes().get(0).getHashAlgorithm(), "md5");
+        Assert.assertEquals(new BigInteger(1, fileTransfer.getHashes().get(0).getHashValue()).toString(16), "552da749930852c69ae5d2141d3766b1");
         Assert.assertNotNull(fileTransfer.getDate());
         Assert.assertEquals(fileTransfer.getDescription(), "This is a test. If this were a real file...");
     }

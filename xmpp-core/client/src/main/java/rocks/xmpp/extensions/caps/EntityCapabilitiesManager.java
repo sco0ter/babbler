@@ -37,12 +37,14 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.cache.DirectoryCache;
 import rocks.xmpp.util.cache.LruCache;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -55,7 +57,6 @@ import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -88,7 +89,7 @@ public final class EntityCapabilitiesManager extends Manager {
     private static final String HASH_ALGORITHM = "sha-1";
 
     // Cache up to 100 verification strings in memory.
-    private static final Map<Verification, InfoNode> CAPS_CACHE = new LruCache<>(100);
+    private static final Map<Hash, InfoNode> CAPS_CACHE = new LruCache<>(100);
 
     // Cache the capabilities of an entity.
     private static final Map<Jid, InfoNode> ENTITY_CAPABILITIES = new ConcurrentHashMap<>();
@@ -97,7 +98,7 @@ public final class EntityCapabilitiesManager extends Manager {
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
-    private final Map<String, Verification> publishedNodes;
+    private final Map<String, Hash> publishedNodes;
 
     private final DirectoryCache directoryCapsCache;
 
@@ -122,9 +123,9 @@ public final class EntityCapabilitiesManager extends Manager {
         directoryCapsCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("caps")) : null;
         // no need for a synchronized map, since access to this is already synchronized by this class.
 
-        publishedNodes = new LinkedHashMap<String, Verification>(10, 0.75F, false) {
+        publishedNodes = new LinkedHashMap<String, Hash>(10, 0.75F, false) {
             @Override
-            protected boolean removeEldestEntry(Map.Entry<String, Verification> eldest) {
+            protected boolean removeEldestEntry(Map.Entry<String, Hash> eldest) {
                 if (size() > 10) {
                     // Remove old published nodes as well, they are no longer needed.
                     serviceDiscoveryManager.removeInfoNode(eldest.getKey());
@@ -154,9 +155,9 @@ public final class EntityCapabilitiesManager extends Manager {
                     }
                     // a client SHOULD include entity capabilities with every presence notification it sends.
                     // Get the last generated verification string here.
-                    Deque<Verification> verifications = new ArrayDeque<>(publishedNodes.values());
-                    Verification verification = verifications.getLast();
-                    presence.putExtension(new EntityCapabilities(getNode(), verification.hashAlgorithm, verification.verificationString));
+                    Deque<Hash> verifications = new ArrayDeque<>(publishedNodes.values());
+                    Hash verification = verifications.getLast();
+                    presence.putExtension(new EntityCapabilities(getNode(), verification.getHashAlgorithm(), DatatypeConverter.printBase64Binary(verification.getHashValue())));
                     capsSent = true;
                 }
             }
@@ -221,13 +222,13 @@ public final class EntityCapabilitiesManager extends Manager {
             MessageDigest messageDigest = MessageDigest.getInstance(HASH_ALGORITHM);
 
             final InfoDiscovery infoDiscovery = new InfoDiscovery(serviceDiscoveryManager.getIdentities(), serviceDiscoveryManager.getFeatures(), serviceDiscoveryManager.getExtensions());
-            Verification verification = new Verification(HASH_ALGORITHM, EntityCapabilities.getVerificationString(infoDiscovery, messageDigest));
+            Hash hash = new Hash(DatatypeConverter.parseBase64Binary(EntityCapabilities.getVerificationString(infoDiscovery, messageDigest)), HASH_ALGORITHM);
             // Cache our own capabilities.
-            writeToCache(verification, infoDiscovery);
+            writeToCache(hash, infoDiscovery);
 
-            final String node = getNode() + '#' + verification.verificationString;
+            final String node = getNode() + '#' + DatatypeConverter.printBase64Binary(hash.getHashValue());
 
-            publishedNodes.put(node, verification);
+            publishedNodes.put(node, hash);
             serviceDiscoveryManager.addInfoNode(new InfoNode() {
                 @Override
                 public String getNode() {
@@ -321,10 +322,10 @@ public final class EntityCapabilitiesManager extends Manager {
                 });
     }
 
-    private void writeToCache(Verification verification, InfoNode infoNode) {
+    private void writeToCache(Hash hash, InfoNode infoNode) {
         if (directoryCapsCache != null) {
             // Write to in-memory cache.
-            CAPS_CACHE.put(verification, infoNode);
+            CAPS_CACHE.put(hash, infoNode);
 
             // Write to persistent cache.
             try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
@@ -338,28 +339,28 @@ public final class EntityCapabilitiesManager extends Manager {
                         xmppStreamWriter.close();
                     }
                 }
-                directoryCapsCache.put(XmppUtils.hash(verification.toString().getBytes(StandardCharsets.UTF_8)) + ".caps", byteArrayOutputStream.toByteArray());
+                directoryCapsCache.put(XmppUtils.hash(hash.toString().getBytes(StandardCharsets.UTF_8)) + ".caps", byteArrayOutputStream.toByteArray());
             } catch (Exception e) {
                 logger.log(Level.WARNING, e, () -> "Could not write entity capabilities to persistent cache. Reason: " + e.getMessage());
             }
         }
     }
 
-    private InfoNode readFromCache(Verification verification) {
+    private InfoNode readFromCache(Hash hash) {
         if (directoryCapsCache != null) {
             // First check the in-memory cache.
-            InfoNode infoNode = CAPS_CACHE.get(verification);
+            InfoNode infoNode = CAPS_CACHE.get(hash);
             if (infoNode != null) {
                 return infoNode;
             }
             // If it's not present, check the persistent cache.
-            String fileName = XmppUtils.hash(verification.toString().getBytes(StandardCharsets.UTF_8)) + ".caps";
+            String fileName = XmppUtils.hash(hash.toString().getBytes(StandardCharsets.UTF_8)) + ".caps";
             try {
                 byte[] bytes = directoryCapsCache.get(fileName);
                 if (bytes != null) {
                     try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)) {
                         infoNode = (InfoNode) xmppSession.createUnmarshaller().unmarshal(byteArrayInputStream);
-                        CAPS_CACHE.put(verification, infoNode);
+                        CAPS_CACHE.put(hash, infoNode);
                         return infoNode;
                     }
                 }
@@ -372,9 +373,9 @@ public final class EntityCapabilitiesManager extends Manager {
     }
 
     private void handleEntityCaps(final EntityCapabilities entityCapabilities, final Jid entity) {
-        Verification verification = new Verification(entityCapabilities.getHashAlgorithm(), entityCapabilities.getVerificationString());
+        Hash hash = new Hash(entityCapabilities.getHashValue(), entityCapabilities.getHashAlgorithm());
         // Check if the verification string is already known.
-        InfoNode infoNode = readFromCache(verification);
+        InfoNode infoNode = readFromCache(hash);
         if (entityCapabilities.getHashAlgorithm() != null && infoNode != null) {
             // If its known, just update the information for this entity.
             ENTITY_CAPABILITIES.put(entity, infoNode);
@@ -426,7 +427,7 @@ public final class EntityCapabilitiesManager extends Manager {
 
                             // 3.8 If the values of the received and reconstructed hashes match, the processing application MUST consider the result to be valid and SHOULD globally cache the result for all JabberIDs with which it communicates.
                             if (verificationString.equals(entityCapabilities.getVerificationString())) {
-                                writeToCache(new Verification(hashAlgorithm, verificationString), infoDiscovery);
+                                writeToCache(new Hash(entityCapabilities.getHashValue(), hashAlgorithm), infoDiscovery);
                             }
                             ENTITY_CAPABILITIES.put(entity, infoDiscovery);
                         }
@@ -446,46 +447,6 @@ public final class EntityCapabilitiesManager extends Manager {
                     });
                 }
             }
-        }
-    }
-
-    /**
-     * A key for the cache (consisting of hash algorithm and verification string).
-     */
-    private static final class Verification {
-
-        private final String hashAlgorithm;
-
-        private final String verificationString;
-
-        private Verification(String hashAlgorithm, String verificationString) {
-            this.hashAlgorithm = hashAlgorithm;
-            this.verificationString = verificationString;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            }
-            if (!(o instanceof Verification)) {
-                return false;
-            }
-            Verification other = (Verification) o;
-
-            return Objects.equals(hashAlgorithm, other.hashAlgorithm)
-                    && Objects.equals(verificationString, other.verificationString);
-
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(hashAlgorithm, verificationString);
-        }
-
-        @Override
-        public String toString() {
-            return hashAlgorithm + '+' + verificationString;
         }
     }
 }

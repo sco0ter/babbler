@@ -33,6 +33,8 @@ import rocks.xmpp.extensions.hashes.model.HashUsed;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Christian Schudt
@@ -58,5 +60,16 @@ public class HashTest extends XmlTest {
         HashUsed hashUsed = unmarshal(xml, HashUsed.class);
         Assert.assertNotNull(hashUsed);
         Assert.assertEquals(hashUsed.getHashAlgorithm(), "sha-1");
+    }
+
+    @Test
+    public void testEquals() throws JAXBException, XMLStreamException {
+        String xml = "<hash xmlns='urn:xmpp:hashes:2' algo='sha-1'>2AfMGH8O7UNPTvUVAM9aK13mpCY=</hash>\n";
+        Hash hash1 = unmarshal(xml, Hash.class);
+        Hash hash2 = unmarshal(xml, Hash.class);
+
+        Set<Hash> hashes = new HashSet<>();
+        Assert.assertTrue(hashes.add(hash1));
+        Assert.assertFalse(hashes.add(hash2));
     }
 }

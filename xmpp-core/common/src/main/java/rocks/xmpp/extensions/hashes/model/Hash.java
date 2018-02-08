@@ -29,12 +29,13 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlValue;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
  * This class represents a hash value in conjunction with its algorithm.
  * <p>
- * This class is immutable.
+ * This class overrides {@link #equals} and {@link #hashCode()}, two instances equal each other, if their hash algorithm and value are equal.
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0300.html">XEP-0300: Use of Cryptographic Hash Functions in XMPP</a>
@@ -89,6 +90,26 @@ public final class Hash implements Hashed {
     @Override
     public final byte[] getHashValue() {
         return value;
+    }
+
+    @Override
+    public final boolean equals(final Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Hash)) {
+            return false;
+        }
+        Hash other = (Hash) o;
+
+        return Objects.equals(algo, other.algo)
+                && Arrays.equals(value, other.value);
+
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(algo, Arrays.hashCode(value));
     }
 
     @Override

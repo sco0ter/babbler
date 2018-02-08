@@ -46,8 +46,8 @@ import java.util.Locale;
 /**
  * @author Christian Schudt
  */
-public class EntityCapabilitiesManagerTest extends XmlTest {
-    protected EntityCapabilitiesManagerTest() throws JAXBException {
+public class EntityCapabilitiesTest extends XmlTest {
+    protected EntityCapabilitiesTest() throws JAXBException {
         super(EntityCapabilities.class);
     }
 

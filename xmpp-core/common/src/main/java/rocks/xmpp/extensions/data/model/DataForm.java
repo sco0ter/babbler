@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2019 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -376,6 +376,29 @@ public final class DataForm implements Comparable<DataForm> {
         }
     }
 
+    @Override
+    public final boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof DataForm)) {
+            return false;
+        }
+        DataForm other = (DataForm) o;
+        return Objects.equals(instructions, other.instructions)
+                && Objects.equals(pages, other.pages)
+                && Objects.equals(field, other.field)
+                && Objects.equals(item, other.item)
+                && Objects.equals(type, other.type)
+                && Objects.equals(title, other.title)
+                && Objects.equals(reportedFields, other.reportedFields);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(instructions, pages, field, item, type, title, reportedFields);
+    }
+
     /**
      * The form type.
      */
@@ -413,30 +436,30 @@ public final class DataForm implements Comparable<DataForm> {
      * ```java
      * // <field type="boolean" var="test"><value>1</value></field>
      * DataForm.Field field = DataForm.Field.builder()
-     *     .var("test")
-     *     .value(true)
-     *     .build();
-     *
+     * .var("test")
+     * .value(true)
+     * .build();
+     * <p>
      * // <field type="jid-single" var="test"><value>domain</value></field>
      * DataForm.Field.builder()
-     *     .var("test")
-     *     .value(Jid.of("domain"))
-     *     .build();
+     * .var("test")
+     * .value(Jid.of("domain"))
+     * .build();
      * ```
      * <h3>Creating a field with options</h3>
      * ```java
      * // <field type="list-single" var="test"><option><value>option</value></option></field>
      * DataForm.Field field = DataForm.Field.builder()
-     *     .var("test")
-     *     .type(DataForm.Field.Type.LIST_SINGLE)
-     *     .options(Collections.singleton(new DataForm.Option("option")))
-     *     .build();
+     * .var("test")
+     * .type(DataForm.Field.Type.LIST_SINGLE)
+     * .options(Collections.singleton(new DataForm.Option("option")))
+     * .build();
      * ```
      * <h3>Retrieving values from a field</h3>
      * ```java
      * // Interprets the field value as integer, e.g. <value>123</value>
      * Integer intValue = field.getValueAsInteger();
-     *
+     * <p>
      * // Interprets the field value as boolean, e.g. <value>1</value>
      * boolean boolValue = field.getValueAsBoolean();
      * ```
@@ -657,6 +680,30 @@ public final class DataForm implements Comparable<DataForm> {
             } else {
                 return Strings.compareUnsignedBytes(var, o.var, StandardCharsets.UTF_8);
             }
+        }
+
+        @Override
+        public final boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof Field)) {
+                return false;
+            }
+
+            Field other = (Field) o;
+            return Objects.equals(type, other.type)
+                    && Objects.equals(desc, other.desc)
+                    && Objects.equals(required, other.required)
+                    && Objects.equals(validation, other.validation)
+                    && Objects.equals(media, other.media)
+                    && Objects.equals(label, other.label)
+                    && Objects.equals(var, other.var);
+        }
+
+        @Override
+        public final int hashCode() {
+            return Objects.hash(type, desc, required, validation, media, label, var);
         }
 
         @Override
@@ -985,6 +1032,23 @@ public final class DataForm implements Comparable<DataForm> {
         public final List<Field> getFields() {
             return field;
         }
+
+        @Override
+        public final boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof Item)) {
+                return false;
+            }
+            Item other = (Item) o;
+            return Objects.equals(field, other.field);
+        }
+
+        @Override
+        public final int hashCode() {
+            return Objects.hash(field);
+        }
     }
 
     /**
@@ -1038,6 +1102,24 @@ public final class DataForm implements Comparable<DataForm> {
          */
         public final String getValue() {
             return value;
+        }
+
+        @Override
+        public final boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof Option)) {
+                return false;
+            }
+            Option other = (Option) o;
+            return Objects.equals(value, other.value)
+                    && Objects.equals(label, other.label);
+        }
+
+        @Override
+        public final int hashCode() {
+            return Objects.hash(value, label);
         }
     }
 

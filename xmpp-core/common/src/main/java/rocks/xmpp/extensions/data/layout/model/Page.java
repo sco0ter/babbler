@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <page/>} element in the {@code http://jabber.org/protocol/xdata-layout} namespace.
@@ -155,5 +156,26 @@ public final class Page {
      */
     public final String getLabel() {
         return label;
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Page)) {
+            return false;
+        }
+        Page other = (Page) o;
+        return Objects.equals(text, other.text)
+                && Objects.equals(fieldref, other.fieldref)
+                && Objects.equals(section, other.section)
+                && Objects.equals(label, other.label)
+                && Objects.equals(reportedref, other.reportedref);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(text, fieldref, section, label, reportedref);
     }
 }

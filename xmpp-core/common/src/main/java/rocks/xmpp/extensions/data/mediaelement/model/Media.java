@@ -116,6 +116,23 @@ public final class Media {
         return width;
     }
 
+    @Override
+    public final boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Media)) {
+            return false;
+        }
+        Media other = (Media) o;
+        return height == other.height && width == other.width && uri.equals(other.uri);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(height, width, uri);
+    }
+
     /**
      * Specifies the out-of-band location of the media data.
      * <p>
@@ -165,6 +182,24 @@ public final class Media {
          */
         public final String getType() {
             return type;
+        }
+
+        @Override
+        public final boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof Location)) {
+                return false;
+            }
+            Location other = (Location) o;
+            return Objects.equals(uri, other.uri)
+                    && Objects.equals(type, other.type);
+        }
+
+        @Override
+        public final int hashCode() {
+            return Objects.hash(uri, type);
         }
     }
 }

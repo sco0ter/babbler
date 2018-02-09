@@ -64,4 +64,21 @@ public final class FieldReference {
     public final String getVar() {
         return var;
     }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof FieldReference)) {
+            return false;
+        }
+        FieldReference other = (FieldReference) o;
+        return Objects.equals(var, other.var);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(var);
+    }
 }

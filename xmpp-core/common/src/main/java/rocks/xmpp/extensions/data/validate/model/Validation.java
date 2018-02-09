@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <validate/>} element in the {@code http://jabber.org/protocol/xdata-validate} namespace, which is used to validate form fields.
@@ -136,6 +137,25 @@ public final class Validation {
         return listRange;
     }
 
+    @Override
+    public final boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Validation)) {
+            return false;
+        }
+        Validation other = (Validation) o;
+        return Objects.equals(dataType, other.dataType)
+                && Objects.equals(validationMethod, other.validationMethod)
+                && Objects.equals(listRange, other.listRange);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(dataType, validationMethod, listRange);
+    }
+
     /**
      * The abstract validation method.
      *
@@ -159,6 +179,15 @@ public final class Validation {
          * Indicates, that the value(s) should simply match the field type and datatype constraints.
          */
         public static final class Basic extends ValidationMethod {
+            @Override
+            public final boolean equals(Object o) {
+                return o == this || o instanceof Basic;
+            }
+
+            @Override
+            public final int hashCode() {
+                return Basic.class.hashCode();
+            }
         }
 
         /**
@@ -168,6 +197,16 @@ public final class Validation {
          * </p>
          */
         public static final class Open extends ValidationMethod {
+
+            @Override
+            public final boolean equals(Object o) {
+                return o == this || o instanceof Open;
+            }
+
+            @Override
+            public final int hashCode() {
+                return Open.class.hashCode();
+            }
         }
 
         /**
@@ -214,6 +253,24 @@ public final class Validation {
             public final String getMax() {
                 return max;
             }
+
+            @Override
+            public final boolean equals(Object o) {
+                if (o == this) {
+                    return true;
+                }
+                if (!(o instanceof Range)) {
+                    return false;
+                }
+                Range other = (Range) o;
+                return Objects.equals(min, other.min)
+                        && Objects.equals(max, other.max);
+            }
+
+            @Override
+            public final int hashCode() {
+                return Objects.hash(min, max);
+            }
         }
 
         /**
@@ -236,6 +293,23 @@ public final class Validation {
              */
             public final String getRegex() {
                 return value;
+            }
+
+            @Override
+            public final boolean equals(Object o) {
+                if (o == this) {
+                    return true;
+                }
+                if (!(o instanceof Regex)) {
+                    return false;
+                }
+                Regex other = (Regex) o;
+                return Objects.equals(value, other.value);
+            }
+
+            @Override
+            public final int hashCode() {
+                return Objects.hash(value);
             }
         }
     }
@@ -284,6 +358,24 @@ public final class Validation {
          */
         public final Integer getMax() {
             return max;
+        }
+
+        @Override
+        public final boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof ListRange)) {
+                return false;
+            }
+            ListRange other = (ListRange) o;
+            return Objects.equals(min, other.min)
+                    && Objects.equals(max, other.max);
+        }
+
+        @Override
+        public final int hashCode() {
+            return Objects.hash(min, max);
         }
     }
 }

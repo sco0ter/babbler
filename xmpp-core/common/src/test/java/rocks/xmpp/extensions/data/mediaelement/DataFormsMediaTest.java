@@ -33,6 +33,8 @@ import rocks.xmpp.extensions.data.model.DataForm;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Christian Schudt
@@ -96,5 +98,22 @@ public class DataFormsMediaTest extends XmlTest {
         Assert.assertEquals(media.getLocations().get(0).getUri(), URI.create("http://www.victim.com/challenges/ocr.jpeg?F3A6292C"));
         Assert.assertEquals(media.getLocations().get(1).getType(), "image/jpeg");
         Assert.assertEquals(media.getLocations().get(1).getUri(), URI.create("cid:sha1+f24030b8d91d233bac14777be5ab531ca3b9f102@bob.xmpp.org"));
+    }
+
+    @Test
+    public void testEquals() throws XMLStreamException, JAXBException {
+        String xml = "<media xmlns='urn:xmpp:media-element'\n" +
+                "           height='80'\n" +
+                "           width='290'>\n" +
+                "      <uri type='image/jpeg'>http://www.victim.com/challenges/ocr.jpeg?F3A6292C</uri>\n" +
+                "      <uri type='image/jpeg'>cid:sha1+f24030b8d91d233bac14777be5ab531ca3b9f102@bob.xmpp.org</uri>\n" +
+                "    </media>";
+        Media media1 = unmarshal(xml, Media.class);
+        Media media2 = unmarshal(xml, Media.class);
+        Assert.assertNotNull(media1);
+        Assert.assertNotNull(media2);
+        Set<Media> medias = new HashSet<>();
+        medias.add(media1);
+        Assert.assertFalse(medias.add(media2));
     }
 }

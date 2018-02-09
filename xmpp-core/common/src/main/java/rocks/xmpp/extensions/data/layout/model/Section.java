@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <section/>} element in the {@code http://jabber.org/protocol/xdata-layout} namespace.
@@ -143,5 +144,26 @@ public final class Section {
      */
     public FieldReference getReportedReference() {
         return reportedref;
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Section)) {
+            return false;
+        }
+        Section other = (Section) o;
+        return Objects.equals(section, other.section)
+                && Objects.equals(text, other.text)
+                && Objects.equals(fieldref, other.fieldref)
+                && Objects.equals(label, other.label)
+                && Objects.equals(reportedref, other.reportedref);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(section, text, fieldref, label, reportedref);
     }
 }

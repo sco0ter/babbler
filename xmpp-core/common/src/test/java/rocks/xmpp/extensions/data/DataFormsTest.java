@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2015 Christian Schudt
+ * Copyright (c) 2014-2019 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,12 +31,16 @@ import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.data.validate.model.Validation;
+import rocks.xmpp.util.ComparableTestHelper;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Christian Schudt
@@ -107,6 +111,11 @@ public class DataFormsTest extends XmlTest {
                 "    </x>\n";
 
         DataForm dataForm = unmarshal(xml, DataForm.class);
+        DataForm dataForm2 = unmarshal(xml, DataForm.class);
+
+        Assert.assertEquals(dataForm.compareTo(dataForm2), 0);
+        Assert.assertEquals(dataForm, dataForm2);
+        Assert.assertTrue(ComparableTestHelper.isConsistentWithEquals(Arrays.asList(dataForm, dataForm2)));
 
         Assert.assertNotNull(dataForm);
         Assert.assertEquals(dataForm.getType(), DataForm.Type.FORM);
@@ -306,4 +315,22 @@ public class DataFormsTest extends XmlTest {
         String xml5 = marshal(dataForm5);
         Assert.assertEquals(xml5, "<x xmlns=\"jabber:x:data\" type=\"submit\"><field type=\"jid-multi\"></field></x>");
     }
+
+    @Test
+    public void testEquals() throws JAXBException, XMLStreamException {
+        DataForm.Field.Builder fieldBuilder = DataForm.Field.builder()
+                .var("test")
+                .description("description")
+                .required(true)
+                .label("Label")
+                .media(new Media())
+                .validation(new Validation("val"));
+
+        DataForm.Field field1 = fieldBuilder.build();
+        DataForm.Field field2 = fieldBuilder.build();
+        Set<DataForm.Field> medias = new HashSet<>();
+        medias.add(field1);
+        Assert.assertFalse(medias.add(field2));
+    }
+
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2015 Christian Schudt
+ * Copyright (c) 2014-2019 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,9 +29,11 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.data.layout.model.Page;
 import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.util.ComparableTestHelper;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.util.Arrays;
 
 /**
  * @author Christian Schudt
@@ -104,6 +106,11 @@ public class DataFormsLayoutTest extends XmlTest {
                 "</x>\n";
 
         DataForm dataForm = unmarshal(xml, DataForm.class);
+        DataForm dataForm2 = unmarshal(xml, DataForm.class);
+
+        Assert.assertEquals(dataForm.compareTo(dataForm2), 0);
+        Assert.assertEquals(dataForm, dataForm2);
+        Assert.assertTrue(ComparableTestHelper.isConsistentWithEquals(Arrays.asList(dataForm, dataForm2)));
 
         Assert.assertNotNull(dataForm);
         Assert.assertEquals(dataForm.getPages().size(), 3);
@@ -179,6 +186,11 @@ public class DataFormsLayoutTest extends XmlTest {
                 "</x>\n";
 
         DataForm dataForm = unmarshal(xml, DataForm.class);
+        DataForm dataForm2 = unmarshal(xml, DataForm.class);
+
+        Assert.assertEquals(dataForm.compareTo(dataForm2), 0);
+        Assert.assertEquals(dataForm, dataForm2);
+        Assert.assertTrue(ComparableTestHelper.isConsistentWithEquals(Arrays.asList(dataForm, dataForm2)));
 
         Assert.assertNotNull(dataForm);
         Assert.assertEquals(dataForm.getPages().size(), 1);
@@ -235,6 +247,11 @@ public class DataFormsLayoutTest extends XmlTest {
                 "</x>\n";
 
         DataForm dataForm = unmarshal(xml, DataForm.class);
+        DataForm dataForm2 = unmarshal(xml, DataForm.class);
+
+        Assert.assertEquals(dataForm.compareTo(dataForm2), 0);
+        Assert.assertEquals(dataForm, dataForm2);
+        Assert.assertTrue(ComparableTestHelper.isConsistentWithEquals(Arrays.asList(dataForm, dataForm2)));
 
         Assert.assertNotNull(dataForm);
         Assert.assertEquals(dataForm.getPages().size(), 1);
@@ -266,6 +283,11 @@ public class DataFormsLayoutTest extends XmlTest {
                 "</x>\n";
 
         DataForm dataForm = unmarshal(xml, DataForm.class);
+        DataForm dataForm2 = unmarshal(xml, DataForm.class);
+
+        Assert.assertEquals(dataForm.compareTo(dataForm2), 0);
+        Assert.assertEquals(dataForm, dataForm2);
+        Assert.assertTrue(ComparableTestHelper.isConsistentWithEquals(Arrays.asList(dataForm, dataForm2)));
 
         Assert.assertNotNull(dataForm);
         Assert.assertEquals(dataForm.getPages().size(), 1);

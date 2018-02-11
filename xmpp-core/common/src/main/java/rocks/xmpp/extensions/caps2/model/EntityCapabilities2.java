@@ -51,7 +51,7 @@ import java.util.Set;
  * @see <a href="https://xmpp.org/extensions/xep-0390.html">XEP-0390: Entity Capabilities 2.0</a>
  */
 @XmlRootElement(name = "c")
-public final class EntityCapabilities2 extends EntityCapabilities {
+public final class EntityCapabilities2 implements EntityCapabilities {
 
     /**
      * urn:xmpp:caps

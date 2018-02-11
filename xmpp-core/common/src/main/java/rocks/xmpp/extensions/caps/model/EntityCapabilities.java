@@ -24,14 +24,13 @@
 
 package rocks.xmpp.extensions.caps.model;
 
-import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.hashes.model.Hashed;
 
 import java.util.Set;
 
 /**
- * An abstract class for different Entity Capabilities implementations as described in the following two specifications.
+ * An interface for different Entity Capabilities implementations as described in the following two specifications.
  * <ul>
  * <li><a href="https://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a></li>
  * <li><a href="https://xmpp.org/extensions/xep-0390.html">XEP-0390: Entity Capabilities 2.0</a></li>
@@ -39,14 +38,14 @@ import java.util.Set;
  *
  * @author Christian Schudt
  */
-public abstract class EntityCapabilities extends StreamFeature {
+public interface EntityCapabilities {
 
     /**
      * Gets the capability hash set.
      *
      * @return The capability hash set.
      */
-    public abstract Set<Hashed> getCapabilityHashSet();
+    Set<Hashed> getCapabilityHashSet();
 
     /**
      * Creates an UTF-8 encoded verification string from a disco#info query.
@@ -57,7 +56,7 @@ public abstract class EntityCapabilities extends StreamFeature {
      * @param infoNode The query.
      * @return The caps string, aka. verification string.
      */
-    public abstract byte[] createVerificationString(InfoNode infoNode);
+    byte[] createVerificationString(InfoNode infoNode);
 
     /**
      * Creates the Capability Hash Node.
@@ -67,5 +66,5 @@ public abstract class EntityCapabilities extends StreamFeature {
      * @param hashed The pair of hash algorithm and value.
      * @return The node.
      */
-    public abstract String createCapabilityHashNode(Hashed hashed);
+    String createCapabilityHashNode(Hashed hashed);
 }

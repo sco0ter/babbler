@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.caps.model;
 
+import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
@@ -51,7 +52,7 @@ import java.util.Set;
  * @see <a href="http://xmpp.org/extensions/xep-0115.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "c")
-public final class EntityCapabilities1 extends EntityCapabilities implements Hashed {
+public final class EntityCapabilities1 extends StreamFeature implements EntityCapabilities, Hashed {
 
     /**
      * http://jabber.org/protocol/caps

@@ -388,6 +388,7 @@ public final class EntityCapabilitiesManager extends Manager {
     private void processNextEntityCaps(final Iterator<EntityCapabilities> entityCapabilities, final Jid entity) {
         if (entityCapabilities.hasNext()) {
             final EntityCapabilities caps = entityCapabilities.next();
+            logger.log(Level.FINE, "Processing {0}", caps);
             processNextHash(entityCapabilities, caps.getCapabilityHashSet().iterator(), entity, caps);
         }
     }
@@ -414,8 +415,8 @@ public final class EntityCapabilitiesManager extends Manager {
 
                     // 3.1 Send a service discovery information request to the generating entity.
                     // 3.2 Receive a service discovery information response from the generating entity.
+                    logger.log(Level.FINE, "Discovering capabilities for '{0}' at node {1}", new Object[]{entity, nodeToDiscover});
                     serviceDiscoveryManager.discoverInformation(entity, nodeToDiscover).whenComplete((infoDiscovery, e1) -> {
-                        processNextHash(entityCapabilities, hashedIterator, entity, caps);
                         if (e1 != null) {
                             processNextHash(entityCapabilities, hashedIterator, entity, caps);
                             logger.log(Level.WARNING, e1, () -> "Failed to discover information for entity '" + entity + "' for node '" + nodeToDiscover + "'");

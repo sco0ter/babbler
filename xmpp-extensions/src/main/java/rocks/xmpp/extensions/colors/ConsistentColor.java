@@ -204,7 +204,7 @@ public final class ConsistentColor {
     }
 
     /**
-     * Gets the red component of the {@code Color}, in the range {@code 0.0-1.0}.
+     * Gets the red component of the color, in the range {@code 0.0-1.0}.
      *
      * @return The red component.
      */
@@ -213,7 +213,7 @@ public final class ConsistentColor {
     }
 
     /**
-     * Gets the green component of the {@code Color}, in the range {@code 0.0-1.0}.
+     * Gets the green component of the color, in the range {@code 0.0-1.0}.
      *
      * @return The green component.
      */
@@ -222,7 +222,7 @@ public final class ConsistentColor {
     }
 
     /**
-     * Gets the blue component of the {@code Color}, in the range {@code 0.0-1.0}.
+     * Gets the blue component of the color, in the range {@code 0.0-1.0}.
      *
      * @return The blue component.
      */

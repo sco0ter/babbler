@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,20 +47,18 @@ import java.util.Locale;
  * </blockquote>
  * <h3>Usage</h3>
  * This class is immutable, you have to use a builder to create a geo location instance. Here's an example:
- * <pre>
- * {@code
+ * ```java
  * GeoLocation geoLocation = GeoLocation.builder()
  *     .countryCode("de")
  *     .latitude(50.2)
  *     .longitude(7.5)
  *     .timeZoneOffset(ZoneOffset.of("+01:00"))
  *     .build();
- * }
- * </pre>
+ * ```
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0080.html">XEP-0080: User Location</a>
- * @see <a href="http://xmpp.org/extensions/xep-0080.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0080.html">XEP-0080: User Location</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0080.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "geoloc")
 public final class GeoLocation {

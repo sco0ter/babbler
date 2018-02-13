@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,14 +39,11 @@ import java.util.Locale;
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/pubsub#node_config}, which can be used to configure a pubsub node.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
- * <pre>
- * {@code
+ * ```java
  * NodeConfiguration nodeConfiguration = new NodeConfiguration(dataForm);
- * }
- * </pre>
+ * ```
  * To build a form:
- * <pre>
- * {@code
+ * ```java
  * NodeConfiguration nodeConfiguration = NodeConfiguration.builder()
  *     .accessModel(AccessModel.AUTHORIZE)
  *     .bodyXslt(new URL("http://xmpp.org"))
@@ -82,11 +79,10 @@ import java.util.Locale;
  *     .title("Title")
  *     .type("Type")
  *     .build();
- * }
- * </pre>
+ * ```
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#registrar-formtypes-config">16.4.4 pubsub#node_config FORM_TYPE</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#registrar-formtypes-config">16.4.4 pubsub#node_config FORM_TYPE</a>
  */
 public final class NodeConfiguration {
 

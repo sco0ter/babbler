@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,17 +43,15 @@ import java.util.Set;
 /**
  * The implementation of the {@code <x/>} element in the {@code http://jabber.org/protocol/muc#user} namespace.
  * <h3>Usage</h3>
- * <pre>
- * {@code
+ * ```java
  * // To create an element with an item of 'owner' and 'moderator'
  * MucUser mucUser = MucUser.withItem(Affiliation.OWNER, Role.MODERATOR);
- * }
- * </pre>
+ * ```
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#schemas-user">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#schemas-user">XML Schema</a>
  */
 @XmlRootElement(name = "x")
 public final class MucUser {
@@ -95,14 +93,12 @@ public final class MucUser {
     /**
      * Creates a {@code <x/>} element with an {@code <item/>} and a {@code <status/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <x xmlns='http://jabber.org/protocol/muc#user'>
      *     <item affiliation='owner' role='moderator'/>
      *     <status code='110'/>
      * </x>
-     * }
-     * </pre>
+     * ```
      *
      * @param affiliation The affiliation.
      * @param role        The role.
@@ -116,15 +112,13 @@ public final class MucUser {
     /**
      * Creates a {@code <x/>} element with an {@code <item/>} and a {@code <status/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <x xmlns='http://jabber.org/protocol/muc#user'>
      *     <item affiliation='none'
      *           jid='hag66@shakespeare.lit/pda'
      *           role='participant'/>
      * </x>
-     * }
-     * </pre>
+     * ```
      *
      * @param affiliation The affiliation.
      * @param role        The role.
@@ -139,8 +133,7 @@ public final class MucUser {
     /**
      * Creates a {@code <x/>} element with an {@code <item/>} and a {@code <status/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <x xmlns='http://jabber.org/protocol/muc#user'>
      *     <item affiliation='member'
      *           jid='hag66@shakespeare.lit/pda'
@@ -148,8 +141,7 @@ public final class MucUser {
      *           role='participant'/>
      *     <status code='303'/>
      * </x>
-     * }
-     * </pre>
+     * ```
      *
      * @param affiliation The affiliation.
      * @param role        The role.
@@ -165,8 +157,7 @@ public final class MucUser {
     /**
      * Creates a {@code <x/>} element with an {@code <item/>} and a {@code <status/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <x xmlns='http://jabber.org/protocol/muc#user'>
      *     <item affiliation='member'
      *           jid='hag66@shakespeare.lit/pda'
@@ -174,8 +165,7 @@ public final class MucUser {
      *           role='participant'/>
      *     <status code='303'/>
      * </x>
-     * }
-     * </pre>
+     * ```
      *
      * @param role   The role.
      * @param nick   The nick.
@@ -190,8 +180,7 @@ public final class MucUser {
     /**
      * Creates a {@code <x/>} element with an {@code <item/>} and a {@code <status/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <x xmlns='http://jabber.org/protocol/muc#user'>
      *     <item affiliation='none' role='none'>
      *         <actor nick='Fluellen'/>
@@ -199,8 +188,7 @@ public final class MucUser {
      *     </item>
      *     <status code='307'/>
      * </x>
-     * }
-     * </pre>
+     * ```
      *
      * @param affiliation The affiliation.
      * @param role        The role.
@@ -216,8 +204,7 @@ public final class MucUser {
     /**
      * Creates a {@code <x/>} element with an {@code <item/>} and a {@code <status/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <x xmlns='http://jabber.org/protocol/muc#user'>
      *     <item affiliation='member'
      *           nick='thirdwitch'
@@ -225,8 +212,7 @@ public final class MucUser {
      *         <reason>A worthy witch indeed!</reason>
      *     </item>
      * </x>
-     * }
-     * </pre>
+     * ```
      *
      * @param affiliation The affiliation.
      * @param role        The role.
@@ -241,8 +227,7 @@ public final class MucUser {
     /**
      * Creates a {@code <x/>} element with an {@code <item/>} and a {@code <status/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <x xmlns='http://jabber.org/protocol/muc#user'>
      *     <item affiliation='none' role='none' jid='hag66@shakespeare.lit/pda' nick='oldhag'>
      *         <actor nick='Fluellen'/>
@@ -250,8 +235,7 @@ public final class MucUser {
      *     </item>
      *     <status code='307'/>
      * </x>
-     * }
-     * </pre>
+     * ```
      *
      * @param affiliation The affiliation.
      * @param role        The role.
@@ -269,16 +253,14 @@ public final class MucUser {
     /**
      * Creates a {@code <x/>} element with an {@code <item/>} and a {@code <destroy/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <x xmlns='http://jabber.org/protocol/muc#user'>
      *     <item affiliation='none' role='none'/>
      *     <destroy jid='coven@chat.shakespeare.lit'>
      *         <reason>Macbeth doth come.</reason>
      *     </destroy>
      * </x>
-     * }
-     * </pre>
+     * ```
      *
      * @param affiliation The affiliation.
      * @param role        The role.
@@ -293,13 +275,11 @@ public final class MucUser {
     /**
      * Creates a {@code <x/>} element with an {@code <invite/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <x xmlns='http://jabber.org/protocol/muc#user'>
      *     <invite to='hecate@shakespeare.lit'/>
      * </x>
-     * }
-     * </pre>
+     * ```
      *
      * @param invite The invites.
      * @return The {@link MucUser} instance.
@@ -311,8 +291,7 @@ public final class MucUser {
     /**
      * Creates a {@code <x/>} element with an {@code <invite/>} and a {@code <password/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <x xmlns='http://jabber.org/protocol/muc#user'>
      *     <invite to='hecate@shakespeare.lit'/>
      *     <password>cauldronburn</password>
@@ -331,8 +310,7 @@ public final class MucUser {
     /**
      * Creates a {@code <x/>} element with a {@code <decline/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <x xmlns='http://jabber.org/protocol/muc#user'>
      *     <decline to='crone1@shakespeare.lit'>
      *         <reason>
@@ -340,8 +318,7 @@ public final class MucUser {
      *         </reason>
      *     </decline>
      * </x>
-     * }
-     * </pre>
+     * ```
      *
      * @param to     The to attribute.
      * @param reason The reason.
@@ -354,13 +331,11 @@ public final class MucUser {
     /**
      * Creates a {@code <x/>} element with one or more {@code <status/>} child elements.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <x xmlns='http://jabber.org/protocol/muc#user'>
      *     <status code='170'/>
      * </x>
-     * }
-     * </pre>
+     * ```
      *
      * @param status The status.
      * @return The {@link MucUser} instance.

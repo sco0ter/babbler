@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,8 +33,7 @@ import java.time.Instant;
 /**
  * The discussion history for a multi-user chat room, which can be requested when entering a room.
  * <h3>Usage</h3>
- * <pre>
- * {@code
+ * ```java
  * // To request discussion history for max. 65000 characters
  * DiscussionHistory history = DiscussionHistory.forMaxChars(65000);
  *
@@ -46,13 +45,12 @@ import java.time.Instant;
  *
  * // To request no discussion history at all
  * DiscussionHistory history = DiscussionHistory.none();
- * }
- * </pre>
+ * ```
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#enter-history">7.2.14 Discussion History</a>
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#enter-managehistory">7.2.15 Managing Discussion History</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#enter-history">7.2.14 Discussion History</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#enter-managehistory">7.2.15 Managing Discussion History</a>
  */
 public final class DiscussionHistory {
     @XmlAttribute

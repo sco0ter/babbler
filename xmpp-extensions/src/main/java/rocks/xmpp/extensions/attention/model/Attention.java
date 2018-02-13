@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,35 +33,27 @@ import javax.xml.bind.annotation.XmlType;
  * <p><cite><a href="http://xmpp.org/extensions/xep-0224.html">XEP-0224: Attention</a></cite></p>
  * <p>This feature is known as 'nudge' or 'buzz' in some non-XMPP IM protocols.</p>
  * </blockquote>
- * <h3>Usage</h3>
- * <h4>Listening for Attention Requests</h4>
+ * <h3>Listening for Attention Requests</h3>
  * <p>If you want to listen for inbound attention requests, listen for inbound messages and check if they have the {@link rocks.xmpp.extensions.attention.model.Attention} extension.
  * </p>
- * <pre>
- * {@code
+ * ```java
  * xmppClient.addInboundMessageListener(e -> {
  *     if (e.getMessage().hasExtension(Attention.class)) {
  *         // Handle attention request.
  *     }
  * });
- * }
- * </pre>
+ * ```java
  * <p>You should also enable this feature (preferably before login), in order to register this extension in service discovery:</p>
- * <pre>
- * {@code
+ * ```java
  * xmppClient.enableFeature(Attention.NAMESPACE);
- * }
- * </pre>
- * <h4>Requesting Attention</h4>
+ * ```
+ * <h3>Requesting Attention</h3>
  * Attention requests are sent via a 'headline' message:
- * <pre>
- * {@code
+ * ```java
  * Message message = new Message(jid, Message.Type.HEADLINE);
  * message.addExtension(Attention.INSTANCE);
  * xmppClient.send(message);
- * }
- * </pre>
- * <p>
+ * ```
  * This class is immutable.
  *
  * @author Christian Schudt

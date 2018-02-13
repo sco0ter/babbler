@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,17 +39,15 @@ import java.util.List;
 /**
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/muc#admin} namespace.
  * <h3>Usage</h3>
- * <pre>
- * {@code
+ * ```java
  * // To create an element with an item of a role
  * MucAdmin mucAdmin = MucAdmin.withItem(Role.MODERATOR);
- * }
- * </pre>
+ * ```
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#schemas-admin">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#schemas-admin">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class MucAdmin {
@@ -73,13 +71,11 @@ public final class MucAdmin {
     /**
      * Creates a {@code <query/>} element with an {@code <item/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
      *     <item role='participant'/>
      * </query>
-     * }
-     * </pre>
+     * ```
      *
      * @param role The role.
      * @return The {@link MucAdmin} instance.
@@ -91,14 +87,11 @@ public final class MucAdmin {
     /**
      * Creates a {@code <query/>} element with an {@code <item/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
      *     <item affiliation='outcast'/>
      * </query>
-     *
-     * }
-     * </pre>
+     * ```
      *
      * @param affiliation The affiliation.
      * @return The {@link MucAdmin} instance.
@@ -110,16 +103,14 @@ public final class MucAdmin {
     /**
      * Creates a {@code <query/>} element with an {@code <item/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
      *     <item nick='thirdwitch'
      *           role='participant'>
      *         <reason>A worthy witch indeed!</reason>
      *     </item>
      * </query>
-     * }
-     * </pre>
+     * ```
      *
      * @param role   The role.
      * @param nick   The nick.
@@ -133,14 +124,12 @@ public final class MucAdmin {
     /**
      * Creates a {@code <query/>} element with an {@code <item/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
      *     <item affiliation='outcast'
      *           jid='earlofcambridge@shakespeare.lit'/>
      * </query>
-     * }
-     * </pre>
+     * ```
      *
      * @param affiliation The affiliation.
      * @param jid         The JID.
@@ -154,16 +143,14 @@ public final class MucAdmin {
     /**
      * Creates a {@code <query/>} element with an {@code <item/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
      *     <item affiliation='member'
      *      jid='hag66@shakespeare.lit'
      *      nick='thirdwitch'>
      *     <reason>A worthy witch indeed!</reason>
      * </query>
-     * }
-     * </pre>
+     * ```
      *
      * @param affiliation The affiliation.
      * @param jid         The JID.
@@ -178,8 +165,7 @@ public final class MucAdmin {
     /**
      * Creates a {@code <query/>} element with {@code <item/>} child elements.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
      *     <item affiliation='none'
      *           jid='polonius@hamlet/castle'
@@ -194,8 +180,7 @@ public final class MucAdmin {
      *           nick='Hecate'
      *           role='participant'/>
      * </query>
-     * }
-     * </pre>
+     * ```
      *
      * @param items The items.
      * @return The {@link MucAdmin} instance.

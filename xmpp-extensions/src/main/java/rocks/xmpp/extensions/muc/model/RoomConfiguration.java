@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,14 +41,11 @@ import java.util.stream.Collectors;
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#roomconfig}, which can be used to configure a MUC room.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
- * <pre>
- * {@code
+ * ```java
  * RoomConfiguration roomConfiguration = new RoomConfiguration(dataForm);
- * }
- * </pre>
+ * ```
  * To build a form:
- * <pre>
- * {@code
+ * ```java
  * RoomConfiguration roomConfiguration = RoomConfiguration.builder()
  *     .maxHistoryMessages(4)
  *     .rolesThatMaySendPrivateMessages(Arrays.asList(Role.MODERATOR, Role.PARTICIPANT))
@@ -72,12 +69,11 @@ import java.util.stream.Collectors;
  *     .password("pass")
  *     .rolesThatMayDiscoverRealJids(EnumSet.of(Role.MODERATOR))
  *     .build();
- * }
- * </pre>
+ * ```
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner">15.5.3 muc#roomconfig FORM_TYPE</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner">15.5.3 muc#roomconfig FORM_TYPE</a>
  */
 public final class RoomConfiguration {
 

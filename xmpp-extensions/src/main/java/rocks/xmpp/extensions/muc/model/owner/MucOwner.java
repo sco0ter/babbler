@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,17 +35,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/muc#owner} namespace.
  * <h3>Usage</h3>
- * <pre>
- * {@code
+ * ```java
  * // To create an empty element (to query the configuration form).
  * MucOwner mucOwner = MucOwner.empty();
- * }
- * </pre>
+ * ```
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#schemas-owner">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#schemas-owner">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class MucOwner {
@@ -85,15 +83,13 @@ public final class MucOwner {
     /**
      * Creates a {@code <query/>} element with a {@code <destroy/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <query xmlns='http://jabber.org/protocol/muc#owner'>
      *     <destroy jid='coven@chat.shakespeare.lit'>
      *         <reason>Macbeth doth come.</reason>
      *     </destroy>
      * </query>
-     * }
-     * </pre>
+     * ```
      *
      * @param jid    The JID.
      * @param reason The reason.

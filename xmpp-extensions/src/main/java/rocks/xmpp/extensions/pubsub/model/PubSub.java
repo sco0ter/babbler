@@ -148,13 +148,11 @@ public final class PubSub {
     /**
      * Creates a pubsub element with an {@code <affiliations/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
      *     <affiliations/>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @return The pubsub instance.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-affiliations">5.7 Retrieve Affiliations</a>
@@ -166,13 +164,11 @@ public final class PubSub {
     /**
      * Creates a pubsub element with an {@code <affiliations/>} child element and a 'node' attribute.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
-     * <affiliations node='node6'/>
+     *     <affiliations node='node6'/>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node The node.
      * @return The pubsub instance.
@@ -185,8 +181,7 @@ public final class PubSub {
     /**
      * Creates a pubsub element with an {@code <configure/>} child element and a 'node' attribute.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
      *     <configure node='princely_musings'>
      *         <x xmlns='jabber:x:data' type='submit'>
@@ -197,8 +192,7 @@ public final class PubSub {
      *         </x>
      *     </configure>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node              The node.
      * @param configurationForm The configuration form.
@@ -212,13 +206,11 @@ public final class PubSub {
     /**
      * Creates a pubsub element with an {@code <create/>} child element and a 'node' attribute.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
      *     <create node='princely_musings'/>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node The node.
      * @return The pubsub instance.
@@ -231,8 +223,7 @@ public final class PubSub {
     /**
      * Creates a pubsub element with an {@code <create/>} and {@code <configure/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
      *     <create node='princely_musings'/>
      *     <configure>
@@ -240,8 +231,7 @@ public final class PubSub {
      *         </x>
      *     </configure>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node              The node.
      * @param configurationForm The configuration form.
@@ -255,13 +245,11 @@ public final class PubSub {
     /**
      * Creates a pubsub element with a {@code <subscriptions/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
      *     <subscriptions/>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @return The pubsub instance.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-subscriptions">5.6 Retrieve Subscriptions</a>
@@ -273,13 +261,11 @@ public final class PubSub {
     /**
      * Creates a pubsub element with a {@code <subscriptions/>} child element with a 'node' attribute.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
      *     <subscriptions node='princely_musings'/>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node The node.
      * @return The pubsub instance.
@@ -292,13 +278,11 @@ public final class PubSub {
     /**
      * Creates a pubsub element with a {@code <subscribe/>} child element with a 'node' and 'jid' attribute.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
      *     <subscribe node='princely_musings' jid='francisco@denmark.lit'/>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node The node.
      * @param jid  The JID.
@@ -312,8 +296,7 @@ public final class PubSub {
     /**
      * Creates a pubsub element with a {@code <subscribe/>} and {@code <options/>} child element with a 'node' and 'jid' attribute.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
      *     <subscribe node='princely_musings' jid='francisco@denmark.lit'/>
      *     <options>
@@ -321,8 +304,7 @@ public final class PubSub {
      *         </x>
      *     </options>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node     The node.
      * @param jid      The JID.
@@ -337,16 +319,14 @@ public final class PubSub {
     /**
      * Creates a pubsub element with an {@code <options/>} child element with a 'node' and 'jid' attribute.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
      *     <options>
      *         <x xmlns='jabber:x:data' type='submit'>
      *         </x>
      *     </options>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node     The node.
      * @param jid      The JID.
@@ -362,13 +342,11 @@ public final class PubSub {
     /**
      * Creates a pubsub element with an {@code <unsubscribe/>} child element with a 'node' and 'jid' attribute.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
      *     <unsubscribe node='princely_musings' jid='francisco@denmark.lit'/>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node           The node.
      * @param jid            The JID.
@@ -383,13 +361,11 @@ public final class PubSub {
     /**
      * Creates a pubsub element with a {@code <default/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
      *     <default/>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @return The pubsub instance.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscribe-default">6.4 Request Default Subscription Configuration Options</a>
@@ -401,13 +377,11 @@ public final class PubSub {
     /**
      * Creates a pubsub element with a {@code <default/>} child element with a 'node' attribute.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
      *     <default node='princely_musings'/>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node The node.
      * @return The pubsub instance.
@@ -420,13 +394,11 @@ public final class PubSub {
     /**
      * Creates a pubsub element with an {@code <items/>} child element with a 'node' attribute.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
      *     <items node='princely_musings'/>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node The node.
      * @return The pubsub instance.
@@ -439,16 +411,14 @@ public final class PubSub {
     /**
      * Creates a pubsub element with an {@code <items/>} child element, containing multiple item elements with an 'id' attribute.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
      *     <items node='princely_musings'>
      *         <item id='368866411b877c30064a5f62b917cffe'/>
      *         <item id='4e30f35051b7b8b42abe083742187228'/>
      *     </items>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node The node.
      * @param ids  The ids.
@@ -466,13 +436,11 @@ public final class PubSub {
     /**
      * Creates a pubsub element with an {@code <items/>} child element with a 'node' and a 'max_items' attribute.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
      *     <items node='princely_musings' max_items='2'/>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node     The node.
      * @param maxItems The max items.
@@ -486,16 +454,14 @@ public final class PubSub {
     /**
      * Creates a pubsub element with a {@code <publish/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
      *     <publish node='princely_musings'>
      *         <item id='bnd81g37d61f49fgn581'>
      *             <entry xmlns='http://www.w3.org/2005/Atom'>
      *     ...
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node    The node.
      * @param id      The id.
@@ -511,15 +477,13 @@ public final class PubSub {
     /**
      * Creates a pubsub element with a {@code <retract/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub'>
      *     <retract node='princely_musings' notify='true'>
      *         <item id='ae890ac52d0df67ed7cfdf51b644e901'/>
      *     </retract>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node   The node.
      * @param id     The id.

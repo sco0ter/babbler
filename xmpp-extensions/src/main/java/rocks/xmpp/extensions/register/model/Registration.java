@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,14 +37,11 @@ import java.net.URL;
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:register} namespace.
  * <h3>Usage</h3>
  * To request the registration form:
- * <pre>
- * {@code
+ * ```java
  * Registration registration = Registration.empty();
- * }
- * </pre>
+ * ```
  * To create a registration for submission:
- * <pre>
- * {@code
+ * ```java
  * Registration registration = Registration.builder()
  *     .username("user")
  *     .password("pass")
@@ -53,19 +50,16 @@ import java.net.URL;
  *     .nickname("Nick Name")
  *     .email("E-Mail")
  *     .build();
- * }
- * </pre>
+ * ```
  * To create a registration for removing the current account:
- * <pre>
- * {@code
+ * ```java
  * Registration registration = Registration.remove();
- * }
- * </pre>
+ * ```
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a>
- * @see <a href="http://xmpp.org/extensions/xep-0077.html#schemas-register">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0077.html#schemas-register">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class Registration {

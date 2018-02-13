@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,14 +35,11 @@ import java.util.Collection;
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#register}, which can be used to register with a MUC room.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
- * <pre>
- * {@code
+ * ```java
  * RoomRegistration roomRegistration = new RoomRegistration(dataForm);
- * }
- * </pre>
+ * ```
  * To build a form:
- * <pre>
- * {@code
+ * ```java
  * RoomRegistration roomRegistration = RoomRegistration.builder()
  *     .allowRegister(true)
  *     .email("hag66@witchesonline")
@@ -52,12 +49,11 @@ import java.util.Collection;
  *     .nickname("thirdwitch")
  *     .webPage(new URL("http://witchesonline/~hag66/"))
  *     .build();
- * }
- * </pre>
+ * ```
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#registrar-formtype-register">15.5.1 muc#register FORM_TYPE</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#registrar-formtype-register">15.5.1 muc#register FORM_TYPE</a>
  */
 public final class RoomRegistration {
 

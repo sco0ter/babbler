@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,14 +37,11 @@ import java.util.List;
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/pubsub#subscribe_options}, which can be used to configure a node subscription.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
- * <pre>
- * {@code
+ * ```java
  * SubscribeOptions subscribeOptions = new SubscribeOptions(dataForm);
- * }
- * </pre>
+ * ```
  * To build a form:
- * <pre>
- * {@code
+ * ```java
  * SubscribeOptions subscribeOptions = SubscribeOptions.builder()
  *     .deliver(true)
  *     .digest(true)
@@ -55,11 +52,10 @@ import java.util.List;
  *     .subscriptionType(SubscribeOptions.SubscriptionType.NODES)
  *     .subscriptionDepth(-1)
  *     .build();
- * }
- * </pre>
+ * ```
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#registrar-formtypes-subscribe">16.4.2 pubsub#subscribe_options FORM_TYPE</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#registrar-formtypes-subscribe">16.4.2 pubsub#subscribe_options FORM_TYPE</a>
  */
 public final class SubscribeOptions {
 

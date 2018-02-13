@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,24 +38,20 @@ import java.util.Objects;
 
 /**
  * The implementation of the {@code <address/>} element in the {@code http://jabber.org/protocol/address} namespace.
- * <p>
+ * <h3>Usage</h3>
  * To create a new address, use one of the public constructors, like:
- * <pre>
- * {@code
+ * ```java
  * Address address = new Address(Address.Type.TO, Jid.of("hildjj@jabber.org/Work"), "description");
- * }
- * </pre>
+ * ```
  * To mark an address as delivered, create a new immutable address object from an undelivered address:
- * <pre>
- * {@code
+ * ```java
  * Address delivered = address.delivered();
- * }
- * </pre>
+ * ```
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0033.html">XEP-0033: Extended Stanza Addressing</a>
- * @see <a href="http://xmpp.org/extensions/xep-0033.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0033.html">XEP-0033: Extended Stanza Addressing</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0033.html#schema">XML Schema</a>
  * @see Addresses
  */
 public final class Address {

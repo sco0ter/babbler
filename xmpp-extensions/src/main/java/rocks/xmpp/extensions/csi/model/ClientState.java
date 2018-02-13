@@ -12,14 +12,11 @@ import javax.xml.bind.annotation.XmlType;
  * Represents a client state, i.e. active or inactive.
  * <p>
  * Because elements of Client State Indication are stateless, instances of this class are static singletons.
- * <h2>Usage</h2>
- * <pre>
- * {@code
+ * ```java
  * ClientState.ACTIVE;
  * ClientState.INACTIVE;
  * ClientState.FEATURE;
- * }
- * </pre>
+ * ```
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0352.html">XEP-0352: Client State Indication</a>

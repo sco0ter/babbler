@@ -44,15 +44,13 @@ import java.util.Objects;
  * </blockquote>
  * <h3>Usage</h3>
  * In order to create a privacy rule, use one of the many static factory methods, e.g.:
- * <pre>
- * {@code
+ * ```java
  * // Blocks all messages from juliet@example.net
  * PrivacyRule rule1 = PrivacyRule.blockMessagesFrom(Jid.of("juliet@example.net"), 1);
  *
  * // Blocks outbound presence notifications to the roster group "Bad Friends".
  * PrivacyRule rule2 = PrivacyRule.blockPresenceToRosterGroup("Bad Friends", 2);
- * }
- * </pre>
+ * ```
  * <p>
  * This class is immutable.
  *

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,27 +51,23 @@ import java.util.function.Consumer;
  * </p>
  * <h3>Sending Chat States</h3>
  * Setting your own chat state can either be done in a one-to-one chat session or a group chat.
- * <pre>
- * {@code
+ * ```java
  * ChatStateManager chatStateManager = xmppSession.getManager(ChatStateManager.class);
  * chatStateManager.setChatState(ChatState.COMPOSING, chat);
- * }
- * </pre>
+ * ```
  * <h3>Receiving Chat States</h3>
  * If you want to react to chat states of your chat partner(s), just check for chat state extension and deal with it accordingly.
- * <pre>
- * {@code
+ * ```java
  * ChatState chatState = message.getExtension(ChatState.class);
  * if (chatState == ChatState.COMPOSING) {
  *     // Contact is typing.
  * } else if (chatState == ChatState.PAUSED) {
  *     // Contact has paused typing.
  * }
- * }
- * </pre>
+ * ```
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a>
  */
 public final class ChatStateManager extends Manager {
 
@@ -127,15 +123,13 @@ public final class ChatStateManager extends Manager {
     /**
      * Sets the chat state for a chat. If this manager is disabled this method has no effect.
      * Before sending chat states in a one-to-one chat, you should check, if the peer supports it, e.g. like that:
-     * <pre>
-     * {@code
+     * ```java
      * chatStateManager.isSupported(chat.getChatPartner()).thenAccept(result -> {
      *     if (result) {
      *         chatStateManager.setChatState(chatState, chat);
      *     }
      * });
-     * }
-     * </pre>
+     * ```
      *
      * @param chatState The chat state.
      * @param chat      The chat.

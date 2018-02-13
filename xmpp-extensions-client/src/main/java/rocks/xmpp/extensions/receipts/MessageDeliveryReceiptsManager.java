@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- * The implementation of <a href="http://xmpp.org/extensions/xep-0184.html">XEP-0184: Message Delivery Receipts</a>.
+ * The implementation of <a href="https://xmpp.org/extensions/xep-0184.html">XEP-0184: Message Delivery Receipts</a>.
  * <p>
  * This manager automatically adds message delivery requests to outbound messages, if enabled.
  * If a message has been received by the recipient, registered listeners will be notified about the receipt.
@@ -50,12 +50,10 @@ import java.util.function.Predicate;
  * Note that messages must contain an id, in order to track receipts. If a message does not contain an id, requests won't be added.
  * </p>
  * <h3>Code sample</h3>
- * <pre>
- * {@code
+ * ```java
  * MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = xmppSession.getManager(MessageDeliveryReceiptsManager.class);
  * messageDeliveryReceiptsManager.addMessageDeliveredListener(e -> System.out.println("Message delivered: " + e.getMessageId()));
- * }
- * </pre>
+ * ```
  */
 public final class MessageDeliveryReceiptsManager extends Manager {
 

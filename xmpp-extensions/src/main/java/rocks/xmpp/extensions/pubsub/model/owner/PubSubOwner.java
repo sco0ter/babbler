@@ -76,13 +76,11 @@ public final class PubSubOwner {
     /**
      * Creates a pubsub element with an {@code <configure/>} child element and a 'node' attribute.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
      *     <configure node='princely_musings'/>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node The node.
      * @return The pubsub instance.
@@ -95,16 +93,14 @@ public final class PubSubOwner {
     /**
      * Creates a pubsub element with an {@code <configure/>} child element and a 'node' attribute and a configuration form.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
      *     <configure node='princely_musings'/>
      *        <x xmlns='jabber:x:data' type='submit'>
      *            <field var='FORM_TYPE' type='hidden'>
      *        ...
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param dataForm The configuration form.
      * @param node     The node.
@@ -118,13 +114,11 @@ public final class PubSubOwner {
     /**
      * Creates a pubsub element with a {@code <default/>} child element.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
      *     <default/>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @return The pubsub instance.
      * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-default">8.3 Request Default Node Configuration Options</a>
@@ -136,13 +130,11 @@ public final class PubSubOwner {
     /**
      * Creates a pubsub element with a {@code <delete/>} child element and a 'node' attribute.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
      *     <delete node='princely_musings'/>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node The node.
      * @return The pubsub instance.
@@ -155,15 +147,13 @@ public final class PubSubOwner {
     /**
      * Creates a pubsub element with a {@code <delete/>} child element, a 'node' attribute and a replacement node.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
      *     <delete node='princely_musings'>
      *         <redirect uri='xmpp:hamlet@denmark.lit?;node=blog'/>
      *     </delete>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node            The node.
      * @param replacementNode The replacement node.
@@ -177,13 +167,11 @@ public final class PubSubOwner {
     /**
      * Creates a pubsub element with a {@code <purge/>} child element and a 'node' attribute.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
      *     <purge node='princely_musings'/>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node The node.
      * @return The pubsub instance.
@@ -196,15 +184,13 @@ public final class PubSubOwner {
     /**
      * Creates a pubsub element with a {@code <subscriptions/>} child element with {@code <subscription/>} elements.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
      *     <subscriptions node='princely_musings'>
      *         <subscription jid='bard@shakespeare.lit' subscription='subscribed'/>
      *     </subscriptions>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node          The node.
      * @param subscriptions The subscriptions.
@@ -218,15 +204,13 @@ public final class PubSubOwner {
     /**
      * Creates a pubsub element with a {@code <affiliations/>} child element with {@code <affiliation/>} elements.
      * <p><b>Sample:</b></p>
-     * <pre>
-     * {@code
+     * ```xml
      * <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
      *     <affiliations node='princely_musings'>
      *         <affiliation jid='bard@shakespeare.lit' affiliation='publisher'/>
      *     </affiliations>
      * </pubsub>
-     * }
-     * </pre>
+     * ```
      *
      * @param node             The node.
      * @param affiliationNodes The affiliations.

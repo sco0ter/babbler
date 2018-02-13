@@ -40,14 +40,12 @@ import java.time.Instant;
  * </p>
  * <p>By default, stanza forwarding support is not enabled.</p>
  * In order to check for a forwarded stanza, simply check for the {@link rocks.xmpp.extensions.forward.model.Forwarded} extension:
- * <pre>
- * <code>
+ * ```java
  * Forwarded forwarded = message.getExtension(Forwarded.class);
  * if (forwarded != null) {
  *     Message forwardedMessage = forwarded.getMessage();
  * }
- * </code>
- * </pre>
+ * ```
  *
  * @author Christian Schudt
  */

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,23 +33,18 @@ import java.util.Objects;
 
 /**
  * A container class for Message Delivery Receipts.
- * <h3>Usage</h3>
- * To include a {@code <request/>} element in a message (it's a singleton):
- * <pre>
- * {@code
+ * <h3>Requesting a Message Delivery Receipt</h3>
+ * ```java
  * message.addExtension(MessageDeliveryReceipts.REQUEST);
- * }
- * </pre>
- * To include a {@code <received/>} element in a message:
- * <pre>
- * {@code
+ * ```
+ * <h3>Sending an Receipt to a Message Delivery Request</h3>
+ * ```java
  * message.addExtension(new MessageDeliveryReceipts.Received(id));
- * }
- * </pre>
+ * ```
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0184.html">XEP-0184: Message Delivery Receipts</a>
- * @see <a href="http://xmpp.org/extensions/xep-0184.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0184.html">XEP-0184: Message Delivery Receipts</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0184.html#schema">XML Schema</a>
  */
 @XmlTransient
 @XmlSeeAlso({MessageDeliveryReceipts.Request.class, MessageDeliveryReceipts.Received.class})

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,40 +34,32 @@ import java.util.List;
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/pubsub#publish-options}, which can be used to retrieve node meta data.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
- * <pre>
- * {@code
+ * ```java
  * PublishOptions publishOptions = new PublishOptions(dataForm);
- * }
- * </pre>
+ * ```
  * To build a form:
- * <pre>
- * {@code
+ * ```java
  * PublishOptions publishOptions = PublishOptions.builder()
  *     .accessModel(AccessModel.AUTHORIZE)
  *     .persistItems(true)
  *     .rosterGroupsAllowed(Collections.singleton("Friends"))
  *     .sendLastPublishedItem(SendLastPublishedItem.ON_SUB)
  *     .build();
- * }
- * </pre>
+ * ```
  * <h4>Persistent Storage of Public Data via PubSub</h4>
- * <pre>
- * {@code
+ * ```java
  * PublishOptions publishOptions = PublishOptions.forStorageOfPublicData();
- * }
- * </pre>
+ * ```
  * <h4>Persistent Storage of Public Private via PubSub</h4>
- * <pre>
- * {@code
+ * ```java
  * PublishOptions publishOptions = PublishOptions.forStorageOfPrivateData();
- * }
- * </pre>
+ * ```
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#registrar-formtypes-publish">16.4.5 pubsub#publish-options FORM_TYPE</a>
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish-options">7.1.5 Publishing Options</a>
- * @see <a href="http://xmpp.org/extensions/xep-0222.html">XEP-0222: Persistent Storage of Public Data via PubSub</a>
- * @see <a href="http://xmpp.org/extensions/xep-0223.html">XEP-0223: Persistent Storage of Private Data via PubSub</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#registrar-formtypes-publish">16.4.5 pubsub#publish-options FORM_TYPE</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-publish-options">7.1.5 Publishing Options</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0222.html">XEP-0222: Persistent Storage of Public Data via PubSub</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0223.html">XEP-0223: Persistent Storage of Private Data via PubSub</a>
  */
 public final class PublishOptions {
 

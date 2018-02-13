@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,25 +40,26 @@ import java.util.stream.Collectors;
  * <p>
  * Use this class to add extended address information to a stanza.
  * </p>
- * <h2>Sample</h2>
- * <pre><code>
+ * <h3>Usage</h3>
+ * ```java
  * Address address = new Address(Address.Type.CC, Jid.of("juliet@example.net"));
  * Addresses addresses = new Addresses(Arrays.asList(address));
  * Message message = new Message(Jid.of("romeo@example.net"));
  * message.addExtension(addresses);
- * </code></pre>
- * <h2>Creating a Reply for a Message</h2>
+ * ```
+ * <h3>Creating a Reply for a Message</h3>
  * To create a reply use {@link #createReply(Message, Message)}:
- * <pre>
- * {@code
- * boolean replyGenerated = Addresses.createReply(message, replyMessage);
- * }
- * </pre>
+ * ```java
+ * Message replyMessage = new Message();
+ * boolean replyGenerated = Addresses.createReply(originalMessage, replyMessage);
+ * ```
+ * This will append an address extension to the reply message according to the business rules.
+ * <p>
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0033.html">XEP-0033: Extended Stanza Addressing</a>
- * @see <a href="http://xmpp.org/extensions/xep-0033.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0033.html">XEP-0033: Extended Stanza Addressing</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0033.html#schema">XML Schema</a>
  * @see Address
  */
 @XmlRootElement

@@ -32,7 +32,7 @@ import rocks.xmpp.core.stanza.model.Presence;
  * Each state can transition to a new state depending on an in- or outbound presence subscription change.
  *
  * @author Christian Schudt
- * @see Presence.Type
+ * @see rocks.xmpp.core.stanza.model.Presence.Type
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#substates-defined">RFC 6121, A.1.  Defined States</a>
  */
 public enum DefinedState implements SubscriptionState {

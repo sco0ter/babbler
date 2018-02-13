@@ -155,7 +155,7 @@ public final class Contact implements RosterItem, Comparable<Contact> {
      * Creates a new contact to send to the server for removal.
      *
      * @param jid Jid of the contact to be removed.
-     * @return a contact with only the Jid and {@link Subscription#REMOVE} set.
+     * @return a contact with only the Jid and {@link SubscriptionState.Subscription#REMOVE} set.
      */
     public static Contact removeContact(Jid jid) {
         return new Contact(jid, null, null, null, Subscription.REMOVE, Collections.emptyList());

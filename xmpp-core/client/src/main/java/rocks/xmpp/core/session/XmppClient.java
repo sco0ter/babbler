@@ -64,32 +64,25 @@ import java.util.logging.Logger;
  * The base class for establishing an XMPP session with a server, i.e. client-to-server sessions.
  * <h3>Establishing an XMPP Session</h3>
  * The following example shows the most simple way to establish a session:
- * <pre>
- * {@code
+ * ```java
  * XmppClient xmppClient = XmppClient.create("domain");
  * xmppClient.connect();
  * xmppClient.login("username", "password");
- * }
- * </pre>
+ * ```
  * By default, the session will try to establish a TCP connection over port 5222 and will try BOSH as fallback.
  * You can configure a session and its connection methods by passing appropriate configurations in its constructor.
  * <h3>Sending Messages</h3>
  * Once connected, you can send messages:
- * <pre>
- * {@code
+ * ```java
  * xmppClient.sendMessage(new Message(Jid.of("juliet@example.net"), Message.Type.CHAT));
- * }
- * </pre>
+ * ```
  * <h3>Closing the Session</h3>
- * <pre>
- * {@code
+ * ```java
  * xmppClient.close();
- * }
- * </pre>
+ * ```
  * <h3>Listening for Messages and Presence</h3>
  * <b>Note:</b> Adding the following listeners should be added before logging in, otherwise they might not trigger.
- * <pre>
- * {@code
+ * ```java
  * // Listen for messages
  * xmppClient.addInboundMessageListener(e ->
  *     // Handle inbound message.
@@ -99,8 +92,7 @@ import java.util.logging.Logger;
  * xmppClient.addInboundPresenceListener(e ->
  *     // Handle inbound presence.
  * );
- * }
- * </pre>
+ * ```
  * This class is thread-safe, which means you can safely add listeners or call <code>send()</code>, <code>close()</code> (and other methods) from different threads.
  *
  * @author Christian Schudt

@@ -61,14 +61,12 @@ import java.util.function.Supplier;
  * <p>
  * Use the {@link #builder()} to create instances of this class:
  * </p>
- * <pre>
- * {@code
+ * ```java
  * XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
- * .extensions(MyClass1.class, MyClass2.class)
- * .debugger(ConsoleDebugger.class)
- * .build();
- * }
- * </pre>
+ *     .extensions(Extension.of(MyClass1.class), Extension.of(MyClass2.class))
+ *     .debugger(ConsoleDebugger.class)
+ *     .build();
+ * ```
  * This class is immutable.
  *
  * @author Christian Schudt

@@ -42,14 +42,11 @@ import java.util.Set;
 
 /**
  * Represents the XMPP stream header.
- * <p>
- * Usage:
- * <pre>
- * {@code
+ * <h2>Usage</h2>
+ * ```java
  * StreamHeader streamHeader = StreamHeader.initialClientToServer(from, to, Locale.GERMAN);
  * streamHeader.writeTo(xmlStreamWriter);
- * }
- * </pre>
+ * ```
  * The {@code toString()} method of this class returns the XML string of the stream header,
  * which is emphasized by the implementation of the {@link CharSequence} interface.
  * <p>

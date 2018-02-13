@@ -305,6 +305,19 @@
                         <windowtitle>Babbler ${project.version}</windowtitle>
                         <docfilessubdirs>true</docfilessubdirs>
                         <show>public</show>
+
+                        <!--> Markdown doclet -->
+                        <doclet>ch.raffael.mddoclet.MarkdownDoclet</doclet>
+                        <docletArtifact>
+                            <groupId>ch.raffael.markdown-doclet</groupId>
+                            <artifactId>markdown-doclet</artifactId>
+                            <version>1.4</version>
+                        </docletArtifact>
+                        <useStandardDocletOptions>true</useStandardDocletOptions>
+                        <additionalOptions>
+                            <additionalOption>-highlight-style</additionalOption>
+                            <additionalOption>tomorrow</additionalOption>
+                        </additionalOptions>
                     </configuration>
                 </plugin>
                 <plugin>

@@ -50,9 +50,8 @@ public final class XmppUtils {
 
     /**
      * Creates a {@link XMLStreamWriter} instance, which writes XML without namespace prefixes.
-     * <p><b>Sample usage:</b></p>
-     * <pre>
-     * {@code
+     * <h2>Usage</h2>
+     * ```java
      * Writer writer = new StringWriter();
      *
      * XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
@@ -70,11 +69,9 @@ public final class XmppUtils {
      * marshaller.marshal(message, xmppStreamWriter);
      * xmppStreamWriter.flush();
      * System.out.println(writer.toString());
-     * }
-     * </pre>
+     * ```
      * The output of this is:
-     * <pre>
-     * {@code
+     * ```xml
      * <message to="juliet@example.net">
      *     <sent xmlns="urn:xmpp:carbons:2">
      *         <forwarded xmlns="urn:xmpp:forward:0">
@@ -84,8 +81,7 @@ public final class XmppUtils {
      *         </forwarded>
      *     </sent>
      * </message>
-     * }
-     * </pre>
+     * ```
      *
      * @param xmlStreamWriter     The underlying XML stream writer.
      * @param contentNamespace    The content namspace, e.g. "jabber:client".

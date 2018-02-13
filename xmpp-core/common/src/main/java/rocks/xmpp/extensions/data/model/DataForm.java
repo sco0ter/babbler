@@ -406,12 +406,11 @@ public final class DataForm implements Comparable<DataForm> {
 
     /**
      * A data form field.
-     * <h3>Usage</h3>
-     * <h4>Creating a field</h4>
+     * <h2>Usage</h2>
+     * <h3>Creating a field</h3>
      * Since a field can have multiple different properties like type, value, label, description, required, options, etc. it uses the builder pattern to construct an (immutable) instance of a field.
      * If the field type is omitted it's inferred from the value, as you see in the following examples.
-     * <pre>
-     * {@code
+     * ```java
      * // <field type="boolean" var="test"><value>1</value></field>
      * DataForm.Field field = DataForm.Field.builder()
      *     .var("test")
@@ -423,29 +422,24 @@ public final class DataForm implements Comparable<DataForm> {
      *     .var("test")
      *     .value(Jid.of("domain"))
      *     .build();
-     * }
-     * </pre>
-     * <h4>Creating a field with options</h4>
-     * <pre>
-     * {@code
+     * ```
+     * <h3>Creating a field with options</h3>
+     * ```java
      * // <field type="list-single" var="test"><option><value>option</value></option></field>
      * DataForm.Field field = DataForm.Field.builder()
      *     .var("test")
      *     .type(DataForm.Field.Type.LIST_SINGLE)
      *     .options(Collections.singleton(new DataForm.Option("option")))
      *     .build();
-     * }
-     * </pre>
-     * <h4>Retrieving values from a field</h4>
-     * <pre>
-     * {@code
+     * ```
+     * <h3>Retrieving values from a field</h3>
+     * ```java
      * // Interprets the field value as integer, e.g. <value>123</value>
      * Integer intValue = field.getValueAsInteger();
      *
      * // Interprets the field value as boolean, e.g. <value>1</value>
      * boolean boolValue = field.getValueAsBoolean();
-     * }
-     * </pre>
+     * ```
      * This class is immutable.
      *
      * @see <a href="http://xmpp.org/extensions/xep-0004.html#protocol-field">3.2 The Field Element</a>

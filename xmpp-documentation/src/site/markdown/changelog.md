@@ -6,6 +6,14 @@
 * Works as [JPMS modules](jpms.md) on Java 9 *and* as conventional JAR library on Java 8
 * Make `Jid` class an interface. Full JIDs and bare JIDs now share the same instance. No new instances need to be created when calling `asBareJid()`, the interface just returns a different view on the full JID.
 Reduces GC pressure and increase performance.
+* Allow Unicode (non-ASCII) domain names in JIDs.
+* Update `Jid` implementation to use new PRECIS specification [RFC 8264](https://tools.ietf.org/html/rfc8264)
+* Add a `MalformedJid` implementation to allow to use malformed-jid stanza error.
+* Add Java NIO support
+* Every connection now has `closeAsync()` method
+* Allow to set a custom thread factory for all threads being started
+* Add support for [XEP-0390: Entity Capabilities 2.0](http://www.xmpp.org/extensions/xep-0390.html)
+* Add support for [XEP-0392: Consistent Color Generation](http://www.xmpp.org/extensions/xep-0392.html)
 * Add low-level support for [XEP-0258: Security Labels in XMPP](http://www.xmpp.org/extensions/xep-0258.html)
 * Add low-level support for [XEP-0264: Jingle Content Thumbnails](http://www.xmpp.org/extensions/xep-0264.html)
 * Add low-level support for [XEP-0352: Client State Indication](http://www.xmpp.org/extensions/xep-0352.html)
@@ -18,6 +26,10 @@ Reduces GC pressure and increase performance.
 * XEP-0059: Add `nextPage()` and `previousPage()` method to result set management. Also refine the naming of the RSM methods.
 * XEP-0085: Add `isSupported` method for Chat State Notifications (either discover implicit support or else use service discovery)
 * XEP-0096: Only return a single value during SI FileTransfer negotiation.
+* XEP-0115: Sort by octets, not by characters.
+* XEP-0300: Update to urn:xmpp:hashes:2
+* Fix Message#createError()
+
 
 ### Version 0.7.5 (2018-01-27)
 

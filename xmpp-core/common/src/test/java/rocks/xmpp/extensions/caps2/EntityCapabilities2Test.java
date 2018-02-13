@@ -152,7 +152,6 @@ public class EntityCapabilities2Test extends XmlTest {
                 "</query>";
         InfoDiscovery infoDiscovery = unmarshal(xml, InfoDiscovery.class);
         EntityCapabilities caps = new EntityCapabilities2(infoDiscovery, MessageDigest.getInstance("SHA-256"));
-        System.out.println(caps);
         Assert.assertEquals(caps.getCapabilityHashSet().size(), 1);
         Assert.assertEquals(Base64.getEncoder().encodeToString(caps.getCapabilityHashSet().iterator().next().getHashValue()), "u79ZroNJbdSWhdSp311mddz44oHHPsEBntQ5b1jqBSY=");
     }

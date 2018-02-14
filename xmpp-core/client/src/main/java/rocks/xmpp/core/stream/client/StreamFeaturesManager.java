@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +22,12 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.stream;
+package rocks.xmpp.core.stream.client;
 
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stream.StreamNegotiationException;
+import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.tls.model.StartTls;
@@ -60,7 +62,7 @@ import java.util.stream.Collectors;
  * improve the handling of an XML stream (e.g., establishment of application-layer compression as described
  * in [XEP-0138]).</p>
  * </blockquote>
- * <p>Each feature is associated with a {@linkplain StreamFeatureNegotiator feature negotiator}, which
+ * <p>Each feature is associated with a {@linkplain rocks.xmpp.core.stream.client.StreamFeatureNegotiator feature negotiator}, which
  * negotiates the particular feature.</p>
  * <p>This class manages these negotiators, receives XML elements and delegates them to the responsible
  * feature negotiator for further processing.</p>
@@ -89,7 +91,7 @@ public final class StreamFeaturesManager extends Manager {
     /**
      * The feature negotiators, which are responsible to negotiate each individual feature.
      */
-    private final Set<StreamFeatureNegotiator> streamFeatureNegotiators = new CopyOnWriteArraySet<>();
+    private final Set<StreamFeatureNegotiator<? extends StreamFeature>> streamFeatureNegotiators = new CopyOnWriteArraySet<>();
 
     private CompletableFuture<Void> negotiationCompleted;
 
@@ -147,7 +149,7 @@ public final class StreamFeaturesManager extends Manager {
      *
      * @param streamFeatureNegotiator The feature negotiator, which is responsible for the feature.
      */
-    public final void addFeatureNegotiator(StreamFeatureNegotiator streamFeatureNegotiator) {
+    public final void addFeatureNegotiator(StreamFeatureNegotiator<? extends StreamFeature> streamFeatureNegotiator) {
         streamFeatureNegotiators.add(streamFeatureNegotiator);
     }
 
@@ -156,7 +158,7 @@ public final class StreamFeaturesManager extends Manager {
      *
      * @param streamFeatureNegotiator The feature negotiator.
      */
-    public final void removeFeatureNegotiator(StreamFeatureNegotiator streamFeatureNegotiator) {
+    public final void removeFeatureNegotiator(StreamFeatureNegotiator<? extends StreamFeature> streamFeatureNegotiator) {
         streamFeatureNegotiators.remove(streamFeatureNegotiator);
     }
 
@@ -198,7 +200,7 @@ public final class StreamFeaturesManager extends Manager {
      */
     public final synchronized boolean processElement(Object element) throws StreamNegotiationException {
         // Check if the element is known to any feature negotiator.
-        for (StreamFeatureNegotiator streamFeatureNegotiator : streamFeatureNegotiators) {
+        for (StreamFeatureNegotiator<? extends StreamFeature> streamFeatureNegotiator : streamFeatureNegotiators) {
             if (streamFeatureNegotiator.getFeatureClass() == element.getClass() || streamFeatureNegotiator.canProcess(element)) {
                 CompletableFuture<Void> streamFuture = featureNegotiationStartedFutures.computeIfAbsent(streamFeatureNegotiator.getFeatureClass(), k -> new CompletableFuture<>());
                 StreamNegotiationResult status = streamFeatureNegotiator.processNegotiation(element);

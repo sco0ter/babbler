@@ -30,18 +30,18 @@ import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.model.Session;
-import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.core.stanza.model.client.ClientPresence;
-import rocks.xmpp.core.stream.StreamNegotiationResult;
-import rocks.xmpp.core.stream.model.StreamErrorException;
-import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
+import rocks.xmpp.core.stream.StreamNegotiationResult;
+import rocks.xmpp.core.stream.client.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.subscription.PresenceManager;
@@ -88,7 +88,7 @@ import java.util.logging.Logger;
  * xmppClient.addInboundMessageListener(e ->
  *     // Handle inbound message.
  * );
- *
+ * 
  * // Listen for presence changes
  * xmppClient.addInboundPresenceListener(e ->
  *     // Handle inbound presence.
@@ -138,7 +138,7 @@ public final class XmppClient extends XmppSession {
         authenticationManager = new AuthenticationManager(this);
 
         streamFeaturesManager.addFeatureNegotiator(authenticationManager);
-        streamFeaturesManager.addFeatureNegotiator(new StreamFeatureNegotiator(this, Bind.class) {
+        streamFeaturesManager.addFeatureNegotiator(new StreamFeatureNegotiator<Bind>(this, Bind.class) {
             @Override
             public StreamNegotiationResult processNegotiation(Object element) {
                 // Resource binding will be negotiated manually
@@ -262,7 +262,7 @@ public final class XmppClient extends XmppSession {
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
-     * @throws StanzaErrorException            If the server returned a stanza error during resource binding or roster retrieval.
+     * @throws StanzaErrorException       If the server returned a stanza error during resource binding or roster retrieval.
      * @throws XmppException              If the login failed, due to another error.
      */
     public final byte[] login(String user, String password) throws XmppException {
@@ -280,7 +280,7 @@ public final class XmppClient extends XmppSession {
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
-     * @throws StanzaErrorException            If the server returned a stanza error during resource binding or roster retrieval.
+     * @throws StanzaErrorException       If the server returned a stanza error during resource binding or roster retrieval.
      * @throws XmppException              If the login failed, due to another error.
      */
     public final byte[] login(String user, String password, String resource) throws XmppException {
@@ -299,7 +299,7 @@ public final class XmppClient extends XmppSession {
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
-     * @throws StanzaErrorException            If the server returned a stanza error during resource binding or roster retrieval.
+     * @throws StanzaErrorException       If the server returned a stanza error during resource binding or roster retrieval.
      * @throws XmppException              If the login failed, due to another error.
      */
     public final byte[] login(String authorizationId, final String user, final String password, String resource) throws XmppException {
@@ -331,7 +331,7 @@ public final class XmppClient extends XmppSession {
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
-     * @throws StanzaErrorException            If the server returned a stanza error during resource binding or roster retrieval.
+     * @throws StanzaErrorException       If the server returned a stanza error during resource binding or roster retrieval.
      * @throws XmppException              If the login failed, due to another error.
      */
     public final byte[] login(String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
@@ -346,7 +346,7 @@ public final class XmppClient extends XmppSession {
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
-     * @throws StanzaErrorException            If the server returned a stanza error during resource binding.
+     * @throws StanzaErrorException       If the server returned a stanza error during resource binding.
      * @throws XmppException              If the login failed, due to another error.
      */
     public final byte[] loginAnonymously() throws XmppException {

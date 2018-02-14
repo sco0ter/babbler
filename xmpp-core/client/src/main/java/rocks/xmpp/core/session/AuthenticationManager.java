@@ -32,7 +32,7 @@ import rocks.xmpp.core.sasl.model.Failure;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.sasl.model.Response;
 import rocks.xmpp.core.sasl.model.Success;
-import rocks.xmpp.core.stream.StreamFeatureNegotiator;
+import rocks.xmpp.core.stream.client.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 
@@ -57,7 +57,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-final class AuthenticationManager extends StreamFeatureNegotiator {
+final class AuthenticationManager extends StreamFeatureNegotiator<Mechanisms> {
 
     private static final Logger logger = Logger.getLogger(AuthenticationManager.class.getName());
 

@@ -28,7 +28,7 @@ package rocks.xmpp.extensions.register;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stream.StreamFeaturesManager;
+import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.register.model.Registration;
 import rocks.xmpp.extensions.register.model.feature.RegisterFeature;

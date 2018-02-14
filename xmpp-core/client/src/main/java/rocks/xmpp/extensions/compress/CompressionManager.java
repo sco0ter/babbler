@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.compress;
 
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stream.StreamFeatureNegotiator;
+import rocks.xmpp.core.stream.client.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
@@ -47,7 +47,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class CompressionManager extends StreamFeatureNegotiator {
+public final class CompressionManager extends StreamFeatureNegotiator<CompressionFeature> {
 
     private static final Logger logger = Logger.getLogger(CompressionManager.class.getName());
 

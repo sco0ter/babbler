@@ -26,7 +26,7 @@ package rocks.xmpp.core.tls.client;
 
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.StreamFeatureListener;
-import rocks.xmpp.core.stream.StreamFeatureNegotiator;
+import rocks.xmpp.core.stream.client.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.tls.model.Failure;
@@ -39,7 +39,7 @@ import rocks.xmpp.core.tls.model.StartTls;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tls">STARTTLS Negotiation</a>
  */
-public final class StartTlsManager extends StreamFeatureNegotiator {
+public final class StartTlsManager extends StreamFeatureNegotiator<StartTls> {
 
     private final boolean isSecure;
 

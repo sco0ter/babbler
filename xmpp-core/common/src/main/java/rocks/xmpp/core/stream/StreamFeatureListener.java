@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,16 +24,14 @@
 
 package rocks.xmpp.core.stream;
 
-import java.util.EventListener;
-
 /**
  * A feature listener, which listens for successful feature negotiation.
  *
  * @author Christian Schudt
- * @see rocks.xmpp.core.stream.StreamFeatureNegotiator#addFeatureListener(StreamFeatureListener)
+ * @see StreamNegotiator#addFeatureListener(StreamFeatureListener)
  */
 @FunctionalInterface
-public interface StreamFeatureListener extends EventListener {
+public interface StreamFeatureListener {
 
     /**
      * Fired when the feature has been successfully negotiated.

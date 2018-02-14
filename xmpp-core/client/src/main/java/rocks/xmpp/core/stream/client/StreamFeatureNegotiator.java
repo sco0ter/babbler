@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +22,13 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.stream;
+package rocks.xmpp.core.stream.client;
 
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stream.StreamFeatureListener;
+import rocks.xmpp.core.stream.StreamNegotiator;
+import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.StreamFeature;
 
 import java.util.Set;
@@ -40,11 +43,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * @author Christian Schudt
  */
-public abstract class StreamFeatureNegotiator extends Manager {
+public abstract class StreamFeatureNegotiator<T extends StreamFeature> extends Manager implements StreamNegotiator<T> {
 
     private final Set<StreamFeatureListener> streamFeatureListeners = new CopyOnWriteArraySet<>();
 
-    private final Class<? extends StreamFeature> featureClass;
+    private final Class<T> featureClass;
 
     /**
      * Constructs a feature negotiator.
@@ -52,7 +55,7 @@ public abstract class StreamFeatureNegotiator extends Manager {
      * @param xmppSession  The XMPP session.
      * @param featureClass The feature class, which represents the feature, which will be negotiated.
      */
-    public StreamFeatureNegotiator(XmppSession xmppSession, Class<? extends StreamFeature> featureClass) {
+    public StreamFeatureNegotiator(XmppSession xmppSession, Class<T> featureClass) {
         super(xmppSession, false);
         this.featureClass = featureClass;
     }
@@ -78,28 +81,12 @@ public abstract class StreamFeatureNegotiator extends Manager {
     }
 
     /**
-     * Processes a feature protocol element or the feature element itself.
-     *
-     * @param element The XML element, which belongs to the feature negotiation, e.g. {@code <challenge/>} for SASL negotiation or the feature element itself, e.g. {@code <mechanisms/>}.
-     * @return The status of the feature negotiation.
-     * @throws StreamNegotiationException Any exception which might be thrown during a feature negotiation. Note that any exception thrown during the feature negotiation process is thrown by the {@link rocks.xmpp.core.session.XmppSession#connect()} method and therefore will abort the connection process.
-     */
-    public abstract StreamNegotiationResult processNegotiation(Object element) throws StreamNegotiationException;
-
-    /**
-     * Checks, whether the element can be processed by the feature negotiator.
-     *
-     * @param element The feature protocol element, e.g. {@code <challenge/>}. The element is never the feature element itself, e.g. {@code <mechanisms/>}, which is advertised in the {@code <stream:features/>} element.
-     * @return True, if the element can be processed by the feature negotiator.
-     */
-    public abstract boolean canProcess(Object element);
-
-    /**
      * Gets the feature class, this negotiator is responsible for.
      *
      * @return The feature class.
      */
-    public final Class<? extends StreamFeature> getFeatureClass() {
+    @Override
+    public final Class<T> getFeatureClass() {
         return featureClass;
     }
 }

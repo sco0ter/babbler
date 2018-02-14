@@ -84,20 +84,7 @@ public abstract class StreamFeatureNegotiator extends Manager {
      * @return The status of the feature negotiation.
      * @throws StreamNegotiationException Any exception which might be thrown during a feature negotiation. Note that any exception thrown during the feature negotiation process is thrown by the {@link rocks.xmpp.core.session.XmppSession#connect()} method and therefore will abort the connection process.
      */
-    public abstract Status processNegotiation(Object element) throws StreamNegotiationException;
-
-    /**
-     * Checks, if the feature needs a stream restart after it has been successfully negotiated.
-     * Override this method (returning true), if the feature requires a stream restart after negotiation.
-     * <p>
-     * By default this method returns false.
-     * </p>
-     *
-     * @return True, if the stream requires a restart after feature negotiation.
-     */
-    public boolean needsRestart() {
-        return false;
-    }
+    public abstract StreamNegotiationResult processNegotiation(Object element) throws StreamNegotiationException;
 
     /**
      * Checks, whether the element can be processed by the feature negotiator.
@@ -114,23 +101,5 @@ public abstract class StreamFeatureNegotiator extends Manager {
      */
     public final Class<? extends StreamFeature> getFeatureClass() {
         return featureClass;
-    }
-
-    /**
-     * Represents the status of the feature negotiation.
-     */
-    public enum Status {
-        /**
-         * If the feature negotiation has been successful.
-         */
-        SUCCESS,
-        /**
-         * If the feature negotiation is in progress and has not yet completed.
-         */
-        INCOMPLETE,
-        /**
-         * If the feature has been ignored.
-         */
-        IGNORE
     }
 }

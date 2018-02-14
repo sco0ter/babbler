@@ -28,6 +28,7 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.StreamFeatureListener;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
+import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.tls.model.Failure;
 import rocks.xmpp.core.tls.model.Proceed;
 import rocks.xmpp.core.tls.model.StartTls;
@@ -49,7 +50,7 @@ public final class StartTlsManager extends StreamFeatureNegotiator {
     }
 
     @Override
-    public Status processNegotiation(Object element) throws StreamNegotiationException {
+    public StreamNegotiationResult processNegotiation(Object element) throws StreamNegotiationException {
         if (element instanceof StartTls) {
             StartTls startTls = (StartTls) element;
             if (startTls.isMandatory() && !isSecure) {
@@ -58,21 +59,16 @@ public final class StartTlsManager extends StreamFeatureNegotiator {
             if (isSecure) {
                 xmppSession.send(new StartTls());
             } else {
-                return Status.IGNORE;
+                return StreamNegotiationResult.IGNORE;
             }
         } else if (element instanceof Proceed) {
             notifyFeatureNegotiated();
-            return Status.SUCCESS;
+            return StreamNegotiationResult.RESTART;
         } else if (element instanceof Failure) {
             throw new StreamNegotiationException("Failure during TLS negotiation.");
         }
 
-        return Status.INCOMPLETE;
-    }
-
-    @Override
-    public boolean needsRestart() {
-        return true;
+        return StreamNegotiationResult.INCOMPLETE;
     }
 
     @Override

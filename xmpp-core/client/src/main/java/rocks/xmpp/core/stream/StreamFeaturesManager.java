@@ -72,7 +72,7 @@ import java.util.stream.Collectors;
  */
 public final class StreamFeaturesManager extends Manager {
 
-    private static final EnumSet<StreamFeatureNegotiator.Status> NEGOTIATION_COMPLETED = EnumSet.of(StreamFeatureNegotiator.Status.SUCCESS, StreamFeatureNegotiator.Status.IGNORE);
+    private static final EnumSet<StreamNegotiationResult> NEGOTIATION_COMPLETED = EnumSet.of(StreamNegotiationResult.SUCCESS, StreamNegotiationResult.IGNORE, StreamNegotiationResult.RESTART);
 
     private final Map<Class<? extends StreamFeature>, CompletableFuture<Void>> featureNegotiationStartedFutures = new ConcurrentHashMap<>();
 
@@ -201,12 +201,12 @@ public final class StreamFeaturesManager extends Manager {
         for (StreamFeatureNegotiator streamFeatureNegotiator : streamFeatureNegotiators) {
             if (streamFeatureNegotiator.getFeatureClass() == element.getClass() || streamFeatureNegotiator.canProcess(element)) {
                 CompletableFuture<Void> streamFuture = featureNegotiationStartedFutures.computeIfAbsent(streamFeatureNegotiator.getFeatureClass(), k -> new CompletableFuture<>());
-                StreamFeatureNegotiator.Status status = streamFeatureNegotiator.processNegotiation(element);
+                StreamNegotiationResult status = streamFeatureNegotiator.processNegotiation(element);
                 // If the feature has been successfully negotiated.
                 if (NEGOTIATION_COMPLETED.contains(status)) {
                     streamFuture.complete(null);
                     // Check if the feature expects a restart now.
-                    if (status == StreamFeatureNegotiator.Status.SUCCESS && streamFeatureNegotiator.needsRestart()) {
+                    if (status == StreamNegotiationResult.RESTART) {
                         return true;
                     } else {
                         // If no restart is required, negotiate the next feature.
@@ -232,7 +232,7 @@ public final class StreamFeaturesManager extends Manager {
             Class<? extends StreamFeature> featureClass = advertisedFeature.getClass();
             CompletableFuture<Void> streamFuture = featureNegotiationStartedFutures.computeIfAbsent(featureClass, k -> new CompletableFuture<>());
             if (!streamFuture.isDone()) {
-                StreamFeatureNegotiator.Status negotiationStatus = StreamFeatureNegotiator.Status.IGNORE;
+                StreamNegotiationResult negotiationStatus = StreamNegotiationResult.IGNORE;
                 // See if there's a feature negotiator associated with the feature.
                 for (StreamFeatureNegotiator streamFeatureNegotiator : streamFeatureNegotiators) {
                     if (streamFeatureNegotiator.getFeatureClass() == advertisedFeature.getClass()) {
@@ -245,7 +245,7 @@ public final class StreamFeaturesManager extends Manager {
                 // Complete the future, which means, negotiation of the feature has started.
                 streamFuture.complete(null);
                 // If feature negotiation is incomplete, return and wait until it is completed.
-                if (negotiationStatus == StreamFeatureNegotiator.Status.INCOMPLETE) {
+                if (negotiationStatus == StreamNegotiationResult.INCOMPLETE) {
                     return true;
                 }
             }

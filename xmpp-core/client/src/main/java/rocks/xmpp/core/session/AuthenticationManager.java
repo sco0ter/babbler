@@ -34,6 +34,7 @@ import rocks.xmpp.core.sasl.model.Response;
 import rocks.xmpp.core.sasl.model.Success;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
+import rocks.xmpp.core.stream.StreamNegotiationResult;
 
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.sasl.Sasl;
@@ -137,7 +138,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
     }
 
     @Override
-    public final synchronized Status processNegotiation(Object element) throws StreamNegotiationException {
+    public final synchronized StreamNegotiationResult processNegotiation(Object element) throws StreamNegotiationException {
         try {
             if (element instanceof Mechanisms) {
                 supportedMechanisms.clear();
@@ -162,7 +163,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
                 } catch (SaslException e) {
                     logger.log(Level.WARNING, e.getMessage(), e);
                 }
-                return Status.SUCCESS;
+                return StreamNegotiationResult.RESTART;
             }
         } catch (SaslException e) {
             AuthenticationException authenticationException = new AuthenticationException(e.getMessage());
@@ -177,12 +178,7 @@ final class AuthenticationManager extends StreamFeatureNegotiator {
             throw authenticationException;
         }
 
-        return Status.INCOMPLETE;
-    }
-
-    @Override
-    public final boolean needsRestart() {
-        return true;
+        return StreamNegotiationResult.INCOMPLETE;
     }
 
     @Override

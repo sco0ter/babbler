@@ -37,6 +37,7 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.core.stanza.model.client.ClientPresence;
+import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
@@ -139,9 +140,9 @@ public final class XmppClient extends XmppSession {
         streamFeaturesManager.addFeatureNegotiator(authenticationManager);
         streamFeaturesManager.addFeatureNegotiator(new StreamFeatureNegotiator(this, Bind.class) {
             @Override
-            public Status processNegotiation(Object element) {
+            public StreamNegotiationResult processNegotiation(Object element) {
                 // Resource binding will be negotiated manually
-                return Status.INCOMPLETE;
+                return StreamNegotiationResult.INCOMPLETE;
             }
 
             @Override

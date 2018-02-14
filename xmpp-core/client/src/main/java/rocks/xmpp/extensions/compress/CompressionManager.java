@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.compress;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
+import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
 import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
 
@@ -59,9 +60,9 @@ public final class CompressionManager extends StreamFeatureNegotiator {
     }
 
     @Override
-    public final Status processNegotiation(Object element) throws StreamNegotiationException {
+    public final StreamNegotiationResult processNegotiation(Object element) throws StreamNegotiationException {
         if (compressionMethods.isEmpty()) {
-            return Status.IGNORE;
+            return StreamNegotiationResult.IGNORE;
         }
 
         if (element instanceof CompressionFeature) {
@@ -76,31 +77,21 @@ public final class CompressionManager extends StreamFeatureNegotiator {
                 CompressionMethod compressionMethod = clientMethods.values().iterator().next();
                 xmppSession.send(new StreamCompression.Compress(compressionMethod.getName()));
                 negotiatedCompressionMethod = compressionMethod;
-                return Status.INCOMPLETE;
+                return StreamNegotiationResult.INCOMPLETE;
             } else {
-                return Status.IGNORE;
+                return StreamNegotiationResult.IGNORE;
             }
         } else if (element == StreamCompression.COMPRESSED) {
             notifyFeatureNegotiated();
             logger.fine("Stream is now compressed.");
-            return Status.SUCCESS;
+            return StreamNegotiationResult.RESTART;
         } else if (element instanceof StreamCompression.Failure) {
             negotiatedCompressionMethod = null;
             // Failure of the negotiation SHOULD NOT be treated as an unrecoverable error
             logger.warning("Failure during compression negotiation: " + ((StreamCompression.Failure) element).getCondition());
-            return Status.IGNORE;
+            return StreamNegotiationResult.IGNORE;
         }
-        return Status.IGNORE;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return True, because compression needs a stream restart after feature negotiation.
-     */
-    @Override
-    public final boolean needsRestart() {
-        return true;
+        return StreamNegotiationResult.IGNORE;
     }
 
     @Override

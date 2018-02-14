@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.sm;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
+import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
@@ -117,9 +118,9 @@ public final class StreamManager extends StreamFeatureNegotiator {
     }
 
     @Override
-    public final Status processNegotiation(Object element) {
+    public final StreamNegotiationResult processNegotiation(Object element) {
         if (!isEnabled()) {
-            return Status.IGNORE;
+            return StreamNegotiationResult.IGNORE;
         }
 
         if (element instanceof StreamManagement) {
@@ -136,7 +137,7 @@ public final class StreamManager extends StreamFeatureNegotiator {
                 inboundCount = 0;
                 enabled = (StreamManagement.Enabled) element;
             }
-            return Status.SUCCESS;
+            return StreamNegotiationResult.SUCCESS;
         } else if (element instanceof StreamManagement.Failed) {
             StreamManagement.Failed failed = (StreamManagement.Failed) element;
             if (failed.getLastHandledStanza() != null) {
@@ -164,9 +165,9 @@ public final class StreamManager extends StreamFeatureNegotiator {
             StreamManagement.Resumed resumed = (StreamManagement.Resumed) element;
             markAcknowledged(resumed.getLastHandledStanza());
             resumed(true);
-            return Status.SUCCESS;
+            return StreamNegotiationResult.SUCCESS;
         }
-        return Status.INCOMPLETE;
+        return StreamNegotiationResult.INCOMPLETE;
     }
 
     private void resumed(boolean resumed) {

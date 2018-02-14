@@ -36,7 +36,7 @@
     <name>XMPP.rocks - NIO Codec</name>
     <description>
         A codec for XMPP using plain java.nio.ByteBuffer.
-        The intention is that this codec can ba reused by different NIO implementations.
+        The intention is that this codec can be reused by different NIO implementations.
     </description>
     <build>
         <plugins>

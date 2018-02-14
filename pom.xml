@@ -98,7 +98,6 @@
         <module>xmpp-addr</module>
         <module>xmpp-core</module>
         <module>xmpp-extensions</module>
-        <module>xmpp-extensions-client</module>
         <module>xmpp-debug</module>
         <module>xmpp-sample</module>
         <module>xmpp-documentation</module>

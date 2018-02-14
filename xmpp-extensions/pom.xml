@@ -2,7 +2,7 @@
 <!--
   ~ The MIT License (MIT)
   ~
-  ~ Copyright (c) 2014-2016 Christian Schudt
+  ~ Copyright (c) 2014-2018 Christian Schudt
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -34,22 +34,14 @@
     </parent>
     <artifactId>xmpp-extensions</artifactId>
     <name>XMPP.rocks - Extensions</name>
-    <description>XMPP extension classes (XML schema implementations)</description>
+    <description>XMPP extension</description>
+    <packaging>pom</packaging>
+    <modules>
+        <module>common</module>
+        <module>client</module>
+    </modules>
     <build>
         <plugins>
-            <!-- Generate a sources.jar, so that it can be used by JavaDoc plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
             <!-- Skip site generation -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -64,46 +56,6 @@
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
             </plugin>
-
-            <!-- Define JPMS module name -->
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-jar</id>
-                        <configuration>
-                            <archive>
-                                <manifestEntries>
-                                    <Automatic-Module-Name>rocks.xmpp.extensions</Automatic-Module-Name>
-                                </manifestEntries>
-                            </archive>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
-    <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-addr</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-core-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-core-common</artifactId>
-            <type>test-jar</type>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 </project>

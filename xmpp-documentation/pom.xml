@@ -118,9 +118,9 @@
                                 <includes>
                                     <include>rocks.xmpp:precis</include>
                                     <include>rocks.xmpp:xmpp-addr</include>
-                                    <include>rocks.xmpp:xmpp-core</include>
+                                    <include>rocks.xmpp:xmpp-core-common</include>
                                     <include>rocks.xmpp:xmpp-core-client</include>
-                                    <include>rocks.xmpp:xmpp-extensions</include>
+                                    <include>rocks.xmpp:xmpp-extensions-common</include>
                                     <include>rocks.xmpp:xmpp-extensions-client</include>
                                 </includes>
                             </artifactSet>
@@ -151,7 +151,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-extensions</artifactId>
+            <artifactId>xmpp-extensions-common</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>

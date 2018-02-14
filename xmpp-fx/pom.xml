@@ -67,7 +67,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-extensions</artifactId>
+            <artifactId>xmpp-extensions-common</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

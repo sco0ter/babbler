@@ -29,12 +29,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>rocks.xmpp</groupId>
-        <artifactId>root</artifactId>
+        <artifactId>xmpp-extensions</artifactId>
         <version>0.8.0-SNAPSHOT</version>
     </parent>
-    <artifactId>xmpp-extensions-client</artifactId>
-    <name>XMPP.rocks - Extensions (Client)</name>
-    <description>Client side business logic for XMPP extensions</description>
+    <artifactId>xmpp-extensions-common</artifactId>
+    <name>XMPP.rocks - Extensions - Common</name>
+    <description>Code for XMPP extensions shared by clients and servers (primarily XML schema implementations)</description>
     <build>
         <plugins>
             <!-- Generate a sources.jar, so that it can be used by JavaDoc plugin -->
@@ -48,15 +48,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!-- Skip site generation -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
             </plugin>
 
             <!-- Deploy this artifact -->
@@ -74,7 +65,7 @@
                         <configuration>
                             <archive>
                                 <manifestEntries>
-                                    <Automatic-Module-Name>rocks.xmpp.extensions.client</Automatic-Module-Name>
+                                    <Automatic-Module-Name>rocks.xmpp.extensions.common</Automatic-Module-Name>
                                 </manifestEntries>
                             </archive>
                         </configuration>
@@ -95,24 +86,14 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-core-client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-extensions</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-core-client</artifactId>
-            <version>${project.version}</version>
+            <artifactId>xmpp-core-common</artifactId>
             <type>test-jar</type>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

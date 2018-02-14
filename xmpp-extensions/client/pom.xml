@@ -29,20 +29,31 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>rocks.xmpp</groupId>
-        <artifactId>root</artifactId>
+        <artifactId>xmpp-extensions</artifactId>
         <version>0.8.0-SNAPSHOT</version>
     </parent>
-    <artifactId>xmpp-sample</artifactId>
-    <name>XMPP.rocks - Samples</name>
+    <artifactId>xmpp-extensions-client</artifactId>
+    <name>XMPP.rocks - Extensions - Client</name>
+    <description>Client side business logic for XMPP extensions</description>
     <build>
         <plugins>
-            <!-- Skip site generation -->
+            <!-- Generate a sources.jar, so that it can be used by JavaDoc plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Deploy this artifact -->
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
             </plugin>
 
             <!-- Define JPMS module name -->
@@ -54,7 +65,7 @@
                         <configuration>
                             <archive>
                                 <manifestEntries>
-                                    <Automatic-Module-Name>rocks.xmpp.sample</Automatic-Module-Name>
+                                    <Automatic-Module-Name>rocks.xmpp.extensions.client</Automatic-Module-Name>
                                 </manifestEntries>
                             </archive>
                         </configuration>
@@ -85,29 +96,15 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-extensions-client</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-debug</artifactId>
+            <artifactId>xmpp-core-client</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-nio-netty-client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-transport</artifactId>
-            <version>4.1.19.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-websocket-client</artifactId>
-            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

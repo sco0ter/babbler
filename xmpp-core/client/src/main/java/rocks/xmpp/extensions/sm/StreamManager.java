@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.sm;
 
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stream.client.StreamFeatureNegotiator;
+import rocks.xmpp.core.stream.client.ClientStreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.util.concurrent.AsyncResult;
@@ -47,7 +47,7 @@ import java.util.function.Predicate;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>
  */
-public final class StreamManager extends StreamFeatureNegotiator<StreamManagement> {
+public final class StreamManager extends ClientStreamFeatureNegotiator<StreamManagement> {
 
     /**
      * 2^32 - 1

@@ -34,7 +34,7 @@ import rocks.xmpp.core.stream.model.StreamFeature;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-negotiation">4.3.  Stream Negotiation</a>
  */
-public interface StreamNegotiator<T extends StreamFeature> {
+public interface StreamFeatureNegotiator<T extends StreamFeature> {
 
     /**
      * Processes a feature protocol element or the feature element itself.

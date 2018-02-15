@@ -28,7 +28,7 @@ package rocks.xmpp.core.stream;
  * A feature listener, which listens for successful feature negotiation.
  *
  * @author Christian Schudt
- * @see StreamNegotiator#addFeatureListener(StreamFeatureListener)
+ * @see StreamFeatureNegotiator#addFeatureListener(StreamFeatureListener)
  */
 @FunctionalInterface
 public interface StreamFeatureListener {

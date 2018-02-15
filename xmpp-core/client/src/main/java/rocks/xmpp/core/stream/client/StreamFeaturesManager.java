@@ -28,6 +28,7 @@ import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
+import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.tls.model.StartTls;
@@ -62,7 +63,7 @@ import java.util.stream.Collectors;
  * improve the handling of an XML stream (e.g., establishment of application-layer compression as described
  * in [XEP-0138]).</p>
  * </blockquote>
- * <p>Each feature is associated with a {@linkplain rocks.xmpp.core.stream.client.StreamFeatureNegotiator feature negotiator}, which
+ * <p>Each feature is associated with a {@linkplain StreamFeatureNegotiator feature negotiator}, which
  * negotiates the particular feature.</p>
  * <p>This class manages these negotiators, receives XML elements and delegates them to the responsible
  * feature negotiator for further processing.</p>

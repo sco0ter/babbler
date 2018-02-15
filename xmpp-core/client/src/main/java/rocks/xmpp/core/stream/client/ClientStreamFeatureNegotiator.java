@@ -27,7 +27,7 @@ package rocks.xmpp.core.stream.client;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.StreamFeatureListener;
-import rocks.xmpp.core.stream.StreamNegotiator;
+import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.StreamFeature;
 
@@ -43,7 +43,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  * @author Christian Schudt
  */
-public abstract class StreamFeatureNegotiator<T extends StreamFeature> extends Manager implements StreamNegotiator<T> {
+public abstract class ClientStreamFeatureNegotiator<T extends StreamFeature> extends Manager implements StreamFeatureNegotiator<T> {
 
     private final Set<StreamFeatureListener> streamFeatureListeners = new CopyOnWriteArraySet<>();
 
@@ -55,7 +55,7 @@ public abstract class StreamFeatureNegotiator<T extends StreamFeature> extends M
      * @param xmppSession  The XMPP session.
      * @param featureClass The feature class, which represents the feature, which will be negotiated.
      */
-    public StreamFeatureNegotiator(XmppSession xmppSession, Class<T> featureClass) {
+    public ClientStreamFeatureNegotiator(XmppSession xmppSession, Class<T> featureClass) {
         super(xmppSession, false);
         this.featureClass = featureClass;
     }

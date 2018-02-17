@@ -68,11 +68,6 @@ final class XmppStreamWriter {
     /**
      * Will be accessed only by the writer thread.
      */
-    private XMLStreamWriter prefixFreeCanonicalizationWriter;
-
-    /**
-     * Will be accessed only by the writer thread.
-     */
     private XMLStreamWriter xmlStreamWriter;
 
     /**
@@ -118,13 +113,13 @@ final class XmppStreamWriter {
                     streamManager.markUnacknowledged((Stanza) clientStreamElement);
                 }
 
-                marshaller.marshal(clientStreamElement, prefixFreeCanonicalizationWriter);
-                prefixFreeCanonicalizationWriter.flush();
+                marshaller.marshal(clientStreamElement, xmlStreamWriter);
+                xmlStreamWriter.flush();
 
                 if (clientStreamElement instanceof Stanza) {
                     // Workaround: Simulate keep-alive packet to convince client to process the already transmitted packet.
-                    prefixFreeCanonicalizationWriter.writeCharacters(" ");
-                    prefixFreeCanonicalizationWriter.flush();
+                    xmlStreamWriter.writeCharacters(" ");
+                    xmlStreamWriter.flush();
                 }
 
                 if (debugger != null) {
@@ -154,12 +149,12 @@ final class XmppStreamWriter {
                 if (xmppOutputStream == null) {
                     xmppOutputStream = outputStream;
                 }
-                xmlStreamWriter = xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(xmppOutputStream, "UTF-8");
+                XMLStreamWriter writer = xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(xmppOutputStream, "UTF-8");
 
-                prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, namespace);
+                xmlStreamWriter = XmppUtils.createXmppStreamWriter(writer, namespace);
                 streamOpened = false;
 
-                streamHeader.writeTo(xmlStreamWriter);
+                streamHeader.writeTo(writer);
 
                 if (debugger != null) {
                     debugger.writeStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8).trim(), null);
@@ -177,7 +172,7 @@ final class XmppStreamWriter {
             if (streamOpened) {
                 // Close the stream.
                 try {
-                    xmlStreamWriter.writeEndElement();
+                    xmlStreamWriter.writeEndDocument();
                     xmlStreamWriter.flush();
                     if (debugger != null) {
                         debugger.writeStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8).trim(), null);
@@ -203,10 +198,10 @@ final class XmppStreamWriter {
         synchronized (this) {
             executor.shutdown();
 
-            if (prefixFreeCanonicalizationWriter != null) {
+            if (xmlStreamWriter != null) {
                 try {
-                    prefixFreeCanonicalizationWriter.close();
-                    prefixFreeCanonicalizationWriter = null;
+                    xmlStreamWriter.close();
+                    xmlStreamWriter = null;
                 } catch (Exception e) {
                     exception.addSuppressed(e);
                 }

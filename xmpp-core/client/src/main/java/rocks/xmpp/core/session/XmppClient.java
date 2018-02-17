@@ -142,7 +142,7 @@ public final class XmppClient extends XmppSession {
             @Override
             public StreamNegotiationResult processNegotiation(Object element) {
                 // Resource binding will be negotiated manually
-                return StreamNegotiationResult.IGNORE;
+                return StreamNegotiationResult.INCOMPLETE;
             }
 
             @Override

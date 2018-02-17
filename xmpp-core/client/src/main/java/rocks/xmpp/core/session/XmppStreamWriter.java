@@ -34,6 +34,7 @@ import rocks.xmpp.util.XmppUtils;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
@@ -68,12 +69,7 @@ final class XmppStreamWriter {
     /**
      * Will be accessed only by the writer thread.
      */
-    private XMLStreamWriter xmlStreamWriter;
-
-    /**
-     * Will be accessed only by the writer thread.
-     */
-    private ByteArrayOutputStream byteArrayOutputStream;
+    private OutputStream outputStream;
 
     /**
      * Indicates whether the stream has been opened. Will be accessed only by the writer thread.
@@ -94,8 +90,8 @@ final class XmppStreamWriter {
             executor.scheduleAtFixedRate(() -> {
                 if (EnumSet.of(XmppSession.Status.CONNECTED, XmppSession.Status.AUTHENTICATED).contains(xmppSession.getStatus())) {
                     try {
-                        xmlStreamWriter.writeCharacters(" ");
-                        xmlStreamWriter.flush();
+                        outputStream.write(' ');
+                        outputStream.flush();
                     } catch (Exception e) {
                         notifyException(e);
                     }
@@ -104,27 +100,29 @@ final class XmppStreamWriter {
         }
     }
 
-    CompletableFuture<Void> send(final StreamElement clientStreamElement) {
+    CompletableFuture<Void> write(final StreamElement clientStreamElement, final boolean flush) {
         Objects.requireNonNull(clientStreamElement);
         return CompletableFuture.runAsync(() -> {
-            try {
+
+            try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
                 // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowledged" queue.
                 if (clientStreamElement instanceof Stanza) {
                     streamManager.markUnacknowledged((Stanza) clientStreamElement);
                 }
 
-                marshaller.marshal(clientStreamElement, xmlStreamWriter);
-                xmlStreamWriter.flush();
-
-                if (clientStreamElement instanceof Stanza) {
-                    // Workaround: Simulate keep-alive packet to convince client to process the already transmitted packet.
-                    xmlStreamWriter.writeCharacters(" ");
-                    xmlStreamWriter.flush();
+                XMLStreamWriter writer = null;
+                try {
+                    writer = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(byteArrayOutputStream, "UTF-8"), namespace);
+                    marshaller.marshal(clientStreamElement, writer);
+                    writer.flush();
+                } finally {
+                    if (writer != null) {
+                        writer.close();
+                    }
                 }
-
-                if (debugger != null) {
-                    debugger.writeStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8).trim(), clientStreamElement);
-                    byteArrayOutputStream.reset();
+                write(byteArrayOutputStream.toByteArray());
+                if (flush) {
+                    outputStream.flush();
                 }
             } catch (Exception e) {
                 notifyException(e);
@@ -135,32 +133,24 @@ final class XmppStreamWriter {
 
     void openStream(final OutputStream outputStream, final StreamHeader streamHeader) {
         executor.execute(() -> {
-            try {
+            this.outputStream = outputStream;
+            try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+                XMLStreamWriter writer = null;
+                try {
+                    writer = xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(byteArrayOutputStream, "UTF-8");
 
-                OutputStream xmppOutputStream = null;
-                if (debugger != null) {
-                    byteArrayOutputStream = new ByteArrayOutputStream();
-                    xmppOutputStream = XmppUtils.createBranchedOutputStream(outputStream, byteArrayOutputStream);
-                    OutputStream debuggerOutputStream = debugger.createOutputStream(xmppOutputStream);
-                    if (debuggerOutputStream != null) {
-                        xmppOutputStream = debuggerOutputStream;
+                    streamOpened = false;
+
+                    streamHeader.writeTo(writer);
+
+                    write(byteArrayOutputStream.toByteArray());
+                    outputStream.flush();
+                    streamOpened = true;
+                } finally {
+                    if (writer != null) {
+                        writer.close();
                     }
                 }
-                if (xmppOutputStream == null) {
-                    xmppOutputStream = outputStream;
-                }
-                XMLStreamWriter writer = xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(xmppOutputStream, "UTF-8");
-
-                xmlStreamWriter = XmppUtils.createXmppStreamWriter(writer, namespace);
-                streamOpened = false;
-
-                streamHeader.writeTo(writer);
-
-                if (debugger != null) {
-                    debugger.writeStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8).trim(), null);
-                    byteArrayOutputStream.reset();
-                }
-                streamOpened = true;
             } catch (Exception e) {
                 notifyException(e);
             }
@@ -172,19 +162,31 @@ final class XmppStreamWriter {
             if (streamOpened) {
                 // Close the stream.
                 try {
-                    xmlStreamWriter.writeEndDocument();
-                    xmlStreamWriter.flush();
-                    if (debugger != null) {
-                        debugger.writeStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8).trim(), null);
-                        byteArrayOutputStream.reset();
-                    }
-                    xmlStreamWriter.close();
+                    write(StreamHeader.CLOSING_STREAM_TAG.toString().getBytes(StandardCharsets.UTF_8));
+                    outputStream.flush();
                     streamOpened = false;
                 } catch (Exception e) {
                     notifyException(e);
                 }
             }
         }, executor);
+    }
+
+    private void write(byte[] bytes) throws IOException {
+        if (debugger != null) {
+            debugger.writeStanza(new String(bytes, StandardCharsets.UTF_8).trim(), null);
+        }
+        outputStream.write(bytes);
+    }
+
+    void flush() {
+        executor.execute(() -> {
+            try {
+                outputStream.flush();
+            } catch (IOException e) {
+                xmppSession.notifyException(e);
+            }
+        });
     }
 
     /**
@@ -198,15 +200,14 @@ final class XmppStreamWriter {
         synchronized (this) {
             executor.shutdown();
 
-            if (xmlStreamWriter != null) {
+            if (outputStream != null) {
                 try {
-                    xmlStreamWriter.close();
-                    xmlStreamWriter = null;
+                    outputStream.close();
+                    outputStream = null;
                 } catch (Exception e) {
                     exception.addSuppressed(e);
                 }
             }
-            byteArrayOutputStream = null;
         }
 
         xmppSession.notifyException(exception);

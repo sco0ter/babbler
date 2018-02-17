@@ -67,11 +67,6 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-addr</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>xmpp-core-common</artifactId>
             <version>${project.version}</version>
         </dependency>

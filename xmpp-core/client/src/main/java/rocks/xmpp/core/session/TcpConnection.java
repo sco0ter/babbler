@@ -26,11 +26,13 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.StreamNegotiationException;
+import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.core.tls.client.StartTlsManager;
 import rocks.xmpp.dns.DnsResolver;
@@ -174,12 +176,10 @@ public final class TcpConnection extends Connection {
      * If a proxy has been specified, the connection is established through this proxy.<br>
      * </p>
      *
-     * @param from      The optional 'from' attribute in the stream header.
-     * @param namespace The content namespace, e.g. "jabber:client".
      * @throws IOException If the underlying socket throws an exception.
      */
     @Override
-    public final synchronized void connect(Jid from, String namespace) throws IOException {
+    public final synchronized void connect() throws IOException {
 
         if (socket != null) {
             if (!socket.isClosed() && socket.isConnected()) {
@@ -204,8 +204,6 @@ public final class TcpConnection extends Connection {
         } else {
             throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
         }
-
-        this.from = from;
         streamFeaturesManager.addFeatureNegotiator(securityManager);
         streamFeaturesManager.addFeatureNegotiator(compressionManager);
         streamFeaturesManager.addFeatureNegotiator(streamManager);
@@ -213,15 +211,22 @@ public final class TcpConnection extends Connection {
 
         outputStream = new BufferedOutputStream(socket.getOutputStream());
         inputStream = new BufferedInputStream(socket.getInputStream());
+        closed.set(false);
+    }
+
+    @Override
+    public final void open(final SessionOpen sessionOpen) {
+
+        StreamHeader streamHeader = (StreamHeader) sessionOpen;
+        this.sessionOpen = sessionOpen;
         // Start writing to the output stream.
-        xmppStreamWriter = new XmppStreamWriter(namespace, streamManager, this.xmppSession);
+        xmppStreamWriter = new XmppStreamWriter(streamHeader.getContentNamespace(), streamManager, this.xmppSession);
         xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
-        xmppStreamWriter.openStream(outputStream, from);
+        xmppStreamWriter.openStream(outputStream, streamHeader);
 
         // Start reading from the input stream.
-        xmppStreamReader = new XmppStreamReader(namespace, this, this.xmppSession);
+        xmppStreamReader = new XmppStreamReader(streamHeader.getContentNamespace(), this, this.xmppSession);
         xmppStreamReader.startReading(inputStream);
-        closed.set(false);
     }
 
     @Override
@@ -308,7 +313,7 @@ public final class TcpConnection extends Connection {
 
     @Override
     protected final synchronized void restartStream() {
-        xmppStreamWriter.openStream(outputStream, from);
+        xmppStreamWriter.openStream(outputStream, (StreamHeader) sessionOpen);
         xmppStreamReader.startReading(inputStream);
     }
 
@@ -438,8 +443,8 @@ public final class TcpConnection extends Connection {
         if (streamId != null) {
             sb.append(" (").append(streamId).append(')');
         }
-        if (from != null) {
-            sb.append(", from: ").append(from);
+        if (sessionOpen != null) {
+            sb.append(", from: ").append(sessionOpen.getFrom());
         }
         return sb.toString();
     }

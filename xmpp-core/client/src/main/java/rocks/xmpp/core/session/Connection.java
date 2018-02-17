@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stream.model.StreamElement;
 
 import java.io.IOException;
@@ -52,7 +52,7 @@ public abstract class Connection implements AutoCloseable {
 
     protected int port;
 
-    protected Jid from;
+    protected SessionOpen sessionOpen;
 
     /**
      * Creates a connection to the specified host and port through a proxy.
@@ -121,13 +121,18 @@ public abstract class Connection implements AutoCloseable {
     public abstract CompletableFuture<Void> send(StreamElement streamElement);
 
     /**
-     * Connects to the server and provides an optional 'from' attribute.
+     * Connects to the server.
      *
-     * @param from      The 'from' attribute.
-     * @param namespace The content namespace, e.g. "jabber:client".
      * @throws IOException If no connection could be established, e.g. due to unknown host.
      */
-    public abstract void connect(Jid from, String namespace) throws IOException;
+    public abstract void connect() throws IOException;
+
+    /**
+     * Opens the XML stream to the server.
+     *
+     * @param sessionOpen The session open information.
+     */
+    public abstract void open(SessionOpen sessionOpen);
 
     /**
      * Indicates whether this connection is secured by TLS/SSL.

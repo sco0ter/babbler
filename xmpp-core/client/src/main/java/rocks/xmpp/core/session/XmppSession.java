@@ -41,12 +41,13 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.StreamNegotiationException;
+import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamFeatures;
+import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -347,7 +348,8 @@ public abstract class XmppSession implements AutoCloseable {
             while (connectionIterator.hasNext()) {
                 Connection connection = connectionIterator.next();
                 try {
-                    connection.connect(from, namespace);
+                    connection.connect();
+                    connection.open(StreamHeader.create(from, xmppServiceDomain, null, configuration.getLanguage(), namespace));
                     activeConnection = connection;
                     break;
                 } catch (IOException e) {

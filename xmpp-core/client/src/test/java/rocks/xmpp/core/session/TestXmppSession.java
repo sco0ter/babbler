@@ -27,6 +27,7 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.SameThreadExecutorService;
+import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
 
@@ -71,7 +72,11 @@ public final class TestXmppSession extends XmppSession {
             }
 
             @Override
-            public void connect(Jid from, String namespace) {
+            public void connect() {
+            }
+
+            @Override
+            public void open(SessionOpen sessionOpen) {
             }
 
             @Override

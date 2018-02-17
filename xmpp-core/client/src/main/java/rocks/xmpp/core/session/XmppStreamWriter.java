@@ -24,7 +24,6 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
@@ -139,7 +138,7 @@ final class XmppStreamWriter {
         }, executor);
     }
 
-    void openStream(final OutputStream outputStream, final Jid from) {
+    void openStream(final OutputStream outputStream, final StreamHeader streamHeader) {
         executor.execute(() -> {
             try {
 
@@ -160,7 +159,6 @@ final class XmppStreamWriter {
                 prefixFreeCanonicalizationWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, namespace);
                 streamOpened = false;
 
-                StreamHeader streamHeader = StreamHeader.initialClientToServer(from, xmppSession.getDomain(), xmppSession.getConfiguration().getLanguage(), namespace);
                 streamHeader.writeTo(xmlStreamWriter);
 
                 if (debugger != null) {

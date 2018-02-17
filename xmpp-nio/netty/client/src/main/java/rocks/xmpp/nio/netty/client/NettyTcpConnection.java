@@ -38,17 +38,16 @@ import io.netty.handler.ssl.JdkSslContext;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Connection;
-import rocks.xmpp.core.tls.client.StartTlsManager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.StreamNegotiationException;
+import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamHeader;
+import rocks.xmpp.core.tls.client.StartTlsManager;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.nio.netty.codec.NettyXmppDecoder;
@@ -87,8 +86,6 @@ public final class NettyTcpConnection extends Connection {
     private final AtomicBoolean closed = new AtomicBoolean();
 
     private final StreamManager streamManager;
-
-    private String namespace;
 
     private Channel channel;
 
@@ -172,12 +169,12 @@ public final class NettyTcpConnection extends Connection {
 
     @Override
     protected final void restartStream() {
-        open();
+        open(sessionOpen);
         this.xmppNettyDecoder.restart();
     }
 
     @Override
-    public final synchronized void connect(final Jid from, final String namespace) throws IOException {
+    public final synchronized void connect() throws IOException {
         try {
             final ChannelFuture channelFuture;
 
@@ -207,12 +204,8 @@ public final class NettyTcpConnection extends Connection {
             channelFuture = b.connect(getHostname(), getPort());
             this.channel = channelFuture.channel();
             channelFuture.get();
-
-            this.from = from;
-            this.namespace = namespace;
             this.streamFeaturesManager.addFeatureNegotiator(startTlsManager);
             this.streamFeaturesManager.addFeatureNegotiator(streamManager);
-            open();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
@@ -220,8 +213,10 @@ public final class NettyTcpConnection extends Connection {
         }
     }
 
-    private synchronized void open() {
-        send(StreamHeader.initialClientToServer(from, xmppSession.getDomain(), xmppSession.getConfiguration().getLanguage(), namespace));
+    @Override
+    public final void open(final SessionOpen sessionOpen) {
+        this.sessionOpen = sessionOpen;
+        send(StreamHeader.initialClientToServer(sessionOpen.getFrom(), xmppSession.getDomain(), xmppSession.getConfiguration().getLanguage(), ((StreamHeader) sessionOpen).getContentNamespace()));
     }
 
     @Override
@@ -289,7 +284,7 @@ public final class NettyTcpConnection extends Connection {
                         }
                         return completableFuture;
                     })
-                            // Then compose this future with the returned channel future, kind of flat mapping it.
+                    // Then compose this future with the returned channel future, kind of flat mapping it.
                     .thenCompose(Function.identity());
         }
         return CompletableFuture.completedFuture(null);
@@ -304,8 +299,8 @@ public final class NettyTcpConnection extends Connection {
         if (streamId != null) {
             sb.append(" (").append(streamId).append(')');
         }
-        if (from != null) {
-            sb.append(", from: ").append(from);
+        if (sessionOpen != null) {
+            sb.append(", from: ").append(sessionOpen.getFrom());
         }
         return sb.toString();
     }

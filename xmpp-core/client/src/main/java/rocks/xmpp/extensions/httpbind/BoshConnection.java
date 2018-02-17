@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.httpbind;
 
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
+import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.dns.DnsResolver;
@@ -268,12 +268,10 @@ public final class BoshConnection extends Connection {
     /**
      * Connects to the BOSH server.
      *
-     * @param from      The optional 'from' attribute in the initial BOSH session creation request.
-     * @param namespace The content namespace, e.g. "jabber:client".
      * @throws IOException If a connection could not be established.
      */
     @Override
-    public final synchronized void connect(Jid from, String namespace) throws IOException {
+    public final synchronized void connect() throws IOException {
 
         if (sessionId != null) {
             // Already connected.
@@ -304,7 +302,6 @@ public final class BoshConnection extends Connection {
             }
         }
 
-        this.from = from;
         this.sessionId = null;
         this.authId = null;
         this.usingAcknowledgments = false;
@@ -317,20 +314,6 @@ public final class BoshConnection extends Connection {
         // This will still allow for at least 4503599627370495 requests (2^53-1-2^52), which should be sufficient.
         rid.set(new BigInteger(52, new Random()).longValue());
 
-        // Create initial request.
-        Body.Builder body = Body.builder()
-                .language(xmppSession.getConfiguration().getLanguage())
-                .version("1.11")
-                .wait(boshConnectionConfiguration.getWait())
-                .hold((byte) 1)
-                .route(boshConnectionConfiguration.getRoute())
-                .ack(1L)
-                .from(from)
-                .xmppVersion("1.0");
-
-        if (xmppSession.getDomain() != null) {
-            body.to(xmppSession.getDomain());
-        }
 
         // Try if we can connect in order to fail fast if we can't.
         HttpURLConnection connection = null;
@@ -348,7 +331,25 @@ public final class BoshConnection extends Connection {
         // Threads created by this thread pool, will be used to do simultaneous requests.
         // Even in the unusual case, where the connection manager allows for more requests, two are enough.
         httpBindExecutor = Executors.newFixedThreadPool(2, xmppSession.getConfiguration().getThreadFactory("XMPP BOSH Request Thread"));
+    }
 
+    @Override
+    public final void open(final SessionOpen sessionOpen) {
+        this.sessionOpen = sessionOpen;
+        // Create initial request.
+        Body.Builder body = Body.builder()
+                .language(xmppSession.getConfiguration().getLanguage())
+                .version("1.11")
+                .wait(boshConnectionConfiguration.getWait())
+                .hold((byte) 1)
+                .route(boshConnectionConfiguration.getRoute())
+                .ack(1L)
+                .from(sessionOpen.getFrom())
+                .xmppVersion("1.0");
+
+        if (xmppSession.getDomain() != null) {
+            body.to(xmppSession.getDomain());
+        }
         // Send the initial request.
         sendNewRequest(body, false);
     }
@@ -439,7 +440,7 @@ public final class BoshConnection extends Connection {
                     .restart(true)
                     .to(xmppSession.getDomain())
                     .language(xmppSession.getConfiguration().getLanguage())
-                    .from(from);
+                    .from(sessionOpen.getFrom());
         }
         sendNewRequest(bodyBuilder, false);
     }
@@ -890,8 +891,8 @@ public final class BoshConnection extends Connection {
         if (sessionId != null) {
             sb.append(" (").append(sessionId).append(')');
         }
-        if (from != null) {
-            sb.append(", from: ").append(from);
+        if (sessionOpen != null) {
+            sb.append(", from: ").append(sessionOpen.getFrom());
         }
         return sb.toString();
     }

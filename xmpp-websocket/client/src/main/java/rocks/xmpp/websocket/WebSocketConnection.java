@@ -28,11 +28,11 @@ import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.client.ClientProperties;
 import org.glassfish.tyrus.client.SslEngineConfigurator;
 import org.glassfish.tyrus.container.jdk.client.JdkClientContainer;
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
+import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
@@ -193,7 +193,7 @@ public final class WebSocketConnection extends Connection {
     }
 
     @Override
-    public final void connect(final Jid from, final String namespace) throws IOException {
+    public final void connect() throws IOException {
 
         try {
             final URI path;
@@ -319,9 +319,6 @@ public final class WebSocketConnection extends Connection {
                     });
 
                     session.addMessageHandler(new PongHandler());
-
-                    // Opens the stream
-                    restartStream();
                 }
 
                 @Override
@@ -379,6 +376,13 @@ public final class WebSocketConnection extends Connection {
         } catch (DeploymentException | URISyntaxException e) {
             throw new IOException(e);
         }
+    }
+
+    @Override
+    public final void open(final SessionOpen sessionOpen) {
+        this.sessionOpen = sessionOpen;
+        // Opens the stream
+        restartStream();
     }
 
     @Override
@@ -461,8 +465,8 @@ public final class WebSocketConnection extends Connection {
         if (streamId != null) {
             sb.append(" (").append(streamId).append(')');
         }
-        if (from != null) {
-            sb.append(", from: ").append(from);
+        if (sessionOpen != null) {
+            sb.append(", from: ").append(sessionOpen.getFrom());
         }
         return sb.toString();
     }

@@ -221,20 +221,34 @@ public final class NettyTcpConnection extends Connection {
 
     @Override
     public final CompletableFuture<Void> send(final StreamElement streamElement) {
+        final CompletableFuture<Void> future;
+        final boolean requestStanzaCount = streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement);
+        if (!requestStanzaCount) {
+            future = write(streamElement);
+        } else {
+            future = write(streamElement);
+            write(StreamManagement.REQUEST);
+        }
+        this.flush();
+        return future;
+    }
+
+    @Override
+    public final CompletableFuture<Void> write(final StreamElement streamElement) {
         final CompletableFuture<Void> completableFuture = new CompletableFuture<>();
-        channel.writeAndFlush(streamElement).addListener(future -> {
+        channel.write(streamElement).addListener(future -> {
             if (future.isSuccess()) {
                 completableFuture.complete(null);
             } else {
                 completableFuture.completeExceptionally(future.cause());
             }
         });
-        completableFuture.thenRun(() -> {
-            if (streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement)) {
-                send(StreamManagement.REQUEST);
-            }
-        });
         return completableFuture;
+    }
+
+    @Override
+    public final void flush() {
+        channel.flush();
     }
 
     @Override

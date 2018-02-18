@@ -185,7 +185,8 @@ public final class WebSocketConnection extends Connection {
                 .thenRun(this::flush);
     }
 
-    private synchronized CompletableFuture<Void> write(final StreamElement streamElement) {
+    @Override
+    public final synchronized CompletableFuture<Void> write(final StreamElement streamElement) {
         final CompletableFuture<Void> sendFuture = new CompletableFuture<>();
         session.getAsyncRemote().sendObject(streamElement, result -> {
             if (result.isOK()) {
@@ -198,7 +199,8 @@ public final class WebSocketConnection extends Connection {
         return sendFuture;
     }
 
-    private synchronized void flush() {
+    @Override
+    public final synchronized void flush() {
         try {
             session.getAsyncRemote().flushBatch();
         } catch (IOException e) {

@@ -35,7 +35,6 @@ import rocks.xmpp.dns.TxtRecord;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.util.XmppUtils;
-import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.util.concurrent.CompletionStages;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -520,33 +519,24 @@ public final class BoshConnection extends Connection {
 
     @Override
     public final CompletableFuture<Void> send(StreamElement element) {
-        // Only put content in the body element, if it is allowed (e.g. it does not contain restart='true' and an unacknowledged body isn't resent).
-        Body.Builder bodyBuilder = Body.builder().sessionId(getSessionId());
+        CompletableFuture<Void> future = write(element);
+        flush();
+        return future;
+    }
+
+    @Override
+    public final CompletableFuture<Void> write(StreamElement streamElement) {
         synchronized (elementsToSend) {
-            elementsToSend.add(element);
+            elementsToSend.add(streamElement);
         }
-        final CompletableFuture<Void> future = sendNewRequest(bodyBuilder, false);
-        CompletableFuture<Void> sendFuture = new AsyncResult<Void>(future) {
-            @Override
-            public boolean cancel(boolean mayInterruptIfRunning) {
-                // When cancelled, don't send the element.
-                synchronized (elementsToSend) {
-                    elementsToSend.remove(element);
-                }
-                sendFutures.remove(element);
-                return future.cancel(mayInterruptIfRunning);
-            }
-        }.toCompletableFuture();
-        sendFutures.put(element, sendFuture);
-        sendFuture.whenComplete((result, e) -> {
-            CompletableFuture<Void> completableFuture = sendFutures.remove(element);
-            if (e != null) {
-                completableFuture.completeExceptionally(e);
-            } else {
-                completableFuture.complete(null);
-            }
-        });
+        CompletableFuture<Void> sendFuture = new CompletableFuture<>();
+        sendFutures.put(streamElement, sendFuture);
         return sendFuture;
+    }
+
+    @Override
+    public final void flush() {
+        sendNewRequest(Body.builder().sessionId(getSessionId()), false);
     }
 
     /**

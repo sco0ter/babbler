@@ -314,6 +314,16 @@ public final class TcpConnection extends Connection {
     }
 
     @Override
+    public final CompletableFuture<Void> write(final StreamElement streamElement) {
+        return xmppStreamWriter.write(streamElement, false);
+    }
+
+    @Override
+    public final void flush() {
+        xmppStreamWriter.flush();
+    }
+
+    @Override
     protected final synchronized void restartStream() {
         xmppStreamWriter.openStream(outputStream, (StreamHeader) sessionOpen);
         xmppStreamReader.startReading(inputStream);

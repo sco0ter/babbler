@@ -113,12 +113,25 @@ public abstract class Connection implements AutoCloseable {
     protected abstract void restartStream();
 
     /**
-     * Sends an element over this connection.
+     * Sends an element over this connection. This is basically a short cut for {@linkplain #write(StreamElement) write} + {@linkplain #flush() flush}.
      *
      * @param streamElement The element.
      * @return The future representing the send process and which allows to cancel it.
      */
     public abstract CompletableFuture<Void> send(StreamElement streamElement);
+
+    /**
+     * Writes the element to the stream without really sending it. It must be {@linkplain #flush() flushed}.
+     *
+     * @param streamElement The element.
+     * @return The send future.
+     */
+    public abstract CompletableFuture<Void> write(StreamElement streamElement);
+
+    /**
+     * Flushes the connection. Any buffered elements written via {@link #write(StreamElement)} are sent.
+     */
+    public abstract void flush();
 
     /**
      * Connects to the server.

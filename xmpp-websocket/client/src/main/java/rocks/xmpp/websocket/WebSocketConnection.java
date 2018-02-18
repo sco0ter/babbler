@@ -27,6 +27,7 @@ package rocks.xmpp.websocket;
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.client.ClientProperties;
 import org.glassfish.tyrus.client.SslEngineConfigurator;
+import org.glassfish.tyrus.client.ThreadPoolConfig;
 import org.glassfish.tyrus.container.jdk.client.JdkClientContainer;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Connection;
@@ -73,7 +74,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -171,25 +171,39 @@ public final class WebSocketConnection extends Connection {
     }
 
     @Override
-    public final synchronized CompletableFuture<Void> send(StreamElement streamElement) {
-        // Note: The TyrusFuture returned by session.getAsyncRemote().sendText() is not cancellable.
-        // Therefore use our own future with the BasicRemote.
-        return CompletableFuture.runAsync(() -> {
-            try {
-                if (streamElement instanceof Stanza) {
-                    // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowledged" queue.
-                    this.streamManager.markUnacknowledged((Stanza) streamElement);
-                }
-                session.getBasicRemote().sendObject(streamElement);
-                if (streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement)) {
-                    send(StreamManagement.REQUEST);
-                }
+    public final CompletableFuture<Void> send(final StreamElement streamElement) {
+        if (streamElement instanceof Stanza) {
+            // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowledged" queue.
+            this.streamManager.markUnacknowledged((Stanza) streamElement);
+        }
+        return write(streamElement)
+                .thenRun(() -> {
+                    if (streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement)) {
+                        write(StreamManagement.REQUEST);
+                    }
+                })
+                .thenRun(this::flush);
+    }
 
-            } catch (Exception e) {
-                xmppSession.notifyException(e);
-                throw new CompletionException(e);
+    private synchronized CompletableFuture<Void> write(final StreamElement streamElement) {
+        final CompletableFuture<Void> sendFuture = new CompletableFuture<>();
+        session.getAsyncRemote().sendObject(streamElement, result -> {
+            if (result.isOK()) {
+                sendFuture.complete(null);
+            } else {
+                sendFuture.completeExceptionally(result.getException());
+                xmppSession.notifyException(result.getException());
             }
-        }, executorService);
+        });
+        return sendFuture;
+    }
+
+    private synchronized void flush() {
+        try {
+            session.getAsyncRemote().flushBatch();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     @Override
@@ -261,6 +275,10 @@ public final class WebSocketConnection extends Connection {
                 sslEngineConfigurator.setHostnameVerifier(connectionConfiguration.getHostnameVerifier());
             }
 
+            final ThreadPoolConfig config = ThreadPoolConfig.defaultConfig();
+            config.setThreadFactory(xmppSession.getConfiguration().getThreadFactory("WebSocket Client"));
+            client.getProperties().put(ClientProperties.WORKER_THREAD_POOL_CONFIG, config);
+
             int connectTimeout = connectionConfiguration.getConnectTimeout();
             if (connectTimeout > 0) {
                 client.getProperties().put(ClientProperties.HANDSHAKE_TIMEOUT, connectTimeout);
@@ -291,7 +309,7 @@ public final class WebSocketConnection extends Connection {
                                 exception.addSuppressed(e);
                             }
                         }
-                        WebSocketConnection.this.executorService = Executors.newSingleThreadScheduledExecutor(xmppSession.getConfiguration().getThreadFactory("WebSocket Send Thread"));
+                        WebSocketConnection.this.executorService = Executors.newSingleThreadScheduledExecutor(xmppSession.getConfiguration().getThreadFactory("WebSocket Ping Scheduler"));
                     }
 
                     session.addMessageHandler(StreamElement.class, element -> {
@@ -340,6 +358,7 @@ public final class WebSocketConnection extends Connection {
             if (!session.isOpen()) {
                 throw new IOException("Session could not be opened.");
             }
+            session.getAsyncRemote().setBatchingAllowed(true);
             synchronized (this) {
                 if (exception != null) {
                     throw exception instanceof IOException ? (IOException) exception : new IOException(exception);

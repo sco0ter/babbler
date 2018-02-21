@@ -37,6 +37,7 @@ import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.TxtRecord;
 import rocks.xmpp.extensions.sm.StreamManager;
@@ -74,6 +75,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -400,10 +402,11 @@ public final class WebSocketConnection extends Connection {
     }
 
     @Override
-    public final void open(final SessionOpen sessionOpen) {
+    public final CompletionStage<Void> open(final SessionOpen sessionOpen) {
         this.sessionOpen = sessionOpen;
         // Opens the stream
         restartStream();
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
@@ -475,6 +478,11 @@ public final class WebSocketConnection extends Connection {
             });
         }
         return CompletableFuture.completedFuture(null);
+    }
+
+    @Override
+    public CompletionStage<Void> closeAsync(StreamError streamError) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

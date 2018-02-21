@@ -69,7 +69,7 @@ public class SampleApplication {
                         .authenticationMechanisms("PLAIN")
                         .build();
                 long now = System.currentTimeMillis();
-                for (int i = 0; i < 100; i++) {
+                for (int i = 0; i < 1; i++) {
                     TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
                             .hostname("localhost") // The hostname.
                             .port(5222) // The XMPP default port.

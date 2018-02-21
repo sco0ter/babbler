@@ -46,13 +46,11 @@ import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.core.stream.model.StreamHeader;
+import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.tls.client.StartTlsManager;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
-import rocks.xmpp.nio.netty.codec.NettyXmppDecoder;
-import rocks.xmpp.nio.netty.codec.NettyXmppEncoder;
-import rocks.xmpp.util.concurrent.CompletionStages;
+import rocks.xmpp.nio.netty.NettyChannelConnection;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -63,10 +61,9 @@ import java.net.Proxy;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -76,8 +73,6 @@ import java.util.logging.Logger;
 public final class NettyTcpConnection extends Connection {
 
     private static final Logger logger = Logger.getLogger(NettyTcpConnection.class.getName());
-
-    private NettyXmppDecoder xmppNettyDecoder;
 
     private final StreamFeaturesManager streamFeaturesManager;
 
@@ -89,12 +84,7 @@ public final class NettyTcpConnection extends Connection {
 
     private Channel channel;
 
-    /**
-     * Guarded by "this".
-     */
-    private String streamId;
-
-    private CompletableFuture<Void> closeReceived;
+    private NettyChannelConnection channelConnection;
 
     /**
      * Creates a connection to the specified host and port through a proxy.
@@ -120,32 +110,20 @@ public final class NettyTcpConnection extends Connection {
         if (xmppSession.getDebugger() != null) {
             xmppSession.getDebugger().readStanza(xml, streamElement);
         }
-        if (streamElement instanceof SessionOpen) {
-            synchronized (this) {
-                this.streamId = ((SessionOpen) streamElement).getId();
+        try {
+            if (xmppSession.handleElement(streamElement)) {
+                channelConnection.open(sessionOpen);
+                channelConnection.restartStream();
             }
-        } else if (streamElement == StreamHeader.CLOSING_STREAM_TAG) {
-            final CompletableFuture<Void> future;
-            synchronized (this) {
-                future = closeReceived;
-            }
-            future.complete(null);
-            closeAsync();
-        } else {
-            try {
-                if (xmppSession.handleElement(streamElement)) {
-                    restartStream();
-                }
-            } catch (XmppException e) {
-                xmppSession.notifyException(e);
-            }
+        } catch (XmppException e) {
+            xmppSession.notifyException(e);
         }
     }
 
     private synchronized void secureConnection() throws NoSuchAlgorithmException {
         final SSLContext sslContext = getConfiguration().getSSLContext() != null ? getConfiguration().getSSLContext() : SSLContext.getDefault();
         final SslContext sslCtx = new JdkSslContext(sslContext, true, ClientAuth.OPTIONAL);
-        final SslHandler handler = sslCtx.newHandler(channel.alloc(), xmppSession.getDomain().toString(), getPort());
+        final SslHandler handler = sslCtx.newHandler(channel.alloc(), String.valueOf(xmppSession.getDomain()), getPort());
         final HostnameVerifier verifier = getConfiguration().getHostnameVerifier();
         final SSLEngine sslEngine = handler.engine();
 
@@ -169,8 +147,6 @@ public final class NettyTcpConnection extends Connection {
 
     @Override
     protected final void restartStream() {
-        open(sessionOpen);
-        this.xmppNettyDecoder.restart();
     }
 
     @Override
@@ -178,9 +154,6 @@ public final class NettyTcpConnection extends Connection {
         try {
             final ChannelFuture channelFuture;
 
-            this.xmppNettyDecoder = new NettyXmppDecoder(this::onRead, xmppSession::createUnmarshaller, xmppSession::notifyException);
-
-            closeReceived = new CompletableFuture<>();
             closed.set(false);
             final Bootstrap b = new Bootstrap();
             b.group(((NettyTcpConnectionConfiguration) getConfiguration()).getEventLoopGroup());
@@ -197,8 +170,12 @@ public final class NettyTcpConnection extends Connection {
                             ch.pipeline().addFirst(new HttpProxyHandler(getConfiguration().getProxy().address()));
                         }
                     }
-                    final NettyXmppEncoder xmppNettyEncoder = new NettyXmppEncoder(xmppSession.getDebugger()::writeStanza, xmppSession::createMarshaller, xmppSession::notifyException);
-                    ch.pipeline().addLast(xmppNettyEncoder, xmppNettyDecoder);
+                    channelConnection = new NettyChannelConnection(ch,
+                            NettyTcpConnection.this::onRead,
+                            xmppSession::createUnmarshaller,
+                            xmppSession.getDebugger()::writeStanza,
+                            xmppSession::createMarshaller,
+                            xmppSession::notifyException);
                 }
             });
             channelFuture = b.connect(getHostname(), getPort());
@@ -214,9 +191,9 @@ public final class NettyTcpConnection extends Connection {
     }
 
     @Override
-    public final void open(final SessionOpen sessionOpen) {
+    public final CompletionStage<Void> open(final SessionOpen sessionOpen) {
         this.sessionOpen = sessionOpen;
-        send(StreamHeader.initialClientToServer(sessionOpen.getFrom(), xmppSession.getDomain(), xmppSession.getConfiguration().getLanguage(), ((StreamHeader) sessionOpen).getContentNamespace()));
+        return channelConnection.open(sessionOpen);
     }
 
     @Override
@@ -235,30 +212,22 @@ public final class NettyTcpConnection extends Connection {
 
     @Override
     public final CompletableFuture<Void> write(final StreamElement streamElement) {
-        final CompletableFuture<Void> completableFuture = new CompletableFuture<>();
-        channel.write(streamElement).addListener(future -> {
-            if (future.isSuccess()) {
-                completableFuture.complete(null);
-            } else {
-                completableFuture.completeExceptionally(future.cause());
-            }
-        });
-        return completableFuture;
+        return channelConnection.write(streamElement).toCompletableFuture();
     }
 
     @Override
     public final void flush() {
-        channel.flush();
+        channelConnection.flush();
     }
 
     @Override
     public final synchronized boolean isSecure() {
-        return channel != null && channel.pipeline().toMap().containsKey("SSL");
+        return channelConnection != null && channelConnection.isSecure();
     }
 
     @Override
     public final synchronized String getStreamId() {
-        return streamId;
+        return channelConnection.getStreamId();
     }
 
     @Override
@@ -268,40 +237,12 @@ public final class NettyTcpConnection extends Connection {
 
     @Override
     public final synchronized CompletableFuture<Void> closeAsync() {
-        if (closed.compareAndSet(false, true)) {
-            final CompletableFuture<Void> closeFuture = closeReceived;
+        return channelConnection.closeAsync().toCompletableFuture();
+    }
 
-            // First send the </stream:stream> element
-            return send(StreamHeader.CLOSING_STREAM_TAG)
-                    // Then wait for the reception of the peer's closing element or timeout.
-                    .thenCompose(v -> closeFuture.applyToEither(CompletionStages.timeoutAfter(500, TimeUnit.MILLISECONDS), Function.identity()))
-                    .handle((aVoid, exc) -> {
-                        // Then close the socket channel (which is also a future).
-                        final CompletableFuture<Void> completableFuture = new CompletableFuture<>();
-                        final Channel ch;
-                        synchronized (this) {
-                            ch = channel;
-                        }
-                        if (ch != null) {
-                            ch.close().addListener(future -> {
-                                if (future.isSuccess()) {
-                                    completableFuture.complete(null);
-                                } else {
-                                    completableFuture.completeExceptionally(future.cause());
-                                }
-                            });
-                            streamFeaturesManager.removeFeatureNegotiator(startTlsManager);
-                            streamFeaturesManager.removeFeatureNegotiator(streamManager);
-                            return completableFuture;
-                        } else {
-                            completableFuture.complete(null);
-                        }
-                        return completableFuture;
-                    })
-                    // Then compose this future with the returned channel future, kind of flat mapping it.
-                    .thenCompose(Function.identity());
-        }
-        return CompletableFuture.completedFuture(null);
+    @Override
+    public CompletionStage<Void> closeAsync(StreamError streamError) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -310,8 +251,8 @@ public final class NettyTcpConnection extends Connection {
         if (hostname != null) {
             sb.append(" to ").append(hostname).append(':').append(port);
         }
-        if (streamId != null) {
-            sb.append(" (").append(streamId).append(')');
+        if (channelConnection != null) {
+            sb.append(" (").append(channelConnection.getStreamId()).append(')');
         }
         if (sessionOpen != null) {
             sb.append(", from: ").append(sessionOpen.getFrom());

@@ -30,6 +30,7 @@ import rocks.xmpp.core.stream.model.StreamElement;
 import java.io.IOException;
 import java.net.Proxy;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -37,7 +38,7 @@ import java.util.concurrent.ExecutionException;
  *
  * @author Christian Schudt
  */
-public abstract class Connection implements AutoCloseable {
+public abstract class Connection implements rocks.xmpp.core.net.Connection {
 
     private final ConnectionConfiguration connectionConfiguration;
 
@@ -145,7 +146,7 @@ public abstract class Connection implements AutoCloseable {
      *
      * @param sessionOpen The session open information.
      */
-    public abstract void open(SessionOpen sessionOpen);
+    public abstract CompletionStage<Void> open(SessionOpen sessionOpen);
 
     /**
      * Indicates whether this connection is secured by TLS/SSL.

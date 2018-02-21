@@ -30,6 +30,7 @@ import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.TxtRecord;
 import rocks.xmpp.extensions.compress.CompressionMethod;
@@ -65,6 +66,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
@@ -333,7 +335,7 @@ public final class BoshConnection extends Connection {
     }
 
     @Override
-    public final void open(final SessionOpen sessionOpen) {
+    public final CompletionStage<Void> open(final SessionOpen sessionOpen) {
         this.sessionOpen = sessionOpen;
         // Create initial request.
         Body.Builder body = Body.builder()
@@ -350,7 +352,7 @@ public final class BoshConnection extends Connection {
             body.to(xmppSession.getDomain());
         }
         // Send the initial request.
-        sendNewRequest(body, false);
+        return sendNewRequest(body, false);
     }
 
     @Override
@@ -497,6 +499,11 @@ public final class BoshConnection extends Connection {
             }
         }));
         return future;
+    }
+
+    @Override
+    public CompletionStage<Void> closeAsync(StreamError streamError) {
+        throw new UnsupportedOperationException();
     }
 
     private synchronized void shutdown() {

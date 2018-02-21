@@ -30,8 +30,10 @@ import rocks.xmpp.core.SameThreadExecutorService;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamError;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 
 /**
@@ -86,7 +88,8 @@ public final class TestXmppSession extends XmppSession {
             }
 
             @Override
-            public void open(SessionOpen sessionOpen) {
+            public CompletionStage<Void> open(SessionOpen sessionOpen) {
+                return null;
             }
 
             @Override
@@ -107,6 +110,11 @@ public final class TestXmppSession extends XmppSession {
             @Override
             public CompletableFuture<Void> closeAsync() {
                 return CompletableFuture.completedFuture(null);
+            }
+
+            @Override
+            public CompletionStage<Void> closeAsync(StreamError streamError) {
+                return null;
             }
         };
         stanzaListenerExecutor = iqHandlerExecutor = new SameThreadExecutorService();

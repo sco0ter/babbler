@@ -60,6 +60,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -215,7 +216,7 @@ public final class TcpConnection extends Connection {
     }
 
     @Override
-    public final void open(final SessionOpen sessionOpen) {
+    public final CompletionStage<Void> open(final SessionOpen sessionOpen) {
 
         StreamHeader streamHeader = (StreamHeader) sessionOpen;
         this.sessionOpen = sessionOpen;
@@ -227,6 +228,7 @@ public final class TcpConnection extends Connection {
         // Start reading from the input stream.
         xmppStreamReader = new XmppStreamReader(streamHeader.getContentNamespace(), this, this.xmppSession);
         xmppStreamReader.startReading(inputStream);
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
@@ -384,6 +386,11 @@ public final class TcpConnection extends Connection {
                     });
         }
         return CompletableFuture.completedFuture(null);
+    }
+
+    @Override
+    public CompletionStage<Void> closeAsync(StreamError streamError) {
+        throw new UnsupportedOperationException();
     }
 
     /**

@@ -125,8 +125,6 @@ public abstract class XmppSession implements AutoCloseable {
 
     private static final EnumSet<Status> IS_CONNECTED = EnumSet.of(Status.CONNECTED, Status.AUTHENTICATED, Status.AUTHENTICATING);
 
-    protected final List<Connection> connections = new ArrayList<>();
-
     protected final XmppSessionConfiguration configuration;
 
     protected final ServiceDiscoveryManager serviceDiscoveryManager;
@@ -134,6 +132,8 @@ public abstract class XmppSession implements AutoCloseable {
     protected final StreamFeaturesManager streamFeaturesManager;
 
     final Set<Consumer<ConnectionEvent>> connectionListeners = new CopyOnWriteArraySet<>();
+
+    private final List<ConnectionConfiguration> connectionConfigurations = new ArrayList<>();
 
     private final Set<Consumer<MessageEvent>> inboundMessageListeners = new CopyOnWriteArraySet<>();
 
@@ -239,10 +239,10 @@ public abstract class XmppSession implements AutoCloseable {
 
         if (connectionConfigurations.length == 0) {
             // Add two fallback connections. Host and port will be determined by the XMPP domain via SRV lookup.
-            connections.add(TcpConnectionConfiguration.getDefault().createConnection(this));
-            connections.add(BoshConnectionConfiguration.getDefault().createConnection(this));
+            this.connectionConfigurations.add(TcpConnectionConfiguration.getDefault());
+            this.connectionConfigurations.add(BoshConnectionConfiguration.getDefault());
         } else {
-            Arrays.stream(connectionConfigurations).map(connectionConfiguration -> connectionConfiguration.createConnection(this)).forEach(connections::add);
+            Arrays.stream(connectionConfigurations).forEach(this.connectionConfigurations::add);
         }
 
         configuration.getExtensions().forEach(serviceDiscoveryManager::registerFeature);
@@ -343,10 +343,11 @@ public abstract class XmppSession implements AutoCloseable {
             logger.log(Level.WARNING, "Failure during closing previous connection.", e);
         }
 
-        synchronized (connections) {
-            Iterator<Connection> connectionIterator = getConnections().iterator();
+        synchronized (connectionConfigurations) {
+            Iterator<ConnectionConfiguration> connectionIterator = getConnections().iterator();
             while (connectionIterator.hasNext()) {
-                Connection connection = connectionIterator.next();
+                ConnectionConfiguration connectionConfiguration = connectionIterator.next();
+                Connection connection = connectionConfiguration.createConnection(this);
                 try {
                     connection.connect();
                     connection.open(StreamHeader.create(from, xmppServiceDomain, null, configuration.getLanguage(), namespace));
@@ -826,7 +827,7 @@ public abstract class XmppSession implements AutoCloseable {
      * @return The actively used connection.
      */
     public final Connection getActiveConnection() {
-        synchronized (connections) {
+        synchronized (connectionConfigurations) {
             return activeConnection;
         }
     }
@@ -1057,8 +1058,8 @@ public abstract class XmppSession implements AutoCloseable {
      *
      * @return The connections.
      */
-    public final List<Connection> getConnections() {
-        return Collections.unmodifiableList(connections);
+    public final List<ConnectionConfiguration> getConnections() {
+        return Collections.unmodifiableList(connectionConfigurations);
     }
 
     /**
@@ -1273,7 +1274,7 @@ public abstract class XmppSession implements AutoCloseable {
                 connection.close();
             }
         } finally {
-            synchronized (connections) {
+            synchronized (connectionConfigurations) {
                 activeConnection = null;
             }
         }

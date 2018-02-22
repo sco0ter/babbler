@@ -24,14 +24,12 @@
 
 package rocks.xmpp.extensions.httpbind;
 
-import rocks.xmpp.core.session.Connection;
+import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.dns.DnsResolver;
-import rocks.xmpp.dns.TxtRecord;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.util.XmppUtils;
@@ -60,7 +58,6 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -82,7 +79,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class BoshConnection extends Connection {
+public final class BoshConnection extends AbstractConnection {
 
     private static final Logger logger = Logger.getLogger(BoshConnection.class.getName());
 
@@ -99,6 +96,8 @@ public final class BoshConnection extends Connection {
     private final BoshConnectionConfiguration boshConnectionConfiguration;
 
     private final XmppDebugger debugger;
+
+    private final XmppSession xmppSession;
 
     private final Deque<String> keySequence = new ArrayDeque<>();
 
@@ -129,6 +128,11 @@ public final class BoshConnection extends Connection {
     private final String clientAcceptEncoding;
 
     /**
+     * Guarded by "this".
+     */
+    private final URL url;
+
+    /**
      * The executor, which will execute HTTP requests.
      * Guarded by "this".
      */
@@ -152,23 +156,17 @@ public final class BoshConnection extends Connection {
     private String sessionId;
 
     /**
-     * Guarded by "this".
-     */
-    private String authId;
-
-    /**
      * True, if the connection manager sends acknowledgments.
      * Guarded by "this".
      */
     private boolean usingAcknowledgments;
 
-    /**
-     * Guarded by "this".
-     */
-    private URL url;
+    private SessionOpen sessionOpen;
 
-    BoshConnection(XmppSession xmppSession, BoshConnectionConfiguration configuration) {
-        super(xmppSession, configuration);
+    BoshConnection(final URL url, final XmppSession xmppSession, final BoshConnectionConfiguration configuration) {
+        super(configuration);
+        this.url = url;
+        this.xmppSession = xmppSession;
         this.boshConnectionConfiguration = configuration;
         this.debugger = xmppSession.getDebugger();
 
@@ -211,31 +209,6 @@ public final class BoshConnection extends Connection {
     }
 
     /**
-     * Tries to find the BOSH URL by a DNS TXT lookup as described in <a href="http://xmpp.org/extensions/xep-0156.html">XEP-0156</a>.
-     *
-     * @param xmppServiceDomain The fully qualified domain name.
-     * @param nameServer        The name server.
-     * @param timeout           The lookup timeout.
-     * @return The BOSH URL, if it could be found or null.
-     */
-    private static String findBoshUrl(String xmppServiceDomain, String nameServer, long timeout) {
-
-        try {
-            List<TxtRecord> txtRecords = DnsResolver.resolveTXT(xmppServiceDomain, nameServer, timeout);
-            for (TxtRecord txtRecord : txtRecords) {
-                Map<String, String> attributes = txtRecord.asAttributes();
-                String url = attributes.get("_xmpp-client-xbosh");
-                if (url != null) {
-                    return url;
-                }
-            }
-        } catch (IOException e) {
-            return null;
-        }
-        return null;
-    }
-
-    /**
      * Generates a key sequence.
      *
      * @see <a href="http://xmpp.org/extensions/xep-0124.html#keys-generate">15.3 Generating the Key Sequence</a>
@@ -270,40 +243,14 @@ public final class BoshConnection extends Connection {
      *
      * @throws IOException If a connection could not be established.
      */
-    //@Override
-    public final synchronized void connect() throws IOException {
+    final synchronized void connect() throws IOException {
 
         if (sessionId != null) {
             // Already connected.
             return;
         }
 
-        if (url == null) {
-            String protocol = boshConnectionConfiguration.isSecure() ? "https" : "http";
-            // If no port has been configured, use the default ports.
-            int targetPort = getPort() > 0 ? getPort() : (boshConnectionConfiguration.isSecure() ? 5281 : 5280);
-            // If a hostname has been configured, use it to connect.
-            if (getHostname() != null) {
-                url = new URL(protocol, getHostname(), targetPort, boshConnectionConfiguration.getPath());
-            } else if (xmppSession.getDomain() != null) {
-                // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
-                String resolvedUrl = findBoshUrl(xmppSession.getDomain().toString(), xmppSession.getConfiguration().getNameServer(), boshConnectionConfiguration.getConnectTimeout());
-                if (resolvedUrl != null) {
-                    url = new URL(resolvedUrl);
-                } else {
-                    // Fallback mechanism:
-                    // If the URL could not be resolved, use the domain name and port 5280 as default.
-                    url = new URL(protocol, xmppSession.getDomain().toString(), targetPort, boshConnectionConfiguration.getPath());
-                }
-                this.port = url.getPort() > 0 ? url.getPort() : url.getDefaultPort();
-                this.hostname = url.getHost();
-            } else {
-                throw new IllegalStateException("Neither an URL nor a domain given for a BOSH connection.");
-            }
-        }
-
         this.sessionId = null;
-        this.authId = null;
         this.usingAcknowledgments = false;
         this.requestCompressionMethod = null;
         this.requestCount.set(0);
@@ -373,8 +320,8 @@ public final class BoshConnection extends Connection {
         // It's the session creation response.
         if (responseBody.getSid() != null) {
             synchronized (this) {
+                openedByPeer(responseBody);
                 sessionId = responseBody.getSid();
-                authId = responseBody.getAuthId();
                 if (responseBody.getAck() != null) {
                     usingAcknowledgments = true;
                 }
@@ -487,7 +434,6 @@ public final class BoshConnection extends Connection {
                     }
                 }
                 sessionId = null;
-                authId = null;
                 requestCompressionMethod = null;
                 keySequence.clear();
             }
@@ -837,7 +783,7 @@ public final class BoshConnection extends Connection {
     }
 
     private HttpURLConnection getConnection() throws IOException {
-        Proxy proxy = getProxy();
+        Proxy proxy = boshConnectionConfiguration.getProxy();
         HttpURLConnection httpURLConnection;
         if (proxy != null) {
             httpURLConnection = (HttpURLConnection) url.openConnection(proxy);

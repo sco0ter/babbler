@@ -24,13 +24,17 @@
 
 package rocks.xmpp.extensions.httpbind;
 
-import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.dns.DnsResolver;
+import rocks.xmpp.dns.TxtRecord;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.URL;
 import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A configuration for a BOSH connection.
@@ -109,14 +113,60 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
     }
 
     @Override
-    public Connection createConnection(XmppSession xmppSession) {
-        BoshConnection boshConnection = new BoshConnection(xmppSession, this);
+    public rocks.xmpp.core.net.Connection createConnection(XmppSession xmppSession) {
         try {
+            URL url;
+            String protocol = isSecure() ? "https" : "http";
+            // If no port has been configured, use the default ports.
+            int targetPort = getPort() > 0 ? getPort() : (isSecure() ? 5281 : 5280);
+            // If a hostname has been configured, use it to connect.
+            if (getHostname() != null) {
+                url = new URL(protocol, getHostname(), targetPort, getPath());
+            } else if (xmppSession.getDomain() != null) {
+                // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
+                String resolvedUrl = findBoshUrl(xmppSession.getDomain().toString(), xmppSession.getConfiguration().getNameServer(), getConnectTimeout());
+                if (resolvedUrl != null) {
+                    url = new URL(resolvedUrl);
+                } else {
+                    // Fallback mechanism:
+                    // If the URL could not be resolved, use the domain name and port 5280 as default.
+                    url = new URL(protocol, xmppSession.getDomain().toString(), targetPort, getPath());
+                }
+            } else {
+                throw new IllegalStateException("Neither an URL nor a domain given for a BOSH connection.");
+            }
+
+            BoshConnection boshConnection = new BoshConnection(url, xmppSession, this);
             boshConnection.connect();
+            return boshConnection;
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        return boshConnection;
+    }
+
+    /**
+     * Tries to find the BOSH URL by a DNS TXT lookup as described in <a href="http://xmpp.org/extensions/xep-0156.html">XEP-0156</a>.
+     *
+     * @param xmppServiceDomain The fully qualified domain name.
+     * @param nameServer        The name server.
+     * @param timeout           The lookup timeout.
+     * @return The BOSH URL, if it could be found or null.
+     */
+    private static String findBoshUrl(String xmppServiceDomain, String nameServer, long timeout) {
+
+        try {
+            List<TxtRecord> txtRecords = DnsResolver.resolveTXT(xmppServiceDomain, nameServer, timeout);
+            for (TxtRecord txtRecord : txtRecords) {
+                Map<String, String> attributes = txtRecord.asAttributes();
+                String url = attributes.get("_xmpp-client-xbosh");
+                if (url != null) {
+                    return url;
+                }
+            }
+        } catch (IOException e) {
+            return null;
+        }
+        return null;
     }
 
     /**

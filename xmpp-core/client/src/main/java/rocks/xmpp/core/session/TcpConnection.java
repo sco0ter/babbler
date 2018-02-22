@@ -24,8 +24,8 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.StreamNegotiationException;
@@ -35,8 +35,6 @@ import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.core.tls.client.StartTlsManager;
-import rocks.xmpp.dns.DnsResolver;
-import rocks.xmpp.dns.SrvRecord;
 import rocks.xmpp.extensions.compress.CompressionManager;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
@@ -53,15 +51,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -76,7 +70,7 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">3.  TCP Binding</a>
  */
-public final class TcpConnection extends Connection {
+public final class TcpConnection extends AbstractConnection {
 
     private static final Logger logger = Logger.getLogger(TcpConnection.class.getName());
 
@@ -90,7 +84,7 @@ public final class TcpConnection extends Connection {
 
     private final TcpConnectionConfiguration tcpConnectionConfiguration;
 
-    private final AtomicBoolean closed = new AtomicBoolean(false);
+    private final XmppSession xmppSession;
 
     /**
      * The stream id, which is assigned by the server.
@@ -123,8 +117,14 @@ public final class TcpConnection extends Connection {
      */
     private OutputStream outputStream;
 
-    TcpConnection(XmppSession xmppSession, TcpConnectionConfiguration configuration) {
-        super(xmppSession, configuration);
+    private SessionOpen sessionOpen;
+
+    TcpConnection(final Socket socket, final XmppSession xmppSession, final TcpConnectionConfiguration configuration) throws IOException {
+        super(configuration);
+        this.socket = socket;
+        this.outputStream = new BufferedOutputStream(socket.getOutputStream());
+        this.inputStream = new BufferedInputStream(socket.getInputStream());
+        this.xmppSession = xmppSession;
         this.tcpConnectionConfiguration = configuration;
         this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         this.streamManager = xmppSession.getManager(StreamManager.class);
@@ -166,52 +166,10 @@ public final class TcpConnection extends Connection {
                 throw new StreamNegotiationException(e);
             }
         });
-    }
-
-    /**
-     * Connects to the specified XMPP server using a socket connection.
-     * Stream features are negotiated until SASL negotiation, which will be negotiated separately in the {@link XmppClient#login(String, String)} method.
-     * <p>If only a XMPP service domain has been specified, it is tried to resolve the FQDN via SRV lookup.<br>
-     * If that fails, it is tried to connect directly the XMPP service domain on port 5222.<br>
-     * If a hostname and port have been specified, these are used to establish the connection.<br>
-     * If a proxy has been specified, the connection is established through this proxy.<br>
-     * </p>
-     *
-     * @throws IOException If the underlying socket throws an exception.
-     */
-    public final synchronized void connect() throws IOException {
-
-        if (socket != null) {
-            if (!socket.isClosed() && socket.isConnected()) {
-                // Already connected.
-                return;
-            }
-
-            try {
-                close();
-            } catch (final Exception e) {
-                // ignored
-            }
-        }
-
-        if (getHostname() != null && !getHostname().isEmpty()) {
-            this.socket = createAndConnectSocket(InetSocketAddress.createUnresolved(getHostname(), getPort()), getProxy());
-        } else if (xmppSession.getDomain() != null) {
-            if (!connectWithXmppServiceDomain(xmppSession.getDomain())) {
-                // 9. If the initiating entity does not receive a response to its SRV query, it SHOULD attempt the fallback process described in the next section.
-                this.socket = createAndConnectSocket(InetSocketAddress.createUnresolved(xmppSession.getDomain().toString(), getPort()), getProxy());
-            }
-        } else {
-            throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
-        }
         streamFeaturesManager.addFeatureNegotiator(securityManager);
         streamFeaturesManager.addFeatureNegotiator(compressionManager);
         streamFeaturesManager.addFeatureNegotiator(streamManager);
         streamManager.reset();
-
-        outputStream = new BufferedOutputStream(socket.getOutputStream());
-        inputStream = new BufferedInputStream(socket.getInputStream());
-        closed.set(false);
     }
 
     @Override
@@ -233,26 +191,6 @@ public final class TcpConnection extends Connection {
     @Override
     public synchronized boolean isSecure() {
         return socket instanceof SSLSocket;
-    }
-
-    private Socket createAndConnectSocket(InetSocketAddress unresolvedAddress, Proxy proxy) throws IOException {
-        final Socket socket;
-        if (tcpConnectionConfiguration.getSocketFactory() == null) {
-            if (proxy != null) {
-                socket = new Socket(proxy);
-            } else {
-                socket = new Socket();
-            }
-        } else {
-            socket = tcpConnectionConfiguration.getSocketFactory().createSocket();
-        }
-        // SocketFactory may return an already connected socket, so check the connected state to prevent SocketException.
-        if (!socket.isConnected()) {
-            socket.connect(new InetSocketAddress(unresolvedAddress.getHostName(), unresolvedAddress.getPort()), tcpConnectionConfiguration.getConnectTimeout());
-        }
-        this.port = unresolvedAddress.getPort();
-        this.hostname = unresolvedAddress.getHostName();
-        return socket;
     }
 
     /**
@@ -383,56 +321,6 @@ public final class TcpConnection extends Connection {
         });
     }
 
-    /**
-     * This is the preferred way to resolve the FQDN.
-     *
-     * @param xmppServiceDomain The fully qualified domain name.
-     * @return If the connection could be established.
-     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">3.2.1.  Preferred Process: SRV Lookup</a>
-     */
-    private boolean connectWithXmppServiceDomain(final Jid xmppServiceDomain) {
-
-        // 1. The initiating entity constructs a DNS SRV query whose inputs are:
-        //
-        //   * Service of "xmpp-client" (for client-to-server connections) or "xmpp-server" (for server-to-server connections)
-        try {
-            final List<SrvRecord> srvRecords = DnsResolver.resolveSRV("xmpp-client", xmppServiceDomain, xmppSession.getConfiguration().getNameServer(), tcpConnectionConfiguration.getConnectTimeout());
-
-            // 3. If a response is received, it will contain one or more combinations of a port and FDQN, each of which is weighted and prioritized as described in [DNS-SRV].
-            // Sort the entries, so that the best one is tried first.
-            srvRecords.sort(null);
-            IOException ex = null;
-            for (SrvRecord srvRecord : srvRecords) {
-                if (srvRecord != null) {
-                    // (However, if the result of the SRV lookup is a single resource record with a Target of ".", i.e., the root domain, then the initiating entity MUST abort SRV processing at this point because according to [DNS-SRV] such a Target "means that the service is decidedly not available at this domain".)
-                    if (".".equals(srvRecord.getTarget())) {
-                        return false;
-                    }
-
-                    try {
-                        // 4. The initiating entity chooses at least one of the returned FQDNs to resolve (following the rules in [DNS-SRV]), which it does by performing DNS "A" or "AAAA" lookups on the FDQN; this will result in an IPv4 or IPv6 address.
-                        // 5. The initiating entity uses the IP address(es) from the successfully resolved FDQN (with the corresponding port number returned by the SRV lookup) as the connection address for the receiving entity.
-                        // 6. If the initiating entity fails to connect using that IP address but the "A" or "AAAA" lookups returned more than one IP address, then the initiating entity uses the next resolved IP address for that FDQN as the connection address.
-                        this.socket = createAndConnectSocket(InetSocketAddress.createUnresolved(srvRecord.getTarget(), srvRecord.getPort()), getProxy());
-                        return true;
-                    } catch (IOException e) {
-                        // 7. If the initiating entity fails to connect using all resolved IP addresses for a given FDQN, then it repeats the process of resolution and connection for the next FQDN returned by the SRV lookup based on the priority and weight as defined in [DNS-SRV].
-                        ex = e;
-                    }
-                }
-            }
-
-            // 8. If the initiating entity receives a response to its SRV query but it is not able to establish an XMPP connection using the data received in the response, it SHOULD NOT attempt the fallback process described in the next section (this helps to prevent a state mismatch between inbound and outbound connections).
-            if (!srvRecords.isEmpty()) {
-                throw new IOException("Could not connect to any host.", ex);
-            }
-        } catch (Exception e) {
-            // Unable to resolve the domain, try fallback.
-            return false;
-        }
-        return false;
-    }
-
     @Override
     public final boolean isUsingAcknowledgements() {
         return streamManager.isActive();
@@ -441,8 +329,8 @@ public final class TcpConnection extends Connection {
     @Override
     public final synchronized String toString() {
         StringBuilder sb = new StringBuilder("TCP connection");
-        if (hostname != null) {
-            sb.append(" to ").append(hostname).append(':').append(port);
+        if (socket != null) {
+            sb.append(" to ").append(socket.getInetAddress()).append(':').append(socket.getPort());
         }
         if (streamId != null) {
             sb.append(" (").append(streamId).append(')');

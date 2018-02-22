@@ -25,6 +25,7 @@
 package rocks.xmpp.websocket;
 
 import rocks.xmpp.core.net.AbstractConnection;
+import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.websocket.model.Close;
@@ -50,7 +51,8 @@ public class WebSocketConnection extends AbstractConnection {
 
     protected SessionOpen sessionOpen;
 
-    WebSocketConnection(Session session) {
+    WebSocketConnection(Session session, ConnectionConfiguration connectionConfiguration) {
+        super(connectionConfiguration);
         this.session = session;
         session.addMessageHandler(StreamElement.class, this::onRead);
     }

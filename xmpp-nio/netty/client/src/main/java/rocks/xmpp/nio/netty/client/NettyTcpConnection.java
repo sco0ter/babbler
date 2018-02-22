@@ -31,7 +31,6 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
@@ -72,7 +71,8 @@ public final class NettyTcpConnection extends NettyChannelConnection {
         super(channel, null, xmppSession::createUnmarshaller,
                 xmppSession.getDebugger()::writeStanza,
                 xmppSession::createMarshaller,
-                xmppSession::notifyException);
+                xmppSession::notifyException,
+                connectionConfiguration);
         this.xmppSession = xmppSession;
         this.connectionConfiguration = connectionConfiguration;
         StreamFeaturesManager streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
@@ -102,11 +102,6 @@ public final class NettyTcpConnection extends NettyChannelConnection {
         } catch (XmppException e) {
             xmppSession.notifyException(e);
         }
-    }
-
-    @Override
-    public final ConnectionConfiguration getConfiguration() {
-        return connectionConfiguration;
     }
 
     private synchronized void secureConnection() throws NoSuchAlgorithmException {

@@ -25,7 +25,6 @@
 package rocks.xmpp.websocket;
 
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
@@ -69,8 +68,6 @@ public class WebSocketClientConnection extends WebSocketConnection {
 
     private final XmppSession xmppSession;
 
-    private ConnectionConfiguration connectionConfiguration;
-
     /**
      * Guarded by "this".
      */
@@ -82,13 +79,12 @@ public class WebSocketClientConnection extends WebSocketConnection {
     private Future<?> pongFuture;
 
     WebSocketClientConnection(Session session, URI uri, XmppSession xmppSession, WebSocketConnectionConfiguration connectionConfiguration) {
-        super(session);
+        super(session, connectionConfiguration);
         this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         this.streamManager = xmppSession.getManager(StreamManager.class);
         this.streamFeaturesManager.addFeatureNegotiator(streamManager);
         this.streamManager.reset();
         this.xmppSession = xmppSession;
-        this.connectionConfiguration = connectionConfiguration;
         this.uri = uri;
         this.executorService = Executors.newSingleThreadScheduledExecutor(xmppSession.getConfiguration().getThreadFactory("WebSocket Ping Scheduler"));
         session.addMessageHandler(new PongHandler());
@@ -145,11 +141,6 @@ public class WebSocketClientConnection extends WebSocketConnection {
         } catch (XmppException e) {
             xmppSession.notifyException(e);
         }
-    }
-
-    @Override
-    public final ConnectionConfiguration getConfiguration() {
-        return connectionConfiguration;
     }
 
     @Override

@@ -57,6 +57,7 @@ public abstract class Connection extends AbstractConnection {
      * @param connectionConfiguration The connection configuration.
      */
     protected Connection(XmppSession xmppSession, ConnectionConfiguration connectionConfiguration) {
+        super(connectionConfiguration);
         this.xmppSession = xmppSession;
         this.hostname = connectionConfiguration.getHostname();
         this.port = connectionConfiguration.getPort();

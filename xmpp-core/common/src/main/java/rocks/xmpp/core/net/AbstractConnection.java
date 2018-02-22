@@ -46,9 +46,17 @@ public abstract class AbstractConnection implements Connection {
 
     private final CompletableFuture<Void> closedByPeer = new CompletableFuture<>();
 
+    private final ConnectionConfiguration connectionConfiguration;
+
     private String streamId;
 
-    protected AbstractConnection() {
+    protected AbstractConnection(ConnectionConfiguration connectionConfiguration) {
+        this.connectionConfiguration = connectionConfiguration;
+    }
+
+    @Override
+    public ConnectionConfiguration getConfiguration() {
+        return connectionConfiguration;
     }
 
     /**
@@ -100,7 +108,7 @@ public abstract class AbstractConnection implements Connection {
                     // Then wait for the reception of the peer's closing element or timeout.
                     .thenCompose(v -> closedByPeer.applyToEither(CompletionStages.timeoutAfter(3500, TimeUnit.MILLISECONDS), Function.identity()))
                     .handle((aVoid, exc) -> closeConnection())
-                            // Then compose this future with the returned channel future, kind of flat mapping it.
+                    // Then compose this future with the returned channel future, kind of flat mapping it.
                     .thenCompose(Function.identity());
         }
         return CompletableFuture.completedFuture(null);

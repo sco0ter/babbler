@@ -27,6 +27,7 @@ package rocks.xmpp.nio.netty;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import rocks.xmpp.core.net.AbstractConnection;
+import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamHeader;
@@ -62,7 +63,9 @@ public class NettyChannelConnection extends AbstractConnection {
                                   final Supplier<Unmarshaller> unmarshallerSupplier,
                                   final BiConsumer<String, StreamElement> onWrite,
                                   final Supplier<Marshaller> marshallerSupplier,
-                                  final Consumer<Throwable> onException) {
+                                  final Consumer<Throwable> onException,
+                                  final ConnectionConfiguration connectionConfiguration) {
+        super(connectionConfiguration);
         this.channel = channel;
         this.onRead = onRead;
         this.decoder = new NettyXmppDecoder(this::onRead, unmarshallerSupplier, onException);

@@ -28,6 +28,8 @@ import rocks.xmpp.core.session.Connection;
 import rocks.xmpp.core.session.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.Duration;
 
 /**
@@ -37,10 +39,10 @@ import java.time.Duration;
  * In order to create an instance of this class you have to use the builder pattern as shown below.
  * ```java
  * BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
- *     .hostname("localhost")
- *     .port(5280)
- *     .path("/http-bind/")
- *     .build();
+ * .hostname("localhost")
+ * .port(5280)
+ * .path("/http-bind/")
+ * .build();
  * ```
  * The above sample configuration will connect to <code>http://localhost:5280/http-bind/</code>.
  * <p>
@@ -108,7 +110,13 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
 
     @Override
     public Connection createConnection(XmppSession xmppSession) {
-        return new BoshConnection(xmppSession, this);
+        BoshConnection boshConnection = new BoshConnection(xmppSession, this);
+        try {
+            boshConnection.connect();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return boshConnection;
     }
 
     /**

@@ -98,7 +98,7 @@ public abstract class AbstractConnection implements Connection {
             // First close XMPP layer stream
             return closeStream()
                     // Then wait for the reception of the peer's closing element or timeout.
-                    .thenCompose(v -> closedByPeer.applyToEither(CompletionStages.timeoutAfter(500, TimeUnit.MILLISECONDS), Function.identity()))
+                    .thenCompose(v -> closedByPeer.applyToEither(CompletionStages.timeoutAfter(3500, TimeUnit.MILLISECONDS), Function.identity()))
                     .handle((aVoid, exc) -> closeConnection())
                             // Then compose this future with the returned channel future, kind of flat mapping it.
                     .thenCompose(Function.identity());
@@ -121,7 +121,7 @@ public abstract class AbstractConnection implements Connection {
     @Override
     public final void close() throws Exception {
         try {
-            closeAsync().toCompletableFuture().get(1, TimeUnit.SECONDS);
+            closeAsync().toCompletableFuture().get(4, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
             if (e.getCause() instanceof Exception) {
                 throw (Exception) e.getCause();

@@ -43,7 +43,7 @@ import java.util.List;
  * @author Christian Schudt
  * @see Connection
  */
-public abstract class ConnectionConfiguration {
+public abstract class ConnectionConfiguration implements rocks.xmpp.core.net.ConnectionConfiguration {
 
     private final String hostname;
 
@@ -78,7 +78,7 @@ public abstract class ConnectionConfiguration {
      * @param xmppSession The XMPP session, which is associated with the connection.
      * @return The connection.
      */
-    public abstract Connection createConnection(XmppSession xmppSession);
+    public abstract rocks.xmpp.core.net.Connection createConnection(XmppSession xmppSession);
 
     /**
      * Gets the hostname.

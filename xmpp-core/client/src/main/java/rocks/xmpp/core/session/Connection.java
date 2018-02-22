@@ -24,21 +24,17 @@
 
 package rocks.xmpp.core.session;
 
+import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.session.model.SessionOpen;
-import rocks.xmpp.core.stream.model.StreamElement;
 
-import java.io.IOException;
 import java.net.Proxy;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 
 /**
  * The base connection class which provides hostname, port and proxy information.
  *
  * @author Christian Schudt
  */
-public abstract class Connection implements rocks.xmpp.core.net.Connection {
+public abstract class Connection extends AbstractConnection {
 
     private final ConnectionConfiguration connectionConfiguration;
 
@@ -105,64 +101,6 @@ public abstract class Connection implements rocks.xmpp.core.net.Connection {
     }
 
     /**
-     * Restarts the stream.
-     *
-     * @see <a href="https://tools.ietf.org/html/rfc6120#section-4.3.3">RFC 6120 § 4.3.3.  Restarts</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0206.html#preconditions-sasl">XEP-0206 Authentication and Resource Binding</a>
-     * @see <a href="https://tools.ietf.org/html/rfc7395#section-3.7">RFC 7395 § 3.7.  Stream Restarts</a>
-     */
-    protected abstract void restartStream();
-
-    /**
-     * Sends an element over this connection. This is basically a short cut for {@linkplain #write(StreamElement) write} + {@linkplain #flush() flush}.
-     *
-     * @param streamElement The element.
-     * @return The future representing the send process and which allows to cancel it.
-     */
-    public abstract CompletableFuture<Void> send(StreamElement streamElement);
-
-    /**
-     * Writes the element to the stream without really sending it. It must be {@linkplain #flush() flushed}.
-     *
-     * @param streamElement The element.
-     * @return The send future.
-     */
-    public abstract CompletableFuture<Void> write(StreamElement streamElement);
-
-    /**
-     * Flushes the connection. Any buffered elements written via {@link #write(StreamElement)} are sent.
-     */
-    public abstract void flush();
-
-    /**
-     * Connects to the server.
-     *
-     * @throws IOException If no connection could be established, e.g. due to unknown host.
-     */
-    public abstract void connect() throws IOException;
-
-    /**
-     * Opens the XML stream to the server.
-     *
-     * @param sessionOpen The session open information.
-     */
-    public abstract CompletionStage<Void> open(SessionOpen sessionOpen);
-
-    /**
-     * Indicates whether this connection is secured by TLS/SSL.
-     *
-     * @return True, if this connection is secured.
-     */
-    public abstract boolean isSecure();
-
-    /**
-     * Gets the stream id of this connection.
-     *
-     * @return The stream id.
-     */
-    public abstract String getStreamId();
-
-    /**
      * Indicates, whether this connection is using acknowledgements.
      * <p>
      * TCP and WebSocket connections use <a href="http://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a> to acknowledge stanzas.
@@ -174,39 +112,4 @@ public abstract class Connection implements rocks.xmpp.core.net.Connection {
      * @see <a href="http://xmpp.org/extensions/xep-0124.html#ack">XEP-0124 § 9. Acknowledgements</a>
      */
     public abstract boolean isUsingAcknowledgements();
-
-    /**
-     * Closes the connection. This method blocks until everything is closed.
-     *
-     * @throws Exception If the async close failed.
-     * @see #closeAsync()
-     */
-    @Override
-    public final void close() throws Exception {
-        try {
-            closeAsync().get();
-        } catch (ExecutionException e) {
-            if (e.getCause() instanceof Exception) {
-                throw (Exception) e.getCause();
-            } else {
-                throw e;
-            }
-        } catch (InterruptedException e) {
-            // Implementers of AutoCloseable are strongly advised to not have the close method throw InterruptedException.
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    /**
-     * Asynchronously closes the connection.
-     * <p>
-     * Closing usually involves a round-trip with the peer on the XMPP layer first by sending a closing stream element,
-     * then waiting on the response and then closing the underlying transport layer.
-     * <p>
-     * Implementations wait a maximum of 500ms for the XMPP level close.
-     *
-     * @return The future, which is complete, when the connection is closed.
-     * @see #close()
-     */
-    public abstract CompletableFuture<Void> closeAsync();
 }

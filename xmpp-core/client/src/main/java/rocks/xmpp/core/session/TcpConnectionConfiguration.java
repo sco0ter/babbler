@@ -25,6 +25,8 @@
 package rocks.xmpp.core.session;
 
 import javax.net.SocketFactory;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 
 /**
  * A configuration for a TCP connection.
@@ -99,7 +101,13 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
 
     @Override
     public final Connection createConnection(XmppSession xmppSession) {
-        return new TcpConnection(xmppSession, this);
+        TcpConnection connection = new TcpConnection(xmppSession, this);
+        try {
+            connection.connect();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return connection;
     }
 
     /**

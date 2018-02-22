@@ -61,7 +61,6 @@ import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
@@ -184,7 +183,7 @@ public abstract class XmppSession implements AutoCloseable {
     /**
      * guarded by "connections"
      */
-    protected Connection activeConnection;
+    protected rocks.xmpp.core.net.Connection activeConnection;
 
     /**
      * The XMPP domain which will be assigned by the server's response. This is read by different threads, so make it volatile to ensure visibility of the written value.
@@ -347,17 +346,19 @@ public abstract class XmppSession implements AutoCloseable {
             Iterator<ConnectionConfiguration> connectionIterator = getConnections().iterator();
             while (connectionIterator.hasNext()) {
                 ConnectionConfiguration connectionConfiguration = connectionIterator.next();
-                Connection connection = connectionConfiguration.createConnection(this);
+                rocks.xmpp.core.net.Connection connection = null;
                 try {
-                    connection.connect();
+                    connection = connectionConfiguration.createConnection(this);
                     connection.open(StreamHeader.create(from, xmppServiceDomain, null, configuration.getLanguage(), namespace));
                     activeConnection = connection;
                     break;
-                } catch (IOException e) {
-                    try {
-                        connection.close();
-                    } catch (Exception e1) {
-                        e.addSuppressed(e1);
+                } catch (Exception e) {
+                    if (connection != null) {
+                        try {
+                            connection.close();
+                        } catch (Exception e1) {
+                            e.addSuppressed(e1);
+                        }
                     }
                     if (connectionIterator.hasNext()) {
                         logger.log(Level.WARNING, "{0} failed to connect. Trying alternative connection.", connection);
@@ -826,7 +827,7 @@ public abstract class XmppSession implements AutoCloseable {
      *
      * @return The actively used connection.
      */
-    public final Connection getActiveConnection() {
+    public final rocks.xmpp.core.net.Connection getActiveConnection() {
         synchronized (connectionConfigurations) {
             return activeConnection;
         }
@@ -894,7 +895,7 @@ public abstract class XmppSession implements AutoCloseable {
                 }
             }
 
-            Connection connection = getActiveConnection();
+            rocks.xmpp.core.net.Connection connection = getActiveConnection();
             if (connection == null) {
                 IllegalStateException ise = new IllegalStateException("Session is not connected to server (status: " + getStatus() + ')');
                 Throwable cause = exception;
@@ -903,7 +904,7 @@ public abstract class XmppSession implements AutoCloseable {
                 }
                 throw ise;
             } else {
-                sendFuture = connection.send(element);
+                sendFuture = connection.send(element).toCompletableFuture();
             }
         } catch (Exception e) {
             sendFuture = new CompletableFuture<>();
@@ -928,7 +929,7 @@ public abstract class XmppSession implements AutoCloseable {
                 });
                 // The stanza has been successfully sent. Don't track it any longer, unless the connection supports acknowledgements.
                 if (element instanceof Stanza) {
-                    Connection connection = getActiveConnection();
+                    rocks.xmpp.core.net.Connection connection = getActiveConnection();
                     if (connection == null || !connection.isUsingAcknowledgements()) {
                         Stanza st = (Stanza) element;
                         removeFromQueue(st);
@@ -1269,7 +1270,7 @@ public abstract class XmppSession implements AutoCloseable {
     private void closeAndNullifyConnection() throws Exception {
 
         try {
-            Connection connection = getActiveConnection();
+            rocks.xmpp.core.net.Connection connection = getActiveConnection();
             if (connection != null) {
                 connection.close();
             }

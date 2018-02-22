@@ -24,11 +24,21 @@
 
 package rocks.xmpp.nio.netty.client;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import rocks.xmpp.core.session.Connection;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.proxy.HttpProxyHandler;
+import io.netty.handler.proxy.Socks5ProxyHandler;
 import rocks.xmpp.core.session.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
+
+import java.net.Proxy;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Christian Schudt
@@ -52,8 +62,36 @@ public final class NettyTcpConnectionConfiguration extends ConnectionConfigurati
     }
 
     @Override
-    public final Connection createConnection(final XmppSession xmppSession) {
-        return new NettyTcpConnection(xmppSession, this);
+    public final rocks.xmpp.core.net.Connection createConnection(final XmppSession xmppSession) {
+        try {
+            final Bootstrap b = new Bootstrap();
+            b.group(getEventLoopGroup());
+            b.channel(NioSocketChannel.class);
+            b.option(ChannelOption.SO_KEEPALIVE, true);
+            b.handler(new ChannelInitializer<SocketChannel>() {
+                @Override
+                public final void initChannel(final SocketChannel ch) {
+                    Proxy proxy = getProxy();
+                    if (proxy != null) {
+                        if (proxy.type() == Proxy.Type.SOCKS) {
+                            ch.pipeline().addFirst(new Socks5ProxyHandler(getProxy().address()));
+                        } else if (proxy.type() == Proxy.Type.HTTP) {
+                            ch.pipeline().addFirst(new HttpProxyHandler(getProxy().address()));
+                        }
+                    }
+//
+                }
+            });
+            ChannelFuture channelFuture = b.connect(getHostname(), getPort());
+            channelFuture.get();
+            return new NettyTcpConnection(channelFuture.channel(),
+                    xmppSession, this);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e.getCause());
+        }
     }
 
     /**

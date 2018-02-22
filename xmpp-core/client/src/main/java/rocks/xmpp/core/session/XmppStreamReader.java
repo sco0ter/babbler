@@ -94,7 +94,7 @@ final class XmppStreamReader {
         this.namespace = namespace;
     }
 
-    void startReading(final InputStream inputStream) {
+    void startReading(final InputStream inputStream, final Runnable closedByPeer) {
 
         executorService.execute(() -> {
             boolean doRestart = false;
@@ -194,6 +194,7 @@ final class XmppStreamReader {
                     }
                     if (xmlEvent.isEndElement()) {
                         // The stream gets closed with </stream:stream>
+                        closedByPeer.run();
                         if (debugger != null) {
                             QName qName = xmlEvent.asEndElement().getName();
                             debugger.readStanza("</" + qName.getPrefix() + ':' + qName.getLocalPart() + '>', null);

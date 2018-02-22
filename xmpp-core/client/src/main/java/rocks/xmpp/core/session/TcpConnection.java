@@ -179,7 +179,6 @@ public final class TcpConnection extends Connection {
      *
      * @throws IOException If the underlying socket throws an exception.
      */
-    @Override
     public final synchronized void connect() throws IOException {
 
         if (socket != null) {
@@ -227,7 +226,7 @@ public final class TcpConnection extends Connection {
 
         // Start reading from the input stream.
         xmppStreamReader = new XmppStreamReader(streamHeader.getContentNamespace(), this, this.xmppSession);
-        xmppStreamReader.startReading(inputStream);
+        xmppStreamReader.startReading(inputStream, this::closedByPeer);
         return CompletableFuture.completedFuture(null);
     }
 
@@ -328,69 +327,60 @@ public final class TcpConnection extends Connection {
     @Override
     protected final synchronized void restartStream() {
         xmppStreamWriter.openStream(outputStream, (StreamHeader) sessionOpen);
-        xmppStreamReader.startReading(inputStream);
+        xmppStreamReader.startReading(inputStream, this::closedByPeer);
     }
 
-    /**
-     * Closes the TCP connection.
-     * It first sends a {@code </stream:stream>}, then shuts down the writer so that no more stanzas can be sent.
-     * After that it shuts down the reader and awaits shortly for any stanzas from the server and the server gracefully closing the stream with {@code </stream:stream>}.
-     * Eventually the socket is closed.
-     */
     @Override
-    public final synchronized CompletableFuture<Void> closeAsync() {
-        if (closed.compareAndSet(false, true)) {
+    protected CompletionStage<Void> closeStream() {
 
-            final XmppStreamWriter writer;
-            final XmppStreamReader reader;
+        final XmppStreamWriter writer;
+        final XmppStreamReader reader;
 
-            synchronized (this) {
-                writer = xmppStreamWriter;
-                reader = xmppStreamReader;
-            }
-            final CompletableFuture<Void> writeFuture;
-            if (writer != null) {
-                writeFuture = writer.shutdown();
-            } else {
-                writeFuture = CompletableFuture.completedFuture(null);
-            }
-            // This call closes the stream and waits until everything has been sent to the server.
-            return writeFuture.handle((aVoid, throwable) -> {
-                // This call shuts down the reader and waits for a </stream> response from the server, if it hasn't already shut down before by the server.
-                if (reader != null) {
-                    return reader.shutdown();
-                }
-                return CompletableFuture.<Void>completedFuture(null);
-            }).thenCompose(Function.identity())
-                    .whenComplete((aVoid, throwable) -> {
-                        streamFeaturesManager.removeFeatureNegotiator(securityManager);
-                        streamFeaturesManager.removeFeatureNegotiator(compressionManager);
-                        streamFeaturesManager.removeFeatureNegotiator(streamManager);
-                        synchronized (this) {
-                            inputStream = null;
-                            outputStream = null;
-                            streamId = null;
-
-                            // We have sent a </stream:stream> to close the stream and waited for a server response, which also closes the stream by sending </stream:stream>.
-                            // Now close the socket.
-                            if (socket != null) {
-                                try {
-                                    socket.close();
-                                } catch (IOException e) {
-                                    throw new UncheckedIOException(e);
-                                } finally {
-                                    socket = null;
-                                }
-                            }
-                        }
-                    });
+        synchronized (this) {
+            writer = xmppStreamWriter;
+            reader = xmppStreamReader;
         }
-        return CompletableFuture.completedFuture(null);
+        final CompletableFuture<Void> writeFuture;
+        if (writer != null) {
+            writeFuture = writer.shutdown();
+        } else {
+            writeFuture = CompletableFuture.completedFuture(null);
+        }
+        // This call closes the stream and waits until everything has been sent to the server.
+        return writeFuture.handle((aVoid, throwable) -> {
+            // This call shuts down the reader and waits for a </stream> response from the server, if it hasn't already shut down before by the server.
+            if (reader != null) {
+                return reader.shutdown();
+            }
+
+            return CompletableFuture.<Void>completedFuture(null);
+        }).thenCompose(Function.identity());
     }
 
     @Override
-    public CompletionStage<Void> closeAsync(StreamError streamError) {
-        throw new UnsupportedOperationException();
+    protected CompletionStage<Void> closeConnection() {
+        return CompletableFuture.runAsync(() -> {
+            streamFeaturesManager.removeFeatureNegotiator(securityManager);
+            streamFeaturesManager.removeFeatureNegotiator(compressionManager);
+            streamFeaturesManager.removeFeatureNegotiator(streamManager);
+            synchronized (this) {
+                inputStream = null;
+                outputStream = null;
+                streamId = null;
+
+                // We have sent a </stream:stream> to close the stream and waited for a server response, which also closes the stream by sending </stream:stream>.
+                // Now close the socket.
+                if (socket != null) {
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    } finally {
+                        socket = null;
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -441,11 +431,6 @@ public final class TcpConnection extends Connection {
             return false;
         }
         return false;
-    }
-
-    @Override
-    public final synchronized String getStreamId() {
-        return streamId;
     }
 
     @Override

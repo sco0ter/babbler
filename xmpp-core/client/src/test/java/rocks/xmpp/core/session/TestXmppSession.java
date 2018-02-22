@@ -30,7 +30,6 @@ import rocks.xmpp.core.SameThreadExecutorService;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.core.stream.model.StreamError;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -69,6 +68,16 @@ public final class TestXmppSession extends XmppSession {
             }
 
             @Override
+            protected CompletionStage<Void> closeStream() {
+                return CompletableFuture.completedFuture(null);
+            }
+
+            @Override
+            protected CompletionStage<Void> closeConnection() {
+                return CompletableFuture.completedFuture(null);
+            }
+
+            @Override
             public CompletableFuture<Void> send(StreamElement clientStreamElement) {
                 return CompletableFuture.completedFuture(null);
             }
@@ -83,7 +92,7 @@ public final class TestXmppSession extends XmppSession {
 
             }
 
-            @Override
+            //@Override
             public void connect() {
             }
 
@@ -98,23 +107,8 @@ public final class TestXmppSession extends XmppSession {
             }
 
             @Override
-            public String getStreamId() {
-                return null;
-            }
-
-            @Override
             public boolean isUsingAcknowledgements() {
                 return false;
-            }
-
-            @Override
-            public CompletableFuture<Void> closeAsync() {
-                return CompletableFuture.completedFuture(null);
-            }
-
-            @Override
-            public CompletionStage<Void> closeAsync(StreamError streamError) {
-                return null;
             }
         };
         stanzaListenerExecutor = iqHandlerExecutor = new SameThreadExecutorService();

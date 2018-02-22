@@ -38,6 +38,19 @@ import java.util.concurrent.CompletionStage;
 public interface Connection extends AutoCloseable {
 
     /**
+     * Gets the configuration used to create this connection.
+     *
+     * @return The
+     */
+    default ConnectionConfiguration getConfiguration() {
+        return null;
+    }
+
+    default boolean isUsingAcknowledgements() {
+        return false;
+    }
+
+    /**
      * Opens the XML stream to the peer entity.
      *
      * @param sessionOpen The session open information.

@@ -24,13 +24,44 @@
 
 package rocks.xmpp.websocket;
 
-import rocks.xmpp.core.session.Connection;
+import org.glassfish.tyrus.client.ClientManager;
+import org.glassfish.tyrus.client.ClientProperties;
+import org.glassfish.tyrus.client.SslEngineConfigurator;
+import org.glassfish.tyrus.client.ThreadPoolConfig;
+import org.glassfish.tyrus.container.jdk.client.JdkClientContainer;
 import rocks.xmpp.core.session.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.dns.DnsResolver;
+import rocks.xmpp.dns.TxtRecord;
+import rocks.xmpp.websocket.codec.XmppWebSocketDecoder;
+import rocks.xmpp.websocket.codec.XmppWebSocketEncoder;
 
 import javax.net.ssl.SSLContext;
+import javax.websocket.ClientEndpointConfig;
+import javax.websocket.CloseReason;
+import javax.websocket.DeploymentException;
+import javax.websocket.Endpoint;
+import javax.websocket.EndpointConfig;
+import javax.websocket.HandshakeResponse;
+import javax.websocket.Session;
+import javax.websocket.SessionException;
+import javax.websocket.server.HandshakeRequest;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /**
  * A configuration for a WebSocket connection.
@@ -39,12 +70,12 @@ import java.time.Duration;
  * In order to create an instance of this class you have to use the builder pattern as shown below.
  * ```java
  * WebSocketConnectionConfiguration connectionConfiguration = WebSocketConnectionConfiguration.builder()
- *     .hostname("localhost")
- *     .port(7443)
- *     .path("/ws/")
- *     .sslContext(sslContext)
- *     .secure(true)
- *     .build();
+ * .hostname("localhost")
+ * .port(7443)
+ * .path("/ws/")
+ * .sslContext(sslContext)
+ * .secure(true)
+ * .build();
  * ```
  * The above sample configuration will connect to <code>wss://localhost:7443/ws/</code> using SSL with a custom {@link SSLContext}.
  * <p>
@@ -125,8 +156,138 @@ public final class WebSocketConnectionConfiguration extends ConnectionConfigurat
     }
 
     @Override
-    public final Connection createConnection(final XmppSession xmppSession) {
-        return new WebSocketConnection(xmppSession, this);
+    public final rocks.xmpp.core.net.Connection createConnection(final XmppSession xmppSession) {
+        try {
+            return new WebSocketClientConnection(createWebSocketSession(xmppSession), null, xmppSession, this);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public final Session createWebSocketSession(XmppSession xmppSession) throws IOException {
+
+        try {
+            final URI path;
+            synchronized (this) {
+
+                URI uri;
+                String protocol = isSecure() ? "wss" : "ws";
+                // If no port has been configured, use the default ports.
+                int targetPort = getPort() > 0 ? getPort() : (isSecure() ? 5281 : 5280);
+                // If a hostname has been configured, use it to connect.
+                if (getHostname() != null) {
+                    uri = new URI(protocol, null, getHostname(), targetPort, getPath(), null, null);
+                } else if (xmppSession.getDomain() != null) {
+                    // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
+                    String resolvedUrl = findWebSocketEndpoint(xmppSession.getDomain().toString(), xmppSession.getConfiguration().getNameServer(), getConnectTimeout());
+                    if (resolvedUrl != null) {
+                        uri = new URI(resolvedUrl);
+                    } else {
+                        // Fallback mechanism:
+                        // If the URL could not be resolved, use the domain name and port 5280 as default.
+                        uri = new URI(protocol, null, xmppSession.getDomain().toString(), targetPort, getPath(), null, null);
+                    }
+                } else {
+                    throw new IllegalStateException("Neither an URL nor a domain given for a WebSocket connection.");
+                }
+
+                path = uri;
+            }
+            final AtomicBoolean handshakeSucceeded = new AtomicBoolean();
+            final ClientEndpointConfig clientEndpointConfig = ClientEndpointConfig.Builder.create()
+                    .encoders(Collections.singletonList(XmppWebSocketEncoder.class))
+                    .decoders(Collections.singletonList(XmppWebSocketDecoder.class))
+                    .preferredSubprotocols(Collections.singletonList("xmpp"))
+                    .configurator(new ClientEndpointConfig.Configurator() {
+                        @Override
+                        public void afterResponse(HandshakeResponse response) {
+                            // If a client receives a handshake response that does not include
+                            // 'xmpp' in the 'Sec-WebSocket-Protocol' header, then an XMPP
+                            // subprotocol WebSocket connection was not established and the client
+                            // MUST close the WebSocket connection.
+                            List<String> responseHeader = response.getHeaders().get(HandshakeRequest.SEC_WEBSOCKET_PROTOCOL);
+                            if (responseHeader != null && responseHeader.contains("xmpp")) {
+                                handshakeSucceeded.set(true);
+                            }
+                        }
+                    }).build();
+            clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.MARSHALLER, (Supplier<Marshaller>) xmppSession::createMarshaller);
+            clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.UNMARSHALLER, (Supplier<Unmarshaller>) xmppSession::createUnmarshaller);
+            clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.ON_WRITE, (BiConsumer<String, StreamElement>) xmppSession.getDebugger()::writeStanza);
+            clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.ON_READ, (BiConsumer<String, StreamElement>) xmppSession.getDebugger()::readStanza);
+            clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.XML_OUTPUT_FACTORY, xmppSession.getConfiguration().getXmlOutputFactory());
+
+            final ClientManager client = ClientManager.createClient(JdkClientContainer.class.getName());
+            if (getSSLContext() != null) {
+                SslEngineConfigurator sslEngineConfigurator = new SslEngineConfigurator(getSSLContext());
+                client.getProperties().put(ClientProperties.SSL_ENGINE_CONFIGURATOR, sslEngineConfigurator);
+                sslEngineConfigurator.setHostnameVerifier(getHostnameVerifier());
+            }
+
+            final ThreadPoolConfig config = ThreadPoolConfig.defaultConfig();
+            config.setThreadFactory(xmppSession.getConfiguration().getThreadFactory("WebSocket Client"));
+            client.getProperties().put(ClientProperties.WORKER_THREAD_POOL_CONFIG, config);
+
+            int connectTimeout = getConnectTimeout();
+            if (connectTimeout > 0) {
+                client.getProperties().put(ClientProperties.HANDSHAKE_TIMEOUT, connectTimeout);
+            }
+            final Proxy proxy = getProxy();
+            if (proxy != null && proxy.type() == Proxy.Type.HTTP) {
+                InetSocketAddress inetSocketAddress = ((InetSocketAddress) proxy.address());
+                client.getProperties().put(ClientProperties.PROXY_URI, "http://" + inetSocketAddress.getHostName() + ':' + inetSocketAddress.getPort());
+            }
+
+            final Session session = client.connectToServer(new Endpoint() {
+                @Override
+                public void onOpen(Session session, EndpointConfig config) {
+                    if (!handshakeSucceeded.get()) {
+                        try {
+                            String msg = "Server response did not include 'Sec-WebSocket-Protocol' header with value 'xmpp'.";
+                            session.close(new CloseReason(CloseReason.CloseCodes.PROTOCOL_ERROR, msg));
+                        } catch (IOException e) {
+                            xmppSession.notifyException(e);
+                        }
+                    }
+                }
+
+                @Override
+                public void onError(Session session, Throwable t) {
+                    xmppSession.notifyException(t);
+                }
+
+                @Override
+                public void onClose(Session session, CloseReason closeReason) {
+                    if (closeReason.getCloseCode() != CloseReason.CloseCodes.NORMAL_CLOSURE) {
+                        xmppSession.notifyException(new SessionException(closeReason.toString(), null, session));
+                    }
+                }
+            }, clientEndpointConfig, path);
+
+            if (!session.isOpen()) {
+                throw new IOException("Session could not be opened.");
+            }
+            return session;
+        } catch (DeploymentException | URISyntaxException e) {
+            throw new IOException(e);
+        }
+    }
+
+    private static String findWebSocketEndpoint(String xmppServiceDomain, String nameServer, long timeout) {
+
+        try {
+            List<TxtRecord> txtRecords = DnsResolver.resolveTXT(xmppServiceDomain, nameServer, timeout);
+            for (TxtRecord txtRecord : txtRecords) {
+                Map<String, String> attributes = txtRecord.asAttributes();
+                String url = attributes.get("_xmpp-client-websocket");
+                if (url != null) {
+                    return url;
+                }
+            }
+        } catch (IOException e) {
+            return null;
+        }
+        return null;
     }
 
     @Override

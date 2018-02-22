@@ -167,8 +167,8 @@ public final class VisualDebugger implements XmppDebugger {
                 if (xmppSession.getConnectedResource() != null) {
                     title.set(xmppSession.getConnectedResource().toString());
                 } else if (xmppSession.getActiveConnection() != null) {
-                    debugController.viewModel.server.set(xmppSession.getActiveConnection().getHostname());
-                    debugController.viewModel.port.set(xmppSession.getActiveConnection().getPort());
+//                    debugController.viewModel.server.set(xmppSession.getActiveConnection().getHostname());
+//                    debugController.viewModel.port.set(xmppSession.getActiveConnection().getPort());
                     title.set(xmppSession.getDomain() != null ? xmppSession.getDomain().toString() : "...");
                 }
                 if (!xmppSession.isConnected()) {

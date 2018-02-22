@@ -100,7 +100,7 @@ public class SampleApplication {
                             .build();
 
 
-                    XmppClient xmppClient = XmppClient.create("localhost", configuration, nettyTcpConnectionConfiguration);
+                    XmppClient xmppClient = XmppClient.create("localhost", configuration, boshConfiguration);
 
                     // Listen for inbound messages.
                     xmppClient.addInboundMessageListener(e -> logger.info("Received: " + e.getMessage()));

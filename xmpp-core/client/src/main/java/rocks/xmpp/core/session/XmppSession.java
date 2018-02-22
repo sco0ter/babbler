@@ -26,6 +26,7 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.SessionOpen;
@@ -183,7 +184,7 @@ public abstract class XmppSession implements AutoCloseable {
     /**
      * guarded by "connections"
      */
-    protected rocks.xmpp.core.net.Connection activeConnection;
+    protected Connection activeConnection;
 
     /**
      * The XMPP domain which will be assigned by the server's response. This is read by different threads, so make it volatile to ensure visibility of the written value.
@@ -346,7 +347,7 @@ public abstract class XmppSession implements AutoCloseable {
             Iterator<ConnectionConfiguration> connectionIterator = getConnections().iterator();
             while (connectionIterator.hasNext()) {
                 ConnectionConfiguration connectionConfiguration = connectionIterator.next();
-                rocks.xmpp.core.net.Connection connection = null;
+                Connection connection = null;
                 try {
                     connection = connectionConfiguration.createConnection(this);
                     connection.open(StreamHeader.create(from, xmppServiceDomain, null, configuration.getLanguage(), namespace));
@@ -827,7 +828,7 @@ public abstract class XmppSession implements AutoCloseable {
      *
      * @return The actively used connection.
      */
-    public final rocks.xmpp.core.net.Connection getActiveConnection() {
+    public final Connection getActiveConnection() {
         synchronized (connectionConfigurations) {
             return activeConnection;
         }
@@ -895,7 +896,7 @@ public abstract class XmppSession implements AutoCloseable {
                 }
             }
 
-            rocks.xmpp.core.net.Connection connection = getActiveConnection();
+            Connection connection = getActiveConnection();
             if (connection == null) {
                 IllegalStateException ise = new IllegalStateException("Session is not connected to server (status: " + getStatus() + ')');
                 Throwable cause = exception;
@@ -929,7 +930,7 @@ public abstract class XmppSession implements AutoCloseable {
                 });
                 // The stanza has been successfully sent. Don't track it any longer, unless the connection supports acknowledgements.
                 if (element instanceof Stanza) {
-                    rocks.xmpp.core.net.Connection connection = getActiveConnection();
+                    Connection connection = getActiveConnection();
                     if (connection == null || !connection.isUsingAcknowledgements()) {
                         Stanza st = (Stanza) element;
                         removeFromQueue(st);
@@ -1270,7 +1271,7 @@ public abstract class XmppSession implements AutoCloseable {
     private void closeAndNullifyConnection() throws Exception {
 
         try {
-            rocks.xmpp.core.net.Connection connection = getActiveConnection();
+            Connection connection = getActiveConnection();
             if (connection != null) {
                 connection.close();
             }

@@ -29,6 +29,7 @@ import org.glassfish.tyrus.client.ClientProperties;
 import org.glassfish.tyrus.client.SslEngineConfigurator;
 import org.glassfish.tyrus.client.ThreadPoolConfig;
 import org.glassfish.tyrus.container.jdk.client.JdkClientContainer;
+import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.session.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.model.StreamElement;
@@ -156,7 +157,7 @@ public final class WebSocketConnectionConfiguration extends ConnectionConfigurat
     }
 
     @Override
-    public final rocks.xmpp.core.net.Connection createConnection(final XmppSession xmppSession) {
+    public final Connection createConnection(final XmppSession xmppSession) {
         try {
             return new WebSocketClientConnection(createWebSocketSession(xmppSession), null, xmppSession, this);
         } catch (IOException e) {

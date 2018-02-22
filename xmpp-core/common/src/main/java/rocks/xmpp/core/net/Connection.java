@@ -42,13 +42,9 @@ public interface Connection extends AutoCloseable {
      *
      * @return The
      */
-    default ConnectionConfiguration getConfiguration() {
-        return null;
-    }
+    ConnectionConfiguration getConfiguration();
 
-    default boolean isUsingAcknowledgements() {
-        return false;
-    }
+    boolean isUsingAcknowledgements();
 
     /**
      * Opens the XML stream to the peer entity.

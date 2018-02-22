@@ -70,6 +70,7 @@ public final class TestXmppSession extends XmppSession {
 
             @Override
             protected CompletionStage<Void> closeStream() {
+                closedByPeer();
                 return CompletableFuture.completedFuture(null);
             }
 

@@ -132,6 +132,11 @@ public class WebSocketClientConnection extends WebSocketConnection {
     }
 
     @Override
+    public final boolean isUsingAcknowledgements() {
+        return streamManager.isActive();
+    }
+
+    @Override
     protected void onRead(final StreamElement streamElement) {
         super.onRead(streamElement);
         try {

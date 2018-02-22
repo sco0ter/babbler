@@ -25,6 +25,7 @@
 package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.SrvRecord;
 
@@ -108,7 +109,7 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
     }
 
     @Override
-    public final rocks.xmpp.core.net.Connection createConnection(XmppSession xmppSession) {
+    public final Connection createConnection(XmppSession xmppSession) {
 
         try {
             Socket socket;

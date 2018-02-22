@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.httpbind;
 
+import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.session.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.dns.DnsResolver;
@@ -113,7 +114,7 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
     }
 
     @Override
-    public rocks.xmpp.core.net.Connection createConnection(XmppSession xmppSession) {
+    public Connection createConnection(XmppSession xmppSession) {
         try {
             URL url;
             String protocol = isSecure() ? "https" : "http";

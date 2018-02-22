@@ -34,6 +34,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.proxy.HttpProxyHandler;
 import io.netty.handler.proxy.Socks5ProxyHandler;
+import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.session.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 
@@ -62,7 +63,7 @@ public final class NettyTcpConnectionConfiguration extends ConnectionConfigurati
     }
 
     @Override
-    public final rocks.xmpp.core.net.Connection createConnection(final XmppSession xmppSession) {
+    public final Connection createConnection(final XmppSession xmppSession) {
         try {
             final Bootstrap b = new Bootstrap();
             b.group(getEventLoopGroup());

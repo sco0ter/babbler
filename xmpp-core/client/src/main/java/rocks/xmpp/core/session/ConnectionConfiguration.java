@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.session;
 
+import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 
 import javax.net.SocketFactory;
@@ -77,7 +78,7 @@ public abstract class ConnectionConfiguration implements rocks.xmpp.core.net.Con
      * @param xmppSession The XMPP session, which is associated with the connection.
      * @return The connection.
      */
-    public abstract rocks.xmpp.core.net.Connection createConnection(XmppSession xmppSession);
+    public abstract Connection createConnection(XmppSession xmppSession);
 
     /**
      * Gets the hostname.

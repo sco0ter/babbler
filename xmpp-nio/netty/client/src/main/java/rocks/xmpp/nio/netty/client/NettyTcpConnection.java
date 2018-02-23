@@ -36,6 +36,8 @@ import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.tls.client.StartTlsManager;
+import rocks.xmpp.extensions.compress.CompressionManager;
+import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.nio.netty.net.NettyChannelConnection;
 
@@ -45,6 +47,7 @@ import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.concurrent.CompletionStage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,7 +58,13 @@ public final class NettyTcpConnection extends NettyChannelConnection {
 
     private static final Logger logger = Logger.getLogger(NettyTcpConnection.class.getName());
 
+    private final StreamFeaturesManager streamFeaturesManager;
+
     private final StreamManager streamManager;
+
+    private final StartTlsManager startTlsManager;
+
+    private final CompressionManager compressionManager;
 
     private final NettyTcpConnectionConfiguration connectionConfiguration;
 
@@ -75,17 +84,29 @@ public final class NettyTcpConnection extends NettyChannelConnection {
                 connectionConfiguration);
         this.xmppSession = xmppSession;
         this.connectionConfiguration = connectionConfiguration;
-        StreamFeaturesManager streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
+
         this.streamManager = xmppSession.getManager(StreamManager.class);
-        StartTlsManager startTlsManager = new StartTlsManager(xmppSession, () -> {
+        this.streamManager.reset();
+
+        this.startTlsManager = new StartTlsManager(xmppSession, () -> {
             try {
                 secureConnection();
             } catch (Exception e) {
                 throw new StreamNegotiationException(e);
             }
         }, connectionConfiguration.isSecure());
-        streamFeaturesManager.addFeatureNegotiator(startTlsManager);
-        streamFeaturesManager.addFeatureNegotiator(streamManager);
+
+        this.compressionManager = xmppSession.getManager(CompressionManager.class);
+        this.compressionManager.getConfiguredCompressionMethods().addAll(connectionConfiguration.getCompressionMethods());
+        this.compressionManager.addFeatureListener(() -> {
+            CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
+            compress(compressionMethod.getName(), null);
+        });
+
+        this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
+        this.streamFeaturesManager.addFeatureNegotiator(streamManager);
+        this.streamFeaturesManager.addFeatureNegotiator(startTlsManager);
+        this.streamFeaturesManager.addFeatureNegotiator(compressionManager);
     }
 
     @Override
@@ -132,6 +153,15 @@ public final class NettyTcpConnection extends NettyChannelConnection {
     @Override
     public final boolean isUsingAcknowledgements() {
         return streamManager.isActive();
+    }
+
+    @Override
+    protected final CompletionStage<Void> closeConnection() {
+        return super.closeConnection().thenRun(() -> {
+            this.streamFeaturesManager.removeFeatureNegotiator(streamManager);
+            this.streamFeaturesManager.removeFeatureNegotiator(startTlsManager);
+            this.streamFeaturesManager.removeFeatureNegotiator(compressionManager);
+        });
     }
 
     @Override

@@ -26,6 +26,10 @@ package rocks.xmpp.nio.netty.net;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
+import io.netty.handler.codec.compression.JdkZlibDecoder;
+import io.netty.handler.codec.compression.JdkZlibEncoder;
+import io.netty.handler.codec.compression.ZlibWrapper;
 import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.session.model.SessionOpen;
@@ -123,8 +127,40 @@ public class NettyChannelConnection extends AbstractConnection {
     public void secure() {
     }
 
-    public boolean compress(String method, Runnable onSuccess, Runnable onUnsupported) {
-        return false;
+    /**
+     * Compresses the connection.
+     *
+     * @param method    The compression method. Supported methods are: "zlib", "deflate" and "gzip".
+     * @param onSuccess Invoked after the compression method has been chosen, but before compression is applied.
+     * @return True if the connection is compressed; false if the compression method is unknown.
+     */
+    public final boolean compress(final String method, final Runnable onSuccess) {
+        final ZlibWrapper zlibWrapper;
+        switch (method) {
+            case "zlib":
+                zlibWrapper = ZlibWrapper.ZLIB;
+                break;
+            case "deflate":
+                zlibWrapper = ZlibWrapper.NONE;
+                break;
+            case "gzip":
+                zlibWrapper = ZlibWrapper.GZIP;
+                break;
+            default:
+                return false;
+        }
+        if (onSuccess != null) {
+            onSuccess.run();
+        }
+        final ChannelHandler channelHandler = channel.pipeline().get("SSL");
+        if (channelHandler != null) {
+            channel.pipeline().addAfter("SSL", "decompressor", new JdkZlibDecoder(zlibWrapper));
+            channel.pipeline().addAfter("SSL", "compressor", new JdkZlibEncoder(zlibWrapper));
+        } else {
+            channel.pipeline().addFirst("decompressor", new JdkZlibDecoder(zlibWrapper));
+            channel.pipeline().addFirst("compressor", new JdkZlibEncoder(zlibWrapper));
+        }
+        return true;
     }
 
     @Override
@@ -143,7 +179,7 @@ public class NettyChannelConnection extends AbstractConnection {
     }
 
     @Override
-    protected final CompletionStage<Void> closeConnection() {
+    protected CompletionStage<Void> closeConnection() {
         final CompletableFuture<Void> completableFuture = new CompletableFuture<>();
         channel.close().addListener(future -> {
             if (future.isSuccess()) {

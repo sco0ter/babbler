@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,26 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.websocket;
-
-import rocks.xmpp.core.session.Extension;
-import rocks.xmpp.core.session.Module;
-import rocks.xmpp.websocket.model.Close;
-import rocks.xmpp.websocket.model.Open;
-
-import java.util.Collection;
-import java.util.Collections;
-
 /**
- * The WebSocket module, which is used to make the framing elements {@code <open/>} and {@code <close/>} known to the session.
- *
- * @author Christian Schudt
- * @since 0.7.0
+ * Client classes for establishing a WebSocket connection.
  */
-public final class WebSocketModule implements Module {
-
-    @Override
-    public final Collection<Extension> getExtensions() {
-        return Collections.singleton(Extension.of(Open.class, Close.class));
-    }
-}
+package rocks.xmpp.websocket.net.client;

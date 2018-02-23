@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.websocket;
+package rocks.xmpp.websocket.net.client;
 
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
@@ -31,6 +31,7 @@ import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
+import rocks.xmpp.websocket.net.WebSocketConnection;
 
 import javax.websocket.MessageHandler;
 import javax.websocket.PongMessage;
@@ -64,9 +65,9 @@ public class WebSocketClientConnection extends WebSocketConnection {
 
     private final URI uri;
 
-    private ScheduledExecutorService executorService;
-
     private final XmppSession xmppSession;
+
+    private ScheduledExecutorService executorService;
 
     /**
      * Guarded by "this".

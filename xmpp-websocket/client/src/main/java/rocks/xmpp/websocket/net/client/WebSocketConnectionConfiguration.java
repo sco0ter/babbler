@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.websocket;
+package rocks.xmpp.websocket.net.client;
 
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.client.ClientProperties;
@@ -35,6 +35,7 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.TxtRecord;
+import rocks.xmpp.websocket.net.WebSocketConnection;
 import rocks.xmpp.websocket.codec.XmppWebSocketDecoder;
 import rocks.xmpp.websocket.codec.XmppWebSocketEncoder;
 
@@ -71,12 +72,12 @@ import java.util.function.Supplier;
  * In order to create an instance of this class you have to use the builder pattern as shown below.
  * ```java
  * WebSocketConnectionConfiguration connectionConfiguration = WebSocketConnectionConfiguration.builder()
- * .hostname("localhost")
- * .port(7443)
- * .path("/ws/")
- * .sslContext(sslContext)
- * .secure(true)
- * .build();
+ *     .hostname("localhost")
+ *     .port(7443)
+ *     .path("/ws/")
+ *     .sslContext(sslContext)
+ *     .secure(true)
+ *     .build();
  * ```
  * The above sample configuration will connect to <code>wss://localhost:7443/ws/</code> using SSL with a custom {@link SSLContext}.
  * <p>
@@ -165,7 +166,7 @@ public final class WebSocketConnectionConfiguration extends ConnectionConfigurat
         }
     }
 
-    public final Session createWebSocketSession(XmppSession xmppSession) throws IOException {
+    private Session createWebSocketSession(XmppSession xmppSession) throws IOException {
 
         try {
             final URI path;

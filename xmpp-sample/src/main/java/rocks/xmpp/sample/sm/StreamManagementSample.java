@@ -34,7 +34,7 @@ import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
-import rocks.xmpp.websocket.WebSocketConnectionConfiguration;
+import rocks.xmpp.websocket.net.client.WebSocketConnectionConfiguration;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.websocket;
+package rocks.xmpp.websocket.net;
 
 import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.net.ConnectionConfiguration;
@@ -41,7 +41,6 @@ import java.util.concurrent.CompletionStage;
  * An XMPP WebSocket connection.
  *
  * @author Christian Schudt
- * @see WebSocketConnectionConfiguration
  * @see <a href="https://tools.ietf.org/html/rfc7395">XMPP Subprotocol for WebSocket</a>
  * @since 0.7.0
  */
@@ -51,7 +50,7 @@ public class WebSocketConnection extends AbstractConnection {
 
     protected SessionOpen sessionOpen;
 
-    WebSocketConnection(Session session, ConnectionConfiguration connectionConfiguration) {
+    public WebSocketConnection(Session session, ConnectionConfiguration connectionConfiguration) {
         super(connectionConfiguration);
         this.session = session;
         session.addMessageHandler(StreamElement.class, this::onRead);

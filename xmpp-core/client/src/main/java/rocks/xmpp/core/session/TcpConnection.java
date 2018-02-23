@@ -56,7 +56,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -85,12 +84,6 @@ public final class TcpConnection extends AbstractConnection {
     private final TcpConnectionConfiguration tcpConnectionConfiguration;
 
     private final XmppSession xmppSession;
-
-    /**
-     * The stream id, which is assigned by the server.
-     * guarded by "this"
-     */
-    String streamId;
 
     /**
      * guarded by "this"
@@ -177,15 +170,15 @@ public final class TcpConnection extends AbstractConnection {
 
         StreamHeader streamHeader = (StreamHeader) sessionOpen;
         this.sessionOpen = sessionOpen;
-        // Start writing to the output stream.
-        xmppStreamWriter = new XmppStreamWriter(streamHeader.getContentNamespace(), streamManager, this.xmppSession);
-        xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
-        xmppStreamWriter.openStream(outputStream, streamHeader);
 
         // Start reading from the input stream.
         xmppStreamReader = new XmppStreamReader(streamHeader.getContentNamespace(), this, this.xmppSession);
-        xmppStreamReader.startReading(inputStream, this::closedByPeer);
-        return CompletableFuture.completedFuture(null);
+        xmppStreamReader.startReading(inputStream, this::openedByPeer, this::closedByPeer);
+
+        // Start writing to the output stream.
+        xmppStreamWriter = new XmppStreamWriter(streamHeader.getContentNamespace(), streamManager, this.xmppSession);
+        xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
+        return xmppStreamWriter.openStream(outputStream, streamHeader);
     }
 
     @Override
@@ -265,7 +258,7 @@ public final class TcpConnection extends AbstractConnection {
     @Override
     protected final synchronized void restartStream() {
         xmppStreamWriter.openStream(outputStream, (StreamHeader) sessionOpen);
-        xmppStreamReader.startReading(inputStream, this::closedByPeer);
+        xmppStreamReader.startReading(inputStream, this::openedByPeer, this::closedByPeer);
     }
 
     @Override
@@ -285,40 +278,37 @@ public final class TcpConnection extends AbstractConnection {
             writeFuture = CompletableFuture.completedFuture(null);
         }
         // This call closes the stream and waits until everything has been sent to the server.
-        return writeFuture.handle((aVoid, throwable) -> {
+        return writeFuture.whenCompleteAsync((aVoid, throwable) -> {
             // This call shuts down the reader and waits for a </stream> response from the server, if it hasn't already shut down before by the server.
             if (reader != null) {
-                return reader.shutdown();
+                reader.shutdown();
             }
-
-            return CompletableFuture.<Void>completedFuture(null);
-        }).thenCompose(Function.identity());
+        });
     }
 
     @Override
     protected CompletionStage<Void> closeConnection() {
-        return CompletableFuture.runAsync(() -> {
-            streamFeaturesManager.removeFeatureNegotiator(securityManager);
-            streamFeaturesManager.removeFeatureNegotiator(compressionManager);
-            streamFeaturesManager.removeFeatureNegotiator(streamManager);
-            synchronized (this) {
-                inputStream = null;
-                outputStream = null;
-                streamId = null;
 
-                // We have sent a </stream:stream> to close the stream and waited for a server response, which also closes the stream by sending </stream:stream>.
-                // Now close the socket.
-                if (socket != null) {
-                    try {
-                        socket.close();
-                    } catch (IOException e) {
-                        throw new UncheckedIOException(e);
-                    } finally {
-                        socket = null;
-                    }
+        streamFeaturesManager.removeFeatureNegotiator(securityManager);
+        streamFeaturesManager.removeFeatureNegotiator(compressionManager);
+        streamFeaturesManager.removeFeatureNegotiator(streamManager);
+        synchronized (this) {
+            inputStream = null;
+            outputStream = null;
+
+            // We have sent a </stream:stream> to close the stream and waited for a server response, which also closes the stream by sending </stream:stream>.
+            // Now close the socket.
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                } finally {
+                    socket = null;
                 }
             }
-        });
+        }
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
@@ -332,11 +322,8 @@ public final class TcpConnection extends AbstractConnection {
         if (socket != null) {
             sb.append(" to ").append(socket.getInetAddress()).append(':').append(socket.getPort());
         }
-        if (streamId != null) {
-            sb.append(" (").append(streamId).append(')');
-        }
-        if (sessionOpen != null) {
-            sb.append(", from: ").append(sessionOpen.getFrom());
+        if (getStreamId() != null) {
+            sb.append(" (").append(getStreamId()).append(')');
         }
         return sb.toString();
     }

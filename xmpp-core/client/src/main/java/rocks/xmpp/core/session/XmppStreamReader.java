@@ -48,10 +48,10 @@ import javax.xml.stream.events.XMLEvent;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Locale;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * This class is responsible for reading the inbound XMPP stream. It starts one "reader thread", which keeps reading the XMPP document from the stream until the stream is closed or disconnected.
@@ -94,7 +94,7 @@ final class XmppStreamReader {
         this.namespace = namespace;
     }
 
-    void startReading(final InputStream inputStream, final Runnable closedByPeer) {
+    void startReading(final InputStream inputStream, final Consumer<SessionOpen> openedByPeer, final Runnable closedByPeer) {
 
         executorService.execute(() -> {
             boolean doRestart = false;
@@ -126,11 +126,6 @@ final class XmppStreamReader {
                         StartElement startElement = xmlEvent.asStartElement();
                         if (StreamHeader.LOCAL_NAME.equals(startElement.getName().getLocalPart()) && StreamHeader.STREAM_NAMESPACE.equals(startElement.getName().getNamespaceURI())) {
                             Attribute idAttribute = startElement.getAttributeByName(STREAM_ID);
-                            if (idAttribute != null) {
-                                synchronized (connection) {
-                                    connection.streamId = idAttribute.getValue();
-                                }
-                            }
                             final Attribute fromAttribute = startElement.getAttributeByName(FROM);
                             final Attribute toAttribute = startElement.getAttributeByName(TO);
                             final Attribute langAttribute = startElement.getAttributeByName(LANG);
@@ -138,28 +133,8 @@ final class XmppStreamReader {
                             final Jid to = toAttribute != null ? Jid.ofEscaped(toAttribute.getValue()) : null;
                             final String id = idAttribute != null ? idAttribute.getValue() : null;
                             final Locale lang = langAttribute != null ? Locale.forLanguageTag(langAttribute.getValue()) : null;
-                            SessionOpen streamHeader = new SessionOpen() {
-                                @Override
-                                public Jid getFrom() {
-                                    return from;
-                                }
-
-                                @Override
-                                public Jid getTo() {
-                                    return to;
-                                }
-
-                                @Override
-                                public String getId() {
-                                    return id;
-                                }
-
-                                @Override
-                                public Locale getLanguage() {
-                                    return lang;
-                                }
-                            };
-
+                            StreamHeader streamHeader = StreamHeader.create(from, to, id, lang, namespace);
+                            openedByPeer.accept(streamHeader);
                             if (debugger != null) {
                                 XMLEventWriter writer = xmppSession.getConfiguration().getXmlOutputFactory().createXMLEventWriter(stringWriter);
                                 writer.add(startDocument);
@@ -239,18 +214,16 @@ final class XmppStreamReader {
     /**
      * Shuts down the executor and waits maximal 0.5 seconds for the reader thread to finish, i.e. when the server sends a {@code </stream:stream>} response.
      */
-    CompletableFuture<Void> shutdown() {
-        return CompletableFuture.runAsync(() -> {
-            executorService.shutdown();
-            // Wait for the closing </stream> element to be received.
-            try {
-                if (!executorService.awaitTermination(500, TimeUnit.MILLISECONDS)) {
-                    executorService.shutdownNow();
-                }
-            } catch (InterruptedException e) {
+    void shutdown() {
+        executorService.shutdown();
+        // Wait for the closing </stream> element to be received.
+        try {
+            if (!executorService.awaitTermination(500, TimeUnit.MILLISECONDS)) {
                 executorService.shutdownNow();
-                Thread.currentThread().interrupt();
             }
-        });
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 }

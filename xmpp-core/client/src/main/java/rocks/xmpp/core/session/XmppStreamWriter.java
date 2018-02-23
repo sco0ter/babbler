@@ -41,6 +41,7 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -131,8 +132,8 @@ final class XmppStreamWriter {
         }, executor);
     }
 
-    void openStream(final OutputStream outputStream, final StreamHeader streamHeader) {
-        executor.execute(() -> {
+    CompletionStage<Void> openStream(final OutputStream outputStream, final StreamHeader streamHeader) {
+        return CompletableFuture.runAsync(() -> {
             this.outputStream = outputStream;
             try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
                 XMLStreamWriter writer = null;
@@ -154,7 +155,7 @@ final class XmppStreamWriter {
             } catch (Exception e) {
                 notifyException(e);
             }
-        });
+        }, executor);
     }
 
     private CompletableFuture<Void> closeStream() {
@@ -218,7 +219,7 @@ final class XmppStreamWriter {
      * This method waits until this task is completed, but not more than 0.25 seconds.
      */
     CompletableFuture<Void> shutdown() {
-        return closeStream().whenComplete((aVoid, throwable) -> {
+        return closeStream().whenCompleteAsync((aVoid, throwable) -> {
             executor.shutdown();
             try {
                 // Wait for the closing stream element to be sent before we can close the socket.

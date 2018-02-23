@@ -25,6 +25,7 @@
 package rocks.xmpp.websocket.codec;
 
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.util.XmppUtils;
 
@@ -64,7 +65,7 @@ public final class XmppWebSocketEncoder implements Encoder.Text<StreamElement> {
         try (Writer writer = new StringWriter()) {
             XMLStreamWriter xmlStreamWriter = null;
             try {
-                xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(writer), null, object instanceof StreamFeatures);
+                xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(writer), null, object instanceof StreamFeatures || object instanceof StreamError);
                 marshaller.get().marshal(object, xmlStreamWriter);
                 xmlStreamWriter.flush();
                 String xml = writer.toString();

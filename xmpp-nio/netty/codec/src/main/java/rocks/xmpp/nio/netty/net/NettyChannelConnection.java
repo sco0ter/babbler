@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.nio.netty;
+package rocks.xmpp.nio.netty.net;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -52,7 +52,7 @@ public class NettyChannelConnection extends AbstractConnection {
 
     protected final Channel channel;
 
-    protected final NettyXmppDecoder decoder;
+    private final NettyXmppDecoder decoder;
 
     private final BiConsumer<String, StreamElement> onRead;
 

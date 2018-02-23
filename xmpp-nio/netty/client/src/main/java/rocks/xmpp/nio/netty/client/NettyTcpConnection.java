@@ -37,7 +37,7 @@ import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.tls.client.StartTlsManager;
 import rocks.xmpp.extensions.sm.StreamManager;
-import rocks.xmpp.nio.netty.NettyChannelConnection;
+import rocks.xmpp.nio.netty.net.NettyChannelConnection;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;

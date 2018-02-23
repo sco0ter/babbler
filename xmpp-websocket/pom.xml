@@ -37,7 +37,7 @@
     <description>XMPP Subprotocol for WebSocket</description>
     <packaging>pom</packaging>
     <modules>
-        <module>core</module>
+        <module>common</module>
         <module>client</module>
     </modules>
     <build>

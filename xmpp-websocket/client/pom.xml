@@ -99,7 +99,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-websocket-core</artifactId>
+            <artifactId>xmpp-websocket-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

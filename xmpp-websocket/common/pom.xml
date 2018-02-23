@@ -32,8 +32,8 @@
         <artifactId>xmpp-websocket</artifactId>
         <version>0.8.0-SNAPSHOT</version>
     </parent>
-    <artifactId>xmpp-websocket-core</artifactId>
-    <name>XMPP.rocks - WebSocket (RFC 7395) - Core</name>
+    <artifactId>xmpp-websocket-common</artifactId>
+    <name>XMPP.rocks - WebSocket (RFC 7395) - Common</name>
     <description>XMPP Subprotocol for WebSocket - Codecs and XMPP frames shared by client and server</description>
     <build>
         <plugins>

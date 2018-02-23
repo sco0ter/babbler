@@ -28,6 +28,9 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 /**
  * This class is an IQ handler for extension managers.
  * <p>
@@ -39,21 +42,30 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
  */
 public abstract class AbstractIQHandler implements IQHandler {
 
-    private final IQ.Type type;
+    private final Set<IQ.Type> type;
 
     /**
      * @param type The IQ type which is handled by this handler (get or set).
      */
-    protected AbstractIQHandler(IQ.Type type) {
-        if (type != IQ.Type.GET && type != IQ.Type.SET) {
-            throw new IllegalArgumentException("type must be 'get' or 'set'");
+    protected AbstractIQHandler(IQ.Type... type) {
+        if (type.length == 0) {
+            throw new IllegalArgumentException("type type list must not be empty.");
         }
-        this.type = type;
+        if (type.length == 1) {
+            this.type = EnumSet.of(type[0]);
+        } else if (type.length == 2) {
+            this.type = EnumSet.of(type[0], type[1]);
+        } else {
+            throw new IllegalArgumentException("Max 2 varargs allowed, which must be of type 'get' or 'set'.");
+        }
+        if (this.type.contains(IQ.Type.ERROR) || this.type.contains(IQ.Type.RESULT)) {
+            throw new IllegalArgumentException("type must be 'get' and/or 'set'");
+        }
     }
 
     @Override
     public final IQ handleRequest(IQ iq) {
-        if (iq.getType() == type) {
+        if (type.contains(iq.getType())) {
             return processRequest(iq);
         } else {
             return iq.createError(new StanzaError(Condition.BAD_REQUEST, "Type was '" + iq.getType().toString().toLowerCase() + "', but expected '" + type.toString().toLowerCase() + "'."));

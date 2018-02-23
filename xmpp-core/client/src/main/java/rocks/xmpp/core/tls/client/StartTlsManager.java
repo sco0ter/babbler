@@ -24,11 +24,11 @@
 
 package rocks.xmpp.core.tls.client;
 
+import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stream.StreamFeatureListener;
-import rocks.xmpp.core.stream.client.ClientStreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
+import rocks.xmpp.core.stream.client.ClientStreamFeatureNegotiator;
 import rocks.xmpp.core.tls.model.Failure;
 import rocks.xmpp.core.tls.model.Proceed;
 import rocks.xmpp.core.tls.model.StartTls;
@@ -41,12 +41,14 @@ import rocks.xmpp.core.tls.model.StartTls;
  */
 public final class StartTlsManager extends ClientStreamFeatureNegotiator<StartTls> {
 
+    private final TcpBinding tcpBinding;
+
     private final boolean isSecure;
 
-    public StartTlsManager(XmppSession xmppSession, StreamFeatureListener streamFeatureListener, boolean isSecure) {
+    public StartTlsManager(XmppSession xmppSession, TcpBinding tcpBinding, boolean isSecure) {
         super(xmppSession, StartTls.class);
+        this.tcpBinding = tcpBinding;
         this.isSecure = isSecure;
-        addFeatureListener(streamFeatureListener);
     }
 
     @Override
@@ -62,7 +64,11 @@ public final class StartTlsManager extends ClientStreamFeatureNegotiator<StartTl
                 return StreamNegotiationResult.IGNORE;
             }
         } else if (element instanceof Proceed) {
-            notifyFeatureNegotiated();
+            try {
+                tcpBinding.secureConnection();
+            } catch (Exception e) {
+                throw new StreamNegotiationException(e);
+            }
             return StreamNegotiationResult.RESTART;
         } else if (element instanceof Failure) {
             throw new StreamNegotiationException("Failure during TLS negotiation.");

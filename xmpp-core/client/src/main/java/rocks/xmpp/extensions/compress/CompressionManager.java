@@ -24,10 +24,11 @@
 
 package rocks.xmpp.extensions.compress;
 
+import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stream.client.ClientStreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
+import rocks.xmpp.core.stream.client.ClientStreamFeatureNegotiator;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
 import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
 
@@ -35,6 +36,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -51,12 +53,15 @@ public final class CompressionManager extends ClientStreamFeatureNegotiator<Comp
 
     private static final Logger logger = Logger.getLogger(CompressionManager.class.getName());
 
+    private final TcpBinding tcpBinding;
+
     private final List<CompressionMethod> compressionMethods = new CopyOnWriteArrayList<>();
 
     private CompressionMethod negotiatedCompressionMethod;
 
-    private CompressionManager(XmppSession xmppSession) {
+    public CompressionManager(final XmppSession xmppSession, final TcpBinding tcpBinding) {
         super(xmppSession, CompressionFeature.class);
+        this.tcpBinding = tcpBinding;
     }
 
     @Override
@@ -82,7 +87,13 @@ public final class CompressionManager extends ClientStreamFeatureNegotiator<Comp
                 return StreamNegotiationResult.IGNORE;
             }
         } else if (element == StreamCompression.COMPRESSED) {
-            notifyFeatureNegotiated();
+            try {
+                tcpBinding.compressConnection(negotiatedCompressionMethod.getName(), null);
+            } catch (Exception e) {
+                // Failure of the negotiation SHOULD NOT be treated as an unrecoverable error
+                logger.log(Level.WARNING, "Failure during stream compression.", e);
+                return StreamNegotiationResult.IGNORE;
+            }
             logger.fine("Stream is now compressed.");
             return StreamNegotiationResult.RESTART;
         } else if (element instanceof StreamCompression.Failure) {

@@ -32,12 +32,10 @@ import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.tls.client.StartTlsManager;
 import rocks.xmpp.extensions.compress.CompressionManager;
-import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.nio.netty.net.NettyChannelConnection;
 
@@ -88,20 +86,11 @@ public final class NettyTcpConnection extends NettyChannelConnection {
         this.streamManager = xmppSession.getManager(StreamManager.class);
         this.streamManager.reset();
 
-        this.startTlsManager = new StartTlsManager(xmppSession, () -> {
-            try {
-                secureConnection();
-            } catch (Exception e) {
-                throw new StreamNegotiationException(e);
-            }
-        }, connectionConfiguration.isSecure());
+        this.startTlsManager = new StartTlsManager(xmppSession, this, connectionConfiguration.isSecure());
 
-        this.compressionManager = xmppSession.getManager(CompressionManager.class);
+        this.compressionManager = new CompressionManager(xmppSession, this);
+        this.compressionManager.getConfiguredCompressionMethods().clear();
         this.compressionManager.getConfiguredCompressionMethods().addAll(connectionConfiguration.getCompressionMethods());
-        this.compressionManager.addFeatureListener(() -> {
-            CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
-            compress(compressionMethod.getName(), null);
-        });
 
         this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         this.streamFeaturesManager.addFeatureNegotiator(streamManager);
@@ -125,7 +114,8 @@ public final class NettyTcpConnection extends NettyChannelConnection {
         }
     }
 
-    private synchronized void secureConnection() throws NoSuchAlgorithmException {
+    @Override
+    public final void secureConnection() throws NoSuchAlgorithmException {
         final SSLContext sslContext = getConfiguration().getSSLContext() != null ? getConfiguration().getSSLContext() : SSLContext.getDefault();
         final SslContext sslCtx = new JdkSslContext(sslContext, true, ClientAuth.OPTIONAL);
         final SslHandler handler = sslCtx.newHandler(channel.alloc(), String.valueOf(xmppSession.getDomain()), connectionConfiguration.getPort());

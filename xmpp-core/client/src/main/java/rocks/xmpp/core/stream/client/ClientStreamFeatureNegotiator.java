@@ -26,13 +26,8 @@ package rocks.xmpp.core.stream.client;
 
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stream.StreamFeatureListener;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
-import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.model.StreamFeature;
-
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * A base class to negotiate features.
@@ -45,8 +40,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public abstract class ClientStreamFeatureNegotiator<T extends StreamFeature> extends Manager implements StreamFeatureNegotiator<T> {
 
-    private final Set<StreamFeatureListener> streamFeatureListeners = new CopyOnWriteArraySet<>();
-
     private final Class<T> featureClass;
 
     /**
@@ -58,26 +51,6 @@ public abstract class ClientStreamFeatureNegotiator<T extends StreamFeature> ext
     public ClientStreamFeatureNegotiator(XmppSession xmppSession, Class<T> featureClass) {
         super(xmppSession, false);
         this.featureClass = featureClass;
-    }
-
-    /**
-     * Adds a feature listener, which will get notified about feature negotiation status changes.
-     *
-     * @param streamFeatureListener The feature listener.
-     */
-    public final void addFeatureListener(StreamFeatureListener streamFeatureListener) {
-        streamFeatureListeners.add(streamFeatureListener);
-    }
-
-    /**
-     * Notifies the listener, if a feature negotiation has completed.
-     *
-     * @throws StreamNegotiationException If an exception occurred during feature negotiation.
-     */
-    protected void notifyFeatureNegotiated() throws StreamNegotiationException {
-        for (StreamFeatureListener streamFeatureListener : streamFeatureListeners) {
-            streamFeatureListener.featureSuccessfullyNegotiated();
-        }
     }
 
     /**

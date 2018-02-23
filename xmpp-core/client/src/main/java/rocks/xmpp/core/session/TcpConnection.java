@@ -26,6 +26,7 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.AbstractConnection;
+import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.StreamNegotiationException;
@@ -69,7 +70,7 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp">3.  TCP Binding</a>
  */
-public final class TcpConnection extends AbstractConnection {
+public final class TcpConnection extends AbstractConnection implements TcpBinding {
 
     private static final Logger logger = Logger.getLogger(TcpConnection.class.getName());
 
@@ -121,44 +122,10 @@ public final class TcpConnection extends AbstractConnection {
         this.tcpConnectionConfiguration = configuration;
         this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         this.streamManager = xmppSession.getManager(StreamManager.class);
-        this.securityManager = new StartTlsManager(xmppSession, () -> {
-            try {
-                secureConnection();
-                logger.log(Level.FINE, "Connection has been secured via TLS.");
-            } catch (Exception e) {
-                throw new StreamNegotiationException(e);
-            }
-        }, tcpConnectionConfiguration.isSecure());
-        this.compressionManager = xmppSession.getManager(CompressionManager.class);
+        this.securityManager = new StartTlsManager(xmppSession, this, tcpConnectionConfiguration.isSecure());
+        this.compressionManager = new CompressionManager(xmppSession, this);
+        compressionManager.getConfiguredCompressionMethods().clear();
         compressionManager.getConfiguredCompressionMethods().addAll(tcpConnectionConfiguration.getCompressionMethods());
-        compressionManager.addFeatureListener(() -> {
-            CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
-            // We are in the reader thread here. Make sure it sees the streams assigned by the application thread in the connect() method by using synchronized.
-            // The following might look overly verbose, but it follows the rule to "never call an alien method from within a synchronized region".
-            InputStream iStream;
-            OutputStream oStream;
-            synchronized (TcpConnection.this) {
-                iStream = inputStream;
-                oStream = outputStream;
-            }
-            try {
-                iStream = compressionMethod.decompress(iStream);
-                oStream = compressionMethod.compress(oStream);
-                synchronized (TcpConnection.this) {
-                    inputStream = iStream;
-                    outputStream = oStream;
-                }
-            } catch (IOException e) {
-                // If compression processing fails after the new (compressed) stream has been established, the entity that detects the error SHOULD generate a stream error and close the stream
-                xmppSession.send(new StreamError(Condition.UNDEFINED_CONDITION, new StreamCompression.Failure(StreamCompression.Failure.Condition.PROCESSING_FAILED)));
-                try {
-                    xmppSession.close();
-                } catch (XmppException e1) {
-                    xmppSession.notifyException(e1);
-                }
-                throw new StreamNegotiationException(e);
-            }
-        });
         streamFeaturesManager.addFeatureNegotiator(securityManager);
         streamFeaturesManager.addFeatureNegotiator(compressionManager);
         streamFeaturesManager.addFeatureNegotiator(streamManager);
@@ -189,7 +156,8 @@ public final class TcpConnection extends AbstractConnection {
     /**
      * This method is called from the reader thread. Because it accesses shared data (socket, outputStream, inputStream) it should be synchronized.
      */
-    private void secureConnection() throws IOException, CertificateException, NoSuchAlgorithmException {
+    @Override
+    public void secureConnection() throws IOException, CertificateException, NoSuchAlgorithmException {
 
         SSLContext sslContext = tcpConnectionConfiguration.getSSLContext();
         if (sslContext == null) {
@@ -231,6 +199,37 @@ public final class TcpConnection extends AbstractConnection {
             outputStream = new BufferedOutputStream(socket.getOutputStream());
             // http://java-performance.info/java-io-bufferedinputstream-and-java-util-zip-gzipinputstream/
             inputStream = new BufferedInputStream(socket.getInputStream(), 65536);
+        }
+        logger.log(Level.FINE, "Connection has been secured via TLS.");
+    }
+
+    @Override
+    public void compressConnection(final String method, final Runnable onSuccess) throws Exception {
+        CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
+        // We are in the reader thread here. Make sure it sees the streams assigned by the application thread in the connect() method by using synchronized.
+        // The following might look overly verbose, but it follows the rule to "never call an alien method from within a synchronized region".
+        InputStream iStream;
+        OutputStream oStream;
+        synchronized (TcpConnection.this) {
+            iStream = inputStream;
+            oStream = outputStream;
+        }
+        try {
+            iStream = compressionMethod.decompress(iStream);
+            oStream = compressionMethod.compress(oStream);
+            synchronized (TcpConnection.this) {
+                inputStream = iStream;
+                outputStream = oStream;
+            }
+        } catch (IOException e) {
+            // If compression processing fails after the new (compressed) stream has been established, the entity that detects the error SHOULD generate a stream error and close the stream
+            xmppSession.send(new StreamError(Condition.UNDEFINED_CONDITION, new StreamCompression.Failure(StreamCompression.Failure.Condition.PROCESSING_FAILED)));
+            try {
+                xmppSession.close();
+            } catch (XmppException e1) {
+                xmppSession.notifyException(e1);
+            }
+            throw new StreamNegotiationException(e);
         }
     }
 

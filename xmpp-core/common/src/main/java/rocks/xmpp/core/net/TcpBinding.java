@@ -22,21 +22,27 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.stream;
+package rocks.xmpp.core.net;
 
 /**
- * A feature listener, which listens for successful feature negotiation.
+ * Defines characteristics of a TCP binding, like stream encryption via TLS and stream compression.
  *
  * @author Christian Schudt
- * @see StreamFeatureNegotiator#addFeatureListener(StreamFeatureListener)
  */
-@FunctionalInterface
-public interface StreamFeatureListener {
+public interface TcpBinding {
 
     /**
-     * Fired when the feature has been successfully negotiated.
+     * Secures the connection with TLS.
      *
-     * @throws StreamNegotiationException If any exception occurred during handling of the event.
+     * @throws Exception Any exception which may occur during TLS handshake.
      */
-    void featureSuccessfullyNegotiated() throws StreamNegotiationException;
+    void secureConnection() throws Exception;
+
+    /**
+     * Compresses the connection.
+     *
+     * @param method    The compression method.
+     * @param onSuccess Invoked after the compression method has been chosen, but before compression is applied.
+     */
+    void compressConnection(final String method, final Runnable onSuccess) throws Exception;
 }

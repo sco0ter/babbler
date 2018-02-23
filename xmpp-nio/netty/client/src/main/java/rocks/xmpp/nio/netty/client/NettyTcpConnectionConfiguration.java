@@ -35,7 +35,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.proxy.HttpProxyHandler;
 import io.netty.handler.proxy.Socks5ProxyHandler;
 import rocks.xmpp.core.net.Connection;
-import rocks.xmpp.core.session.ConnectionConfiguration;
+import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 
 import java.net.Proxy;
@@ -44,7 +44,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author Christian Schudt
  */
-public final class NettyTcpConnectionConfiguration extends ConnectionConfiguration {
+public final class NettyTcpConnectionConfiguration extends ClientConnectionConfiguration {
 
     private final EventLoopGroup eventLoopGroup;
 
@@ -112,7 +112,7 @@ public final class NettyTcpConnectionConfiguration extends ConnectionConfigurati
     /**
      * A builder to create a {@link NettyTcpConnectionConfiguration} instance.
      */
-    public static final class Builder extends ConnectionConfiguration.Builder<NettyTcpConnectionConfiguration.Builder> {
+    public static final class Builder extends ClientConnectionConfiguration.Builder<NettyTcpConnectionConfiguration.Builder> {
 
         private EventLoopGroup eventLoopGroup;
 

@@ -27,6 +27,7 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.bind.model.Bind;
+import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.model.Session;
@@ -132,7 +133,7 @@ public final class XmppClient extends XmppSession {
      * @param configuration            The configuration.
      * @param connectionConfigurations The connection configurations.
      */
-    private XmppClient(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
+    private XmppClient(String xmppServiceDomain, XmppSessionConfiguration configuration, ClientConnectionConfiguration... connectionConfigurations) {
         super(xmppServiceDomain, configuration, connectionConfigurations);
 
         authenticationManager = new AuthenticationManager(this);
@@ -159,7 +160,7 @@ public final class XmppClient extends XmppSession {
      * @param connectionConfigurations The connection methods, which are used to connect.
      * @return The XMPP client.
      */
-    public static XmppClient create(String xmppServiceDomain, ConnectionConfiguration... connectionConfigurations) {
+    public static XmppClient create(String xmppServiceDomain, ClientConnectionConfiguration... connectionConfigurations) {
         return create(xmppServiceDomain, XmppSessionConfiguration.getDefault(), connectionConfigurations);
     }
 
@@ -171,7 +172,7 @@ public final class XmppClient extends XmppSession {
      * @param connectionConfigurations The connection methods, which are used to connect.
      * @return The XMPP client.
      */
-    public static XmppClient create(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
+    public static XmppClient create(String xmppServiceDomain, XmppSessionConfiguration configuration, ClientConnectionConfiguration... connectionConfigurations) {
         XmppClient xmppClient = new XmppClient(xmppServiceDomain, configuration, connectionConfigurations);
         notifyCreationListeners(xmppClient);
         return xmppClient;

@@ -26,6 +26,7 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.net.Connection;
+import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.SrvRecord;
 
@@ -57,7 +58,7 @@ import java.util.List;
  * @see rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration
  * @see TcpConnection
  */
-public final class TcpConnectionConfiguration extends ConnectionConfiguration {
+public final class TcpConnectionConfiguration extends ClientConnectionConfiguration {
 
     private static volatile TcpConnectionConfiguration defaultConfiguration;
 
@@ -222,7 +223,7 @@ public final class TcpConnectionConfiguration extends ConnectionConfiguration {
     /**
      * A builder to create a {@link TcpConnectionConfiguration} instance.
      */
-    public static final class Builder extends ConnectionConfiguration.Builder<Builder> {
+    public static final class Builder extends ClientConnectionConfiguration.Builder<Builder> {
 
         private int keepAliveInterval;
 

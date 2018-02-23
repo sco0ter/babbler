@@ -22,9 +22,11 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.session;
+package rocks.xmpp.core.net.client;
 
 import rocks.xmpp.core.net.Connection;
+import rocks.xmpp.core.net.ConnectionConfiguration;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 
 import javax.net.SocketFactory;
@@ -43,7 +45,7 @@ import java.util.List;
  *
  * @author Christian Schudt
  */
-public abstract class ConnectionConfiguration implements rocks.xmpp.core.net.ConnectionConfiguration {
+public abstract class ClientConnectionConfiguration implements ConnectionConfiguration {
 
     private final String hostname;
 
@@ -61,7 +63,7 @@ public abstract class ConnectionConfiguration implements rocks.xmpp.core.net.Con
 
     private final List<CompressionMethod> compressionMethods;
 
-    protected ConnectionConfiguration(Builder<? extends Builder> builder) {
+    protected ClientConnectionConfiguration(Builder<? extends Builder> builder) {
         this.hostname = builder.hostname;
         this.port = builder.port;
         this.proxy = builder.proxy;
@@ -322,6 +324,6 @@ public abstract class ConnectionConfiguration implements rocks.xmpp.core.net.Con
          *
          * @return The concrete connection configuration.
          */
-        public abstract ConnectionConfiguration build();
+        public abstract ClientConnectionConfiguration build();
     }
 }

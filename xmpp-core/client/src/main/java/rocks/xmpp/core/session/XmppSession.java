@@ -27,6 +27,7 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.Connection;
+import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.SessionOpen;
@@ -133,7 +134,7 @@ public abstract class XmppSession implements AutoCloseable {
 
     final Set<Consumer<ConnectionEvent>> connectionListeners = new CopyOnWriteArraySet<>();
 
-    private final List<ConnectionConfiguration> connectionConfigurations = new ArrayList<>();
+    private final List<ClientConnectionConfiguration> connectionConfigurations = new ArrayList<>();
 
     private final Set<Consumer<MessageEvent>> inboundMessageListeners = new CopyOnWriteArraySet<>();
 
@@ -209,7 +210,7 @@ public abstract class XmppSession implements AutoCloseable {
 
     private volatile XmppDebugger debugger;
 
-    protected XmppSession(String xmppServiceDomain, XmppSessionConfiguration configuration, ConnectionConfiguration... connectionConfigurations) {
+    protected XmppSession(String xmppServiceDomain, XmppSessionConfiguration configuration, ClientConnectionConfiguration... connectionConfigurations) {
         this.xmppServiceDomain = xmppServiceDomain != null && !xmppServiceDomain.isEmpty() ? Jid.of(xmppServiceDomain) : null;
         this.configuration = configuration;
         this.stanzaListenerExecutor = Executors.newSingleThreadExecutor(configuration.getThreadFactory("Stanza Listener Thread"));
@@ -344,9 +345,9 @@ public abstract class XmppSession implements AutoCloseable {
         }
 
         synchronized (connectionConfigurations) {
-            Iterator<ConnectionConfiguration> connectionIterator = getConnections().iterator();
+            Iterator<ClientConnectionConfiguration> connectionIterator = getConnections().iterator();
             while (connectionIterator.hasNext()) {
-                ConnectionConfiguration connectionConfiguration = connectionIterator.next();
+                ClientConnectionConfiguration connectionConfiguration = connectionIterator.next();
                 Connection connection = null;
                 try {
                     connection = connectionConfiguration.createConnection(this);
@@ -1060,7 +1061,7 @@ public abstract class XmppSession implements AutoCloseable {
      *
      * @return The connections.
      */
-    public final List<ConnectionConfiguration> getConnections() {
+    public final List<ClientConnectionConfiguration> getConnections() {
         return Collections.unmodifiableList(connectionConfigurations);
     }
 

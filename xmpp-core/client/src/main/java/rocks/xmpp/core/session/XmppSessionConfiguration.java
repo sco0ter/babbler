@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.session;
 
+import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.util.XmppUtils;
@@ -54,7 +55,7 @@ import java.util.function.Supplier;
  * A configuration for an {@link XmppSession}.
  * <p>
  * Most importantly it allows you to introduce custom extensions to your {@link XmppSession}, simply by passing your JAXB annotated classes to the builder of this class
- * and then {@linkplain XmppSession#XmppSession(String, XmppSessionConfiguration, ConnectionConfiguration...) use this configuration for the session}.
+ * and then {@linkplain XmppSession#XmppSession(String, XmppSessionConfiguration, ClientConnectionConfiguration...) use this configuration for the session}.
  * </p>
  * Since creating the JAXB context is quite expensive, this class allows you to create the context once and reuse it by multiple sessions.
  * You can also {@linkplain #setDefault(XmppSessionConfiguration) set} an application-wide default configuration (used by all XMPP sessions).
@@ -70,7 +71,7 @@ import java.util.function.Supplier;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see XmppSession#XmppSession(String, XmppSessionConfiguration, ConnectionConfiguration...)
+ * @see XmppSession#XmppSession(String, XmppSessionConfiguration, ClientConnectionConfiguration...)
  */
 public final class XmppSessionConfiguration {
 

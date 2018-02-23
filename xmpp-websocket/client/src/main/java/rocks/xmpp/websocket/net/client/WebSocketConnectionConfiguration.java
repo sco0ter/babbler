@@ -30,7 +30,7 @@ import org.glassfish.tyrus.client.SslEngineConfigurator;
 import org.glassfish.tyrus.client.ThreadPoolConfig;
 import org.glassfish.tyrus.container.jdk.client.JdkClientContainer;
 import rocks.xmpp.core.net.Connection;
-import rocks.xmpp.core.session.ConnectionConfiguration;
+import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.dns.DnsResolver;
@@ -87,7 +87,7 @@ import java.util.function.Supplier;
  * @see <a href="https://tools.ietf.org/html/rfc7395">XMPP Subprotocol for WebSocket</a>
  * @since 0.7.0
  */
-public final class WebSocketConnectionConfiguration extends ConnectionConfiguration {
+public final class WebSocketConnectionConfiguration extends ClientConnectionConfiguration {
 
     private static volatile WebSocketConnectionConfiguration defaultConfiguration;
 
@@ -300,7 +300,7 @@ public final class WebSocketConnectionConfiguration extends ConnectionConfigurat
     /**
      * A builder to create a {@link WebSocketConnectionConfiguration} instance.
      */
-    public static final class Builder extends ConnectionConfiguration.Builder<Builder> {
+    public static final class Builder extends ClientConnectionConfiguration.Builder<Builder> {
 
         private String path;
 

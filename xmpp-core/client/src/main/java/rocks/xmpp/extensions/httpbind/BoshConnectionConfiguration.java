@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.httpbind;
 
 import rocks.xmpp.core.net.Connection;
-import rocks.xmpp.core.session.ConnectionConfiguration;
+import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.TxtRecord;
@@ -56,7 +56,7 @@ import java.util.Map;
  * @see rocks.xmpp.core.session.TcpConnectionConfiguration
  * @see BoshConnection
  */
-public final class BoshConnectionConfiguration extends ConnectionConfiguration {
+public final class BoshConnectionConfiguration extends ClientConnectionConfiguration {
 
     private static volatile BoshConnectionConfiguration defaultConfiguration;
 
@@ -214,7 +214,7 @@ public final class BoshConnectionConfiguration extends ConnectionConfiguration {
     /**
      * A builder to create a {@link rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration} instance.
      */
-    public static final class Builder extends ConnectionConfiguration.Builder<Builder> {
+    public static final class Builder extends ClientConnectionConfiguration.Builder<Builder> {
 
         private Duration wait;
 

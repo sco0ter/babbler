@@ -233,7 +233,12 @@ public final class StreamHeader implements SessionOpen, CharSequence {
     public final void writeTo(final XMLStreamWriter writer) throws XMLStreamException {
         writer.writeStartDocument(StandardCharsets.UTF_8.name(), "1.0");
         writer.writeStartElement(STREAM_NAMESPACE_PREFIX, LOCAL_NAME, STREAM_NAMESPACE);
+        writer.writeNamespace(XMLConstants.DEFAULT_NS_PREFIX, contentNamespace);
+        writer.writeNamespace(STREAM_NAMESPACE_PREFIX, STREAM_NAMESPACE);
 
+        for (QName qName : additionalNamespaces) {
+            writer.writeNamespace(qName.getPrefix(), qName.getNamespaceURI());
+        }
         if (from != null) {
             writer.writeAttribute("from", from.toString());
         }
@@ -247,12 +252,7 @@ public final class StreamHeader implements SessionOpen, CharSequence {
         if (lang != null) {
             writer.writeAttribute(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI, "lang", lang.toLanguageTag());
         }
-        writer.writeNamespace(XMLConstants.DEFAULT_NS_PREFIX, contentNamespace);
-        writer.writeNamespace(STREAM_NAMESPACE_PREFIX, STREAM_NAMESPACE);
 
-        for (QName qName : additionalNamespaces) {
-            writer.writeNamespace(qName.getPrefix(), qName.getNamespaceURI());
-        }
         // Close the stream header tag
         writer.writeCharacters("");
         writer.flush();
@@ -339,7 +339,17 @@ public final class StreamHeader implements SessionOpen, CharSequence {
 
     @Override
     public final String toString() {
-        final StringBuilder sb = new StringBuilder("<?xml version='1.0' encoding='UTF-8'?><").append(STREAM_NAMESPACE_PREFIX).append(":").append(LOCAL_NAME);
+        final StringBuilder sb = new StringBuilder("<?xml version='1.0' encoding='UTF-8'?><")
+                .append(STREAM_NAMESPACE_PREFIX)
+                .append(":")
+                .append(LOCAL_NAME)
+                .append(" xmlns=\"")
+                .append(contentNamespace)
+                .append("\" xmlns:").append(STREAM_NAMESPACE_PREFIX).append("=\"").append(STREAM_NAMESPACE).append('"');
+
+        for (QName qName : additionalNamespaces) {
+            sb.append(" xmlns:").append(qName.getPrefix()).append("=\"").append(qName.getNamespaceURI()).append('"');
+        }
         if (from != null) {
             sb.append(" from=\"").append(from).append('"');
         }
@@ -352,13 +362,6 @@ public final class StreamHeader implements SessionOpen, CharSequence {
         sb.append(" version=\"1.0\"");
         if (lang != null) {
             sb.append(" xml:lang=\"").append(lang.toLanguageTag()).append('"');
-        }
-        sb.append(" xmlns=\"")
-                .append(contentNamespace)
-                .append("\" xmlns:").append(STREAM_NAMESPACE_PREFIX).append("=\"").append(STREAM_NAMESPACE).append('"');
-
-        for (QName qName : additionalNamespaces) {
-            sb.append(" xmlns:").append(qName.getPrefix()).append("=\"").append(qName.getNamespaceURI()).append('"');
         }
 
         sb.append('>');

@@ -26,9 +26,9 @@ package rocks.xmpp.core.stream.client;
 
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
-import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.tls.model.StartTls;
@@ -170,6 +170,13 @@ public final class StreamFeaturesManager extends Manager {
      * @throws StreamNegotiationException If an exception occurred during feature negotiation.
      */
     public final synchronized void processFeatures(StreamFeatures featuresElement) throws StreamNegotiationException {
+        if (featuresElement.getFeatures().isEmpty()) {
+            for (CompletableFuture<Void> condition : featureNegotiationStartedFutures.values()) {
+                condition.complete(null);
+            }
+            negotiationCompleted.complete(null);
+            return;
+        }
         List<Object> featureList = featuresElement.getFeatures();
 
         featuresToNegotiate.clear();

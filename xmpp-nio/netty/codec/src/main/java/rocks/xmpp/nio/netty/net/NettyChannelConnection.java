@@ -30,6 +30,10 @@ import io.netty.channel.ChannelHandler;
 import io.netty.handler.codec.compression.JdkZlibDecoder;
 import io.netty.handler.codec.compression.JdkZlibEncoder;
 import io.netty.handler.codec.compression.ZlibWrapper;
+import io.netty.handler.ssl.ClientAuth;
+import io.netty.handler.ssl.JdkSslContext;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslHandler;
 import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.net.TcpBinding;
@@ -39,6 +43,7 @@ import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.nio.netty.codec.NettyXmppDecoder;
 import rocks.xmpp.nio.netty.codec.NettyXmppEncoder;
 
+import javax.net.ssl.SSLContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.util.concurrent.CompletableFuture;
@@ -133,6 +138,10 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
 
     @Override
     public void secureConnection() throws Exception {
+        final SSLContext sslContext = getConfiguration().getSSLContext();
+        SslContext sslCtx = new JdkSslContext(sslContext, false, ClientAuth.NONE);
+        final SslHandler handler = new SslHandler(sslCtx.newEngine(channel.alloc()), true);
+        channel.pipeline().addFirst("SSL", handler);
     }
 
     /**

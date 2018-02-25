@@ -118,8 +118,7 @@ public class WebSocketConnection extends AbstractConnection {
     public final CompletionStage<Void> open(final SessionOpen sessionOpen) {
         this.sessionOpen = sessionOpen;
         // Opens the stream
-        send(new Open(sessionOpen.getTo(), sessionOpen.getFrom(), sessionOpen.getId(), sessionOpen.getLanguage()));
-        return CompletableFuture.completedFuture(null);
+        return send(new Open(sessionOpen.getTo(), sessionOpen.getFrom(), sessionOpen.getId(), sessionOpen.getLanguage()));
     }
 
     @Override

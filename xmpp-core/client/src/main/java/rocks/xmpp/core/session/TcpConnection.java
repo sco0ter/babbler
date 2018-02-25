@@ -51,7 +51,6 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UncheckedIOException;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -85,6 +84,8 @@ public final class TcpConnection extends AbstractConnection implements TcpBindin
     private final TcpConnectionConfiguration tcpConnectionConfiguration;
 
     private final XmppSession xmppSession;
+
+    private final CompletableFuture<Void> closeFuture = new CompletableFuture<>();
 
     /**
      * guarded by "this"
@@ -291,23 +292,31 @@ public final class TcpConnection extends AbstractConnection implements TcpBindin
         streamFeaturesManager.removeFeatureNegotiator(securityManager);
         streamFeaturesManager.removeFeatureNegotiator(compressionManager);
         streamFeaturesManager.removeFeatureNegotiator(streamManager);
-        synchronized (this) {
-            inputStream = null;
-            outputStream = null;
+        try {
+            synchronized (this) {
+                inputStream = null;
+                outputStream = null;
 
-            // We have sent a </stream:stream> to close the stream and waited for a server response, which also closes the stream by sending </stream:stream>.
-            // Now close the socket.
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                } finally {
-                    socket = null;
+                // We have sent a </stream:stream> to close the stream and waited for a server response, which also closes the stream by sending </stream:stream>.
+                // Now close the socket.
+                if (socket != null) {
+                    try {
+                        socket.close();
+                    } finally {
+                        socket = null;
+                    }
                 }
             }
+            closeFuture.complete(null);
+        } catch (IOException e) {
+            closeFuture.completeExceptionally(e);
         }
-        return CompletableFuture.completedFuture(null);
+        return closeFuture;
+    }
+
+    @Override
+    public final CompletionStage<Void> closeFuture() {
+        return closeFuture;
     }
 
     @Override

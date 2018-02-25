@@ -35,9 +35,9 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.TxtRecord;
-import rocks.xmpp.websocket.net.WebSocketConnection;
 import rocks.xmpp.websocket.codec.XmppWebSocketDecoder;
 import rocks.xmpp.websocket.codec.XmppWebSocketEncoder;
+import rocks.xmpp.websocket.net.WebSocketConnection;
 
 import javax.net.ssl.SSLContext;
 import javax.websocket.ClientEndpointConfig;
@@ -61,6 +61,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -72,12 +73,12 @@ import java.util.function.Supplier;
  * In order to create an instance of this class you have to use the builder pattern as shown below.
  * ```java
  * WebSocketConnectionConfiguration connectionConfiguration = WebSocketConnectionConfiguration.builder()
- *     .hostname("localhost")
- *     .port(7443)
- *     .path("/ws/")
- *     .sslContext(sslContext)
- *     .secure(true)
- *     .build();
+ * .hostname("localhost")
+ * .port(7443)
+ * .path("/ws/")
+ * .sslContext(sslContext)
+ * .secure(true)
+ * .build();
  * ```
  * The above sample configuration will connect to <code>wss://localhost:7443/ws/</code> using SSL with a custom {@link SSLContext}.
  * <p>
@@ -160,13 +161,14 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
     @Override
     public final Connection createConnection(final XmppSession xmppSession) {
         try {
-            return new WebSocketClientConnection(createWebSocketSession(xmppSession), null, xmppSession, this);
+            final CompletableFuture<Void> closeFuture = new CompletableFuture<>();
+            return new WebSocketClientConnection(createWebSocketSession(xmppSession, closeFuture), closeFuture, null, xmppSession, this);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    private Session createWebSocketSession(XmppSession xmppSession) throws IOException {
+    private Session createWebSocketSession(XmppSession xmppSession, CompletableFuture<Void> closeFuture) throws IOException {
 
         try {
             final URI path;
@@ -261,8 +263,9 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
                 @Override
                 public void onClose(Session session, CloseReason closeReason) {
                     if (closeReason.getCloseCode() != CloseReason.CloseCodes.NORMAL_CLOSURE) {
-                        xmppSession.notifyException(new SessionException(closeReason.toString(), null, session));
+                        closeFuture.completeExceptionally(new SessionException(closeReason.toString(), null, session));
                     }
+                    closeFuture.complete(null);
                 }
             }, clientEndpointConfig, path);
 

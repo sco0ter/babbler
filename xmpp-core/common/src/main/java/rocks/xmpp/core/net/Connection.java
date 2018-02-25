@@ -109,6 +109,13 @@ public interface Connection extends AutoCloseable {
      */
     CompletionStage<Void> closeAsync(StreamError streamError);
 
+    /**
+     * Returns a future which is complete, when the connection is closed.
+     *
+     * @return The close future.
+     */
+    CompletionStage<Void> closeFuture();
+
     @Override
     void close() throws Exception;
 }

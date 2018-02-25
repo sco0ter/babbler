@@ -48,10 +48,13 @@ public class WebSocketConnection extends AbstractConnection {
 
     protected final Session session;
 
+    private final CompletionStage<Void> closeFuture;
+
     protected SessionOpen sessionOpen;
 
-    public WebSocketConnection(Session session, ConnectionConfiguration connectionConfiguration) {
+    public WebSocketConnection(Session session, CompletableFuture<Void> closeFuture, ConnectionConfiguration connectionConfiguration) {
         super(connectionConfiguration);
+        this.closeFuture = closeFuture;
         this.session = session;
         session.addMessageHandler(StreamElement.class, this::onRead);
     }
@@ -83,6 +86,11 @@ public class WebSocketConnection extends AbstractConnection {
                 throw new UncheckedIOException(e);
             }
         });
+    }
+
+    @Override
+    public final CompletionStage<Void> closeFuture() {
+        return closeFuture;
     }
 
     @Override
@@ -125,4 +133,6 @@ public class WebSocketConnection extends AbstractConnection {
     public final boolean isSecure() {
         return session.isSecure();
     }
+
+
 }

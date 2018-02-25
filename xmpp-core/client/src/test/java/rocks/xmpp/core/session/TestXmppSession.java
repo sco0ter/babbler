@@ -105,6 +105,11 @@ public final class TestXmppSession extends XmppSession {
             }
 
             @Override
+            public CompletionStage<Void> closeFuture() {
+                return null;
+            }
+
+            @Override
             public boolean isUsingAcknowledgements() {
                 return false;
             }

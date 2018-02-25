@@ -132,6 +132,8 @@ public final class BoshConnection extends AbstractConnection {
      */
     private final URL url;
 
+    private final CompletableFuture<Void> closeFuture = new CompletableFuture<>();
+
     /**
      * The executor, which will execute HTTP requests.
      * Guarded by "this".
@@ -351,6 +353,7 @@ public final class BoshConnection extends AbstractConnection {
         if (responseBody.getType() == Body.Type.TERMINATE && responseBody.getCondition() != null && responseBody.getCondition() != Body.Condition.REMOTE_STREAM_ERROR) {
             // Shutdown the executor, we don't want to send further requests from now on.
             shutdown();
+            closeFuture.completeExceptionally(new BoshException(responseBody.getCondition(), responseBody.getUri()));
             throw new BoshException(responseBody.getCondition(), responseBody.getUri());
         } else if (responseBody.getType() == Body.Type.ERROR) {
             // In any response it sends to the client, the connection manager MAY return a recoverable error by setting a 'type' attribute of the <body/> element to "error". These errors do not imply that the HTTP session is terminated.
@@ -418,26 +421,34 @@ public final class BoshConnection extends AbstractConnection {
     @Override
     protected CompletionStage<Void> closeConnection() {
         return CompletableFuture.runAsync(() -> {
-
-            synchronized (this) {
-                if (httpBindExecutor != null) {
-                    // and then shut it down.
-                    httpBindExecutor.shutdown();
-                    try {
-                        if (!httpBindExecutor.awaitTermination(50, TimeUnit.MILLISECONDS)) {
+            try {
+                synchronized (this) {
+                    if (httpBindExecutor != null) {
+                        // and then shut it down.
+                        httpBindExecutor.shutdown();
+                        try {
+                            if (!httpBindExecutor.awaitTermination(50, TimeUnit.MILLISECONDS)) {
+                                httpBindExecutor.shutdownNow();
+                            }
+                        } catch (InterruptedException e) {
+                            // (Re-)Cancel if current thread also interrupted
                             httpBindExecutor.shutdownNow();
+                            Thread.currentThread().interrupt();
                         }
-                    } catch (InterruptedException e) {
-                        // (Re-)Cancel if current thread also interrupted
-                        httpBindExecutor.shutdownNow();
-                        Thread.currentThread().interrupt();
                     }
+                    sessionId = null;
+                    requestCompressionMethod = null;
+                    keySequence.clear();
                 }
-                sessionId = null;
-                requestCompressionMethod = null;
-                keySequence.clear();
+            } finally {
+                closeFuture.complete(null);
             }
         });
+    }
+
+    @Override
+    public final CompletionStage<Void> closeFuture() {
+        return closeFuture;
     }
 
     private synchronized void shutdown() {

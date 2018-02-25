@@ -79,8 +79,8 @@ public class WebSocketClientConnection extends WebSocketConnection {
      */
     private Future<?> pongFuture;
 
-    WebSocketClientConnection(Session session, URI uri, XmppSession xmppSession, WebSocketConnectionConfiguration connectionConfiguration) {
-        super(session, connectionConfiguration);
+    WebSocketClientConnection(Session session, CompletableFuture<Void> closeFuture, URI uri, XmppSession xmppSession, WebSocketConnectionConfiguration connectionConfiguration) {
+        super(session, closeFuture, connectionConfiguration);
         this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         this.streamManager = xmppSession.getManager(StreamManager.class);
         this.streamFeaturesManager.addFeatureNegotiator(streamManager);

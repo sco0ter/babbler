@@ -70,19 +70,9 @@
                         <configuration>
                             <archive>
                                 <manifestEntries>
-                                    <Automatic-Module-Name>rocks.xmpp.core</Automatic-Module-Name>
+                                    <Automatic-Module-Name>rocks.xmpp.core.server</Automatic-Module-Name>
                                 </manifestEntries>
                             </archive>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                        <configuration>
-                            <includes>
-                                <include>rocks/xmpp/core/XmlTest.class</include>
-                            </includes>
                         </configuration>
                     </execution>
                 </executions>

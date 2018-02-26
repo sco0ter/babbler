@@ -71,7 +71,7 @@
                         <configuration>
                             <archive>
                                 <manifestEntries>
-                                    <Automatic-Module-Name>rocks.xmpp.core</Automatic-Module-Name>
+                                    <Automatic-Module-Name>rocks.xmpp.core.common</Automatic-Module-Name>
                                 </manifestEntries>
                             </archive>
                         </configuration>

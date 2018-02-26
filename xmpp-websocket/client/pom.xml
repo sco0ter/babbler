@@ -69,7 +69,7 @@
                         <configuration>
                             <archive>
                                 <manifestEntries>
-                                    <Automatic-Module-Name>rocks.xmpp.websocket.net.client</Automatic-Module-Name>
+                                    <Automatic-Module-Name>rocks.xmpp.websocket.client</Automatic-Module-Name>
                                 </manifestEntries>
                             </archive>
                         </configuration>

@@ -24,8 +24,6 @@
 
 package rocks.xmpp.core.tls.server;
 
-import rocks.xmpp.core.net.Connection;
-import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.server.ServerStreamFeatureNegotiator;
@@ -40,31 +38,28 @@ import rocks.xmpp.core.tls.model.StartTls;
  */
 public final class StartTlsNegotiator extends ServerStreamFeatureNegotiator<StartTls> {
 
-    private final TcpBinding tcpBinding;
+    private final TcpBinding connection;
 
-    private final ConnectionConfiguration connectionConfiguration;
-
-    public StartTlsNegotiator(final TcpBinding tcpBinding, final ConnectionConfiguration connectionConfiguration) {
+    public StartTlsNegotiator(final TcpBinding connection) {
         super(StartTls.class);
-        this.tcpBinding = tcpBinding;
-        this.connectionConfiguration = connectionConfiguration;
+        this.connection = connection;
     }
 
     @Override
     public final StartTls createStreamFeature() {
-        return new StartTls(connectionConfiguration.isSecure());
+        return new StartTls(connection.getConfiguration().isSecure());
     }
 
     @Override
     public final StreamNegotiationResult processNegotiation(final Object element) {
         if (element instanceof StartTls) {
             try {
-                tcpBinding.secureConnection();
-                ((Connection) tcpBinding).send((Proceed.INSTANCE));
+                connection.secureConnection();
+                connection.send((Proceed.INSTANCE));
                 return StreamNegotiationResult.RESTART;
             } catch (Exception e) {
-                ((Connection) tcpBinding).write(Failure.INSTANCE);
-                ((Connection) tcpBinding).closeAsync();
+                connection.write(Failure.INSTANCE);
+                connection.closeAsync();
             }
         }
         return StreamNegotiationResult.IGNORE;

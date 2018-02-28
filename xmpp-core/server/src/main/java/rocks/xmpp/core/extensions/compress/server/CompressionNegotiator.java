@@ -24,7 +24,6 @@
 
 package rocks.xmpp.core.extensions.compress.server;
 
-import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.model.StreamError;
@@ -44,7 +43,7 @@ public final class CompressionNegotiator extends ServerStreamFeatureNegotiator<C
 
     private final CompressionFeature feature;
 
-    private final Connection connection;
+    private final TcpBinding connection;
 
     /**
      * Constructs the compression negotiator.
@@ -52,7 +51,7 @@ public final class CompressionNegotiator extends ServerStreamFeatureNegotiator<C
      * @param connection The connection.
      * @param method     The method.
      */
-    public CompressionNegotiator(final Connection connection, final String... method) {
+    public CompressionNegotiator(final TcpBinding connection, final String... method) {
         super(CompressionFeature.class);
         this.connection = connection;
         this.feature = new CompressionFeature(Arrays.asList(method));
@@ -69,7 +68,7 @@ public final class CompressionNegotiator extends ServerStreamFeatureNegotiator<C
             final StreamCompression.Compress compress = (StreamCompression.Compress) element;
             try {
                 final Runnable onSuccess = () -> connection.send(StreamCompression.COMPRESSED);
-                ((TcpBinding) connection).compressConnection(compress.getMethod(), onSuccess);
+                connection.compressConnection(compress.getMethod(), onSuccess);
                 return StreamNegotiationResult.RESTART;
             } catch (Exception e) {
                 connection.closeAsync(new StreamError(Condition.UNDEFINED_CONDITION, new StreamCompression.Failure(StreamCompression.Failure.Condition.UNSUPPORTED_METHOD)));

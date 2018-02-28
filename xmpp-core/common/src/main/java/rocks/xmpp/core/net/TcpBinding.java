@@ -29,7 +29,7 @@ package rocks.xmpp.core.net;
  *
  * @author Christian Schudt
  */
-public interface TcpBinding {
+public interface TcpBinding extends Connection {
 
     /**
      * Secures the connection with TLS.

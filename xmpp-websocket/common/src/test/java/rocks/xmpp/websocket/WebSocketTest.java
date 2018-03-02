@@ -54,7 +54,7 @@ public class WebSocketTest extends XmlTest {
 
     @Test
     public void unmarshalClose() throws XMLStreamException, JAXBException {
-        Close close = unmarshal("<close xmlns=\"urn:ietf:params:xml:ns:xmpp-framing\" version=\"1.0\" see-other-uri=\"wss://otherendpoint.example/xmpp-bind\"></close>", Close.class);
+        Close close = unmarshal("<close xmlns=\"urn:ietf:params:xml:ns:xmpp-framing\" see-other-uri=\"wss://otherendpoint.example/xmpp-bind\"></close>", Close.class);
         Assert.assertEquals(close.getUri(), URI.create("wss://otherendpoint.example/xmpp-bind"));
     }
 
@@ -67,6 +67,6 @@ public class WebSocketTest extends XmlTest {
     @Test
     public void marshalClose() throws XMLStreamException, JAXBException {
         Close close = new Close(URI.create("wss://otherendpoint.example/xmpp-bind"));
-        Assert.assertEquals(marshal(close), "<close xmlns=\"urn:ietf:params:xml:ns:xmpp-framing\" version=\"1.0\" see-other-uri=\"wss://otherendpoint.example/xmpp-bind\"></close>");
+        Assert.assertEquals(marshal(close), "<close xmlns=\"urn:ietf:params:xml:ns:xmpp-framing\" see-other-uri=\"wss://otherendpoint.example/xmpp-bind\"></close>");
     }
 }

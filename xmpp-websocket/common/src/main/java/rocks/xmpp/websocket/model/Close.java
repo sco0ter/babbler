@@ -56,7 +56,7 @@ public final class Close extends Frame {
      * @param uri The 'see-other-uri' attribute.
      */
     public Close(URI uri) {
-        this(null, null, null, null, "1.0", uri);
+        this(null, null, null, null, null, uri);
     }
 
     /**

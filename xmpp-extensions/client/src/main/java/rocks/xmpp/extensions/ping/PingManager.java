@@ -28,7 +28,6 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
@@ -36,6 +35,7 @@ import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.extensions.ping.handler.PingHandler;
 import rocks.xmpp.extensions.ping.model.Ping;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
@@ -89,12 +89,7 @@ public final class PingManager extends Manager {
         scheduledExecutorService = new ScheduledThreadPoolExecutor(1, xmppSession.getConfiguration().getThreadFactory("XMPP Scheduled Ping Thread"));
         scheduledExecutorService.setRemoveOnCancelPolicy(true);
 
-        this.iqHandler = new AbstractIQHandler(IQ.Type.GET) {
-            @Override
-            protected IQ processRequest(IQ iq) {
-                return iq.createResult();
-            }
-        };
+        this.iqHandler = new PingHandler();
         inboundMessageListener = e -> rescheduleNextPing();
         inboundPresenceListener = e -> rescheduleNextPing();
         inboundIQListener = e -> rescheduleNextPing();

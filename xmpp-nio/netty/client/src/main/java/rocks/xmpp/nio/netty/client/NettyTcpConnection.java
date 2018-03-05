@@ -34,6 +34,9 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.StreamErrorException;
+import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.core.tls.client.StartTlsManager;
 import rocks.xmpp.extensions.compress.CompressionManager;
 import rocks.xmpp.extensions.sm.StreamManager;
@@ -45,6 +48,7 @@ import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.Locale;
 import java.util.concurrent.CompletionStage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,6 +86,15 @@ public final class NettyTcpConnection extends NettyChannelConnection {
                 connectionConfiguration);
         this.xmppSession = xmppSession;
         this.connectionConfiguration = connectionConfiguration;
+
+        closeFuture().whenComplete(((aVoid, throwable) -> {
+            if (throwable != null) {
+                xmppSession.notifyException(throwable);
+            } else if (!isClosed()) {
+                // If the server closed the connection, initiate a reconnection.
+                xmppSession.notifyException(new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, "Stream closed by server", Locale.ENGLISH, null)));
+            }
+        }));
 
         this.streamManager = xmppSession.getManager(StreamManager.class);
         this.streamManager.reset();

@@ -27,9 +27,9 @@ package rocks.xmpp.extensions.time;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.extensions.time.handler.EntityTimeHandler;
 import rocks.xmpp.extensions.time.model.EntityTime;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
@@ -49,12 +49,7 @@ public final class EntityTimeManager extends Manager {
 
     private EntityTimeManager(final XmppSession xmppSession) {
         super(xmppSession);
-        iqHandler = new AbstractIQHandler(IQ.Type.GET) {
-            @Override
-            protected IQ processRequest(IQ iq) {
-                return iq.createResult(new EntityTime(OffsetDateTime.now()));
-            }
-        };
+        iqHandler = new EntityTimeHandler();
     }
 
     @Override

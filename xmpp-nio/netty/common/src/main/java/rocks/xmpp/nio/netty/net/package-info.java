@@ -23,6 +23,6 @@
  */
 
 /**
- * Provides connection-related classes based for Netty channels.
+ * Provides connection-related classes based on Netty channels.
  */
 package rocks.xmpp.nio.netty.net;

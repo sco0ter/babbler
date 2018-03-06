@@ -22,61 +22,58 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.nio.netty.codec;
+package rocks.xmpp.nio.netty.net;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufOutputStream;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.handler.codec.MessageToByteEncoder;
 import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.nio.codec.XmppStreamDecoder;
+import rocks.xmpp.nio.codec.XmppStreamEncoder;
 
-import javax.xml.bind.Unmarshaller;
-import java.nio.ByteBuffer;
-import java.util.List;
+import javax.xml.bind.Marshaller;
+import javax.xml.stream.XMLOutputFactory;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Decodes byte buffers to stream elements.
+ * Encodes stream elements to byte buffers.
  * <p>
  * This class should be added to Netty's channel pipeline.
- * The output of this decoder are implementations of {@link StreamElement}.
  *
  * @author Christian Schudt
- * @see NettyXmppEncoder
  */
-public final class NettyXmppDecoder extends ByteToMessageDecoder {
+final class NettyXmppEncoder extends MessageToByteEncoder<StreamElement> {
 
-    private final BiConsumer<String, StreamElement> onRead;
+    private final BiConsumer<String, StreamElement> onWrite;
 
-    private final XmppStreamDecoder xmppStreamDecoder;
+    private final XmppStreamEncoder xmppStreamEncoder;
 
     private final Consumer<Throwable> onFailure;
 
     /**
-     * Creates the decoder.
-     *
-     * @param onRead               The first parameter of this callback is the decoded XML element, the second one is the unmarshalled element.
-     * @param unmarshallerSupplier Supplies the unmarshaller, e.g. via a {@code ThreadLocal<Unmarshaller>}
-     * @param onFailure            Called when an exception in the pipeline has occurred. If null, the exception is propagated to next handler. If non-null this callback is called instead.
+     * @param onWrite            The first parameter of this callback is the encoded XML element, the second one is the marshalled element.
+     * @param marshallerSupplier Supplies the marshaller, e.g. via a {@code ThreadLocal<Marshaller>}
+     * @param onFailure          Called when an exception in the pipeline has occurred. If null, the exception is propagated to next handler. If non-null this callback is called instead.
      */
-    public NettyXmppDecoder(final BiConsumer<String, StreamElement> onRead, final Supplier<Unmarshaller> unmarshallerSupplier, final Consumer<Throwable> onFailure) {
-        this.onRead = onRead;
-        this.xmppStreamDecoder = new XmppStreamDecoder(unmarshallerSupplier);
+    NettyXmppEncoder(final BiConsumer<String, StreamElement> onWrite, final Supplier<Marshaller> marshallerSupplier, final Consumer<Throwable> onFailure) {
+        this.onWrite = onWrite;
+        this.xmppStreamEncoder = new XmppStreamEncoder(XMLOutputFactory.newFactory(), marshallerSupplier, Function.identity());
         this.onFailure = onFailure;
     }
 
     @Override
-    protected final void decode(final ChannelHandlerContext ctx, final ByteBuf byteBuf, final List<Object> list) throws Exception {
-        final ByteBuffer byteBuffer = byteBuf.nioBuffer();
-        this.xmppStreamDecoder.decode(byteBuffer, (s, streamElement) -> {
-            list.add(streamElement);
-            if (onRead != null) {
-                onRead.accept(s, streamElement);
+    protected final void encode(final ChannelHandlerContext ctx, final StreamElement streamElement, final ByteBuf byteBuf) throws Exception {
+        try (OutputStream outputStream = new ByteBufOutputStream(byteBuf)) {
+            xmppStreamEncoder.encode(streamElement, outputStream);
+            if (onWrite != null) {
+                onWrite.accept(byteBuf.toString(StandardCharsets.UTF_8), streamElement);
             }
-        });
-        byteBuf.readerIndex(byteBuffer.position());
+        }
     }
 
     @Override
@@ -86,12 +83,5 @@ public final class NettyXmppDecoder extends ByteToMessageDecoder {
         } else {
             super.exceptionCaught(ctx, cause);
         }
-    }
-
-    /**
-     * Restarts the stream.
-     */
-    public final void restart() {
-        this.xmppStreamDecoder.restart();
     }
 }

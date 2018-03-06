@@ -36,7 +36,7 @@
     <name>XMPP.rocks - NIO (Netty Implementation)</name>
     <packaging>pom</packaging>
     <modules>
-        <module>codec</module>
+        <module>common</module>
         <module>client</module>
     </modules>
     <properties>

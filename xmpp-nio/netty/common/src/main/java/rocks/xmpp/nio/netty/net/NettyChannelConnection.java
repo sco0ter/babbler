@@ -40,8 +40,6 @@ import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamHeader;
-import rocks.xmpp.nio.netty.codec.NettyXmppDecoder;
-import rocks.xmpp.nio.netty.codec.NettyXmppEncoder;
 
 import javax.net.ssl.SSLContext;
 import javax.xml.bind.Marshaller;

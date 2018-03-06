@@ -77,7 +77,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>xmpp-nio-netty-codec</artifactId>
+            <artifactId>xmpp-nio-netty-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

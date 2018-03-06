@@ -68,11 +68,10 @@ public abstract class AbstractConnection implements Connection {
      * Restarts the stream.
      *
      * @see <a href="https://tools.ietf.org/html/rfc6120#section-4.3.3">RFC 6120 § 4.3.3.  Restarts</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0206.html#preconditions-sasl">XEP-0206 Authentication and Resource Binding</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0206.html#preconditions-sasl">XEP-0206 Authentication and Resource Binding</a>
      * @see <a href="https://tools.ietf.org/html/rfc7395#section-3.7">RFC 7395 § 3.7.  Stream Restarts</a>
      */
-    protected void restartStream() {
-    }
+    protected abstract void restartStream();
 
     /**
      * Closes the XMPP layer stream, e.g. by sending {@code </stream:stream>}.

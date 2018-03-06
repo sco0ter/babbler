@@ -80,12 +80,11 @@ public final class NettyTcpConnectionConfiguration extends ClientConnectionConfi
                             ch.pipeline().addFirst(new HttpProxyHandler(getProxy().address()));
                         }
                     }
-//
                 }
             });
             ChannelFuture channelFuture = b.connect(getHostname(), getPort());
             channelFuture.get();
-            return new NettyTcpConnection(channelFuture.channel(),
+            return new NettyTcpConnection((SocketChannel) channelFuture.channel(),
                     xmppSession, this);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

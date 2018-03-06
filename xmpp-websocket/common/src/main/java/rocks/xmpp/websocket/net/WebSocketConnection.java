@@ -149,4 +149,14 @@ public class WebSocketConnection extends AbstractConnection {
         // session.isSecure() does always return false for client connections, also use the configuration.
         return session.isSecure() || getConfiguration().isSecure();
     }
+
+    @Override
+    public final String toString() {
+        StringBuilder sb = new StringBuilder("WebSocket connection at ").append(session.getRequestURI());
+        final String streamId = getStreamId();
+        if (streamId != null) {
+            sb.append(" (").append(streamId).append(')');
+        }
+        return sb.toString();
+    }
 }

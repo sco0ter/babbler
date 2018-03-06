@@ -825,16 +825,11 @@ public final class BoshConnection extends AbstractConnection {
     }
 
     @Override
-    public final synchronized String toString() {
-        StringBuilder sb = new StringBuilder("BOSH connection");
-        if (url != null) {
-            sb.append(" to ").append(url);
-        }
-        if (sessionId != null) {
-            sb.append(" (").append(sessionId).append(')');
-        }
-        if (sessionOpen != null) {
-            sb.append(", from: ").append(sessionOpen.getFrom());
+    public final String toString() {
+        StringBuilder sb = new StringBuilder("BOSH connection at ").append(url);
+        String streamId = getStreamId();
+        if (streamId != null) {
+            sb.append(" (").append(streamId).append(')');
         }
         return sb.toString();
     }

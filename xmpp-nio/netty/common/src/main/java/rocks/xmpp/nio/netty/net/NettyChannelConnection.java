@@ -24,9 +24,9 @@
 
 package rocks.xmpp.nio.netty.net;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.compression.JdkZlibDecoder;
 import io.netty.handler.codec.compression.JdkZlibEncoder;
 import io.netty.handler.codec.compression.ZlibWrapper;
@@ -60,7 +60,7 @@ import java.util.function.Supplier;
  */
 public class NettyChannelConnection extends AbstractConnection implements TcpBinding {
 
-    protected final Channel channel;
+    protected final SocketChannel channel;
 
     private final NettyXmppDecoder decoder;
 
@@ -72,7 +72,7 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
 
     private final Consumer<Throwable> onException;
 
-    public NettyChannelConnection(final Channel channel,
+    public NettyChannelConnection(final SocketChannel channel,
                                   final StreamHandler streamHandler,
                                   final BiConsumer<String, StreamElement> onRead,
                                   final Supplier<Unmarshaller> unmarshallerSupplier,
@@ -217,5 +217,15 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
     @Override
     protected CompletionStage<Void> closeConnection() {
         return completableFutureFromChannelFuture(channel.close());
+    }
+
+    @Override
+    public final String toString() {
+        final StringBuilder sb = new StringBuilder("TCP NIO connection at ").append(channel.remoteAddress());
+        final String streamId = getStreamId();
+        if (streamId != null) {
+            sb.append(" (").append(streamId).append(')');
+        }
+        return sb.toString();
     }
 }

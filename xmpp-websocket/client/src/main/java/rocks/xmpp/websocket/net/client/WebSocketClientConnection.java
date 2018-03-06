@@ -172,21 +172,6 @@ public final class WebSocketClientConnection extends WebSocketConnection {
         });
     }
 
-    @Override
-    public final synchronized String toString() {
-        StringBuilder sb = new StringBuilder("WebSocket connection");
-        if (session != null) {
-            sb.append(" to ").append(session.getRequestURI());
-        }
-        if (getStreamId() != null) {
-            sb.append(" (").append(getStreamId()).append(')');
-        }
-        if (sessionOpen != null) {
-            sb.append(", from: ").append(sessionOpen.getFrom());
-        }
-        return sb.toString();
-    }
-
     private final class PongHandler implements MessageHandler.Whole<PongMessage> {
 
         @Override

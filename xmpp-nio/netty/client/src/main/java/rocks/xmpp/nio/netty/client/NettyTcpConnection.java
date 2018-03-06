@@ -25,6 +25,7 @@
 package rocks.xmpp.nio.netty.client;
 
 import io.netty.channel.Channel;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.JdkSslContext;
 import io.netty.handler.ssl.SslContext;
@@ -76,7 +77,7 @@ public final class NettyTcpConnection extends NettyChannelConnection {
      * @param xmppSession             The XMPP session.
      * @param connectionConfiguration The connection configuration.
      */
-    NettyTcpConnection(final Channel channel, final XmppSession xmppSession, final NettyTcpConnectionConfiguration connectionConfiguration) {
+    NettyTcpConnection(final SocketChannel channel, final XmppSession xmppSession, final NettyTcpConnectionConfiguration connectionConfiguration) {
         super(channel, xmppSession, xmppSession.getDebugger()::readStanza, xmppSession::createUnmarshaller,
                 xmppSession.getDebugger()::writeStanza,
                 xmppSession::createMarshaller,
@@ -153,18 +154,5 @@ public final class NettyTcpConnection extends NettyChannelConnection {
             this.streamFeaturesManager.removeFeatureNegotiator(startTlsManager);
             this.streamFeaturesManager.removeFeatureNegotiator(compressionManager);
         });
-    }
-
-    @Override
-    public final synchronized String toString() {
-        StringBuilder sb = new StringBuilder("TCP NIO connection");
-        sb.append(" to ").append(connectionConfiguration.getHostname()).append(':').append(connectionConfiguration.getPort());
-        if (getStreamId() != null) {
-            sb.append(" (").append(getStreamId()).append(')');
-        }
-        if (sessionOpen != null) {
-            sb.append(", from: ").append(sessionOpen.getFrom());
-        }
-        return sb.toString();
     }
 }

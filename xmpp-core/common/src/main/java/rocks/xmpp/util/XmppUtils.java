@@ -62,19 +62,19 @@ public final class XmppUtils {
      * <h2>Usage</h2>
      * ```java
      * Writer writer = new StringWriter();
-     * <p>
+     *
      * XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
      * XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
-     * <p>
+     *
      * JAXBContext jaxbContext = JAXBContext.newInstance(Message.class, Sent.class);
      * Marshaller marshaller = jaxbContext.createMarshaller();
      * marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-     * <p>
+     *
      * Message forwardedMessage = new Message(Jid.of("romeo@example.net"), Message.Type.CHAT, "Hi!!");
-     * <p>
+     *
      * Message message = new Message(Jid.of("juliet@example.net"));
      * message.addExtension(new Sent(new Forwarded(forwardedMessage)));
-     * <p>
+     *
      * marshaller.marshal(message, xmppStreamWriter);
      * xmppStreamWriter.flush();
      * System.out.println(writer.toString());
@@ -82,13 +82,13 @@ public final class XmppUtils {
      * The output of this is:
      * ```xml
      * <message to="juliet@example.net">
-     * <sent xmlns="urn:xmpp:carbons:2">
-     * <forwarded xmlns="urn:xmpp:forward:0">
-     * <message xmlns="jabber:client" to="romeo@example.net" type="chat">
-     * <body>Hi!!</body>
-     * </message>
-     * </forwarded>
-     * </sent>
+     *     <sent xmlns="urn:xmpp:carbons:2">
+     *         <forwarded xmlns="urn:xmpp:forward:0">
+     *             <message xmlns="jabber:client" to="romeo@example.net" type="chat">
+     *                 <body>Hi!!</body>
+     *             </message>
+     *         </forwarded>
+     *     </sent>
      * </message>
      * ```
      *

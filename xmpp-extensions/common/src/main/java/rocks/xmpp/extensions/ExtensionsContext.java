@@ -241,7 +241,7 @@ public final class ExtensionsContext implements XmppContext {
 
                 // XEP-0191: Blocking Command
                 BlockList.class,
-                
+
                 // XEP-0199: XMPP Ping
                 Ping.class,
 

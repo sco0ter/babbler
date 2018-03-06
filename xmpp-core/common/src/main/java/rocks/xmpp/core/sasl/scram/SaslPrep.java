@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  * @author Christian Schudt
  * @see <a href="http://tools.ietf.org/html/rfc4013">SASLprep: Stringprep Profile for User Names and Passwords</a>
  */
-final class SaslPrep {
+public final class SaslPrep {
 
     /**
      * C.1.2 Non-ASCII space characters
@@ -59,7 +59,7 @@ final class SaslPrep {
      *
      * @return The mapped string.
      */
-    static String prepare(String input) {
+    public static String prepare(String input) {
 
         // 2.1. Mapping
         // This profile specifies:

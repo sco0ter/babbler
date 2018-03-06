@@ -25,15 +25,21 @@
 package rocks.xmpp.sample;
 
 import io.netty.channel.nio.NioEventLoopGroup;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
+import rocks.xmpp.extensions.last.LastActivityManager;
+import rocks.xmpp.extensions.ping.PingManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
+import rocks.xmpp.extensions.time.EntityTimeManager;
+import rocks.xmpp.im.roster.RosterManager;
+import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.nio.netty.client.NettyTcpConnectionConfiguration;
 import rocks.xmpp.websocket.net.client.WebSocketConnectionConfiguration;
 
@@ -43,6 +49,8 @@ import javax.net.ssl.X509TrustManager;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.concurrent.Executors;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -65,9 +73,12 @@ public class SampleApplication {
         Executors.newFixedThreadPool(1).execute(() -> {
             try {
                 NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup(1);
+
+
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                         .debugger(ConsoleDebugger.class)
                         .authenticationMechanisms("PLAIN")
+                        .defaultResponseTimeout(Duration.ofSeconds(20))
                         .build();
                 long now = System.currentTimeMillis();
                 for (int i = 0; i < 1; i++) {
@@ -76,23 +87,27 @@ public class SampleApplication {
                             .hostname("localhost") // The hostname.
                             .port(5222) // The XMPP default port.
                             .sslContext(getTrustAllSslContext()) // Use an SSL context, which trusts every server. Only use it for testing!
-                                    //.channelEncryption(ChannelEncryption.DIRECT) // We want to negotiate a TLS connection.
+                            .channelEncryption(ChannelEncryption.OPTIONAL) // We want to negotiate a TLS connection.
                             .hostnameVerifier((s, sslSession) -> true)
+
                             .build();
 
                     BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()
                             .hostname("localhost")
-                            .port(7443)
+
+                            .port(8443)
+                            .path("/xmpp/http-bind")
                             .sslContext(getTrustAllSslContext())
                             .channelEncryption(ChannelEncryption.DIRECT)
                             .hostnameVerifier((s, sslSession) -> true)
                             .build();
+
                     WebSocketConnectionConfiguration webSocketConfiguration = WebSocketConnectionConfiguration.builder()
                             .hostname("localhost")
-                            .port(7070)
+                            .port(8443)
+                            .path("/xmpp/ws")
                             .sslContext(getTrustAllSslContext())
                             .channelEncryption(ChannelEncryption.DIRECT)
-                            .hostnameVerifier((s, sslSession) -> true)
                             .build();
 
                     NettyTcpConnectionConfiguration nettyTcpConnectionConfiguration = NettyTcpConnectionConfiguration.builder()
@@ -105,7 +120,8 @@ public class SampleApplication {
                             .build();
 
 
-                    XmppClient xmppClient = XmppClient.create("localhost", configuration, socketConnectionConfiguration);
+                    XmppClient xmppClient = XmppClient.create("localhost", configuration, webSocketConfiguration);
+
 
                     // Listen for inbound messages.
                     xmppClient.addInboundMessageListener(e -> logger.info("Received: " + e.getMessage()));
@@ -122,14 +138,21 @@ public class SampleApplication {
                     xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT, "Hello World! öäü!"));
                     xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
                     xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
+                    xmppClient.getManager(PingManager.class).pingServer().getResult();
+
+                    OffsetDateTime entityTime = xmppClient.getManager(EntityTimeManager.class).getEntityTime(null).getResult();
+                    System.out.println(entityTime);
+
+                    xmppClient.getManager(RosterManager.class).addContact(new Contact(Jid.of("admin@test"), "test", "group"), false, "").getResult();
+                    xmppClient.getManager(LastActivityManager.class).getLastActivity(Jid.ofDomain(xmppClient.getConnectedResource().getDomain())).getResult();
 
                     now = System.currentTimeMillis();
-                    xmppClient.close();
+                    // xmppClient.close();
                     System.out.println(System.currentTimeMillis() - now);
                     //logger.info(xmppClient.getActiveConnection().toString());
                 }
-                long time = System.currentTimeMillis() - now;
-                int i = 0;
+
+
             } catch (XmppException | GeneralSecurityException e) {
                 throw new RuntimeException(e);
             }

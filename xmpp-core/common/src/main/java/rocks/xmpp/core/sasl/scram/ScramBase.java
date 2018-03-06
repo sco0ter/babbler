@@ -43,7 +43,7 @@ import java.util.Random;
  *
  * @author Christian Schudt
  */
-abstract class ScramBase {
+public abstract class ScramBase {
 
     private static final byte[] INT1 = new byte[]{0, 0, 0, 1};
 
@@ -51,7 +51,7 @@ abstract class ScramBase {
 
     private static final byte[] SERVER_KEY = "Server Key".getBytes(StandardCharsets.UTF_8);
 
-    final CallbackHandler callbackHandler;
+    protected final CallbackHandler callbackHandler;
 
     private final String hmacAlgorithm;
 
@@ -59,17 +59,17 @@ abstract class ScramBase {
 
     private final String mechanism;
 
-    boolean complete;
+    protected boolean complete;
 
-    String clientFirstMessageBare;
+    protected String clientFirstMessageBare;
 
-    String serverFirstMessage;
+    protected String serverFirstMessage;
 
-    String nonce;
+    protected String nonce;
 
-    String channelBinding;
+    protected String channelBinding;
 
-    ScramBase(String hashAlgorithm, CallbackHandler callbackHandler) {
+    protected ScramBase(String hashAlgorithm, CallbackHandler callbackHandler) {
         hashAlgorithm = hashAlgorithm.toUpperCase();
 
         if ("SHA-1".equals(hashAlgorithm)) {
@@ -92,7 +92,7 @@ abstract class ScramBase {
      * @param b The second byte array.
      * @return The XOR combined byte array.
      */
-    static byte[] xor(byte[] a, byte[] b) {
+    protected static byte[] xor(byte[] a, byte[] b) {
         byte[] c = new byte[a.length];
         for (int i = 0; i < a.length; i++) {
             c[i] = (byte) (a[i] ^ b[i]);
@@ -106,7 +106,7 @@ abstract class ScramBase {
      * @return The nonce.
      * @throws NoSuchAlgorithmException If the generation algorithm does not exist.
      */
-    static String generateNonce() throws NoSuchAlgorithmException {
+    protected static String generateNonce() throws NoSuchAlgorithmException {
         byte[] nonce = new byte[16];
         Random rand = SecureRandom.getInstance("SHA1PRNG");
         rand.nextBytes(nonce);
@@ -119,7 +119,7 @@ abstract class ScramBase {
      * @param str The string.
      * @return The attributes.
      */
-    static Map<Character, String> getAttributes(String str) {
+    protected static Map<Character, String> getAttributes(String str) {
         Map<Character, String> map = new HashMap<>();
         String[] parts = str.split(",", 8);
         for (String part : parts) {
@@ -137,7 +137,7 @@ abstract class ScramBase {
      * @param nonce    The nonce.
      * @return The client-first-message-bare.
      */
-    static String createClientFirstMessageBare(String username, String nonce) {
+    protected static String createClientFirstMessageBare(String username, String nonce) {
         return "n=" + username + ",r=" + nonce;
     }
 
@@ -150,7 +150,7 @@ abstract class ScramBase {
      * @throws InvalidKeyException      If the key is invalid.
      * @throws NoSuchAlgorithmException If the mac algorithm does not exist.
      */
-    final byte[] computeClientSignature(byte[] clientKey, String authMessage) throws InvalidKeyException, NoSuchAlgorithmException {
+    protected final byte[] computeClientSignature(byte[] clientKey, String authMessage) throws InvalidKeyException, NoSuchAlgorithmException {
         byte[] storedKey = computeStoredKey(clientKey);
         // ClientSignature := HMAC(StoredKey, AuthMessage)
         return hmac(storedKey, authMessage.getBytes(StandardCharsets.UTF_8));
@@ -161,7 +161,7 @@ abstract class ScramBase {
      *
      * @return The auth message.
      */
-    final String computeAuthMessage() {
+    protected final String computeAuthMessage() {
         // AuthMessage     := client-first-message-bare + "," +
         //                    server-first-message + "," +
         //                    client-final-message-without-proof
@@ -179,7 +179,7 @@ abstract class ScramBase {
      * @throws InvalidKeyException      If the key is invalid.
      * @throws NoSuchAlgorithmException If the hash algorithm does not exist.
      */
-    final byte[] computeSaltedPassword(char[] password, byte[] salt, int iterationCount) throws InvalidKeyException, NoSuchAlgorithmException {
+    public final byte[] computeSaltedPassword(char[] password, byte[] salt, int iterationCount) throws InvalidKeyException, NoSuchAlgorithmException {
         // SaltedPassword  := Hi(Normalize(password), salt, i)
         return hi(SaslPrep.prepare(new String(password)).getBytes(StandardCharsets.UTF_8), salt, iterationCount);
     }
@@ -192,7 +192,7 @@ abstract class ScramBase {
      * @throws InvalidKeyException      If the key is invalid.
      * @throws NoSuchAlgorithmException If the mac algorithm does not exist.
      */
-    final byte[] computeClientKey(byte[] saltedPassword) throws InvalidKeyException, NoSuchAlgorithmException {
+    public final byte[] computeClientKey(byte[] saltedPassword) throws InvalidKeyException, NoSuchAlgorithmException {
         // ClientKey       := HMAC(SaltedPassword, "Client Key")
         return hmac(saltedPassword, CLIENT_KEY);
     }
@@ -204,7 +204,7 @@ abstract class ScramBase {
      * @return The stored key.
      * @throws NoSuchAlgorithmException If the hash algorithm does not exist.
      */
-    final byte[] computeStoredKey(byte[] clientKey) throws NoSuchAlgorithmException {
+    public final byte[] computeStoredKey(byte[] clientKey) throws NoSuchAlgorithmException {
         // StoredKey       := H(ClientKey)
         return h(clientKey);
     }
@@ -216,7 +216,7 @@ abstract class ScramBase {
      * @return The stored key.
      * @throws NoSuchAlgorithmException If the hash algorithm does not exist.
      */
-    final byte[] computeServerKey(byte[] saltedPassword) throws InvalidKeyException, NoSuchAlgorithmException {
+    public final byte[] computeServerKey(byte[] saltedPassword) throws InvalidKeyException, NoSuchAlgorithmException {
         // ServerKey       := HMAC(SaltedPassword, "Server Key")
         return hmac(saltedPassword, SERVER_KEY);
     }
@@ -231,7 +231,7 @@ abstract class ScramBase {
      * @return The hash value.
      * @throws NoSuchAlgorithmException If the hash algorithm does not exist.
      */
-    final byte[] h(byte[] str) throws NoSuchAlgorithmException {
+    protected final byte[] h(byte[] str) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance(hashAlgorithm);
         digest.update(str);
         return digest.digest();
@@ -250,7 +250,7 @@ abstract class ScramBase {
      * @throws NoSuchAlgorithmException If the MAC algorithm does not exist.
      * @throws InvalidKeyException      If the key does not exist.
      */
-    final byte[] hmac(byte[] key, byte[] str) throws NoSuchAlgorithmException, InvalidKeyException {
+    protected final byte[] hmac(byte[] key, byte[] str) throws NoSuchAlgorithmException, InvalidKeyException {
         Mac mac = Mac.getInstance(hmacAlgorithm);
         mac.init(new SecretKeySpec(key, hmacAlgorithm));
         mac.update(str);

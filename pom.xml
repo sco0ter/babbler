@@ -100,6 +100,7 @@
         <module>xmpp-fx</module>
         <module>xmpp-websocket</module>
         <module>xmpp-nio</module>
+        <module>xmpp-server</module>
     </modules>
 
     <distributionManagement>

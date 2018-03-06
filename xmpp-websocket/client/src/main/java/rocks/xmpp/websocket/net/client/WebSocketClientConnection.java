@@ -37,7 +37,6 @@ import javax.websocket.MessageHandler;
 import javax.websocket.PongMessage;
 import javax.websocket.Session;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
@@ -55,15 +54,13 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Christian Schudt
  */
-public class WebSocketClientConnection extends WebSocketConnection {
+public final class WebSocketClientConnection extends WebSocketConnection {
 
     private final StreamFeaturesManager streamFeaturesManager;
 
     private final StreamManager streamManager;
 
     private final Set<String> pings = new CopyOnWriteArraySet<>();
-
-    private final URI uri;
 
     private final XmppSession xmppSession;
 
@@ -86,7 +83,6 @@ public class WebSocketClientConnection extends WebSocketConnection {
         this.streamFeaturesManager.addFeatureNegotiator(streamManager);
         this.streamManager.reset();
         this.xmppSession = xmppSession;
-        this.uri = session.getRequestURI();
         this.executorService = Executors.newSingleThreadScheduledExecutor(xmppSession.getConfiguration().getThreadFactory("WebSocket Ping Scheduler"));
         session.addMessageHandler(new PongHandler());
         if (connectionConfiguration.getPingInterval() != null && !connectionConfiguration.getPingInterval().isNegative() && !connectionConfiguration.getPingInterval().isZero()) {
@@ -189,8 +185,8 @@ public class WebSocketClientConnection extends WebSocketConnection {
     @Override
     public final synchronized String toString() {
         StringBuilder sb = new StringBuilder("WebSocket connection");
-        if (uri != null) {
-            sb.append(" to ").append(uri);
+        if (session != null) {
+            sb.append(" to ").append(session.getRequestURI());
         }
         if (getStreamId() != null) {
             sb.append(" (").append(getStreamId()).append(')');

@@ -131,8 +131,7 @@ public class WebSocketConnection extends AbstractConnection {
 
     @Override
     public final boolean isSecure() {
-        return session.isSecure();
+        // session.isSecure() does always return false for client connections, also use the configuration.
+        return session.isSecure() || getConfiguration().isSecure();
     }
-
-
 }

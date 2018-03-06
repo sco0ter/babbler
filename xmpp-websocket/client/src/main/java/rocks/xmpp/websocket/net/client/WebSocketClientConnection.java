@@ -79,14 +79,14 @@ public class WebSocketClientConnection extends WebSocketConnection {
      */
     private Future<?> pongFuture;
 
-    WebSocketClientConnection(Session session, CompletableFuture<Void> closeFuture, URI uri, XmppSession xmppSession, WebSocketConnectionConfiguration connectionConfiguration) {
+    WebSocketClientConnection(Session session, CompletableFuture<Void> closeFuture, XmppSession xmppSession, WebSocketConnectionConfiguration connectionConfiguration) {
         super(session, closeFuture, connectionConfiguration);
         this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         this.streamManager = xmppSession.getManager(StreamManager.class);
         this.streamFeaturesManager.addFeatureNegotiator(streamManager);
         this.streamManager.reset();
         this.xmppSession = xmppSession;
-        this.uri = uri;
+        this.uri = session.getRequestURI();
         this.executorService = Executors.newSingleThreadScheduledExecutor(xmppSession.getConfiguration().getThreadFactory("WebSocket Ping Scheduler"));
         session.addMessageHandler(new PongHandler());
         if (connectionConfiguration.getPingInterval() != null && !connectionConfiguration.getPingInterval().isNegative() && !connectionConfiguration.getPingInterval().isZero()) {

@@ -162,7 +162,7 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
     public final Connection createConnection(final XmppSession xmppSession) {
         try {
             final CompletableFuture<Void> closeFuture = new CompletableFuture<>();
-            return new WebSocketClientConnection(createWebSocketSession(xmppSession, closeFuture), closeFuture, null, xmppSession, this);
+            return new WebSocketClientConnection(createWebSocketSession(xmppSession, closeFuture), closeFuture, xmppSession, this);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

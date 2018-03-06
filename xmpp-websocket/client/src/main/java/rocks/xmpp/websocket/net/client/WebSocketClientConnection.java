@@ -62,8 +62,6 @@ public final class WebSocketClientConnection extends WebSocketConnection {
 
     private final Set<String> pings = new CopyOnWriteArraySet<>();
 
-    private final XmppSession xmppSession;
-
     private ScheduledExecutorService executorService;
 
     /**
@@ -77,12 +75,11 @@ public final class WebSocketClientConnection extends WebSocketConnection {
     private Future<?> pongFuture;
 
     WebSocketClientConnection(Session session, CompletableFuture<Void> closeFuture, XmppSession xmppSession, WebSocketConnectionConfiguration connectionConfiguration) {
-        super(session, closeFuture, connectionConfiguration);
+        super(session, xmppSession, xmppSession::notifyException, closeFuture, connectionConfiguration);
         this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         this.streamManager = xmppSession.getManager(StreamManager.class);
         this.streamFeaturesManager.addFeatureNegotiator(streamManager);
         this.streamManager.reset();
-        this.xmppSession = xmppSession;
         this.executorService = Executors.newSingleThreadScheduledExecutor(xmppSession.getConfiguration().getThreadFactory("WebSocket Ping Scheduler"));
         session.addMessageHandler(new PongHandler());
         if (connectionConfiguration.getPingInterval() != null && !connectionConfiguration.getPingInterval().isNegative() && !connectionConfiguration.getPingInterval().isZero()) {
@@ -136,18 +133,6 @@ public final class WebSocketClientConnection extends WebSocketConnection {
     @Override
     public final boolean isUsingAcknowledgements() {
         return streamManager.isActive();
-    }
-
-    @Override
-    protected void onRead(final StreamElement streamElement) {
-        super.onRead(streamElement);
-        try {
-            if (xmppSession.handleElement(streamElement)) {
-                restartStream();
-            }
-        } catch (XmppException e) {
-            xmppSession.notifyException(e);
-        }
     }
 
     @Override

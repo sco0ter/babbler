@@ -30,10 +30,8 @@ import io.netty.handler.ssl.JdkSslContext;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
-import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.errors.Condition;
@@ -79,7 +77,7 @@ public final class NettyTcpConnection extends NettyChannelConnection {
      * @param connectionConfiguration The connection configuration.
      */
     NettyTcpConnection(final Channel channel, final XmppSession xmppSession, final NettyTcpConnectionConfiguration connectionConfiguration) {
-        super(channel, null, xmppSession::createUnmarshaller,
+        super(channel, xmppSession, xmppSession.getDebugger()::readStanza, xmppSession::createUnmarshaller,
                 xmppSession.getDebugger()::writeStanza,
                 xmppSession::createMarshaller,
                 xmppSession::notifyException,
@@ -112,19 +110,9 @@ public final class NettyTcpConnection extends NettyChannelConnection {
     }
 
     @Override
-    protected void onRead(final String xml, final StreamElement streamElement) {
-        super.onRead(xml, streamElement);
-        if (xmppSession.getDebugger() != null) {
-            xmppSession.getDebugger().readStanza(xml, streamElement);
-        }
-        try {
-            if (xmppSession.handleElement(streamElement)) {
-                open(sessionOpen);
-                restartStream();
-            }
-        } catch (XmppException e) {
-            xmppSession.notifyException(e);
-        }
+    protected final void restartStream() {
+        super.restartStream();
+        open(sessionOpen);
     }
 
     @Override

@@ -24,9 +24,11 @@
 
 package rocks.xmpp.websocket.net;
 
+import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.session.model.SessionOpen;
+import rocks.xmpp.core.stream.StreamHandler;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.websocket.model.Close;
 import rocks.xmpp.websocket.model.Open;
@@ -36,6 +38,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
 
 /**
  * An XMPP WebSocket connection.
@@ -50,20 +53,33 @@ public class WebSocketConnection extends AbstractConnection {
 
     private final CompletionStage<Void> closeFuture;
 
+    private final StreamHandler streamHandler;
+
+    private final Consumer<Throwable> onException;
+
     protected SessionOpen sessionOpen;
 
-    public WebSocketConnection(Session session, CompletableFuture<Void> closeFuture, ConnectionConfiguration connectionConfiguration) {
+    public WebSocketConnection(Session session, StreamHandler streamHandler, Consumer<Throwable> onException, CompletableFuture<Void> closeFuture, ConnectionConfiguration connectionConfiguration) {
         super(connectionConfiguration);
         this.closeFuture = closeFuture;
         this.session = session;
+        this.streamHandler = streamHandler;
+        this.onException = onException;
         session.addMessageHandler(StreamElement.class, this::onRead);
     }
 
-    protected void onRead(final StreamElement streamElement) {
+    private void onRead(final StreamElement streamElement) {
         if (streamElement instanceof Open) {
             openedByPeer((Open) streamElement);
         } else if (streamElement instanceof Close) {
             closedByPeer();
+        }
+        try {
+            if (streamHandler.handleElement(streamElement)) {
+                restartStream();
+            }
+        } catch (XmppException e) {
+            onException.accept(e);
         }
     }
 

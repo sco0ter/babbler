@@ -43,6 +43,7 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.core.stream.StreamHandler;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
@@ -118,7 +119,7 @@ import java.util.logging.Logger;
  * @see <a href="http://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
  * @see <a href="http://xmpp.org/extensions/xep-0174.html">XEP-0174: Serverless Messaging</a>
  */
-public abstract class XmppSession implements AutoCloseable {
+public abstract class XmppSession implements StreamHandler, AutoCloseable {
 
     protected static final Collection<Consumer<XmppSession>> creationListeners = new CopyOnWriteArraySet<>();
 
@@ -1135,6 +1136,7 @@ public abstract class XmppSession implements AutoCloseable {
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
      * @throws XmppException              If any other XMPP exception occurs.
      */
+    @Override
     public boolean handleElement(final Object element) throws XmppException {
 
         StreamManager streamManager = getManager(StreamManager.class);

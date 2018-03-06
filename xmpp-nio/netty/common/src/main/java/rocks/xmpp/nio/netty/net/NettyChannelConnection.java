@@ -34,10 +34,12 @@ import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.JdkSslContext;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslHandler;
+import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.session.model.SessionOpen;
+import rocks.xmpp.core.stream.StreamHandler;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamHeader;
 
@@ -66,7 +68,12 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
 
     protected SessionOpen sessionOpen;
 
+    private final StreamHandler streamHandler;
+
+    private final Consumer<Throwable> onException;
+
     public NettyChannelConnection(final Channel channel,
+                                  final StreamHandler streamHandler,
                                   final BiConsumer<String, StreamElement> onRead,
                                   final Supplier<Unmarshaller> unmarshallerSupplier,
                                   final BiConsumer<String, StreamElement> onWrite,
@@ -76,6 +83,8 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
         super(connectionConfiguration);
         this.channel = channel;
         this.onRead = onRead;
+        this.streamHandler = streamHandler;
+        this.onException = onException;
         this.decoder = new NettyXmppDecoder(this::onRead, unmarshallerSupplier, onException);
         channel.pipeline().addLast(decoder, new NettyXmppEncoder(onWrite, marshallerSupplier, onException));
     }
@@ -110,6 +119,13 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
             openedByPeer((SessionOpen) streamElement);
         } else if (streamElement == StreamHeader.CLOSING_STREAM_TAG) {
             closedByPeer();
+        }
+        try {
+            if (streamHandler.handleElement(streamElement)) {
+                restartStream();
+            }
+        } catch (XmppException e) {
+            onException.accept(e);
         }
     }
 
@@ -184,7 +200,7 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
     }
 
     @Override
-    public void restartStream() {
+    protected void restartStream() {
         decoder.restart();
     }
 

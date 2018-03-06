@@ -131,6 +131,11 @@ public final class WebSocketClientConnection extends WebSocketConnection {
     }
 
     @Override
+    protected final void restartStream() {
+        open(sessionOpen);
+    }
+
+    @Override
     public final boolean isUsingAcknowledgements() {
         return streamManager.isActive();
     }

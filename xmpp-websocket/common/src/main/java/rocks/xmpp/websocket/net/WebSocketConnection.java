@@ -84,8 +84,7 @@ public class WebSocketConnection extends AbstractConnection {
     }
 
     @Override
-    protected final void restartStream() {
-        open(sessionOpen);
+    protected void restartStream() {
     }
 
     @Override

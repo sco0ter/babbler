@@ -514,6 +514,13 @@ public class JidTest {
     }
 
     @Test
+    public void testPunyCode() {
+        Jid fromPunyCode = Jid.of("user@xn--xample-2of.com");
+        Jid fromUnicode = Jid.of(fromPunyCode.toString());
+        Assert.assertEquals(fromPunyCode, fromUnicode);
+    }
+
+    @Test
     public void testTrailingDot() {
         Jid jid = Jid.ofDomain("domain.");
         Assert.assertEquals(jid.getDomain(), "domain");

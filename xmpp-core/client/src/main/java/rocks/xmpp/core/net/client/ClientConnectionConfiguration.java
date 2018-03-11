@@ -115,6 +115,7 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
      * @return If the connection is to be secured.
      * @see Builder#secure(boolean)
      */
+    @Override
     public final boolean isSecure() {
         return secure;
     }
@@ -124,6 +125,7 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
      *
      * @return The SSL context.
      */
+    @Override
     public final SSLContext getSSLContext() {
         return sslContext;
     }

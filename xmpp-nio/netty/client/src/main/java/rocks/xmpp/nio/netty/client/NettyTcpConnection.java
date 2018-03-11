@@ -128,17 +128,21 @@ public final class NettyTcpConnection extends NettyChannelConnection {
             final SSLParameters sslParameters = sslEngine.getSSLParameters();
             sslParameters.setEndpointIdentificationAlgorithm("HTTPS");
             sslEngine.setSSLParameters(sslParameters);
-        } else {
-            Future<Channel> handshakeFuture = handler.handshakeFuture();
-            handshakeFuture.addListener(future -> {
-                if (future.isSuccess()) {
-                    if (!verifier.verify(xmppSession.getDomain().toString(), sslEngine.getSession())) {
-                        throw new CertificateException("Server failed to authenticate as " + xmppSession.getDomain());
-                    }
+        }
+
+        final Future<Channel> handshakeFuture = handler.handshakeFuture();
+        handshakeFuture.addListener(future -> {
+            if (future.isSuccess()) {
+                if (verifier != null && !verifier.verify(xmppSession.getDomain().toString(), sslEngine.getSession())) {
+                    xmppSession.notifyException(new CertificateException("Server failed to authenticate as " + xmppSession.getDomain()));
+                } else {
                     logger.log(Level.FINE, "Connection has been secured via TLS.");
                 }
-            });
-        }
+            } else {
+                xmppSession.notifyException(future.cause());
+            }
+        });
+
         channel.pipeline().addFirst("SSL", handler);
     }
 

@@ -2,7 +2,7 @@
 <!--
   ~ The MIT License (MIT)
   ~
-  ~ Copyright (c) 2014-2016 Christian Schudt
+  ~ Copyright (c) 2014-2018 Christian Schudt
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -34,32 +34,11 @@
     </parent>
     <artifactId>xmpp-websocket-common</artifactId>
     <name>XMPP.rocks - WebSocket (RFC 7395) - Common</name>
-    <description>XMPP Subprotocol for WebSocket - Codecs and XMPP frames shared by client and server</description>
+    <description>XMPP Subprotocol for WebSocket - Codecs, Connection and XMPP frames shared by client and server</description>
     <build>
         <plugins>
-            <!-- Generate a sources.jar, so that it can be used by JavaDoc plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
-            <!-- Skip site generation -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-
-            <!-- Create test jar / Define JPMS module name -->
+            <!-- Define JPMS module name -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -76,13 +55,7 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- Deploy this artifact -->
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-            </plugin>
-
+            
         </plugins>
 
     </build>
@@ -100,7 +73,6 @@
         <dependency>
             <groupId>javax.websocket</groupId>
             <artifactId>javax.websocket-api</artifactId>
-            <version>1.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

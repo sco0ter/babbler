@@ -2,7 +2,7 @@
 <!--
   ~ The MIT License (MIT)
   ~
-  ~ Copyright (c) 2014-2016 Christian Schudt
+  ~ Copyright (c) 2014-2018 Christian Schudt
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -37,19 +37,6 @@
     <description>XMPP address format, i.e. Jabber ID</description>
     <build>
         <plugins>
-            <!-- Generate a sources.jar, so that it can be used by JavaDoc plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
             <!-- Skip site generation -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

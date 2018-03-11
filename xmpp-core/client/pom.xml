@@ -37,20 +37,6 @@
     <description>Core XMPP client logic</description>
     <build>
         <plugins>
-
-            <!-- Generate a sources.jar, so that it can be used by JavaDoc plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
             <!-- Create test jar / Define JPMS module name -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

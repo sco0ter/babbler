@@ -25,7 +25,6 @@
 package rocks.xmpp.nio.netty.client;
 
 import io.netty.channel.Channel;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.JdkSslContext;
 import io.netty.handler.ssl.SslContext;
@@ -77,7 +76,7 @@ public final class NettyTcpConnection extends NettyChannelConnection {
      * @param xmppSession             The XMPP session.
      * @param connectionConfiguration The connection configuration.
      */
-    NettyTcpConnection(final SocketChannel channel, final XmppSession xmppSession, final NettyTcpConnectionConfiguration connectionConfiguration) {
+    NettyTcpConnection(final Channel channel, final XmppSession xmppSession, final NettyTcpConnectionConfiguration connectionConfiguration) {
         super(channel, xmppSession, xmppSession.getDebugger()::readStanza, xmppSession::createUnmarshaller,
                 xmppSession.getDebugger()::writeStanza,
                 xmppSession::createMarshaller,

@@ -33,7 +33,7 @@
         <version>0.8.0-SNAPSHOT</version>
     </parent>
     <artifactId>xmpp-nio-netty</artifactId>
-    <name>XMPP.rocks - NIO (Netty Implementation)</name>
+    <name>XMPP.rocks - NIO (Netty)</name>
     <packaging>pom</packaging>
     <modules>
         <module>common</module>

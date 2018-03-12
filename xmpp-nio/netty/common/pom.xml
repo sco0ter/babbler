@@ -33,7 +33,7 @@
         <version>0.8.0-SNAPSHOT</version>
     </parent>
     <artifactId>xmpp-nio-netty-common</artifactId>
-    <name>XMPP.rocks - NIO (Netty Connection)</name>
+    <name>XMPP.rocks - NIO (Netty) - Common</name>
     <description>
         Codec and connection implementations using the Netty framework.
         This artifact could be used by clients and servers.

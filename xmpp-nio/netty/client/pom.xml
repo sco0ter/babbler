@@ -33,7 +33,7 @@
         <version>0.8.0-SNAPSHOT</version>
     </parent>
     <artifactId>xmpp-nio-netty-client</artifactId>
-    <name>XMPP.rocks - NIO (Netty Client)</name>
+    <name>XMPP.rocks - NIO (Netty) - Client</name>
     <description>A NIO connection method for clients using the Netty framework.</description>
     <build>
         <plugins>

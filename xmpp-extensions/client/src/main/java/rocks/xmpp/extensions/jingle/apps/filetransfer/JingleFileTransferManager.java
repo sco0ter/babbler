@@ -61,7 +61,7 @@ public final class JingleFileTransferManager extends Manager {
     @Override
     protected void onEnable() {
         super.onEnable();
-        jingleManager.registerApplicationFormat(JingleFileTransfer.class, this::onFileTransferRequest);
+        jingleManager.registerApplicationFormat(JingleFileTransfer.class, JingleFileTransferManager::onFileTransferRequest);
     }
 
     @Override
@@ -70,7 +70,7 @@ public final class JingleFileTransferManager extends Manager {
         jingleManager.unregisterApplicationFormat(JingleFileTransfer.class);
     }
 
-    private void onFileTransferRequest(JingleSession jingleSession) {
+    private static void onFileTransferRequest(JingleSession jingleSession) {
         jingleSession.accept(jingleSession.getContents().get(0));
     }
 

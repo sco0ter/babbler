@@ -78,7 +78,7 @@ public abstract class XmlTest {
         this.namespace = namespace;
     }
 
-    private XMLEventReader getStream(String stanza) throws XMLStreamException {
+    private static XMLEventReader getStream(String stanza) throws XMLStreamException {
         String stream = StreamHeader.responseClientToServer(FROM, null, "1", Locale.ENGLISH) + stanza + StreamHeader.CLOSING_STREAM_TAG;
         Reader reader = new StringReader(stream);
         XMLEventReader xmlEventReader = INPUT_FACTORY.createXMLEventReader(reader);

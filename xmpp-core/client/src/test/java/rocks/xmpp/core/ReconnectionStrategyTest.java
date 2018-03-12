@@ -76,7 +76,7 @@ public class ReconnectionStrategyTest {
         Assert.assertEquals(strategy.getNextReconnectionAttempt(1, null), Duration.ofSeconds(5));
     }
 
-    private void shouldBackoffBinaryExponentially(ReconnectionStrategy strategy, Throwable cause) {
+    private static void shouldBackoffBinaryExponentially(ReconnectionStrategy strategy, Throwable cause) {
         Duration first = strategy.getNextReconnectionAttempt(0, cause);
         Assert.assertTrue(first.getSeconds() >= 0 && first.getSeconds() < 60);
         Duration second = strategy.getNextReconnectionAttempt(1, null);

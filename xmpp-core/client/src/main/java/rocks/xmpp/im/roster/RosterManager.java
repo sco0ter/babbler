@@ -331,7 +331,7 @@ public final class RosterManager extends Manager {
         return null;
     }
 
-    private void removeContactByJid(Contact contact, Collection<Contact> contacts) {
+    private static void removeContactByJid(Contact contact, Collection<Contact> contacts) {
         for (Contact c : contacts) {
             if (c.getJid().equals(contact.getJid())) {
                 contacts.remove(c);

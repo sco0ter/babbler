@@ -120,7 +120,7 @@ public class ConsistentColorGenerationTest {
         assertEqualsRounded(color3.getBlue(), 0.505, 3);
     }
 
-    private void assertEqualsRounded(double actual, double expected, int scale) {
+    private static void assertEqualsRounded(double actual, double expected, int scale) {
         Assert.assertEquals(BigDecimal.valueOf(actual).setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue(), expected);
     }
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,16 +26,12 @@ package rocks.xmpp.core.stanza;
 
 import rocks.xmpp.core.stanza.model.Message;
 
-import java.util.function.Consumer;
-
 /**
  * A message event is fired whenever a message is received or sent.
  * <p>
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see rocks.xmpp.core.session.XmppSession#addInboundMessageListener(Consumer)
- * @see rocks.xmpp.core.session.XmppSession#addOutboundMessageListener(Consumer)
  */
 public final class MessageEvent extends StanzaEvent<Message> {
     /**

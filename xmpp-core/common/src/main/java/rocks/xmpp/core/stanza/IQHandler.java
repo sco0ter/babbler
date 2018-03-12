@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,21 +27,16 @@ package rocks.xmpp.core.stanza;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.IQ.Type;
 
-import java.util.function.Consumer;
-
 /**
  * Handles an inbound IQ request, (IQ stanzas of type {@link Type#GET} or {@link Type#SET}) by processing the request and returning an IQ response of type {@link Type#RESULT result} or {@link Type#ERROR error}.
  * <p>
- * In contrast to {@link rocks.xmpp.core.session.XmppSession#addInboundIQListener(Consumer)} which merely listens to IQ stanzas, IQ handlers facilitate the proper handling of IQ requests by enforcing the semantics of IQs, especially:
  * <blockquote>
  * <cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-semantics-iq">8.2.3.  IQ Semantics</a></cite>
  * <p>An entity that receives an IQ request of type "get" or "set" MUST reply with an IQ response of type "result" or "error". The response MUST preserve the 'id' attribute of the request (or be empty if the generated stanza did not include an 'id' attribute).</p>
  * </blockquote>
- * IQ handlers are registered for a specific payload type via {@link rocks.xmpp.core.session.XmppSession#addIQHandler(Class, IQHandler)}.
  *
  * @author Christian Schudt
  * @see <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-semantics-iq">8.2.3.  IQ Semantics</a>
- * @see rocks.xmpp.core.session.XmppSession#addIQHandler(Class, IQHandler)
  */
 @FunctionalInterface
 public interface IQHandler {

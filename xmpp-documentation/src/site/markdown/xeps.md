@@ -17,7 +17,7 @@
 * ![supported][supported]           [XEP-0054: vcard-temp](https://xmpp.org/extensions/xep-0054.html) <small>1.2</small>
 * ![supported][supported]           [XEP-0055: Jabber Search](https://xmpp.org/extensions/xep-0055.html) <small>1.3</small>
 * ![supported][supported]           [XEP-0059: Result Set Management](https://xmpp.org/extensions/xep-0059.html) <small>1.0</small>
-* ![supported][supported]           [XEP-0060: Publish-Subscribe](https://xmpp.org/extensions/xep-0060.html) <small>1.13.8</small>
+* ![supported][supported]           [XEP-0060: Publish-Subscribe](https://xmpp.org/extensions/xep-0060.html) <small>1.15.1</small>
 * ![supported][supported]           [XEP-0065: SOCKS5 Bytestreams](https://xmpp.org/extensions/xep-0065.html) <small>1.8.1</small>
 * ![supported][supported]           [XEP-0066: Out of Band Data](https://xmpp.org/extensions/xep-0066.html) <small>1.5</small>
 * ![supported][supported]           [XEP-0070: Verifying HTTP Requests via XMPP](https://xmpp.org/extensions/xep-0070.html) <small>1.0.1</small>

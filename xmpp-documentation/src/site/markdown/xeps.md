@@ -1,4 +1,15 @@
-# Supported XEPs
+# Supported Specifications
+
+## RFCs
+---
+
+* ![supported][supported]           [RFC 6120: Extensible Messaging and Presence Protocol (XMPP): Core](https://tools.ietf.org/html/rfc6120)
+* ![supported][supported]           [RFC 6121: Extensible Messaging and Presence Protocol (XMPP): Instant Messaging and Presence](https://tools.ietf.org/html/rfc6121)
+* ![supported][supported]           [RFC 7622: Extensible Messaging and Presence Protocol (XMPP): Address Format](https://tools.ietf.org/html/rfc7622)
+* ![supported][supported]           [RFC 7395: An Extensible Messaging and Presence Protocol (XMPP) Subprotocol for WebSocket](https://tools.ietf.org/html/rfc7395)
+
+
+## XEPs
 ---
 
 *(Only listing historical and standard tracks extensions with status 'Draft' or 'Final' that are applicable to XMPP clients)*

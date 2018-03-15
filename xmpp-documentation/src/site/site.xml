@@ -57,7 +57,7 @@
         -->
         <menu name="Project Information">
             <item href="index.html" name="About"/>
-            <item href="xeps.html" name="Supported XEPs"/>
+            <item href="xeps.html" name="Supported Specifications"/>
             <item href="license.html" name="License"/>
             <item href="changelog.html" name="Changelog"/>
         </menu>

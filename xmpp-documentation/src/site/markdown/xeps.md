@@ -20,7 +20,7 @@
 * ![supported][supported]           [XEP-0013: Flexible Offline Message Retrieval](https://xmpp.org/extensions/xep-0013.html) <small>1.2</small>
 * ![supported][supported]           [XEP-0030: Service Discovery](https://xmpp.org/extensions/xep-0030.html) <small>2.5rc3</small>
 * ![supported][supported]           [XEP-0033: Extended Stanza Addressing](https://xmpp.org/extensions/xep-0033.html) <small>1.2.1</small>
-* ![supported][supported]           [XEP-0045: Multi-User Chat](https://xmpp.org/extensions/xep-0045.html) <small>1.27</small>
+* ![supported][supported]           [XEP-0045: Multi-User Chat](https://xmpp.org/extensions/xep-0045.html) <small>1.31</small>
 * ![supported][supported]           [XEP-0047: In-Band Bytestreams](https://xmpp.org/extensions/xep-0047.html) <small>2.0</small>
 * ![supported][supported]           [XEP-0048: Bookmarks](https://xmpp.org/extensions/xep-0048.html) <small>1.1</small>
 * ![supported][supported]           [XEP-0049: Private XML Storage](https://xmpp.org/extensions/xep-0049.html) <small>1.2</small>

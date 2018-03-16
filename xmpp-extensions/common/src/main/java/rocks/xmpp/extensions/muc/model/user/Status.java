@@ -134,10 +134,17 @@ public final class Status {
      */
     public static final Status SERVICE_SHUT_DOWN = new Status(332);
 
+    /**
+     * Inform users that a user was removed because of an error reply (for example
+     * when an s2s link fails between the MUC and the removed users server).
+     */
+    public static final Status REMOVED_DUE_TO_ERROR = new Status(333);
+
     @XmlAttribute
-    private Integer code;
+    private final Integer code;
 
     private Status() {
+        this.code = null;
     }
 
     /**

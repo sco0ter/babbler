@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.component.accept;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
@@ -63,8 +64,8 @@ public final class ExternalComponent extends XmppSession {
 
     private volatile Jid connectedResource;
 
-    private ExternalComponent(String componentName, String sharedSecret, XmppSessionConfiguration configuration, String hostname, int port) {
-        super(componentName, configuration, TcpConnectionConfiguration.builder().hostname(hostname).port(port).build());
+    private ExternalComponent(String componentName, String sharedSecret, XmppSessionConfiguration configuration, ClientConnectionConfiguration connectionConfiguration) {
+        super(componentName, configuration, connectionConfiguration);
         this.sharedSecret = sharedSecret;
     }
 
@@ -92,7 +93,20 @@ public final class ExternalComponent extends XmppSession {
      * @return The external component.
      */
     public static ExternalComponent create(String componentName, String sharedSecret, XmppSessionConfiguration configuration, String hostname, int port) {
-        ExternalComponent component = new ExternalComponent(componentName, sharedSecret, configuration, hostname, port);
+        return create(componentName, sharedSecret, configuration, TcpConnectionConfiguration.builder().hostname(hostname).port(port).build());
+    }
+
+    /**
+     * Creates a new external component using a default configuration. Any registered {@link #addCreationListener(Consumer) creation listeners} are triggered.
+     *
+     * @param componentName            The component name.
+     * @param sharedSecret             The shared secret (password).
+     * @param xmppSessionConfiguration The XMPP configuration.
+     * @param connectionConfiguration  The connection configuration.
+     * @return The external component.
+     */
+    public static ExternalComponent create(String componentName, String sharedSecret, XmppSessionConfiguration xmppSessionConfiguration, ClientConnectionConfiguration connectionConfiguration) {
+        ExternalComponent component = new ExternalComponent(componentName, sharedSecret, xmppSessionConfiguration, connectionConfiguration);
         notifyCreationListeners(component);
         return component;
     }
@@ -116,17 +130,18 @@ public final class ExternalComponent extends XmppSession {
                         tryConnect(from, "jabber:component:accept");
                         logger.fine("Negotiating stream, waiting until handshake is ready to be negotiated.");
                         streamOpened.get(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
-                        // Wait shortly to see if the server will respond with a <conflict/>, <host-unknown/> or other stream error.
-                        Thread.sleep(20);
 
                         // Check if the server returned a stream error, e.g. conflict.
                         throwAsXmppExceptionIfNotNull(exception);
+
+                        // Wait shortly to see if the server will respond with a <conflict/>, <host-unknown/> or other stream error.
+                        Thread.sleep(20);
 
                         connectedResource = getDomain();
                     }
                 }
             }
-
+            
             // Don't call listeners from within synchronized blocks to avoid possible deadlocks.
             updateStatus(Status.CONNECTING, Status.CONNECTED);
             login(sharedSecret);
@@ -203,9 +218,14 @@ public final class ExternalComponent extends XmppSession {
     }
 
     private void releaseLock() {
-        CompletableFuture<Void> future = handshakeReceived;
+        CompletableFuture<Void> future = streamOpened;
         if (future != null) {
             future.complete(null);
+            streamOpened = null;
+        }
+        CompletableFuture<Void> future2 = handshakeReceived;
+        if (future2 != null) {
+            future2.complete(null);
             handshakeReceived = null;
         }
     }

@@ -254,6 +254,8 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
         if (e != null) {
             if (e instanceof XmppException) {
                 throw (XmppException) e;
+            } else if (e.getCause() instanceof XmppException) {
+                throw (XmppException) e.getCause();
             } else if (e instanceof RuntimeException) {
                 throw (RuntimeException) e;
             } else if (e instanceof Error) {

@@ -68,6 +68,8 @@ final class XmppStreamReader {
 
     private static final QName TO = new QName("to");
 
+    private static final QName VERSION = new QName("version");
+
     private static final QName LANG = new QName(XMLConstants.XML_NS_URI, "lang");
 
     private final TcpConnection connection;
@@ -128,12 +130,14 @@ final class XmppStreamReader {
                             Attribute idAttribute = startElement.getAttributeByName(STREAM_ID);
                             final Attribute fromAttribute = startElement.getAttributeByName(FROM);
                             final Attribute toAttribute = startElement.getAttributeByName(TO);
+                            final Attribute versionAttribute = startElement.getAttributeByName(VERSION);
                             final Attribute langAttribute = startElement.getAttributeByName(LANG);
                             final Jid from = fromAttribute != null ? Jid.ofEscaped(fromAttribute.getValue()) : null;
                             final Jid to = toAttribute != null ? Jid.ofEscaped(toAttribute.getValue()) : null;
                             final String id = idAttribute != null ? idAttribute.getValue() : null;
+                            final String version = versionAttribute != null ? versionAttribute.getValue() : null;
                             final Locale lang = langAttribute != null ? Locale.forLanguageTag(langAttribute.getValue()) : null;
-                            StreamHeader streamHeader = StreamHeader.create(from, to, id, lang, namespace);
+                            StreamHeader streamHeader = StreamHeader.create(from, to, id, version, lang, namespace);
                             openedByPeer.accept(streamHeader);
                             if (debugger != null) {
                                 XMLEventWriter writer = xmppSession.getConfiguration().getXmlOutputFactory().createXMLEventWriter(stringWriter);

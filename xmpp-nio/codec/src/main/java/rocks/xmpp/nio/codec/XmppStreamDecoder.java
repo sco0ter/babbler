@@ -128,11 +128,7 @@ public final class XmppStreamDecoder {
                                 throw new StreamErrorException(new StreamError(Condition.INVALID_XML, "Invalid stream element '" + localName + "'", Locale.US));
                             }
 
-                            // Validate version.
                             final String version = xmlStreamReader.getAttributeValue(XMLConstants.DEFAULT_NS_PREFIX, "version");
-                            if (!"1.0".equals(version)) {
-                                throw new StreamErrorException(new StreamError(Condition.UNSUPPORTED_VERSION, "Only XMPP version 1.0 supported", Locale.US));
-                            }
                             final String from = xmlStreamReader.getAttributeValue(XMLConstants.DEFAULT_NS_PREFIX, "from");
                             final String to = xmlStreamReader.getAttributeValue(XMLConstants.DEFAULT_NS_PREFIX, "to");
                             final String id = xmlStreamReader.getAttributeValue(XMLConstants.DEFAULT_NS_PREFIX, "id");
@@ -156,11 +152,12 @@ public final class XmppStreamDecoder {
                             // Copy the rest of the stream.
                             // From now on, only store the XML stream without the stream header.
                             xmlStream.delete(0, (int) elementEnd);
-                            
+
                             final StreamHeader header = StreamHeader.create(
                                     from != null ? Jid.ofEscaped(from) : null,
                                     to != null ? Jid.ofEscaped(to) : null,
                                     id,
+                                    version,
                                     lang != null ? Locale.forLanguageTag(lang) : null,
                                     contentNamespace,
                                     additionalNamespaces.toArray(new QName[additionalNamespaces.size()]));
@@ -229,6 +226,8 @@ public final class XmppStreamDecoder {
                         break;
                 }
             }
+        } catch (StreamErrorException e) {
+            throw e;
         } catch (XMLStreamException e) {
             throw new StreamErrorException(new StreamError(Condition.NOT_WELL_FORMED), e);
         } catch (Exception e) {

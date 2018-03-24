@@ -344,7 +344,7 @@ public final class EntityCapabilitiesManager extends Manager {
             try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
                 XMLStreamWriter xmppStreamWriter = null;
                 try {
-                    xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(byteArrayOutputStream));
+                    xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(byteArrayOutputStream, StandardCharsets.UTF_8.name()));
                     xmppSession.createMarshaller().marshal(infoNode, xmppStreamWriter);
                     xmppStreamWriter.flush();
                 } finally {

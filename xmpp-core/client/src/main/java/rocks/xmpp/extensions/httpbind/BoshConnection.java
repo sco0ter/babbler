@@ -636,7 +636,7 @@ public final class BoshConnection extends AbstractConnection {
                                     }
 
                                     // Create the writer for this connection.
-                                    xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(xmppOutputStream, "UTF-8"));
+                                    xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(xmppOutputStream, StandardCharsets.UTF_8.name()));
                                     body = bodyBuilder.requestId(rid.getAndIncrement()).build();
                                     // Then write the XML to the output stream by marshalling the object to the writer.
                                     // Marshaller needs to be recreated here, because it's not thread-safe.

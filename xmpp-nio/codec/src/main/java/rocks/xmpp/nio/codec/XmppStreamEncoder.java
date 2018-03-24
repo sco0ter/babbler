@@ -102,7 +102,7 @@ public final class XmppStreamEncoder {
         try {
             if (streamElement instanceof StreamHeader) {
                 contentNamespace = ((StreamHeader) streamElement).getContentNamespace();
-                final XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream);
+                final XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream, StandardCharsets.UTF_8.name());
                 ((StreamHeader) streamElement).writeTo(writer);
                 return;
             } else if (streamElement == StreamHeader.CLOSING_STREAM_TAG) {
@@ -112,7 +112,7 @@ public final class XmppStreamEncoder {
             }
             streamElement = stanzaMapper.apply(streamElement);
 
-            final XMLStreamWriter streamWriter = XmppUtils.createXmppStreamWriter(outputFactory.createXMLStreamWriter(outputStream), contentNamespace);
+            final XMLStreamWriter streamWriter = XmppUtils.createXmppStreamWriter(outputFactory.createXMLStreamWriter(outputStream, StandardCharsets.UTF_8.name()), contentNamespace);
             final Marshaller m = marshaller.get();
             m.setProperty(Marshaller.JAXB_FRAGMENT, true);
             m.marshal(streamElement, streamWriter);

@@ -113,7 +113,7 @@ final class XmppStreamWriter {
 
                 XMLStreamWriter writer = null;
                 try {
-                    writer = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(byteArrayOutputStream, "UTF-8"), namespace);
+                    writer = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(byteArrayOutputStream, StandardCharsets.UTF_8.name()), namespace);
                     marshaller.marshal(clientStreamElement, writer);
                     writer.flush();
                 } finally {
@@ -138,7 +138,7 @@ final class XmppStreamWriter {
             try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
                 XMLStreamWriter writer = null;
                 try {
-                    writer = xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(byteArrayOutputStream, "UTF-8");
+                    writer = xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(byteArrayOutputStream, StandardCharsets.UTF_8.name());
 
                     streamOpened = false;
 

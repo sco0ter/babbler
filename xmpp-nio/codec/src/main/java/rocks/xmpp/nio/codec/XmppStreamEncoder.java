@@ -59,6 +59,8 @@ public final class XmppStreamEncoder {
 
     private final Function<StreamElement, StreamElement> stanzaMapper;
 
+    private String contentNamespace;
+
     /**
      * Creates the XMPP encoder.
      * <p>
@@ -99,6 +101,7 @@ public final class XmppStreamEncoder {
     public final void encode(StreamElement streamElement, final OutputStream outputStream) throws StreamErrorException {
         try {
             if (streamElement instanceof StreamHeader) {
+                contentNamespace = ((StreamHeader) streamElement).getContentNamespace();
                 final XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream);
                 ((StreamHeader) streamElement).writeTo(writer);
                 return;
@@ -109,7 +112,7 @@ public final class XmppStreamEncoder {
             }
             streamElement = stanzaMapper.apply(streamElement);
 
-            final XMLStreamWriter streamWriter = XmppUtils.createXmppStreamWriter(outputFactory.createXMLStreamWriter(outputStream));
+            final XMLStreamWriter streamWriter = XmppUtils.createXmppStreamWriter(outputFactory.createXMLStreamWriter(outputStream), contentNamespace);
             final Marshaller m = marshaller.get();
             m.setProperty(Marshaller.JAXB_FRAGMENT, true);
             m.marshal(streamElement, streamWriter);

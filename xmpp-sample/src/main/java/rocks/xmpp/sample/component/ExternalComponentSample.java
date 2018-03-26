@@ -26,9 +26,9 @@ package rocks.xmpp.sample.component;
 
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
+import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.component.accept.ExternalComponent;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -36,6 +36,7 @@ import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.langtrans.model.LanguageTranslation;
 import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
 import rocks.xmpp.extensions.muc.model.Muc;
+import rocks.xmpp.nio.netty.client.NettyTcpConnectionConfiguration;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -53,10 +54,14 @@ public class ExternalComponentSample {
             try {
 
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
-                        .debugger(VisualDebugger.class)
+                        .debugger(ConsoleDebugger.class)
                         .build();
 
-                ExternalComponent myComponent = ExternalComponent.create("translation", "test", configuration, "localhost", 5275);
+                NettyTcpConnectionConfiguration connectionConfiguration = NettyTcpConnectionConfiguration.builder()
+                        .hostname("localhost")
+                        .port(5275)
+                        .build();
+                ExternalComponent myComponent = ExternalComponent.create("translation", "test", configuration, connectionConfiguration);
 
                 ServiceDiscoveryManager serviceDiscoveryManager = myComponent.getManager(ServiceDiscoveryManager.class);
 
@@ -96,7 +101,7 @@ public class ExternalComponentSample {
 
                 // Connect
                 myComponent.connect();
-            } catch (XmppException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });

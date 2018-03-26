@@ -27,6 +27,7 @@ package rocks.xmpp.core.net.client;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 
 import javax.net.SocketFactory;
@@ -53,7 +54,7 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
 
     private final Proxy proxy;
 
-    private final boolean secure;
+    private final ChannelEncryption channelEncryption;
 
     private final SSLContext sslContext;
 
@@ -67,7 +68,7 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
         this.hostname = builder.hostname;
         this.port = builder.port;
         this.proxy = builder.proxy;
-        this.secure = builder.secure;
+        this.channelEncryption = builder.channelEncryption;
         this.sslContext = builder.sslContext;
         this.hostnameVerifier = builder.hostnameVerifier;
         this.connectTimeout = builder.connectTimeout;
@@ -109,15 +110,9 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
         return proxy;
     }
 
-    /**
-     * Indicates whether the connection is secured by SSL.
-     *
-     * @return If the connection is to be secured.
-     * @see Builder#secure(boolean)
-     */
     @Override
-    public final boolean isSecure() {
-        return secure;
+    public final ChannelEncryption getChannelEncryption() {
+        return channelEncryption;
     }
 
     /**
@@ -175,7 +170,7 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
 
         protected Proxy proxy;
 
-        protected boolean secure;
+        protected ChannelEncryption channelEncryption;
 
         protected SSLContext sslContext;
 
@@ -249,9 +244,39 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
          * @param secure If the connection is secured via SSL.
          * @return The builder.
          * @see #sslContext(SSLContext)
+         * @deprecated Use {@link #channelEncryption}.
          */
+        @Deprecated
         public final T secure(boolean secure) {
-            this.secure = secure;
+            channelEncryption(secure ? ChannelEncryption.REQUIRED : ChannelEncryption.DISABLED);
+            return self();
+        }
+
+        /**
+         * Sets how the connection is secured via SSL.
+         * <p>
+         * A standard TCP connection starts with a plain socket and negotiates a secure SSL connection during stream negotiation via 'StartTLS'.
+         * Hence, setting {@link ChannelEncryption#OPTIONAL} means, you start with a plain socket and upgrade it to a secure socket during XMPP negotiation, if possible.
+         * <p>
+         * Setting {@link ChannelEncryption#DISABLED} means, you start with plain socket and won't upgrade to a secure socket.
+         * However, some servers require that the client secures the connection, in which case an exception is thrown during connecting.
+         * <p>
+         * If your server expects the connection to be secured immediately (often on port 5223), you should use {@link ChannelEncryption#DIRECT}.
+         * <p>
+         * See <a href="https://xmpp.org/rfcs/rfc6120.html#tls">RFC 6120 § 5.  STARTTLS Negotiation</a> for further information.
+         * <p>
+         * HTTP (BOSH) and WebSocket connections provide TLS outside of the XMPP layer, i.e. it's not negotiated in XMPP.
+         * Setting {@link ChannelEncryption#DIRECT} for these connection methods means the connection connects via {@code https} or {@code wss} respectively.
+         * {@link ChannelEncryption#OPTIONAL} and {@link ChannelEncryption#REQUIRED} are not applicable for these connecion methods.
+         * <p>
+         * If you set this to {@code true}, you should also {@linkplain #sslContext(SSLContext) set} an {@link SSLContext}. Otherwise {@code SSLContext.getDefault()} is used.
+         *
+         * @param channelEncryption The channel encryption mode.
+         * @return The builder.
+         * @see #sslContext(SSLContext)
+         */
+        public final T channelEncryption(ChannelEncryption channelEncryption) {
+            this.channelEncryption = channelEncryption;
             return self();
         }
 

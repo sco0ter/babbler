@@ -28,6 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.IntegrationTest;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 
@@ -41,7 +42,7 @@ public class CompressionIT extends IntegrationTest {
         TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
                 .hostname(HOSTNAME)
                 .compressionMethods(CompressionMethod.ZLIB)
-                .secure(false)
+                .channelEncryption(ChannelEncryption.DISABLED)
                 .build();
 
         try (XmppClient xmppSession = XmppClient.create(DOMAIN, tcpConfiguration)) {

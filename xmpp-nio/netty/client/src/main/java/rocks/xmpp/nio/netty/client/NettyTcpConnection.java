@@ -97,7 +97,7 @@ public final class NettyTcpConnection extends NettyChannelConnection {
         this.streamManager = xmppSession.getManager(StreamManager.class);
         this.streamManager.reset();
 
-        this.startTlsManager = new StartTlsManager(xmppSession, this, connectionConfiguration.isSecure());
+        this.startTlsManager = new StartTlsManager(xmppSession, this, connectionConfiguration.getChannelEncryption());
 
         this.compressionManager = new CompressionManager(xmppSession, this);
         this.compressionManager.getConfiguredCompressionMethods().clear();
@@ -141,7 +141,6 @@ public final class NettyTcpConnection extends NettyChannelConnection {
                 xmppSession.notifyException(future.cause());
             }
         });
-
         channel.pipeline().addFirst("SSL", handler);
     }
 

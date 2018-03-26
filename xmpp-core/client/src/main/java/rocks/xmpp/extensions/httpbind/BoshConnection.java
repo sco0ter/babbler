@@ -30,6 +30,7 @@ import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.util.XmppUtils;
@@ -305,7 +306,7 @@ public final class BoshConnection extends AbstractConnection {
 
     @Override
     public final boolean isSecure() {
-        return boshConnectionConfiguration.isSecure();
+        return boshConnectionConfiguration.getChannelEncryption() == ChannelEncryption.DIRECT;
     }
 
     /**

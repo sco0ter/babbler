@@ -25,6 +25,7 @@
 package rocks.xmpp.sample.disco;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
@@ -50,7 +51,7 @@ public class DiscoSampleUser1 {
 
                 TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
                         .port(5222)
-                        .secure(false)
+                        .channelEncryption(ChannelEncryption.DISABLED)
                         .build();
 
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()

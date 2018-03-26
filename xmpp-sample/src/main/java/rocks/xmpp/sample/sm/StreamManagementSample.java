@@ -25,6 +25,7 @@
 package rocks.xmpp.sample.sm;
 
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.session.SendTask;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
@@ -50,20 +51,20 @@ public class StreamManagementSample {
                 TcpConnectionConfiguration tcpConnectionConfiguration = TcpConnectionConfiguration.builder()
                         .hostname("localhost")
                         .port(5222)
-                        .secure(false) // Disable TLS only for simpler example here.
+                        .channelEncryption(ChannelEncryption.DISABLED) // Disable TLS only for simpler example here.
                         .build();
 
                 BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()
                         .hostname("localhost")
                         .port(7070)
                                 //.sslContext(getTrustAllSslContext())
-                        .secure(false)
+                        .channelEncryption(ChannelEncryption.DISABLED)
                         .build();
 
                 WebSocketConnectionConfiguration webSocketConnectionConfiguration = WebSocketConnectionConfiguration.builder()
                         .hostname("localhost")
                         .port(80)
-                        .secure(false) // Disable TLS only for simpler example here.
+                        .channelEncryption(ChannelEncryption.DISABLED) // Disable TLS only for simpler example here.
                         .build();
 
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()

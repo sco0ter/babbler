@@ -123,7 +123,7 @@ public final class TcpConnection extends AbstractConnection implements TcpBindin
         this.tcpConnectionConfiguration = configuration;
         this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         this.streamManager = xmppSession.getManager(StreamManager.class);
-        this.securityManager = new StartTlsManager(xmppSession, this, tcpConnectionConfiguration.isSecure());
+        this.securityManager = new StartTlsManager(xmppSession, this, tcpConnectionConfiguration.getChannelEncryption());
         this.compressionManager = new CompressionManager(xmppSession, this);
         compressionManager.getConfiguredCompressionMethods().clear();
         compressionManager.getConfiguredCompressionMethods().addAll(tcpConnectionConfiguration.getCompressionMethods());
@@ -159,7 +159,9 @@ public final class TcpConnection extends AbstractConnection implements TcpBindin
      */
     @Override
     public void secureConnection() throws IOException, CertificateException, NoSuchAlgorithmException {
-
+        if (isSecure()) {
+            return;
+        }
         SSLContext sslContext = tcpConnectionConfiguration.getSSLContext();
         if (sslContext == null) {
             sslContext = SSLContext.getDefault();

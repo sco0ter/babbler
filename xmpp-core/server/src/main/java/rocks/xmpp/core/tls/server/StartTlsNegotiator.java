@@ -27,6 +27,7 @@ package rocks.xmpp.core.tls.server;
 import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.server.ServerStreamFeatureNegotiator;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.tls.model.Failure;
 import rocks.xmpp.core.tls.model.Proceed;
 import rocks.xmpp.core.tls.model.StartTls;
@@ -47,7 +48,7 @@ public final class StartTlsNegotiator extends ServerStreamFeatureNegotiator<Star
 
     @Override
     public final StartTls createStreamFeature() {
-        return new StartTls(connection.getConfiguration().isSecure());
+        return new StartTls(connection.getConfiguration().getChannelEncryption() == ChannelEncryption.REQUIRED);
     }
 
     @Override

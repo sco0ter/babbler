@@ -37,8 +37,10 @@ import io.netty.handler.proxy.Socks5ProxyHandler;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.net.ChannelEncryption;
 
 import java.net.Proxy;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -84,8 +86,16 @@ public final class NettyTcpConnectionConfiguration extends ClientConnectionConfi
             });
             ChannelFuture channelFuture = b.connect(getHostname(), getPort());
             channelFuture.get();
-            return new NettyTcpConnection(channelFuture.channel(),
+            NettyTcpConnection nettyTcpConnection = new NettyTcpConnection(channelFuture.channel(),
                     xmppSession, this);
+            if (getChannelEncryption() == ChannelEncryption.DIRECT) {
+                try {
+                    nettyTcpConnection.secureConnection();
+                } catch (NoSuchAlgorithmException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return nettyTcpConnection;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);

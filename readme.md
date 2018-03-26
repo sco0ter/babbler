@@ -231,7 +231,7 @@ WebSocketConnectionConfiguration webSocketConfiguration = WebSocketConnectionCon
     .port(7443)
     .path("/ws/")
     .sslContext(sslContext)
-    .secure(true)
+    .channelEncryption(ChannelEncryption.DIRECT)
     .build();
 ```
 
@@ -250,7 +250,7 @@ You can set a custom `SSLContext` by configuring it like this:
 
 ```java
 TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
-    .secure(true)          // Default value is true
+    .channelEncryption(ChannelEncryption.OPTIONAL)
     .sslContext(sslContext)
     .hostnameVerifier(hostnameVerifier)
     .build();

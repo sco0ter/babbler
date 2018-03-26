@@ -27,11 +27,13 @@ package rocks.xmpp.extensions.httpbind;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.TxtRecord;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.Proxy;
 import java.net.URL;
 import java.time.Duration;
 import java.util.List;
@@ -117,9 +119,9 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
     public Connection createConnection(XmppSession xmppSession) {
         try {
             URL url;
-            String protocol = isSecure() ? "https" : "http";
+            String protocol = getChannelEncryption() == ChannelEncryption.DIRECT ? "https" : "http";
             // If no port has been configured, use the default ports.
-            int targetPort = getPort() > 0 ? getPort() : (isSecure() ? 5281 : 5280);
+            int targetPort = getPort() > 0 ? getPort() : (getChannelEncryption() == ChannelEncryption.DIRECT ? 5281 : 5280);
             // If a hostname has been configured, use it to connect.
             if (getHostname() != null) {
                 url = new URL(protocol, getHostname(), targetPort, getPath());
@@ -208,7 +210,7 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
 
     @Override
     public final String toString() {
-        return "BOSH connection configuration: " + (isSecure() ? "https" : "http") + "://" + super.toString() + path;
+        return "BOSH connection configuration: " + (getChannelEncryption() == ChannelEncryption.DIRECT ? "https" : "http") + "://" + super.toString() + path;
     }
 
     /**
@@ -226,6 +228,7 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
 
         private Builder() {
             // default values
+            channelEncryption(ChannelEncryption.DISABLED);
             wait(Duration.ofMinutes(1));
             path("/http-bind/");
         }
@@ -299,6 +302,12 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
 
         @Override
         public BoshConnectionConfiguration build() {
+            if (proxy != null && proxy.type() != Proxy.Type.HTTP && proxy.type() != Proxy.Type.DIRECT) {
+                throw new UnsupportedOperationException("Non-HTTP proxies are not supported by BOSH connections.");
+            }
+            if (channelEncryption != ChannelEncryption.DISABLED && channelEncryption != ChannelEncryption.DIRECT) {
+                throw new IllegalArgumentException("BOSH connections only support ChannelEncryption.DIRECT (https) or ChannelEncryption.DISABLED (http).");
+            }
             return new BoshConnectionConfiguration(this);
         }
     }

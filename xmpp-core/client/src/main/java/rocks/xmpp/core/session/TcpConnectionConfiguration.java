@@ -27,6 +27,7 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.SrvRecord;
 
@@ -36,6 +37,8 @@ import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.List;
 
 /**
@@ -49,7 +52,7 @@ import java.util.List;
  *     .hostname("localhost")
  *     .port(5222)
  *     .sslContext(sslContext)
- *     .secure(false)
+ *     .channelEncryption(ChannelEncryption.DISABLED)
  *     .build();
  * ```
  * This class is immutable.
@@ -124,9 +127,15 @@ public final class TcpConnectionConfiguration extends ClientConnectionConfigurat
             } else {
                 throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
             }
-            return new TcpConnection(socket, xmppSession, this);
+            TcpConnection tcpConnection = new TcpConnection(socket, xmppSession, this);
+            if (getChannelEncryption() == ChannelEncryption.DIRECT) {
+                tcpConnection.secureConnection();
+            }
+            return tcpConnection;
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        } catch (CertificateException | NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -145,6 +154,7 @@ public final class TcpConnectionConfiguration extends ClientConnectionConfigurat
         if (!socket.isConnected()) {
             socket.connect(new InetSocketAddress(unresolvedAddress.getHostName(), unresolvedAddress.getPort()), getConnectTimeout());
         }
+
         return socket;
     }
 

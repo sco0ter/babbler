@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core;
 
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 
@@ -53,7 +54,7 @@ public abstract class IntegrationTest {
         TcpConnectionConfiguration tcpConnectionConfiguration = TcpConnectionConfiguration.builder()
                 .hostname(HOSTNAME)
                 .port(5222)
-                .secure(false)
+                .channelEncryption(ChannelEncryption.DISABLED)
                 .build();
         TcpConnectionConfiguration.setDefault(tcpConnectionConfiguration);
     }

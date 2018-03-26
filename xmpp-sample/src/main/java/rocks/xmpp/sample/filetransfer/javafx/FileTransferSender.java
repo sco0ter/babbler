@@ -37,6 +37,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSession;
@@ -63,7 +64,7 @@ public class FileTransferSender extends Application {
             protected XmppSession call() throws Exception {
                 TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
                         .port(5222)
-                        .secure(false)
+                        .channelEncryption(ChannelEncryption.DISABLED)
                         .build();
 
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()

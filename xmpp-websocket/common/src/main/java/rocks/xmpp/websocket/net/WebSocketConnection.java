@@ -30,6 +30,7 @@ import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stream.StreamHandler;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.websocket.model.Close;
 import rocks.xmpp.websocket.model.Open;
 
@@ -147,7 +148,7 @@ public class WebSocketConnection extends AbstractConnection {
     @Override
     public final boolean isSecure() {
         // session.isSecure() does always return false for client connections, also use the configuration.
-        return session.isSecure() || getConfiguration().isSecure();
+        return session.isSecure() || getConfiguration().getChannelEncryption() == ChannelEncryption.DIRECT;
     }
 
     @Override

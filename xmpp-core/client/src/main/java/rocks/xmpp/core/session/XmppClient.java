@@ -43,6 +43,7 @@ import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.client.ClientStreamFeatureNegotiator;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamErrorException;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.subscription.PresenceManager;
@@ -87,12 +88,12 @@ import java.util.logging.Logger;
  * ```java
  * // Listen for messages
  * xmppClient.addInboundMessageListener(e ->
- *     // Handle inbound message.
+ * // Handle inbound message.
  * );
- * 
+ * <p>
  * // Listen for presence changes
  * xmppClient.addInboundPresenceListener(e ->
- *     // Handle inbound presence.
+ * // Handle inbound presence.
  * );
  * ```
  * This class is thread-safe, which means you can safely add listeners or call <code>send()</code>, <code>close()</code> (and other methods) from different threads.
@@ -235,7 +236,7 @@ public final class XmppClient extends XmppSession {
             }
 
             // If a secure connection has been configured, but hasn't been negotiated for some reason (e.g. MitM attack), throw an exception.
-            if (!activeConnection.isSecure() && activeConnection.getConfiguration().isSecure()) {
+            if (!activeConnection.isSecure() && activeConnection.getConfiguration().getChannelEncryption() == ChannelEncryption.REQUIRED) {
                 throw new StreamNegotiationException("Transport Layer Security has been configured, but hasn't been negotiated.");
             }
 

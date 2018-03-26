@@ -25,6 +25,7 @@
 package rocks.xmpp.sample.geolocation;
 
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.extensions.geoloc.GeoLocationManager;
@@ -42,7 +43,7 @@ public class GeolocationReceiver {
             try {
                 TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
                         .port(5222)
-                        .secure(false)
+                        .channelEncryption(ChannelEncryption.DISABLED)
                         .build();
 
                 XmppClient xmppSession = XmppClient.create("localhost", tcpConfiguration);

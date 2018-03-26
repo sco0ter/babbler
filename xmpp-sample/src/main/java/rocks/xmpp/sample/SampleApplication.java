@@ -31,6 +31,7 @@ import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.nio.netty.client.NettyTcpConnectionConfiguration;
@@ -74,33 +75,36 @@ public class SampleApplication {
                             .hostname("localhost") // The hostname.
                             .port(5222) // The XMPP default port.
                             .sslContext(getTrustAllSslContext()) // Use an SSL context, which trusts every server. Only use it for testing!
-                            .secure(true) // We want to negotiate a TLS connection.
+                            //.channelEncryption(ChannelEncryption.DIRECT) // We want to negotiate a TLS connection.
+                            .hostnameVerifier((s, sslSession) -> true)
                             .build();
 
                     BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()
                             .hostname("localhost")
-                            .port(7070)
-                            //.sslContext(getTrustAllSslContext())
-                            .secure(false)
+                            .port(7443)
+                            .sslContext(getTrustAllSslContext())
+                            .channelEncryption(ChannelEncryption.DIRECT)
+                            .hostnameVerifier((s, sslSession) -> true)
                             .build();
                     WebSocketConnectionConfiguration webSocketConfiguration = WebSocketConnectionConfiguration.builder()
                             .hostname("localhost")
-                            .port(80)
-                            //.sslContext(getTrustAllSslContext())
-                            .secure(false)
+                            .port(7070)
+                            .sslContext(getTrustAllSslContext())
+                            .channelEncryption(ChannelEncryption.DIRECT)
+                            .hostnameVerifier((s, sslSession) -> true)
                             .build();
 
                     NettyTcpConnectionConfiguration nettyTcpConnectionConfiguration = NettyTcpConnectionConfiguration.builder()
                             .hostname("localhost")
-                            .port(5222)
+                            .port(5223)
                             .sslContext(getTrustAllSslContext())
-                            .secure(true)
+                            .channelEncryption(ChannelEncryption.DIRECT)
                             .hostnameVerifier((s, sslSession) -> true)
                             .eventLoopGroup(eventLoopGroup)
                             .build();
 
 
-                    XmppClient xmppClient = XmppClient.create("localhost", configuration, webSocketConfiguration);
+                    XmppClient xmppClient = XmppClient.create("localhost", configuration, tcpConfiguration);
 
                     // Listen for inbound messages.
                     xmppClient.addInboundMessageListener(e -> logger.info("Received: " + e.getMessage()));
@@ -114,7 +118,7 @@ public class SampleApplication {
                     xmppClient.login("admin", "admin");
 
                     // Send a message to myself, which is caught by the listener above.
-                    xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
+                    xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT, "Hello World! öäü!"));
                     xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
                     xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
 

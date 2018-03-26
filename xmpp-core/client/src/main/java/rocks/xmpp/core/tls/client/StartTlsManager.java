@@ -29,6 +29,7 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.client.ClientStreamFeatureNegotiator;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.tls.model.Failure;
 import rocks.xmpp.core.tls.model.Proceed;
 import rocks.xmpp.core.tls.model.StartTls;
@@ -43,22 +44,22 @@ public final class StartTlsManager extends ClientStreamFeatureNegotiator<StartTl
 
     private final TcpBinding tcpBinding;
 
-    private final boolean isSecure;
+    private final ChannelEncryption channelEncryption;
 
-    public StartTlsManager(XmppSession xmppSession, TcpBinding tcpBinding, boolean isSecure) {
+    public StartTlsManager(XmppSession xmppSession, TcpBinding tcpBinding, ChannelEncryption channelEncryption) {
         super(xmppSession, StartTls.class);
         this.tcpBinding = tcpBinding;
-        this.isSecure = isSecure;
+        this.channelEncryption = channelEncryption;
     }
 
     @Override
     public StreamNegotiationResult processNegotiation(Object element) throws StreamNegotiationException {
         if (element instanceof StartTls) {
             StartTls startTls = (StartTls) element;
-            if (startTls.isMandatory() && !isSecure) {
+            if (startTls.isMandatory() && channelEncryption == ChannelEncryption.DISABLED) {
                 throw new StreamNegotiationException("The server requires TLS, but you disabled it.");
             }
-            if (isSecure) {
+            if (channelEncryption == ChannelEncryption.OPTIONAL || channelEncryption == ChannelEncryption.REQUIRED) {
                 xmppSession.send(new StartTls());
             } else {
                 return StreamNegotiationResult.IGNORE;

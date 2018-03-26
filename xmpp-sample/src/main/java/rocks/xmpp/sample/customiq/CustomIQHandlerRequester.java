@@ -24,6 +24,7 @@
 
 package rocks.xmpp.sample.customiq;
 
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.session.Extension;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
@@ -46,7 +47,7 @@ public class CustomIQHandlerRequester {
                 TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
                         .hostname("localhost")
                         .port(5222)
-                        .secure(false)
+                        .channelEncryption(ChannelEncryption.DISABLED)
                         .build();
 
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()

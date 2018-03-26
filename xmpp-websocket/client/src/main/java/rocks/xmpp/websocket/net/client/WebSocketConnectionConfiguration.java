@@ -33,6 +33,7 @@ import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.TxtRecord;
 import rocks.xmpp.websocket.codec.XmppWebSocketDecoder;
@@ -73,12 +74,12 @@ import java.util.function.Supplier;
  * In order to create an instance of this class you have to use the builder pattern as shown below.
  * ```java
  * WebSocketConnectionConfiguration connectionConfiguration = WebSocketConnectionConfiguration.builder()
- * .hostname("localhost")
- * .port(7443)
- * .path("/ws/")
- * .sslContext(sslContext)
- * .secure(true)
- * .build();
+ *     .hostname("localhost")
+ *     .port(7443)
+ *     .path("/ws/")
+ *     .sslContext(sslContext)
+ *     .channelEncryption(ChannelEncryption.DIRECT)
+ *     .build();
  * ```
  * The above sample configuration will connect to <code>wss://localhost:7443/ws/</code> using SSL with a custom {@link SSLContext}.
  * <p>
@@ -175,9 +176,9 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
             synchronized (this) {
 
                 URI uri;
-                String protocol = isSecure() ? "wss" : "ws";
+                String protocol = getChannelEncryption() == ChannelEncryption.DIRECT ? "wss" : "ws";
                 // If no port has been configured, use the default ports.
-                int targetPort = getPort() > 0 ? getPort() : (isSecure() ? 5281 : 5280);
+                int targetPort = getPort() > 0 ? getPort() : (getChannelEncryption() == ChannelEncryption.DIRECT ? 5281 : 5280);
                 // If a hostname has been configured, use it to connect.
                 if (getHostname() != null) {
                     uri = new URI(protocol, null, getHostname(), targetPort, getPath(), null, null);
@@ -297,7 +298,7 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
 
     @Override
     public final String toString() {
-        return "WebSocket connection configuration: " + (isSecure() ? "wss" : "ws") + "://" + super.toString() + path;
+        return "WebSocket connection configuration: " + (getChannelEncryption() == ChannelEncryption.DIRECT ? "wss" : "ws") + "://" + super.toString() + path;
     }
 
     /**
@@ -347,6 +348,9 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
         public final WebSocketConnectionConfiguration build() {
             if (proxy != null && proxy.type() != Proxy.Type.HTTP && proxy.type() != Proxy.Type.DIRECT) {
                 throw new UnsupportedOperationException("Non-HTTP proxies are not supported by WebSockets.");
+            }
+            if (channelEncryption != ChannelEncryption.DISABLED && channelEncryption != ChannelEncryption.DIRECT) {
+                throw new IllegalArgumentException("WebSocket connections only support ChannelEncryption.DIRECT (wss) or ChannelEncryption.DISABLED (ws).");
             }
             return new WebSocketConnectionConfiguration(this);
         }

@@ -33,6 +33,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
@@ -59,7 +60,7 @@ public class RealTimeTextSample extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         TcpConnectionConfiguration tcpConnectionConfiguration = TcpConnectionConfiguration.builder()
-                .secure(false)
+                .channelEncryption(ChannelEncryption.DISABLED)
                 .hostname("localhost")
                 .port(5222).build();
 

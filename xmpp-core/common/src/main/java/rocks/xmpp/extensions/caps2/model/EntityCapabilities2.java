@@ -30,6 +30,7 @@ import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.hashes.model.Hashed;
+import rocks.xmpp.util.Strings;
 
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -139,10 +140,14 @@ public final class EntityCapabilities2 implements EntityCapabilities {
 
                 // 6.1.1.1 Encode the character data of each <value/> element
                 if (field.getValue() != null) {
-                    sb.append(field.getValue());
+                    List<String> values = new ArrayList<>(field.getValues());
+                    values.sort((s, t1) -> Strings.compareUnsignedBytes(s, t1, StandardCharsets.UTF_8));
+                    for (String value : values) {
+                        sb.append(value);
+                        // and append an octet of value 0x1f (ASCII Unit Separator).
+                        sb.appendCodePoint('\u001F');
+                    }
                 }
-                // and append an octet of value 0x1f (ASCII Unit Separator).
-                sb.appendCodePoint('\u001F');
 
                 // 6.1.1.4. Append an octet of value 0x1e (ASCII Record Separator).
                 sb.appendCodePoint('\u001E');

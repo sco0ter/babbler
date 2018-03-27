@@ -244,7 +244,7 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
             this.connectionConfigurations.add(TcpConnectionConfiguration.getDefault());
             this.connectionConfigurations.add(BoshConnectionConfiguration.getDefault());
         } else {
-            Arrays.stream(connectionConfigurations).forEach(this.connectionConfigurations::add);
+            this.connectionConfigurations.addAll(Arrays.asList(connectionConfigurations));
         }
 
         configuration.getExtensions().forEach(serviceDiscoveryManager::registerFeature);

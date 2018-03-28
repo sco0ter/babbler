@@ -37,15 +37,6 @@
     <description>XMPP address format, i.e. Jabber ID</description>
     <build>
         <plugins>
-            <!-- Skip site generation -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-
             <!-- Deploy this artifact -->
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>

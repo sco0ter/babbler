@@ -36,14 +36,6 @@
     <name>XMPP.rocks - Debugging Tools</name>
     <build>
         <plugins>
-            <!-- Skip site generation -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
 
             <!-- Deploy this artifact -->
             <plugin>

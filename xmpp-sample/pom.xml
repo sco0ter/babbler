@@ -36,14 +36,6 @@
     <name>XMPP.rocks - Samples</name>
     <build>
         <plugins>
-            <!-- Skip site generation -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
 
             <!-- Define JPMS module name -->
             <plugin>

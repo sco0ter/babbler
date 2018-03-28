@@ -135,13 +135,15 @@ public final class ExternalComponent extends XmppSession {
                         throwAsXmppExceptionIfNotNull(exception);
 
                         // Wait shortly to see if the server will respond with a <conflict/>, <host-unknown/> or other stream error.
-                        Thread.sleep(20);
+                        Thread.sleep(50);
+                        
+                        streamFeaturesManager.completeNegotiation().get(configuration.getDefaultResponseTimeout().toMillis() * 2, TimeUnit.MILLISECONDS);
 
                         connectedResource = getDomain();
                     }
                 }
             }
-            
+            throwAsXmppExceptionIfNotNull(exception);
             // Don't call listeners from within synchronized blocks to avoid possible deadlocks.
             updateStatus(Status.CONNECTING, Status.CONNECTED);
             login(sharedSecret);
@@ -196,10 +198,11 @@ public final class ExternalComponent extends XmppSession {
 
     @Override
     public final boolean handleElement(Object element) throws XmppException {
+        boolean doRestart = false;
         if (element instanceof Handshake) {
             releaseLock();
         } else {
-            super.handleElement(element);
+            doRestart = super.handleElement(element);
         }
         if (element instanceof SessionOpen) {
             CompletableFuture<Void> future = streamOpened;
@@ -208,13 +211,13 @@ public final class ExternalComponent extends XmppSession {
                 streamOpened = null;
             }
         }
-        return false;
+        return doRestart;
     }
 
     @Override
     public final void notifyException(Throwable e) {
-        super.notifyException(e);
         releaseLock();
+        super.notifyException(e);
     }
 
     private void releaseLock() {

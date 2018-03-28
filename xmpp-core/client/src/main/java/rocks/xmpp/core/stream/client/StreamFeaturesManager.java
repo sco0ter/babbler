@@ -203,7 +203,7 @@ public final class StreamFeaturesManager extends Manager {
      * Tries to process an element, which is a feature or may belong to a feature protocol, e.g. the {@code <proceed/>} element from TLS negotiation.
      *
      * @param element The element.
-     * @return True, if the stream needs restarted, after a feature has been negotiated.
+     * @return True, if the stream needs to be restarted, after a feature has been negotiated.
      * @throws StreamNegotiationException If an exception occurred during feature negotiation.
      */
     public final synchronized boolean processElement(Object element) throws StreamNegotiationException {
@@ -263,7 +263,9 @@ public final class StreamFeaturesManager extends Manager {
             return negotiateNextFeature();
         } else {
             featureNegotiationStartedFutures.clear();
-            negotiationCompleted.complete(null);
+            if (negotiationCompleted != null) {
+                negotiationCompleted.complete(null);
+            }
             return false;
         }
     }
@@ -286,7 +288,7 @@ public final class StreamFeaturesManager extends Manager {
      */
     public final synchronized Future<Void> completeNegotiation() throws StreamNegotiationException {
         negotiateNextFeature();
-        return negotiationCompleted;
+        return negotiationCompleted != null ? negotiationCompleted : CompletableFuture.completedFuture(null);
     }
 
     /**

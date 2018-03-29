@@ -25,12 +25,12 @@
 package rocks.xmpp.extensions.httpbind;
 
 import rocks.xmpp.core.net.AbstractConnection;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.util.XmppUtils;
@@ -148,7 +148,7 @@ public final class BoshConnection extends AbstractConnection {
     private CompressionMethod requestCompressionMethod;
 
     /**
-     * Guarded by "this".
+     * Guarded by "elementsToSend".
      */
     private long highestReceivedRid;
 
@@ -285,7 +285,9 @@ public final class BoshConnection extends AbstractConnection {
 
     @Override
     public final CompletionStage<Void> open(final SessionOpen sessionOpen) {
-        this.sessionOpen = sessionOpen;
+        synchronized (this) {
+            this.sessionOpen = sessionOpen;
+        }
         // Create initial request.
         Body.Builder body = Body.builder()
                 .language(xmppSession.getConfiguration().getLanguage())
@@ -399,11 +401,16 @@ public final class BoshConnection extends AbstractConnection {
     @Override
     protected CompletionStage<Void> closeStream() {
         final CompletableFuture<Void> future;
-        if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
-            if (getSessionId() != null) {
+        final ExecutorService executorService;
+        synchronized (this){
+            executorService = httpBindExecutor;
+        }
+        if (executorService != null && !executorService.isShutdown()) {
+            final String sid = getSessionId();
+            if (sid != null) {
                 // Terminate the BOSH session.
                 Body.Builder bodyBuilder = Body.builder()
-                        .sessionId(sessionId)
+                        .sessionId(sid)
                         .type(Body.Type.TERMINATE);
 
                 future = sendNewRequest(bodyBuilder, false)
@@ -412,7 +419,7 @@ public final class BoshConnection extends AbstractConnection {
             } else {
                 future = CompletableFuture.completedFuture(null);
             }
-            httpBindExecutor.shutdown();
+            executorService.shutdown();
         } else {
             future = CompletableFuture.completedFuture(null);
         }
@@ -562,6 +569,10 @@ public final class BoshConnection extends AbstractConnection {
                     try {
 
                         if (!resendAfterError) {
+                            final ExecutorService executor;
+                            synchronized (this) {
+                                executor = httpBindExecutor;
+                            }
                             synchronized (elementsToSend) {
                                 appendKey(bodyBuilder);
 
@@ -585,10 +596,10 @@ public final class BoshConnection extends AbstractConnection {
                                 // Also don't send a new request, if the executors are shutdown.
                                 body = bodyBuilder.build();
                                 if (body.getType() != Body.Type.TERMINATE &&
-                                        ((httpBindExecutor == null || httpBindExecutor.isShutdown())
+                                        ((executor == null || executor.isShutdown())
                                                 || (requestCount.get() > 0
                                                 && body.getPause() == null
-                                                && !body.isRestart() && sessionId != null && elementsToSend.isEmpty()))) {
+                                                && !body.isRestart() && getSessionId() != null && elementsToSend.isEmpty()))) {
                                     return;
                                 }
                                 // Clear everything after the elements have been sent.
@@ -604,9 +615,13 @@ public final class BoshConnection extends AbstractConnection {
                             httpConnection.setRequestProperty("Accept-Encoding", clientAcceptEncoding);
                         }
 
+                        final CompressionMethod compressionMethod;
+                        synchronized (this) {
+                            compressionMethod = requestCompressionMethod;
+                        }
                         // If we can compress, tell the server about it.
-                        if (requestCompressionMethod != null) {
-                            httpConnection.setRequestProperty("Content-Encoding", requestCompressionMethod.getName());
+                        if (compressionMethod != null) {
+                            httpConnection.setRequestProperty("Content-Encoding", compressionMethod.getName());
                         }
 
                         httpConnection.setDoOutput(true);
@@ -616,7 +631,7 @@ public final class BoshConnection extends AbstractConnection {
 
                         requestCount.getAndIncrement();
                         try {
-                            try (OutputStream requestStream = requestCompressionMethod != null ? requestCompressionMethod.compress(httpConnection.getOutputStream()) : httpConnection.getOutputStream()) {
+                            try (OutputStream requestStream = compressionMethod != null ? compressionMethod.compress(httpConnection.getOutputStream()) : httpConnection.getOutputStream()) {
                                 ByteArrayOutputStream byteArrayOutputStreamRequest = null;
                                 XMLStreamWriter xmlStreamWriter = null;
                                 OutputStream xmppOutputStream = null;
@@ -681,7 +696,7 @@ public final class BoshConnection extends AbstractConnection {
                                 ackReceived(body.getRid());
 
                                 // We received a response for the request. Store the RID, so that we can inform the connection manager with our next request, that we received a response.
-                                synchronized (BoshConnection.this) {
+                                synchronized (elementsToSend) {
                                     highestReceivedRid = body.getRid() != null ? body.getRid() : 0;
                                 }
 

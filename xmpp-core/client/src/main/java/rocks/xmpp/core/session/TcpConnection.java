@@ -137,16 +137,25 @@ public final class TcpConnection extends AbstractConnection implements TcpBindin
     public final CompletionStage<Void> open(final SessionOpen sessionOpen) {
 
         StreamHeader streamHeader = (StreamHeader) sessionOpen;
-        this.sessionOpen = sessionOpen;
-
+        synchronized (this) {
+            this.sessionOpen = sessionOpen;
+        }
         // Start reading from the input stream.
         xmppStreamReader = new XmppStreamReader(streamHeader.getContentNamespace(), this, this.xmppSession);
-        xmppStreamReader.startReading(inputStream, this::openedByPeer, this::closedByPeer);
+        final InputStream is;
+        synchronized (this){
+            is = inputStream;
+        }
+        xmppStreamReader.startReading(is, this::openedByPeer, this::closedByPeer);
 
         // Start writing to the output stream.
         xmppStreamWriter = new XmppStreamWriter(streamHeader.getContentNamespace(), streamManager, this.xmppSession);
         xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
-        return xmppStreamWriter.openStream(outputStream, streamHeader);
+        final OutputStream os;
+        synchronized (this){
+            os = outputStream;
+        }
+        return xmppStreamWriter.openStream(os, streamHeader);
     }
 
     @Override

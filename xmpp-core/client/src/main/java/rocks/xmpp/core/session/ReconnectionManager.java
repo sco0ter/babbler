@@ -146,7 +146,10 @@ final class ReconnectionManager extends Manager {
             nextReconnectionAttempt = Instant.now().plus(duration);
 
             scheduledReconnectingInterval = scheduledExecutorService.scheduleAtFixedRate(() -> {
-                Duration remainingDuration = Duration.between(Instant.now(), nextReconnectionAttempt);
+                Duration remainingDuration;
+                synchronized (this) {
+                    remainingDuration = Duration.between(Instant.now(), nextReconnectionAttempt);
+                }
                 if (!remainingDuration.isNegative()) {
                     XmppUtils.notifyEventListeners(xmppSession.connectionListeners, new ConnectionEvent(xmppSession, ConnectionEvent.Type.RECONNECTION_PENDING, throwable, remainingDuration));
                 } else {

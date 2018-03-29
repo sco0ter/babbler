@@ -119,9 +119,9 @@
     <reporting>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>3.0.5</version>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>3.1.3</version>
             </plugin>
         </plugins>
     </reporting>
@@ -217,7 +217,7 @@
                     </dependency>
                 </dependencies>
             </plugin>
-            
+
             <!-- Generate sources jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -253,6 +253,7 @@
                     <version>3.7</version>
                     <configuration>
                         <locales>en</locales>
+                        <siteDirectory>xmpp-documentation/src/site</siteDirectory>
                     </configuration>
                     <dependencies>
                         <dependency>

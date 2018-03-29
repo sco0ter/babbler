@@ -346,11 +346,11 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
 
         if (result == 0) {
             // First compare the priority.
-            result = Byte.compare(priority != null ? priority : 0, o.priority != null ? o.priority : 0);
+            result = Byte.compare(priority != null ? priority : 0, o.getPriority() != null ? o.getPriority() : 0);
             // If priority is equal, compare the show element.
             if (result == 0) {
                 // If we have no show attribute, but the other one has, we are available and are better than the other.
-                if (show == null && o.show != null) {
+                if (show == null && o.getShow() != null) {
                     return -1;
                 }
                 // If both have no show element, presences are equal.
@@ -358,10 +358,10 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
                     return 0;
                 }
                 // If we have a show element, but the other not, the other has higher priority.
-                else if (o.show == null) {
+                else if (o.getShow() == null) {
                     return 1;
                 } else {
-                    return show.compareTo(o.show);
+                    return show.compareTo(o.getShow());
                 }
             }
         }

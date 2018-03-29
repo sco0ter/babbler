@@ -34,6 +34,7 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -52,8 +53,8 @@ public final class SoftwareVersionManager extends Manager {
     static {
         Properties properties = new Properties();
         SoftwareVersion version;
-        try {
-            properties.load(SoftwareVersionManager.class.getResourceAsStream("/META-INF/maven/rocks.xmpp/xmpp-extensions-client/pom.properties"));
+        try (InputStream inputStream = SoftwareVersionManager.class.getResourceAsStream("/META-INF/maven/rocks.xmpp/xmpp-extensions-client/pom.properties")) {
+            properties.load(inputStream);
             version = new SoftwareVersion("Babbler", properties.getProperty("version"));
         } catch (Exception e) {
             version = null;

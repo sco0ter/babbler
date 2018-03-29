@@ -253,15 +253,15 @@ public final class RosterManager extends Manager {
                             nestedGroups = new String[]{group};
                         }
 
-                        String currentGroupName = "";
+                        StringBuilder currentGroupName = new StringBuilder();
                         ContactGroup currentGroup = null;
                         for (int i = 0; i < nestedGroups.length; i++) {
                             String nestedGroupName = nestedGroups[i];
-                            currentGroupName += nestedGroupName;
-                            ContactGroup nestedGroup = rosterGroupMap.get(currentGroupName);
+                            currentGroupName.append(nestedGroupName);
+                            ContactGroup nestedGroup = rosterGroupMap.get(currentGroupName.toString());
                             if (nestedGroup == null) {
-                                nestedGroup = new ContactGroup(nestedGroupName, currentGroupName, currentGroup);
-                                rosterGroupMap.put(currentGroupName, nestedGroup);
+                                nestedGroup = new ContactGroup(nestedGroupName, currentGroupName.toString(), currentGroup);
+                                rosterGroupMap.put(currentGroupName.toString(), nestedGroup);
                                 // Only add top level groups.
                                 if (i == 0) {
                                     groups.add(nestedGroup);
@@ -273,7 +273,7 @@ public final class RosterManager extends Manager {
 
                             currentGroup = nestedGroup;
                             if (i < nestedGroups.length - 1) {
-                                currentGroupName += groupDelimiter;
+                                currentGroupName.append(groupDelimiter);
                             }
                         }
                         if (currentGroup != null) {
@@ -593,7 +593,7 @@ public final class RosterManager extends Manager {
 
         Collection<CompletionStage<?>> completionStages = new ArrayList<>();
         for (Contact contact : contactGroup.getContacts()) {
-            Collection<String> newGroups = new ArrayDeque<>(contact.getGroups());
+            Collection<String> newGroups = new ArrayList<>(contact.getGroups());
             newGroups.remove(contactGroup.getFullName());
             newGroups.add(newName);
             // Only do a roster update, if the groups have really changed.

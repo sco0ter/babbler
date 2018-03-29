@@ -105,26 +105,23 @@ final class IbbInputStream extends InputStream {
                 return false;
             }
             timeout = readTimeout;
-        }
-        // If the buffer is empty, retrieve the next data packet and load it into the buffer.
-        if (n == -1 || n >= buffer.length) {
-            try {
-                InBandByteStream.Data data = null;
-                if (timeout <= 0) {
-                    while (data == null || data.getSequence() == -1) {
-                        synchronized (this) {
+
+            // If the buffer is empty, retrieve the next data packet and load it into the buffer.
+            if (n == -1 || n >= buffer.length) {
+                try {
+                    InBandByteStream.Data data = null;
+                    if (timeout <= 0) {
+                        while (data == null || data.getSequence() == -1) {
                             // If the stream has been closed and there's no more data to process, return -1.
                             if (closed && queue.isEmpty()) {
                                 return false;
                             }
+                            // Let's see, if there's some data for me.
+                            data = queue.poll(1, TimeUnit.SECONDS);
                         }
-                        // Let's see, if there's some data for me.
-                        data = queue.poll(1, TimeUnit.SECONDS);
-                    }
-                } else {
-                    data = queue.poll(timeout, TimeUnit.MILLISECONDS);
-                    if (data == null || data.getSequence() == -1) {
-                        synchronized (this) {
+                    } else {
+                        data = queue.poll(timeout, TimeUnit.MILLISECONDS);
+                        if (data == null || data.getSequence() == -1) {
                             if (closed && queue.isEmpty()) {
                                 return false;
                             } else {
@@ -132,17 +129,17 @@ final class IbbInputStream extends InputStream {
                             }
                         }
                     }
-                }
-                synchronized (this) {
+
                     // Assign the new buffer.
                     buffer = data.getBytes();
                     n = 0;
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    InterruptedIOException ie = new InterruptedIOException();
+                    ie.initCause(e);
+                    throw ie;
                 }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                InterruptedIOException ie = new InterruptedIOException();
-                ie.initCause(e);
-                throw ie;
             }
         }
         return true;

@@ -84,12 +84,7 @@ final class IbbSession extends ByteStreamSession {
     }
 
     final synchronized boolean dataReceived(InBandByteStream.Data data) {
-        if (inboundSequence++ == data.getSequence()) {
-            inputStream.queue.offer(data);
-            return true;
-        } else {
-            return false;
-        }
+        return inboundSequence++ == data.getSequence() && inputStream.queue.offer(data);
     }
 
     final AsyncResult<IQ> open() {

@@ -26,8 +26,8 @@ package rocks.xmpp.extensions.sm;
 
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stream.client.ClientStreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
+import rocks.xmpp.core.stream.client.ClientStreamFeatureNegotiator;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
@@ -206,7 +206,7 @@ public final class StreamManager extends ClientStreamFeatureNegotiator<StreamMan
      * Increments the inbound stanza count.
      */
     public final synchronized void incrementInboundStanzaCount() {
-        inboundCount = ++inboundCount & MAX_H;
+        inboundCount = inboundCount + 1 & MAX_H;
     }
 
     /**

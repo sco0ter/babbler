@@ -45,17 +45,17 @@ import java.util.List;
  */
 public final class FileTransferOfferEvent extends EventObject implements FileTransferOffer {
 
-    private final FileTransferOffer fileTransferOffer;
+    private final transient FileTransferOffer fileTransferOffer;
 
-    private final IQ iq;
+    private final transient IQ iq;
 
     private final String mimeType;
 
     private final String sessionId;
 
-    private final FileTransferNegotiator fileTransferNegotiator;
+    private final transient FileTransferNegotiator fileTransferNegotiator;
 
-    private final Object protocol;
+    private final transient Object protocol;
 
     /**
      * Constructs a prototypical Event.

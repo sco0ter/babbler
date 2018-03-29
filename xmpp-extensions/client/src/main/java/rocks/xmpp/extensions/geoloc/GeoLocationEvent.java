@@ -37,7 +37,7 @@ import java.util.function.Consumer;
  * @see GeoLocationManager#addGeoLocationListener(Consumer)
  */
 public final class GeoLocationEvent extends EventObject {
-    private final GeoLocation geoLocation;
+    private final transient GeoLocation geoLocation;
 
     private final Jid publisher;
 

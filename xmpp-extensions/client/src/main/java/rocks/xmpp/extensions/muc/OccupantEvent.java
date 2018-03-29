@@ -39,11 +39,11 @@ import java.util.function.Consumer;
  */
 public final class OccupantEvent extends EventObject {
 
-    private final Occupant occupant;
+    private final transient Occupant occupant;
 
     private final Type type;
 
-    private final Actor actor;
+    private final transient Actor actor;
 
     private final String reason;
 

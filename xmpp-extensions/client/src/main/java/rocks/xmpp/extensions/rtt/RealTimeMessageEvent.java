@@ -34,7 +34,7 @@ import java.util.EventObject;
  */
 public final class RealTimeMessageEvent extends EventObject {
 
-    private final InboundRealTimeMessage realTimeMessage;
+    private final transient InboundRealTimeMessage realTimeMessage;
 
     /**
      * Constructs a real-time text event.

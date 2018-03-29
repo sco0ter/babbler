@@ -40,7 +40,7 @@ import java.util.function.Consumer;
 public final class ReachabilityEvent extends EventObject {
     private final Jid contact;
 
-    private final List<Address> reachabilityAddresses;
+    private final transient List<Address> reachabilityAddresses;
 
     /**
      * Constructs a reachability event.

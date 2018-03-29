@@ -40,9 +40,9 @@ import java.util.concurrent.CompletableFuture;
  */
 final class IbbEvent extends ByteStreamEvent {
 
-    private final XmppSession xmppSession;
+    private final transient XmppSession xmppSession;
 
-    private final IQ iq;
+    private final transient IQ iq;
 
     private final int blockSize;
 

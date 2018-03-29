@@ -43,11 +43,11 @@ import java.util.concurrent.CompletionException;
  */
 final class S5bEvent extends ByteStreamEvent {
 
-    private final XmppSession xmppSession;
+    private final transient XmppSession xmppSession;
 
-    private final IQ iq;
+    private final transient IQ iq;
 
-    private final List<StreamHost> streamHosts;
+    private final transient List<StreamHost> streamHosts;
 
     public S5bEvent(Object source, String sessionId, XmppSession xmppSession, IQ iq, List<StreamHost> streamHosts) {
         super(source, sessionId);

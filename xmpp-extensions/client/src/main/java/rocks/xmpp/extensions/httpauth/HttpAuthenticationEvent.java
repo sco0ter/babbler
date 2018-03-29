@@ -43,7 +43,7 @@ import java.util.EventObject;
  */
 public final class HttpAuthenticationEvent extends EventObject {
 
-    private final ConfirmationRequest confirmationRequest;
+    private final transient ConfirmationRequest confirmationRequest;
 
     private final XmppSession xmppSession;
 

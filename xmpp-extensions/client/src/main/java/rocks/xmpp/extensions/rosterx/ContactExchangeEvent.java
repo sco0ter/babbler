@@ -40,7 +40,7 @@ import java.util.function.Consumer;
  */
 public final class ContactExchangeEvent extends EventObject {
 
-    private final List<ContactExchange.Item> items;
+    private final transient List<ContactExchange.Item> items;
 
     private final String message;
 

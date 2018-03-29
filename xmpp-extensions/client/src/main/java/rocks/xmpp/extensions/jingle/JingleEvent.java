@@ -39,11 +39,11 @@ public final class JingleEvent extends EventObject {
 
     private final String sessionId;
 
-    private final IQ iq;
+    private final transient IQ iq;
 
-    private final XmppSession xmppSession;
+    private final transient XmppSession xmppSession;
 
-    private final Jingle jingle;
+    private final transient Jingle jingle;
 
     /**
      * Constructs a Jingle event.

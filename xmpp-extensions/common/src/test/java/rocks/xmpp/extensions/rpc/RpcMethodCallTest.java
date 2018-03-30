@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2015 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -84,9 +84,9 @@ public class RpcMethodCallTest extends XmlTest {
         Assert.assertEquals(rpc.getMethodCall().getMethodName(), "examples.getStateName");
         Assert.assertEquals(rpc.getMethodCall().getParameters().size(), 5);
         Assert.assertEquals(rpc.getMethodCall().getParameters().get(0).getAsInteger(), (Integer) 6);
-        Assert.assertEquals(rpc.getMethodCall().getParameters().get(1).getAsBoolean(), Boolean.FALSE);
-        Assert.assertEquals(rpc.getMethodCall().getParameters().get(2).getAsArray().get(0).getAsBoolean(), Boolean.TRUE);
-        Assert.assertEquals(rpc.getMethodCall().getParameters().get(3).getAsMap().get("key").getAsBoolean(), Boolean.TRUE);
+        Assert.assertEquals(rpc.getMethodCall().getParameters().get(1).getAsBoolean(), false);
+        Assert.assertEquals(rpc.getMethodCall().getParameters().get(2).getAsArray().get(0).getAsBoolean(), true);
+        Assert.assertEquals(rpc.getMethodCall().getParameters().get(3).getAsMap().get("key").getAsBoolean(), true);
         Assert.assertEquals(rpc.getMethodCall().getParameters().get(4).getAsInstant(), OffsetDateTime.parse("2014-01-23T22:37:34+04:00"));
     }
 

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,16 +37,16 @@ final class NumericBoolean {
         this(false);
     }
 
-    public NumericBoolean(Boolean b) {
-        this.value = b != null && b ? 1 : 0;
+    NumericBoolean(boolean b) {
+        this.value = b ? 1 : 0;
     }
 
     final Integer getValue() {
         return value;
     }
 
-    final Boolean getAsBoolean() {
-        return value != null ? value != 0 : null;
+    final boolean getAsBoolean() {
+        return value != null && value == 1;
     }
 
     @Override

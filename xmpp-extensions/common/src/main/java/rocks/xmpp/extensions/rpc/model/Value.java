@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -76,7 +76,7 @@ public final class Value {
      *
      * @param b The boolean value.
      */
-    private Value(Boolean b) {
+    private Value(boolean b) {
         this.value = new NumericBoolean(b);
     }
 
@@ -176,7 +176,7 @@ public final class Value {
      * @param b The boolean value.
      * @return The value element.
      */
-    public static Value of(Boolean b) {
+    public static Value of(boolean b) {
         return new Value(b);
     }
 
@@ -247,12 +247,12 @@ public final class Value {
     }
 
     /**
-     * Gets the value as boolean or null.
+     * Gets the value as boolean.
      *
-     * @return The boolean or null.
+     * @return The boolean.
      */
-    public final Boolean getAsBoolean() {
-        return value instanceof NumericBoolean ? ((NumericBoolean) value).getAsBoolean() : null;
+    public final boolean getAsBoolean() {
+        return value instanceof NumericBoolean && ((NumericBoolean) value).getAsBoolean();
     }
 
     /**

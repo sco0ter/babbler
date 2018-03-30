@@ -338,7 +338,7 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
         });
     }
 
-    protected final void tryConnect(Jid from, String namespace) throws XmppException {
+    protected final void tryConnect(Jid from, String namespace, String version) throws XmppException {
 
         // Close any previous connection, which might still be open.
         try {
@@ -354,7 +354,7 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
                 Connection connection = null;
                 try {
                     connection = connectionConfiguration.createConnection(this);
-                    connection.open(StreamHeader.create(from, xmppServiceDomain, null, "1.0", configuration.getLanguage(), namespace));
+                    connection.open(StreamHeader.create(from, xmppServiceDomain, null, version, configuration.getLanguage(), namespace));
                     activeConnection = connection;
                     break;
                 } catch (Exception e) {

@@ -127,7 +127,7 @@ public final class ExternalComponent extends XmppSession {
                         // Reset
                         exception = null;
 
-                        tryConnect(from, "jabber:component:accept");
+                        tryConnect(from, "jabber:component:accept", null);
                         logger.fine("Negotiating stream, waiting until handshake is ready to be negotiated.");
                         streamOpened.get(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
 
@@ -136,7 +136,7 @@ public final class ExternalComponent extends XmppSession {
 
                         // Wait shortly to see if the server will respond with a <conflict/>, <host-unknown/> or other stream error.
                         Thread.sleep(50);
-                        
+
                         streamFeaturesManager.completeNegotiation().get(configuration.getDefaultResponseTimeout().toMillis() * 2, TimeUnit.MILLISECONDS);
 
                         connectedResource = getDomain();

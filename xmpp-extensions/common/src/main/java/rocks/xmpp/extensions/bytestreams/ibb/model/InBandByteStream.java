@@ -185,7 +185,7 @@ public abstract class InBandByteStream {
          */
         public Data(byte[] bytes, String sid, int seq) {
             super(sid);
-            this.bytes = bytes;
+            this.bytes = Objects.requireNonNull(bytes).clone();
             this.seq = seq;
         }
 
@@ -204,7 +204,7 @@ public abstract class InBandByteStream {
          * @return The bytes.
          */
         public final byte[] getBytes() {
-            return bytes;
+            return bytes.clone();
         }
 
         @Override

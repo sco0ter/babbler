@@ -99,7 +99,7 @@ public final class Data {
      * @param maxAge The max age.
      */
     public Data(byte[] bytes, String type, Integer maxAge) {
-        this.bytes = Objects.requireNonNull(bytes);
+        this.bytes = Objects.requireNonNull(bytes).clone();
         this.cid = createContendId(bytes);
         this.type = Objects.requireNonNull(type);
         this.maxAge = maxAge;
@@ -151,6 +151,6 @@ public final class Data {
      * @return The bytes.
      */
     public final byte[] getBytes() {
-        return bytes;
+        return bytes != null ? bytes.clone() : null;
     }
 }

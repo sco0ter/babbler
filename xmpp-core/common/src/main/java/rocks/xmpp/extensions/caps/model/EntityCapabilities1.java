@@ -100,7 +100,7 @@ public final class EntityCapabilities1 extends StreamFeature implements EntityCa
 
     @Override
     public final byte[] getHashValue() {
-        return ver;
+        return ver.clone();
     }
 
     /**

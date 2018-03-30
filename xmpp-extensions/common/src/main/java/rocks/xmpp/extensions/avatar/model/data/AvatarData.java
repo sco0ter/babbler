@@ -56,7 +56,7 @@ public final class AvatarData {
      * @param data The image data.
      */
     public AvatarData(byte[] data) {
-        this.data = Objects.requireNonNull(data);
+        this.data = Objects.requireNonNull(data).clone();
     }
 
     /**
@@ -65,6 +65,6 @@ public final class AvatarData {
      * @return The image data.
      */
     public final byte[] getData() {
-        return data;
+        return data.clone();
     }
 }

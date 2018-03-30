@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <vCard/>} element in the {@code vcard-temp} namespace.
@@ -1907,7 +1908,7 @@ public final class VCard {
          */
         public Image(String type, byte[] value) {
             this.type = type;
-            this.value = value;
+            this.value = Objects.requireNonNull(value).clone();
             this.uri = null;
         }
 
@@ -1937,7 +1938,7 @@ public final class VCard {
          * @return The photo.
          */
         public byte[] getValue() {
-            return value;
+            return value.clone();
         }
 
         /**
@@ -1969,7 +1970,7 @@ public final class VCard {
         }
 
         public Sound(byte[] value, URI uri, String phonetic) {
-            this.value = value;
+            this.value = Objects.requireNonNull(value).clone();
             this.uri = uri;
             this.phonetic = phonetic;
         }
@@ -1980,7 +1981,7 @@ public final class VCard {
          * @return The photo.
          */
         public byte[] getValue() {
-            return value;
+            return value.clone();
         }
 
         /**

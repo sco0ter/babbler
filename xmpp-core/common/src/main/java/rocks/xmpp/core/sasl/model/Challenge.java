@@ -60,7 +60,7 @@ public final class Challenge implements StreamElement {
      * @param value The challenge data.
      */
     public Challenge(final byte[] value) {
-        this.value = value;
+        this.value = value != null ? value.clone() : null;
     }
 
     /**
@@ -69,7 +69,7 @@ public final class Challenge implements StreamElement {
      * @return The challenge.
      */
     public final byte[] getValue() {
-        return value;
+        return value != null ? value.clone() : null;
     }
 
     @Override

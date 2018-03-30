@@ -66,7 +66,7 @@ public final class Auth implements StreamElement {
      */
     public Auth(String mechanism, byte[] initialResponse) {
         this.mechanism = mechanism;
-        this.initialResponse = initialResponse;
+        this.initialResponse = initialResponse != null ? initialResponse.clone() : null;
     }
 
     /**
@@ -84,7 +84,7 @@ public final class Auth implements StreamElement {
      * @return The initial response.
      */
     public final byte[] getInitialResponse() {
-        return initialResponse;
+        return initialResponse != null ? initialResponse.clone() : null;
     }
 
     @Override

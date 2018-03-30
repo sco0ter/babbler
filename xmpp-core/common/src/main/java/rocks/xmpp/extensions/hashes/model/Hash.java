@@ -68,7 +68,7 @@ public final class Hash implements Hashed {
      * @param algorithm The hash algorithm.
      */
     public Hash(byte[] value, String algorithm) {
-        this.value = Arrays.copyOf(Objects.requireNonNull(value), value.length);
+        this.value = Objects.requireNonNull(value).clone();
         this.algo = Objects.requireNonNull(algorithm);
     }
 
@@ -96,7 +96,7 @@ public final class Hash implements Hashed {
      */
     @Override
     public final byte[] getHashValue() {
-        return value;
+        return value.clone();
     }
 
     @Override

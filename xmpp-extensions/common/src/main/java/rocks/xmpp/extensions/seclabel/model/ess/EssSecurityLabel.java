@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.seclabel.model.ess;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <esssecuritylabel/>} element in the {@code urn:xmpp:sec-label:ess:0} namespace.
@@ -46,7 +47,7 @@ public final class EssSecurityLabel {
     }
 
     public EssSecurityLabel(byte[] value) {
-        this.value = value;
+        this.value = Objects.requireNonNull(value).clone();
     }
 
     /**
@@ -55,6 +56,6 @@ public final class EssSecurityLabel {
      * @return The BER/DER encoding of an ASN.1 ESSSecurityLabel type as defined in RFC 2634.
      */
     public final byte[] getValue() {
-        return value;
+        return value.clone();
     }
 }

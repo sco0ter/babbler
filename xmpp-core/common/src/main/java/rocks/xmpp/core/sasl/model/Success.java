@@ -53,7 +53,7 @@ public final class Success implements StreamElement {
     }
 
     public Success(byte[] additionalData) {
-        this.additionalData = additionalData;
+        this.additionalData = additionalData != null ? additionalData.clone() : null;
     }
 
     /**
@@ -63,7 +63,7 @@ public final class Success implements StreamElement {
      * @return Additional data.
      */
     public final byte[] getAdditionalData() {
-        return additionalData;
+        return additionalData != null ? additionalData.clone() : null;
     }
 
     @Override

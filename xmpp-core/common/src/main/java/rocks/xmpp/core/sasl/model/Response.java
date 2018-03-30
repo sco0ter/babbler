@@ -60,7 +60,7 @@ public final class Response implements StreamElement {
      * @param value The value.
      */
     public Response(byte[] value) {
-        this.value = value;
+        this.value = value != null ? value.clone() : null;
     }
 
     /**
@@ -69,7 +69,7 @@ public final class Response implements StreamElement {
      * @return The value.
      */
     public final byte[] getValue() {
-        return value;
+        return value != null ? value.clone() : null;
     }
 
     @Override

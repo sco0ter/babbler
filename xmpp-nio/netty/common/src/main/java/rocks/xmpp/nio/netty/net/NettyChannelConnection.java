@@ -112,7 +112,7 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
         }
     }
 
-    protected void onRead(final String xml, final StreamElement streamElement) {
+    private void onRead(final String xml, final StreamElement streamElement) {
         if (onRead != null) {
             onRead.accept(xml, streamElement);
         }

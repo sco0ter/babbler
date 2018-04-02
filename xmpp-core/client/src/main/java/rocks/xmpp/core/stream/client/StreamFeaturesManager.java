@@ -27,6 +27,7 @@ package rocks.xmpp.core.stream.client;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
+import rocks.xmpp.core.stream.StreamHandler;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.model.StreamFeature;
@@ -35,7 +36,6 @@ import rocks.xmpp.core.tls.model.StartTls;
 
 import java.util.ArrayDeque;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,9 +73,7 @@ import java.util.stream.Collectors;
  *
  * @author Christian Schudt
  */
-public final class StreamFeaturesManager extends Manager {
-
-    private static final EnumSet<StreamNegotiationResult> NEGOTIATION_COMPLETED = EnumSet.of(StreamNegotiationResult.SUCCESS, StreamNegotiationResult.IGNORE, StreamNegotiationResult.RESTART);
+public final class StreamFeaturesManager extends Manager implements StreamHandler {
 
     private final Map<Class<? extends StreamFeature>, CompletableFuture<Void>> featureNegotiationStartedFutures = new ConcurrentHashMap<>();
 
@@ -96,6 +94,8 @@ public final class StreamFeaturesManager extends Manager {
 
     private CompletableFuture<Void> negotiationCompleted;
 
+    private boolean streamWillBeRestarted;
+
     private StreamFeaturesManager(XmppSession xmppSession) {
         super(xmppSession, false);
     }
@@ -107,6 +107,7 @@ public final class StreamFeaturesManager extends Manager {
                 // If we're (re)connecting, make sure any previous features are forgotten.
                 case CONNECTING:
                     synchronized (this) {
+                        negotiationCompleted = new CompletableFuture<>();
                         featureNegotiationStartedFutures.clear();
                         advertisedFeatures.clear();
                     }
@@ -170,13 +171,7 @@ public final class StreamFeaturesManager extends Manager {
      * @throws StreamNegotiationException If an exception occurred during feature negotiation.
      */
     public final synchronized void processFeatures(StreamFeatures featuresElement) throws StreamNegotiationException {
-        if (featuresElement.getFeatures().isEmpty()) {
-            for (CompletableFuture<Void> condition : featureNegotiationStartedFutures.values()) {
-                condition.complete(null);
-            }
-            negotiationCompleted.complete(null);
-            return;
-        }
+        streamWillBeRestarted = false;
         List<Object> featureList = featuresElement.getFeatures();
 
         featuresToNegotiate.clear();
@@ -193,8 +188,6 @@ public final class StreamFeaturesManager extends Manager {
             ((StartTls) featureList.get(0)).setMandatory(true);
         }
 
-        negotiationCompleted = new CompletableFuture<>();
-
         // Immediately start negotiating the first feature.
         negotiateNextFeature();
     }
@@ -206,67 +199,64 @@ public final class StreamFeaturesManager extends Manager {
      * @return True, if the stream needs to be restarted, after a feature has been negotiated.
      * @throws StreamNegotiationException If an exception occurred during feature negotiation.
      */
-    public final synchronized boolean processElement(Object element) throws StreamNegotiationException {
+    @Override
+    public final boolean handleElement(Object element) throws StreamNegotiationException {
+        StreamNegotiationResult streamNegotiationResult = StreamNegotiationResult.IGNORE;
         // Check if the element is known to any feature negotiator.
         for (StreamFeatureNegotiator<? extends StreamFeature> streamFeatureNegotiator : streamFeatureNegotiators) {
             if (streamFeatureNegotiator.getFeatureClass() == element.getClass() || streamFeatureNegotiator.canProcess(element)) {
-                CompletableFuture<Void> streamFuture = featureNegotiationStartedFutures.computeIfAbsent(streamFeatureNegotiator.getFeatureClass(), k -> new CompletableFuture<>());
-                StreamNegotiationResult status = streamFeatureNegotiator.processNegotiation(element);
-                // If the feature has been successfully negotiated.
-                if (NEGOTIATION_COMPLETED.contains(status)) {
-                    streamFuture.complete(null);
-                    // Check if the feature expects a restart now.
-                    if (status == StreamNegotiationResult.RESTART) {
-                        return true;
-                    } else {
-                        // If no restart is required, negotiate the next feature.
-                        negotiateNextFeature();
+                streamNegotiationResult = streamFeatureNegotiator.processNegotiation(element);
+                if (streamNegotiationResult != StreamNegotiationResult.IGNORE && element instanceof StreamFeature) {
+                    synchronized (this) {
+                        streamWillBeRestarted = ((StreamFeature) element).requiresRestart();
                     }
                 }
-                return false;
+                break;
             }
         }
-        return false;
+        // If the feature has been successfully negotiated.
+        switch (streamNegotiationResult) {
+            case RESTART:
+                synchronized (this) {
+                    featuresToNegotiate.clear();
+                    streamWillBeRestarted = false;
+                }
+                return true;
+            case SUCCESS:
+            case IGNORE:
+                negotiateNextFeature();
+                return false;
+            default:
+                return false;
+        }
     }
 
     /**
      * Negotiates the next feature. If the feature has been successfully negotiated, the next feature is automatically negotiated.
      *
-     * @return True, if there are more feature to negotiate; false, if feature negotiation has been completed.
      * @throws StreamNegotiationException If an exception occurred during feature negotiation.
      */
-    private synchronized boolean negotiateNextFeature() throws StreamNegotiationException {
+    private synchronized void negotiateNextFeature() throws StreamNegotiationException {
         final StreamFeature advertisedFeature;
         // Get the next feature
         if ((advertisedFeature = featuresToNegotiate.poll()) != null) {
-            Class<? extends StreamFeature> featureClass = advertisedFeature.getClass();
-            CompletableFuture<Void> streamFuture = featureNegotiationStartedFutures.computeIfAbsent(featureClass, k -> new CompletableFuture<>());
+            final CompletableFuture<Void> streamFuture = featureNegotiationStartedFutures.computeIfAbsent(advertisedFeature.getClass(), k -> new CompletableFuture<>());
             if (!streamFuture.isDone()) {
-                StreamNegotiationResult negotiationStatus = StreamNegotiationResult.IGNORE;
-                // See if there's a feature negotiator associated with the feature.
-                for (StreamFeatureNegotiator streamFeatureNegotiator : streamFeatureNegotiators) {
-                    if (streamFeatureNegotiator.getFeatureClass() == advertisedFeature.getClass()) {
-                        // Start negotiating the feature.
-                        negotiationStatus = streamFeatureNegotiator.processNegotiation(advertisedFeature);
-                        break;
-                    }
-                }
-
-                // Complete the future, which means, negotiation of the feature has started.
+                handleElement(advertisedFeature);
+                // Complete the future, which means, negotiation of the feature has been started.
                 streamFuture.complete(null);
-                // If feature negotiation is incomplete, return and wait until it is completed.
-                if (negotiationStatus == StreamNegotiationResult.INCOMPLETE) {
-                    return true;
-                }
+            } else {
+                // If the feature has been successfully negotiated, immediately go on with the next feature.
+                negotiateNextFeature();
             }
-            // If no feature negotiator was found or if the feature has been successfully negotiated, immediately go on with the next feature.
-            return negotiateNextFeature();
-        } else {
+        } else if (!streamWillBeRestarted) {
+            for (CompletableFuture<Void> condition : featureNegotiationStartedFutures.values()) {
+                condition.complete(null);
+            }
             featureNegotiationStartedFutures.clear();
             if (negotiationCompleted != null) {
                 negotiationCompleted.complete(null);
             }
-            return false;
         }
     }
 

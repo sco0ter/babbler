@@ -1204,7 +1204,7 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
             throw new StreamErrorException((StreamError) element);
         } else {
             // Let's see, if the element is known to any feature negotiator.
-            return streamFeaturesManager.processElement(element);
+            return streamFeaturesManager.handleElement(element);
         }
         return false;
     }

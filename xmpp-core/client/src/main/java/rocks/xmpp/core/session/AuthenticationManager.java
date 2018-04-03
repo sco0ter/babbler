@@ -32,9 +32,9 @@ import rocks.xmpp.core.sasl.model.Failure;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.sasl.model.Response;
 import rocks.xmpp.core.sasl.model.Success;
-import rocks.xmpp.core.stream.client.ClientStreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
+import rocks.xmpp.core.stream.client.ClientStreamFeatureNegotiator;
 
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.sasl.Sasl;
@@ -119,7 +119,7 @@ final class AuthenticationManager extends ClientStreamFeatureNegotiator<Mechanis
                     throw new StreamNegotiationException("Server doesn't support any of the requested SASL mechanisms: " + mechanisms + ".");
                 }
                 successData = null;
-                saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[clientMechanisms.size()]), authorizationId, "xmpp", "TODO: xmppSession.getActiveConnection().getHostname()", Collections.emptyMap(), callbackHandler);
+                saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[clientMechanisms.size()]), authorizationId, "xmpp", xmppSession.getDomain().toString(), Collections.emptyMap(), callbackHandler);
 
                 if (saslClient == null) {
                     throw new SaslException("No SASL client found for mechanisms: " + clientMechanisms);

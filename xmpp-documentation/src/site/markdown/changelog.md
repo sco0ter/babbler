@@ -28,7 +28,9 @@ Reduces GC pressure and increase performance.
 * XEP-0096: Only return a single value during SI FileTransfer negotiation.
 * XEP-0115: Sort by octets, not by characters.
 * XEP-0300: Update to urn:xmpp:hashes:2
+* XEP-0184: Receipt messages should have the same type as the request message instead of normal type.
 * Fix Message#createError()
+
 
 
 ### Version 0.7.5 (2018-01-27)

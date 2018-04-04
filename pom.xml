@@ -253,7 +253,6 @@
                     <version>3.7</version>
                     <configuration>
                         <locales>en</locales>
-                        <siteDirectory>xmpp-documentation/src/site</siteDirectory>
                     </configuration>
                     <dependencies>
                         <dependency>

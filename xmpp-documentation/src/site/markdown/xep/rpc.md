@@ -74,4 +74,4 @@ try {
 
 XML-RPC fault errors are translated into `RpcException`.
 
-[Jabber-RPC]: http://xmpp.org/extensions/xep-0079.html "XEP-0009: Jabber-RPC"
+[Jabber-RPC]: https://xmpp.org/extensions/xep-0079.html "XEP-0009: Jabber-RPC"

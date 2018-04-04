@@ -60,7 +60,7 @@ public final class AuthenticationException extends StreamNegotiationException {
      * The specific SASL error condition.
      *
      * @return The error condition.
-     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#sasl-errors">6.5.  SASL Errors</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#sasl-errors">6.5.  SASL Errors</a>
      */
     public Failure.Condition getCondition() {
         return condition;

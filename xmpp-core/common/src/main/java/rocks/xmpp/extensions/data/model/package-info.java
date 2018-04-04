@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0004.html">XEP-0004: Data Forms</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0004.html">XEP-0004: Data Forms</a>.
  * <p>
  * defines an XMPP protocol extension for data forms that can be used in workflows such as service configuration as well as for application-specific data description and reporting. The protocol includes lightweight semantics for forms processing (such as request, response, submit, and cancel), defines several common field types (boolean, list options with single or multiple choice, text with single line or multiple lines, single or multiple JabberIDs, hidden fields, etc.), provides extensibility for future data types, and can be embedded in a wide range of applications. The protocol is not intended to provide complete forms-processing functionality as is provided in the W3C XForms technology, but instead provides a basic subset of such functionality for use by XMPP entities.
  * </p>

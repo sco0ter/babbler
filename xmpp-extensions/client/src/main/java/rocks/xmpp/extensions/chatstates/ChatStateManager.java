@@ -157,7 +157,7 @@ public final class ChatStateManager extends Manager {
      *
      * @param jid The JID.
      * @return An async result indicating whether chat state notifications are supported.
-     * @see <a href="http://xmpp.org/extensions/xep-0085.html#bizrules-gen">5.1 Generation of Notifications</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0085.html#bizrules-gen">5.1 Generation of Notifications</a>
      */
     public final AsyncResult<Boolean> isSupported(Jid jid) {
         Boolean supports = contactSupportsChatStateNotifications.get(jid);

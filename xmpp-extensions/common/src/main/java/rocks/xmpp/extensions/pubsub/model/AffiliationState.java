@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
  * Represents the affiliations which allow to manage permissions.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#affiliations">4.1 Affiliations</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#affiliations">4.1 Affiliations</a>
  */
 public enum AffiliationState {
     /**

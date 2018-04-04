@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Represents the 'DataEncodingUnknown' SOAP fault.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0072.html#errors">6. Error Handling</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0072.html#errors">6. Error Handling</a>
  */
 @XmlRootElement(name = "DataEncodingUnknown")
 public final class DataEncodingUnknown extends SoapFault {

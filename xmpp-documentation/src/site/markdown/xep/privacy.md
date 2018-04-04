@@ -95,5 +95,5 @@ You can create an "invisibility" list with a handful of static factory methods, 
 PrivacyList invisibilityList = PrivacyList.createInvisibilityList();
 ```
 
-[Privacy Lists]: http://xmpp.org/extensions/xep-0016.html "XEP-0016: Privacy Lists"
-[Invisibility]: http://xmpp.org/extensions/xep-0126.html "XEP-0126: Invisibility"
+[Privacy Lists]: https://xmpp.org/extensions/xep-0016.html "XEP-0016: Privacy Lists"
+[Invisibility]: https://xmpp.org/extensions/xep-0126.html "XEP-0126: Invisibility"

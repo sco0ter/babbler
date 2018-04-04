@@ -402,7 +402,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      *
      * @param newNickname The new nickname.
      * @return The async result with the presence returned by the chat room.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#changenick">7.6 Changing Nickname</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#changenick">7.6 Changing Nickname</a>
      */
     public final AsyncResult<Presence> changeNickname(String newNickname) {
         if (!hasEntered()) {
@@ -417,7 +417,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      *
      * @param show   The 'show' value.
      * @param status The status.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#changepres">7.7 Changing Availability Status</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#changepres">7.7 Changing Availability Status</a>
      */
     public void changeAvailabilityStatus(Presence.Show show, String status) {
         Presence presence;
@@ -435,7 +435,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      *
      * @param invitee The invitee.
      * @param reason  The reason.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#invite">7.8 Inviting Another User to a Room</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#invite">7.8 Inviting Another User to a Room</a>
      */
     public void invite(Jid invitee, String reason) {
         invite(invitee, reason, false);
@@ -447,8 +447,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param invitee The invitee.
      * @param reason  The reason.
      * @param direct  True, if the message is sent directly to the invitee; false if it is mediated by the room.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#invite-direct">7.8.1 Direct Invitation</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#invite-mediated">7.8.2 Mediated Invitation</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#invite-direct">7.8.1 Direct Invitation</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#invite-mediated">7.8.2 Mediated Invitation</a>
      */
     public void invite(Jid invitee, String reason, boolean direct) {
         Message message;
@@ -466,7 +466,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Gets the data form necessary to register with the room.
      *
      * @return The async result with the data form.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
      * @see RoomRegistration
      */
     public AsyncResult<DataForm> getRegistrationForm() {
@@ -484,7 +484,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      *
      * @param registration The registration.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
      * @see RoomRegistration
      */
     public AsyncResult<IQ> register(Registration registration) {
@@ -522,7 +522,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     /**
      * Requests voice in a moderated room.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#requestvoice">7.13 Requesting Voice</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#requestvoice">7.13 Requesting Voice</a>
      */
     public void requestVoice() {
         Message message = new Message(roomJid);
@@ -535,7 +535,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Exits the room.
      *
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#exit">7.14 Exiting a Room</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#exit">7.14 Exiting a Room</a>
      */
     public AsyncResult<Void> exit() {
         return exit(null);
@@ -546,7 +546,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      *
      * @param message The exit message.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#exit">7.14 Exiting a Room</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#exit">7.14 Exiting a Room</a>
      */
     public final AsyncResult<Void> exit(String message) {
 
@@ -579,7 +579,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Gets the voice list.
      *
      * @return The async result with the voice list.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyvoice">8.5 Modifying the Voice List</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#modifyvoice">8.5 Modifying the Voice List</a>
      */
     public AsyncResult<List<rocks.xmpp.extensions.muc.model.Item>> getVoiceList() {
         return xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Role.PARTICIPANT, null, null))).thenApply(result -> {
@@ -593,11 +593,11 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      *
      * @param items The items.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyvoice">8.5 Modifying the Voice List</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymod">9.8 Modifying the Moderator List</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyowner">10.5 Modifying the Owner List</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyadmin">10.8 Modifying the Admin List</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#modifyvoice">8.5 Modifying the Voice List</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#modifymod">9.8 Modifying the Moderator List</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#modifyowner">10.5 Modifying the Owner List</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#modifyadmin">10.8 Modifying the Admin List</a>
      */
     public AsyncResult<IQ> changeAffiliationsOrRoles(List<rocks.xmpp.extensions.muc.model.Item> items) {
         return xmppSession.query(IQ.set(roomJid, MucAdmin.withItems(items)));
@@ -607,7 +607,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Gets the ban list.
      *
      * @return The async result with the ban list.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifyban">9.2 Modifying the Ban List</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#modifyban">9.2 Modifying the Ban List</a>
      */
     public AsyncResult<List<rocks.xmpp.extensions.muc.model.Item>> getBanList() {
         return xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Affiliation.OUTCAST, null, null))).thenApply(result -> {
@@ -635,13 +635,13 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param user        The user.
      * @param reason      The reason.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#ban">9.1 Banning a User</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmember">9.3 Granting Membership</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemember">9.4 Revoking Membership</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantowner">10.3 Granting Owner Status</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokeowner">10.4 Revoking Owner Status</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantadmin">10.6 Granting Admin Status</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokeadmin">10.7 Revoking Admin Status</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#ban">9.1 Banning a User</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#grantmember">9.3 Granting Membership</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#revokemember">9.4 Revoking Membership</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#grantowner">10.3 Granting Owner Status</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#revokeowner">10.4 Revoking Owner Status</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#grantadmin">10.6 Granting Admin Status</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#revokeadmin">10.7 Revoking Admin Status</a>
      */
     public final AsyncResult<IQ> changeAffiliation(Affiliation affiliation, Jid user, String reason) {
         return xmppSession.query(IQ.set(roomJid, MucAdmin.withItem(affiliation, user, null, reason)));
@@ -657,7 +657,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param user   The user.
      * @param reason The reason (optional). May be <code>null</code>.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#ban">9.1 Banning a User</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#ban">9.1 Banning a User</a>
      */
     public final AsyncResult<IQ> banUser(Jid user, String reason) {
         return changeAffiliation(Affiliation.OUTCAST, user, reason);
@@ -670,7 +670,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param nick   The nick (optional). That nick becomes the user's default nick in the room if that functionality is supported by the implementation. May be <code>null</code>.
      * @param reason The reason (optional). May be <code>null</code>.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmember">9.3 Granting Membership</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#grantmember">9.3 Granting Membership</a>
      * @see #revokeMembership(Jid, String)
      */
     public final AsyncResult<IQ> grantMembership(Jid user, String nick, String reason) {
@@ -683,7 +683,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param user   The user.
      * @param reason The reason (optional). May be <code>null</code>.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemember">9.4 Revoking Membership</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#revokemember">9.4 Revoking Membership</a>
      * @see #grantMembership(Jid, String, String)
      */
     public final AsyncResult<IQ> revokeMembership(Jid user, String reason) {
@@ -696,7 +696,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param user   The user.
      * @param reason The reason (optional). May be <code>null</code>.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantowner">10.3 Granting Owner Status</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#grantowner">10.3 Granting Owner Status</a>
      * @see #revokeOwnerStatus(Jid, String)
      */
     public final AsyncResult<IQ> grantOwnerStatus(Jid user, String reason) {
@@ -711,7 +711,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param user   The user.
      * @param reason The reason (optional). May be <code>null</code>.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokeowner">10.4 Revoking Owner Status</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#revokeowner">10.4 Revoking Owner Status</a>
      * @see #grantOwnerStatus(Jid, String)
      */
     public final AsyncResult<IQ> revokeOwnerStatus(Jid user, String reason) {
@@ -725,7 +725,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param user   The user.
      * @param reason The reason (optional). May be <code>null</code>.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantadmin">10.6 Granting Admin Status</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#grantadmin">10.6 Granting Admin Status</a>
      * @see #revokeAdminStatus(Jid, String)
      */
     public final AsyncResult<IQ> grantAdminStatus(Jid user, String reason) {
@@ -739,7 +739,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param user   The user.
      * @param reason The reason (optional). May be <code>null</code>.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokeadmin">10.7 Revoking Admin Status</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#revokeadmin">10.7 Revoking Admin Status</a>
      * @see #grantAdminStatus(Jid, String)
      */
     public final AsyncResult<IQ> revokeAdminStatus(Jid user, String reason) {
@@ -763,11 +763,11 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param nickname The occupant's nickname.
      * @param reason   The reason.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#kick">8.2 Kicking an Occupant</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantvoice">8.3 Granting Voice to a Visitor</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokevoice">8.4 Revoking Voice from a Participant</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmod">9.6 Granting Moderator Status</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemod">9.7 Revoking Moderator Status</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#kick">8.2 Kicking an Occupant</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#grantvoice">8.3 Granting Voice to a Visitor</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#revokevoice">8.4 Revoking Voice from a Participant</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#grantmod">9.6 Granting Moderator Status</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#revokemod">9.7 Revoking Moderator Status</a>
      */
     public final AsyncResult<IQ> changeRole(Role role, String nickname, String reason) {
         return xmppSession.query(IQ.set(roomJid, MucAdmin.withItem(role, nickname, reason)));
@@ -779,7 +779,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param nickname The nickname.
      * @param reason   The reason (optional). May be <code>null</code>.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#kick">8.2 Kicking an Occupant</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#kick">8.2 Kicking an Occupant</a>
      */
     public final AsyncResult<IQ> kickOccupant(String nickname, String reason) {
         return changeRole(Role.NONE, nickname, reason);
@@ -792,7 +792,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param nickname The nickname.
      * @param reason   The reason (optional). May be <code>null</code>.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantvoice">8.3 Granting Voice to a Visitor</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#grantvoice">8.3 Granting Voice to a Visitor</a>
      * @see #revokeVoice(String, String)
      */
     public final AsyncResult<IQ> grantVoice(String nickname, String reason) {
@@ -805,7 +805,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param nickname The nickname.
      * @param reason   The reason (optional). May be <code>null</code>.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokevoice">8.4 Revoking Voice from a Participant</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#revokevoice">8.4 Revoking Voice from a Participant</a>
      * @see #grantVoice(String, String)
      */
     public final AsyncResult<IQ> revokeVoice(String nickname, String reason) {
@@ -818,7 +818,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param nickname The nickname.
      * @param reason   The reason (optional). May be <code>null</code>.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#grantmod">9.6 Granting Moderator Status</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#grantmod">9.6 Granting Moderator Status</a>
      */
     public final AsyncResult<IQ> grantModeratorStatus(String nickname, String reason) {
         return changeRole(Role.MODERATOR, nickname, reason);
@@ -831,7 +831,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param nickname The nickname.
      * @param reason   The reason (optional). May be <code>null</code>.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#revokemod">9.7 Revoking Moderator Status</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#revokemod">9.7 Revoking Moderator Status</a>
      */
     public final AsyncResult<IQ> revokeModeratorStatus(String nickname, String reason) {
         return changeRole(Role.PARTICIPANT, nickname, reason);
@@ -841,7 +841,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Gets the owners of the room.
      *
      * @return The async result with the owners.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
     public AsyncResult<List<Item>> getOwners() {
         return getByAffiliation(Affiliation.OWNER);
@@ -851,7 +851,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Gets the outcasts of the room.
      *
      * @return The async result with the outcasts.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
     public AsyncResult<List<Item>> getOutcasts() {
         return getByAffiliation(Affiliation.OUTCAST);
@@ -861,7 +861,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Gets the admins of the room.
      *
      * @return The async result with the admins.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
     public AsyncResult<List<Item>> getAdmins() {
         return getByAffiliation(Affiliation.ADMIN);
@@ -877,7 +877,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * </p>
      *
      * @return The async result with the members.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
      */
     public AsyncResult<List<Item>> getMembers() {
         return getByAffiliation(Affiliation.MEMBER);
@@ -894,7 +894,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Gets the moderators.
      *
      * @return The async result with the moderators.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#modifymod">9.8 Modifying the Moderator List</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#modifymod">9.8 Modifying the Moderator List</a>
      */
     public AsyncResult<List<Item>> getModerators() {
         return xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Role.MODERATOR, null, null))).thenApply(result -> {
@@ -907,7 +907,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Gets the room information for this chat room.
      *
      * @return The async result with the room info.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-roominfo">6.4 Querying for Room Information</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#disco-roominfo">6.4 Querying for Room Information</a>
      */
     public AsyncResult<RoomInformation> getRoomInformation() {
         return serviceDiscoveryManager.discoverInformation(roomJid).thenApply(infoNode -> {
@@ -946,7 +946,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Gets the occupants in this room, i.e. their nicknames. This method should be used, when you are not yet in the room.
      *
      * @return The async result with the occupants.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-roomitems">6.5 Querying for Room Items</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#disco-roomitems">6.5 Querying for Room Items</a>
      * @see #getOccupants()
      */
     public AsyncResult<List<String>> discoverOccupants() {
@@ -992,7 +992,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      *
      * @return The async result with the configuration form.
      * @see RoomConfiguration
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
      * @see #configure(RoomConfiguration)
      */
     public AsyncResult<DataForm> getConfigurationForm() {
@@ -1007,7 +1007,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      *
      * @param roomConfiguration The async result with the room configuration form.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
      * @see #getConfigurationForm()
      */
     public AsyncResult<IQ> configure(RoomConfiguration roomConfiguration) {
@@ -1039,7 +1039,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      *
      * @param reason The reason for the room destruction.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#destroyroom">10.9 Destroying a Room</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#destroyroom">10.9 Destroying a Room</a>
      */
     public AsyncResult<IQ> destroy(String reason) {
         MucOwner mucOwner = MucOwner.withDestroy(roomJid, reason);
@@ -1050,7 +1050,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Destroys the room.
      *
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#destroyroom">10.9 Destroying a Room</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#destroyroom">10.9 Destroying a Room</a>
      */
     public final AsyncResult<IQ> destroy() {
         return destroy(null);

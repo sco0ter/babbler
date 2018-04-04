@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Christian Schudt
  * @see #INVALID_OPTIONS
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-process-failure">6.3.6.2 Failure</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-process-failure">6.3.6.2 Failure</a>
  */
 @XmlRootElement(name = "invalid-options")
 @XmlType(factoryMethod = "create")

@@ -58,7 +58,7 @@ import static rocks.xmpp.core.session.ReconnectionStrategy.truncatedBinaryExpone
  * This class is unconditionally thread-safe.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">3.3.  Reconnection</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">3.3.  Reconnection</a>
  */
 final class ReconnectionManager extends Manager {
 

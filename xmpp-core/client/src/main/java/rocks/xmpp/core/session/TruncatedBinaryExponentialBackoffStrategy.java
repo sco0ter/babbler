@@ -42,7 +42,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * The strategy is called "truncated", because it won't increase the time span after the nth iteration, which means in the example above, the sixth and any further attempt
  * behaves equally to the fifth attempt.
  * <p>
- * This "truncated binary exponential backoff" is the <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">recommended reconnection strategy by the XMPP specification</a>.
+ * This "truncated binary exponential backoff" is the <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">recommended reconnection strategy by the XMPP specification</a>.
  * <p>
  * This class is immutable.
  *

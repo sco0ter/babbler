@@ -38,8 +38,8 @@ import java.util.List;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
- * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-stream">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0138.html#schemas-stream">XML Schema</a>
  */
 @XmlRootElement(name = "compression")
 public final class CompressionFeature extends StreamFeature {

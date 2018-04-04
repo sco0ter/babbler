@@ -34,8 +34,8 @@ import java.util.Objects;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>
- * @see <a href="http://xmpp.org/extensions/xep-0084.html#schema-data">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0084.html#schema-data">XML Schema</a>
  */
 @XmlRootElement(name = "data")
 public final class AvatarData {

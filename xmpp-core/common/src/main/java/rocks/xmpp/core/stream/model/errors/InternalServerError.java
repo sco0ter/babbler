@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <internal-server-error/>} stream error.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-internal-server-error">4.9.3.8.  internal-server-error</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-internal-server-error">4.9.3.8.  internal-server-error</a></cite></p>
  * <p>The server has experienced a misconfiguration or other internal error that prevents it from servicing the stream.</p>
  * </blockquote>
  * This class is a singleton.

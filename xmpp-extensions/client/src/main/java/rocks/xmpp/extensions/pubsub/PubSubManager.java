@@ -44,8 +44,8 @@ import java.util.stream.Collectors;
  *
  * @author Christian Schudt
  * @see rocks.xmpp.extensions.pubsub.PubSubService
- * @see <a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>
- * @see <a href="http://xmpp.org/extensions/xep-0163.html">XEP-0163: Personal Eventing Protocol</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0163.html">XEP-0163: Personal Eventing Protocol</a>
  */
 public final class PubSubManager extends Manager {
 
@@ -82,7 +82,7 @@ public final class PubSubManager extends Manager {
      * Creates a personal eventing service.
      *
      * @return The personal eventing service.
-     * @see <a href="http://xmpp.org/extensions/xep-0163.html">XEP-0163: Personal Eventing Protocol</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0163.html">XEP-0163: Personal Eventing Protocol</a>
      */
     public PubSubService createPersonalEventingService() {
         return new PubSubService(xmppSession.getConnectedResource().asBareJid(), "Personal Eventing Service", xmppSession, serviceDiscoveryManager);

@@ -47,7 +47,7 @@ import rocks.xmpp.extensions.chatstates.model.ChatState;
  *
  * @author Christian Schudt
  * @see ChatState
- * @see <a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a>
  */
 public class ChatStateTextArea extends TextArea {
 

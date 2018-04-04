@@ -41,8 +41,8 @@ import java.util.stream.Collectors;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>
- * @see <a href="http://xmpp.org/extensions/xep-0131.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0131.html#schema">XML Schema</a>
  * @see Header
  */
 @XmlRootElement
@@ -98,7 +98,7 @@ public final class Headers {
      * @param start The start date.
      * @param stop  The stop date.
      * @return The header.
-     * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
      */
     public static Headers ofTimePeriod(OffsetDateTime start, OffsetDateTime stop) {
         // If both a start time and a stop time are specified, the stop time MUST be later than the start time.

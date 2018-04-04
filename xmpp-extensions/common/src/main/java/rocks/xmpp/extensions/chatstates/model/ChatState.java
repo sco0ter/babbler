@@ -33,8 +33,8 @@ import javax.xml.bind.annotation.XmlType;
  * Represents a chat state, i.e. composing, active, inactive, paused or gone.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a>
- * @see <a href="http://xmpp.org/extensions/xep-0085.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0085.html#schema">XML Schema</a>
  */
 @XmlTransient
 @XmlSeeAlso({ChatState.Active.class, ChatState.Composing.class, ChatState.Gone.class, ChatState.Inactive.class, ChatState.Paused.class})

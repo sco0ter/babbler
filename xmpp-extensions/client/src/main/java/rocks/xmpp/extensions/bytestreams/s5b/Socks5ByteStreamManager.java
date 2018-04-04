@@ -55,7 +55,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
 /**
- * A manager for <a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>.
+ * A manager for <a href="https://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>.
  * <p>
  * If {@linkplain #setLocalHostEnabled(boolean) enabled}, this class starts a local SOCKS5 server to support direct connections between two entities.
  * You can {@linkplain #setPort(int) set a port} of this local server, if you don't set a port, the default port 1080 is used.
@@ -197,7 +197,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      * Discovers the SOCKS5 proxies.
      *
      * @return The async result with the proxies.
-     * @see <a href="http://xmpp.org/extensions/xep-0065.html#disco">4. Discovering Proxies</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0065.html#disco">4. Discovering Proxies</a>
      */
     public AsyncResult<List<StreamHost>> discoverProxies() {
         // First discover the items which identify the proxy host.

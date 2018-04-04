@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of the <a href="http://xmpp.org/rfcs/rfc6121.html#sub-preapproval">Subscription Pre-Approval</a> namespace.
+ * Provides XML schema implementations of the <a href="https://xmpp.org/rfcs/rfc6121.html#sub-preapproval">Subscription Pre-Approval</a> namespace.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:xmpp:features:pre-approval", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.im.subscription.preapproval.model;

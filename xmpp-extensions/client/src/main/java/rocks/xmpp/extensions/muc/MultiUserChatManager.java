@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
  * Manages Multi-User Chat.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
  */
 public final class MultiUserChatManager extends Manager {
 
@@ -129,7 +129,7 @@ public final class MultiUserChatManager extends Manager {
      * Discovers the multi-user chat services hosted at the connected domain.
      *
      * @return The async result with the list of chat services.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-service">6.1 Discovering a MUC Service</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#disco-service">6.1 Discovering a MUC Service</a>
      */
     public AsyncResult<List<ChatService>> discoverChatServices() {
         return serviceDiscoveryManager.discoverServices(Identity.conferenceText()).thenApply(services ->
@@ -143,7 +143,7 @@ public final class MultiUserChatManager extends Manager {
      *
      * @param contact The contact, which must be a full JID.
      * @return The async result with the items, {@link rocks.xmpp.extensions.disco.model.items.Item#getJid()} has the room address, and {@link rocks.xmpp.extensions.disco.model.items.Item#getName()}} has the nickname.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-client">6.7 Discovering Client Support for MUC</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#disco-client">6.7 Discovering Client Support for MUC</a>
      */
     public AsyncResult<List<Item>> discoverEnteredRooms(Jid contact) {
         return serviceDiscoveryManager.discoverItems(contact, ROOMS_NODE).thenApply(ItemNode::getItems);

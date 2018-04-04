@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0172.html">XEP-0172: User Nickname</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0172.html">XEP-0172: User Nickname</a>.
  * <p>
  * It defines a protocol for communicating user nicknames, either in XMPP presence subscription requests or in XMPP messages.
  * </p>

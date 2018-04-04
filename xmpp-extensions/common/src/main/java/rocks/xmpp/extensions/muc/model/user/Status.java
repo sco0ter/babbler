@@ -31,7 +31,7 @@ import java.util.Objects;
  * The implementation of the {@code <status/>} element.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#statuscodes">11. Status Codes</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#statuscodes">11. Status Codes</a>
  */
 public final class Status {
 

@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0234.html#file-not-available">9.1 File not Available</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0234.html#file-not-available">9.1 File not Available</a>
  */
 @XmlRootElement(name = "file-not-available")
 @XmlType(factoryMethod = "create")

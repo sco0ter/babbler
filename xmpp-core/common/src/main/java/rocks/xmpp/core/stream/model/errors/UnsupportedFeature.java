@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <unsupported-feature/>} stream error.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-unsupported-feature">4.9.3.23.  unsupported-feature</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-unsupported-feature">4.9.3.23.  unsupported-feature</a></cite></p>
  * <p>The receiving entity has advertised a mandatory-to-negotiate stream feature that the initiating entity does not support, and has offered no other mandatory-to-negotiate feature alongside the unsupported feature.</p>
  * </blockquote>
  * This class is a singleton.

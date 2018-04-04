@@ -51,7 +51,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Manages SASL authentication as described in <a href="http://xmpp.org/rfcs/rfc6120.html#sasl">SASL Negotiation</a>.
+ * Manages SASL authentication as described in <a href="https://xmpp.org/rfcs/rfc6120.html#sasl">SASL Negotiation</a>.
  * <p>
  * This class is thread-safe.
  *

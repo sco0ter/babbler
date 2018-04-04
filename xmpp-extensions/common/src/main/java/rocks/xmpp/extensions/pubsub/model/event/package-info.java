@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a> (#event).
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a> (#event).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = PubSub.NAMESPACE + "#event", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.pubsub.model.event;

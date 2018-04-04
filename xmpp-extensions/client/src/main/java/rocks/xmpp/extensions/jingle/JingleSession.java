@@ -88,8 +88,8 @@ public final class JingleSession {
      * Initiates the session.
      *
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0166.html#protocol-initiate">6.2 Initiation</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-session-initiate">7.2.10 session-initiate</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0166.html#protocol-initiate">6.2 Initiation</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0166.html#def-action-session-initiate">7.2.10 session-initiate</a>
      */
     public AsyncResult<Void> initiate() {
         if (!createdLocally) {
@@ -104,8 +104,8 @@ public final class JingleSession {
      *
      * @param contents The contents.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0166.html#session-acceptance">6.5 Acceptance</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-session-accept">7.2.8 session-accept</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0166.html#session-acceptance">6.5 Acceptance</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0166.html#def-action-session-accept">7.2.8 session-accept</a>
      */
     public AsyncResult<Void> accept(Jingle.Content... contents) {
         if (state != State.PENDING) {
@@ -138,7 +138,7 @@ public final class JingleSession {
      *
      * @param reason The reason for termination.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0166.html#session-terminate">6.7 Termination</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0166.html#session-terminate">6.7 Termination</a>
      */
     public AsyncResult<IQ> terminate(Jingle.Reason reason) {
         // As soon as an entity sends a session-terminate action, it MUST consider the session to be in the ENDED state
@@ -155,7 +155,7 @@ public final class JingleSession {
      * @param contentName     The content name.
      * @param transportMethod The replaced transport method.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-transport-replace">7.2.15 transport-replace</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0166.html#def-action-transport-replace">7.2.15 transport-replace</a>
      */
     public AsyncResult<IQ> replaceTransport(String contentName, TransportMethod transportMethod) {
         Jingle.Content content = new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
@@ -181,7 +181,7 @@ public final class JingleSession {
      *
      * @param object The session info payload.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action-session-info">7.2.9 session-info</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0166.html#def-action-session-info">7.2.9 session-info</a>
      */
     public AsyncResult<IQ> sendSessionInfo(Object object) {
         return xmppSession.query(IQ.set(peer, new Jingle(sessionId, Jingle.Action.SESSION_INFO, object)));
@@ -210,7 +210,7 @@ public final class JingleSession {
     /**
      * Represents the state of a Jingle session.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0166.html#concepts-session">5.1 Overall Session Management</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0166.html#concepts-session">5.1 Overall Session Management</a>
      */
     public enum State {
         /**

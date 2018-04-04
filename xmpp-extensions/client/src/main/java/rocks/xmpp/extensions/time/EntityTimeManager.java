@@ -36,7 +36,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 import java.time.OffsetDateTime;
 
 /**
- * This manager implements <a href="http://xmpp.org/extensions/xep-0202.html">XEP-0202: Entity Time</a>.
+ * This manager implements <a href="https://xmpp.org/extensions/xep-0202.html">XEP-0202: Entity Time</a>.
  * <p>
  * It automatically responds to entity time requests, with the system's current date and timezone information and allows to retrieve another entity's time.
  * </p>

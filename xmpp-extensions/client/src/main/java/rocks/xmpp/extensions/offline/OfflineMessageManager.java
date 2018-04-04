@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This manager covers the use cases of <a href="http://xmpp.org/extensions/xep-0013.html">XEP-0013: Flexible Offline Message Retrieval</a>.
+ * This manager covers the use cases of <a href="https://xmpp.org/extensions/xep-0013.html">XEP-0013: Flexible Offline Message Retrieval</a>.
  * <p>
  * Offline Message Retrieval must be used before sending initial presence, in order to tell the server, that it must not flood the client with offline messages later.
  * </p>
@@ -71,7 +71,7 @@ public final class OfflineMessageManager extends Manager {
      * Gets the number of offline messages.
      *
      * @return The async result with the number of offline messages.
-     * @see <a href="http://xmpp.org/extensions/xep-0013.html#request-number">2.2 Requesting Number of Messages</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0013.html#request-number">2.2 Requesting Number of Messages</a>
      */
     public AsyncResult<Integer> requestNumberOfMessages() {
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
@@ -95,7 +95,7 @@ public final class OfflineMessageManager extends Manager {
      * Gets the offline message headers.
      *
      * @return The async result with the list of message headers.
-     * @see <a href="http://xmpp.org/extensions/xep-0013.html#request-headers">2.3 Requesting Message Headers</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0013.html#request-headers">2.3 Requesting Message Headers</a>
      */
     public AsyncResult<List<OfflineMessageHeader>> requestMessageHeaders() {
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
@@ -111,7 +111,7 @@ public final class OfflineMessageManager extends Manager {
      *
      * @param id The offline message id, which corresponds to {@link OfflineMessageHeader#getId()}
      * @return The async result with the server's IQ reply.
-     * @see <a href="http://xmpp.org/extensions/xep-0013.html#retrieve-specific">2.4 Retrieving Specific Messages</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0013.html#retrieve-specific">2.4 Retrieving Specific Messages</a>
      */
     public AsyncResult<IQ> requestMessage(String id) {
         return xmppSession.query(IQ.get(new OfflineMessage(new OfflineMessage.Item(id, OfflineMessage.Item.Action.VIEW))));
@@ -122,7 +122,7 @@ public final class OfflineMessageManager extends Manager {
      *
      * @param ids The offline message ids, which correspond to {@link OfflineMessageHeader#getId()}
      * @return The async result with the server's IQ reply.
-     * @see <a href="http://xmpp.org/extensions/xep-0013.html#remove-specific">2.5 Removing Specific Messages</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0013.html#remove-specific">2.5 Removing Specific Messages</a>
      */
     public AsyncResult<IQ> removeMessages(String... ids) {
         List<OfflineMessage.Item> items = new ArrayList<>();
@@ -136,7 +136,7 @@ public final class OfflineMessageManager extends Manager {
      * Requests all offline messages.
      *
      * @return The async result with the server's IQ reply.
-     * @see <a href="http://xmpp.org/extensions/xep-0013.html#retrieve-all">2.6 Retrieving All Messages</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0013.html#retrieve-all">2.6 Retrieving All Messages</a>
      */
     public AsyncResult<IQ> requestAllMessages() {
         return xmppSession.query(IQ.get(new OfflineMessage(true, false)));
@@ -146,7 +146,7 @@ public final class OfflineMessageManager extends Manager {
      * Removes all offline messages.
      *
      * @return The async result with the server's IQ reply.
-     * @see <a href="http://xmpp.org/extensions/xep-0013.html#remove-all">2.7 Removing All Messages</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0013.html#remove-all">2.7 Removing All Messages</a>
      */
     public AsyncResult<IQ> removeAllMessages() {
         return xmppSession.query(IQ.set(new OfflineMessage(false, true)));

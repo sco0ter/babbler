@@ -250,9 +250,9 @@ public final class XmppSessionConfiguration {
     /**
      * Gets the caching directory for directory-based caches used for:
      * <ul>
-     * <li><a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a></li>
-     * <li><a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a></li>
-     * <li><a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a></li>
+     * <li><a href="https://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a></li>
+     * <li><a href="https://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a></li>
+     * <li><a href="https://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a></li>
      * </ul>
      * By default this directory is called <code>xmpp.rocks</code> and is located in the operating system's application data folder:<br>
      * <p>
@@ -271,7 +271,7 @@ public final class XmppSessionConfiguration {
      * Gets a supplier for initial presence which is sent during login.
      *
      * @return The initial presence supplier.
-     * @see <a href="http://xmpp.org/rfcs/rfc6121.html#presence-initial">4.2.  Initial Presence</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-initial">4.2.  Initial Presence</a>
      */
     public final Supplier<Presence> getInitialPresence() {
         return initialPresence;
@@ -281,7 +281,7 @@ public final class XmppSessionConfiguration {
      * Gets the preferred or default language for any human-readable XML character data to be sent over the stream.
      *
      * @return The language.
-     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-attr-xmllang">4.7.4.  xml:lang</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-attr-xmllang">4.7.4.  xml:lang</a>
      */
     public final Locale getLanguage() {
         return language;
@@ -414,7 +414,7 @@ public final class XmppSessionConfiguration {
         /**
          * Sets the preferred mechanisms used for this XMPP session.
          * <blockquote>
-         * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-rules-preferences">6.3.3.  Mechanism Preferences</a></cite></p>
+         * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#sasl-rules-preferences">6.3.3.  Mechanism Preferences</a></cite></p>
          * <p>Any entity that will act as a SASL client or a SASL server MUST maintain an ordered list
          * of its preferred SASL mechanisms according to the client or server,
          * where the list is ordered according to local policy or user configuration
@@ -437,9 +437,9 @@ public final class XmppSessionConfiguration {
         /**
          * Sets the caching directory for directory-based caches used for:
          * <ul>
-         * <li><a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a></li>
-         * <li><a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a></li>
-         * <li><a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a></li>
+         * <li><a href="https://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a></li>
+         * <li><a href="https://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a></li>
+         * <li><a href="https://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a></li>
          * </ul>
          * If you want to disable the use of directory caching, pass null.
          *
@@ -460,7 +460,7 @@ public final class XmppSessionConfiguration {
          *
          * @param presenceSupplier The presence supplier.
          * @return The builder.
-         * @see <a href="http://xmpp.org/rfcs/rfc6121.html#presence-initial">4.2.  Initial Presence</a>
+         * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-initial">4.2.  Initial Presence</a>
          */
         public final Builder initialPresence(Supplier<Presence> presenceSupplier) {
             this.initialPresence = presenceSupplier;
@@ -472,7 +472,7 @@ public final class XmppSessionConfiguration {
          *
          * @param language The language.
          * @return The builder.
-         * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-attr-xmllang">4.7.4.  xml:lang</a>
+         * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-attr-xmllang">4.7.4.  xml:lang</a>
          */
         public final Builder language(Locale language) {
             this.language = language;
@@ -484,7 +484,7 @@ public final class XmppSessionConfiguration {
          *
          * @param reconnectionStrategy The reconnection strategy.
          * @return The builder.
-         * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">3.3.  Reconnection</a>
+         * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">3.3.  Reconnection</a>
          */
         public final Builder reconnectionStrategy(ReconnectionStrategy reconnectionStrategy) {
             this.reconnectionStrategy = reconnectionStrategy;

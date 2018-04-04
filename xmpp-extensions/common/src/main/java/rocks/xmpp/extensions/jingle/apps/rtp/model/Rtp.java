@@ -139,7 +139,7 @@ public final class Rtp extends ApplicationFormat {
     /**
      * The encryption element, which is used for the Secure Real-time Transport Protocol.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0167.html#srtp">7. Negotiation of SRTP</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0167.html#srtp">7. Negotiation of SRTP</a>
      */
     public static final class Encryption {
 
@@ -153,7 +153,7 @@ public final class Rtp extends ApplicationFormat {
     /**
      * The crypto element, which is used for the Secure Real-time Transport Protocol.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0167.html#srtp">7. Negotiation of SRTP</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0167.html#srtp">7. Negotiation of SRTP</a>
      */
     public static final class Crypto {
 

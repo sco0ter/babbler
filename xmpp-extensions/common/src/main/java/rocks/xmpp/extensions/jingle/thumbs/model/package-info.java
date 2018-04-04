@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0264.html">XEP-0264: Jingle Content Thumbnails</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0264.html">XEP-0264: Jingle Content Thumbnails</a>.
  * <p>
  * It defines an XMPP protocol extension for initiating and managing peer-to-peer media sessions between two XMPP entities in a way that is interoperable with existing Internet standards. The protocol provides a pluggable model that enables the core session management semantics (compatible with SIP) to be used for a wide variety of application types (e.g., voice chat, video chat, file transfer) and with a wide variety of transport methods (e.g., TCP, UDP, ICE, application-specific transports).
  * </p>

@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides classes for <a href="http://xmpp.org/extensions/xep-0048.html">XEP-0048: Bookmarks</a>.
+ * Provides classes for <a href="https://xmpp.org/extensions/xep-0048.html">XEP-0048: Bookmarks</a>.
  * <p>
  * It defines an XML data format for use by XMPP clients in storing bookmarks to mult-user chatrooms and web pages. The chatroom bookmarking function includes the ability to auto-join rooms on login.
  * </p>

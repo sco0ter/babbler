@@ -29,7 +29,7 @@ package rocks.xmpp.core.stream.model;
  *
  * @author Christian Schudt
  * @see StreamError
- * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
  */
 public final class StreamErrorException extends rocks.xmpp.core.stream.StreamErrorException {
 

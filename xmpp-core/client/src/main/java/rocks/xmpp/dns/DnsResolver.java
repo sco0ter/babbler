@@ -42,8 +42,8 @@ import java.util.stream.Collectors;
  * A minimalistic DNS resolver, which can resolve SRV and TXT records in the context of XMPP.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">RFC 6120 3.2.1.  Preferred Process: SRV Lookup</a>
- * @see <a href="http://xmpp.org/extensions/xep-0156.html">XEP-0156: Discovering Alternative XMPP Connection Methods</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">RFC 6120 3.2.1.  Preferred Process: SRV Lookup</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0156.html">XEP-0156: Discovering Alternative XMPP Connection Methods</a>
  */
 public final class DnsResolver {
 
@@ -63,7 +63,7 @@ public final class DnsResolver {
      * @param timeout    The timeout.
      * @return The DNS SRV records.
      * @throws IOException If a timeout occurs or no connection to the DNS server can be established.
-     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">RFC 6120 3.2.1.  Preferred Process: SRV Lookup</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">RFC 6120 3.2.1.  Preferred Process: SRV Lookup</a>
      */
     public static List<SrvRecord> resolveSRV(CharSequence service, CharSequence domain, String nameServer, long timeout) throws IOException {
         return resolve("_" + service + "._tcp.", domain, ResourceRecord.Type.SRV, nameServer, timeout, resourceRecord -> (SrvRecord) resourceRecord.data);
@@ -82,7 +82,7 @@ public final class DnsResolver {
      * @param timeout    The timeout.
      * @return The DNS SRV records.
      * @throws IOException If a timeout occurs or no connection to the DNS server can be established.
-     * @see <a href="http://xmpp.org/extensions/xep-0156.html">XEP-0156: Discovering Alternative XMPP Connection Methods</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0156.html">XEP-0156: Discovering Alternative XMPP Connection Methods</a>
      */
     public static List<TxtRecord> resolveTXT(CharSequence domain, String nameServer, long timeout) throws IOException {
         return resolve("_xmppconnect.", domain, ResourceRecord.Type.TXT, nameServer, timeout, resourceRecord -> (TxtRecord) resourceRecord.data);

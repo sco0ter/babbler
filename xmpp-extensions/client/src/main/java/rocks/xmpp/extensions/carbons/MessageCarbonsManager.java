@@ -43,7 +43,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * This class is thread-safe.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0280.html">XEP-0280: Message Carbons</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0280.html">XEP-0280: Message Carbons</a>
  */
 public final class MessageCarbonsManager extends Manager {
 

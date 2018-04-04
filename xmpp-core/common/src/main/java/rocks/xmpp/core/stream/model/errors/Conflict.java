@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <conflict/>} stream error.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-conflict">4.9.3.3.  conflict</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-conflict">4.9.3.3.  conflict</a></cite></p>
  * <p>The server either (1) is closing the existing stream for this entity because a new stream has been initiated that conflicts with the existing stream, or (2) is refusing a new stream for this entity because allowing the new stream would conflict with an existing stream (e.g., because the server allows only a certain number of connections from the same IP address or allows only one server-to-server stream for a given domain pair as a way of helping to ensure in-order processing as described under Section 10.1).</p>
  * </blockquote>
  * This class is a singleton.

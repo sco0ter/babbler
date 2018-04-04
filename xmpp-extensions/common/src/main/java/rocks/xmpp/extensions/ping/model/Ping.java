@@ -33,8 +33,8 @@ import javax.xml.bind.annotation.XmlType;
  * This class is a singleton.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0199.html">XEP-0199: XMPP Ping</a>
- * @see <a href="http://xmpp.org/extensions/xep-0199.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0199.html">XEP-0199: XMPP Ping</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0199.html#schema">XML Schema</a>
  */
 @XmlRootElement
 @XmlType(factoryMethod = "create")

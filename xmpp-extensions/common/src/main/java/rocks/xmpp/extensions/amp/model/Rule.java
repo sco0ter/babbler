@@ -35,8 +35,8 @@ import java.util.Objects;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>
- * @see <a href="http://xmpp.org/extensions/xep-0079.html#schemas-amp">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0079.html#schemas-amp">XML Schema</a>
  */
 public final class Rule {
     @XmlAttribute
@@ -142,34 +142,34 @@ public final class Rule {
     /**
      * The action defines what occurs when a particular rule is triggered. The value of the action attribute determines the behavior if the rule's condition is met.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0079.html#actions-def">3.4 Defined Actions</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0079.html#actions-def">3.4 Defined Actions</a>
      */
     public enum Action {
         /**
          * The "alert" action triggers a reply {@code <message/>} stanza to the sending entity.
          *
-         * @see <a href="http://xmpp.org/extensions/xep-0079.html#actions-def-alert">3.4.1 alert</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0079.html#actions-def-alert">3.4.1 alert</a>
          */
         @XmlEnumValue("alert")
         ALERT,
         /**
          * The "drop" action silently discards the message from any further delivery attempts and ensures that it is not placed into offline storage.
          *
-         * @see <a href="http://xmpp.org/extensions/xep-0079.html#actions-def-drop">3.4.2 drop</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0079.html#actions-def-drop">3.4.2 drop</a>
          */
         @XmlEnumValue("drop")
         DROP,
         /**
          * The "error" action triggers a reply {@code <message/>} stanza of type "error" to the sending entity.
          *
-         * @see <a href="http://xmpp.org/extensions/xep-0079.html#actions-def-error">3.4.3 error</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0079.html#actions-def-error">3.4.3 error</a>
          */
         @XmlEnumValue("error")
         ERROR,
         /**
          * The "notify" action triggers a reply {@code <message/>} stanza to the sending entity.
          *
-         * @see <a href="http://xmpp.org/extensions/xep-0079.html#actions-def-notify">3.4.4 notify</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0079.html#actions-def-notify">3.4.4 notify</a>
          */
         @XmlEnumValue("notify")
         NOTIFY
@@ -178,27 +178,27 @@ public final class Rule {
     /**
      * The condition defines how or when a particular rule is triggered. The value of the condition attribute determines what the contents of the {@code <rule/>} mean.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0079.html#conditions-def">3.3 Defined Conditions</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0079.html#conditions-def">3.3 Defined Conditions</a>
      */
     public enum Condition {
         /**
          * The "deliver" condition is used to ensure delivery (or non-delivery) in one of five ways.
          *
-         * @see <a href="http://xmpp.org/extensions/xep-0079.html#conditions-def-deliver">3.3.1 deliver</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0079.html#conditions-def-deliver">3.3.1 deliver</a>
          */
         @XmlEnumValue("deliver")
         DELIVER,
         /**
          * The "expire-at" condition is used to ensure delivery before an absolute point in time.
          *
-         * @see <a href="http://xmpp.org/extensions/xep-0079.html#conditions-def-expireat">3.3.2 expire-at</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0079.html#conditions-def-expireat">3.3.2 expire-at</a>
          */
         @XmlEnumValue("expire-at")
         EXPIRE_AT,
         /**
          * The "match-resource" condition is used to restrict delivery based on the resource identifier of the recipient JID.
          *
-         * @see <a href="http://xmpp.org/extensions/xep-0079.html#conditions-def-match">3.3.3 match-resource</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0079.html#conditions-def-match">3.3.3 match-resource</a>
          */
         @XmlEnumValue("match-resource")
         MATCH_RESOURCE,
@@ -207,7 +207,7 @@ public final class Rule {
     /**
      * The possible values for the {@link Rule.Condition#DELIVER} condition.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0079.html#conditions-def-deliver">3.3.1 deliver</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0079.html#conditions-def-deliver">3.3.1 deliver</a>
      */
     public enum DeliveryMode {
         /**
@@ -235,7 +235,7 @@ public final class Rule {
     /**
      * The possible values for the {@link Rule.Condition#MATCH_RESOURCE} condition.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0079.html#conditions-def-match">3.3.3 match-resource</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0079.html#conditions-def-match">3.3.3 match-resource</a>
      */
     public enum MatchResource {
         /**

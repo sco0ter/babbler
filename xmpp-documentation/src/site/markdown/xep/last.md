@@ -70,6 +70,6 @@ Instant uptime = Instant.now().minusSeconds(lastActivity.getSeconds());
 
                 
                 
-[Last Activity]: http://xmpp.org/extensions/xep-0012.html "XEP-0012: Last Activity"
-[Last Activity in Presence]: http://xmpp.org/extensions/xep-0256.html "XEP-0256: Last Activity in Presence"
-[Last User Interaction in Presence]: http://xmpp.org/extensions/xep-0319.html "XEP-0319: Last User Interaction in Presence"
+[Last Activity]: https://xmpp.org/extensions/xep-0012.html "XEP-0012: Last Activity"
+[Last Activity in Presence]: https://xmpp.org/extensions/xep-0256.html "XEP-0256: Last Activity in Presence"
+[Last User Interaction in Presence]: https://xmpp.org/extensions/xep-0319.html "XEP-0319: Last User Interaction in Presence"

@@ -33,8 +33,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </p>
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>
- * @see <a href="http://xmpp.org/extensions/xep-0079.html#schemas">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0079.html#schemas">XML Schema</a>
  */
 @XmlRootElement(name = "invalid-rules")
 public final class InvalidRules extends AdvancedMessageProcessingError {

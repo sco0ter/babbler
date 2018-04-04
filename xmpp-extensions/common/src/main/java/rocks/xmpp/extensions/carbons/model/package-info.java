@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0280.html">XEP-0280: Message Carbons</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0280.html">XEP-0280: Message Carbons</a>.
  * <p>
  * In order to keep all IM clients for a user engaged in a conversation, outbound messages are carbon-copied to all interested resources.
  * </p>

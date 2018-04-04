@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides classes for <a href="http://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>.
+ * Provides classes for <a href="https://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>.
  * <p>
  * It documents the existing protocol used for communication between servers and "external" components over the Jabber network.
  * </p>

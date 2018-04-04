@@ -35,8 +35,8 @@ import java.util.Objects;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>
- * @see <a href="http://xmpp.org/extensions/xep-0131.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0131.html#schema">XML Schema</a>
  * @see Headers
  */
 public final class Header {
@@ -59,10 +59,10 @@ public final class Header {
     /**
      * Creates a header.
      *
-     * @param name  The name of the header. See <a href="http://xmpp.org/extensions/xep-0131.html#registrar-shim">9.3 SHIM Headers Registry</a> for registered headers.
+     * @param name  The name of the header. See <a href="https://xmpp.org/extensions/xep-0131.html#registrar-shim">9.3 SHIM Headers Registry</a> for registered headers.
      * @param value The header value.
      * @return The header.
-     * @see <a href="http://xmpp.org/extensions/xep-0131.html#registrar-shim">9.3 SHIM Headers Registry</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0131.html#registrar-shim">9.3 SHIM Headers Registry</a>
      */
     public static Header of(String name, String value) {
         return new Header(Objects.requireNonNull(name), value);
@@ -73,7 +73,7 @@ public final class Header {
      *
      * @param dateTime The start date.
      * @return The header.
-     * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
      */
     public static Header ofStartDate(OffsetDateTime dateTime) {
         return new Header("Start", dateTime.toString());
@@ -84,7 +84,7 @@ public final class Header {
      *
      * @param dateTime The stop date.
      * @return The header.
-     * @see <a href="http://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
      */
     public static Header ofStopDate(OffsetDateTime dateTime) {
         return new Header("Stop", dateTime.toString());

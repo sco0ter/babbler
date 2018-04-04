@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>.
  * <p>
  * It defines an XMPP protocol extension for active management of an XML stream between two XMPP entities, including features for stanza acknowledgements and stream resumption.
  * </p>

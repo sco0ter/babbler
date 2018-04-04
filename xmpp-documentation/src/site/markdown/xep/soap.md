@@ -70,4 +70,4 @@ if (messageFactory != null) {
 }
 ```
 
-[SOAP Over XMPP]: http://xmpp.org/extensions/xep-0072.html "XEP-0072: SOAP Over XMPP"
+[SOAP Over XMPP]: https://xmpp.org/extensions/xep-0072.html "XEP-0072: SOAP Over XMPP"

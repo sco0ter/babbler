@@ -46,7 +46,7 @@ import java.util.Locale;
  * ```java
  * NodeConfiguration nodeConfiguration = NodeConfiguration.builder()
  *     .accessModel(AccessModel.AUTHORIZE)
- *     .bodyXslt(new URL("http://xmpp.org"))
+ *     .bodyXslt(new URL("https://xmpp.org"))
  *     .childrenAssociationPolicy(ChildrenAssociationPolicy.OWNERS)
  *     .childrenAssociationWhitelist(Collections.singleton(Jid.of("domain")))
  *     .children(Collections.singleton("collection1"))
@@ -927,7 +927,7 @@ public final class NodeConfiguration {
          *
          * @param temporarySubscriptions Whether to make all subscriptions temporary, based on subscriber presence.
          * @return The builder.
-         * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-tempsub">12.4 Temporary Subscriptions</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0060.html#impl-tempsub">12.4 Temporary Subscriptions</a>
          */
         public final Builder temporarySubscriptions(boolean temporarySubscriptions) {
             this.temporarySubscriptions = temporarySubscriptions;

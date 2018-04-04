@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0234.html#file-too-large">9.2 File too Large</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0234.html#file-too-large">9.2 File too Large</a>
  */
 @XmlRootElement(name = "file-too-large")
 @XmlType(factoryMethod = "create")

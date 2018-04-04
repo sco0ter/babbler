@@ -23,4 +23,4 @@ message.addExtension(amp);
 ```
 
 
-[Advanced Message Processing]: http://xmpp.org/extensions/xep-0079.html "XEP-0079: Advanced Message Processing"
+[Advanced Message Processing]: https://xmpp.org/extensions/xep-0079.html "XEP-0079: Advanced Message Processing"

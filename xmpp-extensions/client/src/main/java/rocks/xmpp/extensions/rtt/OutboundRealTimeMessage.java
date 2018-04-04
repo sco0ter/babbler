@@ -299,7 +299,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
      * Gets the refresh interval, after which a refresh message is sent to ensure real-time text is kept in sync. The default is 10 seconds.
      *
      * @return The refresh interval.
-     * @see <a href="http://xmpp.org/extensions/xep-0301.html#message_refresh">4.7.3 Message Refresh</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0301.html#message_refresh">4.7.3 Message Refresh</a>
      */
     public final long getRefreshInterval() {
         return refreshInterval;
@@ -309,7 +309,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
      * Gets the transmission interval of real-time text. The default is 700 milliseconds.
      *
      * @return The refresh interval.
-     * @see <a href="http://xmpp.org/extensions/xep-0301.html#transmission_interval">4.5 Transmission Interval</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0301.html#transmission_interval">4.5 Transmission Interval</a>
      */
     public final long getTransmissionInterval() {
         return transmissionInterval;

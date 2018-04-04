@@ -103,7 +103,7 @@ public final class Addresses {
      * This is useful for server processing (multicast usage).
      *
      * @return A new addresses extension.
-     * @see <a href="http://xmpp.org/extensions/xep-0033.html#multicast">6. Multicast Usage</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0033.html#multicast">6. Multicast Usage</a>
      */
     public final Addresses deliveredAndWithoutBlindCarbonCopies() {
         return new Addresses(this.address.stream().map(Address::delivered).filter(address -> address.getType() != Address.Type.BCC).collect(Collectors.toList()));
@@ -113,7 +113,7 @@ public final class Addresses {
      * If a noreply address is specified, a reply SHOULD NOT be generated.
      *
      * @return True, if a reply should not be generated.
-     * @see <a href="http://xmpp.org/extensions/xep-0033.html#replies">8. Reply Handling</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0033.html#replies">8. Reply Handling</a>
      */
     public final boolean shouldNotReply() {
         // If a noreply address is specified, a reply SHOULD NOT be generated.
@@ -129,7 +129,7 @@ public final class Addresses {
      * @param original The original message.
      * @param reply    The reply message.
      * @return True, if a reply has been generated; false, if a reply should not be generated.
-     * @see <a href="http://xmpp.org/extensions/xep-0033.html#replies">8. Reply Handling</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0033.html#replies">8. Reply Handling</a>
      */
     public static boolean createReply(Message original, Message reply) {
         Addresses addresses = original.getExtension(Addresses.class);

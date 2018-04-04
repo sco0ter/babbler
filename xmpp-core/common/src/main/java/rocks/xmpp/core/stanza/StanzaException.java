@@ -34,7 +34,7 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
  * It should be thrown, if a request (e.g. an IQ stanza) returned a stanza error.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a>
  * @deprecated Use {@link rocks.xmpp.core.stanza.model.StanzaErrorException}
  */
 @Deprecated
@@ -65,7 +65,7 @@ public class StanzaException extends XmppException {
      * Gets the stanza error, i.e. the {@code <error/>} element.
      *
      * @return The stanza error.
-     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a>
      */
     public final StanzaError getError() {
         return stanza.getError();
@@ -76,7 +76,7 @@ public class StanzaException extends XmppException {
      * This is a shortcut for {@code getError().getCondition()}.
      *
      * @return The error condition.
-     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions">8.3.3.  Defined Conditions</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions">8.3.3.  Defined Conditions</a>
      */
     public final Condition getCondition() {
         return stanza.getError().getCondition();

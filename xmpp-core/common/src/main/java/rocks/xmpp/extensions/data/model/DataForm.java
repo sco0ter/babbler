@@ -56,8 +56,8 @@ import java.util.stream.Collectors;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0004.html">XEP-0004: Data Forms</a>
- * @see <a href="http://xmpp.org/extensions/xep-0004.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0004.html">XEP-0004: Data Forms</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0004.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "x")
 public final class DataForm implements Comparable<DataForm> {
@@ -442,7 +442,7 @@ public final class DataForm implements Comparable<DataForm> {
      * ```
      * This class is immutable.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0004.html#protocol-field">3.2 The Field Element</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0004.html#protocol-field">3.2 The Field Element</a>
      */
     @XmlRootElement
     public static final class Field implements Comparable<Field> {
@@ -626,7 +626,7 @@ public final class DataForm implements Comparable<DataForm> {
          * Gets the validation for this field.
          *
          * @return The validation.
-         * @see <a href="http://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>
          */
         public final Validation getValidation() {
             return validation;
@@ -686,7 +686,7 @@ public final class DataForm implements Comparable<DataForm> {
         /**
          * Defines field types.
          * <blockquote>
-         * <p><cite><a href="http://xmpp.org/extensions/xep-0004.html#protocol-fieldtypes">3.3 Field Types</a></cite></p>
+         * <p><cite><a href="https://xmpp.org/extensions/xep-0004.html#protocol-fieldtypes">3.3 Field Types</a></cite></p>
          * <p>The following field types represent data "types" that are commonly exchanged between Jabber/XMPP entities.</p>
          * </blockquote>
          */

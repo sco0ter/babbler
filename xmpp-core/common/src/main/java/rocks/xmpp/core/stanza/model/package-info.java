@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas">XML Stanzas</a> and <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error">Stanza Errors</a>.
+ * Provides <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas">XML Stanzas</a> and <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error">Stanza Errors</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapter(value = LocaleAdapter.class, type = Locale.class) package rocks.xmpp.core.stanza.model;

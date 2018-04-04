@@ -38,8 +38,8 @@ import java.util.Objects;
  * A non-instantiable container class for holding the five different Message Carbons elements.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0280.html">XEP-0280: Message Carbons</a>
- * @see <a href="http://xmpp.org/extensions/xep-0280.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0280.html">XEP-0280: Message Carbons</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0280.html#schema">XML Schema</a>
  */
 @XmlTransient
 @XmlSeeAlso({MessageCarbons.Enable.class, MessageCarbons.Disable.class, MessageCarbons.Private.class, MessageDeliveryReceipts.Received.class, MessageCarbons.Sent.class})

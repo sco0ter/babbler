@@ -35,13 +35,13 @@ import java.util.Objects;
 /**
  * Represents an identity of an XMPP entity.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber Entity</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber Entity</a></cite></p>
  * <p>In disco, an entity's identity is broken down into its category (server, client, gateway, directory, etc.) and its particular type within that category (IM server, phone vs. handheld client, MSN gateway vs. AIM gateway, user directory vs. chatroom directory, etc.). This information helps requesting entities to determine the group or "bucket" of services into which the entity is most appropriately placed (e.g., perhaps the entity is shown in a GUI with an appropriate icon). An entity MAY have multiple identities. When multiple identity elements are provided, the name attributes for each identity element SHOULD have the same value.</p>
  * </blockquote>
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/registrar/disco-categories.html">Service Discovery Identities</a>
+ * @see <a href="https://xmpp.org/registrar/disco-categories.html">Service Discovery Identities</a>
  */
 public final class Identity implements Comparable<Identity> {
 
@@ -882,7 +882,7 @@ public final class Identity implements Comparable<Identity> {
     }
 
     /**
-     * Implements a natural ordering of an identity, as suggested and required by <a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>.
+     * Implements a natural ordering of an identity, as suggested and required by <a href="https://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>.
      *
      * @param o The other identity.
      * @return The result of the comparison.

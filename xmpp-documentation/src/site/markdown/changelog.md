@@ -164,17 +164,17 @@ Reduces GC pressure and increase performance.
 ## Version 0.6.0 (2015-08-12)
 
 * Add support for [XEP-0114: Jabber Component Protocol](http://www.xmpp.org/extensions/xep-0114.html)
-* Add support for [XEP-0171: Language Translation](http://xmpp.org/extensions/xep-0171.html)
+* Add support for [XEP-0171: Language Translation](https://xmpp.org/extensions/xep-0171.html)
 * Add support for [XEP-0205: Best Practices to Discourage Denial of Service Attacks](http://www.xmpp.org/extensions/xep-0205.html) (error conditions)
 * Add support for [XEP-0301: In-Band Real Time Text](http://www.xmpp.org/extensions/xep-0301.html)
-* Add support for [XEP-0319: Last User Interaction in Presence](http://xmpp.org/extensions/xep-0319.html)
+* Add support for [XEP-0319: Last User Interaction in Presence](https://xmpp.org/extensions/xep-0319.html)
 * Send initial presence automatically during login (no need to do it manually anymore).
 * Disabled extensions no longer process stanzas (for increased performance).
 * `XmppSession` is now `XmppClient` and derives the now abstract `XmppSession`. This is due to the added support for XEP-0114.
 * `XmppSession` has a new convenient method for determining support of a feature (since it's used by many XEPs).
 * `login` method now returns "additional data with success", i.e. the contents of the `<success/>` element.
 * Add a new `ReconnectionStrategy` implementation, which always tries to reconnect after fix time.
-* There's a new "xmpp-addr" project for [RFC 6122](http://xmpp.org/rfcs/rfc6122.html) which contains the `Jid` class, which has therefore also moved to a new package (`rocks.xmpp.addr`)
+* There's a new "xmpp-addr" project for [RFC 6122](https://xmpp.org/rfcs/rfc6122.html) which contains the `Jid` class, which has therefore also moved to a new package (`rocks.xmpp.addr`)
 * Likewise the Roster and Chat classes have been moved from the 'core' to 'im' package to better resemble the separation of RFC 6120 and 6121.
 * Use [Java 8's Functional Interfaces](https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html):
     * All event listeners have been replaced by `java.util.function.Consumer<T extends EventObject>` (if you used lambda expressions, nothing has changed for you)
@@ -197,29 +197,29 @@ Reduces GC pressure and increase performance.
 
 ## Version 0.5.0 (2015-03-21)
 
-* Add support for [XEP-0059: Result Set Management](http://xmpp.org/extensions/xep-0059.html)
-    * Specifically your hosted Service Discovery items (XEP-0030) can now return [limited result sets](http://xmpp.org/extensions/xep-0059.html#examples).
-* Add support for [XEP-0222: Persistent Storage of Public Data via PubSub](http://xmpp.org/extensions/xep-0222.html)
-* Add support for [XEP-0223: Persistent Storage of Private Data via PubSub](http://xmpp.org/extensions/xep-0223.html)
-* Add support for [Roster Versioning](http://xmpp.org/rfcs/rfc6121.html#roster-versioning)
+* Add support for [XEP-0059: Result Set Management](https://xmpp.org/extensions/xep-0059.html)
+    * Specifically your hosted Service Discovery items (XEP-0030) can now return [limited result sets](https://xmpp.org/extensions/xep-0059.html#examples).
+* Add support for [XEP-0222: Persistent Storage of Public Data via PubSub](https://xmpp.org/extensions/xep-0222.html)
+* Add support for [XEP-0223: Persistent Storage of Private Data via PubSub](https://xmpp.org/extensions/xep-0223.html)
+* Add support for [Roster Versioning](https://xmpp.org/rfcs/rfc6121.html#roster-versioning)
 * Rework the way inbound/outbound stanzas are handled: Instead of `add[Message|Presence|IQ]Listener` you now have to use `addInbound[Message|Presence|IQ]Listener`. (API change!)
 * Add `IQHandler` interface which allows to easily respond to IQ request.
-* PubSub: Add support for [Publish Options](http://xmpp.org/extensions/xep-0060.html#publisher-publish-options)
+* PubSub: Add support for [Publish Options](https://xmpp.org/extensions/xep-0060.html#publisher-publish-options)
 * PubSub: Add API to retrieve subscription options for a specific subscription id.
 * Harmonize Exception design: Most methods now only throw `XmppException` (or a subclass thereof)
-* Add helper classes to work with [standardized MUC](http://xmpp.org/extensions/xep-0045.html#registrar-formtype) and [PubSub data forms](http://xmpp.org/extensions/xep-0060.html#registrar-formtypes), e.g. to configure a node.
+* Add helper classes to work with [standardized MUC](https://xmpp.org/extensions/xep-0045.html#registrar-formtype) and [PubSub data forms](https://xmpp.org/extensions/xep-0060.html#registrar-formtypes), e.g. to configure a node.
 * Rename some methods to better resemble the terminology of the specifications (e.g. `discover*` instead of `get*`).
 * Refactor Chat State Notifications, Message Delivery Receipts, PingManager
-* Refactor [XEP-0107](http://xmpp.org/extensions/xep-0107.html): Mood values can now take specific (custom) moods.
+* Refactor [XEP-0107](https://xmpp.org/extensions/xep-0107.html): Mood values can now take specific (custom) moods.
 * Most extension classes are now immutable.
-* Couple RosterManager more tightly with [XEP-0083: Nested Roster Groups](http://xmpp.org/extensions/xep-0083.html).
+* Couple RosterManager more tightly with [XEP-0083: Nested Roster Groups](https://xmpp.org/extensions/xep-0083.html).
 * Add new `connect(Jid from)` method to set the 'from' attribute in the stream header.
 * Add new `login()` method, which allows to pass an authorization id and a `CallbackHandler`.
 * Implement `Comparable` for ChatRoom and ChatService classes.
-* MUC: Add API to discover [allowable traffic](http://xmpp.org/extensions/xep-0045.html#impl-service-traffic) in a chat room.
-* MUC: Add support for [`http://jabber.org/protocol/muc#rooms`](http://xmpp.org/extensions/xep-0045.html#disco-client)
+* MUC: Add API to discover [allowable traffic](https://xmpp.org/extensions/xep-0045.html#impl-service-traffic) in a chat room.
+* MUC: Add support for [`http://jabber.org/protocol/muc#rooms`](https://xmpp.org/extensions/xep-0045.html#disco-client)
 * Add support for [optional session establishment](http://tools.ietf.org/html/draft-cridland-xmpp-session-01).
-* Add persistent (directory-based) cache support for [Entity Capabilities](http://xmpp.org/extensions/xep-0115.html) and [Avatars](http://xmpp.org/extensions/xep-0084.html).
+* Add persistent (directory-based) cache support for [Entity Capabilities](https://xmpp.org/extensions/xep-0115.html) and [Avatars](https://xmpp.org/extensions/xep-0084.html).
 * Use Singleton pattern for XML elements where appropriate (e.g. most stanza errors).
 * Add support for BOSH compression (gzip, deflate)
 * `XmppSession.getExtensionManager()` has been replaced with a more general `getManager()`, which also covers core managers.
@@ -228,8 +228,8 @@ Reduces GC pressure and increase performance.
 
 ## Version 0.4.0 (2014-11-01)
 
-* Add support for [XEP-0070: Verifying HTTP Requests via XMPP](http://xmpp.org/extensions/xep-0070.html)
-* Add support for [XEP-0084: User Avatar](http://xmpp.org/extensions/xep-0084.html)
+* Add support for [XEP-0070: Verifying HTTP Requests via XMPP](https://xmpp.org/extensions/xep-0070.html)
+* Add support for [XEP-0084: User Avatar](https://xmpp.org/extensions/xep-0084.html)
 * Add visual debugger.
 * First version available on Maven Central.
 * Add ability for modularization.
@@ -238,7 +238,7 @@ Reduces GC pressure and increase performance.
 * Improve reconnection logic.
 * Improvements for BOSH connection:
     * Allow secure HTTPS connection
-    * Provide ability to use a [key sequencing mechanism](http://xmpp.org/extensions/xep-0124.html#keys).
+    * Provide ability to use a [key sequencing mechanism](https://xmpp.org/extensions/xep-0124.html#keys).
     * minor improvements and tests with ejabberd server.
 * Periodically ping the server (XEP-0199) to allow for a more stable connection.
 * Add `isRequest()` and `isResponse()` method to IQ.
@@ -249,39 +249,39 @@ Reduces GC pressure and increase performance.
 
 ## Version 0.3.0 (2014-08-02)
 
-* Add support for [XEP-0047: In-Band Bytestreams](http://xmpp.org/extensions/xep-0047.html)
-* Add support for [XEP-0065: SOCKS5 Bytestreams](http://xmpp.org/extensions/xep-0065.html)
-* Add support for [XEP-0066: Out of Band Data](http://xmpp.org/extensions/xep-0066.html)
-* Add support for [XEP-0071: XHTML-IM](http://xmpp.org/extensions/xep-0071.html)
-* Add support for [XEP-0072: SOAP Over XMPP](http://xmpp.org/extensions/xep-0072.html)
-* Add support for [XEP-0095: Stream Initiation](http://xmpp.org/extensions/xep-0095.html)
-* Add support for [XEP-0096: SI File Transfer](http://xmpp.org/extensions/xep-0096.html)
-* Add support for [XEP-0186: Invisible Command](http://xmpp.org/extensions/xep-0186.html)
-* Add support for [XEP-0300: Use of Cryptographic Hash Functions in XMPP](http://xmpp.org/extensions/xep-0300.html)
+* Add support for [XEP-0047: In-Band Bytestreams](https://xmpp.org/extensions/xep-0047.html)
+* Add support for [XEP-0065: SOCKS5 Bytestreams](https://xmpp.org/extensions/xep-0065.html)
+* Add support for [XEP-0066: Out of Band Data](https://xmpp.org/extensions/xep-0066.html)
+* Add support for [XEP-0071: XHTML-IM](https://xmpp.org/extensions/xep-0071.html)
+* Add support for [XEP-0072: SOAP Over XMPP](https://xmpp.org/extensions/xep-0072.html)
+* Add support for [XEP-0095: Stream Initiation](https://xmpp.org/extensions/xep-0095.html)
+* Add support for [XEP-0096: SI File Transfer](https://xmpp.org/extensions/xep-0096.html)
+* Add support for [XEP-0186: Invisible Command](https://xmpp.org/extensions/xep-0186.html)
+* Add support for [XEP-0300: Use of Cryptographic Hash Functions in XMPP](https://xmpp.org/extensions/xep-0300.html)
 * Fix Man-in-the-Middle vulnerability / Added Hostname Verification. [Read more about it](http://tersesystems.com/2014/03/23/fixing-hostname-verification/).
 * Add `BookmarkManager` for more convenient management of bookmarks.
 * Implement `Comparable` interface for bookmarks.
 * Improve BOSH logic with regard to overactivity. Also updated BOSH version to 1.11.
 * Stream errors now have their own `StreamError` class and no longer derive from `Exception` due to some JAXB problems.
 * Enhance `RosterManager` API to easily rename or remove (nested) roster groups.
-* Add helper methods to facilitate use of [XEP-0149: Time Periods](http://xmpp.org/extensions/xep-0149.html)
+* Add helper methods to facilitate use of [XEP-0149: Time Periods](https://xmpp.org/extensions/xep-0149.html)
 * Set encoding for the XMPP stream to UTF-8.
 * Make connection establishment a little bit more robust.
 * Increase performance by using buffered streams.
-* Improve logic for [vCard based avatars](http://xmpp.org/extensions/xep-0153.html).
+* Improve logic for [vCard based avatars](https://xmpp.org/extensions/xep-0153.html).
 * Implement `toString()` method on many objects.
 * Add more documentation.
 
 
 ## Version 0.2.0 (2014-07-06)
 
-* Add support for [XEP-0045: Multi-User Chat](http://xmpp.org/extensions/xep-0045.html)
-* Add support for [XEP-0079: Advanced Message Processing](http://xmpp.org/extensions/xep-0079.html)
-* Add support for [XEP-0122: Data Forms Validation](http://xmpp.org/extensions/xep-0122.html)
-* Add support for [XEP-0141: Data Forms Layout](http://xmpp.org/extensions/xep-0141.html)
-* Add support for [XEP-0144: Roster Item Exchange](http://xmpp.org/extensions/xep-0144.html)
-* Add support for [XEP-0280: Message Carbons](http://xmpp.org/extensions/xep-0280.html)
-* Add support for [XEP-0335: JSON Containers](http://xmpp.org/extensions/xep-0335.html)
+* Add support for [XEP-0045: Multi-User Chat](https://xmpp.org/extensions/xep-0045.html)
+* Add support for [XEP-0079: Advanced Message Processing](https://xmpp.org/extensions/xep-0079.html)
+* Add support for [XEP-0122: Data Forms Validation](https://xmpp.org/extensions/xep-0122.html)
+* Add support for [XEP-0141: Data Forms Layout](https://xmpp.org/extensions/xep-0141.html)
+* Add support for [XEP-0144: Roster Item Exchange](https://xmpp.org/extensions/xep-0144.html)
+* Add support for [XEP-0280: Message Carbons](https://xmpp.org/extensions/xep-0280.html)
+* Add support for [XEP-0335: JSON Containers](https://xmpp.org/extensions/xep-0335.html)
 * RosterManager now supports (nested) contact groups
 * Improve `Jid` class (nodeprep, resourceprep, better escaping logic, caching for better performance, `Comparable` interface implemented)
 * Add JID Escaping feature (`jid\\escaping`) to feature list for Service Discovery.
@@ -291,8 +291,8 @@ Reduces GC pressure and increase performance.
 * The base `Connection` class is now called `XmppSession`, which can have multiple connection methods. Each connection method is tried while connecting. That way a XMPP session can have a normal `TcpConnection` and an alternative `BoshConnection`, which is tried as fallback.
 * Move Message, Presence and IQ classes from `org.xmpp.stanza` to `org.xmpp.stanza.client package (API change).
 * The 'from' attribute of roster/privacy lists/blocking command pushes are now checked to prevent IQ spoofing.
-* Update [XEP-0080: User Location](http://xmpp.org/extensions/xep-0080.html) implementation from version 1.7 to 1.8.
-* Provide convenience methods for creating [XEP-0126: Invisibility](http://xmpp.org/extensions/xep-0126.html) privacy lists.
+* Update [XEP-0080: User Location](https://xmpp.org/extensions/xep-0080.html) implementation from version 1.7 to 1.8.
+* Provide convenience methods for creating [XEP-0126: Invisibility](https://xmpp.org/extensions/xep-0126.html) privacy lists.
 * Implement `Comparable` interface for `PrivacyList` and `PrivacyRule`.
 * Various minor refactoring and improvements.
 

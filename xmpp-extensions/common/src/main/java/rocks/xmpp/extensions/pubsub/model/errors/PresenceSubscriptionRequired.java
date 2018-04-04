@@ -33,8 +33,8 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Christian Schudt
  * @see #PRESENCE_SUBSCRIPTION_REQUIRED
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-presence">6.1.3.2 Presence Subscription Required</a>
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-presence">6.5.9.6 Presence Subscription Required</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-presence">6.1.3.2 Presence Subscription Required</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-presence">6.5.9.6 Presence Subscription Required</a>
  */
 @XmlRootElement(name = "presence-subscription-required")
 @XmlType(factoryMethod = "create")

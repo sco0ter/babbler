@@ -163,7 +163,7 @@ public final class TcpConnectionConfiguration extends ClientConnectionConfigurat
      *
      * @param xmppServiceDomain The fully qualified domain name.
      * @return If the connection could be established.
-     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">3.2.1.  Preferred Process: SRV Lookup</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">3.2.1.  Preferred Process: SRV Lookup</a>
      */
     private Socket connectWithXmppServiceDomain(final Jid xmppServiceDomain, final String nameServer) {
 

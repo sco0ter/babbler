@@ -267,7 +267,7 @@ public final class StreamHeader implements SessionOpen, CharSequence {
      * Gets the 'from' attribute.
      *
      * @return The 'from' attribute.
-     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-attr-from">4.7.1.  from</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-attr-from">4.7.1.  from</a>
      */
     @Override
     public final Jid getFrom() {
@@ -278,7 +278,7 @@ public final class StreamHeader implements SessionOpen, CharSequence {
      * Gets the 'to' attribute.
      *
      * @return The 'to' attribute.
-     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-attr-to">4.7.2.  to</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-attr-to">4.7.2.  to</a>
      */
     @Override
     public final Jid getTo() {
@@ -289,7 +289,7 @@ public final class StreamHeader implements SessionOpen, CharSequence {
      * Gets the 'id' attribute.
      *
      * @return The 'id' attribute.
-     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-attr-id">4.7.3.  id</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-attr-id">4.7.3.  id</a>
      */
     @Override
     public final String getId() {
@@ -300,7 +300,7 @@ public final class StreamHeader implements SessionOpen, CharSequence {
      * Gets the 'xml:lang' attribute.
      *
      * @return The 'xml:lang' attribute.
-     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-attr-xmllang">4.7.4.  xml:lang</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-attr-xmllang">4.7.4.  xml:lang</a>
      */
     @Override
     public final Locale getLanguage() {
@@ -321,7 +321,7 @@ public final class StreamHeader implements SessionOpen, CharSequence {
      * Gets additional namespaces other than the content namespace and the stream namespace.
      *
      * @return The namespaces.
-     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-ns-other">4.8.4.  Other Namespaces</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-ns-other">4.8.4.  Other Namespaces</a>
      */
     public final List<QName> getAdditionalNamespaces() {
         return Collections.unmodifiableList(additionalNamespaces);

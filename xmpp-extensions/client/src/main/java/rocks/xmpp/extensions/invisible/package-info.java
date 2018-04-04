@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides classes for <a href="http://xmpp.org/extensions/xep-0186.html">XEP-0186: Invisible Command</a>.
+ * Provides classes for <a href="https://xmpp.org/extensions/xep-0186.html">XEP-0186: Invisible Command</a>.
  * <p>
  * It defines an XMPP-compatible protocol for user invisibility.
  * </p>

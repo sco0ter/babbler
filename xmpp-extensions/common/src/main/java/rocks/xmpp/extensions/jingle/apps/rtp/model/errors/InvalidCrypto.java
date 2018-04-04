@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * The implementation of the {@code <invalid-crypto/>} element in the {@code urn:xmpp:jingle:apps:rtp:errors:1} namespace.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0167.html#srtp">7. Negotiation of SRTP</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0167.html#srtp">7. Negotiation of SRTP</a>
  */
 @XmlRootElement(name = "invalid-crypto")
 public final class InvalidCrypto {

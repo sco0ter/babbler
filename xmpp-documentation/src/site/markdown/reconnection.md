@@ -5,7 +5,7 @@ It may happen that the connection drops, e.g. because the server has been shutdo
 (e.g. because the laptop is in sleep mode).
 
 Babbler tries to reconnect automatically by default after a random number of seconds. It basically follows the recommendation described in
-[RFC 6120 § 3.3 Reconnection](http://xmpp.org/rfcs/rfc6120.html#tcp-reconnect), but makes smart differentiations between system shutdown and client disconnects by default
+[RFC 6120 § 3.3 Reconnection](https://xmpp.org/rfcs/rfc6120.html#tcp-reconnect), but makes smart differentiations between system shutdown and client disconnects by default
 (on system shutdown, the reconnection window is a bit larger).
 
 ## Custom Reconnection Strategies

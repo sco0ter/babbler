@@ -57,8 +57,8 @@ import java.util.Locale;
  * ```
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-metadata">5.4 Discover Node Metadata</a>
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#registrar-formtypes-metadata">16.4.3 pubsub#meta-data FORM_TYPE</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#entity-metadata">5.4 Discover Node Metadata</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#registrar-formtypes-metadata">16.4.3 pubsub#meta-data FORM_TYPE</a>
  */
 public final class NodeMetaData {
 

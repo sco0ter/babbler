@@ -40,8 +40,8 @@ import java.util.Objects;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0202.html">XEP-0202: Entity Time</a>
- * @see <a href="http://xmpp.org/extensions/xep-0202.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0202.html">XEP-0202: Entity Time</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0202.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "time")
 public final class EntityTime {

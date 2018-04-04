@@ -64,4 +64,4 @@ if (html != null) {
 Use either `getBody()` which gets the body element as DOM Element or `getContent()`, which gets the XHTML content (between the `<body>` element) as String.
 
 
-[XHTML-IM]: http://xmpp.org/extensions/xep-0071.html "XEP-0071: XHTML-IM"
+[XHTML-IM]: https://xmpp.org/extensions/xep-0071.html "XEP-0071: XHTML-IM"

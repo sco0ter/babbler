@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <recipient-unavailable/>} stanza error.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-recipient-unavailable">8.3.3.13.  recipient-unavailable</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-recipient-unavailable">8.3.3.13.  recipient-unavailable</a></cite></p>
  * <p>The intended recipient is temporarily unavailable, undergoing maintenance, etc.; the associated error type SHOULD be "wait".</p>
  * </blockquote>
  * This class is a singleton.

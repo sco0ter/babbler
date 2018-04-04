@@ -40,8 +40,8 @@ import java.util.List;
  * The implementation of the {@code <rtt/>} element in the {@code urn:xmpp:rtt:0} namespace.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0301.html">XEP-0301: In-Band Real Time Text</a>
- * @see <a href="http://xmpp.org/extensions/xep-0301.html#xml_schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0301.html">XEP-0301: In-Band Real Time Text</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0301.html#xml_schema">XML Schema</a>
  */
 @XmlRootElement(name = "rtt")
 public final class RealTimeText {
@@ -95,7 +95,7 @@ public final class RealTimeText {
      * </blockquote>
      *
      * @return The event.
-     * @see <a href="http://xmpp.org/extensions/xep-0301.html#event">4.2.2 event</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0301.html#event">4.2.2 event</a>
      */
     public final Event getEvent() {
         return event;
@@ -105,7 +105,7 @@ public final class RealTimeText {
      * Gets the sequence.
      *
      * @return The sequence.
-     * @see <a href="http://xmpp.org/extensions/xep-0301.html#seq">4.2.1 seq</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0301.html#seq">4.2.1 seq</a>
      */
     public final Integer getSequence() {
         return sequence;
@@ -115,7 +115,7 @@ public final class RealTimeText {
      * Gets the actions.
      *
      * @return The actions.
-     * @see <a href="http://xmpp.org/extensions/xep-0301.html#realtime_text_actions">4.6 Real-Time Text Actions</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0301.html#realtime_text_actions">4.6 Real-Time Text Actions</a>
      */
     public final List<Action> getActions() {
         return Collections.unmodifiableList(actions);
@@ -125,7 +125,7 @@ public final class RealTimeText {
      * Gets the id.
      *
      * @return The id.
-     * @see <a href="http://xmpp.org/extensions/xep-0301.html#id">4.2.3 id</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0301.html#id">4.2.3 id</a>
      */
     public final String getId() {
         return id;
@@ -134,7 +134,7 @@ public final class RealTimeText {
     /**
      * The real-time text event.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0301.html#event">4.2.2 event</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0301.html#event">4.2.2 event</a>
      */
     public enum Event {
         /**
@@ -175,7 +175,7 @@ public final class RealTimeText {
     /**
      * The implementation of the {@code <t/>} element.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/extensions/xep-0301.html#element_t_insert_text">4.6.3.1 Element {@code <t/>} - Insert Text</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/extensions/xep-0301.html#element_t_insert_text">4.6.3.1 Element {@code <t/>} - Insert Text</a></cite></p>
      * <p>Supports the transmission of text, including key presses, and text block inserts.</p>
      * </blockquote>
      */
@@ -239,7 +239,7 @@ public final class RealTimeText {
     /**
      * The implementation of the {@code <e/>} element.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/extensions/xep-0301.html#element_e_erase_text">4.6.3.2 Element {@code <e/>} - Erase Text</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/extensions/xep-0301.html#element_e_erase_text">4.6.3.2 Element {@code <e/>} - Erase Text</a></cite></p>
      * <p>Supports the behavior of backspace key presses. Text is removed towards beginning of the message. This element is also used for all delete operations, including the backspace key, the delete key, and text block deletes.</p>
      * </blockquote>
      */
@@ -312,7 +312,7 @@ public final class RealTimeText {
     /**
      * The implementation of the {@code <w/>} element.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/extensions/xep-0301.html#element_w_wait_interval">4.6.3.3 Element {@code <w/>} - Wait Interval</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/extensions/xep-0301.html#element_w_wait_interval">4.6.3.3 Element {@code <w/>} - Wait Interval</a></cite></p>
      * <p>Allow for the transmission of intervals, between real-time text actions, to recreate the pauses between key presses.</p>
      * </blockquote>
      */

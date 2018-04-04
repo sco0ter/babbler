@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <registration-required/>} stanza error.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-registration-required">8.3.3.15.  registration-required</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-registration-required">8.3.3.15.  registration-required</a></cite></p>
  * <p>The requesting entity is not authorized to access the requested service because prior registration is necessary (examples of prior registration include members-only rooms in XMPP multi-user chat [XEP-0045] and gateways to non-XMPP instant messaging services, which traditionally required registration in order to use the gateway [XEP-0100]); the associated error type SHOULD be "auth".</p>
  * </blockquote>
  * This class is a singleton.

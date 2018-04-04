@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of the <a href="http://xmpp.org/rfcs/rfc6120.html#streams-ns-stream">Stream Namespace</a>, like <a href="http://xmpp.org/rfcs/rfc6120.html#streams-negotiation-features">Stream Features</a>.
+ * Provides XML schema implementations of the <a href="https://xmpp.org/rfcs/rfc6120.html#streams-ns-stream">Stream Namespace</a>, like <a href="https://xmpp.org/rfcs/rfc6120.html#streams-negotiation-features">Stream Features</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = StreamHeader.STREAM_NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED, xmlns = {@XmlNs(prefix = StreamHeader.STREAM_NAMESPACE_PREFIX, namespaceURI = StreamHeader.STREAM_NAMESPACE)}) package rocks.xmpp.core.stream.model;

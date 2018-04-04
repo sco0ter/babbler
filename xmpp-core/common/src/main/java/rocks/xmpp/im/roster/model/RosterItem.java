@@ -48,7 +48,7 @@ public interface RosterItem extends SubscriptionState {
     /**
      * Gets the name of the contact.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#roster-syntax-items-name">2.1.2.4.  Name Attribute</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#roster-syntax-items-name">2.1.2.4.  Name Attribute</a></cite></p>
      * <p>The 'name' attribute of the {@code <item/>} element specifies the "handle" to be associated with the JID, as determined by the user (not the contact). Although the value of the 'name' attribute MAY have meaning to a human user, it is opaque to the server. However, the 'name' attribute MAY be used by the server for matching purposes within the context of various XMPP extensions (one possible comparison method is that described for XMPP resourceparts in [XMPP-ADDR]).</p>
      * <p>It is OPTIONAL for a client to include the 'name' attribute when adding or updating a roster item.</p>
      * </blockquote>
@@ -60,7 +60,7 @@ public interface RosterItem extends SubscriptionState {
     /**
      * Gets the subscription pre-approval status.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#roster-syntax-items-approved">2.1.2.1.  Approved Attribute</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#roster-syntax-items-approved">2.1.2.1.  Approved Attribute</a></cite></p>
      * <p>The boolean 'approved' attribute with a value of "true" is used to signal subscription pre-approval as described under Section 3.4</p>
      * </blockquote>
      *

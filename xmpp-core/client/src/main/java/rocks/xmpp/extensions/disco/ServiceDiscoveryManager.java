@@ -63,9 +63,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * Manages <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>.
+ * Manages <a href="https://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/extensions/xep-0030.html#intro">1. Introduction</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/extensions/xep-0030.html#intro">1. Introduction</a></cite></p>
  * <p>The ability to discover information about entities on the Jabber network is extremely valuable. Such information might include features offered or protocols supported by the entity, the entity's type or identity, and additional entities that are associated with the original entity in some way (often thought of as "children" of the "parent" entity).</p>
  * </blockquote>
  * <p>Enabled extensions are automatically added to the list of features by their respective manager class.
@@ -218,7 +218,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @return The extensions.
      * @see #addExtension(rocks.xmpp.extensions.data.model.DataForm)
      * @see #removeExtension(rocks.xmpp.extensions.data.model.DataForm)
-     * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     @SuppressWarnings("unchecked")
     public final List<DataForm> getExtensions() {
@@ -316,7 +316,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @param extension The extension.
      * @see #removeExtension(rocks.xmpp.extensions.data.model.DataForm)
      * @see #getExtensions()
-     * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public final void addExtension(DataForm extension) {
         if (extensions.add(extension) && xmppSession.isConnected()) {
@@ -330,7 +330,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @param extension The extension.
      * @see #addExtension(rocks.xmpp.extensions.data.model.DataForm)
      * @see #getExtensions()
-     * @see <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public final void removeExtension(DataForm extension) {
         if (extensions.remove(extension) && xmppSession.isConnected()) {
@@ -341,7 +341,7 @@ public final class ServiceDiscoveryManager extends Manager {
     /**
      * Discovers information about another XMPP entity.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber Entity</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber Entity</a></cite></p>
      * <p>A requesting entity may want to discover information about another entity on the network. The information desired generally is of two kinds:</p>
      * <ol>
      * <li>The target entity's identity.</li>
@@ -359,7 +359,7 @@ public final class ServiceDiscoveryManager extends Manager {
     /**
      * Discovers information about another XMPP entity targeted at a specific node.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/extensions/xep-0030.html#info-nodes">3.2 Info Nodes</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/extensions/xep-0030.html#info-nodes">3.2 Info Nodes</a></cite></p>
      * <p>A disco#info query MAY also be directed to a specific node identifier associated with a JID.</p>
      * </blockquote>
      *

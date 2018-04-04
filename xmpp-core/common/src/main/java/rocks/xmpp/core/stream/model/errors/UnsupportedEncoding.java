@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <unsupported-encoding/>} stream error.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-unsupported-encoding">4.9.3.22.  unsupported-encoding</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-unsupported-encoding">4.9.3.22.  unsupported-encoding</a></cite></p>
  * <p>The initiating entity has encoded the stream in an encoding that is not supported by the server (see Section 11.6) or has otherwise improperly encoded the stream (e.g., by violating the rules of the [UTF-8] encoding).</p>
  * </blockquote>
  * This class is a singleton.

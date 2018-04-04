@@ -75,7 +75,7 @@ import rocks.xmpp.util.cache.DirectoryCache;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
- * This class manages avatar updates as described in <a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a> and <a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>.
+ * This class manages avatar updates as described in <a href="https://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a> and <a href="https://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>.
  * <p>
  * Whenever an avatar update is received by a contact, either via the presence based avatar extension (XEP-0153) or the PEP-based notification (XEP-0084), the registered listeners are triggered.
  * </p>
@@ -233,7 +233,7 @@ public final class AvatarManager extends Manager {
             if (event != null) {
                 Addresses addresses = message.getExtension(Addresses.class);
                 if (addresses != null) {
-                    // See http://xmpp.org/extensions/xep-0163.html#notify-addressing
+                    // See https://xmpp.org/extensions/xep-0163.html#notify-addressing
                     for (Address address : addresses.getAddresses()) {
                         if (address.getType() == Address.Type.REPLYTO && xmppSession.getConnectedResource().equals(address.getJid())) {
                             // Don't notify if the message came from our own connected resource.
@@ -462,7 +462,7 @@ public final class AvatarManager extends Manager {
      *
      * @param imageData The avatar image data, which must be in PNG format. {@code null} resets the avatar.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User Publishes Avatar</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0153.html#publish">3.1 User Publishes Avatar</a>
      */
     public final AsyncResult<Void> publishAvatar(byte[] imageData) {
 
@@ -488,7 +488,7 @@ public final class AvatarManager extends Manager {
      *                      resets the avatar.
      * @return The async result.
      * @throws XmppException If the image could not be converted to PNG.
-     * @see <a href="http://xmpp.org/extensions/xep-0153.html#publish">3.1 User Publishes Avatar</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0153.html#publish">3.1 User Publishes Avatar</a>
      */
     public final AsyncResult<Void> publishAvatarImage(final BufferedImage bufferedImage) throws XmppException {
         try {

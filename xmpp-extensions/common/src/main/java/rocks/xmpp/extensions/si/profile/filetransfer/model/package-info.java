@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a>.
  * <p>
  * It defines a profile of the XMPP stream initiation extension for transferring files between two entities. The protocol provides a modular framework that enables the exchange of information about the file to be transferred as well as the negotiation of parameters such as the transport to be used.
  * </p>

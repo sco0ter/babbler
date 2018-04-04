@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides classes for <a href="http://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>.
+ * Provides classes for <a href="https://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>.
  */
 package rocks.xmpp.extensions.sm;
 

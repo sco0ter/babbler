@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0050.html">XEP-0050: Ad-Hoc Commands</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0050.html">XEP-0050: Ad-Hoc Commands</a>.
  * <p>
  * It defines an XMPP protocol extension for advertising and executing application-specific commands, such as those related to a configuration workflow. Typically the commands contain data forms (XEP-0004) in order to structure the information exchange.
  * </p>

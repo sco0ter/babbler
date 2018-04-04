@@ -34,7 +34,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * This class implements <a href="http://xmpp.org/extensions/xep-0049.html">XEP-0049: Private XML Storage</a>.
+ * This class implements <a href="https://xmpp.org/extensions/xep-0049.html">XEP-0049: Private XML Storage</a>.
  * <p>
  * It allows to retrieve and store private data in the server's private XML storage.
  * </p>

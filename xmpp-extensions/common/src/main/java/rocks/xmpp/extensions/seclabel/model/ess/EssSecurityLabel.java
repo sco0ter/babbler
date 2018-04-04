@@ -32,8 +32,8 @@ import java.util.Objects;
  * The implementation of the {@code <esssecuritylabel/>} element in the {@code urn:xmpp:sec-label:ess:0} namespace.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0258.html">XEP-0258: Security Labels in XMPP</a>
- * @see <a href="http://xmpp.org/extensions/xep-0258.html#schema-ess">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0258.html">XEP-0258: Security Labels in XMPP</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0258.html#schema-ess">XML Schema</a>
  * @see <a href="http://tools.ietf.org/html/rfc2634">RFC 2634</a>
  */
 @XmlRootElement(name = "esssecuritylabel")

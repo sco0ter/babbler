@@ -38,7 +38,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * This manager implements <a href="http://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>.
+ * This manager implements <a href="https://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>.
  * <p>
  * If enabled and a software version has been set, it automatically responds to inbound queries for the software version.
  * </p>

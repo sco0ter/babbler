@@ -38,7 +38,7 @@ import java.net.URL;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
  */
 @XmlRootElement(name = "query")
 public final class OobIQ {

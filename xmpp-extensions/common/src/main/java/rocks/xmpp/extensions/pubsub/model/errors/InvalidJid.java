@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Christian Schudt
  * @see #INVALID_JID
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-nomatch">6.1.3.1 JIDs Do Not Match</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-nomatch">6.1.3.1 JIDs Do Not Match</a>
  */
 @XmlRootElement(name = "invalid-jid")
 @XmlType(factoryMethod = "create")

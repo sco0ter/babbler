@@ -42,8 +42,8 @@ import java.util.stream.Collectors;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
- * @see <a href="http://xmpp.org/extensions/xep-0009.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0009.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class Rpc {

@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of the <a href="http://xmpp.org/rfcs/rfc6120.html#schemas-streamerror">Stream Error Namespace</a>.
+ * Provides XML schema implementations of the <a href="https://xmpp.org/rfcs/rfc6120.html#schemas-streamerror">Stream Error Namespace</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-streams", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.core.stream.model.errors;

@@ -41,8 +41,8 @@ import java.util.Objects;
  * This class is a view on a collection, if the underlying collection changes, the view on the collection will yield different results.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0030.html#items-nodes">XEP-0030: Service Discovery 4.2 Items Nodes</a>
- * @see <a href="http://xmpp.org/extensions/xep-0059.html#examples">XEP-0059: Result Set Management 3. Examples</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0030.html#items-nodes">XEP-0030: Service Discovery 4.2 Items Nodes</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0059.html#examples">XEP-0059: Result Set Management 3. Examples</a>
  * @deprecated Use {@link ResultSetProvider#forItems(Collection)}}
  */
 @Deprecated

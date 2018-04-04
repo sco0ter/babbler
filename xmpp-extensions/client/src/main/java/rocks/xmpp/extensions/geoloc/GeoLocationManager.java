@@ -44,7 +44,7 @@ import java.util.function.Consumer;
  * Manages the publishing of user location and the notification of it.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0080.html">XEP-0080: User Location</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0080.html">XEP-0080: User Location</a>
  */
 public final class GeoLocationManager extends Manager {
 

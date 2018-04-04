@@ -27,4 +27,4 @@ messageDeliveryReceiptsManager.setMessageFilter(message -> message.getType() == 
 ```
 
 
-[Receipts]: http://xmpp.org/extensions/xep-0184.html "XEP-0184: Message Delivery Receipts"
+[Receipts]: https://xmpp.org/extensions/xep-0184.html "XEP-0184: Message Delivery Receipts"

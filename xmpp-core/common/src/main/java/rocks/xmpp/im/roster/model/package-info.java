@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of the <a href="http://xmpp.org/rfcs/rfc6121.html#schema">Roster Namespace</a>.
+ * Provides XML schema implementations of the <a href="https://xmpp.org/rfcs/rfc6121.html#schema">Roster Namespace</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "jabber:iq:roster", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.im.roster.model;

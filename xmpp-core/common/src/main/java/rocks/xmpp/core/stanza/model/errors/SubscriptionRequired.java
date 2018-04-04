@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <subscription-required/>} stanza error.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-subscription-required">8.3.3.20.  subscription-required</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-subscription-required">8.3.3.20.  subscription-required</a></cite></p>
  * <p>The requesting entity is not authorized to access the requested service because a prior subscription is necessary (examples of prior subscription include authorization to receive presence information as defined in [XMPP-IM] and opt-in data feeds for XMPP publish-subscribe as defined in [XEP-0060]); the associated error type SHOULD be "auth".</p>
  * </blockquote>
  * This class is a singleton.

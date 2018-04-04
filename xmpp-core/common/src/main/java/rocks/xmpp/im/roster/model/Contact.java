@@ -42,7 +42,7 @@ import java.util.Objects;
 /**
  * A contact in the user's roster.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#roster-syntax-items">2.1.2.  Roster Items</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#roster-syntax-items">2.1.2.  Roster Items</a></cite></p>
  * <p>The {@code <query/>} element inside a roster set contains one {@code <item/>} child, and a roster result typically contains multiple {@code <item/>} children. Each {@code <item/>} element describes a unique "roster item" (sometimes also called a "contact").</p>
  * </blockquote>
  * <p>
@@ -222,7 +222,7 @@ public final class Contact implements RosterItem, Comparable<Contact> {
     /**
      * Gets the name of the contact.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#roster-syntax-items-name">2.1.2.4.  Name Attribute</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#roster-syntax-items-name">2.1.2.4.  Name Attribute</a></cite></p>
      * <p>The 'name' attribute of the {@code <item/>} element specifies the "handle" to be associated with the JID, as determined by the user (not the contact). Although the value of the 'name' attribute MAY have meaning to a human user, it is opaque to the server. However, the 'name' attribute MAY be used by the server for matching purposes within the context of various XMPP extensions (one possible comparison method is that described for XMPP resourceparts in [XMPP-ADDR]).</p>
      * <p>It is OPTIONAL for a client to include the 'name' attribute when adding or updating a roster item.</p>
      * </blockquote>
@@ -247,7 +247,7 @@ public final class Contact implements RosterItem, Comparable<Contact> {
     /**
      * Gets the pending state of the contact.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#roster-syntax-items-ask">2.1.2.2.  Ask Attribute</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#roster-syntax-items-ask">2.1.2.2.  Ask Attribute</a></cite></p>
      * <p>The 'ask' attribute of the {@code <item/>} element with a value of "subscribe" is used to signal various subscription sub-states that include a "Pending Out" aspect as described under Section 3.1.2.</p>
      * <p>A server SHOULD include the 'ask' attribute to inform the client of "Pending Out" sub-states. A client MUST NOT include the 'ask' attribute in the roster sets it sends to the server, but instead MUST use presence stanzas of type "subscribe" and "unsubscribe" to manage such sub-states as described under Section 3.1.2. </p>
      * </blockquote>
@@ -263,7 +263,7 @@ public final class Contact implements RosterItem, Comparable<Contact> {
     /**
      * Gets the pending state of the contact.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#roster-syntax-items-ask">2.1.2.2.  Ask Attribute</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#roster-syntax-items-ask">2.1.2.2.  Ask Attribute</a></cite></p>
      * <p>The 'ask' attribute of the {@code <item/>} element with a value of "subscribe" is used to signal various subscription sub-states that include a "Pending Out" aspect as described under Section 3.1.2.</p>
      * <p>A server SHOULD include the 'ask' attribute to inform the client of "Pending Out" sub-states. A client MUST NOT include the 'ask' attribute in the roster sets it sends to the server, but instead MUST use presence stanzas of type "subscribe" and "unsubscribe" to manage such sub-states as described under Section 3.1.2. </p>
      * </blockquote>
@@ -289,7 +289,7 @@ public final class Contact implements RosterItem, Comparable<Contact> {
     /**
      * Gets the subscription pre-approval status.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#roster-syntax-items-approved">2.1.2.1.  Approved Attribute</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#roster-syntax-items-approved">2.1.2.1.  Approved Attribute</a></cite></p>
      * <p>The boolean 'approved' attribute with a value of "true" is used to signal subscription pre-approval as described under Section 3.4</p>
      * </blockquote>
      *

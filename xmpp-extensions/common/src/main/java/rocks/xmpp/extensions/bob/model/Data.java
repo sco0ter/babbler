@@ -37,8 +37,8 @@ import java.util.Objects;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits of Binary</a>
- * @see <a href="http://xmpp.org/extensions/xep-0231.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits of Binary</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0231.html#schema">XML Schema</a>
  */
 @XmlRootElement
 public final class Data {

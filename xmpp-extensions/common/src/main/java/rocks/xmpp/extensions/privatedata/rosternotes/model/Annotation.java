@@ -39,7 +39,7 @@ import java.util.Objects;
 /**
  * The implementation of the {@code <storage/>} element in the {@code storage:rosternotes} namespace.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/extensions/xep-0145.html">XEP-0145: Annotations</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/extensions/xep-0145.html">XEP-0145: Annotations</a></cite></p>
  * <p>Many modern IM clients offer functionality that enables users to make notes about items in their roster. This comes in handy if users don't have meaningful information in their vCard or if you need to remember additional things related to a roster item.</p>
  * <p>This specification defines a protocol for storing annotations about a given set of entities. Its primary goal is to enable users to store some personal piece of information with their roster items.</p>
  * <p>Annotations are stored using server-side private XML storage (the 'jabber:iq:private' namespace).</p>
@@ -47,8 +47,8 @@ import java.util.Objects;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0145.html">XEP-0145: Annotations</a>
- * @see <a href="http://xmpp.org/extensions/xep-0145.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0145.html">XEP-0145: Annotations</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0145.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "storage")
 public final class Annotation {

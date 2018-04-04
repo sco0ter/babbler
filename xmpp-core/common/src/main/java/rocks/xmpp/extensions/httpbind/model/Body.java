@@ -54,9 +54,9 @@ import java.util.stream.Collectors;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0124.html">XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)</a>
- * @see <a href="http://xmpp.org/extensions/xep-0206.html">XEP-0206: XMPP Over BOSH</a>
- * @see <a href="http://xmpp.org/extensions/xep-0124.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0124.html">XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0206.html">XEP-0206: XMPP Over BOSH</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0124.html#schema">XML Schema</a>
  */
 @XmlRootElement
 public final class Body implements SessionOpen, Comparable<Body> {

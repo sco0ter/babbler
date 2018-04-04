@@ -42,7 +42,7 @@ import java.util.Set;
  * into one class, so that a developer doesn't have to deal with the complex structure of the service discovery result.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-roominfo">6.4 Querying for Room Information</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#disco-roominfo">6.4 Querying for Room Information</a>
  * @see ChatRoom#getRoomInformation()
  */
 public final class RoomInformation {
@@ -179,7 +179,7 @@ public final class RoomInformation {
     }
 
 
-    // http://xmpp.org/extensions/xep-0045.html#registrar-features
+    // https://xmpp.org/extensions/xep-0045.html#registrar-features
 
     /**
      * Hidden room.

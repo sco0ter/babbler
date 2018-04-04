@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a> (feature).
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a> (feature).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "http://jabber.org/features/compress", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.compress.model.feature;

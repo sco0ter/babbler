@@ -46,7 +46,7 @@ import java.util.function.Consumer;
  * </p>
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0070.html">XEP-0070: Verifying HTTP Requests via XMPP</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0070.html">XEP-0070: Verifying HTTP Requests via XMPP</a>
  */
 public final class HttpAuthenticationManager extends Manager {
 

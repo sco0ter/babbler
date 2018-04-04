@@ -106,8 +106,8 @@ import java.util.logging.Logger;
  * </p>
  * <ul>
  * <li>A normal client-to-server session. This is the default and most used XMPP session. It's concrete implementation is the {@link XmppClient}.</li>
- * <li>An external component session (<a href="http://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>).</li>
- * <li>A client-to-client session (<a href="http://xmpp.org/extensions/xep-0174.html">XEP-0174: Serverless Messaging</a>) (no implementation yet).</li>
+ * <li>An external component session (<a href="https://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>).</li>
+ * <li>A client-to-client session (<a href="https://xmpp.org/extensions/xep-0174.html">XEP-0174: Serverless Messaging</a>) (no implementation yet).</li>
  * </ul>
  * <p>
  * This class provides the common functionality and abstract methods for connection establishment, sending and receiving XML stanzas, closing the session, etc.
@@ -116,8 +116,8 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  * @see XmppClient
- * @see <a href="http://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
- * @see <a href="http://xmpp.org/extensions/xep-0174.html">XEP-0174: Serverless Messaging</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0174.html">XEP-0174: Serverless Messaging</a>
  */
 public abstract class XmppSession implements StreamHandler, AutoCloseable {
 

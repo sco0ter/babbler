@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides classes for <a href="http://xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a> (feature).
+ * Provides classes for <a href="https://xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a> (feature).
  */
 @XmlSchema(namespace = RegisterFeature.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.register.model.feature;
 

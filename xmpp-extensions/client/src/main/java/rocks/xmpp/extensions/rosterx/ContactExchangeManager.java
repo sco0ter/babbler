@@ -56,7 +56,7 @@ import java.util.function.Consumer;
  * Manages contact exchange between entities.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0144.html">XEP-0144: Roster Item Exchange</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0144.html">XEP-0144: Roster Item Exchange</a>
  */
 public final class ContactExchangeManager extends Manager {
 
@@ -175,7 +175,7 @@ public final class ContactExchangeManager extends Manager {
      * The JIDs contained in this collection must be bare JIDs.
      *
      * @return The trusted entities.
-     * @see <a href="http://xmpp.org/extensions/xep-0144.html#security-trust">8.1 Trusted Entities</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0144.html#security-trust">8.1 Trusted Entities</a>
      */
     public final Collection<Jid> getTrustedEntities() {
         return trustedEntities;
@@ -204,7 +204,7 @@ public final class ContactExchangeManager extends Manager {
             }
             ContactExchange contactExchange = new ContactExchange(rosterItems);
 
-            // http://xmpp.org/extensions/xep-0144.html#stanza
+            // https://xmpp.org/extensions/xep-0144.html#stanza
             Presence presence = xmppSession.getManager(PresenceManager.class).getPresence(jid);
             if (presence.isAvailable()) {
                 return xmppSession.query(IQ.set(presence.getFrom(), contactExchange), Void.class);

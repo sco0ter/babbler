@@ -36,7 +36,7 @@ import java.text.Collator;
  * The main actor in a multi-user chat environment is the occupant, who can be said to be located "in" a multi-user chat room and to participate in the discussions held in that room.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#user">7. Occupant Use Cases</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#user">7. Occupant Use Cases</a>
  */
 public final class Occupant implements Comparable<Occupant> {
 

@@ -43,8 +43,8 @@ import java.util.List;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a>
- * @see <a href="http://xmpp.org/extensions/xep-0096.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0096.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "file")
 public final class SIFileTransferOffer implements FileTransferOffer {

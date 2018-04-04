@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 /**
  * Manages the various features, which are advertised during stream negotiation.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-negotiation">4.3.  Stream Negotiation</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-negotiation">4.3.  Stream Negotiation</a></cite></p>
  * <p>Because the receiving entity for a stream acts as a gatekeeper to the domains it services, it imposes
  * certain conditions for connecting as a client or as a peer server. At a minimum, the initiating entity
  * needs to authenticate with the receiving entity before it is allowed to send stanzas to the receiving

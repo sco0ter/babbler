@@ -144,7 +144,7 @@ public class EntityCapabilitiesTest extends XmlTest {
     }
 
     /**
-     * Generation example from <a href="http://xmpp.org/extensions/xep-0115.html#ver-gen-simple">5.2 Simple Generation Example</a>
+     * Generation example from <a href="https://xmpp.org/extensions/xep-0115.html#ver-gen-simple">5.2 Simple Generation Example</a>
      *
      * @throws NoSuchAlgorithmException If SHA-1 algorithm could not be found.
      */
@@ -165,7 +165,7 @@ public class EntityCapabilitiesTest extends XmlTest {
     }
 
     /**
-     * Generation example from <a href="http://xmpp.org/extensions/xep-0115.html#ver-gen-complex">5.3 Complex Generation Example</a>
+     * Generation example from <a href="https://xmpp.org/extensions/xep-0115.html#ver-gen-complex">5.3 Complex Generation Example</a>
      *
      * @throws NoSuchAlgorithmException If SHA-1 algorithm could not be found.
      */

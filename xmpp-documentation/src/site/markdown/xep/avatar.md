@@ -60,5 +60,5 @@ avatarManager.addAvatarChangeListener(e -> {
 There's also a file based cache for downloaded avatars, so that they don't need to be downloaded again.
 Avatars are cached in the folder "avatars" in your cache directory (configurable in `XmppSessionConfiguration`)
 
-[User Avatar]: http://xmpp.org/extensions/xep-0084.html "XEP-0084: User Avatar"
-[vCard-Based Avatars]: http://xmpp.org/extensions/xep-0153.html "XEP-0153: vCard-Based Avatars"
+[User Avatar]: https://xmpp.org/extensions/xep-0084.html "XEP-0084: User Avatar"
+[vCard-Based Avatars]: https://xmpp.org/extensions/xep-0153.html "XEP-0153: vCard-Based Avatars"

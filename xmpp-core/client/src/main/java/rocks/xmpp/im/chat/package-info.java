@@ -24,7 +24,7 @@
 
 /**
  * Provides core classes needed for chat.
- * @see <a href="http://xmpp.org/rfcs/rfc6121.html#message-chat">5.1.  One-to-One Chat Sessions</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#message-chat">5.1.  One-to-One Chat Sessions</a>
  */
 package rocks.xmpp.im.chat;
 

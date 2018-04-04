@@ -13,8 +13,8 @@ The `XmppClient` instance is the central object. Every other action you will do 
 
 A session to an XMPP server can be established in three ways (connection methods):
 
-1. By a [normal TCP socket connection](http://xmpp.org/rfcs/rfc6120.html#tcp)
-2. By a [BOSH connection (XEP-0124)](http://xmpp.org/extensions/xep-0124.html)
+1. By a [normal TCP socket connection](https://xmpp.org/rfcs/rfc6120.html#tcp)
+2. By a [BOSH connection (XEP-0124)](https://xmpp.org/extensions/xep-0124.html)
 3. By a [WebSocket connection (RFC 7395)](https://tools.ietf.org/html/rfc7395)
 
 By default, the `XmppClient` will try to establish a connection via TCP first during the connection process.

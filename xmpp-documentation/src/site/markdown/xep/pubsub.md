@@ -124,5 +124,5 @@ try {
 
 PubSub errors can be found in the ```rocks.xmpp.extensions.pubsub.model.errors``` package.
 
-[PubSub]: http://xmpp.org/extensions/xep-0060.html "XEP-0060: Publish-Subscribe"
-[Tune]: http://xmpp.org/extensions/xep-0118.html "XEP-0118: User Tune"
+[PubSub]: https://xmpp.org/extensions/xep-0060.html "XEP-0060: Publish-Subscribe"
+[Tune]: https://xmpp.org/extensions/xep-0118.html "XEP-0118: User Tune"

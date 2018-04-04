@@ -74,7 +74,7 @@ public interface ReconnectionStrategy {
      * The strategy is called "truncated", because it won't increase the time span after the nth iteration, which means in the example above, the sixth and any further attempt
      * behaves equally to the fifth attempt.
      * </p>
-     * This "truncated binary exponential backoff" is the <a href="http://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">recommended reconnection strategy by the XMPP specification</a>.
+     * This "truncated binary exponential backoff" is the <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">recommended reconnection strategy by the XMPP specification</a>.
      *
      * @param slotTime The slot time (in seconds), usually 60.
      * @param ceiling  The ceiling, i.e. when the time is truncated. E.g. if the ceiling is 4, the back off is truncated at the 5th reconnection attempt (it starts at zero).

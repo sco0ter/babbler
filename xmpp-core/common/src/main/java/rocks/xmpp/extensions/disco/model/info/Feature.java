@@ -33,7 +33,7 @@ import java.util.Objects;
 /**
  * Represents a feature offered or protocol supported by an XMPP entity.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber Entity</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber Entity</a></cite></p>
  * <p>This information helps requesting entities determine what actions are possible with regard to this entity (registration, search, join, etc.), what protocols the entity supports, and specific feature types of interest, if any (e.g., for the purpose of feature negotiation).</p>
  * </blockquote>
  * This class is immutable.
@@ -94,7 +94,7 @@ final class Feature implements Comparable<Feature> {
     }
 
     /**
-     * Implements a natural ordering of a feature, as suggested and required by <a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>.
+     * Implements a natural ordering of a feature, as suggested and required by <a href="https://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>.
      * (The 'var' attributes are compared to each other).
      *
      * @param o The other feature.

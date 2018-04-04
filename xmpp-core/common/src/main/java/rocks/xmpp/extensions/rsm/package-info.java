@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides classes for <a href="http://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>.
+ * Provides classes for <a href="https://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>.
  */
 package rocks.xmpp.extensions.rsm;
 

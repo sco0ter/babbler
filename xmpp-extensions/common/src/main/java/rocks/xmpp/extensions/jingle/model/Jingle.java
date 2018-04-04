@@ -115,7 +115,7 @@ public final class Jingle {
     /**
      * Gets the initiator.
      * <blockquote>
-     * <p>The full JID of the entity that has initiated the session flow. When the Jingle action is "session-initiate", the {@code <jingle/>} element SHOULD possess an 'initiator' attribute that explicitly specifies the full JID of the initiating entity; for all other actions, the {@code <jingle/>} element SHOULD NOT possess an 'initiator' attribute and the recipient of the message SHOULD ignore the value if provided. The value of the 'initiator' attribute MAY be different from the 'from' address on the IQ-set of the session-initiate message (e.g., to handle certain interactions involving call managers, soft switches, and media relays). This usage shall be defined in other specifications, for example, in <a href="http://xmpp.org/extensions/xep-0251.html">Jingle Session Transfer (XEP-0251)</a>. However, in all cases if the 'initiator' and 'from' values differ then the responder MUST NOT interact with the 'initiator' JID unless it trusts the 'initiator' JID or trusts that the 'from' JID is allowed to authorize the 'initiator' JID to act on the 'from' JID's behalf. In the absence of explicit rules for handling this case, the responder SHOULD simply ignore the 'initiator' attribute and treat the 'from' JID as the initiating entity. After sending acknowledgement of the session-initiate message, the responder MUST send all future commmunications about the Jingle session to the initiator (whether the initiator is considered the 'from' JID or the 'initiator' JID).</p>
+     * <p>The full JID of the entity that has initiated the session flow. When the Jingle action is "session-initiate", the {@code <jingle/>} element SHOULD possess an 'initiator' attribute that explicitly specifies the full JID of the initiating entity; for all other actions, the {@code <jingle/>} element SHOULD NOT possess an 'initiator' attribute and the recipient of the message SHOULD ignore the value if provided. The value of the 'initiator' attribute MAY be different from the 'from' address on the IQ-set of the session-initiate message (e.g., to handle certain interactions involving call managers, soft switches, and media relays). This usage shall be defined in other specifications, for example, in <a href="https://xmpp.org/extensions/xep-0251.html">Jingle Session Transfer (XEP-0251)</a>. However, in all cases if the 'initiator' and 'from' values differ then the responder MUST NOT interact with the 'initiator' JID unless it trusts the 'initiator' JID or trusts that the 'from' JID is allowed to authorize the 'initiator' JID to act on the 'from' JID's behalf. In the absence of explicit rules for handling this case, the responder SHOULD simply ignore the 'initiator' attribute and treat the 'from' JID as the initiating entity. After sending acknowledgement of the session-initiate message, the responder MUST send all future commmunications about the Jingle session to the initiator (whether the initiator is considered the 'from' JID or the 'initiator' JID).</p>
      * </blockquote>
      *
      * @return The initiator.
@@ -182,7 +182,7 @@ public final class Jingle {
     /**
      * The action.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-action">7.2 Action Attribute</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0166.html#def-action">7.2 Action Attribute</a>
      */
     public enum Action {
         /**
@@ -265,7 +265,7 @@ public final class Jingle {
     /**
      * The implementation of the {@code <content/>} element.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-content">7.3 Content Element</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0166.html#def-content">7.3 Content Element</a>
      */
     public static final class Content {
 
@@ -419,7 +419,7 @@ public final class Jingle {
     /**
      * The implementation of the {@code <reason/>} element.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0166.html#def-reason">7.4 Reason Element</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0166.html#def-reason">7.4 Reason Element</a>
      */
     public static final class Reason {
 

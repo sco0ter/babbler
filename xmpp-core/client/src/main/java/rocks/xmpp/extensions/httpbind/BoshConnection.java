@@ -76,7 +76,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The implementation of <a href="http://xmpp.org/extensions/xep-0124.html">XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)</a> and <a href="http://xmpp.org/extensions/xep-0206.html">XEP-0206: XMPP Over BOSH</a>.
+ * The implementation of <a href="https://xmpp.org/extensions/xep-0124.html">XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)</a> and <a href="https://xmpp.org/extensions/xep-0206.html">XEP-0206: XMPP Over BOSH</a>.
  *
  * @author Christian Schudt
  */
@@ -214,7 +214,7 @@ public final class BoshConnection extends AbstractConnection {
     /**
      * Generates a key sequence.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0124.html#keys-generate">15.3 Generating the Key Sequence</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0124.html#keys-generate">15.3 Generating the Key Sequence</a>
      */
     private void generateKeySequence() {
         keySequence.clear();
@@ -374,7 +374,7 @@ public final class BoshConnection extends AbstractConnection {
     /**
      * Restarts the stream.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/extensions/xep-0206.html#preconditions-sasl">Authentication and Resource Binding</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/extensions/xep-0206.html#preconditions-sasl">Authentication and Resource Binding</a></cite></p>
      * <p>Upon receiving the {@code <success/>} element, the client MUST then ask the connection manager to restart the stream by sending a "restart request" that is structured as follows</p>
      * <ul>
      * <li>The BOSH {@code <body/>} element MUST include a boolean 'restart' attribute (qualified by the 'urn:xmpp:xbosh' namespace) whose value is set to "true".</li>
@@ -503,8 +503,8 @@ public final class BoshConnection extends AbstractConnection {
      * Appends a key attribute to the body and generates a new key sequence if the old one is empty.
      *
      * @param bodyBuilder The builder.
-     * @see <a href="http://xmpp.org/extensions/xep-0124.html#keys-use">15.4 Use of Keys</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0124.html#keys-switch">15.5 Switching to Another Key Sequence</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0124.html#keys-use">15.4 Use of Keys</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0124.html#keys-switch">15.5 Switching to Another Key Sequence</a>
      */
     private void appendKey(Body.Builder bodyBuilder) {
         if (boshConnectionConfiguration.isUseKeySequence()) {

@@ -43,8 +43,8 @@ import java.util.Objects;
  * The implementation of the {@code <transport/>} element in the {@code urn:xmpp:jingle:transports:s5b:1} namespace.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0260.html">XEP-0260: Jingle SOCKS5 Bytestreams Transport Method</a>
- * @see <a href="http://xmpp.org/extensions/xep-0260.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0260.html">XEP-0260: Jingle SOCKS5 Bytestreams Transport Method</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0260.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "transport")
 public final class S5bTransportMethod extends TransportMethod {

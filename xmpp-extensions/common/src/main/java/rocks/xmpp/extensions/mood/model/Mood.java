@@ -37,14 +37,14 @@ import java.util.Objects;
 /**
  * The implementation of the {@code <mood/>} element in the {@code http://jabber.org/protocol/mood} namespace.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/extensions/xep-0107.html">XEP-0107: User Mood</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/extensions/xep-0107.html">XEP-0107: User Mood</a></cite></p>
  * <p>This specification defines a payload format for communicating information about user moods, such as whether a person is currently happy, sad, angy, or annoyed. The payload format is typically transported using the personal eventing protocol, a profile of XMPP publish-subscribe specified in XEP-0163.</p>
  * </blockquote>
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0107.html">XEP-0107: User Mood</a>
- * @see <a href="http://xmpp.org/extensions/xep-0107.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0107.html">XEP-0107: User Mood</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0107.html#schema">XML Schema</a>
  */
 @XmlRootElement
 @XmlSeeAlso({

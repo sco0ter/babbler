@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0300.html">XEP-0300: Use of Cryptographic Hash Functions in XMPP</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0300.html">XEP-0300: Use of Cryptographic Hash Functions in XMPP</a>.
  * <p>
  * It provides recommendations for the use of cryptographic hash functions in XMPP protocol extensions.
  * </p>

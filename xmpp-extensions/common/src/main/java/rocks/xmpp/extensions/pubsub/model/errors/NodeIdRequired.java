@@ -33,8 +33,8 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Christian Schudt
  * @see #NODE_ID_REQUIRED
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-delete-error-nodeid">7.2.3.3 NodeID Required</a>
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure-error-nodeid">8.2.3.3 NodeID Required</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-delete-error-nodeid">7.2.3.3 NodeID Required</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-configure-error-nodeid">8.2.3.3 NodeID Required</a>
  */
 @XmlRootElement(name = "nodeid-required")
 @XmlType(factoryMethod = "create")

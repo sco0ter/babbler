@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Christian Schudt
  * @see #TOO_MANY_SUBSCRIPTIONS
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-toomany">6.1.3.9 Too Many Subscriptions</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-toomany">6.1.3.9 Too Many Subscriptions</a>
  */
 @XmlRootElement(name = "too-many-subscriptions")
 @XmlType(factoryMethod = "create")

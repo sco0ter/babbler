@@ -41,8 +41,8 @@ import java.util.Objects;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0152.html">XEP-0152: Reachability Addresses</a>
- * @see <a href="http://xmpp.org/extensions/xep-0152.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0152.html">XEP-0152: Reachability Addresses</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0152.html#schema">XML Schema</a>
  */
 public final class Address {
 

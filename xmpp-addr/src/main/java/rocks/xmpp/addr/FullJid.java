@@ -203,7 +203,7 @@ final class FullJid extends AbstractJid {
      * @return The JID.
      * @throws NullPointerException     If the jid is null.
      * @throws IllegalArgumentException If the jid could not be parsed or is not valid.
-     * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
     static Jid of(String jid, final boolean doUnescape) {
         Objects.requireNonNull(jid, "jid must not be null.");
@@ -244,7 +244,7 @@ final class FullJid extends AbstractJid {
      *
      * @param localPart The local part.
      * @return The escaped local part or null.
-     * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
     private static String escape(final CharSequence localPart) {
         if (localPart != null) {

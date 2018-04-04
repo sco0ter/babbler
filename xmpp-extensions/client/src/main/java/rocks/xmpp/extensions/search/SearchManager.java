@@ -32,10 +32,10 @@ import rocks.xmpp.extensions.search.model.Search;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
- * The search manager allows to perform search requests on a server or service component according to <a href="http://xmpp.org/extensions/xep-0055.html">XEP-0055: Jabber Search</a>.
+ * The search manager allows to perform search requests on a server or service component according to <a href="https://xmpp.org/extensions/xep-0055.html">XEP-0055: Jabber Search</a>.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/extensions/xep-0055.html#intro">1. Introduction</a></cite></p>
- * <p>The basic functionality is to query an information repository regarding the possible search fields, to send a search query, and to receive search results. Note well that there is currently no mechanism for paging through results or limiting the number of "hits", and that the allowable search fields are limited to those defined in the XML schema; however, extensibility MAY be provided via the <a href="http://xmpp.org/extensions/xep-0004.html">Data Forms (XEP-0004)</a> protocol.</p>
+ * <p><cite><a href="https://xmpp.org/extensions/xep-0055.html#intro">1. Introduction</a></cite></p>
+ * <p>The basic functionality is to query an information repository regarding the possible search fields, to send a search query, and to receive search results. Note well that there is currently no mechanism for paging through results or limiting the number of "hits", and that the allowable search fields are limited to those defined in the XML schema; however, extensibility MAY be provided via the <a href="https://xmpp.org/extensions/xep-0004.html">Data Forms (XEP-0004)</a> protocol.</p>
  * </blockquote>
  *
  * @author Christian Schudt
@@ -54,7 +54,7 @@ public final class SearchManager extends Manager {
     /**
      * Discovers the supported search fields of a service.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/extensions/xep-0055.html#usecases-search">2.1 Searching</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/extensions/xep-0055.html#usecases-search">2.1 Searching</a></cite></p>
      * <p>In order to search an information respository, a user first needs to discover what search fields are supported by the service.</p>
      * <p>The service MUST then return the possible search fields to the user, and MAY include instructions.</p>
      * </blockquote>

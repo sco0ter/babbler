@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Christian Schudt
  * @see #PENDING_SUBSCRIPTION
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-pending">6.1.3.7 Subscription Pending</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-pending">6.1.3.7 Subscription Pending</a>
  */
 @XmlRootElement(name = "pending-subscription")
 @XmlType(factoryMethod = "create")

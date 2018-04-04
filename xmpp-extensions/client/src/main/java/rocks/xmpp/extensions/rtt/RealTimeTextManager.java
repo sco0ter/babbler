@@ -186,7 +186,7 @@ public final class RealTimeTextManager extends Manager {
      * Activates real-time text for a chat session.
      *
      * @param chat The chat.
-     * @see <a href="http://xmpp.org/extensions/xep-0301.html#activating_realtime_text">6.1 Activating Real-Time Text</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0301.html#activating_realtime_text">6.1 Activating Real-Time Text</a>
      */
     public final void activate(Chat chat) {
         Message message = new Message();
@@ -199,7 +199,7 @@ public final class RealTimeTextManager extends Manager {
      * Deactivates real-time text for a chat session.
      *
      * @param chat The chat.
-     * @see <a href="http://xmpp.org/extensions/xep-0301.html#deactivating_realtime_text">6.2 Deactivating Real-Time Text</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0301.html#deactivating_realtime_text">6.2 Deactivating Real-Time Text</a>
      */
     public final void deactivate(Chat chat) {
         Message message = new Message();

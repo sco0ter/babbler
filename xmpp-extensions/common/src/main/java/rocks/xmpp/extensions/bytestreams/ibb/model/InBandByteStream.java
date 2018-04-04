@@ -36,7 +36,7 @@ import java.util.Objects;
  * This class is a container for the three different In-Band ByteStream elements and provides the namespace for IBB, so that it can be used by other protocols such as XEP-0095.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
  */
 @XmlTransient
 @XmlSeeAlso({InBandByteStream.Open.class, InBandByteStream.Data.class, InBandByteStream.Close.class})
@@ -72,8 +72,8 @@ public abstract class InBandByteStream {
      * <p>
      * This class is immutable.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0047.html#schema">XML Schema</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0047.html#schema">XML Schema</a>
      */
     @XmlRootElement
     public static final class Open extends InBandByteStream {
@@ -156,8 +156,8 @@ public abstract class InBandByteStream {
      * <p>
      * This class is immutable.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0047.html#schema">XML Schema</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0047.html#schema">XML Schema</a>
      */
     @XmlRootElement
     public static final class Data extends InBandByteStream {
@@ -218,8 +218,8 @@ public abstract class InBandByteStream {
      * <p>
      * This class is immutable.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0047.html#schema">XML Schema</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0047.html#schema">XML Schema</a>
      */
     @XmlRootElement
     public static final class Close extends InBandByteStream {

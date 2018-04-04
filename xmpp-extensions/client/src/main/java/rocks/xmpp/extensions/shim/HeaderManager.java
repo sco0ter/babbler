@@ -40,7 +40,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 /**
- * Manages support for <a href="http://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>.
+ * Manages support for <a href="https://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>.
  * <p>
  * By default support is disabled, so that service discovery won't reveal the 'http://jabber.org/protocol/shim' feature.
  * </p>
@@ -105,7 +105,7 @@ public final class HeaderManager extends Manager implements InfoNode {
 
     @Override
     public Set<String> getFeatures() {
-        // http://xmpp.org/extensions/xep-0131.html#disco-header
+        // https://xmpp.org/extensions/xep-0131.html#disco-header
         return supportedHeaders.stream().map(supportedHeader -> Headers.NAMESPACE + '#' + supportedHeader).collect(Collectors.toSet());
     }
 

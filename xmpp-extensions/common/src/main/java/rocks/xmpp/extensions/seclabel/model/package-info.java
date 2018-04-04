@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides classes for <a href="http://xmpp.org/extensions/xep-00258.html">XEP-0258: Security Labels in XMPP</a>.
+ * Provides classes for <a href="https://xmpp.org/extensions/xep-00258.html">XEP-0258: Security Labels in XMPP</a>.
  * <p>
  * It describes the use of security labels in XMPP. The document specifies how security label meta-data is carried in XMPP, when this meta-data should or should not be provided, and how the meta-data is to be processed.
  * </p>

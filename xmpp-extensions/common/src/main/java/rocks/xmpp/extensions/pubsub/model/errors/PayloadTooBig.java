@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Christian Schudt
  * @see #PAYLOAD_TOO_BIG
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish-error-bigpayload">7.1.3.4 Payload Too Big</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-publish-error-bigpayload">7.1.3.4 Payload Too Big</a>
  */
 @XmlRootElement(name = "payload-too-big")
 @XmlType(factoryMethod = "create")

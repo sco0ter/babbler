@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <attention/>} element in the {@code urn:xmpp:attention:0} namespace.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/extensions/xep-0224.html">XEP-0224: Attention</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/extensions/xep-0224.html">XEP-0224: Attention</a></cite></p>
  * <p>This feature is known as 'nudge' or 'buzz' in some non-XMPP IM protocols.</p>
  * </blockquote>
  * <h3>Listening for Attention Requests</h3>
@@ -57,8 +57,8 @@ import javax.xml.bind.annotation.XmlType;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0224.html">XEP-0224: Attention</a>
- * @see <a href="http://xmpp.org/extensions/xep-0224.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0224.html">XEP-0224: Attention</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0224.html#schema">XML Schema</a>
  */
 @XmlRootElement
 @XmlType(factoryMethod = "create")

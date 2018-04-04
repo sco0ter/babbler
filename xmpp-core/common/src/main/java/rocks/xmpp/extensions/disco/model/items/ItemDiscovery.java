@@ -40,8 +40,8 @@ import java.util.List;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>
- * @see <a href="http://xmpp.org/extensions/xep-0030.html#schemas-items">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0030.html#schemas-items">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class ItemDiscovery implements ItemNode {

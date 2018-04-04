@@ -48,7 +48,7 @@ import java.io.Serializable;
  * ```java
  * Jid.of("romeo@capulet.lit/balcony").equals(Jid.of("romeo@capulet.lit/balcony")); // true
  * ```
- * The default implementation of this class also supports <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>, i.e.
+ * The default implementation of this class also supports <a href="https://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>, i.e.
  * ```java
  * Jid.of("d'artagnan@musketeers.lit")
  * ```
@@ -151,7 +151,7 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
      * @return The JID.
      * @throws NullPointerException     If the jid is null.
      * @throws IllegalArgumentException If the jid could not be parsed or is not valid.
-     * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
     static Jid of(CharSequence jid) {
         return FullJid.of(jid.toString(), false);
@@ -166,7 +166,7 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
      * @return The JID.
      * @throws NullPointerException     If the jid is null.
      * @throws IllegalArgumentException If the jid could not be parsed or is not valid.
-     * @see <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
      */
     static Jid ofEscaped(CharSequence jid) {
         return FullJid.of(jid.toString(), true);
@@ -295,7 +295,7 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
     String getResource();
 
     /**
-     * Returns the JID in escaped form as described in <a href="http://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>.
+     * Returns the JID in escaped form as described in <a href="https://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>.
      *
      * @return The escaped JID.
      * @see #toString()

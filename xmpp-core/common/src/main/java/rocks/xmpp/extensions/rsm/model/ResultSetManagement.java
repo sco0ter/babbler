@@ -30,8 +30,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * The implementation of the {@code <set/>} element in the {@code http://jabber.org/protocol/rsm} namespace.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>
- * @see <a href="http://xmpp.org/extensions/xep-0059.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0059.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "set")
 public final class ResultSetManagement {
@@ -100,7 +100,7 @@ public final class ResultSetManagement {
      *
      * @param limit The limit, i.e. the maximum number of items.
      * @return The result set.
-     * @see <a href="http://xmpp.org/extensions/xep-0059.html#limit">2.1 Limiting the Number of Items</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0059.html#limit">2.1 Limiting the Number of Items</a>
      * @deprecated Use {@link #forFirstPage(int)}
      */
     @Deprecated
@@ -113,7 +113,7 @@ public final class ResultSetManagement {
      *
      * @param max The item count per page.
      * @return The result set.
-     * @see <a href="http://xmpp.org/extensions/xep-0059.html#limit">2.1 Limiting the Number of Items</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0059.html#limit">2.1 Limiting the Number of Items</a>
      */
     public static ResultSetManagement forFirstPage(int max) {
         return new ResultSetManagement(max, null, null, null, null, null, null);
@@ -125,7 +125,7 @@ public final class ResultSetManagement {
      * @param max The item count per page.
      * @param id  The id of the last item of the previous page. This should be the {@link #getLastItem()} ()} of the previous page.
      * @return The result set.
-     * @see <a href="http://xmpp.org/extensions/xep-0059.html#forwards">2.2 Paging Forwards Through a Result Set</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0059.html#forwards">2.2 Paging Forwards Through a Result Set</a>
      */
     public static ResultSetManagement forNextPage(int max, String id) {
         return new ResultSetManagement(max, id, null, null, null, null, null);
@@ -137,7 +137,7 @@ public final class ResultSetManagement {
      * @param max The item count per page.
      * @param id  The id of the first item of the next page. This should be the {@link #getFirstItem()} of the next page.
      * @return The result set.
-     * @see <a href="http://xmpp.org/extensions/xep-0059.html#backwards">2.3 Paging Backwards Through a Result Set</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0059.html#backwards">2.3 Paging Backwards Through a Result Set</a>
      */
     public static ResultSetManagement forPreviousPage(int max, String id) {
         return new ResultSetManagement(max, null, id, null, null, null, null);
@@ -148,7 +148,7 @@ public final class ResultSetManagement {
      *
      * @param max The item count per page.
      * @return The result set.
-     * @see <a href="http://xmpp.org/extensions/xep-0059.html#last">2.5 Requesting the Last Page in a Result Set</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0059.html#last">2.5 Requesting the Last Page in a Result Set</a>
      */
     public static ResultSetManagement forLastPage(int max) {
         return new ResultSetManagement(max, null, "", null, null, null, null);
@@ -160,7 +160,7 @@ public final class ResultSetManagement {
      * @param limit The item count per page.
      * @param index The index to start from.
      * @return The result set.
-     * @see <a href="http://xmpp.org/extensions/xep-0059.html#jump">2.6 Retrieving a Page Out of Order</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0059.html#jump">2.6 Retrieving a Page Out of Order</a>
      */
     public static ResultSetManagement forLimit(int limit, int index) {
         return new ResultSetManagement(limit, null, null, null, null, index, null);
@@ -171,7 +171,7 @@ public final class ResultSetManagement {
      *
      * @param count The item count per page.
      * @return The result set.
-     * @see <a href="http://xmpp.org/extensions/xep-0059.html#jump">2.6 Retrieving a Page Out of Order</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0059.html#jump">2.6 Retrieving a Page Out of Order</a>
      * @deprecated Use {@link #forCountResponse(int)}
      */
     @Deprecated
@@ -184,7 +184,7 @@ public final class ResultSetManagement {
      *
      * @param count The item count per page.
      * @return The result set.
-     * @see <a href="http://xmpp.org/extensions/xep-0059.html#jump">2.6 Retrieving a Page Out of Order</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0059.html#jump">2.6 Retrieving a Page Out of Order</a>
      */
     public static ResultSetManagement forCountResponse(int count) {
         return new ResultSetManagement(null, null, null, count, null, null, null);
@@ -198,7 +198,7 @@ public final class ResultSetManagement {
      * @param first The first item.
      * @param last  The last item.
      * @return The result set.
-     * @see <a href="http://xmpp.org/extensions/xep-0059.html#forwards">2.2 Paging Forwards Through a Result Set</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0059.html#forwards">2.2 Paging Forwards Through a Result Set</a>
      * @deprecated Use {@link #forResponse(Integer, Integer, String, String)}
      */
     @Deprecated
@@ -214,7 +214,7 @@ public final class ResultSetManagement {
      * @param first The first item.
      * @param last  The last item.
      * @return The result set.
-     * @see <a href="http://xmpp.org/extensions/xep-0059.html#forwards">2.2 Paging Forwards Through a Result Set</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0059.html#forwards">2.2 Paging Forwards Through a Result Set</a>
      */
     public static ResultSetManagement forResponse(Integer count, Integer index, String first, String last) {
         return new ResultSetManagement(null, null, null, count, new First(index, first), null, last);
@@ -224,7 +224,7 @@ public final class ResultSetManagement {
      * Gets a result set, which gets the item count of a result without retrieving the items themselves.
      *
      * @return The result set.
-     * @see <a href="http://xmpp.org/extensions/xep-0059.html#count">2.7 Getting the Item Count</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0059.html#count">2.7 Getting the Item Count</a>
      */
     public static ResultSetManagement forItemCount() {
         return forFirstPage(0);

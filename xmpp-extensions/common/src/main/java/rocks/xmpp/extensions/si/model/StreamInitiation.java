@@ -38,8 +38,8 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0095.html">XEP-0095: Stream Initiation</a>
- * @see <a href="http://xmpp.org/extensions/xep-0095.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0095.html">XEP-0095: Stream Initiation</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0095.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "si")
 @XmlSeeAlso({BadProfile.class, NoValidStreams.class})

@@ -132,7 +132,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
     public void testNodeConfiguration() throws JAXBException, XMLStreamException, MalformedURLException {
         NodeConfiguration nodeConfiguration = NodeConfiguration.builder()
                 .accessModel(AccessModel.AUTHORIZE)
-                .bodyXslt(new URL("http://xmpp.org"))
+                .bodyXslt(new URL("https://xmpp.org"))
                 .childrenAssociationPolicy(ChildrenAssociationPolicy.OWNERS)
                 .childrenAssociationWhitelist(Collections.singleton(Jid.of("domain")))
                 .children(Collections.singleton("collection1"))
@@ -170,7 +170,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\">" +
                 "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/pubsub#node_config</value></field>" +
                 "<field type=\"list-single\" var=\"pubsub#access_model\"><value>authorize</value></field>" +
-                "<field type=\"text-single\" var=\"pubsub#body_xslt\"><value>http://xmpp.org</value></field>" +
+                "<field type=\"text-single\" var=\"pubsub#body_xslt\"><value>https://xmpp.org</value></field>" +
                 "<field type=\"list-single\" var=\"pubsub#children_association_policy\"><value>owners</value></field>" +
                 "<field type=\"jid-multi\" var=\"pubsub#children_association_whitelist\"><value>domain</value></field>" +
                 "<field type=\"text-multi\" var=\"pubsub#children\"><value>collection1</value></field>" +
@@ -208,7 +208,7 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         NodeConfiguration nodeConfiguration1 = new NodeConfiguration(dataForm);
         Assert.assertEquals(nodeConfiguration1.getAccessModel(), AccessModel.AUTHORIZE);
         Assert.assertNotNull(nodeConfiguration1.getBodyXslt());
-        Assert.assertEquals(nodeConfiguration1.getBodyXslt().toString(), "http://xmpp.org");
+        Assert.assertEquals(nodeConfiguration1.getBodyXslt().toString(), "https://xmpp.org");
         Assert.assertEquals(nodeConfiguration1.getChildrenAssociationPolicy(), ChildrenAssociationPolicy.OWNERS);
         Assert.assertEquals(nodeConfiguration1.getChildrenAssociationWhitelist(), Collections.singleton(Jid.of("domain")));
         Assert.assertEquals(nodeConfiguration1.getChildren(), Collections.singleton("collection1"));

@@ -44,8 +44,8 @@ import java.util.Objects;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0050.html">XEP-0050: Ad-Hoc Commands</a>
- * @see <a href="http://xmpp.org/extensions/xep-0050.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0050.html">XEP-0050: Ad-Hoc Commands</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0050.html#schema">XML Schema</a>
  */
 @XmlRootElement
 @XmlSeeAlso({Command.MalformedAction.class, Command.BadAction.class, Command.BadLocale.class, Command.BadPayload.class, Command.BadSessionId.class, Command.SessionExpired.class})
@@ -184,7 +184,7 @@ public final class Command {
      * Gets the command payload.
      *
      * @return The command payload.
-     * @see <a href="http://xmpp.org/extensions/xep-0050.html#impl-payloads">3.5 Command Payloads</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0050.html#impl-payloads">3.5 Command Payloads</a>
      */
     public final List<Object> getPayloads() {
         return payloads;
@@ -203,7 +203,7 @@ public final class Command {
      * Gets the node.
      *
      * @return The node.
-     * @see <a href="http://xmpp.org/extensions/xep-0050.html#impl-nodes">3.2 Command Nodes</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0050.html#impl-nodes">3.2 Command Nodes</a>
      */
     public final String getNode() {
         return node;
@@ -231,7 +231,7 @@ public final class Command {
      * Gets the possible command actions, which are provided by the responder.
      *
      * @return The command actions.
-     * @see <a href="http://xmpp.org/extensions/xep-0050.html#impl-actions">3.4 Command Actions</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0050.html#impl-actions">3.4 Command Actions</a>
      */
     public final Collection<Action> getActions() {
         if (status == Status.COMPLETED) {
@@ -421,7 +421,7 @@ public final class Command {
     /**
      * Represents a note associated with a command.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0050.html#desc-note">4.3 &lt;note/&gt; Element</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0050.html#desc-note">4.3 &lt;note/&gt; Element</a>
      */
     public static final class Note {
 

@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Christian Schudt
  * @see #MAX_ITEMS_EXCEEDED
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-batch">12.10 Batch Processing</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#impl-batch">12.10 Batch Processing</a>
  */
 @XmlRootElement(name = "max-items-exceeded")
 @XmlType(factoryMethod = "create")

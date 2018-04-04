@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Predicate;
 
 /**
- * Manages the stream as described in <a href="http://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>.
+ * Manages the stream as described in <a href="https://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>.
  * <p>
  * This class enables stream management during stream negotiation, if the stream management feature has been enabled before login:
  * ```java
@@ -45,7 +45,7 @@ import java.util.function.Predicate;
  * ```
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>
  */
 public final class StreamManager extends ClientStreamFeatureNegotiator<StreamManagement> {
 
@@ -285,7 +285,7 @@ public final class StreamManager extends ClientStreamFeatureNegotiator<StreamMan
      * Resumes the stream.
      *
      * @return The async result, which is done, if either the stream is not resumable, or the server resumed the stream.
-     * @see <a href="http://xmpp.org/extensions/xep-0198.html#resumption">5. Resumption</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0198.html#resumption">5. Resumption</a>
      */
     public AsyncResult<Boolean> resume() {
         if (!isResumable()) {

@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = InBandByteStream.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.bytestreams.ibb.model;

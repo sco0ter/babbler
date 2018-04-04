@@ -40,7 +40,7 @@ import java.util.Deque;
 /**
  * Writes XML in a prefix-free canonicalization form.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-extended">8.4.  Extended Content</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-extended">8.4.  Extended Content</a></cite></p>
  * <p>It is conventional in the XMPP community for implementations to not generate namespace prefixes for elements that are qualified by extended namespaces (in the XML community, this convention is sometimes called "prefix-free canonicalization"). However, if an implementation generates such namespace prefixes then it MUST include the namespace declaration in the stanza itself or a child element of the stanza, not in the stream header (see Section 4.8.4).</p>
  * </blockquote>
  * See also <a href="http://stackoverflow.com/questions/5720501/jaxb-marshalling-xmpp-stanzas">here</a> for implementation idea.
@@ -53,7 +53,7 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
 
     /**
      * This is the default content namespace.
-     * See also <a href="http://xmpp.org/rfcs/rfc6120.html#streams-ns-content">http://xmpp.org/rfcs/rfc6120.html#streams-ns-content</a>
+     * See also <a href="https://xmpp.org/rfcs/rfc6120.html#streams-ns-content">https://xmpp.org/rfcs/rfc6120.html#streams-ns-content</a>
      */
     private final String contentNamespace;
 

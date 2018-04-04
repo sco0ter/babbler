@@ -42,8 +42,8 @@ import java.util.Objects;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0055.html">XEP-0055: Jabber Search</a>
- * @see <a href="http://xmpp.org/extensions/xep-0055.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0055.html">XEP-0055: Jabber Search</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0055.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class Search {
@@ -169,7 +169,7 @@ public final class Search {
     /**
      * Gets additional information for the search, e.g. for gender.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/extensions/xep-0055.html#extensibility">3. Extensibility</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/extensions/xep-0055.html#extensibility">3. Extensibility</a></cite></p>
      * <p>The fields defined in the 'jabber:iq:search' namespace are strictly limited to those specified in the schema. If a host needs to gather additional information, Data Forms SHOULD be used; a host MUST NOT add new fields to the 'jabber:iq:search' namespace. Support for extensibility via Data Forms is RECOMMENDED, but is not required for compliance with this document.</p>
      * </blockquote>
      *
@@ -183,7 +183,7 @@ public final class Search {
      * Gets the result set information.
      *
      * @return The result set.
-     * @see <a href="http://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>
      */
     public final ResultSetManagement getResultSet() {
         return resultSet;

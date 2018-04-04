@@ -28,7 +28,7 @@
  * It defines a registry of application-specific error conditions.
  * </p>
  *
- * @see <a href="http://xmpp.org/registrar/errors.html">Application-Specific Error Conditions</a>
+ * @see <a href="https://xmpp.org/registrar/errors.html">Application-Specific Error Conditions</a>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:xmpp:errors", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.errors.model;

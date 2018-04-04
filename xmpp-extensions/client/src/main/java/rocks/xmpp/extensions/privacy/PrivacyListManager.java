@@ -43,9 +43,9 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 
 /**
- * This class manages privacy lists, which allow users to block communications from other users as described in <a href="http://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>.
+ * This class manages privacy lists, which allow users to block communications from other users as described in <a href="https://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/extensions/xep-0016.html#protocol">2. Protocol</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/extensions/xep-0016.html#protocol">2. Protocol</a></cite></p>
  * <p>Server-side privacy lists enable successful completion of the following use cases:</p>
  * <ul>
  * <li>Retrieving one's privacy lists.</li>
@@ -125,7 +125,7 @@ public final class PrivacyListManager extends Manager {
      * Gets the privacy lists.
      *
      * @return The async result with the privacy lists.
-     * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
      */
     public AsyncResult<Collection<PrivacyList>> getPrivacyLists() {
         return xmppSession.query(IQ.get(new Privacy())).thenApply(result -> {
@@ -148,7 +148,7 @@ public final class PrivacyListManager extends Manager {
      *
      * @param name The privacy list name.
      * @return The async result with the privacy list.
-     * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-retrieve">2.3 Retrieving One's Privacy Lists</a>
      */
     public AsyncResult<PrivacyList> getPrivacyList(String name) {
         return xmppSession.query(IQ.get(new Privacy(new PrivacyList(name)))).thenApply(result -> {
@@ -165,7 +165,7 @@ public final class PrivacyListManager extends Manager {
      *
      * @param name The active list name.
      * @return The async result with the server's IQ reply.
-     * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-active">2.4 Managing Active Lists</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-active">2.4 Managing Active Lists</a>
      */
     public AsyncResult<IQ> setActiveList(String name) {
         return setPrivacy(Privacy.withActive(name));
@@ -175,7 +175,7 @@ public final class PrivacyListManager extends Manager {
      * Declines the use of any active list.
      *
      * @return The async result with the server's IQ reply.
-     * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-active">2.4 Managing Active Lists</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-active">2.4 Managing Active Lists</a>
      */
     public AsyncResult<IQ> declineActiveList() {
         return setActiveList("");
@@ -186,7 +186,7 @@ public final class PrivacyListManager extends Manager {
      *
      * @param name The list name.
      * @return The async result with the server's IQ reply.
-     * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-default">2.5 Managing the Default List</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-default">2.5 Managing the Default List</a>
      */
     public AsyncResult<IQ> setDefaultList(String name) {
         return setPrivacy(Privacy.withDefault(name));
@@ -196,7 +196,7 @@ public final class PrivacyListManager extends Manager {
      * Declines the use of any default list.
      *
      * @return The async result with the server's IQ reply.
-     * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-default">2.5 Managing the Default List</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-default">2.5 Managing the Default List</a>
      */
     public AsyncResult<IQ> declineDefaultList() {
         return setDefaultList("");
@@ -207,7 +207,7 @@ public final class PrivacyListManager extends Manager {
      *
      * @param privacyList The privacy list.
      * @return The async result with the server's IQ reply.
-     * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-edit">2.6 Editing a Privacy List</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-edit">2.6 Editing a Privacy List</a>
      */
     public AsyncResult<IQ> createOrUpdateList(PrivacyList privacyList) {
         return setPrivacy(new Privacy(privacyList));
@@ -218,7 +218,7 @@ public final class PrivacyListManager extends Manager {
      *
      * @param name The privacy list.
      * @return The async result with the server's IQ reply.
-     * @see <a href="http://xmpp.org/extensions/xep-0016.html#protocol-remove">2.8 Removing a Privacy List</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-remove">2.8 Removing a Privacy List</a>
      */
     public AsyncResult<IQ> removeList(String name) {
         return setPrivacy(new Privacy(new PrivacyList(name)));

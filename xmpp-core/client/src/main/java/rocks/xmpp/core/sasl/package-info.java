@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides classes for <a href="http://xmpp.org/rfcs/rfc6120.html#sasl">SASL Negotiation</a> (authentication).
+ * Provides classes for <a href="https://xmpp.org/rfcs/rfc6120.html#sasl">SASL Negotiation</a> (authentication).
  */
 package rocks.xmpp.core.sasl;
 

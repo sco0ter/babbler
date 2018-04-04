@@ -147,7 +147,7 @@ public final class Address {
      * Gets the address type.
      *
      * @return The address type.
-     * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-type">4.6 'type' attribute</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-type">4.6 'type' attribute</a>
      */
     public final Type getType() {
         return type;
@@ -157,7 +157,7 @@ public final class Address {
      * Gets the JID.
      *
      * @return The JID.
-     * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-jid">4.1 'jid' attribute</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-jid">4.1 'jid' attribute</a>
      */
     public final Jid getJid() {
         return jid;
@@ -167,7 +167,7 @@ public final class Address {
      * Gets the URI. It specifies an external system address, such as a sip:, sips:, or im: URI.
      *
      * @return The URI.
-     * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-uri">4.2 'uri' attribute</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-uri">4.2 'uri' attribute</a>
      */
     public final URI getUri() {
         return uri;
@@ -177,7 +177,7 @@ public final class Address {
      * Gets the node. It specifies a sub-addressable unit at a particular JID, corresponding to a Service Discovery node.
      *
      * @return The node.
-     * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-node">4.3 'node' attribute</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-node">4.3 'node' attribute</a>
      */
     public final String getNode() {
         return node;
@@ -187,7 +187,7 @@ public final class Address {
      * Gets the description. It specifies human-readable information for this address. This data may be used by clients to provide richer address-book integration.
      *
      * @return The description.
-     * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-desc">4.4 'desc' attribute</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-desc">4.4 'desc' attribute</a>
      */
     public final String getDescription() {
         return desc;
@@ -197,7 +197,7 @@ public final class Address {
      * Indicates, whether the service has delivered the stanza to this address.
      *
      * @return True, if the service has delivered the stanza to this address.
-     * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-delivered">4.5 'delivered' attribute</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-delivered">4.5 'delivered' attribute</a>
      */
     public final boolean isDelivered() {
         return delivered != null && delivered;
@@ -225,7 +225,7 @@ public final class Address {
      * Gets the extensions as unmodifiable list.
      *
      * @return The extensions.
-     * @see <a href="http://xmpp.org/extensions/xep-0033.html#extensibility">4.7 Extensibility</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0033.html#extensibility">4.7 Extensibility</a>
      */
     public final List<Object> getExtensions() {
         return Collections.unmodifiableList(extensions);
@@ -237,7 +237,7 @@ public final class Address {
      * @param <T>   The extension type.
      * @param clazz The extension class.
      * @return The extension or null.
-     * @see <a href="http://xmpp.org/extensions/xep-0033.html#extensibility">4.7 Extensibility</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0033.html#extensibility">4.7 Extensibility</a>
      */
     @SuppressWarnings("unchecked")
     public final <T> T getExtension(Class<T> clazz) {
@@ -252,56 +252,56 @@ public final class Address {
     /**
      * The type of the address.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-type">4.6 'type' attribute</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-type">4.6 'type' attribute</a>
      */
     public enum Type {
         /**
          * These addressees should receive 'blind carbon copies' of the stanza. This means that the server MUST remove these addresses before the stanza is delivered to anyone other than the given bcc addressee or the multicast service of the bcc addressee.
          *
-         * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-type-bcc">4.6.3 Address type='bcc'</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-type-bcc">4.6.3 Address type='bcc'</a>
          */
         @XmlEnumValue(value = "bcc")
         BCC,
         /**
          * These addressees are the secondary recipients of the stanza.
          *
-         * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-type-cc">4.6.2 Address type='cc'</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-type-cc">4.6.2 Address type='cc'</a>
          */
         @XmlEnumValue(value = "cc")
         CC,
         /**
          * This address type contains no actual address information. Instead, it means that the receiver SHOULD NOT reply to the message. This is useful when broadcasting messages to many receivers.
          *
-         * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-type-noreply">4.6.6 Address type='noreply'</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-type-noreply">4.6.6 Address type='noreply'</a>
          */
         @XmlEnumValue(value = "noreply")
         NOREPLY,
         /**
          * This is the JID of a Multi-User Chat (XEP-0045) [5] room to which responses should be sent. When a user wants to reply to this stanza, the client SHOULD join this room first. Clients SHOULD respect this request unless an explicit override occurs. There MAY be more than one replyto or replyroom on a stanza, in which case the reply stanza MUST be routed to all of the addresses.
          *
-         * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-type-replyroom">4.6.5 Address type='replyroom'</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-type-replyroom">4.6.5 Address type='replyroom'</a>
          */
         @XmlEnumValue(value = "replyroom")
         REPLYROOM,
         /**
          * This is the address to which all replies are requested to be sent. Clients SHOULD respect this request unless an explicit override occurs. There MAY be more than one replyto or replyroom on a stanza, in which case the reply stanza MUST be routed to all of the addresses.
          *
-         * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-type-replyto">4.6.4 Address type='replyto'</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-type-replyto">4.6.4 Address type='replyto'</a>
          */
         @XmlEnumValue(value = "replyto")
         REPLYTO,
         /**
          * These addressees are the primary recipients of the stanza.
          *
-         * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-type-to">4.6.1 Address type='to'</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-type-to">4.6.1 Address type='to'</a>
          */
         @XmlEnumValue(value = "to")
         TO,
         /**
          * In Multi-User Chat, if the room is non-anonymous, notes the original full JID of the sender.
          *
-         * @see <a href="http://xmpp.org/extensions/xep-0033.html#addr-type-ofrom">4.6.7 Address type='ofrom'</a>
-         * @see <a href="http://xmpp.org/extensions/xep-0045.html#enter-history">7.2.14 Discussion History</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-type-ofrom">4.6.7 Address type='ofrom'</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0045.html#enter-history">7.2.14 Discussion History</a>
          */
         @XmlEnumValue(value = "ofrom")
         OFROM

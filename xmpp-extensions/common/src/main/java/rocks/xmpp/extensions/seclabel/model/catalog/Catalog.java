@@ -40,8 +40,8 @@ import java.util.List;
  * The implementation of the {@code <catalog/>} element in the {@code urn:xmpp:sec-label:catalog:2} namespace.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0258.html">XEP-0258: Security Labels in XMPP</a>
- * @see <a href="http://xmpp.org/extensions/xep-0258.html#schema-catalog">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0258.html">XEP-0258: Security Labels in XMPP</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0258.html#schema-catalog">XML Schema</a>
  */
 @XmlRootElement(name = "catalog")
 public final class Catalog {

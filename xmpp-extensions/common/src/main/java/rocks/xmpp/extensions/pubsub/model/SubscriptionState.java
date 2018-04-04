@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
  * Represents the subscription state to a node.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#substates">4.2 Subscription States</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#substates">4.2 Subscription States</a>
  */
 public enum SubscriptionState {
     /**

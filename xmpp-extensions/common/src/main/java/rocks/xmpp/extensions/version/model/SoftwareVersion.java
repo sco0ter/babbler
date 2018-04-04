@@ -33,8 +33,8 @@ import java.util.Objects;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>
- * @see <a href="http://xmpp.org/extensions/xep-0092.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0092.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class SoftwareVersion {
@@ -60,7 +60,7 @@ public final class SoftwareVersion {
      * Creates a software version instance.
      * The operating system will be determined automatically.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/extensions/xep-0092.html#security">5. Security Considerations</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/extensions/xep-0092.html#security">5. Security Considerations</a></cite></p>
      * <p>Revealing the application's underlying operating system may open the user or system to attacks directed against that operating system; therefore, an application MUST provide a way for a human user or administrator to disable sharing of information about the operating system.</p>
      * </blockquote>
      * If you want to hide OS information, use {@link #SoftwareVersion(String, String, String)} and pass null for the os parameter.

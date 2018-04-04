@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * The implementation of the {@code <active/>} element in the {@code urn:xmpp:jingle:apps:rtp:info:1} namespace.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0167.html#info-active">8.1 Active</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0167.html#info-active">8.1 Active</a>
  */
 @XmlRootElement
 public final class Active {

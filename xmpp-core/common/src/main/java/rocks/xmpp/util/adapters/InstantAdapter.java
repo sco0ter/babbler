@@ -29,7 +29,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 
 /**
- * Converts an {@link java.time.Instant} to a string representation according to <a href="http://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a> and vice versa.
+ * Converts an {@link java.time.Instant} to a string representation according to <a href="https://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a> and vice versa.
  */
 public final class InstantAdapter extends XmlAdapter<String, Instant> {
 

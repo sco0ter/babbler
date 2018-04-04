@@ -49,8 +49,8 @@ import java.util.List;
  * The implementation of the {@code <event/>} element in the {@code http://jabber.org/protocol/pubsub#event} namespace.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#schemas-event">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#schemas-event">XML Schema</a>
  */
 @XmlRootElement(name = "event")
 public final class Event {

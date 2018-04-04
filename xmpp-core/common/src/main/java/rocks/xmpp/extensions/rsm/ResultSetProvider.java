@@ -33,7 +33,7 @@ import java.util.List;
  * Provides methods which are needed for result set management.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>
  */
 public interface ResultSetProvider<T extends ResultSetItem> {
 

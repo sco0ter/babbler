@@ -73,8 +73,8 @@ import java.util.List;
  * </p>
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#schemas-pubsub">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#schemas-pubsub">XML Schema</a>
  */
 @XmlRootElement(name = "pubsub")
 @XmlSeeAlso({Unsupported.class, InvalidJid.class, PresenceSubscriptionRequired.class, NotInRosterGroup.class, ClosedNode.class, PendingSubscription.class, TooManySubscriptions.class, ConfigurationRequired.class, SubIdRequired.class, NotSubscribed.class, NotSubscribed.class, InvalidSubId.class, JidRequired.class, InvalidOptions.class, PayloadTooBig.class, InvalidPayload.class, ItemRequired.class, PayloadRequired.class, ItemForbidden.class, NodeIdRequired.class, MaxItemsExceeded.class, MaxNodesExceeded.class,
@@ -155,7 +155,7 @@ public final class PubSub {
      * ```
      *
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-affiliations">5.7 Retrieve Affiliations</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#entity-affiliations">5.7 Retrieve Affiliations</a>
      */
     public static PubSub withAffiliations() {
         return withAffiliations(null);
@@ -172,7 +172,7 @@ public final class PubSub {
      *
      * @param node The node.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-affiliations">5.7 Retrieve Affiliations</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#entity-affiliations">5.7 Retrieve Affiliations</a>
      */
     public static PubSub withAffiliations(String node) {
         return new PubSub(new AffiliationsElement(node));
@@ -197,7 +197,7 @@ public final class PubSub {
      * @param node              The node.
      * @param configurationForm The configuration form.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-tempsub">12.4 Temporary Subscriptions</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#impl-tempsub">12.4 Temporary Subscriptions</a>
      */
     public static PubSub withConfigure(String node, DataForm configurationForm) {
         return new PubSub(new Configure(node, configurationForm));
@@ -214,7 +214,7 @@ public final class PubSub {
      *
      * @param node The node.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create">8.1 Create a Node</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-create">8.1 Create a Node</a>
      */
     public static PubSub withCreate(String node) {
         return new PubSub(new Create(node), null);
@@ -236,7 +236,7 @@ public final class PubSub {
      * @param node              The node.
      * @param configurationForm The configuration form.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-create-and-configure">8.1.3 Create and Configure a Node</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-create-and-configure">8.1.3 Create and Configure a Node</a>
      */
     public static PubSub withCreate(String node, DataForm configurationForm) {
         return new PubSub(new Create(node), new Configure(configurationForm));
@@ -252,7 +252,7 @@ public final class PubSub {
      * ```
      *
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-subscriptions">5.6 Retrieve Subscriptions</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#entity-subscriptions">5.6 Retrieve Subscriptions</a>
      */
     public static PubSub withSubscriptions() {
         return withSubscriptions(null);
@@ -269,7 +269,7 @@ public final class PubSub {
      *
      * @param node The node.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-subscriptions">5.6 Retrieve Subscriptions</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#entity-subscriptions">5.6 Retrieve Subscriptions</a>
      */
     public static PubSub withSubscriptions(String node) {
         return new PubSub(new Subscriptions(node));
@@ -287,7 +287,7 @@ public final class PubSub {
      * @param node The node.
      * @param jid  The JID.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe">6.1 Subscribe to a Node</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-subscribe">6.1 Subscribe to a Node</a>
      */
     public static PubSub withSubscribe(String node, Jid jid) {
         return new PubSub(new Subscribe(node, jid));
@@ -310,7 +310,7 @@ public final class PubSub {
      * @param jid      The JID.
      * @param dataForm The dataForm.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-subandconfig">6.3.7 Subscribe and Configure</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-subandconfig">6.3.7 Subscribe and Configure</a>
      */
     public static PubSub withSubscribe(String node, Jid jid, DataForm dataForm) {
         return new PubSub(new Subscribe(node, jid), new Options(dataForm));
@@ -333,7 +333,7 @@ public final class PubSub {
      * @param subid    The subscription id.
      * @param dataForm The data form.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
      */
     public static PubSub withOptions(String node, Jid jid, String subid, DataForm dataForm) {
         return new PubSub(new Options(node, jid, subid, dataForm));
@@ -352,7 +352,7 @@ public final class PubSub {
      * @param jid            The JID.
      * @param subscriptionId The subscription id.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe">6.2 Unsubscribe from a Node</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe">6.2 Unsubscribe from a Node</a>
      */
     public static PubSub withUnsubscribe(String node, Jid jid, String subscriptionId) {
         return new PubSub(new Unsubscribe(node, jid, subscriptionId));
@@ -368,7 +368,7 @@ public final class PubSub {
      * ```
      *
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscribe-default">6.4 Request Default Subscription Configuration Options</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscribe-default">6.4 Request Default Subscription Configuration Options</a>
      */
     public static PubSub withDefault() {
         return withDefault(null);
@@ -385,7 +385,7 @@ public final class PubSub {
      *
      * @param node The node.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscribe-default">6.4 Request Default Subscription Configuration Options</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscribe-default">6.4 Request Default Subscription Configuration Options</a>
      */
     public static PubSub withDefault(String node) {
         return new PubSub(new Default(node));
@@ -402,7 +402,7 @@ public final class PubSub {
      *
      * @param node The node.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestall">6.5.2 Requesting All Items</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestall">6.5.2 Requesting All Items</a>
      */
     public static PubSub withItems(String node) {
         return new PubSub(new Items(node));
@@ -423,7 +423,7 @@ public final class PubSub {
      * @param node The node.
      * @param ids  The ids.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-returnnotify">6.5.6 Returning Notifications Only</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-returnnotify">6.5.6 Returning Notifications Only</a>
      */
     public static PubSub withItems(String node, String... ids) {
         List<ItemElement> items = new ArrayList<>();
@@ -445,7 +445,7 @@ public final class PubSub {
      * @param node     The node.
      * @param maxItems The max items.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestrecent">6.5.7 Requesting the Most Recent Items</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestrecent">6.5.7 Requesting the Most Recent Items</a>
      */
     public static PubSub withItems(String node, int maxItems) {
         return new PubSub(new Items(node, maxItems));
@@ -468,7 +468,7 @@ public final class PubSub {
      * @param item    The item to publish.
      * @param options The publish options.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish">7.1 Publish an Item to a Node</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-publish">7.1 Publish an Item to a Node</a>
      */
     public static PubSub withPublish(String node, String id, Object item, DataForm options) {
         return new PubSub(new Publish(node, new ItemElement(id, item)), options != null ? new PublishOptions(options) : null);
@@ -489,7 +489,7 @@ public final class PubSub {
      * @param id     The id.
      * @param notify The notify attribute.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-delete">7.2 Delete an Item from a Node</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-delete">7.2 Delete an Item from a Node</a>
      */
     public static PubSub withRetract(String node, String id, boolean notify) {
         return new PubSub(new Retract(node, new ItemElement(id), notify));

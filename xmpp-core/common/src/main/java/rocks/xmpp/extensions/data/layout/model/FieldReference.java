@@ -34,7 +34,7 @@ import java.util.Objects;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0141.html">XEP-0141: Data Forms Layout</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0141.html">XEP-0141: Data Forms Layout</a>
  * @see rocks.xmpp.extensions.data.model.DataForm#getFields()
  * @see Page#getFieldReferences()
  */

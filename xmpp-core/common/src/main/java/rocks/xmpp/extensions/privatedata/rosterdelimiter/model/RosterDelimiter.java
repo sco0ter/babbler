@@ -33,15 +33,15 @@ import javax.xml.bind.annotation.XmlValue;
  * It allows to store a roster group delimiter in the private storage, in order to display nested roster groups.
  * </p>
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/extensions/xep-0083.html#namespace">2. roster:delimiter Namespace</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/extensions/xep-0083.html#namespace">2. roster:delimiter Namespace</a></cite></p>
  * <p>Therefore, the delimiter SHOULD contain multiple characters in order to avoid inconveniencing the user, but single-character delimiters MUST be honored by the client. The exception is if the delimiter is a single alphanumeric character (a-z, A-Z, 0-9); in this case compliant clients MUST treat the situation as if nesting were disabled, to avoid malicious use of this element by setting 'e' or 'm' or some other common single character as a delimiter.</p>
  * <p>A compliant client SHOULD ask for the nested delimiter before requesting the user's roster, in order to know whether or not to parse the roster 'group' fields accordingly. If there is no delimiter stored, a client MAY set a delimiter but MUST either prompt the user for a delimiter, or use a user-configurable default.</p>
  * </blockquote>
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
- * @see <a href="http://xmpp.org/extensions/xep-0083.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0083.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "roster")
 public final class RosterDelimiter {

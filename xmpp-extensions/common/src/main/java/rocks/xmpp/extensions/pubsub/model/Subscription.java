@@ -67,7 +67,7 @@ public interface Subscription {
      * Gets the expiry of the subscription.
      *
      * @return The expiry.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-leases">12.18 Time-Based Subscriptions (Leases)</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#impl-leases">12.18 Time-Based Subscriptions (Leases)</a>
      */
     Instant getExpiry();
 

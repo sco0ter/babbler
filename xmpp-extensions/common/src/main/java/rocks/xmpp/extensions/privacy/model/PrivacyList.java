@@ -39,13 +39,13 @@ import java.util.Objects;
 /**
  * The implementation of a privacy list.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/extensions/xep-0016.html#protocol">2. Protocol</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/extensions/xep-0016.html#protocol">2. Protocol</a></cite></p>
  * <p>Most instant messaging systems have found it necessary to implement some method for users to block communications from particular other users (this is also required by sections 5.1.5, 5.1.15, 5.3.2, and 5.4.10 of RFC 2779 [3]. In XMPP this is done by managing one's privacy lists using the 'jabber:iq:privacy' namespace.</p>
  * </blockquote>
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>
  */
 public final class PrivacyList implements Comparable<PrivacyList> {
 
@@ -98,11 +98,11 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     /**
      * Creates a global invisibility list, where you are still visible to some contacts.
      *
-     * @param listName The list name. See <a href="http://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
+     * @param listName The list name. See <a href="https://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
      * @param jids     The JIDs to which you are still visible.
      * @return The invisibility list.
-     * @see <a href="http://xmpp.org/extensions/xep-0126.html">XEP-0126: Invisibility</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0126.html#vis-select-jid">3.2.1 Becoming Visible by JID</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0126.html">XEP-0126: Invisibility</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0126.html#vis-select-jid">3.2.1 Becoming Visible by JID</a>
      */
     public static PrivacyList createInvisibilityListExceptForUsers(String listName, Jid... jids) {
         Collection<PrivacyRule> rules = new ArrayDeque<>();
@@ -117,11 +117,11 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     /**
      * Creates a global invisibility list, where you are still visible to some contacts.
      *
-     * @param listName The list name. See <a href="http://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
+     * @param listName The list name. See <a href="https://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
      * @param groups   The roster groups to which you are still visible.
      * @return The invisibility list.
-     * @see <a href="http://xmpp.org/extensions/xep-0126.html">XEP-0126: Invisibility</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0126.html#vis-select-roster">3.2.2 Becoming Visible by Roster Group</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0126.html">XEP-0126: Invisibility</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0126.html#vis-select-roster">3.2.2 Becoming Visible by Roster Group</a>
      */
     public static PrivacyList createInvisibilityListExceptForGroups(String listName, String... groups) {
         Collection<PrivacyRule> rules = new ArrayDeque<>();
@@ -136,11 +136,11 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     /**
      * Creates a selective invisibility list. You are only invisible to the provided JIDs. You are visible to everyone else.
      *
-     * @param listName The list name. See <a href="http://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
+     * @param listName The list name. See <a href="https://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
      * @param jids     The JIDs to which you appear invisible.
      * @return The invisibility list.
-     * @see <a href="http://xmpp.org/extensions/xep-0126.html">XEP-0126: Invisibility</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0126.html#invis-select-jid">3.4.1 Becoming Invisible by JID</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0126.html">XEP-0126: Invisibility</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0126.html#invis-select-jid">3.4.1 Becoming Invisible by JID</a>
      */
     public static PrivacyList createInvisibilityListForUsers(String listName, Jid... jids) {
         Collection<PrivacyRule> rules = new ArrayDeque<>();
@@ -155,11 +155,11 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     /**
      * Creates a selective invisibility list. You are only invisible to the provided JIDs. You are visible to everyone else.
      *
-     * @param listName The list name. See <a href="http://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
+     * @param listName The list name. See <a href="https://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
      * @param groups   The roster groups to which you appear invisible.
      * @return The invisibility list.
-     * @see <a href="http://xmpp.org/extensions/xep-0126.html">XEP-0126: Invisibility</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0126.html#invis-select-roster">3.4.2 Becoming Invisible by Roster Group</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0126.html">XEP-0126: Invisibility</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0126.html#invis-select-roster">3.4.2 Becoming Invisible by Roster Group</a>
      */
     public static PrivacyList createInvisibilityListForGroups(String listName, String... groups) {
         Collection<PrivacyRule> rules = new ArrayDeque<>();

@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides classes for <a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a>.
+ * Provides classes for <a href="https://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a>.
  * <p>
  * It defines an XMPP protocol extension for communicating the status of a user in a chat session, thus indicating whether a chat partner is actively engaged in the chat, composing a message, temporarily paused, inactive, or gone. The protocol can be used in the context of a one-to-one chat session or a multi-user chat room.
  * </p>

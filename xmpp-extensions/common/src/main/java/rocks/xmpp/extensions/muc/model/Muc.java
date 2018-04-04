@@ -44,8 +44,8 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#schemas-muc">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#schemas-muc">XML Schema</a>
  */
 @XmlRootElement(name = "x")
 @XmlSeeAlso({MucUser.class, MucAdmin.class, MucOwner.class})

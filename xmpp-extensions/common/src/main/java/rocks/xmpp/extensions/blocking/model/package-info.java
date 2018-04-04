@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>.
  * <p>
  * It specifies an XMPP protocol extension for communications blocking that is intended to be simpler than privacy lists (XEP-0016).
  * </p>

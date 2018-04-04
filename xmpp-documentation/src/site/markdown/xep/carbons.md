@@ -52,4 +52,4 @@ if (received != null) {
 }
 ```
 
-[Message Carbons]: http://xmpp.org/extensions/xep-0280.html "XEP-0280: Message Carbons"
+[Message Carbons]: https://xmpp.org/extensions/xep-0280.html "XEP-0280: Message Carbons"

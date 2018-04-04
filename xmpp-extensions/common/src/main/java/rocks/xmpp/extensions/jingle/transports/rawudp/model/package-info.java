@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0177.html">XEP-0177: Jingle Raw UDP Transport Method</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0177.html">XEP-0177: Jingle Raw UDP Transport Method</a>.
  * <p>
  * It defines a Jingle transport method that results in sending media data using raw datagram associations via the User Datagram Protocol (UDP). This simple transport method does not provide NAT traversal, and the ICE-UDP transport method should be used if NAT traversal is required.
  * </p>

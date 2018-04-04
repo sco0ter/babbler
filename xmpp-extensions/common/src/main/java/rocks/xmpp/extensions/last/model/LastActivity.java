@@ -34,9 +34,9 @@ import javax.xml.bind.annotation.XmlValue;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a>
- * @see <a href="http://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>
- * @see <a href="http://xmpp.org/extensions/xep-0012.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0012.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class LastActivity {
@@ -81,7 +81,7 @@ public final class LastActivity {
     }
 
     /**
-     * Gets the status message of the last unavailable presence received from the user, if the last activity request was a <a href="http://xmpp.org/extensions/xep-0012.html#offline">Offline User Query</a>.
+     * Gets the status message of the last unavailable presence received from the user, if the last activity request was a <a href="https://xmpp.org/extensions/xep-0012.html#offline">Offline User Query</a>.
      *
      * @return The status message of the last unavailable presence received from the user or null.
      */

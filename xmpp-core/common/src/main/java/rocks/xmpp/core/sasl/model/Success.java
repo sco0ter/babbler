@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 /**
  * The implementation of the {@code <success/>} element, which indicates success during SASL negotiation.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-process-neg-success">6.4.6.  SASL Success</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#sasl-process-neg-success">6.4.6.  SASL Success</a></cite></p>
  * <p>The receiving entity reports success of the handshake by sending a {@code <success/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-sasl' namespace; this element MAY contain XML character data (in SASL terminology, "additional data with success") if the chosen SASL mechanism supports or requires it.</p>
  * </blockquote>
  * <p>

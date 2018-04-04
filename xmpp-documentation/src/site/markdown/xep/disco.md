@@ -117,7 +117,7 @@ serviceDiscoveryManager.addIdentity(Identity.clientPc());
 *client/pc* is also the default identity, if none was added (every entity requires at least one identity), so in most cases you don't need to add one.
 
 
-[Service Discovery]: http://xmpp.org/extensions/xep-0030.html "XEP-0030: Service Discovery"
-[Entity Capabilities]: http://xmpp.org/extensions/xep-0115.html "XEP-0115: Entity Capabilities"
-[Software Version]: http://xmpp.org/extensions/xep-0092.html "XEP-0092: Software Version"
-[Result Set Management]: http://xmpp.org/extensions/xep-0059.html "XEP-0059: Result Set Management"
+[Service Discovery]: https://xmpp.org/extensions/xep-0030.html "XEP-0030: Service Discovery"
+[Entity Capabilities]: https://xmpp.org/extensions/xep-0115.html "XEP-0115: Entity Capabilities"
+[Software Version]: https://xmpp.org/extensions/xep-0092.html "XEP-0092: Software Version"
+[Result Set Management]: https://xmpp.org/extensions/xep-0059.html "XEP-0059: Result Set Management"

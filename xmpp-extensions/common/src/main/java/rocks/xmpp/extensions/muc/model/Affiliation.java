@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
  * A long-lived association or connection with a room; the possible affiliations are "owner", "admin", "member", and "outcast" (naturally it is also possible to have no affiliation); affiliation is distinct from role. An affiliation lasts across a user's visits to a room.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#affil">5.2 Affiliations</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#affil">5.2 Affiliations</a>
  */
 public enum Affiliation {
     /**

@@ -41,8 +41,8 @@ import java.util.Objects;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0144.html">XEP-0144: Roster Item Exchange</a>
- * @see <a href="http://xmpp.org/extensions/xep-0144.html#schema">11. XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0144.html">XEP-0144: Roster Item Exchange</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0144.html#schema">11. XML Schema</a>
  */
 @XmlRootElement(name = "x")
 public final class ContactExchange {
@@ -144,21 +144,21 @@ public final class ContactExchange {
             /**
              * Suggests roster item addition.
              *
-             * @see <a href="http://xmpp.org/extensions/xep-0144.html#add">3.1 Suggesting Roster Item Addition</a>
+             * @see <a href="https://xmpp.org/extensions/xep-0144.html#add">3.1 Suggesting Roster Item Addition</a>
              */
             @XmlEnumValue("add")
             ADD,
             /**
              * Suggests roster item deletion.
              *
-             * @see <a href="http://xmpp.org/extensions/xep-0144.html#delete">3.2 Suggesting Roster Item Deletion</a>
+             * @see <a href="https://xmpp.org/extensions/xep-0144.html#delete">3.2 Suggesting Roster Item Deletion</a>
              */
             @XmlEnumValue("delete")
             DELETE,
             /**
              * Suggests roster item modification.
              *
-             * @see <a href="http://xmpp.org/extensions/xep-0144.html#modify">3.3 Suggesting Roster Item Modification</a>
+             * @see <a href="https://xmpp.org/extensions/xep-0144.html#modify">3.3 Suggesting Roster Item Modification</a>
              */
             @XmlEnumValue("modify")
             MODIFY

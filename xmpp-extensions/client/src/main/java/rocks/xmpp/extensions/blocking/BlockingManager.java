@@ -146,7 +146,7 @@ public final class BlockingManager extends Manager {
      * Retrieves the blocked contacts.
      *
      * @return The async result with the block list.
-     * @see <a href="http://xmpp.org/extensions/xep-0191.html#blocklist">3.2 User Retrieves Block List</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0191.html#blocklist">3.2 User Retrieves Block List</a>
      */
     public final AsyncResult<Set<Jid>> getBlockedContacts() {
         return xmppSession.query(IQ.get(new BlockList())).thenApply(result -> {
@@ -165,7 +165,7 @@ public final class BlockingManager extends Manager {
      *
      * @param jids The contacts.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0191.html#block">3.3 User Blocks Contact</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0191.html#block">3.3 User Blocks Contact</a>
      */
     public final AsyncResult<IQ> blockContact(Jid... jids) {
         return xmppSession.query(IQ.set(new Block(Arrays.asList(jids))));
@@ -176,8 +176,8 @@ public final class BlockingManager extends Manager {
      *
      * @param jids The contacts.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0191.html#unblock">3.4 User Unblocks Contact</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0191.html#unblockall">3.5 User Unblocks All Contacts</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0191.html#unblock">3.4 User Unblocks Contact</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0191.html#unblockall">3.5 User Unblocks All Contacts</a>
      */
     public final AsyncResult<IQ> unblockContact(Jid... jids) {
         return xmppSession.query(IQ.set(new Unblock(Arrays.asList(jids))));

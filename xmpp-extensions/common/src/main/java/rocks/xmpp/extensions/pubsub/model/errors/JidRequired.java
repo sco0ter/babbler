@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Christian Schudt
  * @see #JID_REQUIRED
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-error-jid">6.3.4.3 Subscriber JID Required</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-error-jid">6.3.4.3 Subscriber JID Required</a>
  */
 @XmlRootElement(name = "jid-required")
 @XmlType(factoryMethod = "create")

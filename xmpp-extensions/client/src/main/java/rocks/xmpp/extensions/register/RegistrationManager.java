@@ -73,7 +73,7 @@ public final class RegistrationManager extends Manager {
      * If you are already registered to the server, this method returns your registration data and {@link rocks.xmpp.extensions.register.model.Registration#isRegistered()} returns true.
      *
      * @return The async result with the registration data.
-     * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-register">3.1 Entity Registers with a Host</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0077.html#usecases-register">3.1 Entity Registers with a Host</a>
      * @see rocks.xmpp.extensions.register.model.Registration
      */
     public final AsyncResult<Registration> getRegistration() {
@@ -85,7 +85,7 @@ public final class RegistrationManager extends Manager {
      *
      * @param registration The registration.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-register">3.1 Entity Registers with a Host</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0077.html#usecases-register">3.1 Entity Registers with a Host</a>
      */
     public final AsyncResult<Void> register(Registration registration) {
         return xmppSession.query(IQ.set(registration), Void.class);
@@ -95,7 +95,7 @@ public final class RegistrationManager extends Manager {
      * Cancels a registration. This method must be called after having authenticated to the server.
      *
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-cancel">3.2 Entity Cancels an Existing Registration</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0077.html#usecases-cancel">3.2 Entity Cancels an Existing Registration</a>
      */
     public final AsyncResult<Void> cancelRegistration() {
         return xmppSession.query(IQ.set(Registration.remove()), Void.class);
@@ -107,7 +107,7 @@ public final class RegistrationManager extends Manager {
      * @param username The user name.
      * @param password The password.
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0077.html#usecases-changepw">3.3 User Changes Password</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0077.html#usecases-changepw">3.3 User Changes Password</a>
      */
 
     public final AsyncResult<Void> changePassword(String username, String password) {

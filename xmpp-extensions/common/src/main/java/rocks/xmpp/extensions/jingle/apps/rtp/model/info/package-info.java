@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0167.html">XEP-0167: Jingle RTP Sessions</a> (info).
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0167.html">XEP-0167: Jingle RTP Sessions</a> (info).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:xmpp:jingle:apps:rtp:info:1", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.jingle.apps.rtp.model.info;

@@ -55,10 +55,10 @@ xmppClient.addInboundMessageListener(e -> {
 });
 ```
 
-[GeoLocation]: http://xmpp.org/extensions/xep-0080.html "XEP-0080: User Location"
-[Mood]: http://xmpp.org/extensions/xep-0107.html "XEP-0107: User Mood"
-[Activity]: http://xmpp.org/extensions/xep-0108.html "XEP-0108: User Activity"
-[Avatar]: http://xmpp.org/extensions/xep-0084.html "XEP-0084: User Avatar"
-[Tune]: http://xmpp.org/extensions/xep-0118.html "XEP-0118: User Tune"
-[PubSub]: http://xmpp.org/extensions/xep-0060.html "XEP-0060: Publish-Subscribe"
-[PEP]: http://xmpp.org/extensions/xep-0163.html "XEP-0163: Personal Eventing Protocol"
+[GeoLocation]: https://xmpp.org/extensions/xep-0080.html "XEP-0080: User Location"
+[Mood]: https://xmpp.org/extensions/xep-0107.html "XEP-0107: User Mood"
+[Activity]: https://xmpp.org/extensions/xep-0108.html "XEP-0108: User Activity"
+[Avatar]: https://xmpp.org/extensions/xep-0084.html "XEP-0084: User Avatar"
+[Tune]: https://xmpp.org/extensions/xep-0118.html "XEP-0118: User Tune"
+[PubSub]: https://xmpp.org/extensions/xep-0060.html "XEP-0060: Publish-Subscribe"
+[PEP]: https://xmpp.org/extensions/xep-0163.html "XEP-0163: Personal Eventing Protocol"

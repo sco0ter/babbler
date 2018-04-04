@@ -32,8 +32,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * The implementation of the {@code <register/>} element in the {@code http://jabber.org/features/iq-register} namespace.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a>
- * @see <a href="http://xmpp.org/extensions/xep-0077.html#schemas-streams">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0077.html#schemas-streams">XML Schema</a>
  */
 @XmlRootElement(name = "register")
 public final class RegisterFeature extends StreamFeature {

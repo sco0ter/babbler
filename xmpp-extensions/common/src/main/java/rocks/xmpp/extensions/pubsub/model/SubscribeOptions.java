@@ -240,7 +240,7 @@ public final class SubscribeOptions {
     /**
      * The subscription type.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#auto-subscribe">9.1 Auto-Subscribe</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#auto-subscribe">9.1 Auto-Subscribe</a>
      */
     public enum SubscriptionType {
         /**
@@ -319,7 +319,7 @@ public final class SubscribeOptions {
          *
          * @param includeBody Whether you want to receive an XMPP message body in addition to the payload.
          * @return The builder.
-         * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-body">12.7 Including a Message Body</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0060.html#impl-body">12.7 Including a Message Body</a>
          */
         public final Builder includeBody(boolean includeBody) {
             this.includeBody = includeBody;
@@ -342,7 +342,7 @@ public final class SubscribeOptions {
          *
          * @param expireAt The expiration date.
          * @return The builder.
-         * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-leases">12.18 Time-Based Subscriptions (Leases)</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0060.html#impl-leases">12.18 Time-Based Subscriptions (Leases)</a>
          */
         public final Builder expireAt(Instant expireAt) {
             this.expireAt = expireAt;
@@ -354,7 +354,7 @@ public final class SubscribeOptions {
          *
          * @param temporary If the subscription is temporary, i.e. only as long as you are online.
          * @return The builder.
-         * @see <a href="http://xmpp.org/extensions/xep-0060.html#impl-tempsub">12.4 Temporary Subscriptions</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0060.html#impl-tempsub">12.4 Temporary Subscriptions</a>
          */
         public final Builder temporary(boolean temporary) {
             this.temporary = temporary;
@@ -366,7 +366,7 @@ public final class SubscribeOptions {
          *
          * @param subscriptionType The subscription type.
          * @return The builder.
-         * @see <a href="http://xmpp.org/extensions/xep-0060.html#auto-subscribe">9.1 Auto-Subscribe</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0060.html#auto-subscribe">9.1 Auto-Subscribe</a>
          */
         public final Builder subscriptionType(SubscriptionType subscriptionType) {
             this.subscriptionType = subscriptionType;
@@ -378,7 +378,7 @@ public final class SubscribeOptions {
          *
          * @param subscriptionDepth The subscription depth.
          * @return The builder.
-         * @see <a href="http://xmpp.org/extensions/xep-0060.html#auto-subscribe">9.1 Auto-Subscribe</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0060.html#auto-subscribe">9.1 Auto-Subscribe</a>
          */
         public final Builder subscriptionDepth(int subscriptionDepth) {
             this.subscriptionDepth = subscriptionDepth;

@@ -234,7 +234,7 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
          * <p>
          * If your server expects the connection to be secured immediately (often on port 5223), you should {@linkplain rocks.xmpp.core.session.TcpConnectionConfiguration.Builder#socketFactory(SocketFactory) set a custom SSL socket factory}.
          * <p>
-         * See <a href="http://xmpp.org/rfcs/rfc6120.html#tls">RFC 6120 § 5.  STARTTLS Negotiation</a> for further information.
+         * See <a href="https://xmpp.org/rfcs/rfc6120.html#tls">RFC 6120 § 5.  STARTTLS Negotiation</a> for further information.
          * <p>
          * HTTP (BOSH) and WebSocket connections provide TLS outside of the XMPP layer, i.e. it's not negotiated in XMPP.
          * Setting {@code secure(true)} for these connection methods means the connection connects via {@code https} or {@code wss} respectively.

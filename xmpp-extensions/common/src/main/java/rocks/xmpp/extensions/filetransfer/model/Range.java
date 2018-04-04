@@ -28,8 +28,8 @@ package rocks.xmpp.extensions.filetransfer.model;
  * An interface for ranged file transfers, which covers both XEP-0096 and XEP-0234.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transferr</a>
- * @see <a href="http://xmpp.org/extensions/xep-0234.html">XEP-0234: Jingle File Transfer</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transferr</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0234.html">XEP-0234: Jingle File Transfer</a>
  */
 public interface Range {
 

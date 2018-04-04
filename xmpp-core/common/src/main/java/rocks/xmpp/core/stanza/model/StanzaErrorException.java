@@ -31,7 +31,7 @@ import rocks.xmpp.core.stanza.StanzaException;
  * It should be thrown, if a request (e.g. an IQ stanza) returned a stanza error.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a>
  */
 public final class StanzaErrorException extends StanzaException {
 

@@ -37,4 +37,4 @@ bookmarkManager.removeWebPageBookmark(url);
 ```
 
 
-[Bookmarks]: http://xmpp.org/extensions/xep-0048.html "XEP-0048: Bookmarks"
+[Bookmarks]: https://xmpp.org/extensions/xep-0048.html "XEP-0048: Bookmarks"

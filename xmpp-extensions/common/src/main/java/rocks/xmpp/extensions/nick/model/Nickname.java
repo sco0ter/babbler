@@ -31,11 +31,11 @@ import java.util.Objects;
 /**
  * The implementation of the {@code <nick/>} element in the {@code http://jabber.org/protocol/nick} namespace.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/extensions/xep-0172.html#intro">1. Introduction</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/extensions/xep-0172.html#intro">1. Introduction</a></cite></p>
  * <p>A nickname is a global, memorable (but not necessarily unique) friendly or informal name chosen by the owner of a bare JID {@code <localpart@domain.tld>} for the purpose of associating a distinctive mapping between the person's unique JID and non-unique nickname.</p>
  * </blockquote>
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/extensions/xep-0172.html#usecases">4. Use Cases</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/extensions/xep-0172.html#usecases">4. Use Cases</a></cite></p>
  * <p>In general, a user SHOULD include his or her nickname when establishing initial communication with a contact or group of contacts (i.e., the user has never been in communication with and does not have a prior relationship with the contact or group of contacts). Appropriate use cases therefore include:</p>
  * <ul>
  * <li>Presence subscription requests</li>
@@ -45,8 +45,8 @@ import java.util.Objects;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0172.html">XEP-0172: User Nickname</a>
- * @see <a href="http://xmpp.org/extensions/xep-0172.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0172.html">XEP-0172: User Nickname</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0172.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "nick")
 public final class Nickname {

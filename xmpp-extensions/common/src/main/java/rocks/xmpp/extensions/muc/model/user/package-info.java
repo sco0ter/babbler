@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a> (#user).
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a> (#user).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = Muc.NAMESPACE + "#user", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.muc.model.user;

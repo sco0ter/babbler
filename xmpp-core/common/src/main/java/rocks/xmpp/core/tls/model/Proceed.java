@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * Represents the TLS proceed case.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#tls-process-initiate-proceed">5.4.2.3.  Proceed Case</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#tls-process-initiate-proceed">5.4.2.3.  Proceed Case</a></cite></p>
  * <p>If the proceed case occurs, the receiving entity MUST return a {@code <proceed/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-tls' namespace.</p>
  * </blockquote>
  */

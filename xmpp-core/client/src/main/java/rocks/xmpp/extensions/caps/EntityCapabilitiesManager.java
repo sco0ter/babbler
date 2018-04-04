@@ -71,7 +71,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This class manages <a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>.
+ * This class manages <a href="https://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>.
  * <p>
  * If this manager is enabled (default), entity capabilities are automatically included in every presence notification being sent.
  * </p>
@@ -83,7 +83,7 @@ import java.util.logging.Logger;
  * This class is thread-safe.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>
  */
 public final class EntityCapabilitiesManager extends Manager {
 
@@ -187,7 +187,7 @@ public final class EntityCapabilitiesManager extends Manager {
             // If we haven't established a presence session yet, don't care about changes in service discovery.
             // If we change features during a presence session, update the verification string and resend presence.
 
-            // http://xmpp.org/extensions/xep-0115.html#advertise:
+            // https://xmpp.org/extensions/xep-0115.html#advertise:
             // "If the supported features change during a generating entity's presence session (e.g., a user installs an updated version of a client plugin), the application MUST recompute the verification string and SHOULD send a new presence broadcast."
             Presence lastPresence = null;
             synchronized (publishedNodes) {
@@ -281,7 +281,7 @@ public final class EntityCapabilitiesManager extends Manager {
     /**
      * Sets the node.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/extensions/xep-0115.html#protocol">4. Protocol</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/extensions/xep-0115.html#protocol">4. Protocol</a></cite></p>
      * <p>It is RECOMMENDED for the value of the 'node' attribute to be an HTTP URL at which a user could find further information about the software product, such as "http://psi-im.org" for the Psi client;</p>
      * </blockquote>
      *
@@ -297,7 +297,7 @@ public final class EntityCapabilitiesManager extends Manager {
      *
      * @param jid The JID, which should usually be a full JID.
      * @return The async result with the capabilities in form of a info node, which contains the identities, the features and service discovery extensions.
-     * @see <a href="http://xmpp.org/extensions/xep-0115.html#discover">6.2 Discovering Capabilities</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0115.html#discover">6.2 Discovering Capabilities</a>
      */
     public final AsyncResult<InfoNode> discoverCapabilities(Jid jid) {
         InfoNode infoNode = ENTITY_CAPABILITIES.get(jid);

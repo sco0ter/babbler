@@ -49,8 +49,8 @@ import java.util.List;
  * The implementation of the {@code <pubsub/>} element in the {@code http://jabber.org/protocol/pubsub#owner} namespace.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#schemas-owner">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#schemas-owner">XML Schema</a>
  */
 @XmlRootElement(name = "pubsub")
 public final class PubSubOwner {
@@ -84,7 +84,7 @@ public final class PubSubOwner {
      *
      * @param node The node.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure">8.2 Configure a Node</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-configure">8.2 Configure a Node</a>
      */
     public static PubSubOwner withConfigure(String node) {
         return new PubSubOwner(new Configure(node));
@@ -105,7 +105,7 @@ public final class PubSubOwner {
      * @param dataForm The configuration form.
      * @param node     The node.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-configure">8.2.4 Form Submission</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-configure">8.2.4 Form Submission</a>
      */
     public static PubSubOwner withConfigure(String node, DataForm dataForm) {
         return new PubSubOwner(new Configure(node, dataForm));
@@ -121,7 +121,7 @@ public final class PubSubOwner {
      * ```
      *
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-default">8.3 Request Default Node Configuration Options</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-default">8.3 Request Default Node Configuration Options</a>
      */
     public static PubSubOwner withDefault() {
         return new PubSubOwner(new Default());
@@ -138,7 +138,7 @@ public final class PubSubOwner {
      *
      * @param node The node.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-delete">8.4 Delete a Node</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-delete">8.4 Delete a Node</a>
      */
     public static PubSubOwner withDelete(String node) {
         return new PubSubOwner(new Delete(node));
@@ -158,7 +158,7 @@ public final class PubSubOwner {
      * @param node            The node.
      * @param replacementNode The replacement node.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-delete">8.4 Delete a Node</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-delete">8.4 Delete a Node</a>
      */
     public static PubSubOwner withDelete(String node, URI replacementNode) {
         return new PubSubOwner(new Delete(node, new Delete.Redirect(replacementNode)));
@@ -175,7 +175,7 @@ public final class PubSubOwner {
      *
      * @param node The node.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-purge">8.5 Purge All Node Items</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-purge">8.5 Purge All Node Items</a>
      */
     public static PubSubOwner withPurge(String node) {
         return new PubSubOwner(new Purge(node));
@@ -195,7 +195,7 @@ public final class PubSubOwner {
      * @param node          The node.
      * @param subscriptions The subscriptions.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-subscriptions-modify">8.8.2 Modify Subscriptions</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-subscriptions-modify">8.8.2 Modify Subscriptions</a>
      */
     public static PubSubOwner withSubscriptions(String node, Subscription... subscriptions) {
         return new PubSubOwner(new Subscriptions(node, subscriptions));
@@ -215,7 +215,7 @@ public final class PubSubOwner {
      * @param node             The node.
      * @param affiliationNodes The affiliations.
      * @return The pubsub instance.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-affiliations-modify">8.9.2 Modify Affiliation</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-affiliations-modify">8.9.2 Modify Affiliation</a>
      */
     public static PubSubOwner withAffiliations(String node, Affiliation... affiliationNodes) {
         return new PubSubOwner((new Affiliations(node, affiliationNodes)));

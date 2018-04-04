@@ -40,9 +40,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Manages stream compression as described in <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>.
+ * Manages stream compression as described in <a href="https://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/extensions/xep-0138.html#intro">1. Introduction</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/extensions/xep-0138.html#intro">1. Introduction</a></cite></p>
  * <p>XMPP Core [1] specifies the use of Transport Layer Security (TLS; see RFC 5246 [2]) for encryption of XML streams, and TLS includes the ability to compress encrypted traffic (see RFC 3749 [3]). However, not all computing platforms are able to implement TLS, and traffic compression may be desirable for communication by applications on such computing platforms. This document defines a mechanism for negotiating the compression of XML streams outside the context of TLS.</p>
  * </blockquote>
  * If you enable this manager, stream compression will be used, if available. Note that stream compression should not be used, when you use TLS.

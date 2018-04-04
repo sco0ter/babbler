@@ -33,8 +33,8 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Christian Schudt
  * @see #CLOSED_NODE
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-whitelist">6.1.3.4 Not on Whitelist</a>
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-whitelist">6.5.9.8 Not on Whitelist</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-whitelist">6.1.3.4 Not on Whitelist</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-whitelist">6.5.9.8 Not on Whitelist</a>
  */
 @XmlRootElement(name = "closed-node")
 @XmlType(factoryMethod = "create")

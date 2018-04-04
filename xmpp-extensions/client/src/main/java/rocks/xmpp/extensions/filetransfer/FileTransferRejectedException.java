@@ -30,9 +30,9 @@ import rocks.xmpp.core.XmppException;
  * This is generic exception when a file transfer request has been rejected.
  * The reason for it is, that different file transfer protocols use different ways to indicate file transfer rejection:
  * <ul>
- * <li><a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a> uses the {@code <not-acceptable/>} stanza error</li>
- * <li><a href="http://xmpp.org/extensions/xep-0095.html">XEP-0095: Stream Initiation</a> / <a href="http://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a> uses the {@code <forbidden/>} stanza error</li>
- * <li><a href="http://xmpp.org/extensions/xep-0166.html">XEP-0166: Jingle</a> / <a href="http://xmpp.org/extensions/xep-0234.html">XEP-0234: Jingle File Transfer</a> uses {@code action='session-terminate'} and  {@code <decline/>} to reject an offer.</li>
+ * <li><a href="https://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a> uses the {@code <not-acceptable/>} stanza error</li>
+ * <li><a href="https://xmpp.org/extensions/xep-0095.html">XEP-0095: Stream Initiation</a> / <a href="https://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a> uses the {@code <forbidden/>} stanza error</li>
+ * <li><a href="https://xmpp.org/extensions/xep-0166.html">XEP-0166: Jingle</a> / <a href="https://xmpp.org/extensions/xep-0234.html">XEP-0234: Jingle File Transfer</a> uses {@code action='session-terminate'} and  {@code <decline/>} to reject an offer.</li>
  * </ul>
  *
  * @author Christian Schudt

@@ -42,8 +42,8 @@ import java.util.Objects;
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/bytestreams} namespace.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>
- * @see <a href="http://xmpp.org/extensions/xep-0065.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0065.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class Socks5ByteStream {
@@ -123,7 +123,7 @@ public final class Socks5ByteStream {
      * @param requesterJid The requester JID
      * @param targetJid    The target JID.
      * @return The hexadecimal-encoded SHA-1 hash.
-     * @see <a href="http://xmpp.org/extensions/xep-0065.html#mediated-proto-establish">6.3.2 Target Establishes SOCKS5 Connection with Proxy</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0065.html#mediated-proto-establish">6.3.2 Target Establishes SOCKS5 Connection with Proxy</a>
      */
     public static String hash(String sessionId, Jid requesterJid, Jid targetJid) {
         return XmppUtils.hash((sessionId + requesterJid.toEscapedString() + targetJid.toEscapedString()).getBytes(StandardCharsets.UTF_8));
@@ -184,7 +184,7 @@ public final class Socks5ByteStream {
         /**
          * UDP transport.
          *
-         * @see <a href="http://xmpp.org/extensions/xep-0065.html#udp">Optional UDP Support</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0065.html#udp">Optional UDP Support</a>
          */
         @XmlEnumValue("udp")
         UDP

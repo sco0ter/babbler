@@ -33,5 +33,5 @@ geoLocationManager.addGeoLocationListener(e -> {
 ```
 
 
-[XEP-0080: User Location]: http://xmpp.org/extensions/xep-0080.html "XEP-0080: User Location"
-[XEP-0163: Personal Eventing Protocol]: http://xmpp.org/extensions/xep-0163.html "XEP-0163: Personal Eventing Protocol"
+[XEP-0080: User Location]: https://xmpp.org/extensions/xep-0080.html "XEP-0080: User Location"
+[XEP-0163: Personal Eventing Protocol]: https://xmpp.org/extensions/xep-0163.html "XEP-0163: Personal Eventing Protocol"

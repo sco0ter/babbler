@@ -148,7 +148,7 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
     }
 
     /**
-     * Tries to find the BOSH URL by a DNS TXT lookup as described in <a href="http://xmpp.org/extensions/xep-0156.html">XEP-0156</a>.
+     * Tries to find the BOSH URL by a DNS TXT lookup as described in <a href="https://xmpp.org/extensions/xep-0156.html">XEP-0156</a>.
      *
      * @param xmppServiceDomain The fully qualified domain name.
      * @param nameServer        The name server.
@@ -249,7 +249,7 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
          *
          * @param wait The time in seconds.
          * @return The builder.
-         * @see <a href="http://xmpp.org/extensions/xep-0124.html#session-request">7.1 Session Creation Request</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0124.html#session-request">7.1 Session Creation Request</a>
          */
         public Builder wait(Duration wait) {
             this.wait = wait;
@@ -261,7 +261,7 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
          *
          * @param wait The time in seconds.
          * @return The builder.
-         * @see <a href="http://xmpp.org/extensions/xep-0124.html#session-request">7.1 Session Creation Request</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0124.html#session-request">7.1 Session Creation Request</a>
          * @deprecated Use {@link #wait(Duration)}
          */
         @Deprecated
@@ -275,7 +275,7 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
          *
          * @param route The route.
          * @return The builder.
-         * @see <a href="http://xmpp.org/extensions/xep-0124.html#session-request">7.1 Session Creation Request</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0124.html#session-request">7.1 Session Creation Request</a>
          */
         public Builder route(String route) {
             this.route = route;
@@ -288,7 +288,7 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
          *
          * @param useKeySequence If a key sequence should be used.
          * @return The builder.
-         * @see <a href="http://xmpp.org/extensions/xep-0124.html#keys">15. Protecting Insecure Sessions</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0124.html#keys">15. Protecting Insecure Sessions</a>
          */
         public Builder useKeySequence(boolean useKeySequence) {
             this.useKeySequence = useKeySequence;

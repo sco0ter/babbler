@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlAttribute;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#continue">7.9 Converting a One-to-One Chat Into a Multi-User Conference</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#continue">7.9 Converting a One-to-One Chat Into a Multi-User Conference</a>
  */
 final class Continue {
     @XmlAttribute

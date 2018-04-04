@@ -1,7 +1,7 @@
 # About
 ---
 
-**Babbler** is a young [XMPP][XMPP] client library for Java 8 SE built on top of [JAXB][JAXB], which allows you to write **XMPP clients** as well as **external server components** using the [XEP-0114: Jabber Component Protocol](http://xmpp.org/extensions/xep-0114.html).
+**Babbler** is a young [XMPP][XMPP] client library for Java 8 SE built on top of [JAXB][JAXB], which allows you to write **XMPP clients** as well as **external server components** using the [XEP-0114: Jabber Component Protocol](https://xmpp.org/extensions/xep-0114.html).
 
 [JAXB][JAXB] as underlying technology makes it robust and allows you to write extensions in a simple and clean manner.
 
@@ -21,7 +21,7 @@ On this site you learn about some general design considerations, a brief user gu
     * Lambda Expressions
     * Functional Interfaces
 * 800+ unit tests
-* Support for **70+** [extensions](http://xmpp.org/xmpp-protocols/xmpp-extensions/), including important ones like:
+* Support for **70+** [extensions](https://xmpp.org/xmpp-protocols/xmpp-extensions/), including important ones like:
     * Multi-User Chat
     * File Transfer
     * PubSub / PEP
@@ -36,7 +36,7 @@ On this site you learn about some general design considerations, a brief user gu
 
 
 [JAXB]: http://en.wikipedia.org/wiki/Java_Architecture_for_XML_Binding "Java Architecture for XML Binding"
-[XMPP]: http://xmpp.org "eXtensible Messaging and Presence Protocol"
-[RFC 6120]: http://xmpp.org/rfcs/rfc6120.html "Extensible Messaging and Presence Protocol (XMPP): Core"
-[RFC 6121]: http://xmpp.org/rfcs/rfc6121.html "Extensible Messaging and Presence Protocol (XMPP): Instant Messaging and Presence"
+[XMPP]: https://xmpp.org "eXtensible Messaging and Presence Protocol"
+[RFC 6120]: https://xmpp.org/rfcs/rfc6120.html "Extensible Messaging and Presence Protocol (XMPP): Core"
+[RFC 6121]: https://xmpp.org/rfcs/rfc6121.html "Extensible Messaging and Presence Protocol (XMPP): Instant Messaging and Presence"
 [RFC 7622]: https://tools.ietf.org/html/rfc7622 "Extensible Messaging and Presence Protocol (XMPP): Address Format"

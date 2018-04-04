@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0020.html">XEP-0020: Feature Negotiation</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0020.html">XEP-0020: Feature Negotiation</a>.
  * <p>
  * It defines an XMPP protocol extension that enables two entities to mutually negotiate feature options, such as parameters related to a file transfer or a communications session.
  * </p>

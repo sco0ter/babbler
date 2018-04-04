@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides classes for <a href="http://xmpp.org/rfcs/rfc6120.html#streams">XML Streams</a>, especially <a href="http://xmpp.org/rfcs/rfc6120.html#streams-negotiation">Stream Negotiation</a>.
+ * Provides classes for <a href="https://xmpp.org/rfcs/rfc6120.html#streams">XML Streams</a>, especially <a href="https://xmpp.org/rfcs/rfc6120.html#streams-negotiation">Stream Negotiation</a>.
  */
 package rocks.xmpp.core.stream;
 

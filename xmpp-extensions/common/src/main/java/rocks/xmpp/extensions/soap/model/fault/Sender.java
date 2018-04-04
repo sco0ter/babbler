@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Represents the 'Sender' SOAP fault.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0072.html#errors">6. Error Handling</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0072.html#errors">6. Error Handling</a>
  */
 @XmlRootElement(name = "Sender")
 public final class Sender extends SoapFault {

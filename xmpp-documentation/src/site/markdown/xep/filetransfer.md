@@ -96,12 +96,12 @@ fileTransfer.addFileTransferStatusListener(e -> {
 fileTransfer.transfer();
 ```
 
-[In-Band Bytestreams]: http://xmpp.org/extensions/xep-0047.html "XEP-0047: In-Band Bytestreams"
-[SOCKS5 Bytestreams]: http://xmpp.org/extensions/xep-0065.html "XEP-0065: SOCKS5 Bytestreams"
-[Out of Band Data]: http://xmpp.org/extensions/xep-0066.html "XEP-0066: Out of Band Data"
-[Stream Initiation]: http://xmpp.org/extensions/xep-0095.html "XEP-0095: Stream Initiation"
-[SI File Transfer]: http://xmpp.org/extensions/xep-0096.html "XEP-0096: SI File Transfer"
-[Jingle]: http://xmpp.org/extensions/xep-0166.html "XEP-0166: Jingle"
-[Jingle File Transfer]: http://xmpp.org/extensions/xep-0234.html "XEP-0234: Jingle File Transfer"
-[Jingle SOCKS5 Bytestreams Transport Method]: http://xmpp.org/extensions/xep-0260.html "XEP-0260: Jingle SOCKS5 Bytestreams Transport Method"
-[Jingle In-Band Bytestreams Transport Method]: http://xmpp.org/extensions/xep-0261.html "XEP-0261: Jingle In-Band Bytestreams Transport Method"
+[In-Band Bytestreams]: https://xmpp.org/extensions/xep-0047.html "XEP-0047: In-Band Bytestreams"
+[SOCKS5 Bytestreams]: https://xmpp.org/extensions/xep-0065.html "XEP-0065: SOCKS5 Bytestreams"
+[Out of Band Data]: https://xmpp.org/extensions/xep-0066.html "XEP-0066: Out of Band Data"
+[Stream Initiation]: https://xmpp.org/extensions/xep-0095.html "XEP-0095: Stream Initiation"
+[SI File Transfer]: https://xmpp.org/extensions/xep-0096.html "XEP-0096: SI File Transfer"
+[Jingle]: https://xmpp.org/extensions/xep-0166.html "XEP-0166: Jingle"
+[Jingle File Transfer]: https://xmpp.org/extensions/xep-0234.html "XEP-0234: Jingle File Transfer"
+[Jingle SOCKS5 Bytestreams Transport Method]: https://xmpp.org/extensions/xep-0260.html "XEP-0260: Jingle SOCKS5 Bytestreams Transport Method"
+[Jingle In-Band Bytestreams Transport Method]: https://xmpp.org/extensions/xep-0261.html "XEP-0261: Jingle In-Band Bytestreams Transport Method"

@@ -233,6 +233,6 @@ chatRoom.addInvitationDeclineListener(e -> {
 });
 ```
 
-[MUC]: http://xmpp.org/extensions/xep-0045.html "XEP-0045: Multi-User Chat"
-[Mediated]: http://xmpp.org/extensions/xep-0045.html#invite-mediated
-[Direct]: http://xmpp.org/extensions/xep-0249.html
+[MUC]: https://xmpp.org/extensions/xep-0045.html "XEP-0045: Multi-User Chat"
+[Mediated]: https://xmpp.org/extensions/xep-0045.html#invite-mediated
+[Direct]: https://xmpp.org/extensions/xep-0249.html

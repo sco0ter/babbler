@@ -22,4 +22,4 @@ You can set your own version, if you want other entities to discover your versio
 softwareVersionManager.setSoftwareVersion(new SoftwareVersion("MyClient", "0.9"));
 ```
 
-[Software Version]: http://xmpp.org/extensions/xep-0092.html "XEP-0092: Software Version"
+[Software Version]: https://xmpp.org/extensions/xep-0092.html "XEP-0092: Software Version"

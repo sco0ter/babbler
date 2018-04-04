@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * Represents the TLS failure case.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#tls-process-initiate-failure">5.4.2.2.  Failure Case</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#tls-process-initiate-failure">5.4.2.2.  Failure Case</a></cite></p>
  * <p>If the failure case occurs, the receiving entity MUST return a {@code <failure/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-tls' namespace, close the XML stream, and terminate the underlying TCP connection.</p>
  * </blockquote>
  */

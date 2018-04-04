@@ -11,4 +11,4 @@ OffsetDateTime dateTime = entityTimeManager.getEntityTime(Jid.of("juliet@example
 ```
 
 
-[Entity Time]: http://xmpp.org/extensions/xep-0202.html "XEP-0202: Entity Time"
+[Entity Time]: https://xmpp.org/extensions/xep-0202.html "XEP-0202: Entity Time"

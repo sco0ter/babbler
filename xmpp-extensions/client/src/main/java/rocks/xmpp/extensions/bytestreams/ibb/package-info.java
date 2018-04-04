@@ -23,6 +23,6 @@
  */
 
 /**
- * Provide classes for <a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>.
+ * Provide classes for <a href="https://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>.
  */
 package rocks.xmpp.extensions.bytestreams.ibb;

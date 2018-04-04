@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides classes for <a href="http://xmpp.org/extensions/xep-0171.html">XEP-0171: Language Translation</a> (items).
+ * Provides classes for <a href="https://xmpp.org/extensions/xep-0171.html">XEP-0171: Language Translation</a> (items).
  * <p>
  * It defines an XMPP protocol extension for providing language translation facilities over XMPP. It supports human, machine, client-based, and server-based translations.
  * </p>

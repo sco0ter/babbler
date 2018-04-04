@@ -79,7 +79,7 @@ public final class PubSubService {
      * Discovers the features, which are supported by the pubsub service.
      *
      * @return The async result with the set of supported features.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-features">5.1 Discover Features</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#entity-features">5.1 Discover Features</a>
      */
     public AsyncResult<Collection<PubSubFeature>> discoverFeatures() {
         return serviceDiscoveryManager.discoverInformation(service).thenApply(this::getFeatures);
@@ -105,7 +105,7 @@ public final class PubSubService {
      * Discovers the first-level nodes of this pubsub service.
      *
      * @return The async result with the list of nodes.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-nodes">5.2 Discover Nodes</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#entity-nodes">5.2 Discover Nodes</a>
      */
     public AsyncResult<List<PubSubNode>> discoverNodes() {
         return serviceDiscoveryManager.discoverItems(service).thenApply(itemNode ->
@@ -130,7 +130,7 @@ public final class PubSubService {
      * Gets the subscriptions for all nodes.
      *
      * @return The async result with the subscriptions for all nodes.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-subscriptions">5.6 Retrieve Subscriptions</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#entity-subscriptions">5.6 Retrieve Subscriptions</a>
      */
     public AsyncResult<List<Subscription>> getSubscriptions() {
         return xmppSession.query(IQ.get(service, PubSub.withSubscriptions())).thenApply(result -> {
@@ -143,7 +143,7 @@ public final class PubSubService {
      * Gets the affiliations for all nodes.
      *
      * @return The async result with the affiliations for all nodes.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#entity-affiliations">5.7 Retrieve Affiliations</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#entity-affiliations">5.7 Retrieve Affiliations</a>
      */
     public AsyncResult<List<Affiliation>> getAffiliations() {
         return xmppSession.query(IQ.get(service, PubSub.withAffiliations())).thenApply(result -> {
@@ -156,7 +156,7 @@ public final class PubSubService {
      * Gets the default subscription options for this pubsub service.
      *
      * @return The async result with the default subscription options.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default Subscription Configuration Options</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default Subscription Configuration Options</a>
      */
     public AsyncResult<DataForm> getDefaultSubscriptionOptions() {
         return xmppSession.query(IQ.get(service, PubSub.withDefault())).thenApply(result -> {
@@ -169,7 +169,7 @@ public final class PubSubService {
      * Gets the default node configuration form for this pubsub service.
      *
      * @return The async result with the configuration form.
-     * @see <a href="http://xmpp.org/extensions/xep-0060.html#owner-default">8.3 Request Default Node Configuration Options</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-default">8.3 Request Default Node Configuration Options</a>
      */
     public AsyncResult<DataForm> getDefaultNodeConfiguration() {
         return xmppSession.query(IQ.get(service, PubSubOwner.withDefault())).thenApply(result -> {

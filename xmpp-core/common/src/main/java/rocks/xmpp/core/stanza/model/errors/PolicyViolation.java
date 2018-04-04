@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <policy-violation/>} stanza error.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-policy-violation">8.3.3.12.  policy-violation</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-policy-violation">8.3.3.12.  policy-violation</a></cite></p>
  * <p>The entity has violated some local service policy (e.g., a message contains words that are prohibited by the service) and the server MAY choose to specify the policy in the {@code <text/>} element or in an application-specific condition element; the associated error type SHOULD be "modify" or "wait" depending on the policy being violated.</p>
  * </blockquote>
  * This class is a singleton.

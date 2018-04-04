@@ -44,4 +44,4 @@ if (replace != null) {
 
 Keeping track of the message ids is of course the developer's responsibility.
 
-[Last Message Correction]: http://xmpp.org/extensions/xep-0308.html "XEP-0308: Last Message Correction"
+[Last Message Correction]: https://xmpp.org/extensions/xep-0308.html "XEP-0308: Last Message Correction"

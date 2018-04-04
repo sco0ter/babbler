@@ -38,8 +38,8 @@ import java.util.List;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0141.html">XEP-0141: Data Forms Layout</a>
- * @see <a href="http://xmpp.org/extensions/xep-0141.html#sectioning">3.2 Sectioning Fields</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0141.html">XEP-0141: Data Forms Layout</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0141.html#sectioning">3.2 Sectioning Fields</a>
  * @see Page#getSections()
  */
 public final class Section {

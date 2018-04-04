@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <internal-server-error/>} stanza error.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-internal-server-error">8.3.3.6.  internal-server-error</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-internal-server-error">8.3.3.6.  internal-server-error</a></cite></p>
  * <p>The server has experienced a misconfiguration or other internal error that prevents it from processing the stanza; the associated error type SHOULD be "cancel".</p>
  * </blockquote>
  * This class is a singleton.

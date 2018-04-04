@@ -33,7 +33,7 @@ import rocks.xmpp.core.stream.model.errors.Condition;
  *
  * @author Christian Schudt
  * @see StreamError
- * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
  * @deprecated
  */
 @Deprecated
@@ -77,7 +77,7 @@ public class StreamErrorException extends XmppException {
      * This is a shortcut for {@code getError().getCondition()}.
      *
      * @return The error condition.
-     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions">4.9.3.  Defined Stream Error Conditions</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions">4.9.3.  Defined Stream Error Conditions</a>
      */
     public final Condition getCondition() {
         return streamError.getCondition();

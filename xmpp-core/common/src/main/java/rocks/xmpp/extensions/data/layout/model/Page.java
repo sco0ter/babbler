@@ -42,8 +42,8 @@ import java.util.List;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0141.html">XEP-0141: Data Forms Layout</a>
- * @see <a href="http://xmpp.org/extensions/xep-0141.html#paging">3.1 Paging Fields</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0141.html">XEP-0141: Data Forms Layout</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0141.html#paging">3.1 Paging Fields</a>
  * @see Section
  * @see FieldReference
  * @see rocks.xmpp.extensions.data.model.DataForm#getPages()

@@ -38,7 +38,7 @@ import rocks.xmpp.core.tls.model.StartTls;
  * Negotiates transport layer security during stream negotiation.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/rfcs/rfc6120.html#tls">STARTTLS Negotiation</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tls">STARTTLS Negotiation</a>
  */
 public final class StartTlsManager extends ClientStreamFeatureNegotiator<StartTls> {
 

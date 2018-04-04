@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0152.html">XEP-0152: Reachability Addresses</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0152.html">XEP-0152: Reachability Addresses</a>.
  * <p>
  * It defines an XMPP protocol extension for communicating information about how an entity can be reached temporarily using methods other than the entity's normal JID.
  * </p>

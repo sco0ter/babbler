@@ -50,7 +50,7 @@ import java.util.logging.Logger;
  * An external component session which connects to an XMPP server using the "Jabber Component Protocol".
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
  */
 public final class ExternalComponent extends XmppSession {
 

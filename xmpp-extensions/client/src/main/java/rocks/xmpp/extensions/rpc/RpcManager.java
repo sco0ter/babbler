@@ -48,7 +48,7 @@ import java.util.logging.Logger;
  * </p>
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
  */
 public final class RpcManager extends Manager {
 

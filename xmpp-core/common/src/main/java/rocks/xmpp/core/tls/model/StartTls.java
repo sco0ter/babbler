@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 /**
  * Represents the STARTTLS feature and initiates the TLS negotiation process.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#tls-process-initiate-command">5.4.2.1.  STARTTLS Command</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#tls-process-initiate-command">5.4.2.1.  STARTTLS Command</a></cite></p>
  * <p>In order to begin the STARTTLS negotiation, the initiating entity issues the STARTTLS command (i.e., a {@code <starttls/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-tls' namespace) to instruct the receiving entity that it wishes to begin a STARTTLS negotiation to secure the stream.</p>
  * </blockquote>
  * <p>

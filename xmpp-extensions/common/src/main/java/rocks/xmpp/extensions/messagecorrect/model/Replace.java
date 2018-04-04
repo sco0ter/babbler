@@ -52,8 +52,8 @@ import java.util.Objects;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0308.html">XEP-0308: Last Message Correction</a>
- * @see <a href="http://xmpp.org/extensions/xep-0308.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0308.html">XEP-0308: Last Message Correction</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0308.html#schema">XML Schema</a>
  */
 @XmlRootElement
 public final class Replace {

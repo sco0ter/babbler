@@ -63,8 +63,8 @@ public abstract class StreamCompression implements StreamElement {
      * This class is immutable.
      *
      * @author Christian Schudt
-     * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
      */
     @XmlRootElement
     public static final class Failure extends StreamCompression {
@@ -169,8 +169,8 @@ public abstract class StreamCompression implements StreamElement {
      * This class is immutable.
      *
      * @author Christian Schudt
-     * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
      */
     @XmlRootElement
     public static final class Compress implements StreamElement {
@@ -199,8 +199,8 @@ public abstract class StreamCompression implements StreamElement {
      * The implementation of the {@code <compressed/>} element in the {@code http://jabber.org/protocol/compress} namespace, which indicates that the stream is now compressed.
      *
      * @author Christian Schudt
-     * @see <a href="http://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0138.html#schemas-protocol">XML Schema</a>
      */
     @XmlRootElement
     @XmlType(factoryMethod = "create")

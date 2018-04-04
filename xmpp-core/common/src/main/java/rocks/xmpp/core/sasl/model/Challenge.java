@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlValue;
 /**
  * The implementation of the {@code <challenge/>} element, which is sent during SASL negotiation.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#sasl-process-neg-challengeresponse">6.4.3.  Challenge-Response Sequence</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#sasl-process-neg-challengeresponse">6.4.3.  Challenge-Response Sequence</a></cite></p>
  * <p>If necessary, the receiving entity challenges the initiating entity by sending a {@code <challenge/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-sasl' namespace; this element MAY contain XML character data (which MUST be generated in accordance with the definition of the SASL mechanism chosen by the initiating entity).</p>
  * </blockquote>
  * <p>

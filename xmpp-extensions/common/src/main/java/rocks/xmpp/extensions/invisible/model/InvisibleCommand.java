@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  * @author Christian Schudt
  * @see #INVISIBLE
  * @see #VISIBLE
- * @see <a href="http://xmpp.org/extensions/xep-0186.html">XEP-0186: Invisible Command</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0186.html">XEP-0186: Invisible Command</a>
  */
 @XmlTransient
 @XmlSeeAlso({InvisibleCommand.Invisible.class, InvisibleCommand.Visible.class})

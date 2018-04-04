@@ -58,7 +58,7 @@ public interface InfoNode {
     Set<String> getFeatures();
 
     /**
-     * Gets the service discovery extensions as described in <a href="http://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
+     * Gets the service discovery extensions as described in <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      *
      * @return The service discovery extensions.
      */

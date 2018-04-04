@@ -37,8 +37,8 @@ import javax.xml.bind.annotation.XmlValue;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>
- * @see <a href="http://xmpp.org/extensions/xep-0122.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0122.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "validate")
 public final class Validation {
@@ -139,7 +139,7 @@ public final class Validation {
     /**
      * The abstract validation method.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0122.html#usecases-validation">3.2 Validation Methods</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0122.html#usecases-validation">3.2 Validation Methods</a>
      */
     @XmlTransient
     public abstract static class ValidationMethod {
@@ -243,7 +243,7 @@ public final class Validation {
     /**
      * For {@linkplain rocks.xmpp.extensions.data.model.DataForm.Field.Type#LIST_MULTI "list-multi"}, validation can indicate that a minimum and maximum number of options should be selected and/or entered. This selection range MAY be combined with the other methods to provide more flexibility.
      *
-     * @see <a href="http://xmpp.org/extensions/xep-0122.html#usecases-ranges">3.3 Selection Ranges in "list-multi"</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0122.html#usecases-ranges">3.3 Selection Ranges in "list-multi"</a>
      */
     public static final class ListRange {
         @XmlAttribute

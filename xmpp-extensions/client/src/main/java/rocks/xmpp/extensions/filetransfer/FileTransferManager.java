@@ -119,7 +119,7 @@ public final class FileTransferManager extends Manager {
      * @param recipient   The recipient's JID (must be a full JID).
      * @param timeout     The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
      * @deprecated Use {@link #offerFile(URI, String, Jid, Duration)}
      */
     @Deprecated
@@ -136,7 +136,7 @@ public final class FileTransferManager extends Manager {
      * @param recipient   The recipient's JID (must be a full JID).
      * @param timeout     The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
      * @return The async result.
-     * @see <a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
      */
     public final AsyncResult<IQ> offerFile(URI uri, String description, Jid recipient, Duration timeout) {
         return xmppSession.query(IQ.set(recipient, new OobIQ(uri, description)), timeout).handle((iq, e) -> {

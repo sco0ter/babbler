@@ -37,7 +37,7 @@ import java.util.Collection;
  *
  * @author Christian Schudt
  * @see <a href="http://tools.ietf.org/html/rfc1928">SOCKS Protocol Version 5</a>
- * @see <a href="http://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>
  */
 final class Socks5Protocol {
 

@@ -55,7 +55,7 @@ import java.util.Set;
  * This allows to disable certain extensions or managers by default.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>
  */
 public final class Extension {
 
@@ -137,7 +137,7 @@ public final class Extension {
     }
 
     /**
-     * Creates an PEP (<a href="http://xmpp.org/extensions/xep-0163.html">Personal Eventing Protocol</a>) extension with a namespace, business logic and XML schema classes.
+     * Creates an PEP (<a href="https://xmpp.org/extensions/xep-0163.html">Personal Eventing Protocol</a>) extension with a namespace, business logic and XML schema classes.
      *
      * @param namespace The protocol namespace.
      * @param manager   The manager class, which covers the business logic.

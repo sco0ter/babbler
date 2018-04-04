@@ -36,8 +36,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>
- * @see <a href="http://xmpp.org/extensions/xep-0079.html#schemas-err">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0079.html#schemas-err">XML Schema</a>
  */
 @XmlRootElement(name = "failed-rules")
 public final class FailedRules extends AdvancedMessageProcessingError {

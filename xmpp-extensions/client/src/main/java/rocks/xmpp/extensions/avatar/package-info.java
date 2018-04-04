@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides classes for <a href="http://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>.
+ * Provides classes for <a href="https://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>.
  */
 package rocks.xmpp.extensions.avatar;
 

@@ -33,9 +33,9 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Christian Schudt
  * @see #SUB_ID_REQUIRED
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe-error-nosubid">6.2.3.1 No Subscription ID</a>
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-configure-error-subid">6.3.4.4 Subscription ID Required</a>
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-subid">6.5.9.1 Subscription ID Required</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe-error-nosubid">6.2.3.1 No Subscription ID</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-error-subid">6.3.4.4 Subscription ID Required</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-subid">6.5.9.1 Subscription ID Required</a>
  */
 @XmlRootElement(name = "subid-required")
 @XmlType(factoryMethod = "create")

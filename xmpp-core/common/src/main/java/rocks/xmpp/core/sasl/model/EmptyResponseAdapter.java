@@ -15,8 +15,8 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
  * </blockquote>
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/rfcs/rfc6120.html#sasl-process-neg-initiate">6.4.2.  Initiation</a>
- * @see <a href="http://xmpp.org/rfcs/rfc6120.html#sasl-process-neg-success">6.4.6.  SASL Success</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6120.html#sasl-process-neg-initiate">6.4.2.  Initiation</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6120.html#sasl-process-neg-success">6.4.6.  SASL Success</a>
  */
 final class EmptyResponseAdapter extends XmlAdapter<String, byte[]> {
 

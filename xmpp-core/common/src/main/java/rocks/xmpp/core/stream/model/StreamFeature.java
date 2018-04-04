@@ -66,7 +66,7 @@ public abstract class StreamFeature implements Comparable<StreamFeature> {
     /**
      * Compares two features by their priority and mandatory-to-negotiate flag.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-negotiation-features">4.3.2.  Stream Features Format</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-negotiation-features">4.3.2.  Stream Features Format</a></cite></p>
      * <p>A {@code <features/>} element that contains both mandatory-to-negotiate and voluntary-to-negotiate features
      * indicates that the negotiation is not complete but that the initiating entity MAY complete
      * the voluntary-to-negotiate feature(s) before it attempts to negotiate the mandatory-to-negotiate feature(s).
@@ -75,7 +75,7 @@ public abstract class StreamFeature implements Comparable<StreamFeature> {
      *
      * @param o The other feature.
      * @return The comparison result.
-     * @see <a href="http://xmpp.org/extensions/xep-0170.html">XEP-0170: Recommended Order of Stream Feature Negotiation</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0170.html">XEP-0170: Recommended Order of Stream Feature Negotiation</a>
      */
     @Override
     public final int compareTo(StreamFeature o) {

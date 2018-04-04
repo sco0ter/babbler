@@ -67,7 +67,7 @@ public final class ChatService implements Comparable<ChatService> {
      * Discovers the list of chat rooms hosted by this chat service.
      *
      * @return The async result with the list of public rooms.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#disco-rooms">6.3 Discovering Rooms</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#disco-rooms">6.3 Discovering Rooms</a>
      */
     public AsyncResult<List<ChatRoom>> discoverRooms() {
         return serviceDiscoveryManager.discoverItems(serviceAddress).thenApply(itemNode -> {

@@ -32,7 +32,7 @@ import rocks.xmpp.addr.Jid;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0013.html#request-headers">2.3 Requesting Message Headers</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0013.html#request-headers">2.3 Requesting Message Headers</a>
  */
 public final class OfflineMessageHeader {
 

@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Christian Schudt
  * @see #CONFIGURATION_REQUIRED
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-configure">6.1.5 Configuration Required</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-configure">6.1.5 Configuration Required</a>
  */
 @XmlRootElement(name = "configuration-required")
 @XmlType(factoryMethod = "create")

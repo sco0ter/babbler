@@ -9,4 +9,4 @@
 ```
 
 
-[Data Forms]: http://xmpp.org/extensions/xep-0004.html "XEP-0004: Data Forms"
+[Data Forms]: https://xmpp.org/extensions/xep-0004.html "XEP-0004: Data Forms"

@@ -39,4 +39,4 @@ vCard.setNickname("Nickname");
 vCardManager.setVCard(vCard);
 ```
 
-[vcard-temp]: http://xmpp.org/extensions/xep-0054.html "XEP-0054: vcard-temp"
+[vcard-temp]: https://xmpp.org/extensions/xep-0054.html "XEP-0054: vcard-temp"

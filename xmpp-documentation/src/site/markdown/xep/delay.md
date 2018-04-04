@@ -18,4 +18,4 @@ There's also a convenient method to retrieve the send date of a stanza, which is
 Instant sendDate = DelayedDelivery.sendDate(message);
 ```
 
-[Delayed Delivery]: http://xmpp.org/extensions/xep-0203.html "XEP-0203: Delayed Delivery"
+[Delayed Delivery]: https://xmpp.org/extensions/xep-0203.html "XEP-0203: Delayed Delivery"

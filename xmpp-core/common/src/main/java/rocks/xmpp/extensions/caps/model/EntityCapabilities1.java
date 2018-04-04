@@ -48,8 +48,8 @@ import java.util.Set;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>
- * @see <a href="http://xmpp.org/extensions/xep-0115.html#schema">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0115.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "c")
 public final class EntityCapabilities1 extends StreamFeature implements EntityCapabilities, Hashed {

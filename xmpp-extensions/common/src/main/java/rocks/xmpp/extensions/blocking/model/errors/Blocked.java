@@ -31,8 +31,8 @@ import javax.xml.bind.annotation.XmlType;
  * The implementation of the {@code <blocked/>} element in the {@code urn:xmpp:blocking:errors} namespace.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>
- * @see <a href="http://xmpp.org/extensions/xep-0191.html#schema-blocking-errors">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0191.html#schema-blocking-errors">XML Schema</a>
  */
 @XmlRootElement
 @XmlType(factoryMethod = "create")

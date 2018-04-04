@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/rfcs/rfc6121.html#roster-versioning">Roster Versioning</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/rfcs/rfc6121.html#roster-versioning">Roster Versioning</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:xmpp:features:rosterver", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.im.roster.versioning.model;

@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * </p>
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0166.html#errors">10. Error Handling</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0166.html#errors">10. Error Handling</a>
  */
 @XmlRootElement(name = "unknown-session")
 public final class UnknownSession extends JingleError {

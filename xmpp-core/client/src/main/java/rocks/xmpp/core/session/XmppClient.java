@@ -495,8 +495,8 @@ public final class XmppClient extends XmppSession {
         // than the server itself or the client's account, the server MUST NOT process the stanza
         // and MUST close the stream with a <not-authorized/> stream error."
 
-        // Deprecated method of session binding, according to the <a href="http://xmpp.org/rfcs/rfc3921.html#session">old specification</a>
-        // This is no longer used, according to the <a href="http://xmpp.org/rfcs/rfc6120.html">updated specification</a>.
+        // Deprecated method of session binding, according to the <a href="https://xmpp.org/rfcs/rfc3921.html#session">old specification</a>
+        // This is no longer used, according to the <a href="https://xmpp.org/rfcs/rfc6120.html">updated specification</a>.
         // But some old server implementation still require it.
         Session session = (Session) streamFeaturesManager.getFeatures().get(Session.class);
         if (session != null && session.isMandatory()) {
@@ -512,7 +512,7 @@ public final class XmppClient extends XmppSession {
     /**
      * Gets the connected resource, which is assigned by the server after resource binding.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#bind-fundamentals">7.1.  Fundamentals</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#bind-fundamentals">7.1.  Fundamentals</a></cite></p>
      * <p>After a client has bound a resource to the stream, it is referred to as a "connected resource".</p>
      * </blockquote>
      *

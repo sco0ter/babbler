@@ -73,10 +73,10 @@ import java.util.stream.Collectors;
  * Hence before {@linkplain #requestRoster() requesting the roster}, it is checked if there's a cached version of your roster in the {@linkplain rocks.xmpp.core.session.XmppSessionConfiguration#getCacheDirectory() cache directory}.
  * If so, the server is informed about your version and will not send the full roster, but only "diffs" to your version, thus being more efficient.
  * <h3>Retrieving the Roster on Login</h3>
- * As per <a href="http://xmpp.org/rfcs/rfc6121.html#roster-login">RFC 6121</a> the roster should be retrieved on login.
+ * As per <a href="https://xmpp.org/rfcs/rfc6121.html#roster-login">RFC 6121</a> the roster should be retrieved on login.
  * This behavior can also be {@linkplain #setRetrieveRosterOnLogin(boolean) changed}.
  * <h3>Nested Roster Groups</h3>
- * <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a> are supported, but are disabled by default, which means the group delimiter is not retrieved before {@linkplain #requestRoster() requesting the roster}.
+ * <a href="https://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a> are supported, but are disabled by default, which means the group delimiter is not retrieved before {@linkplain #requestRoster() requesting the roster}.
  * You can {@linkplain #setAskForGroupDelimiter(boolean) change} this behavior or {@linkplain #setGroupDelimiter(String) set a group delimiter} without retrieving it from the server in case you want to use a fix roster group delimiter.
  * <p>
  * You can listen for roster updates (aka roster pushes) and for initial roster retrieval, by {@linkplain #addRosterListener(Consumer) adding} a {@link Consumer}.
@@ -84,9 +84,9 @@ import java.util.stream.Collectors;
  * This class is unconditionally thread-safe.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/rfcs/rfc6121.html#roster-login">2.2.  Retrieving the Roster on Login</a>
- * @see <a href="http://xmpp.org/rfcs/rfc6121.html#roster-versioning">2.6.  Roster Versioning</a>
- * @see <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#roster-login">2.2.  Retrieving the Roster on Login</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#roster-versioning">2.6.  Roster Versioning</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
  */
 public final class RosterManager extends Manager {
     private static final Logger logger = Logger.getLogger(RosterManager.class.getName());
@@ -439,7 +439,7 @@ public final class RosterManager extends Manager {
     /**
      * Controls, whether the roster is automatically retrieved as soon as the user has logged in.
      * <blockquote>
-     * <p><cite><a href="http://xmpp.org/rfcs/rfc6121.html#roster-login">2.2.  Retrieving the Roster on Login</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#roster-login">2.2.  Retrieving the Roster on Login</a></cite></p>
      * <p>Upon authenticating with a server and binding a resource (thus becoming a connected resource as defined in [XMPP-CORE]), a client SHOULD request the roster before sending initial presence (however, because receiving the roster is not necessarily desirable for all resources, e.g., a connection with limited bandwidth, the client's request for the roster is not mandatory).</p>
      * </blockquote>
      *
@@ -453,7 +453,7 @@ public final class RosterManager extends Manager {
      * Requests the roster from the server. When the server returns the result, the {@link Consumer} are notified.
      * That means, you should first {@linkplain #addRosterListener(Consumer) register} a {@link Consumer} prior to calling this method.
      * <p>
-     * <a href="http://xmpp.org/rfcs/rfc6121.html#roster-versioning">Roster Versioning</a> is supported, which means that this method checks
+     * <a href="https://xmpp.org/rfcs/rfc6121.html#roster-versioning">Roster Versioning</a> is supported, which means that this method checks
      * if there's a cached version of your roster in the {@linkplain rocks.xmpp.core.session.XmppSessionConfiguration#getCacheDirectory() cache directory}.
      * If so and if Roster Versioning is supported by the server, the cached version is returned and any missing roster items are sent later by the server via roster pushes.
      *
@@ -649,7 +649,7 @@ public final class RosterManager extends Manager {
      *
      * @param groupDelimiter The group delimiter.
      * @see #storeGroupDelimiter(String)
-     * @see <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
      */
     public final synchronized void setGroupDelimiter(String groupDelimiter) {
         this.groupDelimiter = groupDelimiter;
@@ -661,7 +661,7 @@ public final class RosterManager extends Manager {
      * @param groupDelimiter The group delimiter.
      * @return The async result.
      * @see #setGroupDelimiter(String)
-     * @see <a href="http://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
      */
     public final AsyncResult<Void> storeGroupDelimiter(String groupDelimiter) {
         return privateDataManager.storeData(RosterDelimiter.of(groupDelimiter))
@@ -691,7 +691,7 @@ public final class RosterManager extends Manager {
      * Indicates whether the server supports roster versioning.
      *
      * @return True, if roster versioning is supported.
-     * @see <a href="http://xmpp.org/rfcs/rfc6121.html#roster-versioning">2.6.  Roster Versioning</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6121.html#roster-versioning">2.6.  Roster Versioning</a>
      */
     public boolean isRosterVersioningSupported() {
         return xmppSession.getManager(StreamFeaturesManager.class).getFeatures().containsKey(RosterVersioning.class);

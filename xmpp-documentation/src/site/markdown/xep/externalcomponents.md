@@ -82,4 +82,4 @@ Now, when a client discovers services of your server, the server will advertise 
 
 That also means, that there's a lot of shared functionality and `ExternalComponent` supports many protocols out of the box, like Service Discovery, Message Delivery Receipts, Entity Time, ...
 
-[External Components]: http://xmpp.org/extensions/xep-0114.html "XEP-0114: Jabber Component Protocol"
+[External Components]: https://xmpp.org/extensions/xep-0114.html "XEP-0114: Jabber Component Protocol"

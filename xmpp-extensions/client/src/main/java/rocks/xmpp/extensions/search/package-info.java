@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides classes for <a href="http://xmpp.org/extensions/xep-0055.html">XEP-0055: Jabber Search</a>.
+ * Provides classes for <a href="https://xmpp.org/extensions/xep-0055.html">XEP-0055: Jabber Search</a>.
  * <p>
  * It provides canonical documentation of the jabber:iq:search namespace currently in use within the Jabber community.
  * </p>

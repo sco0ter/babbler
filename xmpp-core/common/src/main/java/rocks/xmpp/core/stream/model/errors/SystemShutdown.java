@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <system-shutdown/>} stream error.<blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-system-shutdown">4.9.3.20.  system-shutdown</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-system-shutdown">4.9.3.20.  system-shutdown</a></cite></p>
  * <p>The server is being shut down and all active streams are being statusChanged.</p>
  * </blockquote>
  * This class is a singleton.

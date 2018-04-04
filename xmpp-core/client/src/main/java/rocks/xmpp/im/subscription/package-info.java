@@ -23,6 +23,6 @@
  */
 
 /**
- * Provides classes for <a href="http://xmpp.org/rfcs/rfc6121.html#sub">Managing Presence Subscriptions</a>.
+ * Provides classes for <a href="https://xmpp.org/rfcs/rfc6121.html#sub">Managing Presence Subscriptions</a>.
  */
 package rocks.xmpp.im.subscription;

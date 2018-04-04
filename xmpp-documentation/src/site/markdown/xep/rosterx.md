@@ -41,4 +41,4 @@ In case the contact was suggested to be added, this will add the suggested conta
 If it already exists in your roster but in another group, the contact will additionally be added to the suggested group.
 
 
-[Roster Item Exchange]: http://xmpp.org/extensions/xep-0144.html "XEP-0144: Roster Item Exchange"
+[Roster Item Exchange]: https://xmpp.org/extensions/xep-0144.html "XEP-0144: Roster Item Exchange"

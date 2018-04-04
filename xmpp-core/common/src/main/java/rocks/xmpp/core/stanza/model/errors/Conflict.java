@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <conflict/>} stanza error.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-conflict">8.3.3.2.  conflict</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-conflict">8.3.3.2.  conflict</a></cite></p>
  * <p>Access cannot be granted because an existing resource exists with the same name or address; the associated error type SHOULD be "cancel".</p>
  * </blockquote>
  * This class is a singleton.

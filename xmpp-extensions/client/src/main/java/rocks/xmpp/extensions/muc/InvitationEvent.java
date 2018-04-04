@@ -145,8 +145,8 @@ public final class InvitationEvent extends EventObject {
      * Indicates, whether the invitation is a mediated or direct invitation.
      *
      * @return True, if the invitation was mediated by the room; false, if it is a direct invitation.
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#invite-direct">7.8.1 Direct Invitation</a>
-     * @see <a href="http://xmpp.org/extensions/xep-0045.html#invite-mediated">7.8.2 Mediated Invitation</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#invite-direct">7.8.1 Direct Invitation</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0045.html#invite-mediated">7.8.2 Mediated Invitation</a>
      */
     public boolean isMediated() {
         return mediated;

@@ -29,7 +29,7 @@ package rocks.xmpp.extensions.pubsub.model;
  *
  * @author Christian Schudt
  * @see NodeConfiguration#getAccessModel()
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#accessmodels">4.5 Node Access Models</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#accessmodels">4.5 Node Access Models</a>
  */
 public enum AccessModel {
 

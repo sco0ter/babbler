@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
  * A temporary position or privilege level within a room, distinct from a user's long-lived affiliation with the room; the possible roles are "moderator", "participant", and "visitor" (it is also possible to have no defined role). A role lasts only for the duration of an occupant's visit to a room.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0045.html#roles">5.1 Roles</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#roles">5.1 Roles</a>
  */
 public enum Role {
     /**

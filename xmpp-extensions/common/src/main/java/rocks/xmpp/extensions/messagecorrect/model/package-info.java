@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0308.html">XEP-0308: Last Message Correction</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0308.html">XEP-0308: Last Message Correction</a>.
  * <p>
  * It defines a method for indicating that a message is a correction of the last sent message.
  * </p>

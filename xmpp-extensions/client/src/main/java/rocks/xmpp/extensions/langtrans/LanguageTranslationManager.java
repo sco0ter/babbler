@@ -47,7 +47,7 @@ import java.util.Locale;
  * It lets you discover language translation providers and ask them to translate a text.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0171.html">XEP-0171: Language Translation</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0171.html">XEP-0171: Language Translation</a>
  */
 public final class LanguageTranslationManager extends Manager {
 
@@ -62,7 +62,7 @@ public final class LanguageTranslationManager extends Manager {
      * Discovers the language provider on the connected server.
      *
      * @return The async result containing the list of translation providers.
-     * @see <a href="http://xmpp.org/extensions/xep-0171.html#disco">4.2 Discovering Translation Providers</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0171.html#disco">4.2 Discovering Translation Providers</a>
      */
     public AsyncResult<List<Item>> discoverTranslationProviders() {
         return serviceDiscoveryManager.discoverServices(Identity.automationTranslation());
@@ -73,7 +73,7 @@ public final class LanguageTranslationManager extends Manager {
      *
      * @param translationProvider The translation provider.
      * @return The list of supported languages with details.
-     * @see <a href="http://xmpp.org/extensions/xep-0171.html#disco-lang">4.2.3 Discovering Language Support</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0171.html#disco-lang">4.2.3 Discovering Language Support</a>
      */
     public AsyncResult<List<LanguageSupport.Item>> discoverLanguageSupport(Jid translationProvider) {
         return xmppSession.query(IQ.get(translationProvider, new LanguageSupport()), LanguageSupport.class).thenApply(LanguageSupport::getItems);
@@ -87,7 +87,7 @@ public final class LanguageTranslationManager extends Manager {
      * @param sourceLanguage      The source language.
      * @param destinationLanguage The destination language.
      * @return The translations.
-     * @see <a href="http://xmpp.org/extensions/xep-0171.html#request">4.3 Requesting a Translation from a Service</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0171.html#request">4.3 Requesting a Translation from a Service</a>
      */
     public AsyncResult<List<LanguageTranslation.Translation>> translate(Jid translationProvider, String text, Locale sourceLanguage, Locale... destinationLanguage) {
         Collection<LanguageTranslation.Translation> translations = new ArrayDeque<>();

@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="http://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a> (jabber:iq:oob).
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a> (jabber:iq:oob).
  * <p>
  * This package is for the <code>jabber:iq:oob</code> namespace.
  * </p>

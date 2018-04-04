@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <bad-format/>} stream error.
  * <blockquote>
- * <p><cite><a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-bad-format">4.9.3.1.  bad-format</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-bad-format">4.9.3.1.  bad-format</a></cite></p>
  * <p>The entity has sent XML that cannot be processed.</p>
  * </blockquote>
  * This class is a singleton.

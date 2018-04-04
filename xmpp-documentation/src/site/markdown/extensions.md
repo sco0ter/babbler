@@ -22,11 +22,11 @@ Most extensions need some kind of logic or have to implement business rules defi
 Therefore extensions are associated with a `Manager` class, which handles their business rules.
 
 Nearly all extensions have one thing in common: They can be either enabled or disabled, e.g. you can either enable or disable
-support for [XEP-0115: Entity Capabilities](http://xmpp.org/extensions/xep-0115.html) or [XEP-0184: Message Delivery Receipts](http://xmpp.org/extensions/xep-0184.html).
+support for [XEP-0115: Entity Capabilities](https://xmpp.org/extensions/xep-0115.html) or [XEP-0184: Message Delivery Receipts](https://xmpp.org/extensions/xep-0184.html).
 
 Extensions are also associated with an identifier, usually a namespace, e.g. `urn:xmpp:receipts`.
 
-By enabling an extension, support for it will be automatically advertised by [XEP-0030: Service Discovery](http://xmpp.org/extensions/xep-0030.html).
+By enabling an extension, support for it will be automatically advertised by [XEP-0030: Service Discovery](https://xmpp.org/extensions/xep-0030.html).
 
 To get a manager for a specific extension, you use the `getManager` method of the `XmppClient`.
 
@@ -39,7 +39,7 @@ EntityTimeManager entityTimeManager = xmppClient.getManager(EntityTimeManager.cl
 entityTimeManager.setEnabled(false);
 ```
 
-This manager manages [XEP-0202: Entity Time](http://xmpp.org/extensions/xep-0202.html) and is enabled by default.
+This manager manages [XEP-0202: Entity Time](https://xmpp.org/extensions/xep-0202.html) and is enabled by default.
 Inbound "time" requests are automatically replied to with the current time, while enabled.
 
 ---

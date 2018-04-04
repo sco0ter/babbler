@@ -47,8 +47,8 @@ import java.util.Objects;
  * The implementation of the {@code <vCard/>} element in the {@code vcard-temp} namespace.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0054.html">XEP-0054: vcard-temp</a>
- * @see <a href="http://xmpp.org/extensions/xep-0054.html#dtd">DTD</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0054.html">XEP-0054: vcard-temp</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0054.html#dtd">DTD</a>
  */
 @XmlRootElement(name = "vCard")
 public final class VCard {

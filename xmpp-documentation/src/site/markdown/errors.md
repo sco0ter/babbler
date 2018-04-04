@@ -63,5 +63,5 @@ As you can see asking for the type and then for the specific condition gets you 
 Btw: If you wonder, why the error conditions aren't represented as enum, it is because some error conditions like `<gone/>` have additional data.
 
 
-[Stream Errors]: http://xmpp.org/rfcs/rfc6120.html#streams-error "Stream Errors"
-[Stanza Errors]: http://xmpp.org/rfcs/rfc6120.html#stanzas-error "Stanza Errors"
+[Stream Errors]: https://xmpp.org/rfcs/rfc6120.html#streams-error "Stream Errors"
+[Stanza Errors]: https://xmpp.org/rfcs/rfc6120.html#stanzas-error "Stanza Errors"

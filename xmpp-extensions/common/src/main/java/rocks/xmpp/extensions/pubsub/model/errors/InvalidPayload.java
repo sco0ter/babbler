@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  * @author Christian Schudt
  * @see #INVALID_PAYLOAD
- * @see <a href="http://xmpp.org/extensions/xep-0060.html#publisher-publish-error-badpayload">7.1.3.5 Bad Payload</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-publish-error-badpayload">7.1.3.5 Bad Payload</a>
  */
 @XmlRootElement(name = "invalid-payload")
 @XmlType(factoryMethod = "create")

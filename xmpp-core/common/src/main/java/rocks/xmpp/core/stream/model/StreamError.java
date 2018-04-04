@@ -40,7 +40,7 @@ import java.util.Objects;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
  */
 @XmlRootElement(name = "error")
 public final class StreamError implements StreamElement {
@@ -136,7 +136,7 @@ public final class StreamError implements StreamElement {
      * Gets the application specific condition, if any.
      *
      * @return The application specific condition.
-     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-app">4.9.4.  Application-Specific Conditions</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-app">4.9.4.  Application-Specific Conditions</a>
      */
     public final Object getExtension() {
         return extension;
@@ -146,7 +146,7 @@ public final class StreamError implements StreamElement {
      * Gets the defined stream error condition or {@link Condition#UNDEFINED_CONDITION} if the condition is unknown.
      *
      * @return The error condition.
-     * @see <a href="http://xmpp.org/rfcs/rfc6120.html#streams-error-conditions">4.9.3.  Defined Stream Error Conditions</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions">4.9.3.  Defined Stream Error Conditions</a>
      */
     public final Condition getCondition() {
         // The "defined-condition" MUST correspond to one of the stream error conditions defined under Section 4.9.3.

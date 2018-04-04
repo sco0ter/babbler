@@ -33,8 +33,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * This class is immutable.
  *
  * @author Christian Schudt
- * @see <a href="http://xmpp.org/extensions/xep-0049.html">XEP-0049: Private XML Storage</a>
- * @see <a href="http://xmpp.org/extensions/xep-0049.html#sect-idp1528656">XML Schema</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0049.html">XEP-0049: Private XML Storage</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0049.html#sect-idp1528656">XML Schema</a>
  */
 @XmlRootElement(name = "query")
 public final class PrivateData {

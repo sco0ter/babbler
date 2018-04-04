@@ -157,7 +157,7 @@ public final class JingleFileTransfer extends ApplicationFormat {
          * Gets the optional thumbnail.
          *
          * @return The thumbnail or null.
-         * @see <a href="http://xmpp.org/extensions/xep-0264.html">XEP-0264: Jingle Content Thumbnails</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0264.html">XEP-0264: Jingle Content Thumbnails</a>
          */
         public final Thumbnail getThumbnail() {
             return thumbnail;

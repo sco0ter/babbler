@@ -241,7 +241,7 @@ public final class TcpConnectionConfiguration extends ClientConnectionConfigurat
 
         private Builder() {
             // default values.
-            secure(true);
+            channelEncryption(ChannelEncryption.OPTIONAL);
             port(5222);
             keepAliveInterval(30);
         }

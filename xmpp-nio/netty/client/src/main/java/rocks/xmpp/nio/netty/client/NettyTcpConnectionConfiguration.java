@@ -127,7 +127,7 @@ public final class NettyTcpConnectionConfiguration extends ClientConnectionConfi
 
         private Builder() {
             // default values.
-            secure(true);
+            channelEncryption(ChannelEncryption.OPTIONAL);
             port(5222);
         }
 

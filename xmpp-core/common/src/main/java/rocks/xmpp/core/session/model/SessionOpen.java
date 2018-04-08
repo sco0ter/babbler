@@ -44,4 +44,11 @@ public interface SessionOpen extends StreamElement {
      * @return The 'xml:lang' attribute.
      */
     Locale getLanguage();
+
+    /**
+     * Gets the XMPP version.
+     *
+     * @return The XMPP version.
+     */
+    String getVersion();
 }

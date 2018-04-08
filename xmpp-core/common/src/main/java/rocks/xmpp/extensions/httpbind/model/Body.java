@@ -547,7 +547,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
      *
      * @return The 'version' attribute value.
      */
-    public final String getVersion() {
+    public final String getBoshVersion() {
         return ver;
     }
 
@@ -570,7 +570,8 @@ public final class Body implements SessionOpen, Comparable<Body> {
      *
      * @return The XMPP version.
      */
-    public final String getXmppVersion() {
+    @Override
+    public final String getVersion() {
         return version;
     }
 

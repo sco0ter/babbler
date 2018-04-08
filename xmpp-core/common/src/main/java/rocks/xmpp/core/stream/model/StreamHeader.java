@@ -308,6 +308,17 @@ public final class StreamHeader implements SessionOpen, CharSequence {
     }
 
     /**
+     * Gets the 'version' attribute.
+     *
+     * @return The XMPP version.
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-attr-version">4.7.5.  version</a>
+     */
+    @Override
+    public final String getVersion() {
+        return version;
+    }
+
+    /**
      * Gets the content namespace, i.e. the namespace which has no prefix.
      *
      * @return The content namespace.

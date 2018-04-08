@@ -94,6 +94,8 @@ public final class StreamFeaturesManager extends Manager implements StreamHandle
 
     private CompletableFuture<Void> negotiationCompleted;
 
+    private CompletableFuture<Void> streamFeaturesReceived;
+
     private boolean streamWillBeRestarted;
 
     private StreamFeaturesManager(XmppSession xmppSession) {
@@ -108,6 +110,7 @@ public final class StreamFeaturesManager extends Manager implements StreamHandle
                 case CONNECTING:
                     synchronized (this) {
                         negotiationCompleted = new CompletableFuture<>();
+                        streamFeaturesReceived = new CompletableFuture<>();
                         featureNegotiationStartedFutures.clear();
                         advertisedFeatures.clear();
                     }
@@ -172,6 +175,7 @@ public final class StreamFeaturesManager extends Manager implements StreamHandle
      */
     public final synchronized void processFeatures(StreamFeatures featuresElement) throws StreamNegotiationException {
         streamWillBeRestarted = false;
+        streamFeaturesReceived.complete(null);
         List<Object> featureList = featuresElement.getFeatures();
 
         featuresToNegotiate.clear();
@@ -278,7 +282,7 @@ public final class StreamFeaturesManager extends Manager implements StreamHandle
      */
     public final synchronized Future<Void> completeNegotiation() throws StreamNegotiationException {
         negotiateNextFeature();
-        return negotiationCompleted != null ? negotiationCompleted : CompletableFuture.completedFuture(null);
+        return CompletableFuture.allOf(streamFeaturesReceived, negotiationCompleted);
     }
 
     /**

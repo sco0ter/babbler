@@ -56,7 +56,7 @@ public final class ExternalComponent extends XmppSession {
 
     private static final Logger logger = Logger.getLogger(ExternalComponent.class.getName());
 
-    private volatile CompletableFuture<Void> streamOpened;
+    private volatile CompletableFuture<SessionOpen> streamOpened;
 
     private volatile CompletableFuture<Void> handshakeReceived;
 
@@ -127,17 +127,19 @@ public final class ExternalComponent extends XmppSession {
                         // Reset
                         exception = null;
 
-                        tryConnect(from, "jabber:component:accept", null);
+                        tryConnect(from, "jabber:component:accept", "1.0");
                         logger.fine("Negotiating stream, waiting until handshake is ready to be negotiated.");
-                        streamOpened.get(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                        SessionOpen sessionOpen = streamOpened.get(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
 
                         // Check if the server returned a stream error, e.g. conflict.
                         throwAsXmppExceptionIfNotNull(exception);
 
-                        // Wait shortly to see if the server will respond with a <conflict/>, <host-unknown/> or other stream error.
-                        Thread.sleep(50);
-
-                        streamFeaturesManager.completeNegotiation().get(configuration.getDefaultResponseTimeout().toMillis() * 2, TimeUnit.MILLISECONDS);
+                        if (sessionOpen != null && sessionOpen.getVersion() != null) {
+                            streamFeaturesManager.completeNegotiation().get(configuration.getDefaultResponseTimeout().toMillis() * 2, TimeUnit.MILLISECONDS);
+                        } else {
+                            // Wait shortly to see if the server will respond with a <conflict/>, <host-unknown/> or other stream error.
+                            Thread.sleep(50);
+                        }
 
                         connectedResource = getDomain();
                     }
@@ -205,9 +207,9 @@ public final class ExternalComponent extends XmppSession {
             doRestart = super.handleElement(element);
         }
         if (element instanceof SessionOpen) {
-            CompletableFuture<Void> future = streamOpened;
+            CompletableFuture<SessionOpen> future = streamOpened;
             if (future != null) {
-                future.complete(null);
+                future.complete((SessionOpen) element);
                 streamOpened = null;
             }
         }
@@ -221,7 +223,7 @@ public final class ExternalComponent extends XmppSession {
     }
 
     private void releaseLock() {
-        CompletableFuture<Void> future = streamOpened;
+        CompletableFuture<SessionOpen> future = streamOpened;
         if (future != null) {
             future.complete(null);
             streamOpened = null;

@@ -185,7 +185,7 @@ public final class PubSubNode {
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-subscribe">6.1 Subscribe to a Node</a>
      */
     public AsyncResult<Subscription> subscribe() {
-        return subscribe(null);
+        return subscribe(xmppSession.getConnectedResource().asBareJid(), null);
     }
 
     /**
@@ -196,7 +196,30 @@ public final class PubSubNode {
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-subandconfig">6.3.7 Subscribe and Configure</a>
      */
     public AsyncResult<Subscription> subscribe(SubscribeOptions subscribeOptions) {
-        return xmppSession.query(IQ.set(pubSubServiceAddress, PubSub.withSubscribe(Objects.requireNonNull(nodeId, "nodeId must not be null"), xmppSession.getConnectedResource().asBareJid(), subscribeOptions != null ? subscribeOptions.getDataForm() : null))).thenApply(result ->
+        return subscribe(xmppSession.getConnectedResource().asBareJid(), subscribeOptions);
+    }
+
+    /**
+     * Subscribes to this node.
+     *
+     * @param jid The JID which is subscribed.
+     * @return The async result with the subscription.
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-subscribe">6.1 Subscribe to a Node</a>
+     */
+    public final AsyncResult<Subscription> subscribe(final Jid jid) {
+        return subscribe(jid, null);
+    }
+
+    /**
+     * Subscribes to and configures this node.
+     *
+     * @param jid              The JID which is subscribed.
+     * @param subscribeOptions The configuration form.
+     * @return The async result with the subscription.
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-subandconfig">6.3.7 Subscribe and Configure</a>
+     */
+    public final AsyncResult<Subscription> subscribe(final Jid jid, final SubscribeOptions subscribeOptions) {
+        return xmppSession.query(IQ.set(pubSubServiceAddress, PubSub.withSubscribe(Objects.requireNonNull(nodeId, "nodeId must not be null"), Objects.requireNonNull(jid), subscribeOptions != null ? subscribeOptions.getDataForm() : null))).thenApply(result ->
                 result.getExtension(PubSub.class).getSubscription());
     }
 

@@ -253,7 +253,7 @@ public final class StreamFeaturesManager extends Manager implements StreamHandle
                 // If the feature has been successfully negotiated, immediately go on with the next feature.
                 negotiateNextFeature();
             }
-        } else if (!streamWillBeRestarted) {
+        } else if (!streamWillBeRestarted && streamFeaturesReceived.isDone()) {
             for (CompletableFuture<Void> condition : featureNegotiationStartedFutures.values()) {
                 condition.complete(null);
             }
@@ -282,7 +282,7 @@ public final class StreamFeaturesManager extends Manager implements StreamHandle
      */
     public final synchronized Future<Void> completeNegotiation() throws StreamNegotiationException {
         negotiateNextFeature();
-        return CompletableFuture.allOf(streamFeaturesReceived, negotiationCompleted);
+        return negotiationCompleted;
     }
 
     /**

@@ -351,6 +351,7 @@ public final class Registration {
      * @return The web registration URL or null.
      * @deprecated Use {@link #getWebRegistrationUri()}.
      */
+    @Deprecated
     public URL getWebRegistrationUrl() {
         return oobX != null ? oobX.getUrl() : null;
     }

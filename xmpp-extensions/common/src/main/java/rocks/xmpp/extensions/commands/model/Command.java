@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -62,8 +62,8 @@ public final class Command {
     @XmlAttribute
     private final String node;
 
-    @XmlAttribute
-    private final String sessionid;
+    @XmlAttribute(name = "sessionid")
+    private final String sessionId;
 
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
     private final Locale lang;
@@ -81,7 +81,7 @@ public final class Command {
     private Command() {
         this.action = null;
         this.node = null;
-        this.sessionid = null;
+        this.sessionId = null;
         this.status = null;
         this.actions = null;
         this.lang = null;
@@ -163,7 +163,7 @@ public final class Command {
      */
     private Command(String node, String sessionId, Action action, Status status, Collection<Action> actions, Action defaultAction, List<Object> payloads, Locale language, List<Note> notes) {
         this.node = Objects.requireNonNull(node);
-        this.sessionid = sessionId;
+        this.sessionId = sessionId;
         this.action = action;
         this.status = status;
         if (payloads != null) {
@@ -224,7 +224,7 @@ public final class Command {
      * @return The session id.
      */
     public final String getSessionId() {
-        return sessionid;
+        return sessionId;
     }
 
     /**

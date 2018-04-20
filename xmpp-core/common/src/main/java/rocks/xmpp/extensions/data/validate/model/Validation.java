@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,8 +48,8 @@ public final class Validation {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/xdata-validate";
 
-    @XmlAttribute
-    private final String datatype;
+    @XmlAttribute(name = "datatype")
+    private final String dataType;
 
     @XmlElements({@XmlElement(name = "basic", type = ValidationMethod.Basic.class),
             @XmlElement(name = "open", type = ValidationMethod.Open.class),
@@ -100,7 +100,7 @@ public final class Validation {
      * @param listRange        The list range, used for {@link rocks.xmpp.extensions.data.model.DataForm.Field.Type#LIST_MULTI} fields.
      */
     public Validation(String dataType, ValidationMethod validationMethod, ListRange listRange) {
-        this.datatype = dataType;
+        this.dataType = dataType;
         this.validationMethod = validationMethod;
         this.listRange = listRange;
     }
@@ -124,7 +124,7 @@ public final class Validation {
      * @return The data type.
      */
     public final String getDataType() {
-        return datatype;
+        return dataType;
     }
 
     /**

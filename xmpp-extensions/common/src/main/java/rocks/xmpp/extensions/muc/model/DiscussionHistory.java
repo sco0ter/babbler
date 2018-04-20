@@ -53,8 +53,9 @@ import java.time.Instant;
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#enter-managehistory">7.2.15 Managing Discussion History</a>
  */
 public final class DiscussionHistory {
-    @XmlAttribute
-    private final Integer maxchars;
+
+    @XmlAttribute(name = "maxchars")
+    private final Integer maxChars;
 
     @XmlAttribute
     private final Integer maxstanzas;
@@ -70,8 +71,8 @@ public final class DiscussionHistory {
         this(null, null, null, null);
     }
 
-    private DiscussionHistory(Integer maxchars, Integer maxstanzas, Integer seconds, Instant since) {
-        this.maxchars = maxchars;
+    private DiscussionHistory(Integer maxChars, Integer maxstanzas, Integer seconds, Instant since) {
+        this.maxChars = maxChars;
         this.maxstanzas = maxstanzas;
         this.seconds = seconds;
         this.since = since;
@@ -128,13 +129,13 @@ public final class DiscussionHistory {
 
     @Override
     public final String toString() {
-        if (maxchars != null && maxchars == 0) {
+        if (maxChars != null && maxChars == 0) {
             return "No discussion history";
         }
         final StringBuilder sb = new StringBuilder("Discussion history ");
         boolean appended = false;
-        if (maxchars != null) {
-            sb.append("limited to ").append(maxchars).append(" characters");
+        if (maxChars != null) {
+            sb.append("limited to ").append(maxChars).append(" characters");
             appended = true;
         }
         if (maxstanzas != null) {

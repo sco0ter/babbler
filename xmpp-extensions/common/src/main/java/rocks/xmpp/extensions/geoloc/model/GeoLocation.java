@@ -28,6 +28,7 @@ import rocks.xmpp.util.adapters.ZoneOffsetAdapter;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
@@ -85,7 +86,8 @@ public final class GeoLocation {
 
     private final String country;
 
-    private final String countrycode;
+    @XmlElement(name = "countrycode")
+    private final String countryCode;
 
     private final String datum;
 
@@ -99,7 +101,8 @@ public final class GeoLocation {
 
     private final Double lon;
 
-    private final String postalcode;
+    @XmlElement(name = "postalcode")
+    private final String postalCode;
 
     private final String region;
 
@@ -129,7 +132,7 @@ public final class GeoLocation {
         this.bearing = null;
         this.building = null;
         this.country = null;
-        this.countrycode = null;
+        this.countryCode = null;
         this.datum = null;
         this.description = null;
         this.floor = null;
@@ -137,7 +140,7 @@ public final class GeoLocation {
         this.lat = null;
         this.locality = null;
         this.lon = null;
-        this.postalcode = null;
+        this.postalCode = null;
         this.region = null;
         this.room = null;
         this.speed = null;
@@ -156,7 +159,7 @@ public final class GeoLocation {
         this.bearing = builder.bearing;
         this.building = builder.building;
         this.country = builder.country;
-        this.countrycode = builder.countryCode;
+        this.countryCode = builder.countryCode;
         this.datum = builder.datum;
         this.description = builder.description;
         this.floor = builder.floor;
@@ -164,7 +167,7 @@ public final class GeoLocation {
         this.lat = builder.latitude;
         this.locality = builder.locality;
         this.lon = builder.longitude;
-        this.postalcode = builder.postalCode;
+        this.postalCode = builder.postalCode;
         this.region = builder.region;
         this.room = builder.room;
         this.speed = builder.speed;
@@ -253,7 +256,7 @@ public final class GeoLocation {
      * @return The country code.
      */
     public final String getCountryCode() {
-        return countrycode;
+        return countryCode;
     }
 
     /**
@@ -316,7 +319,7 @@ public final class GeoLocation {
      * @return The postal code.
      */
     public final String getPostalCode() {
-        return postalcode;
+        return postalCode;
     }
 
     /**
@@ -424,8 +427,8 @@ public final class GeoLocation {
         if (country != null) {
             sb.append("Country: ").append(country).append("; ");
         }
-        if (countrycode != null) {
-            sb.append("Country Code: ").append(countrycode).append("; ");
+        if (countryCode != null) {
+            sb.append("Country Code: ").append(countryCode).append("; ");
         }
         if (datum != null) {
             sb.append("Datum: ").append(datum).append("; ");
@@ -445,8 +448,8 @@ public final class GeoLocation {
         if (lon != null) {
             sb.append("Longitude: ").append(lon).append("°; ");
         }
-        if (postalcode != null) {
-            sb.append("Postal Code: ").append(postalcode).append("; ");
+        if (postalCode != null) {
+            sb.append("Postal Code: ").append(postalCode).append("; ");
         }
         if (region != null) {
             sb.append("Region: ").append(region).append("; ");

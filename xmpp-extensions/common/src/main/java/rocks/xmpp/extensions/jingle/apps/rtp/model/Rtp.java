@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -235,8 +235,8 @@ public final class Rtp extends ApplicationFormat {
         @XmlAttribute
         private int channels = 1;
 
-        @XmlAttribute
-        private long clockrate;
+        @XmlAttribute(name = "clockrate")
+        private long clockRate;
 
         @XmlAttribute
         private int id;
@@ -275,7 +275,7 @@ public final class Rtp extends ApplicationFormat {
         public PayloadType(int id, int channels, long clockRate, String name, long packetTime, long maxPacketTime) {
             this.id = id;
             this.channels = channels;
-            this.clockrate = clockRate;
+            this.clockRate = clockRate;
             this.ptime = packetTime;
             this.maxptime = maxPacketTime;
             this.name = name;
@@ -296,7 +296,7 @@ public final class Rtp extends ApplicationFormat {
          * @return The sampling frequency.
          */
         public long getClockRate() {
-            return clockrate;
+            return clockRate;
         }
 
         /**

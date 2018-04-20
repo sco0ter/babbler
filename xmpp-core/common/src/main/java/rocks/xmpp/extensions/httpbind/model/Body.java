@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -88,8 +88,8 @@ public final class Body implements SessionOpen, Comparable<Body> {
     @XmlAttribute
     private final Long ack;
 
-    @XmlAttribute
-    private final String authid;
+    @XmlAttribute(name = "authid")
+    private final String authId;
 
     @XmlAttribute
     @XmlJavaTypeAdapter(CharsetAdapter.class)
@@ -124,12 +124,12 @@ public final class Body implements SessionOpen, Comparable<Body> {
      * If the connection manager supports session pausing (see Inactivity) then it SHOULD advertise that to the client by including a 'maxpause' attribute in the session creation response element.
      * The value of the attribute indicates the maximum length of a temporary session pause (in seconds) that a client can request.
      */
-    @XmlAttribute
+    @XmlAttribute(name = "maxpause")
     @XmlJavaTypeAdapter(SecondsAdapter.class)
-    private final Duration maxpause;
+    private final Duration maxPause;
 
-    @XmlAttribute
-    private final String newkey;
+    @XmlAttribute(name = "newkey")
+    private final String newKey;
 
     @XmlAttribute
     @XmlJavaTypeAdapter(SecondsAdapter.class)
@@ -202,7 +202,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
         this.uri = null;
         this.accept = null;
         this.ack = null;
-        this.authid = null;
+        this.authId = null;
         this.charsets = null;
         this.condition = null;
         this.content = null;
@@ -210,8 +210,8 @@ public final class Body implements SessionOpen, Comparable<Body> {
         this.hold = null;
         this.inactivity = null;
         this.key = null;
-        this.maxpause = null;
-        this.newkey = null;
+        this.maxPause = null;
+        this.newKey = null;
         this.pause = null;
         this.polling = null;
         this.report = null;
@@ -236,7 +236,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
         this.uri = builder.uri;
         this.accept = builder.accept;
         this.ack = builder.ack;
-        this.authid = builder.authId;
+        this.authId = builder.authId;
         this.charsets = builder.charsets != null ? Arrays.asList(builder.charsets) : null;
         this.condition = builder.condition;
         this.content = builder.content;
@@ -244,8 +244,8 @@ public final class Body implements SessionOpen, Comparable<Body> {
         this.hold = builder.hold;
         this.inactivity = builder.inactivity;
         this.key = builder.key;
-        this.maxpause = builder.maxPause;
-        this.newkey = builder.newKey;
+        this.maxPause = builder.maxPause;
+        this.newKey = builder.newKey;
         this.pause = builder.pause;
         this.polling = builder.polling;
         this.report = builder.report;
@@ -324,7 +324,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
      * @return The 'authId' attribute.
      */
     public final String getAuthId() {
-        return authid;
+        return authId;
     }
 
     /**
@@ -413,7 +413,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
      * @see #getInactivity()
      */
     public final Duration getMaxPause() {
-        return maxpause;
+        return maxPause;
     }
 
     /**
@@ -423,7 +423,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
      * @see #getKey()
      */
     public final String getNewKey() {
-        return newkey;
+        return newKey;
     }
 
     /**

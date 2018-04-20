@@ -596,4 +596,12 @@ public class JidTest {
         // Example from: https://tools.ietf.org/html/rfc5122#section-2.7.3
         Jid.ofDomain("_\u010Dechy.example");
     }
+
+    @Test
+    public void testSame() {
+        Jid jid = Jid.of("test@domain/resource");
+        Jid same = Jid.of(jid);
+        Assert.assertSame(jid, same);
+    }
+
 }

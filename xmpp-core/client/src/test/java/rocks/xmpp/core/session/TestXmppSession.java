@@ -52,7 +52,7 @@ public final class TestXmppSession extends XmppSession {
     }
 
     public TestXmppSession(Jid jid, MockServer mockServer, XmppSessionConfiguration configuration) {
-        super(null, configuration);
+        super("test", configuration);
         connectedResource = jid;
 
         addSendSucceededListener(element -> {

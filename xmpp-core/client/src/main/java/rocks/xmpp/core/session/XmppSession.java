@@ -30,7 +30,6 @@ import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.session.debug.XmppDebugger;
-import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
@@ -135,6 +134,11 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
 
     final Set<Consumer<ConnectionEvent>> connectionListeners = new CopyOnWriteArraySet<>();
 
+    /**
+     * The XMPP domain.
+     */
+    private final Jid xmppServiceDomain;
+
     private final List<ClientConnectionConfiguration> connectionConfigurations = new ArrayList<>();
 
     private final Set<Consumer<MessageEvent>> inboundMessageListeners = new CopyOnWriteArraySet<>();
@@ -189,11 +193,6 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
     protected Connection activeConnection;
 
     /**
-     * The XMPP domain which will be assigned by the server's response. This is read by different threads, so make it volatile to ensure visibility of the written value.
-     */
-    protected volatile Jid xmppServiceDomain;
-
-    /**
      * Any exception that occurred during stream negotiation ({@link #connect()}))
      */
     protected volatile Throwable exception;
@@ -212,7 +211,7 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
     private volatile XmppDebugger debugger;
 
     protected XmppSession(String xmppServiceDomain, XmppSessionConfiguration configuration, ClientConnectionConfiguration... connectionConfigurations) {
-        this.xmppServiceDomain = xmppServiceDomain != null && !xmppServiceDomain.isEmpty() ? Jid.of(xmppServiceDomain) : null;
+        this.xmppServiceDomain = Jid.of(Objects.requireNonNull(xmppServiceDomain, "The XMPP service domain must not be null. It's a required attribute in the stream header"));
         this.configuration = configuration;
         this.stanzaListenerExecutor = Executors.newSingleThreadExecutor(configuration.getThreadFactory("Stanza Listener Thread"));
         this.iqHandlerExecutor = Executors.newCachedThreadPool(configuration.getThreadFactory("IQ Handler Thread"));
@@ -1196,8 +1195,6 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
                 XmppUtils.notifyEventListeners(inboundPresenceListeners, new PresenceEvent(this, (Presence) element, true));
                 streamManager.incrementInboundStanzaCount();
             });
-        } else if (element instanceof SessionOpen) {
-            this.xmppServiceDomain = ((SessionOpen) element).getFrom();
         } else if (element instanceof StreamFeatures) {
             streamFeaturesManager.processFeatures((StreamFeatures) element);
         } else if (element instanceof StreamError) {

@@ -128,7 +128,9 @@ final class ResourceRecord {
                     offset += count + 1;
                     count = data.get() & 0xFF;
                 } else {
-                    sb.append(new String(data.array(), offset + 1, count, StandardCharsets.US_ASCII));
+                    if (data.hasArray()) {
+                        sb.append(new String(data.array(), data.arrayOffset() + offset + 1, count, StandardCharsets.US_ASCII));
+                    }
                     offset += count + 1;
                     count = data.get(offset) & 0xFF;
                 }

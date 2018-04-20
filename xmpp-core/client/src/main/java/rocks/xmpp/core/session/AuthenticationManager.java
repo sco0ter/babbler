@@ -66,12 +66,7 @@ final class AuthenticationManager extends ClientStreamFeatureNegotiator<Mechanis
         // http://download.java.net/jdk8/docs/technotes/guides/security/sasl/sasl-refguide.html
 
         // Add the "ANONYMOUS" and "SCRAM-SHA-1" SASL mechanism.
-        Security.addProvider(new Provider("XMPP Sasl Provider", 1.0, "Provides additional SASL mechanisms, which are required for XMPP.") {
-            {
-                put("SaslClientFactory.ANONYMOUS", XmppSaslClientFactory.class.getName());
-                put("SaslClientFactory.SCRAM-SHA-1", XmppSaslClientFactory.class.getName());
-            }
-        });
+        Security.addProvider(new XmppProvider());
     }
 
     /**
@@ -188,5 +183,14 @@ final class AuthenticationManager extends ClientStreamFeatureNegotiator<Mechanis
 
     synchronized byte[] getSuccessData() {
         return successData;
+    }
+
+    private static final class XmppProvider extends Provider {
+
+        XmppProvider() {
+            super("XMPP Sasl Provider", 1.0, "Provides additional SASL mechanisms, which are required for XMPP.");
+            put("SaslClientFactory.ANONYMOUS", XmppSaslClientFactory.class.getName());
+            put("SaslClientFactory.SCRAM-SHA-1", XmppSaslClientFactory.class.getName());
+        }
     }
 }

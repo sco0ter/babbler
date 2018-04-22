@@ -30,6 +30,7 @@ import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.session.debug.XmppDebugger;
+import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
@@ -1199,7 +1200,7 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
             streamFeaturesManager.processFeatures((StreamFeatures) element);
         } else if (element instanceof StreamError) {
             throw new StreamErrorException((StreamError) element);
-        } else {
+        } else if (!(element instanceof SessionOpen)) {
             // Let's see, if the element is known to any feature negotiator.
             return streamFeaturesManager.handleElement(element);
         }

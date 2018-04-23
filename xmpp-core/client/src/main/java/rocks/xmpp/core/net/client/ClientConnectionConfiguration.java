@@ -24,10 +24,10 @@
 
 package rocks.xmpp.core.net.client;
 
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 
 import javax.net.SocketFactory;
@@ -80,8 +80,9 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
      *
      * @param xmppSession The XMPP session, which is associated with the connection.
      * @return The connection.
+     * @throws Exception Any exception which may occur during connection establishment.
      */
-    public abstract Connection createConnection(XmppSession xmppSession);
+    public abstract Connection createConnection(XmppSession xmppSession) throws Exception;
 
     /**
      * Gets the hostname.

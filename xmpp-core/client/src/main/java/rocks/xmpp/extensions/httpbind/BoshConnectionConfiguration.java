@@ -24,15 +24,14 @@
 
 package rocks.xmpp.extensions.httpbind;
 
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.TxtRecord;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.Proxy;
 import java.net.URL;
 import java.time.Duration;
@@ -46,10 +45,10 @@ import java.util.Map;
  * In order to create an instance of this class you have to use the builder pattern as shown below.
  * ```java
  * BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
- * .hostname("localhost")
- * .port(5280)
- * .path("/http-bind/")
- * .build();
+ *     .hostname("localhost")
+ *     .port(5280)
+ *     .path("/http-bind/")
+ *     .build();
  * ```
  * The above sample configuration will connect to <code>http://localhost:5280/http-bind/</code>.
  * <p>
@@ -116,35 +115,32 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
     }
 
     @Override
-    public Connection createConnection(XmppSession xmppSession) {
-        try {
-            URL url;
-            String protocol = getChannelEncryption() == ChannelEncryption.DIRECT ? "https" : "http";
-            // If no port has been configured, use the default ports.
-            int targetPort = getPort() > 0 ? getPort() : (getChannelEncryption() == ChannelEncryption.DIRECT ? 5281 : 5280);
-            // If a hostname has been configured, use it to connect.
-            if (getHostname() != null) {
-                url = new URL(protocol, getHostname(), targetPort, getPath());
-            } else if (xmppSession.getDomain() != null) {
-                // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
-                String resolvedUrl = findBoshUrl(xmppSession.getDomain().toString(), xmppSession.getConfiguration().getNameServer(), getConnectTimeout());
-                if (resolvedUrl != null) {
-                    url = new URL(resolvedUrl);
-                } else {
-                    // Fallback mechanism:
-                    // If the URL could not be resolved, use the domain name and port 5280 as default.
-                    url = new URL(protocol, xmppSession.getDomain().toString(), targetPort, getPath());
-                }
-            } else {
-                throw new IllegalStateException("Neither an URL nor a domain given for a BOSH connection.");
-            }
+    public Connection createConnection(XmppSession xmppSession) throws Exception {
 
-            BoshConnection boshConnection = new BoshConnection(url, xmppSession, this);
-            boshConnection.connect();
-            return boshConnection;
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+        URL url;
+        String protocol = getChannelEncryption() == ChannelEncryption.DIRECT ? "https" : "http";
+        // If no port has been configured, use the default ports.
+        int targetPort = getPort() > 0 ? getPort() : (getChannelEncryption() == ChannelEncryption.DIRECT ? 5281 : 5280);
+        // If a hostname has been configured, use it to connect.
+        if (getHostname() != null) {
+            url = new URL(protocol, getHostname(), targetPort, getPath());
+        } else if (xmppSession.getDomain() != null) {
+            // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
+            String resolvedUrl = findBoshUrl(xmppSession.getDomain().toString(), xmppSession.getConfiguration().getNameServer(), getConnectTimeout());
+            if (resolvedUrl != null) {
+                url = new URL(resolvedUrl);
+            } else {
+                // Fallback mechanism:
+                // If the URL could not be resolved, use the domain name and port 5280 as default.
+                url = new URL(protocol, xmppSession.getDomain().toString(), targetPort, getPath());
+            }
+        } else {
+            throw new IllegalStateException("Neither an URL nor a domain given for a BOSH connection.");
         }
+
+        BoshConnection boshConnection = new BoshConnection(url, xmppSession, this);
+        boshConnection.connect();
+        return boshConnection;
     }
 
     /**

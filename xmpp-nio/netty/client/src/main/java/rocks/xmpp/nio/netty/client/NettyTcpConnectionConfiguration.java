@@ -34,14 +34,12 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.proxy.HttpProxyHandler;
 import io.netty.handler.proxy.Socks5ProxyHandler;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.net.ChannelEncryption;
 
 import java.net.Proxy;
-import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.ExecutionException;
 
 /**
  * @author Christian Schudt
@@ -65,43 +63,32 @@ public final class NettyTcpConnectionConfiguration extends ClientConnectionConfi
     }
 
     @Override
-    public final Connection createConnection(final XmppSession xmppSession) {
-        try {
-            final Bootstrap b = new Bootstrap();
-            b.group(getEventLoopGroup());
-            b.channel(NioSocketChannel.class);
-            b.option(ChannelOption.SO_KEEPALIVE, true);
-            b.handler(new ChannelInitializer<SocketChannel>() {
-                @Override
-                public final void initChannel(final SocketChannel ch) {
-                    Proxy proxy = getProxy();
-                    if (proxy != null) {
-                        if (proxy.type() == Proxy.Type.SOCKS) {
-                            ch.pipeline().addFirst(new Socks5ProxyHandler(getProxy().address()));
-                        } else if (proxy.type() == Proxy.Type.HTTP) {
-                            ch.pipeline().addFirst(new HttpProxyHandler(getProxy().address()));
-                        }
+    public final Connection createConnection(final XmppSession xmppSession) throws Exception {
+        final Bootstrap b = new Bootstrap();
+        b.group(getEventLoopGroup());
+        b.channel(NioSocketChannel.class);
+        b.option(ChannelOption.SO_KEEPALIVE, true);
+        b.handler(new ChannelInitializer<SocketChannel>() {
+            @Override
+            public final void initChannel(final SocketChannel ch) {
+                Proxy proxy = getProxy();
+                if (proxy != null) {
+                    if (proxy.type() == Proxy.Type.SOCKS) {
+                        ch.pipeline().addFirst(new Socks5ProxyHandler(getProxy().address()));
+                    } else if (proxy.type() == Proxy.Type.HTTP) {
+                        ch.pipeline().addFirst(new HttpProxyHandler(getProxy().address()));
                     }
                 }
-            });
-            ChannelFuture channelFuture = b.connect(getHostname(), getPort());
-            channelFuture.get();
-            NettyTcpConnection nettyTcpConnection = new NettyTcpConnection(channelFuture.channel(),
-                    xmppSession, this);
-            if (getChannelEncryption() == ChannelEncryption.DIRECT) {
-                try {
-                    nettyTcpConnection.secureConnection();
-                } catch (NoSuchAlgorithmException e) {
-                    throw new RuntimeException(e);
-                }
             }
-            return nettyTcpConnection;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e.getCause());
+        });
+        ChannelFuture channelFuture = b.connect(getHostname(), getPort());
+        channelFuture.get();
+        NettyTcpConnection nettyTcpConnection = new NettyTcpConnection(channelFuture.channel(),
+                xmppSession, this);
+        if (getChannelEncryption() == ChannelEncryption.DIRECT) {
+            nettyTcpConnection.secureConnection();
         }
+        return nettyTcpConnection;
     }
 
     /**

@@ -25,20 +25,17 @@
 package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
-import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.SrvRecord;
 
 import javax.net.SocketFactory;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.Socket;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.List;
 
 /**
@@ -113,30 +110,24 @@ public final class TcpConnectionConfiguration extends ClientConnectionConfigurat
     }
 
     @Override
-    public final Connection createConnection(XmppSession xmppSession) {
+    public final Connection createConnection(XmppSession xmppSession) throws Exception {
 
-        try {
-            Socket socket;
-            if (getHostname() != null && !getHostname().isEmpty()) {
-                socket = createAndConnectSocket(InetSocketAddress.createUnresolved(getHostname(), getPort()), getProxy());
-            } else if (xmppSession.getDomain() != null) {
-                if ((socket = connectWithXmppServiceDomain(xmppSession.getDomain(), xmppSession.getConfiguration().getNameServer())) == null) {
-                    // 9. If the initiating entity does not receive a response to its SRV query, it SHOULD attempt the fallback process described in the next section.
-                    socket = createAndConnectSocket(InetSocketAddress.createUnresolved(xmppSession.getDomain().toString(), getPort()), getProxy());
-                }
-            } else {
-                throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
+        Socket socket;
+        if (getHostname() != null && !getHostname().isEmpty()) {
+            socket = createAndConnectSocket(InetSocketAddress.createUnresolved(getHostname(), getPort()), getProxy());
+        } else if (xmppSession.getDomain() != null) {
+            if ((socket = connectWithXmppServiceDomain(xmppSession.getDomain(), xmppSession.getConfiguration().getNameServer())) == null) {
+                // 9. If the initiating entity does not receive a response to its SRV query, it SHOULD attempt the fallback process described in the next section.
+                socket = createAndConnectSocket(InetSocketAddress.createUnresolved(xmppSession.getDomain().toString(), getPort()), getProxy());
             }
-            TcpConnection tcpConnection = new TcpConnection(socket, xmppSession, this);
-            if (getChannelEncryption() == ChannelEncryption.DIRECT) {
-                tcpConnection.secureConnection();
-            }
-            return tcpConnection;
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        } catch (CertificateException | NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+        } else {
+            throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
         }
+        TcpConnection tcpConnection = new TcpConnection(socket, xmppSession, this);
+        if (getChannelEncryption() == ChannelEncryption.DIRECT) {
+            tcpConnection.secureConnection();
+        }
+        return tcpConnection;
     }
 
     private Socket createAndConnectSocket(final InetSocketAddress unresolvedAddress, final Proxy proxy) throws IOException {

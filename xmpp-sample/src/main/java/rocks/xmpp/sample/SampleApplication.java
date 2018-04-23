@@ -27,7 +27,6 @@ package rocks.xmpp.sample;
 import io.netty.channel.nio.NioEventLoopGroup;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
-import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
@@ -72,13 +71,6 @@ public class SampleApplication {
                         .build();
                 long now = System.currentTimeMillis();
                 for (int i = 0; i < 1; i++) {
-                    TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
-                            .hostname("localhost") // The hostname.
-                            .port(5222) // The XMPP default port.
-                            .sslContext(getTrustAllSslContext()) // Use an SSL context, which trusts every server. Only use it for testing!
-                            //.channelEncryption(ChannelEncryption.DIRECT) // We want to negotiate a TLS connection.
-                            .hostnameVerifier((s, sslSession) -> true)
-                            .build();
 
                     SocketConnectionConfiguration socketConnectionConfiguration = SocketConnectionConfiguration.builder()
                             .hostname("localhost") // The hostname.

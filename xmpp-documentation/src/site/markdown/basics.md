@@ -28,7 +28,7 @@ You can also configure different connection methods manually (e.g. if you want t
 In order to create immutable and reusable configuration objects (which could be reused by multiple sessions) and to avoid huge constructors, the Builder Pattern is used to create custom configurations:
 
 ```java
-TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+SocketConnectionConfiguration tcpConfiguration = SocketConnectionConfiguration.builder()
     .hostname("localhost")
     .port(5222)
     .build();
@@ -77,7 +77,7 @@ Here's an overview over the relation between the session and connections:
 You can set a custom `SSLContext` by configuring it like this:
 
 ```java
-TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+SocketConnectionConfiguration tcpConfiguration = SocketConnectionConfiguration.builder()
     .channelEncryption(ChannelEncryption.OPTIONAL)
     .sslContext(sslContext)
     .hostnameVerifier(hostnameVerifier)

@@ -51,7 +51,7 @@ Jid jid = Jid.of('fußball@domain');
 
 There's a new artifact `xmpp-nio-netty-client`, which enables you to use Java NIO for TCP connections using the Netty framework.
 
-Background: The current (and default) implementation (see `TcpConnectionConfiguration`) uses two threads per connection, one for reading, one for writing.
+Background: The current (and default) implementation (see `SocketConnectionConfiguration`) uses two threads per connection, one for reading, one for writing.
 This is required, because it uses `java.net.Socket` internally, which uses blocking IO.
 For most client applications this is not an issue and totally acceptable, because clients rarely open multiple connections.
 

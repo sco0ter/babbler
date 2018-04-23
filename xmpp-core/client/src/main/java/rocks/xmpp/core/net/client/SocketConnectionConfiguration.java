@@ -24,22 +24,16 @@
 
 package rocks.xmpp.core.net.client;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.dns.DnsResolver;
-import rocks.xmpp.dns.SrvRecord;
 
 import javax.net.SocketFactory;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.net.Socket;
-import java.util.List;
 
 /**
- * A configuration for a TCP connection.
+ * A configuration for a TCP connection using {@link Socket}.
  * It allows you to configure various connection settings for a TCP socket connection, most importantly the host address and port,
  * but also a whitespace keep-alive interval, a custom socket factory, a custom SSL context and compression methods.
  * <h3>Usage</h3>
@@ -58,7 +52,7 @@ import java.util.List;
  * @see rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration
  * @see SocketConnection
  */
-public final class SocketConnectionConfiguration extends TcpConnectionConfiguration {
+public final class SocketConnectionConfiguration extends TcpConnectionConfiguration<Socket> {
 
     private static volatile SocketConnectionConfiguration defaultConfiguration;
 
@@ -108,23 +102,7 @@ public final class SocketConnectionConfiguration extends TcpConnectionConfigurat
 
     @Override
     public final Connection createConnection(XmppSession xmppSession) throws Exception {
-
-        Socket socket;
-        if (getHostname() != null && !getHostname().isEmpty()) {
-            socket = createAndConnectSocket(InetSocketAddress.createUnresolved(getHostname(), getPort()), getProxy());
-        } else if (xmppSession.getDomain() != null) {
-            if ((socket = connectWithXmppServiceDomain(xmppSession.getDomain(), xmppSession.getConfiguration().getNameServer())) == null) {
-                // 9. If the initiating entity does not receive a response to its SRV query, it SHOULD attempt the fallback process described in the next section.
-                socket = createAndConnectSocket(InetSocketAddress.createUnresolved(xmppSession.getDomain().toString(), getPort()), getProxy());
-            }
-        } else {
-            throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
-        }
-        SocketConnection socketConnection = new SocketConnection(socket, xmppSession, this);
-        if (getChannelEncryption() == ChannelEncryption.DIRECT) {
-            socketConnection.secureConnection();
-        }
-        return socketConnection;
+        return createConnection(xmppSession, socket -> new SocketConnection(socket, xmppSession, this));
     }
 
     /**
@@ -136,11 +114,12 @@ public final class SocketConnectionConfiguration extends TcpConnectionConfigurat
         return socketFactory;
     }
 
-    private Socket createAndConnectSocket(final InetSocketAddress unresolvedAddress, final Proxy proxy) throws IOException {
+    @Override
+    protected final Socket connect(final String hostname, final int port) throws IOException {
         final Socket socket;
         if (getSocketFactory() == null) {
-            if (proxy != null) {
-                socket = new Socket(proxy);
+            if (getProxy() != null) {
+                socket = new Socket(getProxy());
             } else {
                 socket = new Socket();
             }
@@ -149,59 +128,10 @@ public final class SocketConnectionConfiguration extends TcpConnectionConfigurat
         }
         // SocketFactory may return an already connected socket, so check the connected state to prevent SocketException.
         if (!socket.isConnected()) {
-            socket.connect(new InetSocketAddress(unresolvedAddress.getHostName(), unresolvedAddress.getPort()), getConnectTimeout());
+            socket.connect(new InetSocketAddress(hostname, port), getConnectTimeout());
         }
 
         return socket;
-    }
-
-    /**
-     * This is the preferred way to resolve the FQDN.
-     *
-     * @param xmppServiceDomain The fully qualified domain name.
-     * @return If the connection could be established.
-     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">3.2.1.  Preferred Process: SRV Lookup</a>
-     */
-    private Socket connectWithXmppServiceDomain(final Jid xmppServiceDomain, final String nameServer) {
-
-        // 1. The initiating entity constructs a DNS SRV query whose inputs are:
-        //
-        //   * Service of "xmpp-client" (for client-to-server connections) or "xmpp-server" (for server-to-server connections)
-        try {
-            final List<SrvRecord> srvRecords = DnsResolver.resolveSRV("xmpp-client", xmppServiceDomain, nameServer, getConnectTimeout());
-
-            // 3. If a response is received, it will contain one or more combinations of a port and FDQN, each of which is weighted and prioritized as described in [DNS-SRV].
-            // Sort the entries, so that the best one is tried first.
-            srvRecords.sort(null);
-            IOException ex = null;
-            for (SrvRecord srvRecord : srvRecords) {
-                if (srvRecord != null) {
-                    // (However, if the result of the SRV lookup is a single resource record with a Target of ".", i.e., the root domain, then the initiating entity MUST abort SRV processing at this point because according to [DNS-SRV] such a Target "means that the service is decidedly not available at this domain".)
-                    if (".".equals(srvRecord.getTarget())) {
-                        return null;
-                    }
-
-                    try {
-                        // 4. The initiating entity chooses at least one of the returned FQDNs to resolve (following the rules in [DNS-SRV]), which it does by performing DNS "A" or "AAAA" lookups on the FDQN; this will result in an IPv4 or IPv6 address.
-                        // 5. The initiating entity uses the IP address(es) from the successfully resolved FDQN (with the corresponding port number returned by the SRV lookup) as the connection address for the receiving entity.
-                        // 6. If the initiating entity fails to connect using that IP address but the "A" or "AAAA" lookups returned more than one IP address, then the initiating entity uses the next resolved IP address for that FDQN as the connection address.
-                        return createAndConnectSocket(InetSocketAddress.createUnresolved(srvRecord.getTarget(), srvRecord.getPort()), getProxy());
-                    } catch (IOException e) {
-                        // 7. If the initiating entity fails to connect using all resolved IP addresses for a given FDQN, then it repeats the process of resolution and connection for the next FQDN returned by the SRV lookup based on the priority and weight as defined in [DNS-SRV].
-                        ex = e;
-                    }
-                }
-            }
-
-            // 8. If the initiating entity receives a response to its SRV query but it is not able to establish an XMPP connection using the data received in the response, it SHOULD NOT attempt the fallback process described in the next section (this helps to prevent a state mismatch between inbound and outbound connections).
-            if (!srvRecords.isEmpty()) {
-                throw new IOException("Could not connect to any host.", ex);
-            }
-        } catch (Exception e) {
-            // Unable to resolve the domain, try fallback.
-            return null;
-        }
-        return null;
     }
 
     /**
@@ -210,12 +140,6 @@ public final class SocketConnectionConfiguration extends TcpConnectionConfigurat
     public static final class Builder extends TcpConnectionConfiguration.Builder<Builder> {
 
         private SocketFactory socketFactory;
-
-        private Builder() {
-            // default values.
-            channelEncryption(ChannelEncryption.OPTIONAL);
-            port(5222);
-        }
 
         /**
          * Sets a socket factory which creates the socket.

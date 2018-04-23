@@ -25,6 +25,7 @@
 package rocks.xmpp.nio.netty.client;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -34,7 +35,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.proxy.HttpProxyHandler;
 import io.netty.handler.proxy.Socks5ProxyHandler;
-import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
@@ -44,7 +44,7 @@ import java.net.Proxy;
 /**
  * @author Christian Schudt
  */
-public final class NettyTcpConnectionConfiguration extends TcpConnectionConfiguration {
+public final class NettyTcpConnectionConfiguration extends TcpConnectionConfiguration<Channel> {
 
     private final EventLoopGroup eventLoopGroup;
 
@@ -64,6 +64,12 @@ public final class NettyTcpConnectionConfiguration extends TcpConnectionConfigur
 
     @Override
     public final Connection createConnection(final XmppSession xmppSession) throws Exception {
+        return createConnection(xmppSession, channel -> new NettyTcpConnection(channel,
+                xmppSession, this));
+    }
+
+    @Override
+    protected Channel connect(String hostname, int port) throws Exception {
         final Bootstrap b = new Bootstrap();
         b.group(getEventLoopGroup());
         b.channel(NioSocketChannel.class);
@@ -81,14 +87,9 @@ public final class NettyTcpConnectionConfiguration extends TcpConnectionConfigur
                 }
             }
         });
-        ChannelFuture channelFuture = b.connect(getHostname(), getPort());
+        ChannelFuture channelFuture = b.connect(hostname, port);
         channelFuture.get();
-        NettyTcpConnection nettyTcpConnection = new NettyTcpConnection(channelFuture.channel(),
-                xmppSession, this);
-        if (getChannelEncryption() == ChannelEncryption.DIRECT) {
-            nettyTcpConnection.secureConnection();
-        }
-        return nettyTcpConnection;
+        return channelFuture.channel();
     }
 
     /**
@@ -111,12 +112,6 @@ public final class NettyTcpConnectionConfiguration extends TcpConnectionConfigur
     public static final class Builder extends TcpConnectionConfiguration.Builder<NettyTcpConnectionConfiguration.Builder> {
 
         private EventLoopGroup eventLoopGroup;
-
-        private Builder() {
-            // default values.
-            channelEncryption(ChannelEncryption.OPTIONAL);
-            port(5222);
-        }
 
         /**
          * Sets the NIO event loop.

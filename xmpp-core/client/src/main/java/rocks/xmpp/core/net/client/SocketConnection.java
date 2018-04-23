@@ -52,6 +52,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -115,23 +116,27 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
 
     private SessionOpen sessionOpen;
 
-    public SocketConnection(final Socket socket, final XmppSession xmppSession, final TcpConnectionConfiguration configuration) throws IOException {
+    public SocketConnection(final Socket socket, final XmppSession xmppSession, final TcpConnectionConfiguration configuration) {
         super(configuration);
         this.socket = socket;
-        this.outputStream = new BufferedOutputStream(socket.getOutputStream());
-        this.inputStream = new BufferedInputStream(socket.getInputStream());
-        this.xmppSession = xmppSession;
-        this.tcpConnectionConfiguration = configuration;
-        this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
-        this.streamManager = xmppSession.getManager(StreamManager.class);
-        this.securityManager = new StartTlsManager(xmppSession, this, tcpConnectionConfiguration.getChannelEncryption());
-        this.compressionManager = new CompressionManager(xmppSession, this);
-        compressionManager.getConfiguredCompressionMethods().clear();
-        compressionManager.getConfiguredCompressionMethods().addAll(tcpConnectionConfiguration.getCompressionMethods());
-        streamFeaturesManager.addFeatureNegotiator(securityManager);
-        streamFeaturesManager.addFeatureNegotiator(compressionManager);
-        streamFeaturesManager.addFeatureNegotiator(streamManager);
-        streamManager.reset();
+        try {
+            this.outputStream = new BufferedOutputStream(socket.getOutputStream());
+            this.inputStream = new BufferedInputStream(socket.getInputStream());
+            this.xmppSession = xmppSession;
+            this.tcpConnectionConfiguration = configuration;
+            this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
+            this.streamManager = xmppSession.getManager(StreamManager.class);
+            this.securityManager = new StartTlsManager(xmppSession, this, tcpConnectionConfiguration.getChannelEncryption());
+            this.compressionManager = new CompressionManager(xmppSession, this);
+            compressionManager.getConfiguredCompressionMethods().clear();
+            compressionManager.getConfiguredCompressionMethods().addAll(tcpConnectionConfiguration.getCompressionMethods());
+            streamFeaturesManager.addFeatureNegotiator(securityManager);
+            streamFeaturesManager.addFeatureNegotiator(compressionManager);
+            streamFeaturesManager.addFeatureNegotiator(streamManager);
+            streamManager.reset();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     @Override

@@ -74,6 +74,7 @@ public final class NettyTcpConnectionConfiguration extends TcpConnectionConfigur
         b.group(getEventLoopGroup());
         b.channel(NioSocketChannel.class);
         b.option(ChannelOption.SO_KEEPALIVE, true);
+        b.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, getConnectTimeout());
         b.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             public final void initChannel(final SocketChannel ch) {

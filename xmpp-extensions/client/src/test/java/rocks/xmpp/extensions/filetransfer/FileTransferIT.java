@@ -29,7 +29,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.IntegrationTest;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
@@ -62,11 +62,11 @@ public class FileTransferIT extends IntegrationTest {
         XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                 .debugger(ConsoleDebugger.class)
                 .build();
-        xmppSession[0] = XmppClient.create(DOMAIN, TcpConnectionConfiguration.getDefault());
+        xmppSession[0] = XmppClient.create(DOMAIN, SocketConnectionConfiguration.getDefault());
         xmppSession[0].connect();
         xmppSession[0].login(USER_1, PASSWORD_1);
 
-        xmppSession[1] = XmppClient.create(DOMAIN, configuration, TcpConnectionConfiguration.getDefault());
+        xmppSession[1] = XmppClient.create(DOMAIN, configuration, SocketConnectionConfiguration.getDefault());
         xmppSession[1].connect();
         xmppSession[1].login(USER_2, PASSWORD_2);
 

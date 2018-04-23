@@ -26,7 +26,7 @@ package rocks.xmpp.sample.register;
 
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.ChannelEncryption;
-import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.extensions.register.RegistrationManager;
 import rocks.xmpp.extensions.register.model.Registration;
@@ -40,13 +40,13 @@ public class RegistrationSample {
         Executors.newFixedThreadPool(1).execute(() -> {
             try {
 
-                TcpConnectionConfiguration tcpConnectionConfiguration = TcpConnectionConfiguration.builder()
+                SocketConnectionConfiguration socketConnectionConfiguration = SocketConnectionConfiguration.builder()
                         .hostname("localhost")
                         .port(5222)
                         .channelEncryption(ChannelEncryption.DISABLED) // Disable TLS only for simpler example here.
                         .build();
 
-                XmppClient xmppSession = XmppClient.create("localhost", tcpConnectionConfiguration);
+                XmppClient xmppSession = XmppClient.create("localhost", socketConnectionConfiguration);
 
                 // Connect
                 xmppSession.connect();

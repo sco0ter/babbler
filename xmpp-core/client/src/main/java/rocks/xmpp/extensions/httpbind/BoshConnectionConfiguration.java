@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.httpbind;
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
+import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.TxtRecord;
@@ -54,7 +55,7 @@ import java.util.Map;
  * <p>
  * This class is immutable.
  *
- * @see rocks.xmpp.core.session.TcpConnectionConfiguration
+ * @see SocketConnectionConfiguration
  * @see BoshConnection
  */
 public final class BoshConnectionConfiguration extends ClientConnectionConfiguration {

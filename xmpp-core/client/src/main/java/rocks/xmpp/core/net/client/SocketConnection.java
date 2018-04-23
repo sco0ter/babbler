@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,11 +22,12 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.session;
+package rocks.xmpp.core.net.client;
 
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.net.TcpBinding;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.StreamNegotiationException;
@@ -69,9 +70,9 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp">3.  TCP Binding</a>
  */
-public final class TcpConnection extends AbstractConnection implements TcpBinding {
+public final class SocketConnection extends AbstractConnection implements TcpBinding {
 
-    private static final Logger logger = Logger.getLogger(TcpConnection.class.getName());
+    private static final Logger logger = Logger.getLogger(SocketConnection.class.getName());
 
     private final StreamFeaturesManager streamFeaturesManager;
 
@@ -114,7 +115,7 @@ public final class TcpConnection extends AbstractConnection implements TcpBindin
 
     private SessionOpen sessionOpen;
 
-    TcpConnection(final Socket socket, final XmppSession xmppSession, final TcpConnectionConfiguration configuration) throws IOException {
+    public SocketConnection(final Socket socket, final XmppSession xmppSession, final TcpConnectionConfiguration configuration) throws IOException {
         super(configuration);
         this.socket = socket;
         this.outputStream = new BufferedOutputStream(socket.getOutputStream());
@@ -143,7 +144,7 @@ public final class TcpConnection extends AbstractConnection implements TcpBindin
         // Start reading from the input stream.
         xmppStreamReader = new XmppStreamReader(streamHeader.getContentNamespace(), this, this.xmppSession);
         final InputStream is;
-        synchronized (this){
+        synchronized (this) {
             is = inputStream;
         }
         xmppStreamReader.startReading(is, this::openedByPeer, this::closedByPeer);
@@ -152,7 +153,7 @@ public final class TcpConnection extends AbstractConnection implements TcpBindin
         xmppStreamWriter = new XmppStreamWriter(streamHeader.getContentNamespace(), streamManager, this.xmppSession);
         xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
         final OutputStream os;
-        synchronized (this){
+        synchronized (this) {
             os = outputStream;
         }
         return xmppStreamWriter.openStream(os, streamHeader);
@@ -222,14 +223,14 @@ public final class TcpConnection extends AbstractConnection implements TcpBindin
         // The following might look overly verbose, but it follows the rule to "never call an alien method from within a synchronized region".
         InputStream iStream;
         OutputStream oStream;
-        synchronized (TcpConnection.this) {
+        synchronized (SocketConnection.this) {
             iStream = inputStream;
             oStream = outputStream;
         }
         try {
             iStream = compressionMethod.decompress(iStream);
             oStream = compressionMethod.compress(oStream);
-            synchronized (TcpConnection.this) {
+            synchronized (SocketConnection.this) {
                 inputStream = iStream;
                 outputStream = oStream;
             }

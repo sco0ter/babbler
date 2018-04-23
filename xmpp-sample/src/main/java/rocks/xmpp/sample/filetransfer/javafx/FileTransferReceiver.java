@@ -25,7 +25,7 @@
 package rocks.xmpp.sample.filetransfer.javafx;
 
 import rocks.xmpp.core.net.ChannelEncryption;
-import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
@@ -44,7 +44,7 @@ public class FileTransferReceiver {
         Executors.newFixedThreadPool(1).execute(() -> {
             try {
 
-                TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+                SocketConnectionConfiguration tcpConfiguration = SocketConnectionConfiguration.builder()
                         .port(5222)
                         .channelEncryption(ChannelEncryption.DISABLED)
                         .build();

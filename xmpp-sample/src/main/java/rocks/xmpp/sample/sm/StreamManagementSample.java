@@ -27,7 +27,7 @@ package rocks.xmpp.sample.sm;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.session.SendTask;
-import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
@@ -48,7 +48,7 @@ public class StreamManagementSample {
         Executors.newFixedThreadPool(1).execute(() -> {
             try {
 
-                TcpConnectionConfiguration tcpConnectionConfiguration = TcpConnectionConfiguration.builder()
+                SocketConnectionConfiguration socketConnectionConfiguration = SocketConnectionConfiguration.builder()
                         .hostname("localhost")
                         .port(5222)
                         .channelEncryption(ChannelEncryption.DISABLED) // Disable TLS only for simpler example here.
@@ -71,7 +71,7 @@ public class StreamManagementSample {
                         .debugger(ConsoleDebugger.class)
                         .build();
 
-                XmppClient xmppSession = XmppClient.create("localhost", configuration, tcpConnectionConfiguration);
+                XmppClient xmppSession = XmppClient.create("localhost", configuration, socketConnectionConfiguration);
                 xmppSession.enableFeature(StreamManagement.NAMESPACE);
                 // Connect
                 xmppSession.connect();

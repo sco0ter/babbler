@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2018 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,12 +22,12 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.session;
+package rocks.xmpp.core.net.client;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
-import rocks.xmpp.core.net.client.SocketConnection;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.SrvRecord;
 
@@ -45,39 +45,28 @@ import java.util.List;
  * <h3>Usage</h3>
  * In order to create an instance of this class you have to use the builder pattern as shown below.
  * ```java
- * TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
- * .hostname("localhost")
- * .port(5222)
- * .sslContext(sslContext)
- * .channelEncryption(ChannelEncryption.DISABLED)
- * .build();
+ * SocketConnectionConfiguration socketConfiguration = SocketConnectionConfiguration.builder()
+ *     .hostname("localhost")
+ *     .port(5222)
+ *     .sslContext(sslContext)
+ *     .channelEncryption(ChannelEncryption.DISABLED)
+ *     .build();
  * ```
  * This class is immutable.
  *
  * @author Christian Schudt
  * @see rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration
  * @see SocketConnection
- * @deprecated Use {@link rocks.xmpp.core.net.client.SocketConnectionConfiguration}
  */
-@Deprecated
-public class TcpConnectionConfiguration extends rocks.xmpp.core.net.client.TcpConnectionConfiguration {
+public final class SocketConnectionConfiguration extends TcpConnectionConfiguration {
 
-    private static volatile TcpConnectionConfiguration defaultConfiguration;
+    private static volatile SocketConnectionConfiguration defaultConfiguration;
 
     private final SocketFactory socketFactory;
 
-    protected TcpConnectionConfiguration(Builder builder) {
+    protected SocketConnectionConfiguration(Builder builder) {
         super(builder);
         this.socketFactory = builder.socketFactory;
-    }
-
-    /**
-     * Creates a new builder for this class.
-     *
-     * @return The builder.
-     */
-    public static Builder builder() {
-        return new Builder();
     }
 
     /**
@@ -85,10 +74,10 @@ public class TcpConnectionConfiguration extends rocks.xmpp.core.net.client.TcpCo
      *
      * @return The default configuration.
      */
-    public static TcpConnectionConfiguration getDefault() {
+    public static SocketConnectionConfiguration getDefault() {
         // Use double-checked locking idiom
         if (defaultConfiguration == null) {
-            synchronized (TcpConnectionConfiguration.class) {
+            synchronized (SocketConnectionConfiguration.class) {
                 if (defaultConfiguration == null) {
                     defaultConfiguration = builder().build();
                 }
@@ -102,10 +91,19 @@ public class TcpConnectionConfiguration extends rocks.xmpp.core.net.client.TcpCo
      *
      * @param configuration The default configuration.
      */
-    public static void setDefault(TcpConnectionConfiguration configuration) {
-        synchronized (TcpConnectionConfiguration.class) {
+    public static void setDefault(SocketConnectionConfiguration configuration) {
+        synchronized (SocketConnectionConfiguration.class) {
             defaultConfiguration = configuration;
         }
+    }
+
+    /**
+     * Creates a new builder for this class.
+     *
+     * @return The builder.
+     */
+    public static Builder builder() {
+        return new Builder();
     }
 
     @Override
@@ -127,6 +125,15 @@ public class TcpConnectionConfiguration extends rocks.xmpp.core.net.client.TcpCo
             socketConnection.secureConnection();
         }
         return socketConnection;
+    }
+
+    /**
+     * Gets the socket factory.
+     *
+     * @return The socket factory.
+     */
+    public final SocketFactory getSocketFactory() {
+        return socketFactory;
     }
 
     private Socket createAndConnectSocket(final InetSocketAddress unresolvedAddress, final Proxy proxy) throws IOException {
@@ -198,25 +205,9 @@ public class TcpConnectionConfiguration extends rocks.xmpp.core.net.client.TcpCo
     }
 
     /**
-     * Gets the socket factory.
-     *
-     * @return The socket factory.
-     */
-    public final SocketFactory getSocketFactory() {
-        return socketFactory;
-    }
-
-    @Override
-    public final String toString() {
-        return "TCP connection configuration: " + super.toString();
-    }
-
-    /**
      * A builder to create a {@link TcpConnectionConfiguration} instance.
      */
-    public static final class Builder extends rocks.xmpp.core.net.client.TcpConnectionConfiguration.Builder<Builder> {
-
-        private int keepAliveInterval;
+    public static final class Builder extends TcpConnectionConfiguration.Builder<Builder> {
 
         private SocketFactory socketFactory;
 
@@ -224,18 +215,6 @@ public class TcpConnectionConfiguration extends rocks.xmpp.core.net.client.TcpCo
             // default values.
             channelEncryption(ChannelEncryption.OPTIONAL);
             port(5222);
-            keepAliveInterval(30);
-        }
-
-        /**
-         * Sets the whitespace keep-alive interval in seconds. If the interval is negative, no whitespace will be sent at all.
-         *
-         * @param keepAliveInterval The whitespace keep-alive interval.
-         * @return The builder.
-         */
-        public Builder keepAliveInterval(int keepAliveInterval) {
-            this.keepAliveInterval = keepAliveInterval;
-            return this;
         }
 
         /**
@@ -259,8 +238,8 @@ public class TcpConnectionConfiguration extends rocks.xmpp.core.net.client.TcpCo
         }
 
         @Override
-        public TcpConnectionConfiguration build() {
-            return new TcpConnectionConfiguration(this);
+        public SocketConnectionConfiguration build() {
+            return new SocketConnectionConfiguration(this);
         }
     }
 }

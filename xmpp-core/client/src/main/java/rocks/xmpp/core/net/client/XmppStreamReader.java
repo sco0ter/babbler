@@ -22,10 +22,11 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.session;
+package rocks.xmpp.core.net.client;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stream.model.StreamError;
@@ -72,7 +73,7 @@ final class XmppStreamReader {
 
     private static final QName LANG = new QName(XMLConstants.XML_NS_URI, "lang");
 
-    private final TcpConnection connection;
+    private final SocketConnection connection;
 
     private final XmppSession xmppSession;
 
@@ -86,7 +87,7 @@ final class XmppStreamReader {
 
     private final String namespace;
 
-    XmppStreamReader(String namespace, final TcpConnection connection, XmppSession xmppSession) {
+    XmppStreamReader(String namespace, final SocketConnection connection, XmppSession xmppSession) {
         this.connection = connection;
         this.xmppSession = xmppSession;
         this.debugger = xmppSession.getDebugger();

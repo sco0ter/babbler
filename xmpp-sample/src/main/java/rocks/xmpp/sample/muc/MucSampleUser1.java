@@ -26,7 +26,7 @@ package rocks.xmpp.sample.muc;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.net.ChannelEncryption;
-import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.debug.gui.VisualDebugger;
@@ -47,7 +47,7 @@ public class MucSampleUser1 {
         Executors.newFixedThreadPool(1).execute(() -> {
             try {
 
-                TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
+                SocketConnectionConfiguration tcpConfiguration = SocketConnectionConfiguration.builder()
                         .port(5222)
                         .channelEncryption(ChannelEncryption.DISABLED)
                         .build();

@@ -28,6 +28,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
+import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.model.Session;
@@ -100,7 +101,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  * @see XmppSessionConfiguration
- * @see TcpConnectionConfiguration
+ * @see SocketConnectionConfiguration
  * @see rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration
  */
 public final class XmppClient extends XmppSession {

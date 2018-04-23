@@ -233,7 +233,7 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
          * Setting {@code secure(false)} means, you start with plain socket and won't upgrade to a secure socket.
          * However, some servers require that the client secures the connection, in which case an exception is thrown during connecting.
          * <p>
-         * If your server expects the connection to be secured immediately (often on port 5223), you should {@linkplain rocks.xmpp.core.session.TcpConnectionConfiguration.Builder#socketFactory(SocketFactory) set a custom SSL socket factory}.
+         * If your server expects the connection to be secured immediately (often on port 5223), you should {@linkplain SocketConnectionConfiguration.Builder#socketFactory(SocketFactory) set a custom SSL socket factory}.
          * <p>
          * See <a href="https://xmpp.org/rfcs/rfc6120.html#tls">RFC 6120 § 5.  STARTTLS Negotiation</a> for further information.
          * <p>

@@ -34,7 +34,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.net.ChannelEncryption;
-import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
@@ -59,7 +59,7 @@ public class RealTimeTextSample extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        TcpConnectionConfiguration tcpConnectionConfiguration = TcpConnectionConfiguration.builder()
+        SocketConnectionConfiguration socketConnectionConfiguration = SocketConnectionConfiguration.builder()
                 .channelEncryption(ChannelEncryption.DISABLED)
                 .hostname("localhost")
                 .port(5222).build();
@@ -69,7 +69,7 @@ public class RealTimeTextSample extends Application {
                 .build();
 
 
-        final XmppClient xmppClient = XmppClient.create("localhost", xmppSessionConfiguration, tcpConnectionConfiguration);
+        final XmppClient xmppClient = XmppClient.create("localhost", xmppSessionConfiguration, socketConnectionConfiguration);
 
         // Enable XEP-0301 Real-time Text
         xmppClient.enableFeature(RealTimeText.NAMESPACE);

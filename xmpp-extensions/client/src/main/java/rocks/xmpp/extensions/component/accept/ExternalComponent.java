@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.component.accept;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
-import rocks.xmpp.core.session.TcpConnectionConfiguration;
+import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.model.SessionOpen;
@@ -93,7 +93,7 @@ public final class ExternalComponent extends XmppSession {
      * @return The external component.
      */
     public static ExternalComponent create(String componentName, String sharedSecret, XmppSessionConfiguration configuration, String hostname, int port) {
-        return create(componentName, sharedSecret, configuration, TcpConnectionConfiguration.builder().hostname(hostname).port(port).build());
+        return create(componentName, sharedSecret, configuration, SocketConnectionConfiguration.builder().hostname(hostname).port(port).build());
     }
 
     /**

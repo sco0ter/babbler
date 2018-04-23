@@ -26,6 +26,7 @@ package rocks.xmpp.sample;
 
 import io.netty.channel.nio.NioEventLoopGroup;
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
@@ -79,6 +80,14 @@ public class SampleApplication {
                             .hostnameVerifier((s, sslSession) -> true)
                             .build();
 
+                    SocketConnectionConfiguration socketConnectionConfiguration = SocketConnectionConfiguration.builder()
+                            .hostname("localhost") // The hostname.
+                            .port(5222) // The XMPP default port.
+                            .sslContext(getTrustAllSslContext()) // Use an SSL context, which trusts every server. Only use it for testing!
+                                    //.channelEncryption(ChannelEncryption.DIRECT) // We want to negotiate a TLS connection.
+                            .hostnameVerifier((s, sslSession) -> true)
+                            .build();
+
                     BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()
                             .hostname("localhost")
                             .port(7443)
@@ -95,16 +104,16 @@ public class SampleApplication {
                             .build();
 
                     NettyTcpConnectionConfiguration nettyTcpConnectionConfiguration = NettyTcpConnectionConfiguration.builder()
-                            .hostname("localhost")
-                            .port(5223)
+                            //.hostname("localhost")
+                            .port(5222)
                             .sslContext(getTrustAllSslContext())
-                            .channelEncryption(ChannelEncryption.DIRECT)
+                            //.channelEncryption(ChannelEncryption.DIRECT)
                             .hostnameVerifier((s, sslSession) -> true)
                             .eventLoopGroup(eventLoopGroup)
                             .build();
 
 
-                    XmppClient xmppClient = XmppClient.create("localhost", configuration, tcpConfiguration);
+                    XmppClient xmppClient = XmppClient.create("localhost", configuration, socketConnectionConfiguration);
 
                     // Listen for inbound messages.
                     xmppClient.addInboundMessageListener(e -> logger.info("Received: " + e.getMessage()));

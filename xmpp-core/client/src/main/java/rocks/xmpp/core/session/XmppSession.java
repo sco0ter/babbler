@@ -28,6 +28,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
+import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.SessionOpen;
@@ -241,7 +242,7 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
 
         if (connectionConfigurations.length == 0) {
             // Add two fallback connections. Host and port will be determined by the XMPP domain via SRV lookup.
-            this.connectionConfigurations.add(TcpConnectionConfiguration.getDefault());
+            this.connectionConfigurations.add(SocketConnectionConfiguration.getDefault());
             this.connectionConfigurations.add(BoshConnectionConfiguration.getDefault());
         } else {
             this.connectionConfigurations.addAll(Arrays.asList(connectionConfigurations));

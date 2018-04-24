@@ -63,12 +63,12 @@ public class FileTransferReceiver {
                         FileTransfer fileTransfer = e.accept(new FileOutputStream(new File("test.png"))).getResult();
                         fileTransfer.transfer();
                     } catch (Exception e1) {
-                        e1.printStackTrace();
+                        throw new RuntimeException(e1);
                     }
                 });
 
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         });
     }

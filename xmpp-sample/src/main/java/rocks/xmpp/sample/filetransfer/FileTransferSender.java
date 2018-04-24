@@ -67,7 +67,7 @@ public class FileTransferSender {
                 fileTransfer.transfer();
 
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         });
     }

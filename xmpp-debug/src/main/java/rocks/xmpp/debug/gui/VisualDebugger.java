@@ -51,6 +51,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -236,7 +237,7 @@ public final class VisualDebugger implements XmppDebugger {
                 tabPane.getTabs().add(tab);
                 stage.show();
             } catch (IOException e) {
-                e.printStackTrace();
+               throw new UncheckedIOException(e);
             }
         });
     }

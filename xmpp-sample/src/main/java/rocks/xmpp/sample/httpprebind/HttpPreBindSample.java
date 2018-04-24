@@ -62,7 +62,7 @@ public class HttpPreBindSample {
                 System.out.println("SID: " + sessionId);
                 System.out.println("RID: " + rid);
             } catch (XmppException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         });
     }

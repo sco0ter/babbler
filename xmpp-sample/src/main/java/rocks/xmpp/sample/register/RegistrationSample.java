@@ -70,14 +70,14 @@ public class RegistrationSample {
                     try {
                         xmppSession.login("user", "pass", "register");
                     } catch (XmppException e) {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
                 });
 
 
 
             } catch (XmppException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         });
     }

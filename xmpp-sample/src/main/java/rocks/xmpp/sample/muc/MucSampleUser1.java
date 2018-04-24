@@ -75,7 +75,7 @@ public class MucSampleUser1 {
                 chatRoom.sendMessage("Hello World!");
 
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         });
     }

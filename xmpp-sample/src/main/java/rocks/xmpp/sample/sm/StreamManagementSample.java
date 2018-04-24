@@ -82,7 +82,7 @@ public class StreamManagementSample {
                 xmppSession.addSendSucceededListener(messageEvent -> System.out.println("Sent to server!!!" + messageEvent));
                 xmppSession.addSendFailedListener((messageEvent, e) -> {
                     System.out.println("FAILED!!!" + messageEvent);
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 });
                 // Send a message to myself, which is caught by the listener above.
                 SendTask<Message> trackableMessage = xmppSession.sendMessage(new Message(xmppSession.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
@@ -95,7 +95,7 @@ public class StreamManagementSample {
                 scheduledExecutorService.scheduleAtFixedRate(() -> xmppSession.sendPresence(new Presence(Presence.Show.AWAY)), 0, 10, TimeUnit.SECONDS);
 
             } catch (XmppException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         });
     }

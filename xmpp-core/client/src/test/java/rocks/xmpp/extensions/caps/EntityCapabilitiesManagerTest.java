@@ -60,8 +60,10 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
                 executorService.execute(() -> {
                     try {
                         Assert.assertNotNull(entityCapabilitiesManager.discoverCapabilities(JULIET).get());
-                    } catch (InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    } catch (ExecutionException e) {
+                        throw new RuntimeException(e);
                     }
                 });
             }

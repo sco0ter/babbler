@@ -69,7 +69,7 @@ public class DiscoSampleUser2 {
 
                 serviceDiscoveryManager.discoverInformation(xmppSession.getDomain().withLocal("111").withResource("disco"));
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         });
     }

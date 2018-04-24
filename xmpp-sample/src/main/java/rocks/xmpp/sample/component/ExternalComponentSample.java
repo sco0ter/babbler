@@ -102,7 +102,7 @@ public class ExternalComponentSample {
                 // Connect
                 myComponent.connect();
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         });
     }

@@ -72,7 +72,7 @@ public class CustomIQHandlerRequester {
                 System.out.println(resultIQ.getExtension(Addition.class));
 
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         });
     }

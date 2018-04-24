@@ -73,7 +73,7 @@ public class DiscoSampleUser1 {
                 ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
                 serviceDiscoveryManager.setItemProvider(ResultSetProvider.forItems(myItems));
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         });
     }

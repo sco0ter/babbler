@@ -69,12 +69,12 @@ public class FileTransferReceiver {
                         FileTransfer fileTransfer = e.accept(Paths.get("test.png")).getResult();
                         fileTransfer.transfer();
                     } catch (IOException | XmppException e1) {
-                        e1.printStackTrace();
+                        throw new RuntimeException(e1);
                     }
                 });
 
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         });
     }

@@ -35,6 +35,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -46,7 +47,7 @@ import java.util.concurrent.TimeoutException;
 public class InBandByteStreamIT extends IntegrationTest {
 
     @Test
-    public void test() throws XmppException, IOException, ExecutionException, InterruptedException {
+    public void test() throws XmppException, IOException, ExecutionException, InterruptedException, TimeoutException {
 
         final XmppClient xmppSession1 = XmppClient.create(DOMAIN);
         final XmppClient xmppSession2 = XmppClient.create(DOMAIN);
@@ -81,7 +82,7 @@ public class InBandByteStreamIT extends IntegrationTest {
                         inputStream.close();
 
                     } catch (IOException e1) {
-                        e1.printStackTrace();
+                        throw new UncheckedIOException(e1);
                     } finally {
                         condition.complete(null);
                     }
@@ -98,15 +99,10 @@ public class InBandByteStreamIT extends IntegrationTest {
         os.flush();
         os.close();
 
-        try {
-            if (outputStream.toByteArray().length == 0) {
-                condition.get(5, TimeUnit.SECONDS);
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        } catch (TimeoutException e) {
-            e.printStackTrace();
+        if (outputStream.toByteArray().length == 0) {
+            condition.get(5, TimeUnit.SECONDS);
         }
+
         Assert.assertEquals(outputStream.toByteArray(), new byte[]{1, 2, 3, 4});
     }
 }

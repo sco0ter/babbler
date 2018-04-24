@@ -129,7 +129,7 @@ public class FileTransferSender extends Application {
                             try {
                                 Thread.sleep(100); // For visualization the progress only.
                             } catch (InterruptedException e1) {
-                                e1.printStackTrace();
+                                Thread.currentThread().interrupt();
                             }
                             updateMessage(e.toString());
                             updateProgress(e.getBytesTransferred(), file.length());

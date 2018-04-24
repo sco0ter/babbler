@@ -131,7 +131,7 @@ public class SampleApplication {
                 long time = System.currentTimeMillis() - now;
                 int i = 0;
             } catch (XmppException | GeneralSecurityException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         });
     }

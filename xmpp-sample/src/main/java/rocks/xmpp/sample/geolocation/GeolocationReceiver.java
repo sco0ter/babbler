@@ -60,7 +60,7 @@ public class GeolocationReceiver {
                 // Send initial presence
 
             } catch (XmppException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         });
     }

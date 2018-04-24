@@ -65,7 +65,7 @@ public class GeolocationPublisher {
 //                    geoLocationManager.publish(new GeoLocation(123, 321));
 
             } catch (XmppException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         });
     }

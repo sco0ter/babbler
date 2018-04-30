@@ -47,6 +47,7 @@ import rocks.xmpp.core.stream.model.StreamHeader;
 import javax.net.ssl.SSLContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiConsumer;
@@ -128,6 +129,11 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
         } catch (XmppException e) {
             onException.accept(e);
         }
+    }
+
+    @Override
+    public final InetSocketAddress getRemoteAddress() {
+        return (InetSocketAddress) channel.remoteAddress();
     }
 
     @Override

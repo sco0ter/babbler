@@ -28,6 +28,7 @@ import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.CompletionStage;
 
 /**
@@ -38,12 +39,24 @@ import java.util.concurrent.CompletionStage;
 public interface Connection extends AutoCloseable {
 
     /**
+     * Gets the remote address of this connection.
+     *
+     * @return The remote address.
+     */
+    InetSocketAddress getRemoteAddress();
+
+    /**
      * Gets the configuration used to create this connection.
      *
      * @return The
      */
     ConnectionConfiguration getConfiguration();
 
+    /**
+     * Indicates whether this connection uses acknowledgements, e.g. by means of stream management or BOSH acks.
+     *
+     * @return If this connection uses acknowledgements.
+     */
     boolean isUsingAcknowledgements();
 
     /**

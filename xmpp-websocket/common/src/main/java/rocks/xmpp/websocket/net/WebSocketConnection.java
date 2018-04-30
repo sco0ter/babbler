@@ -37,6 +37,8 @@ import rocks.xmpp.websocket.model.Open;
 import javax.websocket.Session;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
@@ -136,6 +138,11 @@ public class WebSocketConnection extends AbstractConnection {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    @Override
+    public final InetSocketAddress getRemoteAddress() {
+        return InetSocketAddress.createUnresolved(session.getRequestURI().getHost(), session.getRequestURI().getPort());
     }
 
     @Override

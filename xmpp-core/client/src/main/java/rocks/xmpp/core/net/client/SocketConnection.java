@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -334,6 +335,11 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
     @Override
     public final CompletionStage<Void> closeFuture() {
         return closeFuture;
+    }
+
+    @Override
+    public final InetSocketAddress getRemoteAddress() {
+        return (InetSocketAddress) socket.getRemoteSocketAddress();
     }
 
     @Override

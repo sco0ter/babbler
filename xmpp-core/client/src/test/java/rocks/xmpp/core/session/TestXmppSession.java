@@ -33,6 +33,8 @@ import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -107,6 +109,11 @@ public final class TestXmppSession extends XmppSession {
 
             @Override
             public CompletionStage<Void> closeFuture() {
+                return null;
+            }
+
+            @Override
+            public InetSocketAddress getRemoteAddress() {
                 return null;
             }
 

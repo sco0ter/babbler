@@ -72,6 +72,10 @@ public final class JingleEvent extends EventObject {
         xmppSession.send(IQ.set(iq.getFrom(), new Jingle(sessionId, Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.Decline()))));
     }
 
+    public IQ getIQ() {
+    	return iq;
+    }
+
     public Jingle getJingle() {
         return jingle;
     }

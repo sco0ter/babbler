@@ -70,12 +70,6 @@
         <url>https://bitbucket.org/sco0ter/babbler/issues</url>
     </issueManagement>
 
-    <!-- Continuous Integration Management -->
-    <ciManagement>
-        <system>drone.io</system>
-        <url>https://drone.io/bitbucket.org/sco0ter/babbler</url>
-    </ciManagement>
-
     <!-- Mailing Lists -->
     <mailingLists>
     </mailingLists>

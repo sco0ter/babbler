@@ -60,6 +60,23 @@ public final class Candidate extends RemoteCandidate {
     @XmlAttribute
     private Type type;
 
+    public Candidate() {
+    }
+
+    public Candidate(Integer pComponent, String pIp, Integer pPort, Short pFoundation, Short pGeneration, String pId,
+        Short pNetwork, Integer pPriority, String pProtocol, String pRelatedAddress, Integer pRelatedPort, Type pType) {
+        super(pComponent, pIp, pPort);
+        foundation = pFoundation;
+        generation = pGeneration;
+        id = pId;
+        network = pNetwork;
+        priority = pPriority;
+        protocol = pProtocol;
+        relatedAddress = pRelatedAddress;
+        relatedPort = pRelatedPort;
+        type = pType;
+    }
+
     public Short getFoundation() {
         return foundation;
     }

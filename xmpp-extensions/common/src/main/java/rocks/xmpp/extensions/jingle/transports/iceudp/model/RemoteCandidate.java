@@ -40,6 +40,16 @@ public class RemoteCandidate {
     @XmlAttribute
     private Integer port;
 
+    public RemoteCandidate() {
+    }
+
+    public RemoteCandidate(Integer pComponent, String pIp, Integer pPort) {
+    	super();
+        component = pComponent;
+        ip = pIp;
+        port = pPort;
+    }
+
     public int getComponent() {
         return component;
     }

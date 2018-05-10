@@ -45,6 +45,16 @@ public final class IceUdpTransportMethod extends TransportMethod {
 
     private final List<Candidate> candidate = new ArrayList<>();
 
+    public IceUdpTransportMethod() {
+    }
+
+    public IceUdpTransportMethod(String pPwd, String pUfrag, List<Candidate> pCandidates) {
+    	super();
+    	pwd = pPwd;
+    	ufrag = pUfrag;
+    	candidate.addAll(pCandidates);
+    }
+
     @XmlAttribute
     private String pwd;
 

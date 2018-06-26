@@ -743,7 +743,7 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
         }
         return sendAndAwait(iq,
                 IQEvent::getIQ,
-                responseIQ -> responseIQ.isResponse() && responseIQ.getId() != null && responseIQ.getId().equals(iq.getId()),
+                new IQResponsePredicate(iq, getConnectedResource()),
                 this::sendIQ,
                 this::addInboundIQListener,
                 this::removeInboundIQListener,

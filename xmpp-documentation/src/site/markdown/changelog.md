@@ -30,6 +30,7 @@ Reduces GC pressure and increase performance.
 * XEP-0300: Update to urn:xmpp:hashes:2
 * XEP-0184: Receipt messages should have the same type as the request message instead of normal type.
 * Fix Message#createError()
+* Check the 'from' attribute of IQ responses to prevent spoofing
 
 
 

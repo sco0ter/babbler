@@ -33,6 +33,9 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -45,13 +48,15 @@ import java.util.Objects;
  *
  * @author Christian Schudt
  */
-final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
+final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter, NamespaceContext {
 
     private static final Collection<String> PREFIXED_NAMESPACES = Arrays.asList(SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE, SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE);
 
     private final XMLStreamWriter xsw;
 
     private final boolean writeStreamNamespace;
+
+    private final Map<String, String> urisByPrefix = new HashMap<>();
 
     PrefixFreeCanonicalizationWriter(final XMLStreamWriter xsw, final boolean writeStreamNamespace) {
         this.xsw = xsw;
@@ -127,11 +132,29 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
     }
 
     @Override
-    public final void writeAttribute(final String prefix, final String namespaceURI, final String localName, final String value) throws XMLStreamException {
+    public final void writeAttribute(final String prefix, final String namespaceURI, final String localName, String value) throws XMLStreamException {
         // If an attribute has an extra namespace, we need to write that namespace to the element.
         // Do it only once for each element.
         if (!XMLConstants.XML_NS_URI.equals(namespaceURI) && getNamespaceContext().getPrefix(namespaceURI) == null) {
             xsw.writeNamespace(prefix, namespaceURI);
+        }
+        if (XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI.equals(namespaceURI) && "type".equals(localName)) {
+            final String[] split = value.split(":", 2);
+            if (split.length > 1) {
+                final String typePrefix = split[0];
+                // Check if there's a known namespace URI for the prefix.
+                final String namespaceUri = getNamespaceURI(typePrefix);
+                // Check the prefix for the URI.
+                // If it's the default namespace, we don't need to write it.
+                // Otherwise (if the prefix is unknown) write it.
+                final String pref = xsw.getPrefix(namespaceUri);
+                if (!XMLConstants.DEFAULT_NS_PREFIX.equals(pref) && !XMLConstants.NULL_NS_URI.equals(namespaceUri) && namespaceUri != null) {
+                    xsw.writeNamespace(typePrefix, namespaceUri);
+                } else {
+                    // Only write the namespace, not the prefix, if the prefix' namespace is already the default namespace.
+                    value = split[1];
+                }
+            }
         }
         xsw.writeAttribute(prefix, namespaceURI, localName, value);
     }
@@ -146,6 +169,8 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
         // do not write a namespace with a prefix, except it's allowed.
         if (shouldWriteNamespace(namespaceURI)) {
             xsw.writeNamespace(prefix, namespaceURI);
+        } else {
+            urisByPrefix.put(prefix, namespaceURI);
         }
     }
 
@@ -210,8 +235,25 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
     }
 
     @Override
-    public final String getPrefix(final String uri) throws XMLStreamException {
-        return xsw.getPrefix(uri);
+    public final String getNamespaceURI(final String prefix) {
+        String uri = getNamespaceContext().getNamespaceURI(prefix);
+        if (uri == null || XMLConstants.NULL_NS_URI.equals(uri)) {
+            uri = urisByPrefix.get(prefix);
+            if (uri == null) {
+                return XMLConstants.NULL_NS_URI;
+            }
+        }
+        return uri;
+    }
+
+    @Override
+    public final String getPrefix(final String uri) {
+        return getNamespaceContext().getPrefix(uri);
+    }
+
+    @Override
+    public final Iterator getPrefixes(final String namespaceURI) {
+        return getNamespaceContext().getPrefixes(namespaceURI);
     }
 
     @Override

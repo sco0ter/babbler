@@ -28,6 +28,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.bind.model.Bind;
+import rocks.xmpp.core.issue137.ChildType;
+import rocks.xmpp.core.issue137.ObjectFactory;
+import rocks.xmpp.core.issue137.ParentType;
 import rocks.xmpp.core.sasl.model.Auth;
 import rocks.xmpp.core.sasl.model.Response;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -45,8 +48,10 @@ import rocks.xmpp.im.roster.model.Roster;
 import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.StringWriter;
@@ -305,5 +310,26 @@ public class PrefixFreeCanonicalizationWriterTest {
         streamHeader.writeTo(xmppStreamWriter);
         xmppStreamWriter.flush();
         Assert.assertEquals(writer.toString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?><stream:stream version=\"1.0\">");
+    }
+
+    @Test
+    public void testIssue137() throws JAXBException, XMLStreamException {
+
+        Writer writer = new StringWriter();
+        XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
+        XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(
+                xmlStreamWriter, true);
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(ClientIQ.class, ObjectFactory.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+
+        ObjectFactory factory = new ObjectFactory();
+        JAXBElement<ParentType> childElem = factory.createMyElement(new ChildType());
+
+        IQ iq = new IQ(Jid.of("romeo@example.net"), IQ.Type.SET, childElem, "1");
+        marshaller.marshal(ClientIQ.from(iq), xmppStreamWriter);
+        xmppStreamWriter.flush();
+        Assert.assertEquals(writer.toString(), "<iq xmlns=\"jabber:client\" id=\"1\" to=\"romeo@example.net\" type=\"set\"><myElement xmlns=\"http://testnamespace.com\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"childType\"></myElement></iq>");
     }
 }

@@ -31,11 +31,9 @@ import javax.xml.namespace.NamespaceContext;
 import javax.xml.soap.SOAPConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Deque;
+import java.util.Objects;
 
 /**
  * Writes XML in a prefix-free canonicalization form.
@@ -51,73 +49,50 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
 
     private static final Collection<String> PREFIXED_NAMESPACES = Arrays.asList(SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE, SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE);
 
-    /**
-     * This is the default content namespace.
-     * See also <a href="https://xmpp.org/rfcs/rfc6120.html#streams-ns-content">https://xmpp.org/rfcs/rfc6120.html#streams-ns-content</a>
-     */
-    private final String contentNamespace;
-
-    private final Deque<String> namespaces = new ArrayDeque<>();
-
     private final XMLStreamWriter xsw;
 
     private final boolean writeStreamNamespace;
 
-    private String defaultNS;
-
-    PrefixFreeCanonicalizationWriter(final XMLStreamWriter xsw, final String contentNamespace, final boolean writeStreamNamespace) {
+    PrefixFreeCanonicalizationWriter(final XMLStreamWriter xsw, final boolean writeStreamNamespace) {
         this.xsw = xsw;
-        this.defaultNS = this.contentNamespace = contentNamespace == null ? XMLConstants.NULL_NS_URI : contentNamespace;
         this.writeStreamNamespace = writeStreamNamespace;
     }
 
     @Override
     public final void writeStartElement(final String localName) throws XMLStreamException {
-        pushNamespaceUri(XMLConstants.NULL_NS_URI);
         xsw.writeStartElement(localName);
     }
 
     @Override
     public final void writeStartElement(final String namespaceURI, final String localName) throws XMLStreamException {
-        pushNamespaceUri(namespaceURI);
         xsw.writeStartElement(namespaceURI, localName);
     }
 
     @Override
     public final void writeStartElement(final String prefix, final String localName, final String namespaceURI) throws XMLStreamException {
-        pushNamespaceUri(namespaceURI);
-        if (shouldWriteNamespacePrefix(namespaceURI)) {
-            xsw.writeStartElement(prefix, localName, namespaceURI);
-        } else {
-            // If the writer wants to write a prefix, instead don't write it.
-            xsw.writeStartElement(XMLConstants.DEFAULT_NS_PREFIX, localName, namespaceURI);
-            writeDefaultNamespaceIfNecessary(namespaceURI);
-        }
+        writeElement(prefix, localName, namespaceURI, xsw::writeStartElement);
     }
 
     @Override
     public final void writeEmptyElement(final String namespaceURI, final String localName) throws XMLStreamException {
-        pushNamespaceUri(namespaceURI);
         xsw.writeEmptyElement(namespaceURI, localName);
     }
 
     @Override
     public final void writeEmptyElement(final String prefix, final String localName, final String namespaceURI) throws XMLStreamException {
-        pushNamespaceUri(namespaceURI);
-        if (shouldWriteNamespacePrefix(namespaceURI)) {
-            xsw.writeEmptyElement(prefix, localName, namespaceURI);
-        } else {
-            // If the writer wants to write a prefix, instead don't write it.
-            xsw.writeEmptyElement(namespaceURI, localName);
-            writeDefaultNamespaceIfNecessary(namespaceURI);
-        }
+        writeElement(prefix, localName, namespaceURI, xsw::writeEmptyElement);
     }
 
-    private void writeDefaultNamespaceIfNecessary(final String namespaceURI) throws XMLStreamException {
-        // If the namespace is not the current namespace, write it.
-        if (namespaceURI != null && !XMLConstants.NULL_NS_URI.equals(namespaceURI) && !defaultNS.equals(namespaceURI)) {
-            xsw.writeDefaultNamespace(namespaceURI);
-            defaultNS = namespaceURI;
+    private void writeElement(final String prefix, final String localName, final String namespaceURI, ElementWriter writeElement) throws XMLStreamException {
+        if (shouldWriteNamespacePrefix(namespaceURI)) {
+            writeElement.writeElement(prefix, localName, namespaceURI);
+        } else {
+            // If the writer wants to write a prefix, instead don't write it.
+            final String namespaceUriInScope = getNamespaceContext().getNamespaceURI(XMLConstants.DEFAULT_NS_PREFIX);
+            writeElement.writeElement(XMLConstants.DEFAULT_NS_PREFIX, localName, namespaceURI);
+            if ((namespaceUriInScope == null || !Objects.equals(namespaceUriInScope, namespaceURI)) && !XMLConstants.DEFAULT_NS_PREFIX.equals(namespaceURI)) {
+                xsw.writeDefaultNamespace(namespaceURI);
+            }
         }
     }
 
@@ -129,7 +104,6 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
     @Override
     public final void writeEndElement() throws XMLStreamException {
         xsw.writeEndElement();
-        popNamespaceUri();
     }
 
     @Override
@@ -265,24 +239,15 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter {
         return xsw.getProperty(name);
     }
 
-    private void pushNamespaceUri(final String namespaceUri) {
-        namespaces.addFirst(namespaceUri);
-    }
-
-    private void popNamespaceUri() {
-        namespaces.removeFirst();
-        if (!namespaces.isEmpty()) {
-            defaultNS = namespaces.peekFirst();
-        } else {
-            defaultNS = contentNamespace;
-        }
-    }
-
     private boolean shouldWriteNamespace(String namespaceURI) {
-        return !Collections.disjoint(namespaces, PREFIXED_NAMESPACES) || (StreamHeader.STREAM_NAMESPACE.equals(namespaceURI) && writeStreamNamespace);
+        return PREFIXED_NAMESPACES.stream().anyMatch(namespace -> getNamespaceContext().getPrefix(namespace) != null || namespaceURI.equals(namespace)) || (StreamHeader.STREAM_NAMESPACE.equals(namespaceURI) && writeStreamNamespace);
     }
 
     private boolean shouldWriteNamespacePrefix(String namespaceURI) {
         return shouldWriteNamespace(namespaceURI) || StreamHeader.STREAM_NAMESPACE.equals(namespaceURI);
+    }
+
+    private interface ElementWriter {
+        void writeElement(final String prefix, final String localName, final String namespaceURI) throws XMLStreamException;
     }
 }

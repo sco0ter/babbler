@@ -65,7 +65,7 @@ public final class XmppWebSocketEncoder implements Encoder.Text<StreamElement> {
         try (Writer writer = new StringWriter()) {
             XMLStreamWriter xmlStreamWriter = null;
             try {
-                xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(writer), null, object instanceof StreamFeatures || object instanceof StreamError);
+                xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(writer), object instanceof StreamFeatures || object instanceof StreamError);
                 marshaller.get().marshal(object, xmlStreamWriter);
                 xmlStreamWriter.flush();
                 String xml = writer.toString();

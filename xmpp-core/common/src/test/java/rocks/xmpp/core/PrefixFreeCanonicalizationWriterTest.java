@@ -31,8 +31,14 @@ import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.sasl.model.Auth;
 import rocks.xmpp.core.sasl.model.Response;
 import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
+import rocks.xmpp.core.stanza.model.server.ServerMessage;
+import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
+import rocks.xmpp.core.stream.model.StreamHeader;
+import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.im.roster.model.Roster;
@@ -61,8 +67,9 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
 
-        XMLStreamWriter prefixFreeWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, "jabber:client");
-
+        XMLStreamWriter prefixFreeWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter);
+        StreamHeader streamHeader = StreamHeader.create(null, null, null, "1.0", null, "jabber:client");
+        streamHeader.writeTo(xmlStreamWriter);
         JAXBContext jaxbContext = JAXBContext.newInstance(ClientIQ.class, Roster.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
@@ -75,7 +82,7 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         marshaller.marshal(iq, prefixFreeWriter);
         prefixFreeWriter.flush();
-        Assert.assertEquals(writer.toString(), "<iq id=\"1\" type=\"get\"><query xmlns=\"jabber:iq:roster\"><item jid=\"domain\"></item></query></iq>");
+        Assert.assertEquals(writer.toString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?><stream:stream xmlns=\"jabber:client\" xmlns:stream=\"http://etherx.jabber.org/streams\" version=\"1.0\"><iq id=\"1\" type=\"get\"><query xmlns=\"jabber:iq:roster\"><item jid=\"domain\"></item></query></iq>");
     }
 
     @Test
@@ -104,7 +111,7 @@ public class PrefixFreeCanonicalizationWriterTest {
         XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
         XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter);
         xmppStreamWriter.writeStartElement("stream");
-        JAXBContext jaxbContext = JAXBContext.newInstance(Auth.class, Response.class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(ClientMessage.class, Auth.class, Response.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
 
@@ -124,15 +131,18 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
         XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter);
-
+        xmppStreamWriter.setDefaultNamespace("jabber:client");
         JAXBContext jaxbContext = JAXBContext.newInstance(Body.class, StreamFeatures.class, Bind.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+
+        StreamHeader streamHeader = StreamHeader.create(null, null, null, "1.0", null, "jabber:client");
+        streamHeader.writeTo(xmlStreamWriter);
         StreamFeatures streamFeatures = new StreamFeatures(Collections.singleton(new Bind("res")));
 
         marshaller.marshal(streamFeatures, xmppStreamWriter);
         xmppStreamWriter.flush();
-        Assert.assertEquals(writer.toString(), "<stream:features><bind xmlns=\"urn:ietf:params:xml:ns:xmpp-bind\"><resource>res</resource></bind></stream:features>");
+        Assert.assertEquals(writer.toString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?><stream:stream xmlns=\"jabber:client\" xmlns:stream=\"http://etherx.jabber.org/streams\" version=\"1.0\"><stream:features><bind xmlns=\"urn:ietf:params:xml:ns:xmpp-bind\"><resource>res</resource></bind></stream:features>");
     }
 
     @Test
@@ -141,7 +151,7 @@ public class PrefixFreeCanonicalizationWriterTest {
         Writer writer = new StringWriter();
 
         XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
-        XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, "jabber:client", true);
+        XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
 
         JAXBContext jaxbContext = JAXBContext.newInstance(Body.class, StreamFeatures.class, Bind.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
@@ -159,7 +169,7 @@ public class PrefixFreeCanonicalizationWriterTest {
         Writer writer = new StringWriter();
 
         XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
-        XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, "jabber:client", false);
+        XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, false);
 
         JAXBContext jaxbContext = JAXBContext.newInstance(Body.class, StreamFeatures.class, Auth.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
@@ -169,5 +179,131 @@ public class PrefixFreeCanonicalizationWriterTest {
         marshaller.marshal(Body.builder().xmppVersion("1.0").wrappedObjects(Collections.singleton(auth)).build(), xmppStreamWriter);
         xmppStreamWriter.flush();
         Assert.assertEquals(writer.toString(), "<body xmlns=\"http://jabber.org/protocol/httpbind\" xmlns:xmpp=\"urn:xmpp:xbosh\" xmpp:version=\"1.0\"><auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\"></auth></body>");
+    }
+
+    @Test
+    public void testStanzaInBody() throws XMLStreamException, JAXBException {
+
+        Writer writer = new StringWriter();
+
+        XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
+        XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(Body.class, StreamFeatures.class, Bind.class, ClientMessage.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+        Message message = ClientMessage.from(new Message());
+
+        marshaller.marshal(Body.builder().xmppVersion("1.0").wrappedObjects(Collections.singleton(message)).build(), xmppStreamWriter);
+        xmppStreamWriter.flush();
+        Assert.assertEquals(writer.toString(), "<body xmlns=\"http://jabber.org/protocol/httpbind\" xmlns:stream=\"http://etherx.jabber.org/streams\" xmlns:xmpp=\"urn:xmpp:xbosh\" xmpp:version=\"1.0\"><message xmlns=\"jabber:client\"></message></body>");
+    }
+
+    @Test
+    public void testStandaloneClientStanza() throws XMLStreamException, JAXBException {
+
+        Writer writer = new StringWriter();
+
+        XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
+        XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(ClientMessage.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+        Message message = ClientMessage.from(new Message());
+
+        marshaller.marshal(message, xmppStreamWriter);
+        xmppStreamWriter.flush();
+        Assert.assertEquals(writer.toString(), "<message xmlns=\"jabber:client\"></message>");
+    }
+
+    @Test
+    public void testStandaloneStreamFeatures() throws XMLStreamException, JAXBException {
+
+        Writer writer = new StringWriter();
+
+        XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
+        XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamFeatures.class, ClientMessage.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+        StreamFeatures streamFeatures = new StreamFeatures(Collections.emptyList());
+
+        marshaller.marshal(streamFeatures, xmppStreamWriter);
+        xmppStreamWriter.flush();
+        Assert.assertEquals(writer.toString(), "<stream:features xmlns:stream=\"http://etherx.jabber.org/streams\"></stream:features>");
+    }
+
+    @Test
+    public void testStandaloneServerStanza() throws XMLStreamException, JAXBException {
+
+        Writer writer = new StringWriter();
+
+        XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
+        XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, false);
+        xmppStreamWriter.setDefaultNamespace("jabber:server");
+        JAXBContext jaxbContext = JAXBContext.newInstance(ClientMessage.class, ServerMessage.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+        Message message = ServerMessage.from(new Message());
+        Message message1 = ClientMessage.from(new Message());
+        Message message2 = ServerMessage.from(new Message());
+
+        marshaller.marshal(message, xmppStreamWriter);
+        marshaller.marshal(message1, xmppStreamWriter);
+        marshaller.marshal(message2, xmppStreamWriter);
+
+        xmppStreamWriter.flush();
+        Assert.assertEquals(writer.toString(), "<message></message><message xmlns=\"jabber:client\"></message><message></message>");
+    }
+
+    @Test
+    public void testStandaloneStreamError() throws XMLStreamException, JAXBException {
+
+        Writer writer = new StringWriter();
+
+        XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
+        XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(StreamError.class, ClientMessage.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+
+        marshaller.marshal(new StreamError(Condition.INTERNAL_SERVER_ERROR), xmppStreamWriter);
+        xmppStreamWriter.flush();
+        Assert.assertEquals(writer.toString(), "<stream:error xmlns:stream=\"http://etherx.jabber.org/streams\"><internal-server-error xmlns=\"urn:ietf:params:xml:ns:xmpp-streams\"></internal-server-error></stream:error>");
+    }
+
+    @Test
+    public void testClientMessageInContext() throws XMLStreamException, JAXBException {
+
+        Writer writer = new StringWriter();
+
+        XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
+        XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, false);
+        xmppStreamWriter.setDefaultNamespace("jabber:client");
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(ServerMessage.class, ClientMessage.class, Auth.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+        Message message = ClientMessage.from(new Message());
+        marshaller.marshal(message, xmppStreamWriter);
+        xmppStreamWriter.flush();
+        Assert.assertEquals(writer.toString(), "<message></message>");
+    }
+
+    @Test
+    public void testStreamHeader() throws XMLStreamException, JAXBException {
+
+        Writer writer = new StringWriter();
+
+        XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
+        XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, false);
+
+        StreamHeader streamHeader = StreamHeader.create(null, null, null, "1.0", null, "jabber:client");
+        streamHeader.writeTo(xmppStreamWriter);
+        xmppStreamWriter.flush();
+        Assert.assertEquals(writer.toString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?><stream:stream version=\"1.0\">");
     }
 }

@@ -122,7 +122,8 @@ public abstract class XmlTest {
 
         XMLStreamWriter xmlStreamWriter = OUTPUT_FACTORY.createXMLStreamWriter(writer);
 
-        XMLStreamWriter prefixFreeWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, namespace);
+        XMLStreamWriter prefixFreeWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, false);
+        prefixFreeWriter.setDefaultNamespace(namespace);
         marshaller.marshal(object, prefixFreeWriter);
         prefixFreeWriter.flush();
         return writer.toString();

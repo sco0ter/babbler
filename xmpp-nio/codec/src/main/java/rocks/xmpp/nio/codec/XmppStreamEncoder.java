@@ -112,7 +112,8 @@ public final class XmppStreamEncoder {
             }
             streamElement = stanzaMapper.apply(streamElement);
 
-            final XMLStreamWriter streamWriter = XmppUtils.createXmppStreamWriter(outputFactory.createXMLStreamWriter(outputStream, StandardCharsets.UTF_8.name()), contentNamespace);
+            final XMLStreamWriter streamWriter = XmppUtils.createXmppStreamWriter(outputFactory.createXMLStreamWriter(outputStream, StandardCharsets.UTF_8.name()));
+            streamWriter.setDefaultNamespace(contentNamespace);
             final Marshaller m = marshaller.get();
             m.setProperty(Marshaller.JAXB_FRAGMENT, true);
             m.marshal(streamElement, streamWriter);

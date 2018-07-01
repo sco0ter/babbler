@@ -114,7 +114,8 @@ final class XmppStreamWriter {
 
                 XMLStreamWriter writer = null;
                 try {
-                    writer = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(byteArrayOutputStream, StandardCharsets.UTF_8.name()), namespace);
+                    writer = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(byteArrayOutputStream, StandardCharsets.UTF_8.name()));
+                    writer.setDefaultNamespace(namespace);
                     marshaller.marshal(clientStreamElement, writer);
                     writer.flush();
                 } finally {

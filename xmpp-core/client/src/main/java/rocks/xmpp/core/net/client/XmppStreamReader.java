@@ -155,7 +155,8 @@ final class XmppStreamReader {
                             Object object = unmarshaller.unmarshal(xmlEventReader);
                             if (debugger != null) {
                                 // Marshal the inbound stanza. The byteArrayOutputStream cannot be used for that, even if we reset() it, because it could already contain the next stanza.
-                                XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(stringWriter), namespace);
+                                XMLStreamWriter xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(stringWriter));
+                                xmlStreamWriter.setDefaultNamespace(namespace);
                                 marshaller.marshal(object, xmlStreamWriter);
                                 xmlStreamWriter.flush();
                                 debugger.readStanza(stringWriter.toString(), object);

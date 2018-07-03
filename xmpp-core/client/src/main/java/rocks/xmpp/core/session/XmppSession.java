@@ -792,7 +792,7 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
     public final AsyncResult<Message> sendAndAwaitMessage(Message stanza, final Predicate<Message> filter) {
         return sendAndAwait(stanza,
                 MessageEvent::getMessage,
-                filter,
+                filter.and(new MessageResponsePredicate(stanza, getConnectedResource())),
                 this::sendMessage,
                 this::addInboundMessageListener,
                 this::removeInboundMessageListener,

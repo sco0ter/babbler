@@ -370,7 +370,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      */
     public AsyncResult<Message> changeSubject(final String subject) {
         Message message = new Message(roomJid, Message.Type.GROUPCHAT, null, subject, null);
-        return xmppSession.sendAndAwaitMessage(message, message1 -> message1.getSubject() != null && message1.getSubject().equals(subject));
+        return xmppSession.sendAndAwaitMessage(message, message1 -> message1.getBody() == null && message1.getSubject() != null && message1.getSubject().equals(subject));
     }
 
     /**

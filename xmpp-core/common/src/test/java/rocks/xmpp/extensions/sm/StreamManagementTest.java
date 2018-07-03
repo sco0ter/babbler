@@ -53,14 +53,14 @@ public class StreamManagementTest extends XmlTest {
     public void marshalEnable() throws JAXBException, XMLStreamException {
         StreamManagement.Enable enable = new StreamManagement.Enable();
         String xml = marshal(enable);
-        Assert.assertEquals("<enable xmlns=\"urn:xmpp:sm:3\"></enable>", xml);
+        Assert.assertEquals(xml, "<enable xmlns=\"urn:xmpp:sm:3\"></enable>");
     }
 
     @Test
     public void marshalEnableWithResume() throws JAXBException, XMLStreamException {
         StreamManagement.Enable enable = new StreamManagement.Enable(true, 23);
         String xml = marshal(enable);
-        Assert.assertEquals("<enable xmlns=\"urn:xmpp:sm:3\" resume=\"true\" max=\"23\"></enable>", xml);
+        Assert.assertEquals(xml, "<enable xmlns=\"urn:xmpp:sm:3\" resume=\"true\" max=\"23\"></enable>");
     }
 
     @Test
@@ -89,13 +89,13 @@ public class StreamManagementTest extends XmlTest {
     public void marshalAnswer() throws JAXBException, XMLStreamException {
         StreamManagement.Answer answer = new StreamManagement.Answer(1);
         String xml = marshal(answer);
-        Assert.assertEquals("<a xmlns=\"urn:xmpp:sm:3\" h=\"1\"></a>", xml);
+        Assert.assertEquals(xml, "<a xmlns=\"urn:xmpp:sm:3\" h=\"1\"></a>");
     }
 
     @Test
     public void marshalRequest() throws JAXBException, XMLStreamException {
         String xml = marshal(StreamManagement.REQUEST);
-        Assert.assertEquals("<r xmlns=\"urn:xmpp:sm:3\"></r>", xml);
+        Assert.assertEquals(xml, "<r xmlns=\"urn:xmpp:sm:3\"></r>");
     }
 
     @Test

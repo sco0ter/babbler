@@ -61,6 +61,11 @@ abstract class AbstractJid implements Jid {
     }
 
     @Override
+    public final boolean isDomainJid() {
+        return getLocal() == null;
+    }
+
+    @Override
     public final boolean equals(Object o) {
         if (o == this) {
             return true;

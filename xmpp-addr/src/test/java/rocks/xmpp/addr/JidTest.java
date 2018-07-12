@@ -70,6 +70,7 @@ public class JidTest {
     public void testJidDomainOnly() {
         Jid jid = Jid.ofDomain("domain");
         Assert.assertEquals("domain", jid.toString());
+        Assert.assertTrue(jid.isDomainJid());
     }
 
     @Test
@@ -79,9 +80,11 @@ public class JidTest {
 
         Jid jid2 = Jid.ofLocalAndDomain("node", Jid.ofDomain("domain"));
         Assert.assertEquals("node@domain", jid2.toString());
+        Assert.assertFalse(jid2.isDomainJid());
 
         Jid jid3 = Jid.ofDomainAndResource(Jid.ofDomain("domain"), "resource");
         Assert.assertEquals("domain/resource", jid3.toString());
+        Assert.assertTrue(jid3.isDomainJid());
     }
 
     @Test

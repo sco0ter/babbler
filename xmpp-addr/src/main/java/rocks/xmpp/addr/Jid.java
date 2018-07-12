@@ -196,6 +196,13 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
     boolean isBareJid();
 
     /**
+     * Checks if the JID is a domain JID, i.e. if it has no local part.
+     *
+     * @return True, if the JID is a domain JID, i.e. if it has no local part.
+     */
+    boolean isDomainJid();
+
+    /**
      * Gets the bare JID representation of this JID, i.e. removes the resource part.
      * <blockquote>
      * <p>The term "bare JID" refers to an XMPP address of the form &lt;localpart@domainpart&gt; (for an account at a server) or of the form &lt;domainpart&gt; (for a server).</p>

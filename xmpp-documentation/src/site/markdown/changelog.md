@@ -6,7 +6,7 @@
 * Works as [JPMS modules](jpms.md) on Java 9 *and* as conventional JAR library on Java 8
 * Make `Jid` class an interface. Full JIDs and bare JIDs now share the same instance. No new instances need to be created when calling `asBareJid()`, the interface just returns a different view on the full JID.
 Reduces GC pressure and increase performance.
-* Allow Unicode (non-ASCII) domain names in JIDs.
+* Allow Unicode (non-ASCII) domain names in JIDs ([Issue #128](https://bitbucket.org/sco0ter/babbler/issues/128))
 * Update `Jid` implementation to use new PRECIS specification [RFC 8264](https://tools.ietf.org/html/rfc8264)
 * Add a `MalformedJid` implementation to allow to use malformed-jid stanza error.
 * Add Java NIO support
@@ -29,9 +29,11 @@ Reduces GC pressure and increase performance.
 * XEP-0115: Sort by octets, not by characters.
 * XEP-0300: Update to urn:xmpp:hashes:2
 * XEP-0184: Receipt messages should have the same type as the request message instead of normal type.
-* Fix Message#createError()
+* Fix Message#createError() ([Issue #127](https://bitbucket.org/sco0ter/babbler/issues/127))
 * Check the 'from' attribute of IQ responses to prevent spoofing
-
+* Ensure that xsi:type values have a known namespace prefix ([Issue #137](https://bitbucket.org/sco0ter/babbler/issues/137))
+* EntitityCapabilities payload is not added to outgoing presence when presence have 'to' address ([Issue #132](https://bitbucket.org/sco0ter/babbler/issues/132))
+* sendAndAwaitMessage not handling concurrent requests/responses correctly ([Issue #136](https://bitbucket.org/sco0ter/babbler/issues/136))
 
 
 ### Version 0.7.5 (2018-01-27)

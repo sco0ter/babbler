@@ -413,23 +413,26 @@
         </dependencies>
     </dependencyManagement>
 
-    <dependencies>
-        <!-- These dependencies were removed in JDK 9, add them in provided scope for now -->
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.3.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.xml.soap</groupId>
-            <artifactId>saaj-api</artifactId>
-            <version>1.3.5</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
-
     <profiles>
+        <profile>
+            <id>jdk9</id>
+            <activation>
+                <jdk>9</jdk>
+            </activation>
+            <dependencies>
+                <!-- These dependencies were removed in JDK 9 -->
+                <dependency>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                    <version>2.3.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>javax.xml.soap</groupId>
+                    <artifactId>saaj-api</artifactId>
+                    <version>1.3.5</version>
+                </dependency>
+            </dependencies>
+        </profile>
         <profile>
             <id>release</id>
             <build>

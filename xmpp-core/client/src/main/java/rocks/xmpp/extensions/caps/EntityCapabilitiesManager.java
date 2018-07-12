@@ -148,7 +148,7 @@ public final class EntityCapabilitiesManager extends Manager {
 
         this.outboundPresenceListener = e -> {
             final Presence presence = e.getPresence();
-            if (presence.isAvailable() && presence.getTo() == null) {
+            if (presence.isAvailable()) {
                 // Synchronize on sdm, to make sure no features/identities are added removed, while computing the hash.
                 synchronized (publishedNodes) {
                     if (publishedNodes.isEmpty()) {

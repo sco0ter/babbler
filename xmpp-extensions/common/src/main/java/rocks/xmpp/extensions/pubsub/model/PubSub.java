@@ -313,7 +313,7 @@ public final class PubSub {
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-subandconfig">6.3.7 Subscribe and Configure</a>
      */
     public static PubSub withSubscribe(String node, Jid jid, DataForm dataForm) {
-        return new PubSub(new Subscribe(node, jid), new Options(dataForm));
+        return new PubSub(new Subscribe(node, jid), (dataForm != null) ? new Options(dataForm) : null);
     }
 
     /**

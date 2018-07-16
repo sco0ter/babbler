@@ -1,7 +1,7 @@
 # Changelog
 ---
 
-## Version 0.8.0-SNAPSHOT
+## Version 0.8.0 (2018-07-17)
 
 * Works as [JPMS modules](jpms.md) on Java 9 *and* as conventional JAR library on Java 8
 * Make `Jid` class an interface. Full JIDs and bare JIDs now share the same instance. No new instances need to be created when calling `asBareJid()`, the interface just returns a different view on the full JID.

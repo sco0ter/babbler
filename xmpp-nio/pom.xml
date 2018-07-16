@@ -30,7 +30,7 @@
     <parent>
         <groupId>rocks.xmpp</groupId>
         <artifactId>root</artifactId>
-        <version>0.8.0-SNAPSHOT</version>
+        <version>0.8.0</version>
     </parent>
     <artifactId>xmpp-nio</artifactId>
     <name>XMPP.rocks - NIO</name>
@@ -42,6 +42,11 @@
     </modules>
     <build>
         <plugins>
+            <!-- Deploy this artifact and child modules -->
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
 </project>

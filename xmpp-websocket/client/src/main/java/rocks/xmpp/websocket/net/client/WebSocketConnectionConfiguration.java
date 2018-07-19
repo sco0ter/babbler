@@ -340,7 +340,7 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
             if (proxy != null && proxy.type() != Proxy.Type.HTTP && proxy.type() != Proxy.Type.DIRECT) {
                 throw new UnsupportedOperationException("Non-HTTP proxies are not supported by WebSockets.");
             }
-            if (channelEncryption != ChannelEncryption.DISABLED && channelEncryption != ChannelEncryption.DIRECT) {
+            if (channelEncryption != null && channelEncryption != ChannelEncryption.DISABLED && channelEncryption != ChannelEncryption.DIRECT) {
                 throw new IllegalArgumentException("WebSocket connections only support ChannelEncryption.DIRECT (wss) or ChannelEncryption.DISABLED (ws).");
             }
             return new WebSocketConnectionConfiguration(this);

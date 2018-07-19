@@ -71,12 +71,12 @@ import java.util.function.Supplier;
  * In order to create an instance of this class you have to use the builder pattern as shown below.
  * ```java
  * WebSocketConnectionConfiguration connectionConfiguration = WebSocketConnectionConfiguration.builder()
- *     .hostname("localhost")
- *     .port(7443)
- *     .path("/ws/")
- *     .sslContext(sslContext)
- *     .channelEncryption(ChannelEncryption.DIRECT)
- *     .build();
+ * .hostname("localhost")
+ * .port(7443)
+ * .path("/ws/")
+ * .sslContext(sslContext)
+ * .channelEncryption(ChannelEncryption.DIRECT)
+ * .build();
  * ```
  * The above sample configuration will connect to <code>wss://localhost:7443/ws/</code> using SSL with a custom {@link SSLContext}.
  * <p>
@@ -210,8 +210,10 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
                 }).build();
         clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.MARSHALLER, (Supplier<Marshaller>) xmppSession::createMarshaller);
         clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.UNMARSHALLER, (Supplier<Unmarshaller>) xmppSession::createUnmarshaller);
-        clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.ON_WRITE, (BiConsumer<String, StreamElement>) xmppSession.getDebugger()::writeStanza);
-        clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.ON_READ, (BiConsumer<String, StreamElement>) xmppSession.getDebugger()::readStanza);
+        if (xmppSession.getDebugger() != null) {
+            clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.ON_WRITE, (BiConsumer<String, StreamElement>) xmppSession.getDebugger()::writeStanza);
+            clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.ON_READ, (BiConsumer<String, StreamElement>) xmppSession.getDebugger()::readStanza);
+        }
         clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.XML_OUTPUT_FACTORY, xmppSession.getConfiguration().getXmlOutputFactory());
 
         final ClientManager client = ClientManager.createClient(JdkClientContainer.class.getName());

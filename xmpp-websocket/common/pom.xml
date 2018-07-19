@@ -30,7 +30,7 @@
     <parent>
         <groupId>rocks.xmpp</groupId>
         <artifactId>xmpp-websocket</artifactId>
-        <version>0.8.0</version>
+        <version>0.9.0-SNAPSHOT</version>
     </parent>
     <artifactId>xmpp-websocket-common</artifactId>
     <name>XMPP.rocks - WebSocket (RFC 7395) - Common</name>

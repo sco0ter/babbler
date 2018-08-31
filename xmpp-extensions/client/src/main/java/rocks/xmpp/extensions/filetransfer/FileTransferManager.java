@@ -253,7 +253,7 @@ public final class FileTransferManager extends Manager {
      * @param fileSize     The file size.
      * @param lastModified The last modified date.
      * @param description  The description of the file.
-     * @param recipient    The recipient's JID (must be a <em>full</em> JID, i. e. including {@code resource}).
+     * @param recipient    The recipient's JID (must be a <em>full</em> JID for client-to-client file transfers, i. e. including {@code resource}).
      * @param timeout      The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
      * @param sessionId    The session id.
      * @param mimeType     The mime type. If null, the mime type is guessed.
@@ -262,11 +262,9 @@ public final class FileTransferManager extends Manager {
      * @see #md5Hash(Path)
      */
     public final AsyncResult<FileTransfer> offerFile(final InputStream source, final String fileName, final long fileSize, final Instant lastModified, final String description, final Jid recipient, final Duration timeout, final String sessionId, final String mimeType, final String hash) {
-        if (!requireNonNull(recipient, "jid must not be null.").isFullJid()) {
-            throw new IllegalArgumentException("recipient must be a full JID (including resource)");
-        }
+
         // Before a Stream Initiation is attempted the Sender should be sure that the Receiver supports both Stream Initiation and the specific profile that they wish to use.
-        return this.entityCapabilitiesManager.isSupported(StreamInitiation.NAMESPACE, recipient).thenCompose(isSISupported -> {
+        return this.entityCapabilitiesManager.isSupported(StreamInitiation.NAMESPACE, requireNonNull(recipient, "jid must not be null.")).thenCompose(isSISupported -> {
             if (!isSISupported) {
                 throw new CompletionException(new XmppException("Feature not supported"));
             }

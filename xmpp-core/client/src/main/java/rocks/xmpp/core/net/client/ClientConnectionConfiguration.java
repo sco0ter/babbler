@@ -33,6 +33,7 @@ import rocks.xmpp.extensions.compress.CompressionMethod;
 import javax.net.SocketFactory;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import java.net.IDN;
 import java.net.Proxy;
 import java.util.Arrays;
 import java.util.Collections;
@@ -198,7 +199,7 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
          * @return The builder.
          */
         public final T hostname(String hostname) {
-            this.hostname = hostname;
+            this.hostname = IDN.toASCII(hostname, IDN.USE_STD3_ASCII_RULES);
             return self();
         }
 

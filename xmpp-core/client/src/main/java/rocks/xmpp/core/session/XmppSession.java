@@ -370,7 +370,7 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
                         logger.log(Level.WARNING, "{0} failed to connect. Trying alternative connection.", connectionConfiguration);
                         logger.log(Level.FINE, e.getMessage(), e);
                     } else {
-                        throw new ConnectionException(e);
+                        throw new ConnectionException("Failed to connect to " + connectionConfiguration, e);
                     }
                 }
             }

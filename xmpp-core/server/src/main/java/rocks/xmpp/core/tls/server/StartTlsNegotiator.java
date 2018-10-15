@@ -56,7 +56,7 @@ public final class StartTlsNegotiator extends ServerStreamFeatureNegotiator<Star
         if (element instanceof StartTls) {
             try {
                 connection.secureConnection();
-                connection.send((Proceed.INSTANCE));
+                connection.send(Proceed.INSTANCE);
                 return StreamNegotiationResult.RESTART;
             } catch (Exception e) {
                 connection.write(Failure.INSTANCE);

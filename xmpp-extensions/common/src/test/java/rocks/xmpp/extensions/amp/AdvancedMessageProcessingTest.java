@@ -106,7 +106,7 @@ public class AdvancedMessageProcessingTest extends XmlTest {
         Assert.assertEquals(amp.getTo(), Jid.of("bernardo@hamlet.lit/elsinore"));
         Assert.assertEquals(amp.getRules().size(), 1);
         Assert.assertTrue(message.getError().getExtension() instanceof FailedRules);
-        FailedRules failedRules = (FailedRules) (message.getError().getExtension());
+        FailedRules failedRules = (FailedRules) message.getError().getExtension();
         Assert.assertEquals(failedRules.getRules().size(), 1);
         Assert.assertEquals(failedRules.getRules().get(0).getAction(), Rule.Action.ERROR);
         Assert.assertEquals(failedRules.getRules().get(0).getCondition(), Rule.Condition.DELIVER);

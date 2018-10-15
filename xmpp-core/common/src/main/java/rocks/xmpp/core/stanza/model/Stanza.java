@@ -283,7 +283,7 @@ public abstract class Stanza implements StreamElement {
         }
         final Jid toBare = stanza.getTo().asBareJid();
         return (connectedResource != null && toBare.equals(connectedResource.asBareJid()))
-                || (domain != null && (toBare.equals(domain) || toBare.toString().endsWith("." + domain)));
+                || (domain != null && (toBare.equals(Jid.ofDomain(domain)) || toBare.toString().endsWith("." + domain)));
     }
 
     @Override

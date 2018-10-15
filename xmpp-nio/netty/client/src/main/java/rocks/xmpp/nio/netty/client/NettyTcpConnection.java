@@ -85,14 +85,14 @@ public final class NettyTcpConnection extends NettyChannelConnection {
         this.xmppSession = xmppSession;
         this.connectionConfiguration = connectionConfiguration;
 
-        closeFuture().whenComplete(((aVoid, throwable) -> {
+        closeFuture().whenComplete((aVoid, throwable) -> {
             if (throwable != null) {
                 xmppSession.notifyException(throwable);
             } else if (!isClosed()) {
                 // If the server closed the connection, initiate a reconnection.
                 xmppSession.notifyException(new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, "Stream closed by server", Locale.ENGLISH, null)));
             }
-        }));
+        });
 
         this.streamManager = xmppSession.getManager(StreamManager.class);
         this.streamManager.reset();

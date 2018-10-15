@@ -86,7 +86,7 @@ final class Question {
         value[1] = (byte) (type.value >> 8);
         value[2] = (byte) type.value;
         value[3] = (byte) (clazz.value >> 8);
-        value[4] = (byte) (clazz.value);
+        value[4] = (byte) clazz.value;
 
         return concatArrays(bytes, value);
     }

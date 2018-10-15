@@ -146,7 +146,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
      * @return The actions.
      */
     static List<RealTimeText.Action> computeActionElements(CharSequence oldText, CharSequence newText) {
-        if ((oldText == null && newText == null) || (oldText != null && oldText.equals(newText)) || (oldText == null && newText.length() == 0) || (newText == null && oldText.length() == 0)) {
+        if ((oldText == null && newText == null) || (oldText != null && newText != null && oldText.toString().contentEquals(newText)) || (oldText == null && newText.length() == 0) || (newText == null && oldText.length() == 0)) {
             return Collections.emptyList();
         }
         List<RealTimeText.Action> actions = new ArrayList<>();

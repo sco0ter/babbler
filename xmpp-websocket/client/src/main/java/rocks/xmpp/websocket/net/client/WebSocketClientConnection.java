@@ -108,11 +108,11 @@ public final class WebSocketClientConnection extends WebSocketConnection {
                 }
             }, 0, connectionConfiguration.getPingInterval().toMillis(), TimeUnit.MILLISECONDS);
         }
-        closeFuture().whenComplete(((aVoid, throwable) -> {
+        closeFuture().whenComplete((aVoid, throwable) -> {
             if (throwable != null) {
                 xmppSession.notifyException(throwable);
             }
-        }));
+        });
     }
 
     @Override

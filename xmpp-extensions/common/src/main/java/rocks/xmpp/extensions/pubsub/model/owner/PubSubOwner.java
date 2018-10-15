@@ -218,7 +218,7 @@ public final class PubSubOwner {
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-affiliations-modify">8.9.2 Modify Affiliation</a>
      */
     public static PubSubOwner withAffiliations(String node, Affiliation... affiliationNodes) {
-        return new PubSubOwner((new Affiliations(node, affiliationNodes)));
+        return new PubSubOwner(new Affiliations(node, affiliationNodes));
     }
 
     /**

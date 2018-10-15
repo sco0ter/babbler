@@ -924,7 +924,7 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
                 sendTask.updateSendFuture(sendFuture);
             }
         }
-        return sendFuture.whenComplete(((aVoid, throwable) -> {
+        return sendFuture.whenComplete((aVoid, throwable) -> {
             if (throwable == null) {
                 sendSucceededListeners.forEach(listener -> {
                     try {
@@ -951,7 +951,7 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
                     }
                 });
             }
-        }));
+        });
     }
 
     private void removeFromQueue(Stanza stanza) {

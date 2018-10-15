@@ -593,7 +593,7 @@ public final class RosterManager extends Manager {
 
         Collection<CompletionStage<?>> completionStages = new ArrayList<>();
         for (Contact contact : contactGroup.getContacts()) {
-            Collection<String> newGroups = new ArrayList<>(contact.getGroups());
+            List<String> newGroups = new ArrayList<>(contact.getGroups());
             newGroups.remove(contactGroup.getFullName());
             newGroups.add(newName);
             // Only do a roster update, if the groups have really changed.

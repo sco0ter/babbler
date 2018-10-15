@@ -64,7 +64,7 @@ final class MessageResponsePredicate implements Predicate<Message> {
 
     @Override
     public final boolean test(final Message responseMessage) {
-        return (id == null || (Objects.equals(id, responseMessage.getId())))
+        return (id == null || Objects.equals(id, responseMessage.getId()))
                 && (
                 (to != null
                         && ((responseMessage.getFrom() != null && Objects.equals(to.asBareJid(), responseMessage.getFrom().asBareJid()))

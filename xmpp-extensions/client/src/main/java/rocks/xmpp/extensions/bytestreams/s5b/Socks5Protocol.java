@@ -130,7 +130,7 @@ final class Socks5Protocol {
             if (reply[1] == 0) {  // X'00' succeeded
                 request[1] = 0;
                 // When replying to the Target in accordance with Section 6 of RFC 1928, the Proxy MUST set the BND.ADDR and BND.PORT to the DST.ADDR and DST.PORT values provided by the client in the connection request.
-                if (!(Arrays.equals(reply, request))) {
+                if (!Arrays.equals(reply, request)) {
                     throw new IOException("Verification failed.");
                 }
             } else {

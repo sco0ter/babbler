@@ -1012,7 +1012,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      */
     public AsyncResult<IQ> configure(RoomConfiguration roomConfiguration) {
         Objects.requireNonNull(roomConfiguration, "roomConfiguration must not be null.");
-        MucOwner mucOwner = MucOwner.withConfiguration((roomConfiguration.getDataForm()));
+        MucOwner mucOwner = MucOwner.withConfiguration(roomConfiguration.getDataForm());
         return xmppSession.query(IQ.set(roomJid, mucOwner));
     }
 

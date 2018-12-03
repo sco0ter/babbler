@@ -25,10 +25,14 @@
 package rocks.xmpp.nio.netty.client;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.JdkSslContext;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.Future;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
@@ -84,6 +88,20 @@ public final class NettyTcpConnection extends NettyChannelConnection {
                 connectionConfiguration);
         this.xmppSession = xmppSession;
         this.connectionConfiguration = connectionConfiguration;
+
+        int keepAliveInterval = connectionConfiguration.getKeepAliveInterval();
+
+        channel.pipeline().addLast("idleStateHandler", new IdleStateHandler(0, keepAliveInterval, 0));
+        channel.pipeline().addLast("idleStateEventHandler", new ChannelDuplexHandler() {
+
+            @Override
+            public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
+                if (evt instanceof IdleStateEvent) {
+                    ctx.writeAndFlush(' ');
+                }
+            }
+
+        });
 
         closeFuture().whenComplete((aVoid, throwable) -> {
             if (throwable != null) {

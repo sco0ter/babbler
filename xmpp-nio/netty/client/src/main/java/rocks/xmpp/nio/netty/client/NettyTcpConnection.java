@@ -25,10 +25,14 @@
 package rocks.xmpp.nio.netty.client;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.JdkSslContext;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.Future;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
@@ -85,14 +89,28 @@ public final class NettyTcpConnection extends NettyChannelConnection {
         this.xmppSession = xmppSession;
         this.connectionConfiguration = connectionConfiguration;
 
-        closeFuture().whenComplete(((aVoid, throwable) -> {
+        int keepAliveInterval = connectionConfiguration.getKeepAliveInterval();
+
+        channel.pipeline().addLast("idleStateHandler", new IdleStateHandler(0, keepAliveInterval, 0));
+        channel.pipeline().addLast("idleStateEventHandler", new ChannelDuplexHandler() {
+
+            @Override
+            public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
+                if (evt instanceof IdleStateEvent) {
+                    ctx.writeAndFlush(' ');
+                }
+            }
+
+        });
+
+        closeFuture().whenComplete((aVoid, throwable) -> {
             if (throwable != null) {
                 xmppSession.notifyException(throwable);
             } else if (!isClosed()) {
                 // If the server closed the connection, initiate a reconnection.
                 xmppSession.notifyException(new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, "Stream closed by server", Locale.ENGLISH, null)));
             }
-        }));
+        });
 
         this.streamManager = xmppSession.getManager(StreamManager.class);
         this.streamManager.reset();

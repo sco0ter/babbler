@@ -31,6 +31,7 @@ import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamWriter;
@@ -44,6 +45,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -55,6 +57,8 @@ import java.util.concurrent.TimeUnit;
  * @author Christian Schudt
  */
 final class XmppStreamWriter {
+
+    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("XMPP Writer Thread"));
 
     private final XmppSession xmppSession;
 
@@ -83,7 +87,7 @@ final class XmppStreamWriter {
         this.xmppSession = xmppSession;
         this.marshaller = xmppSession.createMarshaller();
         this.debugger = xmppSession.getDebugger();
-        this.executor = Executors.newSingleThreadScheduledExecutor(xmppSession.getConfiguration().getThreadFactory("XMPP Writer Thread"));
+        this.executor = new QueuedScheduledExecutorService(EXECUTOR);
         this.streamManager = streamManager;
     }
 

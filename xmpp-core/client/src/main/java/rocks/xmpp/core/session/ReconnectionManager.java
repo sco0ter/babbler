@@ -28,10 +28,12 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -64,6 +66,8 @@ final class ReconnectionManager extends Manager {
 
     private static final Logger logger = Logger.getLogger(ReconnectionManager.class.getName());
 
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("XMPP Reconnection Thread"));
+
     private final ScheduledExecutorService scheduledExecutorService;
 
     private final ReconnectionStrategy reconnectionStrategy;
@@ -94,7 +98,7 @@ final class ReconnectionManager extends Manager {
                     // -> max. ~ 5 minutes
                     truncatedBinaryExponentialBackoffStrategy(10, 5));
         }
-        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(xmppSession.getConfiguration().getThreadFactory("XMPP Reconnection Thread"));
+        scheduledExecutorService = new QueuedScheduledExecutorService(EXECUTOR_SERVICE);
     }
 
     @Override

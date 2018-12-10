@@ -46,9 +46,9 @@ import java.util.function.Consumer;
  */
 public final class InboundRealTimeMessage extends RealTimeMessage {
 
-    private final StringBuilder sb;
+    private static final ExecutorService PROCESS_ACTIONS_EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Real-time Text Processing Thread"));
 
-    private final ExecutorService processActionsExecutor;
+    private final StringBuilder sb;
 
     private final BlockingQueue<RealTimeText.Action> actions = new LinkedBlockingQueue<>();
 
@@ -63,8 +63,7 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
         this.id = id;
 
         if (xmppSession != null) {
-            processActionsExecutor = Executors.newSingleThreadExecutor(xmppSession.getConfiguration().getThreadFactory("Real-time Text Processing Thread"));
-            processActionsExecutor.execute(() -> {
+            PROCESS_ACTIONS_EXECUTOR.execute(() -> {
                         try {
                             RealTimeText.Action action;
                             // Periodically poll for new action elements until the message is complete.
@@ -93,8 +92,6 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
                         }
                     }
             );
-        } else {
-            processActionsExecutor = null;
         }
     }
 
@@ -206,7 +203,6 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
             complete = true;
             // Add a "poison" element to break the blocking queue immediately.
             actions.offer(new RealTimeText.WaitInterval(Integer.MIN_VALUE));
-            processActionsExecutor.shutdown();
             textChangeListeners.clear();
         }
     }

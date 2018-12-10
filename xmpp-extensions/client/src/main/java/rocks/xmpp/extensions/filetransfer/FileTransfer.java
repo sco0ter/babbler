@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.filetransfer;
 
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.QueuedExecutorService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,6 +47,8 @@ import java.util.function.Consumer;
  * @author Christian Schudt
  */
 public final class FileTransfer {
+
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("File Transfer Thread"));
 
     private final long length;
 
@@ -70,7 +73,7 @@ public final class FileTransfer {
         this.outputStream = outputStream;
         this.length = length;
         this.sessionId = sessionId;
-        this.executorService = Executors.newSingleThreadExecutor(xmppSession.getConfiguration().getThreadFactory("File Transfer Thread"));
+        this.executorService = new QueuedExecutorService(EXECUTOR_SERVICE);
     }
 
     /**

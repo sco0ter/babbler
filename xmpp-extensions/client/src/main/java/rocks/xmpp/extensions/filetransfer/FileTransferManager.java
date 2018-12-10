@@ -71,19 +71,18 @@ import static java.util.Objects.requireNonNull;
  */
 public final class FileTransferManager extends Manager {
 
+    private static final ExecutorService FILE_TRANSFER_OFFER_EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("File Transfer Offer Thread"));
+
     private final StreamInitiationManager streamInitiationManager;
 
     private final EntityCapabilitiesManager entityCapabilitiesManager;
 
     private final Set<Consumer<FileTransferOfferEvent>> fileTransferOfferListeners = new CopyOnWriteArraySet<>();
 
-    private final ExecutorService fileTransferOfferExecutor;
-
     private FileTransferManager(final XmppSession xmppSession) {
         super(xmppSession, true);
         this.streamInitiationManager = xmppSession.getManager(StreamInitiationManager.class);
         this.entityCapabilitiesManager = xmppSession.getManager(EntityCapabilitiesManager.class);
-        this.fileTransferOfferExecutor = Executors.newCachedThreadPool(xmppSession.getConfiguration().getThreadFactory("File Transfer Offer Thread"));
     }
 
     /**
@@ -308,7 +307,7 @@ public final class FileTransferManager extends Manager {
     }
 
     public void fileTransferOffered(final IQ iq, final String sessionId, final String mimeType, final FileTransferOffer fileTransferOffer, final Object protocol, final FileTransferNegotiator fileTransferNegotiator) {
-        fileTransferOfferExecutor.execute(() -> XmppUtils.notifyEventListeners(fileTransferOfferListeners, new FileTransferOfferEvent(this, iq, sessionId, mimeType, fileTransferOffer, protocol, fileTransferNegotiator)));
+        FILE_TRANSFER_OFFER_EXECUTOR.execute(() -> XmppUtils.notifyEventListeners(fileTransferOfferListeners, new FileTransferOfferEvent(this, iq, sessionId, mimeType, fileTransferOffer, protocol, fileTransferNegotiator)));
     }
 
     /**
@@ -334,6 +333,5 @@ public final class FileTransferManager extends Manager {
     @Override
     protected void dispose() {
         fileTransferOfferListeners.clear();
-        fileTransferOfferExecutor.shutdown();
     }
 }

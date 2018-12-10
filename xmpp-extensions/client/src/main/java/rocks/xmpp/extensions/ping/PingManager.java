@@ -37,12 +37,15 @@ import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.ping.handler.PingHandler;
 import rocks.xmpp.extensions.ping.model.Ping;
+import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
+import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 
 import java.time.Duration;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -59,7 +62,9 @@ import java.util.function.Consumer;
  */
 public final class PingManager extends Manager {
 
-    private final ScheduledThreadPoolExecutor scheduledExecutorService;
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("XMPP Scheduled Ping Thread"));
+
+    private final QueuedScheduledExecutorService scheduledExecutorService;
 
     /**
      * guarded by "this"
@@ -86,7 +91,7 @@ public final class PingManager extends Manager {
      */
     private PingManager(final XmppSession xmppSession) {
         super(xmppSession, true);
-        scheduledExecutorService = new ScheduledThreadPoolExecutor(1, xmppSession.getConfiguration().getThreadFactory("XMPP Scheduled Ping Thread"));
+        scheduledExecutorService = new QueuedScheduledExecutorService(EXECUTOR_SERVICE);
         scheduledExecutorService.setRemoveOnCancelPolicy(true);
 
         this.iqHandler = new PingHandler();

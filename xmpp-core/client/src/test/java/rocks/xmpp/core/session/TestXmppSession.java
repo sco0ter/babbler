@@ -37,6 +37,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutorService;
 
 
 /**
@@ -45,6 +46,8 @@ import java.util.concurrent.CompletionStage;
 public final class TestXmppSession extends XmppSession {
 
     private final Jid connectedResource;
+
+    private final ExecutorService executorService;
 
     public TestXmppSession() {
         this(Jid.of("test@domain/resource"), new MockServer());
@@ -122,7 +125,7 @@ public final class TestXmppSession extends XmppSession {
                 return false;
             }
         };
-        stanzaListenerExecutor = iqHandlerExecutor = new SameThreadExecutorService();
+        executorService = new SameThreadExecutorService();
         mockServer.registerConnection(this);
 
         // Auto-connect
@@ -132,6 +135,16 @@ public final class TestXmppSession extends XmppSession {
     @Override
     public void connect(Jid from) {
 
+    }
+
+    @Override
+    protected ExecutorService getIqHandlerExecutor() {
+        return executorService;
+    }
+
+    @Override
+    protected ExecutorService getStanzaListenerExecutor() {
+        return executorService;
     }
 
     @Override

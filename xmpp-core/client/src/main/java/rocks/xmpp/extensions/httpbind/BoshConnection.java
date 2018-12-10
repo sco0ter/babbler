@@ -71,6 +71,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
@@ -83,6 +84,11 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  */
 public final class BoshConnection extends AbstractConnection {
+
+    /**
+     * The executor, which will execute HTTP requests.
+     */
+    private static ExecutorService HTTP_BIND_EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("XMPP BOSH Request Thread"));
 
     private static final Logger logger = Logger.getLogger(BoshConnection.class.getName());
 
@@ -137,11 +143,7 @@ public final class BoshConnection extends AbstractConnection {
 
     private final CompletableFuture<Void> closeFuture = new CompletableFuture<>();
 
-    /**
-     * The executor, which will execute HTTP requests.
-     * Guarded by "this".
-     */
-    private ExecutorService httpBindExecutor;
+    private final AtomicBoolean shutdown = new AtomicBoolean(true);
 
     /**
      * The compression method which is used to compress requests.
@@ -279,10 +281,7 @@ public final class BoshConnection extends AbstractConnection {
                 connection.disconnect();
             }
         }
-
-        // Threads created by this thread pool, will be used to do simultaneous requests.
-        // Even in the unusual case, where the connection manager allows for more requests, two are enough.
-        httpBindExecutor = Executors.newFixedThreadPool(2, xmppSession.getConfiguration().getThreadFactory("XMPP BOSH Request Thread"));
+        shutdown.set(false);
     }
 
     @Override
@@ -356,7 +355,7 @@ public final class BoshConnection extends AbstractConnection {
 
         // If the body contains an error condition, which is not a stream error, terminate the connection by throwing an exception.
         if (responseBody.getType() == Body.Type.TERMINATE && responseBody.getCondition() != null && responseBody.getCondition() != Body.Condition.REMOTE_STREAM_ERROR) {
-            // Shutdown the executor, we don't want to send further requests from now on.
+            // Shutdown the connection, we don't want to send further requests from now on.
             shutdown();
             closeFuture.completeExceptionally(new BoshException(responseBody.getCondition(), responseBody.getUri()));
             throw new BoshException(responseBody.getCondition(), responseBody.getUri());
@@ -403,11 +402,7 @@ public final class BoshConnection extends AbstractConnection {
     @Override
     protected CompletionStage<Void> closeStream() {
         final CompletableFuture<Void> future;
-        final ExecutorService executorService;
-        synchronized (this){
-            executorService = httpBindExecutor;
-        }
-        if (executorService != null && !executorService.isShutdown()) {
+        if (!shutdown.get()) {
             final String sid = getSessionId();
             if (sid != null) {
                 // Terminate the BOSH session.
@@ -421,7 +416,7 @@ public final class BoshConnection extends AbstractConnection {
             } else {
                 future = CompletableFuture.completedFuture(null);
             }
-            executorService.shutdown();
+            shutdown();
         } else {
             future = CompletableFuture.completedFuture(null);
         }
@@ -433,19 +428,6 @@ public final class BoshConnection extends AbstractConnection {
         return CompletableFuture.runAsync(() -> {
             try {
                 synchronized (this) {
-                    if (httpBindExecutor != null) {
-                        // and then shut it down.
-                        httpBindExecutor.shutdown();
-                        try {
-                            if (!httpBindExecutor.awaitTermination(50, TimeUnit.MILLISECONDS)) {
-                                httpBindExecutor.shutdownNow();
-                            }
-                        } catch (InterruptedException e) {
-                            // (Re-)Cancel if current thread also interrupted
-                            httpBindExecutor.shutdownNow();
-                            Thread.currentThread().interrupt();
-                        }
-                    }
                     sessionId = null;
                     requestCompressionMethod = null;
                     keySequence.clear();
@@ -461,10 +443,8 @@ public final class BoshConnection extends AbstractConnection {
         return closeFuture;
     }
 
-    private synchronized void shutdown() {
-        if (httpBindExecutor != null) {
-            httpBindExecutor.shutdown();
-        }
+    private void shutdown() {
+        shutdown.set(true);
     }
 
     /**
@@ -564,9 +544,9 @@ public final class BoshConnection extends AbstractConnection {
      */
     private CompletableFuture<Void> sendNewRequest(final Body.Builder bodyBuilder, boolean resendAfterError) {
 
-        // Make sure, no two threads access this block, in order to ensure that requestCount and httpBindExecutor.isShutdown() don't return inconsistent values.
+        // Make sure, no two threads access this block, in order to ensure that requestCount and shutdown.get() don't return inconsistent values.
         synchronized (this) {
-            if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
+            if (!shutdown.get()) {
                 return CompletableFuture.runAsync(() -> {
 
                     // Open a HTTP connection.
@@ -576,10 +556,6 @@ public final class BoshConnection extends AbstractConnection {
                     try {
 
                         if (!resendAfterError) {
-                            final ExecutorService executor;
-                            synchronized (this) {
-                                executor = httpBindExecutor;
-                            }
                             synchronized (elementsToSend) {
                                 appendKey(bodyBuilder);
 
@@ -600,10 +576,10 @@ public final class BoshConnection extends AbstractConnection {
                                 // and terminate the HTTP session and return a 'policy-violation' terminal binding error to the client.
                                 //
                                 // In short: If we would send a second empty request, don't do that!
-                                // Also don't send a new request, if the executors are shutdown.
+                                // Also don't send a new request, if the connection is shutdown.
                                 body = bodyBuilder.build();
                                 if (body.getType() != Body.Type.TERMINATE &&
-                                        ((executor == null || executor.isShutdown())
+                                        (shutdown.get()
                                                 || (requestCount.get() > 0
                                                 && body.getPause() == null
                                                 && !body.isRestart() && getSessionId() != null && elementsToSend.isEmpty()))) {
@@ -760,7 +736,7 @@ public final class BoshConnection extends AbstractConnection {
                                 // This allows the send method to chime in and send a <body/> with actual payload instead of an empty body just to "hold the line".
                                 Thread.sleep(50);
                             } else {
-                                // Shutdown the executor, we don't want to send further requests from now on.
+                                // Shutdown the connection, we don't want to send further requests from now on.
                                 shutdown();
                                 handleCode(httpConnection.getResponseCode());
                                 try (InputStream errorStream = httpConnection.getErrorStream()) {
@@ -774,7 +750,7 @@ public final class BoshConnection extends AbstractConnection {
                             // As soon as the client receives a response from the connection manager it sends another request, thereby ensuring that the connection manager is (almost) always holding a request that it can use to "push" data to the client.
                             if (requestCount.decrementAndGet() == 0 && responseReceived) {
                                 synchronized (this) {
-                                    if (httpBindExecutor != null && !httpBindExecutor.isShutdown()) {
+                                    if (!shutdown.get()) {
                                         sendNewRequest(Body.builder().sessionId(sessionId), false);
                                     }
                                 }
@@ -797,7 +773,7 @@ public final class BoshConnection extends AbstractConnection {
                             httpConnection.disconnect();
                         }
                     }
-                }, httpBindExecutor);
+                }, HTTP_BIND_EXECUTOR);
             } else {
                 throw new IllegalStateException("Connection already shutdown via close() or detach()");
             }

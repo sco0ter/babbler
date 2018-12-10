@@ -60,6 +60,7 @@ import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.util.concurrent.CompletionStages;
+import rocks.xmpp.util.concurrent.QueuedExecutorService;
 
 import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBException;
@@ -127,6 +128,10 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
     private static final Logger logger = Logger.getLogger(XmppSession.class.getName());
 
     private static final EnumSet<Status> IS_CONNECTED = EnumSet.of(Status.CONNECTED, Status.AUTHENTICATED, Status.AUTHENTICATING);
+
+    private static final ExecutorService IQ_HANDLER_EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("IQ Handler Thread"));
+
+    private static final ExecutorService STANZA_LISTENER_EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Stanza Listener Thread"));
 
     protected final XmppSessionConfiguration configuration;
 
@@ -201,8 +206,6 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
 
     protected volatile boolean wasLoggedIn;
 
-    ExecutorService iqHandlerExecutor;
-
     ExecutorService stanzaListenerExecutor;
 
     /**
@@ -215,8 +218,7 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
     protected XmppSession(String xmppServiceDomain, XmppSessionConfiguration configuration, ClientConnectionConfiguration... connectionConfigurations) {
         this.xmppServiceDomain = Jid.of(Objects.requireNonNull(xmppServiceDomain, "The XMPP service domain must not be null. It's a required attribute in the stream header"));
         this.configuration = configuration;
-        this.stanzaListenerExecutor = Executors.newSingleThreadExecutor(configuration.getThreadFactory("Stanza Listener Thread"));
-        this.iqHandlerExecutor = Executors.newCachedThreadPool(configuration.getThreadFactory("IQ Handler Thread"));
+        this.stanzaListenerExecutor = new QueuedExecutorService(STANZA_LISTENER_EXECUTOR);
         this.serviceDiscoveryManager = getManager(ServiceDiscoveryManager.class);
         this.streamFeaturesManager = getManager(StreamFeaturesManager.class);
 
@@ -1161,7 +1163,7 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
                     synchronized (iqHandlerMap) {
                         iqHandler = iqHandlerMap.get(payload.getClass());
                         // If the handler is to be invoked asynchronously, get the iqHandlerExecutor, otherwise use stanzaListenerExecutor (which is a single thread executor).
-                        executor = iqHandler != null ? (iqHandlerInvocationModes.get(payload.getClass()) ? iqHandlerExecutor : stanzaListenerExecutor) : null;
+                        executor = iqHandler != null ? (iqHandlerInvocationModes.get(payload.getClass()) ? getIqHandlerExecutor() : getStanzaListenerExecutor()) : null;
                     }
 
                     if (iqHandler != null) {
@@ -1183,17 +1185,17 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
                     }
                 }
             }
-            iqHandlerExecutor.execute(() -> {
+            getIqHandlerExecutor().execute(() -> {
                 XmppUtils.notifyEventListeners(inboundIQListeners, new IQEvent(this, iq, true));
                 streamManager.incrementInboundStanzaCount();
             });
         } else if (element instanceof Message) {
-            stanzaListenerExecutor.execute(() -> {
+            getStanzaListenerExecutor().execute(() -> {
                 XmppUtils.notifyEventListeners(inboundMessageListeners, new MessageEvent(this, (Message) element, true));
                 streamManager.incrementInboundStanzaCount();
             });
         } else if (element instanceof Presence) {
-            stanzaListenerExecutor.execute(() -> {
+            getStanzaListenerExecutor().execute(() -> {
                 XmppUtils.notifyEventListeners(inboundPresenceListeners, new PresenceEvent(this, (Presence) element, true));
                 streamManager.incrementInboundStanzaCount();
             });
@@ -1263,7 +1265,6 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
             sendSucceededListeners.clear();
             sendFailedListeners.clear();
             stanzaListenerExecutor.shutdown();
-            iqHandlerExecutor.shutdown();
             if (shutdownHook != null) {
                 Runtime.getRuntime().removeShutdownHook(shutdownHook);
             }
@@ -1412,6 +1413,14 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
                 sendTask.receivedByServer();
             }
         }
+    }
+
+    protected ExecutorService getIqHandlerExecutor() {
+        return IQ_HANDLER_EXECUTOR;
+    }
+
+    protected ExecutorService getStanzaListenerExecutor() {
+        return stanzaListenerExecutor;
     }
 
     /**

@@ -27,6 +27,7 @@ package rocks.xmpp.core.session;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.bind.model.Bind;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.sasl.AuthenticationException;
@@ -44,7 +45,6 @@ import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.client.ClientStreamFeatureNegotiator;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamErrorException;
-import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.subscription.PresenceManager;
@@ -91,7 +91,6 @@ import java.util.logging.Logger;
  * xmppClient.addInboundMessageListener(e ->
  * // Handle inbound message.
  * );
- * <p>
  * // Listen for presence changes
  * xmppClient.addInboundPresenceListener(e ->
  * // Handle inbound presence.

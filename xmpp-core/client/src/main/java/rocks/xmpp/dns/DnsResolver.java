@@ -69,11 +69,6 @@ public final class DnsResolver {
         return resolve("_" + service + "._tcp.", domain, ResourceRecord.Type.SRV, nameServer, timeout, resourceRecord -> (SrvRecord) resourceRecord.data);
     }
 
-    @Deprecated
-    public static List<SrvRecord> resolveSRV(CharSequence service, CharSequence domain, long timeout) throws IOException {
-        return resolveSRV(service, domain, null, timeout);
-    }
-
     /**
      * Resolves DNS TXT records for the given domain.
      *
@@ -86,11 +81,6 @@ public final class DnsResolver {
      */
     public static List<TxtRecord> resolveTXT(CharSequence domain, String nameServer, long timeout) throws IOException {
         return resolve("_xmppconnect.", domain, ResourceRecord.Type.TXT, nameServer, timeout, resourceRecord -> (TxtRecord) resourceRecord.data);
-    }
-
-    @Deprecated
-    public static List<TxtRecord> resolveTXT(CharSequence domain, long timeout) throws IOException {
-        return resolveTXT(domain, null, timeout);
     }
 
     private static <T> List<T> resolve(String prefix, CharSequence domain, ResourceRecord.Type type, String nameServer, long timeout, Function<ResourceRecord, T> mapper) throws IOException {

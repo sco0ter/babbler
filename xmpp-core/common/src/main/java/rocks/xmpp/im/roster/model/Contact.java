@@ -253,22 +253,6 @@ public final class Contact implements RosterItem, Comparable<Contact> {
      * </blockquote>
      *
      * @return True, if a subscription request for the contact is pending, i.e. the contact has not yet approved or denied a subscription request.
-     * @deprecated Use {@link #isPendingOut()}
-     */
-    @Deprecated
-    public final boolean isPending() {
-        return isPendingOut();
-    }
-
-    /**
-     * Gets the pending state of the contact.
-     * <blockquote>
-     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#roster-syntax-items-ask">2.1.2.2.  Ask Attribute</a></cite></p>
-     * <p>The 'ask' attribute of the {@code <item/>} element with a value of "subscribe" is used to signal various subscription sub-states that include a "Pending Out" aspect as described under Section 3.1.2.</p>
-     * <p>A server SHOULD include the 'ask' attribute to inform the client of "Pending Out" sub-states. A client MUST NOT include the 'ask' attribute in the roster sets it sends to the server, but instead MUST use presence stanzas of type "subscribe" and "unsubscribe" to manage such sub-states as described under Section 3.1.2. </p>
-     * </blockquote>
-     *
-     * @return True, if a subscription request for the contact is pending, i.e. the contact has not yet approved or denied a subscription request.
      */
     @Override
     public final boolean isPendingOut() {

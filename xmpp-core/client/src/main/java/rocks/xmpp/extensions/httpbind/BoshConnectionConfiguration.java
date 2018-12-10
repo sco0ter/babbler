@@ -254,20 +254,6 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
         }
 
         /**
-         * Sets the longest time (in seconds) that the connection manager is allowed to wait before responding to any request during the session.
-         *
-         * @param wait The time in seconds.
-         * @return The builder.
-         * @see <a href="https://xmpp.org/extensions/xep-0124.html#session-request">7.1 Session Creation Request</a>
-         * @deprecated Use {@link #wait(Duration)}
-         */
-        @Deprecated
-        public Builder wait(int wait) {
-            this.wait = Duration.ofSeconds(wait);
-            return this;
-        }
-
-        /**
          * Sets the route, formatted as "protocol:host:port" (e.g., "xmpp:example.com:9999").
          *
          * @param route The route.

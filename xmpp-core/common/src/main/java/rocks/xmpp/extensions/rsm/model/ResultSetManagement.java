@@ -96,19 +96,6 @@ public final class ResultSetManagement {
     }
 
     /**
-     * Gets a result set, which limits the number of items of a result to be returned.
-     *
-     * @param limit The limit, i.e. the maximum number of items.
-     * @return The result set.
-     * @see <a href="https://xmpp.org/extensions/xep-0059.html#limit">2.1 Limiting the Number of Items</a>
-     * @deprecated Use {@link #forFirstPage(int)}
-     */
-    @Deprecated
-    public static ResultSetManagement forLimit(int limit) {
-        return new ResultSetManagement(limit, null, null, null, null, null, null);
-    }
-
-    /**
      * Gets a result set, which requests the first page.
      *
      * @param max The item count per page.
@@ -167,19 +154,6 @@ public final class ResultSetManagement {
     }
 
     /**
-     * Gets a result set, which has a count information.
-     *
-     * @param count The item count per page.
-     * @return The result set.
-     * @see <a href="https://xmpp.org/extensions/xep-0059.html#jump">2.6 Retrieving a Page Out of Order</a>
-     * @deprecated Use {@link #forCountResponse(int)}
-     */
-    @Deprecated
-    public static ResultSetManagement forCount(int count) {
-        return new ResultSetManagement(null, null, null, count, null, null, null);
-    }
-
-    /**
      * Gets a result set, which has a count information. The result set is intended for the response.
      *
      * @param count The item count per page.
@@ -188,22 +162,6 @@ public final class ResultSetManagement {
      */
     public static ResultSetManagement forCountResponse(int count) {
         return new ResultSetManagement(null, null, null, count, null, null, null);
-    }
-
-    /**
-     * Gets a result set, which has a count information, including first and last item.
-     *
-     * @param count The item count per page.
-     * @param index The index of the first item.
-     * @param first The first item.
-     * @param last  The last item.
-     * @return The result set.
-     * @see <a href="https://xmpp.org/extensions/xep-0059.html#forwards">2.2 Paging Forwards Through a Result Set</a>
-     * @deprecated Use {@link #forResponse(Integer, Integer, String, String)}
-     */
-    @Deprecated
-    public static ResultSetManagement forCount(Integer count, Integer index, String first, String last) {
-        return new ResultSetManagement(null, null, null, count, new First(index, first), null, last);
     }
 
     /**

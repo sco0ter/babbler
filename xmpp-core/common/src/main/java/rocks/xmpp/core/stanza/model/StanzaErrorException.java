@@ -24,7 +24,8 @@
 
 package rocks.xmpp.core.stanza.model;
 
-import rocks.xmpp.core.stanza.StanzaException;
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 
 /**
  * A stanza exception represents a {@linkplain StanzaError stanza error}.
@@ -33,7 +34,9 @@ import rocks.xmpp.core.stanza.StanzaException;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a>
  */
-public final class StanzaErrorException extends StanzaException {
+public final class StanzaErrorException extends XmppException {
+
+    private final Stanza stanza;
 
     /**
      * Constructs a stanza exception.
@@ -41,6 +44,37 @@ public final class StanzaErrorException extends StanzaException {
      * @param stanza The underlying stanza.
      */
     public StanzaErrorException(Stanza stanza) {
-        super(stanza);
+        super(stanza.getError().toString());
+        this.stanza = stanza;
+    }
+
+    /**
+     * Gets the stanza, which includes the error.
+     *
+     * @return The stanza.
+     */
+    public final Stanza getStanza() {
+        return stanza;
+    }
+
+    /**
+     * Gets the stanza error, i.e. the {@code <error/>} element.
+     *
+     * @return The stanza error.
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a>
+     */
+    public final StanzaError getError() {
+        return stanza.getError();
+    }
+
+    /**
+     * Gets the defined error condition. If the condition is unknown, {@link Condition#UNDEFINED_CONDITION} is returned.
+     * This is a shortcut for {@code getError().getCondition()}.
+     *
+     * @return The error condition.
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions">8.3.3.  Defined Conditions</a>
+     */
+    public final Condition getCondition() {
+        return stanza.getError().getCondition();
     }
 }

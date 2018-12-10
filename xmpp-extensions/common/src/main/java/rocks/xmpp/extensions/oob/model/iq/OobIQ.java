@@ -29,7 +29,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -56,28 +55,7 @@ public final class OobIQ {
     private final String sid;
 
     private OobIQ() {
-        this((URI)null);
-    }
-
-    @Deprecated
-    public OobIQ(URL url) {
-        this(url, null);
-    }
-
-    @Deprecated
-    public OobIQ(URL url, String description) {
-        this(url, description, null);
-    }
-
-    @Deprecated
-    public OobIQ(URL url, String description, String sessionId) {
-        try {
-            this.url = url.toURI();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-        this.desc = description;
-        this.sid = sessionId;
+        this(null);
     }
 
     public OobIQ(URI uri) {
@@ -92,20 +70,6 @@ public final class OobIQ {
         this.url = uri;
         this.desc = description;
         this.sid = sessionId;
-    }
-
-    /**
-     * Gets the URL.
-     *
-     * @return The URL.
-     */
-    @Deprecated
-    public final URL getUrl() {
-        try {
-            return url.toURL();
-        } catch (MalformedURLException e) {
-            throw new UncheckedIOException(e);
-        }
     }
 
     /**

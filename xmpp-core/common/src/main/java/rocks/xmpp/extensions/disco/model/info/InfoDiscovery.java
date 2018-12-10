@@ -130,7 +130,7 @@ public final class InfoDiscovery implements InfoNode {
 
     @Override
     public final Set<String> getFeatures() {
-        Set<String> set = feature.stream().map(Feature::getVar).collect(Collectors.toCollection(TreeSet::new));
+        Set<String> set = feature.stream().filter(f -> f.getVar() != null).map(Feature::getVar).collect(Collectors.toCollection(TreeSet::new));
         return Collections.unmodifiableSet(set);
     }
 

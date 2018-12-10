@@ -109,6 +109,8 @@ final class Feature implements Comparable<Feature> {
                 return 0;
             } else if (var == null) {
                 return -1;
+            } else if (o.var == null) {
+                return 1;
             } else {
                 return Strings.compareUnsignedBytes(var, o.var, StandardCharsets.UTF_8);
             }

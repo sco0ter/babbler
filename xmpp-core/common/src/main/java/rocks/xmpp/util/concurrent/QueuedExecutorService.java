@@ -19,7 +19,7 @@ public class QueuedExecutorService extends AbstractExecutorService {
     /**
      * Lock indicating whether or not a task is pending completion.
      */
-    private final AtomicBoolean lock;
+    final AtomicBoolean lock;
 
     /**
      * Lock indicating whether or not the delegate has been shutdown.
@@ -43,18 +43,7 @@ public class QueuedExecutorService extends AbstractExecutorService {
 
     @Override
     public void execute(Runnable command) {
-
-        synchronized (shutdown) {
-            if (!shutdown.get()) {
-
-                // Adds a task to the queue and call ThreadQueue#poll in order to process it (if the queue
-                // allows it, otherwise, wait for a Thread to be available).
-                tasks.add(command);
-                poll();
-
-            }
-        }
-
+        execute(command, false);
     }
 
     @Override
@@ -83,9 +72,7 @@ public class QueuedExecutorService extends AbstractExecutorService {
 
     @Override
     public boolean isTerminated() {
-        synchronized (shutdown) {
-            return shutdown.get() && tasks.isEmpty() && !lock.get();
-        }
+        return isShutdown() && tasks.isEmpty() && !lock.get();
     }
 
     @Override
@@ -105,6 +92,19 @@ public class QueuedExecutorService extends AbstractExecutorService {
                     nanos -= System.nanoTime() - now;
                 }
             }
+        }
+
+    }
+
+    void execute(Runnable command, boolean ignoreShutdown) {
+
+        if (ignoreShutdown || !isShutdown()) {
+
+            // Adds a task to the queue and call ThreadQueue#poll in order to process it (if the queue
+            // allows it, otherwise, wait for a Thread to be available).
+            tasks.add(command);
+            poll();
+
         }
 
     }

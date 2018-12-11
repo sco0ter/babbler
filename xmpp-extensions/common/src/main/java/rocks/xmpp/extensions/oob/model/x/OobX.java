@@ -28,7 +28,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -55,22 +54,7 @@ public final class OobX {
     private final String desc;
 
     private OobX() {
-        this((URI) null);
-    }
-
-    @Deprecated
-    public OobX(URL url) {
-        this(url, null);
-    }
-
-    @Deprecated
-    public OobX(URL url, String description) {
-        try {
-            this.url = url.toURI();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-        this.desc = description;
+        this(null);
     }
 
     public OobX(URI uri) {
@@ -80,20 +64,6 @@ public final class OobX {
     public OobX(URI uri, String description) {
         this.url = uri;
         this.desc = description;
-    }
-
-    /**
-     * Gets the URL.
-     *
-     * @return The URL.
-     */
-    @Deprecated
-    public final URL getUrl() {
-        try {
-            return url.toURL();
-        } catch (MalformedURLException e) {
-            throw new UncheckedIOException(e);
-        }
     }
 
     /**

@@ -24,6 +24,9 @@
 
 package rocks.xmpp.core.stream.model;
 
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.stream.model.errors.Condition;
+
 /**
  * Represents a stream error.
  *
@@ -31,9 +34,11 @@ package rocks.xmpp.core.stream.model;
  * @see StreamError
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
  */
-public final class StreamErrorException extends rocks.xmpp.core.stream.StreamErrorException {
+public final class StreamErrorException extends XmppException {
 
     private static final long serialVersionUID = -6169260329712442144L;
+
+    private final StreamError streamError;
 
     /**
      * Constructs a stanza exception.
@@ -51,6 +56,27 @@ public final class StreamErrorException extends rocks.xmpp.core.stream.StreamErr
      * @param cause       The cause.
      */
     public StreamErrorException(StreamError streamError, Throwable cause) {
-        super(streamError, cause);
+        super(streamError.toString(), cause);
+        this.streamError = streamError;
+    }
+
+    /**
+     * Gets the stream error.
+     *
+     * @return The stream error.
+     */
+    public final StreamError getError() {
+        return streamError;
+    }
+
+    /**
+     * Gets the defined error condition. If the condition is unknown, {@link Condition#UNDEFINED_CONDITION} is returned.
+     * This is a shortcut for {@code getError().getCondition()}.
+     *
+     * @return The error condition.
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions">4.9.3.  Defined Stream Error Conditions</a>
+     */
+    public final Condition getCondition() {
+        return streamError.getCondition();
     }
 }

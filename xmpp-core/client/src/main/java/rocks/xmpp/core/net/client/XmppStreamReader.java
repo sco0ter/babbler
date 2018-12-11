@@ -53,6 +53,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import rocks.xmpp.util.concurrent.QueuedExecutorService;
 
 /**
  * This class is responsible for reading the inbound XMPP stream. It starts one "reader thread", which keeps reading the XMPP document from the stream until the stream is closed or disconnected.
@@ -62,6 +63,8 @@ import java.util.function.Consumer;
  * @author Christian Schudt
  */
 final class XmppStreamReader {
+
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("XMPP Reader Thread"));
 
     private static final QName STREAM_ID = new QName("id");
 
@@ -93,7 +96,7 @@ final class XmppStreamReader {
         this.debugger = xmppSession.getDebugger();
         this.marshaller = xmppSession.createMarshaller();
         this.unmarshaller = xmppSession.createUnmarshaller();
-        this.executorService = Executors.newSingleThreadExecutor(xmppSession.getConfiguration().getThreadFactory("XMPP Reader Thread"));
+        this.executorService = new QueuedExecutorService(EXECUTOR_SERVICE);
         this.namespace = namespace;
     }
 

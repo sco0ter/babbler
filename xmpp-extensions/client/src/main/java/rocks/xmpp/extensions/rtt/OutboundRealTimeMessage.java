@@ -29,6 +29,7 @@ import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
 import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 
 import java.text.Normalizer;
 import java.util.ArrayDeque;
@@ -37,6 +38,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
@@ -48,6 +50,8 @@ import java.util.concurrent.TimeUnit;
  * @author Christian Schudt
  */
 public final class OutboundRealTimeMessage extends RealTimeMessage {
+
+    private static final ExecutorService TRANSMISSION_EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Real-time Text Transmission Thread"));
 
     private final Collection<RealTimeText.Action> actions = new ArrayDeque<>();
 
@@ -88,7 +92,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
         this.refreshInterval = refreshInterval;
 
         // Set up two executors, which periodically send RTT messages and "refresh messages".
-        transmissionExecutor = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("Real-time Text Transmission Thread"));
+        transmissionExecutor = new QueuedScheduledExecutorService(TRANSMISSION_EXECUTOR);
 
         // This executor periodically sends RTT messages in the preferred transmission interval.
         nextTransmission = transmissionExecutor.schedule(new Runnable() {

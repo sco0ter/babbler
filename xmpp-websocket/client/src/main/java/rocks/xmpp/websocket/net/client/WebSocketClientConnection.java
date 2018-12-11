@@ -31,6 +31,8 @@ import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
+import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 import rocks.xmpp.websocket.net.WebSocketConnection;
 
 import javax.websocket.MessageHandler;
@@ -45,6 +47,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -55,6 +58,8 @@ import java.util.concurrent.TimeUnit;
  * @author Christian Schudt
  */
 public final class WebSocketClientConnection extends WebSocketConnection {
+
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("WebSocket Ping Scheduler"));
 
     private final StreamFeaturesManager streamFeaturesManager;
 
@@ -80,7 +85,7 @@ public final class WebSocketClientConnection extends WebSocketConnection {
         this.streamManager = xmppSession.getManager(StreamManager.class);
         this.streamFeaturesManager.addFeatureNegotiator(streamManager);
         this.streamManager.reset();
-        this.executorService = Executors.newSingleThreadScheduledExecutor(xmppSession.getConfiguration().getThreadFactory("WebSocket Ping Scheduler"));
+        this.executorService = new QueuedScheduledExecutorService(EXECUTOR_SERVICE);
         session.addMessageHandler(new PongHandler());
         if (connectionConfiguration.getPingInterval() != null && !connectionConfiguration.getPingInterval().isNegative() && !connectionConfiguration.getPingInterval().isZero()) {
             pingFuture = this.executorService.scheduleAtFixedRate(() -> {

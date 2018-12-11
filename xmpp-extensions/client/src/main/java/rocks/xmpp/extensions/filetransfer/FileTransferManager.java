@@ -71,19 +71,18 @@ import static java.util.Objects.requireNonNull;
  */
 public final class FileTransferManager extends Manager {
 
+    private static final ExecutorService FILE_TRANSFER_OFFER_EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("File Transfer Offer Thread"));
+
     private final StreamInitiationManager streamInitiationManager;
 
     private final EntityCapabilitiesManager entityCapabilitiesManager;
 
     private final Set<Consumer<FileTransferOfferEvent>> fileTransferOfferListeners = new CopyOnWriteArraySet<>();
 
-    private final ExecutorService fileTransferOfferExecutor;
-
     private FileTransferManager(final XmppSession xmppSession) {
         super(xmppSession, true);
         this.streamInitiationManager = xmppSession.getManager(StreamInitiationManager.class);
         this.entityCapabilitiesManager = xmppSession.getManager(EntityCapabilitiesManager.class);
-        this.fileTransferOfferExecutor = Executors.newCachedThreadPool(xmppSession.getConfiguration().getThreadFactory("File Transfer Offer Thread"));
     }
 
     /**
@@ -108,23 +107,6 @@ public final class FileTransferManager extends Manager {
             // Every implementation of the Java platform is required to support MD5
             throw new AssertionError(e);
         }
-    }
-
-    /**
-     * Offers a file to another user in form of an URL. The file can be downloaded by the recipient via an HTTP GET request.
-     * If this method returns without exception you can assume, that the file has been successfully downloaded by the recipient.
-     *
-     * @param url         The URL of the file.
-     * @param description The description of the file.
-     * @param recipient   The recipient's JID (must be a full JID).
-     * @param timeout     The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
-     * @return The async result.
-     * @see <a href="https://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>
-     * @deprecated Use {@link #offerFile(URI, String, Jid, Duration)}
-     */
-    @Deprecated
-    public final AsyncResult<IQ> offerFile(URL url, String description, Jid recipient, Duration timeout) {
-        return offerFile(URI.create(url.toString()), description, recipient, timeout);
     }
 
     /**
@@ -310,7 +292,7 @@ public final class FileTransferManager extends Manager {
     }
 
     public void fileTransferOffered(final IQ iq, final String sessionId, final String mimeType, final FileTransferOffer fileTransferOffer, final Object protocol, final FileTransferNegotiator fileTransferNegotiator) {
-        fileTransferOfferExecutor.execute(() -> XmppUtils.notifyEventListeners(fileTransferOfferListeners, new FileTransferOfferEvent(this, iq, sessionId, mimeType, fileTransferOffer, protocol, fileTransferNegotiator)));
+        FILE_TRANSFER_OFFER_EXECUTOR.execute(() -> XmppUtils.notifyEventListeners(fileTransferOfferListeners, new FileTransferOfferEvent(this, iq, sessionId, mimeType, fileTransferOffer, protocol, fileTransferNegotiator)));
     }
 
     /**
@@ -336,6 +318,5 @@ public final class FileTransferManager extends Manager {
     @Override
     protected void dispose() {
         fileTransferOfferListeners.clear();
-        fileTransferOfferExecutor.shutdown();
     }
 }

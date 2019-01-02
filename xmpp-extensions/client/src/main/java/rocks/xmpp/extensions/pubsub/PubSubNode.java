@@ -141,11 +141,6 @@ public final class PubSubNode {
                     }
 
                     @Override
-                    public String getNode() {
-                        return null;
-                    }
-
-                    @Override
                     public String getPublisher() {
                         return null;
                     }

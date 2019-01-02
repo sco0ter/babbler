@@ -46,13 +46,6 @@ public interface Item {
     String getId();
 
     /**
-     * Gets the associated node id.
-     *
-     * @return The node id.
-     */
-    String getNode();
-
-    /**
      * Gets the publisher.
      *
      * @return The publisher.

@@ -969,11 +969,6 @@ public final class PubSub {
         }
 
         @Override
-        public final String getNode() {
-            return null;
-        }
-
-        @Override
         public final String getPublisher() {
             return null;
         }

@@ -302,13 +302,10 @@ public final class Event {
         private final String id;
 
         @XmlAttribute
-        private final String node;
-
-        @XmlAttribute
         private final String publisher;
 
         private ItemElement() {
-            this.object = this.id = this.node = this.publisher = null;
+            this.object = this.id = this.publisher = null;
         }
 
         @Override
@@ -319,11 +316,6 @@ public final class Event {
         @Override
         public final String getId() {
             return id;
-        }
-
-        @Override
-        public final String getNode() {
-            return node;
         }
 
         @Override

@@ -258,7 +258,7 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
          *
          * @param sslContext The SSL context.
          * @return The builder.
-         * @see #secure(boolean)
+         * @see #channelEncryption(ChannelEncryption)
          */
         public final T sslContext(SSLContext sslContext) {
             this.sslContext = sslContext;

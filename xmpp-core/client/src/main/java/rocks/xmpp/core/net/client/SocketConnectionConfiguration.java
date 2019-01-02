@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.net.client;
 
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.session.XmppSession;
 
@@ -149,7 +150,7 @@ public final class SocketConnectionConfiguration extends TcpConnectionConfigurat
          *
          * @param socketFactory The socket factory.
          * @return The builder.
-         * @see #secure(boolean)
+         * @see #channelEncryption(ChannelEncryption)
          */
         public Builder socketFactory(SocketFactory socketFactory) {
             this.socketFactory = socketFactory;

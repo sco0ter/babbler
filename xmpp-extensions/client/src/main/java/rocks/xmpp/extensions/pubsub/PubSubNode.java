@@ -31,6 +31,7 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
+import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.pubsub.model.Affiliation;
 import rocks.xmpp.extensions.pubsub.model.Item;
 import rocks.xmpp.extensions.pubsub.model.NodeConfiguration;
@@ -44,7 +45,6 @@ import rocks.xmpp.extensions.pubsub.model.owner.PubSubOwner;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -124,30 +124,8 @@ public final class PubSubNode {
      * @return The async result with the items.
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#entity-discoveritems">5.5 Discover Items for a Node</a>
      */
-    public AsyncResult<List<Item>> discoverItems() {
-        return serviceDiscoveryManager.discoverItems(pubSubServiceAddress, nodeId).thenApply(itemNode -> {
-            List<Item> result = new ArrayList<>();
-            for (final rocks.xmpp.extensions.disco.model.items.Item item : itemNode.getItems()) {
-                // The 'name' attribute of each Service Discovery item MUST contain its ItemID
-                result.add(new Item() {
-                    @Override
-                    public Object getPayload() {
-                        return null;
-                    }
-
-                    @Override
-                    public String getId() {
-                        return item.getName();
-                    }
-
-                    @Override
-                    public String getPublisher() {
-                        return null;
-                    }
-                });
-            }
-            return result;
-        });
+    public AsyncResult<List<rocks.xmpp.extensions.disco.model.items.Item>> discoverItems() {
+        return serviceDiscoveryManager.discoverItems(pubSubServiceAddress, nodeId).thenApply(ItemNode::getItems);
     }
 
     /**

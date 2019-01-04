@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2019 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +24,19 @@
 
 package rocks.xmpp.extensions.sm;
 
+import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Stanza;
+import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.client.ClientStreamFeatureNegotiator;
+import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.StreamErrorException;
+import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
+import java.util.Locale;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -69,6 +75,8 @@ public final class StreamManager extends ClientStreamFeatureNegotiator<StreamMan
      * Tracks the count of inbound stanzas, we have received from the server.
      */
     long inboundCount = 0;
+
+    private long outboundCount = 0;
 
     /**
      * Guarded by "this".
@@ -118,54 +126,64 @@ public final class StreamManager extends ClientStreamFeatureNegotiator<StreamMan
     }
 
     @Override
-    public final StreamNegotiationResult processNegotiation(Object element) {
+    public final StreamNegotiationResult processNegotiation(Object element) throws StreamNegotiationException {
         if (!isEnabled()) {
             return StreamNegotiationResult.IGNORE;
         }
 
-        if (element instanceof StreamManagement) {
-            // Client sets outbound count to zero.
-            synchronized (this) {
-                acknowledgedStanzaCount = 0;
-                enabledByClient = true;
+        try {
+            if (element instanceof StreamManagement) {
+                // Client sets outbound count to zero.
+                synchronized (this) {
+                    acknowledgedStanzaCount = 0;
+                    enabledByClient = true;
+                }
+                unacknowledgedStanzas.clear();
+                xmppSession.send(new StreamManagement.Enable(true));
+            } else if (element instanceof StreamManagement.Enabled) {
+                // In addition, client sets inbound count to zero.
+                synchronized (this) {
+                    inboundCount = 0;
+                    enabled = (StreamManagement.Enabled) element;
+                }
+                return StreamNegotiationResult.SUCCESS;
+            } else if (element instanceof StreamManagement.Failed) {
+                StreamManagement.Failed failed = (StreamManagement.Failed) element;
+                if (failed.getLastHandledStanza() != null) {
+                    markAcknowledged(failed.getLastHandledStanza());
+                }
+                resumed(false);
+                // Stream management errors SHOULD be considered recoverable.
+                // Therefore don't throw an exception.
+                // Most likely Stream Resumption failed, because the server session timed out.
+                // Return Status.INCOMPLETE here, so that SM negotiation can be renegotiated normally.
+            } else if (element instanceof StreamManagement.Request) {
+                // Server wants to know how many stanzas we have received.
+                StreamManagement.Answer answer;
+                synchronized (this) {
+                    answer = new StreamManagement.Answer(inboundCount);
+                }
+                xmppSession.send(answer);
+            } else if (element instanceof StreamManagement.Answer) {
+                StreamManagement.Answer answer = (StreamManagement.Answer) element;
+                // When receiving an <a/> element with an 'h' attribute,
+                // all stanzas whose paired value (X at the time of queueing) is less than or equal to the value of 'h'
+                // can be removed from the unacknowledged queue.
+                markAcknowledged(answer.getLastHandledStanza());
+            } else if (element instanceof StreamManagement.Resumed) {
+                StreamManagement.Resumed resumed = (StreamManagement.Resumed) element;
+                markAcknowledged(resumed.getLastHandledStanza());
+                resumed(true);
+                return StreamNegotiationResult.SUCCESS;
             }
-            unacknowledgedStanzas.clear();
-            xmppSession.send(new StreamManagement.Enable(true));
-        } else if (element instanceof StreamManagement.Enabled) {
-            // In addition, client sets inbound count to zero.
-            synchronized (this) {
-                inboundCount = 0;
-                enabled = (StreamManagement.Enabled) element;
+        } catch (StreamErrorException e) {
+            xmppSession.send(e.getError());
+            try {
+                xmppSession.close();
+            } catch (XmppException e1) {
+                xmppSession.notifyException(e1);
             }
-            return StreamNegotiationResult.SUCCESS;
-        } else if (element instanceof StreamManagement.Failed) {
-            StreamManagement.Failed failed = (StreamManagement.Failed) element;
-            if (failed.getLastHandledStanza() != null) {
-                markAcknowledged(failed.getLastHandledStanza());
-            }
-            resumed(false);
-            // Stream management errors SHOULD be considered recoverable.
-            // Therefore don't throw an exception.
-            // Most likely Stream Resumption failed, because the server session timed out.
-            // Return Status.INCOMPLETE here, so that SM negotiation can be renegotiated normally.
-        } else if (element instanceof StreamManagement.Request) {
-            // Server wants to know how many stanzas we have received.
-            StreamManagement.Answer answer;
-            synchronized (this) {
-                answer = new StreamManagement.Answer(inboundCount);
-            }
-            xmppSession.send(answer);
-        } else if (element instanceof StreamManagement.Answer) {
-            StreamManagement.Answer answer = (StreamManagement.Answer) element;
-            // When receiving an <a/> element with an 'h' attribute,
-            // all stanzas whose paired value (X at the time of queueing) is less than or equal to the value of 'h'
-            // can be removed from the unacknowledged queue.
-            markAcknowledged(answer.getLastHandledStanza());
-        } else if (element instanceof StreamManagement.Resumed) {
-            StreamManagement.Resumed resumed = (StreamManagement.Resumed) element;
-            markAcknowledged(resumed.getLastHandledStanza());
-            resumed(true);
-            return StreamNegotiationResult.SUCCESS;
+            return StreamNegotiationResult.IGNORE;
         }
         return StreamNegotiationResult.INCOMPLETE;
     }
@@ -180,7 +198,7 @@ public final class StreamManager extends ClientStreamFeatureNegotiator<StreamMan
         }
     }
 
-    private void markAcknowledged(Long h) {
+    private void markAcknowledged(Long h) throws StreamErrorException {
         if (h != null) {
             long x;
             synchronized (this) {
@@ -189,6 +207,9 @@ public final class StreamManager extends ClientStreamFeatureNegotiator<StreamMan
                 // When a party receives an <a/> element, it SHOULD keep a record of the 'h' value returned as the
                 // sequence number of the last handled outbound stanza for the current stream (and discard the previous value).
                 acknowledgedStanzaCount = h;
+                if (h > outboundCount) {
+                    throw new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, "", Locale.ENGLISH, new StreamManagement.HandledCountTooHigh(h, outboundCount)));
+                }
             }
             for (long i = 0; i < x; i++) {
                 // Remove X stanzas from the head of the queue and mark them as acknowledged.
@@ -217,6 +238,7 @@ public final class StreamManager extends ClientStreamFeatureNegotiator<StreamMan
     public synchronized void markUnacknowledged(Stanza stanza) {
         if (enabledByClient) {
             unacknowledgedStanzas.offer(stanza);
+            outboundCount = outboundCount + 1 & MAX_H;
         }
     }
 

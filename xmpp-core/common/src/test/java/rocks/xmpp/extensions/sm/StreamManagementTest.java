@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2015 Christian Schudt
+ * Copyright (c) 2014-2019 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 
 import javax.xml.bind.JAXBException;
@@ -38,7 +39,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class StreamManagementTest extends XmlTest {
     protected StreamManagementTest() throws JAXBException {
-        super(StreamManagement.class);
+        super(StreamManagement.class, StreamError.class);
     }
 
     @Test
@@ -120,5 +121,23 @@ public class StreamManagementTest extends XmlTest {
         Assert.assertNotNull(resumed);
         Assert.assertEquals(resumed.getPreviousId(), "some-long-sm-id");
         Assert.assertEquals(resumed.getLastHandledStanza(), Long.valueOf(2));
+    }
+
+    @Test
+    public void unmarshalHandledCountTooHigh() throws XMLStreamException, JAXBException {
+        String xml = "<error xmlns='http://etherx.jabber.org/streams'>\n" +
+                "  <undefined-condition xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>\n" +
+                "  <handled-count-too-high xmlns='urn:xmpp:sm:3' h='10' send-count='8'/>\n" +
+                "  <text xml:lang='en' xmlns='urn:ietf:params:xml:ns:xmpp-streams'>\n" +
+                "    You acknowledged 10 stanzas, but I only sent you 8 so far.\n" +
+                "  </text>\n" +
+                "</error>\n";
+
+        StreamError error = unmarshal(xml, StreamError.class);
+        Assert.assertNotNull(error);
+        StreamManagement.HandledCountTooHigh handledCountTooHigh = (StreamManagement.HandledCountTooHigh) error.getExtension();
+        Assert.assertNotNull(handledCountTooHigh);
+        Assert.assertEquals(handledCountTooHigh.getLastHandledStanza(), Long.valueOf(10));
+        Assert.assertEquals(handledCountTooHigh.getSendCount(), Long.valueOf(8));
     }
 }

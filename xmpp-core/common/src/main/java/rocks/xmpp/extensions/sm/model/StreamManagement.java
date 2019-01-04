@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2019 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,7 +44,7 @@ import javax.xml.bind.annotation.XmlType;
  * @see <a href="https://xmpp.org/extensions/xep-0198.html#schemas">XML Schema</a>
  */
 @XmlRootElement(name = "sm")
-@XmlSeeAlso({StreamManagement.Answer.class, StreamManagement.Enable.class, StreamManagement.Enabled.class, StreamManagement.Failed.class, StreamManagement.Request.class, StreamManagement.Resume.class, StreamManagement.Resumed.class})
+@XmlSeeAlso({StreamManagement.Answer.class, StreamManagement.Enable.class, StreamManagement.Enabled.class, StreamManagement.Failed.class, StreamManagement.Request.class, StreamManagement.Resume.class, StreamManagement.Resumed.class, StreamManagement.HandledCountTooHigh.class})
 public final class StreamManagement extends StreamFeature {
 
     /**
@@ -140,7 +140,7 @@ public final class StreamManagement extends StreamFeature {
         }
 
         @Override
-        public final String toString(){
+        public final String toString() {
             return "Stream Management Request";
         }
     }
@@ -307,6 +307,45 @@ public final class StreamManagement extends StreamFeature {
         @Override
         public final String toString() {
             return "Stream Management Answer: " + getLastHandledStanza();
+        }
+    }
+
+    /**
+     * Indicates that an entity has acknowledged more stanzas than it was sent.
+     * <p>
+     * When a remote entity acknowledges that it has handled a number of stanzas that is higher
+     * than the amount of stanzas that it was sent (by sending an 'h' value that is too high),
+     * the local entity SHOULD generate an undefined-condition stream error that includes
+     * a {@code <handled-count-too-high/>} element.
+     */
+    @XmlRootElement(name = "handled-count-too-high")
+    public static final class HandledCountTooHigh extends LastHandledStanza {
+
+        @XmlAttribute(name = "send-count")
+        private final Long sendCount;
+
+        private HandledCountTooHigh() {
+            super(null);
+            this.sendCount = null;
+        }
+
+        public HandledCountTooHigh(long h, long sendCount) {
+            super(h);
+            this.sendCount = sendCount;
+        }
+
+        /**
+         * The number of stanzas that were sent.
+         *
+         * @return The send count.
+         */
+        public final Long getSendCount() {
+            return sendCount;
+        }
+
+        @Override
+        public final String toString() {
+            return "Handled count too high: " + getLastHandledStanza() + ", expected: " + sendCount;
         }
     }
 

@@ -285,7 +285,7 @@ public final class FileTransferManager extends Manager {
                     } catch (IOException e1) {
                         throw new CompletionException(e1);
                     }
-                    return new FileTransfer(xmppSession, byteStreamSession.getSessionId(), source, outputStream, fileSize);
+                    return new FileTransfer(byteStreamSession.getSessionId(), source, outputStream, fileSize);
                 });
             });
         });

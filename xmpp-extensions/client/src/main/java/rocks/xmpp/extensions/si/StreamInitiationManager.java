@@ -245,7 +245,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
         // And then wait until the peer opens the stream.
         return new AsyncResult<>(withFallbackStage.applyToEither(CompletionStages.timeoutAfter(xmppSession.getConfiguration().getDefaultResponseTimeout().toMillis() * 5, TimeUnit.MILLISECONDS), byteStreamSession -> {
                     try {
-                        return new FileTransfer(xmppSession, byteStreamSession.getSessionId(), byteStreamSession.getInputStream(), outputStream, fileTransferOffer.getSize());
+                        return new FileTransfer(byteStreamSession.getSessionId(), byteStreamSession.getInputStream(), outputStream, fileTransferOffer.getSize());
                     } catch (IOException e) {
                         throw new CompletionException(e);
                     }

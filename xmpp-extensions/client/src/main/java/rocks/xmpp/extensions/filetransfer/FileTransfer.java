@@ -68,7 +68,7 @@ public final class FileTransfer {
 
     private volatile long bytesTransferred;
 
-    public FileTransfer(XmppSession xmppSession, String sessionId, InputStream inputStream, OutputStream outputStream, long length) {
+    public FileTransfer(String sessionId, InputStream inputStream, OutputStream outputStream, long length) {
         this.inputStream = inputStream;
         this.outputStream = outputStream;
         this.length = length;

@@ -246,12 +246,30 @@ public class IQ extends Stanza {
      * @return The result IQ stanza.
      */
     public final IQ createResult(Object extension) {
+        if (isResponse()) {
+            throw new IllegalStateException("Cannot create a result from an IQ, which is already a response IQ.");
+        }
         return new IQ(getFrom(), Type.RESULT, extension, getId(), getTo(), getLanguage(), null);
+    }
+
+    /**
+     * Creates an error response for this stanza.
+     *
+     * @param error           The error which is appended to the stanza.
+     * @param includeOriginal If true, includes the original child element in the error response.
+     * @return The error response.
+     * @see #getError()
+     */
+    public final IQ createError(StanzaError error, boolean includeOriginal) {
+        if (isResponse()) {
+            throw new IllegalStateException("Cannot create an error response from an IQ, which is already a response IQ.");
+        }
+        return new IQ(getFrom(), Type.ERROR, includeOriginal ? getExtension(Object.class) : null, getId(), getTo(), getLanguage(), Objects.requireNonNull(error, "error must not be null"));
     }
 
     @Override
     public final IQ createError(StanzaError error) {
-        return new IQ(getFrom(), Type.ERROR, null, getId(), getTo(), getLanguage(), error);
+        return createError(error, false);
     }
 
     @Override

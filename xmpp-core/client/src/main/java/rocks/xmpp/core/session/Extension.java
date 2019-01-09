@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.StringJoiner;
 
 /**
  * Represents an XMPP protocol extension (XEP).
@@ -210,7 +211,7 @@ public final class Extension {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (o == this) {
             return true;
         }
@@ -229,7 +230,7 @@ public final class Extension {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         if (namespace != null) {
             return Objects.hash(namespace);
         }
@@ -237,5 +238,39 @@ public final class Extension {
             return Objects.hash(manager);
         }
         return Objects.hash(classes);
+    }
+
+    @Override
+    public final String toString() {
+        final StringBuilder sb = new StringBuilder();
+        if (namespace != null) {
+            sb.append(namespace);
+        }
+        if (manager != null) {
+            if (sb.length() > 0) {
+                sb.append(" | ");
+            }
+            sb.append(manager.getCanonicalName());
+        }
+        if (namespace != null || manager != null) {
+            if (sb.length() > 0) {
+                sb.append(" | ");
+            }
+            if (enabled) {
+                sb.append("enabled");
+            } else {
+                sb.append("disabled");
+            }
+        }
+        if (!classes.isEmpty()) {
+            if (sb.length() > 0) {
+                sb.append(" | ");
+            }
+            StringJoiner sj = new StringJoiner(", ");
+            classes.stream().map(Class::getCanonicalName).forEach(sj::add);
+            sb.append(sj);
+        }
+
+        return sb.toString();
     }
 }

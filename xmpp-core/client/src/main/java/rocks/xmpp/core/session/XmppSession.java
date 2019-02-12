@@ -221,15 +221,17 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
         this.streamFeaturesManager = getManager(StreamFeaturesManager.class);
 
         // Add a shutdown hook, which will gracefully close the connection, when the JVM is halted.
-        shutdownHook = configuration.getThreadFactory("Shutdown Hook").newThread(() -> {
-            shutdownHook = null;
-            try {
-                close();
-            } catch (XmppException e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
-            }
-        });
-        Runtime.getRuntime().addShutdownHook(shutdownHook);
+        if (configuration.isCloseOnShutdown()) {
+            shutdownHook = configuration.getThreadFactory("Shutdown Hook").newThread(() -> {
+                shutdownHook = null;
+                try {
+                    close();
+                } catch (XmppException e) {
+                    logger.log(Level.WARNING, e.getMessage(), e);
+                }
+            });
+            Runtime.getRuntime().addShutdownHook(shutdownHook);
+        }
 
         if (configuration.getDebugger() != null) {
             try {

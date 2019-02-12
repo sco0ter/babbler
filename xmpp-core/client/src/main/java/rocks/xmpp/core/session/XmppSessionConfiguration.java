@@ -64,9 +64,9 @@ import java.util.function.Supplier;
  * </p>
  * ```java
  * XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
- *     .extensions(Extension.of(MyClass1.class), Extension.of(MyClass2.class))
- *     .debugger(ConsoleDebugger.class)
- *     .build();
+ * .extensions(Extension.of(MyClass1.class), Extension.of(MyClass2.class))
+ * .debugger(ConsoleDebugger.class)
+ * .build();
  * ```
  * This class is immutable.
  *
@@ -130,6 +130,8 @@ public final class XmppSessionConfiguration {
 
     private final ThreadFactory threadFactory;
 
+    private final boolean closeOnShutdown;
+
     /**
      * Creates a configuration for an {@link XmppSession}. If you want to add custom classes to the {@link JAXBContext}, you can pass them as parameters.
      *
@@ -147,6 +149,7 @@ public final class XmppSessionConfiguration {
         this.reconnectionStrategy = builder.reconnectionStrategy;
         this.nameServer = builder.nameServer;
         this.threadFactory = builder.threadFactory;
+        this.closeOnShutdown = builder.closeOnShutdown;
         this.extensions = new HashSet<>();
 
         // Find all modules, then add all extension from each module.
@@ -318,6 +321,15 @@ public final class XmppSessionConfiguration {
         return XmppUtils.createNamedThreadFactory(name);
     }
 
+    /**
+     * Indicates, if the session is gracefully closed on shutdown of the runtime (JVM).
+     *
+     * @return True, if the session is gracefully closed on shutdown of the runtime (JVM).
+     */
+    public final boolean isCloseOnShutdown() {
+        return closeOnShutdown;
+    }
+
     final Collection<Extension> getExtensions() {
         return extensions;
     }
@@ -363,6 +375,8 @@ public final class XmppSessionConfiguration {
 
         private ThreadFactory threadFactory;
 
+        private boolean closeOnShutdown;
+
         /**
          * The default preferred SASL mechanisms.
          */
@@ -374,8 +388,10 @@ public final class XmppSessionConfiguration {
                 "ANONYMOUS");
 
         private Builder() {
-            defaultResponseTimeout(Duration.ofSeconds(5)).cacheDirectory(DEFAULT_APPLICATION_DATA_PATH)
-                    .initialPresence(Presence::new);
+            defaultResponseTimeout(Duration.ofSeconds(5))
+                    .cacheDirectory(DEFAULT_APPLICATION_DATA_PATH)
+                    .initialPresence(Presence::new)
+                    .closeOnShutdown(true);
         }
 
         /**
@@ -517,6 +533,19 @@ public final class XmppSessionConfiguration {
          */
         public final Builder threadFactory(final ThreadFactory threadFactory) {
             this.threadFactory = threadFactory;
+            return this;
+        }
+
+        /**
+         * Indicates whether the XMPP session is closed, when the JVM is shut down.
+         * If <code>true</code> (default), a shutdown hook is added to the runtime, which will gracefully close the session on shutdown.
+         * If <code>false</code>, no shutdown hook will be added to the runtime.
+         *
+         * @param closeOnShutdown true, if a shutdown hook shall be added to the runtime.
+         * @return The builder.
+         */
+        public final Builder closeOnShutdown(final boolean closeOnShutdown) {
+            this.closeOnShutdown = closeOnShutdown;
             return this;
         }
 

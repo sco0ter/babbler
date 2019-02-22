@@ -25,6 +25,7 @@
 package rocks.xmpp.dns;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 /**
  * A DNS SRV resource record.
@@ -68,10 +69,14 @@ public final class SrvRecord implements Comparable<SrvRecord> {
     private final String target;
 
     SrvRecord(final ByteBuffer data) {
-        this.priority = data.getShort() & 0xFFFF;
-        this.weight = data.getShort() & 0xFFFF;
-        this.port = data.getShort() & 0xFFFF;
-        this.target = ResourceRecord.parse(data);
+        this(data.getShort() & 0xFFFF, data.getShort() & 0xFFFF, data.getShort() & 0xFFFF, ResourceRecord.parse(data));
+    }
+
+    SrvRecord(final int priority, final int weight, final int port, final String target) {
+        this.priority = priority;
+        this.weight = weight;
+        this.port = port;
+        this.target = target;
     }
 
     /**
@@ -116,11 +121,38 @@ public final class SrvRecord implements Comparable<SrvRecord> {
         if (o == null) {
             return -1;
         }
-        final int result = Integer.compare(this.priority, o.priority);
+        int result = Integer.compare(this.priority, o.priority);
         if (result == 0) {
-            return Integer.compare(this.weight, o.weight);
+            result = Integer.compare(this.weight, o.weight);
+            if (result == 0) {
+                result = Integer.compare(this.port, o.port);
+                if (result == 0) {
+                    result = this.target.compareTo(o.target);
+                }
+            }
         }
         return result;
+    }
+
+    @Override
+    public final boolean equals(final Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof SrvRecord)) {
+            return false;
+        }
+        SrvRecord other = (SrvRecord) o;
+
+        return Objects.equals(priority, other.priority)
+                && Objects.equals(weight, other.weight)
+                && Objects.equals(port, other.port)
+                && Objects.equals(target, other.target);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(priority, weight, port, target);
     }
 
     @Override

@@ -26,9 +26,11 @@ package rocks.xmpp.dns;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import rocks.xmpp.util.ComparableTestHelper;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -118,5 +120,17 @@ public class DnsMessageTest {
         txtRecord = new TxtRecord(ByteBuffer.wrap(test), test.length);
         map = txtRecord.asAttributes();
         Assert.assertEquals(map.get("attr"), "te=st");
+    }
+
+    @Test
+    public void testComparable() {
+        SrvRecord srvRecord1 = new SrvRecord(0, 1, 2, "3");
+        SrvRecord srvRecord2 = new SrvRecord(1, 1, 4, "3");
+        SrvRecord srvRecord3 = new SrvRecord(2, 1, 5, "6");
+        SrvRecord srvRecord4 = new SrvRecord(2, 3, 6, "7");
+        SrvRecord srvRecord5 = new SrvRecord(2, 3, 6, "8");
+        List<SrvRecord> list = Arrays.asList(srvRecord1, srvRecord2, srvRecord3, srvRecord4, srvRecord5);
+        Assert.assertTrue(ComparableTestHelper.isConsistentWithEquals(list));
+        ComparableTestHelper.checkCompareToContract(list);
     }
 }

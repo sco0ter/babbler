@@ -481,7 +481,7 @@ public class JidTest {
         Assert.assertEquals(jids.get(8), jid8);
         Assert.assertEquals(jids.get(9), malformedJid1);
         Assert.assertEquals(jids.get(10), malformedJid2);
-        
+
         ComparableTestHelper.checkCompareToContract(jids);
         Assert.assertTrue(ComparableTestHelper.isConsistentWithEquals(jids));
     }
@@ -607,4 +607,21 @@ public class JidTest {
         Assert.assertSame(jid, same);
     }
 
+    @Test
+    public void testWithLocalFromDomainJid() {
+        Jid domainJid = Jid.of("domain.tld");
+        Assert.assertEquals(domainJid.withLocal("local").toEscapedString(), "local@domain.tld");
+    }
+
+    @Test
+    public void testWithResourceFromBareJid() {
+        Jid domainJid = Jid.of("domain.tld");
+        Assert.assertEquals(domainJid.withResource("resource").toEscapedString(), "domain.tld/resource");
+    }
+
+    @Test
+    public void testWithLocalFromBareJid() {
+        Jid domainJid = Jid.of("domain.tld/resource").asBareJid();
+        Assert.assertEquals(domainJid.withLocal("local").toEscapedString(), "local@domain.tld");
+    }
 }

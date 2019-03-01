@@ -152,7 +152,7 @@ final class FullJid extends AbstractJid {
 
                 @Override
                 public Jid withLocal(CharSequence local) {
-                    if ((local == null && this.getLocal() == null) || (local != null && local.toString().contentEquals(this.getLocal()))) {
+                    if ((local == null && this.getLocal() == null) || (local != null && this.getLocal() != null && local.toString().contentEquals(this.getLocal()))) {
                         return this;
                     }
                     return new FullJid(local, getDomain(), getResource(), false, null);
@@ -391,7 +391,7 @@ final class FullJid extends AbstractJid {
      */
     @Override
     public final Jid withLocal(CharSequence local) {
-        if ((local == null && this.getLocal() == null) || (local != null && local.toString().contentEquals(this.getLocal()))) {
+        if ((local == null && this.getLocal() == null) || (local != null && this.getLocal() != null && local.toString().contentEquals(this.getLocal()))) {
             return this;
         }
         return new FullJid(local, getDomain(), getResource(), false, null);
@@ -408,7 +408,7 @@ final class FullJid extends AbstractJid {
      */
     @Override
     public final Jid withResource(CharSequence resource) {
-        if ((resource == null && this.getResource() == null) || (resource != null && resource.toString().contentEquals(this.getResource()))) {
+        if ((resource == null && this.getResource() == null) || (resource != null && this.getResource() != null && resource.toString().contentEquals(this.getResource()))) {
             return this;
         }
         return new FullJid(getLocal(), getDomain(), resource, false, asBareJid());

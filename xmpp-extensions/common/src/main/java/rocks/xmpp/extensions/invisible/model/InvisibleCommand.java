@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2019 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -68,6 +68,7 @@ public abstract class InvisibleCommand {
         private Invisible() {
         }
 
+        @SuppressWarnings("unused")
         private static Invisible create() {
             return (Invisible) INVISIBLE;
         }
@@ -82,6 +83,7 @@ public abstract class InvisibleCommand {
         private Visible() {
         }
 
+        @SuppressWarnings("unused")
         private static Visible create() {
             return (Visible) VISIBLE;
         }

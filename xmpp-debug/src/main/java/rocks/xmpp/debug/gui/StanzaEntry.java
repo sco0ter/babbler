@@ -32,6 +32,7 @@ import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamError;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 /**
  * @author Christian Schudt
@@ -49,7 +50,7 @@ final class StanzaEntry {
         this.inbound = inbound;
         this.xml = xml;
         this.stanza = stanza;
-        this.date = LocalDateTime.now();
+        this.date = LocalDateTime.now(ZoneId.systemDefault());
     }
 
     public String getXml() {

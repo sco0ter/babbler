@@ -54,6 +54,7 @@ public final class S5bTransportNegotiator extends TransportNegotiator<S5bTranspo
     }
 
 
+    @SuppressWarnings("unused")
     private AsyncResult<S5bTransportMethod> createTransport(Jid requester, Jid target) {
 
         return socks5ByteStreamManager.getAvailableStreamHosts().thenApply(streamHosts -> {

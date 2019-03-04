@@ -45,6 +45,7 @@ public final class ResourceLimitExceeded {
     private ResourceLimitExceeded() {
     }
 
+    @SuppressWarnings("unused")
     private static ResourceLimitExceeded create() {
         return INSTANCE;
     }

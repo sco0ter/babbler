@@ -135,6 +135,7 @@ public final class StreamManagement extends StreamFeature {
         private Request() {
         }
 
+        @SuppressWarnings("unused")
         private static Request create() {
             return REQUEST;
         }
@@ -287,6 +288,14 @@ public final class StreamManagement extends StreamFeature {
         public Enable(Boolean resume, Integer max) {
             this.resume = resume;
             this.max = max;
+        }
+
+        public final boolean isResume() {
+            return resume != null && resume;
+        }
+
+        public final Integer getMax() {
+            return max;
         }
     }
 

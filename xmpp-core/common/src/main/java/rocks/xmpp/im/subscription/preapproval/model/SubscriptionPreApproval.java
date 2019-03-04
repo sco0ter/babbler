@@ -48,6 +48,7 @@ public final class SubscriptionPreApproval extends StreamFeature {
     private SubscriptionPreApproval() {
     }
 
+    @SuppressWarnings("unused")
     private static SubscriptionPreApproval create() {
         return INSTANCE;
     }

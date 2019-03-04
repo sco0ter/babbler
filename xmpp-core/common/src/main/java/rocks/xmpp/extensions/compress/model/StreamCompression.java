@@ -131,6 +131,7 @@ public abstract class StreamCompression implements StreamElement {
             private SetupFailed() {
             }
 
+            @SuppressWarnings("unused")
             private static SetupFailed create() {
                 return (SetupFailed) SETUP_FAILED;
             }
@@ -144,6 +145,7 @@ public abstract class StreamCompression implements StreamElement {
             private ProcessingFailed() {
             }
 
+            @SuppressWarnings("unused")
             private static ProcessingFailed create() {
                 return (ProcessingFailed) PROCESSING_FAILED;
             }
@@ -157,6 +159,7 @@ public abstract class StreamCompression implements StreamElement {
             private UnsupportedMethod() {
             }
 
+            @SuppressWarnings("unused")
             private static UnsupportedMethod create() {
                 return (UnsupportedMethod) UNSUPPORTED_METHOD;
             }
@@ -208,6 +211,7 @@ public abstract class StreamCompression implements StreamElement {
         private Compressed() {
         }
 
+        @SuppressWarnings("unused")
         private static Compressed create() {
             return (Compressed) COMPRESSED;
         }

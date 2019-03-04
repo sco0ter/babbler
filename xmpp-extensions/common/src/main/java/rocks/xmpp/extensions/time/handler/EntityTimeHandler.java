@@ -29,6 +29,7 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.time.model.EntityTime;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 
 /**
  * Handles an time request by returning the current time.
@@ -43,7 +44,7 @@ public final class EntityTimeHandler extends AbstractIQHandler {
 
     @Override
     protected final IQ processRequest(IQ iq) {
-        return iq.createResult(new EntityTime(OffsetDateTime.now()));
+        return iq.createResult(new EntityTime(OffsetDateTime.now(ZoneId.systemDefault())));
     }
 }
 

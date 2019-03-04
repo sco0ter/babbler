@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2019 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -87,6 +87,7 @@ public abstract class ChatState {
         private Active() {
         }
 
+        @SuppressWarnings("unused")
         private static Active create() {
             return (Active) ChatState.ACTIVE;
         }
@@ -101,6 +102,7 @@ public abstract class ChatState {
         private Composing() {
         }
 
+        @SuppressWarnings("unused")
         private static Composing create() {
             return (Composing) ChatState.COMPOSING;
         }
@@ -115,6 +117,7 @@ public abstract class ChatState {
         private Gone() {
         }
 
+        @SuppressWarnings("unused")
         private static Gone create() {
             return (Gone) ChatState.GONE;
         }
@@ -129,6 +132,7 @@ public abstract class ChatState {
         private Inactive() {
         }
 
+        @SuppressWarnings("unused")
         private static Inactive create() {
             return (Inactive) ChatState.INACTIVE;
         }
@@ -143,6 +147,7 @@ public abstract class ChatState {
         private Paused() {
         }
 
+        @SuppressWarnings("unused")
         private static Paused create() {
             return (Paused) ChatState.PAUSED;
         }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2019 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "file-not-available")
 @XmlType(factoryMethod = "create")
 final class FileNotAvailable extends FileTransferError {
+
+    @SuppressWarnings("unused")
     private static FileNotAvailable create() {
         return FILE_NOT_AVAILABLE;
     }

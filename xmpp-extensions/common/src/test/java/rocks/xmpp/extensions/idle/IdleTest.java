@@ -37,6 +37,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 
 /**
  * @author Christian Schudt
@@ -61,7 +62,7 @@ public class IdleTest extends XmlTest {
 
     @Test
     public void marshalIdle() throws JAXBException, XMLStreamException {
-        OffsetDateTime now = OffsetDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now(ZoneId.systemDefault());
         Idle idle = Idle.since(now);
         String xml = marshal(idle);
         Assert.assertNotNull(idle);

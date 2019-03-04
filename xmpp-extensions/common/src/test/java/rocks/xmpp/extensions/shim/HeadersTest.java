@@ -35,6 +35,7 @@ import rocks.xmpp.extensions.shim.model.Headers;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -75,10 +76,10 @@ public class HeadersTest extends XmlTest {
         String xmlStart = marshal(Headers.of(Header.ofStartDate(OffsetDateTime.of(2015, 3, 22, 1, 2, 3, 0, ZoneOffset.UTC))));
         Assert.assertEquals(xmlStart, "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Start\">2015-03-22T01:02:03Z</header></headers>");
 
-        String xmlStop = marshal(Headers.of(Header.ofStopDate(OffsetDateTime.now())));
+        String xmlStop = marshal(Headers.of(Header.ofStopDate(OffsetDateTime.now(ZoneId.systemDefault()))));
         Assert.assertTrue(xmlStop.startsWith("<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Stop\">"));
 
-        String xmlPeriod = marshal(Headers.ofTimePeriod(OffsetDateTime.now(), OffsetDateTime.now()));
+        String xmlPeriod = marshal(Headers.ofTimePeriod(OffsetDateTime.now(ZoneId.systemDefault()), OffsetDateTime.now(ZoneId.systemDefault())));
         Assert.assertTrue(xmlPeriod.startsWith("<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Start\">"));
         Assert.assertTrue(xmlPeriod.contains("<header name=\"Stop\">"));
     }

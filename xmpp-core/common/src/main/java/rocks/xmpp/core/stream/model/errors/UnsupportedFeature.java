@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2019 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -44,6 +44,7 @@ final class UnsupportedFeature extends Condition {
     UnsupportedFeature() {
     }
 
+    @SuppressWarnings("unused")
     private static UnsupportedFeature create() {
         return (UnsupportedFeature) UNSUPPORTED_FEATURE;
     }

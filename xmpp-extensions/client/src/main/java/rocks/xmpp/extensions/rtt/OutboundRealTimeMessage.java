@@ -173,7 +173,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
                 actions.add(new RealTimeText.InsertText(newText.subSequence(firstChangedCharacter, endIndex), firstChangedCharacter == oldText.length() ? null : Character.codePointCount(oldText, 0, firstChangedCharacter)));
             }
         }
-        return actions;
+        return Collections.unmodifiableList(actions);
     }
 
     /**

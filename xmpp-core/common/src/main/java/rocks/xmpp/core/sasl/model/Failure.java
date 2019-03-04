@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2019 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -141,6 +141,7 @@ public final class Failure implements StreamElement {
         private Aborted() {
         }
 
+        @SuppressWarnings("unused")
         private static Aborted create() {
             return (Aborted) ABORTED;
         }
@@ -159,6 +160,7 @@ public final class Failure implements StreamElement {
         private AccountDisabled() {
         }
 
+        @SuppressWarnings("unused")
         private static AccountDisabled create() {
             return (AccountDisabled) ACCOUNT_DISABLED;
         }
@@ -177,6 +179,7 @@ public final class Failure implements StreamElement {
         private CredentialsExpired() {
         }
 
+        @SuppressWarnings("unused")
         private static CredentialsExpired create() {
             return (CredentialsExpired) CREDENTIALS_EXPIRED;
         }
@@ -195,6 +198,7 @@ public final class Failure implements StreamElement {
         private EncryptionRequired() {
         }
 
+        @SuppressWarnings("unused")
         private static EncryptionRequired create() {
             return (EncryptionRequired) ENCRYPTION_REQUIRED;
         }
@@ -213,6 +217,7 @@ public final class Failure implements StreamElement {
         private IncorrectEncoding() {
         }
 
+        @SuppressWarnings("unused")
         private static IncorrectEncoding create() {
             return (IncorrectEncoding) INCORRECT_ENCODING;
         }
@@ -231,6 +236,7 @@ public final class Failure implements StreamElement {
         private InvalidAuthzid() {
         }
 
+        @SuppressWarnings("unused")
         private static InvalidAuthzid create() {
             return (InvalidAuthzid) INVALID_AUTHZID;
         }
@@ -249,6 +255,7 @@ public final class Failure implements StreamElement {
         private InvalidMechanism() {
         }
 
+        @SuppressWarnings("unused")
         private static InvalidMechanism create() {
             return (InvalidMechanism) INVALID_MECHANISM;
         }
@@ -267,6 +274,7 @@ public final class Failure implements StreamElement {
         private MalformedRequest() {
         }
 
+        @SuppressWarnings("unused")
         private static MalformedRequest create() {
             return (MalformedRequest) MALFORMED_REQUEST;
         }
@@ -285,6 +293,7 @@ public final class Failure implements StreamElement {
         private MechanismTooWeak() {
         }
 
+        @SuppressWarnings("unused")
         private static MechanismTooWeak create() {
             return (MechanismTooWeak) MECHANISM_TOO_WEAK;
         }
@@ -303,6 +312,7 @@ public final class Failure implements StreamElement {
         private NotAuthorized() {
         }
 
+        @SuppressWarnings("unused")
         private static NotAuthorized create() {
             return (NotAuthorized) NOT_AUTHORIZED;
         }
@@ -321,6 +331,7 @@ public final class Failure implements StreamElement {
         private TemporaryAuthFailure() {
         }
 
+        @SuppressWarnings("unused")
         private static TemporaryAuthFailure create() {
             return (TemporaryAuthFailure) TEMPORARY_AUTH_FAILURE;
         }

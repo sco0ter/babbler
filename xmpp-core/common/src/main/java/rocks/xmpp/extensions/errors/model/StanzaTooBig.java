@@ -45,6 +45,7 @@ public final class StanzaTooBig {
     private StanzaTooBig() {
     }
 
+    @SuppressWarnings("unused")
     private static StanzaTooBig create() {
         return INSTANCE;
     }

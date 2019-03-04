@@ -45,6 +45,7 @@ public final class TooManyStanzas {
     private TooManyStanzas() {
     }
 
+    @SuppressWarnings("unused")
     private static TooManyStanzas create() {
         return INSTANCE;
     }

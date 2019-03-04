@@ -1,6 +1,17 @@
 # Changelog
 ---
 
+### Version 0.8.1
+
+* Make the JVM shutdown hook optionally ([Issue #150](https://bitbucket.org/sco0ter/babbler/issues/150))
+* Fix NPE in InfoDiscovery#getFeatures() ([Issue #146](https://bitbucket.org/sco0ter/babbler/issues/146))
+* Remove errant &lt;p&gt; element in javadoc ([Issue #144](https://bitbucket.org/sco0ter/babbler/issues/144))
+* Convert hostname to ASCII before applying it ([Issue #143](https://bitbucket.org/sco0ter/babbler/issues/143))
+* Don't demand a full JID for SI file transfer ([Issue #142](https://bitbucket.org/sco0ter/babbler/issues/142))
+* Make debugger optional in WebSocketConnection and NettyTcpConnection ([Issue #141](https://bitbucket.org/sco0ter/babbler/issues/141))
+* MessageDeliveryReceiptsManager: correctly set from attribute ([Issue #139](https://bitbucket.org/sco0ter/babbler/issues/139))
+
+
 ## Version 0.8.0 (2018-07-17)
 
 * Works as [JPMS modules](jpms.md) on Java 9 *and* as conventional JAR library on Java 8

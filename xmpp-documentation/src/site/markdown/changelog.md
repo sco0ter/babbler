@@ -1,8 +1,9 @@
 # Changelog
 ---
 
-### Version 0.8.1
+### Version 0.8.1 (2019-03-06)
 
+* Limit the thread usage when multiple clients are running in the same JVM
 * Make the JVM shutdown hook optionally ([Issue #150](https://bitbucket.org/sco0ter/babbler/issues/150))
 * Fix NPE in InfoDiscovery#getFeatures() ([Issue #146](https://bitbucket.org/sco0ter/babbler/issues/146))
 * Remove errant &lt;p&gt; element in javadoc ([Issue #144](https://bitbucket.org/sco0ter/babbler/issues/144))
@@ -10,6 +11,7 @@
 * Don't demand a full JID for SI file transfer ([Issue #142](https://bitbucket.org/sco0ter/babbler/issues/142))
 * Make debugger optional in WebSocketConnection and NettyTcpConnection ([Issue #141](https://bitbucket.org/sco0ter/babbler/issues/141))
 * MessageDeliveryReceiptsManager: correctly set from attribute ([Issue #139](https://bitbucket.org/sco0ter/babbler/issues/139))
+* Make use of `TcpConnectionConfiguration#getKeepAliveInterval` in `NettyTcpConnection`
 
 
 ## Version 0.8.0 (2018-07-17)

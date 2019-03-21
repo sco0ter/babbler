@@ -60,9 +60,21 @@ public final class AvatarMetadata {
         this.pointer = null;
     }
 
+    /**
+     * @param info The info elements.
+     */
     public AvatarMetadata(Info... info) {
         this.info.addAll(Arrays.asList(info));
         this.pointer = null;
+    }
+
+    /**
+     * @param pointer The pointer object. Note that it must be known to the JAXB context.
+     * @param info    The info elements.
+     */
+    public AvatarMetadata(Object pointer, Info... info) {
+        this.info.addAll(Arrays.asList(info));
+        this.pointer = pointer;
     }
 
     /**
@@ -72,6 +84,16 @@ public final class AvatarMetadata {
      */
     public final List<Info> getInfoList() {
         return Collections.unmodifiableList(info);
+    }
+
+    /**
+     * Specifies information about how to retrieve the avatar from a third party service.
+     *
+     * @return The pointer object.
+     * @see <a href="https://xmpp.org/extensions/xep-0084.html#proto-pointer">4.2.2 Pointer Element</a>
+     */
+    public final Object getPointer() {
+        return pointer;
     }
 
     /**

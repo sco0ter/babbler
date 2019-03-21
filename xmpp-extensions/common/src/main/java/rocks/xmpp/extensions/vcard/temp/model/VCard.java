@@ -63,6 +63,7 @@ public final class VCard {
      * Some Jabber implementations add a 'version' attribute to the {@code <vCard/>} element, with the value set at "2.0" or "3.0". The DTD is incorrect, and the examples in draft-dawson-vcard-xml-dtd-01 clearly show that version information is to be included by means of a 'version' attribute, not the {@code <VERSION/>} element as defined in the DTD. However, to conform to draft-dawson-vcard-xml-dtd-01, the value should be "3.0", not "2.0".
      */
     @XmlAttribute
+    @SuppressWarnings("unused")
     private static final String VERSION = "3.0";
 
     /**

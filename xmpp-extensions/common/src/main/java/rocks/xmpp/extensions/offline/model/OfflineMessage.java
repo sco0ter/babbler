@@ -82,7 +82,7 @@ public final class OfflineMessage {
     }
 
     /**
-     * Gets the offline message id.
+     * Gets the offline message id of the first item or null, if the element has no items.
      *
      * @return The offline message id.
      */
@@ -94,11 +94,31 @@ public final class OfflineMessage {
     }
 
     /**
+     * If all messages should be removed.
+     *
+     * @return True if all messages should be removed.
+     * @see <a href="https://xmpp.org/extensions/xep-0013.html#remove-all">2.7 Removing All Messages</a>
+     */
+    public final boolean isPurge() {
+        return purge != null;
+    }
+
+    /**
+     * If all messages should be retrieved.
+     *
+     * @return True if all messages should be retrieved.
+     * @see <a href="https://xmpp.org/extensions/xep-0013.html#retrieve-all">2.6 Retrieving All Messages</a>
+     */
+    public final boolean isFetch() {
+        return fetch != null;
+    }
+
+    /**
      * Gets the items.
      *
      * @return The items.
      */
-    public List<Item> getItems() {
+    public final List<Item> getItems() {
         return Collections.unmodifiableList(item);
     }
 
@@ -126,6 +146,15 @@ public final class OfflineMessage {
          */
         public final String getId() {
             return node;
+        }
+
+        /**
+         * Gets the offline message action.
+         *
+         * @return The action.
+         */
+        public final Action getAction() {
+            return action;
         }
 
         @XmlEnum

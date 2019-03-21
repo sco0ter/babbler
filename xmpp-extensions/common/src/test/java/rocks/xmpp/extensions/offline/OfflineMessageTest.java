@@ -54,6 +54,36 @@ public class OfflineMessageTest extends XmlTest {
         OfflineMessage offlineMessage = iq.getExtension(OfflineMessage.class);
         Assert.assertNotNull(offlineMessage);
         Assert.assertEquals(offlineMessage.getItems().size(), 1);
+        Assert.assertFalse(offlineMessage.isPurge());
+        Assert.assertFalse(offlineMessage.isFetch());
+    }
+
+    @Test
+    public void unmarshalIsPurge() throws JAXBException, XMLStreamException {
+        String xml = "<iq type='set' id='purge1'>\n" +
+                "  <offline xmlns='http://jabber.org/protocol/offline'>\n" +
+                "    <purge/>\n" +
+                "  </offline>\n" +
+                "</iq>";
+        IQ iq = unmarshal(xml, IQ.class);
+        OfflineMessage offlineMessage = iq.getExtension(OfflineMessage.class);
+        Assert.assertNotNull(offlineMessage);
+        Assert.assertTrue(offlineMessage.isPurge());
+        Assert.assertFalse(offlineMessage.isFetch());
+    }
+
+    @Test
+    public void unmarshalIsFetch() throws JAXBException, XMLStreamException {
+        String xml = "<iq type='get' id='fetch1'>\n" +
+                "  <offline xmlns='http://jabber.org/protocol/offline'>\n" +
+                "    <fetch/>\n" +
+                "  </offline>\n" +
+                "</iq>";
+        IQ iq = unmarshal(xml, IQ.class);
+        OfflineMessage offlineMessage = iq.getExtension(OfflineMessage.class);
+        Assert.assertNotNull(offlineMessage);
+        Assert.assertFalse(offlineMessage.isPurge());
+        Assert.assertTrue(offlineMessage.isFetch());
     }
 
     @Test

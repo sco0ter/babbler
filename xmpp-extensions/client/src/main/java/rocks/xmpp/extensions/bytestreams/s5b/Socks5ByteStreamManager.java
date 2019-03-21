@@ -305,15 +305,16 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
                     final Jid requester = xmppSession.getConnectedResource();
 
                     // Create the hash, which will identify the socket connection.
-                    final String hash = Socks5ByteStream.hash(sessionId, requester, target);
+                    final Socks5ByteStream socks5ByteStreamRequest = new Socks5ByteStream(sessionId, streamHosts, requester, target);
+                    String hash = socks5ByteStreamRequest.getDestinationAddress();
                     localSocks5Server.allowedAddresses.add(hash);
 
                     // 5.3.1 Requester Initiates S5B Negotiation
                     // 6.3.1 Requester Initiates S5B Negotiation
                     // Then send the available stream hosts to the receiver, which will then try to connect to one of the hosts.
-                    return xmppSession.query(IQ.set(target, new Socks5ByteStream(sessionId, streamHosts, hash))).whenComplete((a, e) ->
-                                    // When the receiver responded (either with success or with error, we can remove the hash)
-                                    localSocks5Server.allowedAddresses.remove(hash)
+                    return xmppSession.query(IQ.set(target, socks5ByteStreamRequest)).whenComplete((a, e) ->
+                            // When the receiver responded (either with success or with error, we can remove the hash)
+                            localSocks5Server.allowedAddresses.remove(hash)
                     ).thenComposeAsync(result -> {
 
                         // Then complete the process by either connecting to a SOCKS5 proxy or use the socket which our receiver connected to.

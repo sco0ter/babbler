@@ -80,12 +80,13 @@ public final class Socks5ByteStream {
      *
      * @param sessionId   The session id.
      * @param streamHosts The stream hosts.
-     * @param dstaddr     The destination address (i.e. the hash).
+     * @param requester   The requester.
+     * @param target      The target.
      */
-    public Socks5ByteStream(String sessionId, Collection<StreamHost> streamHosts, String dstaddr) {
+    public Socks5ByteStream(String sessionId, Collection<StreamHost> streamHosts, Jid requester, Jid target) {
         this.sid = Objects.requireNonNull(sessionId);
         this.streamhost.addAll(streamHosts);
-        this.dstaddr = dstaddr;
+        this.dstaddr = hash(sessionId, requester, target);
     }
 
     /**
@@ -156,6 +157,24 @@ public final class Socks5ByteStream {
         return streamHostUsed != null ? streamHostUsed.jid : null;
     }
 
+    /**
+     * Gets the DST.ADDR, i.e. the hash of the SID + requester JID + target JID.
+     *
+     * @return The DST.ADDR hash.
+     */
+    public final String getDestinationAddress() {
+        return dstaddr;
+    }
+
+    /**
+     * Gets the mode.
+     *
+     * @return The mode.
+     */
+    public final Mode getMode() {
+        return mode;
+    }
+    
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();

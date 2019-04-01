@@ -26,6 +26,9 @@ package rocks.xmpp.im.roster;
 
 import rocks.xmpp.im.roster.model.Contact;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
@@ -43,11 +46,13 @@ import java.util.function.Consumer;
  */
 public final class RosterEvent extends EventObject {
 
-    private final List<Contact> addedContacts;
+    private static final long serialVersionUID = 3986581536870316963L;
 
-    private final List<Contact> updatedContacts;
+    private transient List<Contact> addedContacts = new ArrayList<>();
 
-    private final List<Contact> removedContacts;
+    private transient List<Contact> updatedContacts = new ArrayList<>();
+
+    private transient List<Contact> removedContacts = new ArrayList<>();
 
     /**
      * Constructs a prototypical Event.
@@ -60,9 +65,9 @@ public final class RosterEvent extends EventObject {
      */
     RosterEvent(Object source, List<Contact> addedContacts, List<Contact> updatedContacts, List<Contact> deletedContacts) {
         super(source);
-        this.addedContacts = Collections.unmodifiableList(addedContacts);
-        this.updatedContacts = Collections.unmodifiableList(updatedContacts);
-        this.removedContacts = Collections.unmodifiableList(deletedContacts);
+        this.addedContacts.addAll(addedContacts);
+        this.updatedContacts.addAll(updatedContacts);
+        this.removedContacts.addAll(deletedContacts);
     }
 
     /**
@@ -71,7 +76,7 @@ public final class RosterEvent extends EventObject {
      * @return The added contacts.
      */
     public final List<Contact> getAddedContacts() {
-        return addedContacts;
+        return Collections.unmodifiableList(addedContacts);
     }
 
     /**
@@ -80,7 +85,7 @@ public final class RosterEvent extends EventObject {
      * @return The updated contacts.
      */
     public final List<Contact> getUpdatedContacts() {
-        return updatedContacts;
+        return Collections.unmodifiableList(updatedContacts);
     }
 
     /**
@@ -89,6 +94,12 @@ public final class RosterEvent extends EventObject {
      * @return The removed contacts.
      */
     public final List<Contact> getRemovedContacts() {
-        return removedContacts;
+        return Collections.unmodifiableList(removedContacts);
+    }
+
+    private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+        addedContacts = new ArrayList<>();
+        updatedContacts = new ArrayList<>();
+        removedContacts = new ArrayList<>();
     }
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2019 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -93,6 +94,25 @@ public final class TxtRecord implements Comparable<TxtRecord> {
         }
         return txt.compareTo(o.txt);
     }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof TxtRecord)) {
+            return false;
+        }
+        TxtRecord other = (TxtRecord) o;
+
+        return Objects.equals(txt, other.txt);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(txt);
+    }
+
 
     @Override
     public final String toString() {

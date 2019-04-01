@@ -36,6 +36,7 @@ import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
@@ -194,7 +195,7 @@ final class XmppStreamReader {
                     // In this case we want to reconnect, therefore throw an exception as if a stream error has occurred.
                     throw new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, "Stream closed by server", Locale.ENGLISH, null));
                 }
-            } catch (Exception e) {
+            } catch (RuntimeException | XmppException | XMLStreamException | JAXBException e) {
                 // shutdown the service, but don't await termination, in order to not block the reader thread.
                 executorService.shutdown();
 

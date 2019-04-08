@@ -68,6 +68,8 @@ import java.util.logging.Logger;
  */
 public final class VisualDebugger implements XmppDebugger {
 
+    private static final Logger xmppLogger = Logger.getLogger("rocks.xmpp");
+
     static {
         initializeLogging();
     }
@@ -123,17 +125,16 @@ public final class VisualDebugger implements XmppDebugger {
         };
         logHandler.setLevel(Level.FINE);
 
-        final Logger logger = Logger.getLogger("rocks.xmpp");
-        logger.addHandler(logHandler);
-        logger.setLevel(Level.FINE);
+        xmppLogger.addHandler(logHandler);
+        xmppLogger.setLevel(Level.FINE);
     }
 
     private static void waitForPlatform() {
         if (!platformInitialized) {
             synchronized (VisualDebugger.class) {
-                if (!platformInitialized) {
+                while (!platformInitialized) {
                     try {
-                        VisualDebugger.class.wait();
+                        VisualDebugger.class.wait(10);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
@@ -156,8 +157,8 @@ public final class VisualDebugger implements XmppDebugger {
 
         SwingUtilities.invokeLater(() -> {
             new JFXPanel(); // this will prepare JavaFX toolkit and environment
-            platformInitialized = true;
             synchronized (VisualDebugger.class) {
+                platformInitialized = true;
                 VisualDebugger.class.notifyAll();
             }
         });
@@ -193,32 +194,34 @@ public final class VisualDebugger implements XmppDebugger {
         Platform.runLater(() -> {
             try {
                 Font.loadFont(getClass().getResource("Inconsolata.ttf").toExternalForm(), 12);
-                if (stage == null) {
-                    root = new SplitPane();
-                    root.setDividerPositions(0.8);
-                    root.setOrientation(Orientation.VERTICAL);
-                    tabPane = new TabPane();
-                    textArea = new TextArea();
-                    textArea.setEditable(false);
-                    root.getItems().addAll(tabPane, textArea);
-                    updateTextArea();
-                    Scene scene = new Scene(root, 800, 600);
-                    scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
-                    stage = new Stage();
-                    stage.setTitle("XMPP Viewer");
-                    stage.getIcons().addAll(new Image(getClass().getResource("xmpp.png").toExternalForm()));
-                    stage.setOnHidden(event -> {
-                        for (Tab tab : tabPane.getTabs()) {
-                            // Trigger the setOnClosed event handler.
-                            Event.fireEvent(tab, new Event(Tab.CLOSED_EVENT));
-                        }
+                synchronized (VisualDebugger.class) {
+                    if (stage == null) {
+                        root = new SplitPane();
+                        root.setDividerPositions(0.8);
+                        root.setOrientation(Orientation.VERTICAL);
+                        tabPane = new TabPane();
+                        textArea = new TextArea();
+                        textArea.setEditable(false);
+                        root.getItems().addAll(tabPane, textArea);
+                        updateTextArea();
+                        Scene scene = new Scene(root, 800, 600);
+                        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+                        stage = new Stage();
+                        stage.setTitle("XMPP Viewer");
+                        stage.getIcons().addAll(new Image(getClass().getResource("xmpp.png").toExternalForm()));
+                        stage.setOnHidden(event -> {
+                            for (Tab tab : tabPane.getTabs()) {
+                                // Trigger the setOnClosed event handler.
+                                Event.fireEvent(tab, new Event(Tab.CLOSED_EVENT));
+                            }
 
-                        tabPane.getTabs().clear();
-                        stage = null;
-                        tabPane = null;
-                        LOG_RECORDS.clear();
-                    });
-                    stage.setScene(scene);
+                            tabPane.getTabs().clear();
+                            stage = null;
+                            tabPane = null;
+                            LOG_RECORDS.clear();
+                        });
+                        stage.setScene(scene);
+                    }
                 }
 
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("DebugView.fxml"));
@@ -237,7 +240,7 @@ public final class VisualDebugger implements XmppDebugger {
                 tabPane.getTabs().add(tab);
                 stage.show();
             } catch (IOException e) {
-               throw new UncheckedIOException(e);
+                throw new UncheckedIOException(e);
             }
         });
     }

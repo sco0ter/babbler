@@ -42,8 +42,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -605,19 +607,117 @@ public final class Body implements SessionOpen, Comparable<Body> {
         if (o == null) {
             return -1;
         }
-        if (rid != null) {
-            if (o.rid != null) {
-                return rid.compareTo(o.rid);
-            } else {
-                return 1;
-            }
-        } else {
-            if (o.rid != null) {
-                return -1;
-            } else {
-                return 0;
-            }
+
+        return Comparator.comparing(Body::getRid, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getSid, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getType, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getCondition, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getWrappedObjects, (o1, o2) -> o1.equals(o2) ? 0 : Integer.compare(o1.hashCode(), o2.hashCode()))
+                .thenComparing(Body::getFrom, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getTo, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getUri, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getAccept, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getAck, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getAuthId, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getCharsets, (o1, o2) -> o1.equals(o2) ? 0 : Integer.compare(o1.hashCode(), o2.hashCode()))
+                .thenComparing(Body::getContent, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getHold, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getInactivity, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getKey, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getMaxPause, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getNewKey, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getPause, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getPolling, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getReport, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getRequests, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getRoute, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getStream, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getTime, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getBoshVersion, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getWait, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::getLanguage, Comparator.nullsFirst((o1, o2) -> o1.toLanguageTag().compareTo(o2.toLanguageTag())))
+                .thenComparing(Body::getVersion, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::isRestartLogic, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .thenComparing(Body::isRestart, Comparator.nullsFirst(Comparator.naturalOrder()))
+                .compare(this, o);
+    }
+
+    @Override
+    public final boolean equals(final Object other) {
+        if (other == this) {
+            return true;
         }
+        if (!(other instanceof Body)) {
+            return false;
+        }
+        final Body o = (Body) other;
+
+        return Objects.equals(wrappedObjects, o.wrappedObjects)
+                && Objects.equals(uri, o.uri)
+                && Objects.equals(accept, o.accept)
+                && Objects.equals(ack, o.ack)
+                && Objects.equals(authId, o.authId)
+                && Objects.equals(charsets, o.charsets)
+                && Objects.equals(condition, o.condition)
+                && Objects.equals(content, o.content)
+                && Objects.equals(from, o.from)
+                && Objects.equals(hold, o.hold)
+                && Objects.equals(inactivity, o.inactivity)
+                && Objects.equals(key, o.key)
+                && Objects.equals(maxPause, o.maxPause)
+                && Objects.equals(newKey, o.newKey)
+                && Objects.equals(pause, o.pause)
+                && Objects.equals(polling, o.polling)
+                && Objects.equals(report, o.report)
+                && Objects.equals(requests, o.requests)
+                && Objects.equals(rid, o.rid)
+                && Objects.equals(route, o.route)
+                && Objects.equals(sid, o.sid)
+                && Objects.equals(stream, o.stream)
+                && Objects.equals(time, o.time)
+                && Objects.equals(to, o.to)
+                && Objects.equals(type, o.type)
+                && Objects.equals(ver, o.ver)
+                && Objects.equals(wait, o.wait)
+                && Objects.equals(lang, o.lang)
+                && Objects.equals(version, o.version)
+                && Objects.equals(restartlogic, o.restartlogic)
+                && Objects.equals(restart, o.restart);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(
+                uri,
+                accept,
+                ack,
+                authId,
+                charsets,
+                condition,
+                content,
+                from,
+                hold,
+                inactivity,
+                key,
+                maxPause,
+                newKey,
+                pause,
+                polling,
+                report,
+                requests,
+                rid,
+                route,
+                sid,
+                stream,
+                time,
+                to,
+                type,
+                ver,
+                wait,
+                lang,
+                version,
+                restartlogic,
+                restart);
     }
 
     @Override

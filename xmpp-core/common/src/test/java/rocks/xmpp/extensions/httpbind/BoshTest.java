@@ -182,10 +182,17 @@ public class BoshTest extends XmlTest {
         String xml = "<body charsets='ISO_8859-1 ISO-2022-JP'" +
                 "      inactivity='86400'\n" +
                 "      time='1000'\n" +
+                "      rid='11'\n" +
                 "      type='terminate'\n" +
                 "      condition='undefined-condition'\n" +
                 "      xmlns='http://jabber.org/protocol/httpbind'/>";
         Body body = unmarshal(xml, Body.class);
+        Body body2 = unmarshal(xml, Body.class);
+
+        Assert.assertEquals(body.compareTo(body2), 0);
+        Assert.assertEquals(body, body2);
+        Assert.assertTrue(ComparableTestHelper.isConsistentWithEquals(Arrays.asList(body, body2)));
+
         Assert.assertEquals(body.getType(), Body.Type.TERMINATE);
         Assert.assertEquals(body.getCondition(), Body.Condition.UNDEFINED_CONDITION);
         Assert.assertEquals(body.getCharsets().size(), 2);

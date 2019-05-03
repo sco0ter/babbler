@@ -127,7 +127,7 @@ public final class Contact implements RosterItem, Comparable<Contact> {
      * @param rosterItem The roster item.
      */
     public Contact(RosterItem rosterItem) {
-        this(rosterItem.getJid(), rosterItem.getName(), rosterItem.isPendingOut(), rosterItem.isApproved(), rosterItem.getSubscription(), rosterItem.getGroups());
+        this(rosterItem.getJid(), rosterItem.getName(), rosterItem.isPendingOut(), rosterItem.isApproved() ? true : null, rosterItem.getSubscription(), rosterItem.getGroups());
     }
 
     /**

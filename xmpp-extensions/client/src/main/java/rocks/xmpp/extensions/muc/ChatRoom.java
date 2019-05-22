@@ -924,7 +924,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                 }
                 for (String feature : infoNode.getFeatures()) {
                     for (MucFeature mucFeature : MucFeature.values()) {
-                        if (mucFeature.getServiceDiscoveryFeature().equals(feature)) {
+                        if (mucFeature.getFeatureName().equals(feature)) {
                             mucFeatures.add(mucFeature);
                         }
                     }

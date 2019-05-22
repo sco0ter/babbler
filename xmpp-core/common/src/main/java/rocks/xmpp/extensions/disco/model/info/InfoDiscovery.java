@@ -57,7 +57,7 @@ public final class InfoDiscovery implements InfoNode {
 
     private final Set<Identity> identity = new TreeSet<>();
 
-    private final Set<Feature> feature = new TreeSet<>();
+    private final Set<FeatureElement> feature = new TreeSet<>();
 
     @XmlElementRef
     private final List<DataForm> extensions = new ArrayList<>();
@@ -116,7 +116,7 @@ public final class InfoDiscovery implements InfoNode {
             this.identity.addAll(identities);
         }
         if (features != null) {
-            this.feature.addAll(features.stream().map(Feature::new).collect(Collectors.toList()));
+            this.feature.addAll(features.stream().map(FeatureElement::new).collect(Collectors.toList()));
         }
         if (extensions != null) {
             this.extensions.addAll(extensions);
@@ -130,7 +130,7 @@ public final class InfoDiscovery implements InfoNode {
 
     @Override
     public final Set<String> getFeatures() {
-        Set<String> set = feature.stream().filter(f -> f.getVar() != null).map(Feature::getVar).collect(Collectors.toCollection(TreeSet::new));
+        Set<String> set = feature.stream().filter(f -> f.getFeatureName() != null).map(FeatureElement::getFeatureName).collect(Collectors.toCollection(TreeSet::new));
         return Collections.unmodifiableSet(set);
     }
 

@@ -24,12 +24,14 @@
 
 package rocks.xmpp.extensions.muc.model;
 
+import rocks.xmpp.extensions.disco.model.info.Feature;
+
 /**
  * A feature of a multi-user chat service.
  *
  * @author Christian Schudt
  */
-public enum MucFeature {
+public enum MucFeature implements Feature {
 
     /**
      * Support for the muc#register FORM_TYPE
@@ -102,12 +104,8 @@ public enum MucFeature {
         this.feature = feature;
     }
 
-    /**
-     * Gets the name of the feature as it is used by service discovery.
-     *
-     * @return The feature name.
-     */
-    public String getServiceDiscoveryFeature() {
+    @Override
+    public final String getFeatureName() {
         return feature;
     }
 }

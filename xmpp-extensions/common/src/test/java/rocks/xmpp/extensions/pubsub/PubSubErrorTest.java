@@ -640,4 +640,12 @@ public class PubSubErrorTest extends XmlTest {
         Assert.assertTrue(iq.getError().getExtension() instanceof MaxItemsExceeded);
         Assert.assertTrue(iq.getError().getExtension() == PubSubError.MAX_ITEMS_EXCEEDED);
     }
+
+    @Test
+    public void testPubSubFeature() {
+        Assert.assertEquals(PubSubFeature.ACCESS_AUTHORIZE.getFeatureName(), "http://jabber.org/protocol/pubsub#access-authorize");
+        for (PubSubFeature feature : PubSubFeature.values()) {
+            Assert.assertNotNull(feature.getFeatureName());
+        }
+    }
 }

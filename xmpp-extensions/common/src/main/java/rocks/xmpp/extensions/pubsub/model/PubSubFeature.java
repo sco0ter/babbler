@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.pubsub.model;
 
+import rocks.xmpp.extensions.disco.model.info.Feature;
+
 import javax.xml.bind.annotation.XmlEnumValue;
 
 /**
@@ -31,7 +33,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
  *
  * @author Christian Schudt
  */
-public enum PubSubFeature {
+public enum PubSubFeature implements Feature {
     /**
      * The default node access model is authorize.
      *
@@ -335,5 +337,14 @@ public enum PubSubFeature {
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#impl-subchange">12.13 Notification of Subscription State Changes</a>
      */
     @XmlEnumValue("subscription-notifications")
-    SUBSCRIPTION_NOTIFICATIONS
+    SUBSCRIPTION_NOTIFICATIONS;
+
+    @Override
+    public final String getFeatureName() {
+        try {
+            return PubSub.NAMESPACE + '#' + getClass().getField(this.name()).getAnnotation(XmlEnumValue.class).value();
+        } catch (NoSuchFieldException e) {
+            throw new AssertionError();
+        }
+    }
 }

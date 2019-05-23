@@ -24,13 +24,21 @@
 
 package rocks.xmpp.util;
 
+import rocks.xmpp.core.XmppContext;
+
+import javax.xml.bind.DataBindingException;
 import javax.xml.bind.DatatypeConverter;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.EventObject;
+import java.util.HashSet;
+import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -53,19 +61,19 @@ public final class XmppUtils {
      * <h2>Usage</h2>
      * ```java
      * Writer writer = new StringWriter();
-     *
+     * <p>
      * XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
      * XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
-     *
+     * <p>
      * JAXBContext jaxbContext = JAXBContext.newInstance(Message.class, Sent.class);
      * Marshaller marshaller = jaxbContext.createMarshaller();
      * marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-     *
+     * <p>
      * Message forwardedMessage = new Message(Jid.of("romeo@example.net"), Message.Type.CHAT, "Hi!!");
-     *
+     * <p>
      * Message message = new Message(Jid.of("juliet@example.net"));
      * message.addExtension(new Sent(new Forwarded(forwardedMessage)));
-     *
+     * <p>
      * marshaller.marshal(message, xmppStreamWriter);
      * xmppStreamWriter.flush();
      * System.out.println(writer.toString());
@@ -73,13 +81,13 @@ public final class XmppUtils {
      * The output of this is:
      * ```xml
      * <message to="juliet@example.net">
-     *     <sent xmlns="urn:xmpp:carbons:2">
-     *         <forwarded xmlns="urn:xmpp:forward:0">
-     *             <message xmlns="jabber:client" to="romeo@example.net" type="chat">
-     *                 <body>Hi!!</body>
-     *             </message>
-     *         </forwarded>
-     *     </sent>
+     * <sent xmlns="urn:xmpp:carbons:2">
+     * <forwarded xmlns="urn:xmpp:forward:0">
+     * <message xmlns="jabber:client" to="romeo@example.net" type="chat">
+     * <body>Hi!!</body>
+     * </message>
+     * </forwarded>
+     * </sent>
      * </message>
      * ```
      *
@@ -94,7 +102,7 @@ public final class XmppUtils {
     /**
      * Creates a {@link XMLStreamWriter} instance, which writes XML without namespace prefixes.
      *
-     * @param xmlStreamWriter  The underlying XML stream writer.
+     * @param xmlStreamWriter The underlying XML stream writer.
      * @return The prefix-free canonicalization writer.
      * @see #createXmppStreamWriter(XMLStreamWriter, boolean)
      */
@@ -171,5 +179,29 @@ public final class XmppUtils {
                 logger.log(Level.WARNING, ex.getMessage(), ex);
             }
         });
+    }
+
+    /**
+     * Creates a {@link JAXBContext} by loading all {@link XmppContext} implementations on the classpath.
+     * {@link XmppContext}s are found by using {@link ServiceLoader}.
+     *
+     * @param additionalClasses The additional classes to be bound to the context.
+     * @return The JAXBContext
+     * @see ServiceLoader
+     * @see XmppContext
+     */
+    public static JAXBContext createContext(final Iterable<Class<?>> additionalClasses) {
+        // Find all contexts, then add all classes from each context.
+        ServiceLoader<XmppContext> loader = ServiceLoader.load(XmppContext.class);
+        Set<Class<?>> classes = new HashSet<>();
+        for (XmppContext module : loader) {
+            module.getClasses().forEach(classes::add);
+        }
+        additionalClasses.forEach(classes::add);
+        try {
+            return JAXBContext.newInstance(classes.toArray(new Class<?>[0]));
+        } catch (JAXBException e) {
+            throw new DataBindingException(e);
+        }
     }
 }

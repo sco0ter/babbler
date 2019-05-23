@@ -25,38 +25,16 @@
 package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.bind.model.Bind;
-import rocks.xmpp.core.sasl.model.Mechanisms;
-import rocks.xmpp.core.session.model.Session;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
-import rocks.xmpp.core.stanza.model.client.ClientPresence;
-import rocks.xmpp.core.stream.model.StreamError;
-import rocks.xmpp.core.stream.model.StreamFeatures;
-import rocks.xmpp.core.tls.model.StartTls;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
 import rocks.xmpp.extensions.caps2.model.EntityCapabilities2;
-import rocks.xmpp.extensions.compress.model.StreamCompression;
-import rocks.xmpp.extensions.data.layout.model.Page;
-import rocks.xmpp.extensions.data.mediaelement.model.Media;
-import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.data.validate.model.Validation;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
-import rocks.xmpp.extensions.errors.model.ResourceLimitExceeded;
-import rocks.xmpp.extensions.errors.model.StanzaTooBig;
-import rocks.xmpp.extensions.errors.model.TooManyStanzas;
-import rocks.xmpp.extensions.httpbind.model.Body;
-import rocks.xmpp.extensions.privatedata.model.PrivateData;
-import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.roster.model.Roster;
-import rocks.xmpp.im.roster.versioning.model.RosterVersioning;
 import rocks.xmpp.im.subscription.PresenceManager;
-import rocks.xmpp.im.subscription.preapproval.model.SubscriptionPreApproval;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -73,57 +51,28 @@ public final class CoreModule implements Module {
     public final Collection<Extension> getExtensions() {
         return Arrays.asList(
 
-                // Core
-                Extension.of(StreamFeatures.class, StreamError.class, ClientMessage.class, ClientPresence.class, ClientIQ.class, Session.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class),
-
-                // XEP-0004: Data Forms
-                Extension.of(DataForm.class),
 
                 // XEP-0030: Service Discovery
-                Extension.of(InfoDiscovery.NAMESPACE, ServiceDiscoveryManager.class, true, InfoDiscovery.class),
-                Extension.of(ItemDiscovery.NAMESPACE, ServiceDiscoveryManager.class, true, ItemDiscovery.class),
+                Extension.of(InfoDiscovery.NAMESPACE, ServiceDiscoveryManager.class, true),
+                Extension.of(ItemDiscovery.NAMESPACE, ServiceDiscoveryManager.class, true),
 
                 // XEP-0059: Result Set Management
-                Extension.of(ResultSetManagement.NAMESPACE, true, ResultSetManagement.class),
-
-                // XEP-0049: Private XML Storage
-                Extension.of(PrivateData.class),
-
-                // XEP-0083: Nested Roster Groups
-                Extension.of(RosterDelimiter.class),
+                Extension.of(ResultSetManagement.NAMESPACE, true),
 
                 // XEP-0106: JID Escaping
                 Extension.of(Jid.ESCAPING_FEATURE, true),
 
                 // XEP-0115: Entity Capabilities
-                Extension.of(EntityCapabilities1.NAMESPACE, EntityCapabilitiesManager.class, true, EntityCapabilities1.class),
-
-                // XEP-0122: Data Forms Validation
-                Extension.of(Validation.NAMESPACE, false, Validation.class),
-
-                // XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)
-                Extension.of(Body.class),
-
-                // XEP-0138: Stream Compression
-                Extension.of(StreamCompression.class),
-
-                // XEP-0141: Data Forms Layout
-                Extension.of(Page.NAMESPACE, false, Page.class),
-
-                // XEP-0205: Best Practices to Discourage Denial of Service Attacks
-                Extension.of(ResourceLimitExceeded.class, StanzaTooBig.class, TooManyStanzas.class),
-
-                // XEP-0221: Data Forms Media Element
-                Extension.of(Media.class),
+                Extension.of(EntityCapabilities1.NAMESPACE, EntityCapabilitiesManager.class, true),
 
                 // XEP-0390 Entity Capabilities 2.0
-                Extension.of(EntityCapabilities2.NAMESPACE, EntityCapabilitiesManager.class, true, EntityCapabilities2.class),
+                Extension.of(EntityCapabilities2.NAMESPACE, EntityCapabilitiesManager.class, true),
 
                 Extension.of(PresenceManager.class, true),
 
                 Extension.of(ReconnectionManager.class, true),
 
-                Extension.of(Roster.NAMESPACE, RosterManager.class, true, Roster.class)
+                Extension.of(Roster.NAMESPACE, RosterManager.class, true)
         );
     }
 }

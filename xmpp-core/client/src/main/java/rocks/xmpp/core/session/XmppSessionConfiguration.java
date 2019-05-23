@@ -29,9 +29,7 @@ import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.util.XmppUtils;
 
-import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import java.nio.file.Files;
@@ -168,12 +166,7 @@ public final class XmppSessionConfiguration {
         for (Extension extension : extensions) {
             classesToBeBound.addAll(extension.getClasses());
         }
-
-        try {
-            jaxbContext = JAXBContext.newInstance(classesToBeBound.toArray(new Class<?>[classesToBeBound.size()]));
-        } catch (JAXBException e) {
-            throw new DataBindingException(e);
-        }
+        jaxbContext = XmppUtils.createContext(classesToBeBound);
     }
 
     /**

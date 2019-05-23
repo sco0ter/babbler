@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2019 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,26 +22,26 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.websocket.net.client;
+package rocks.xmpp.core;
 
-import rocks.xmpp.core.session.Extension;
-import rocks.xmpp.core.session.Module;
-import rocks.xmpp.websocket.model.Close;
-import rocks.xmpp.websocket.model.Open;
-
-import java.util.Collection;
-import java.util.Collections;
+import java.util.ServiceLoader;
 
 /**
- * The WebSocket module, which is used to make the framing elements {@code <open/>} and {@code <close/>} known to the session.
+ * Defines classes to be bound to the JAXBContext.
+ * Implementations of this interface can be found by using {@link ServiceLoader} and by placing a file called {@code rocks.xmpp.core.XmppContext} containing the full qualified class names of the implementations to {@code META-INF/services}.
+ * <p>
+ * Implementations must have a public no-arg default constructor.
  *
  * @author Christian Schudt
- * @since 0.7.0
+ * @see rocks.xmpp.util.XmppUtils#createContext(Iterable)
+ * @see ServiceLoader
  */
-public final class WebSocketModule implements Module {
+public interface XmppContext {
 
-    @Override
-    public final Collection<Extension> getExtensions() {
-        return Collections.singleton(Extension.of(Open.class, Close.class));
-    }
+    /**
+     * Gets the classes to be bound to the {@link javax.xml.bind.JAXBContext}.
+     *
+     * @return The clases to be bound.
+     */
+    Iterable<Class<?>> getClasses();
 }

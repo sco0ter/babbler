@@ -34,7 +34,6 @@ import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
 
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
@@ -44,8 +43,6 @@ import java.util.concurrent.ExecutorService;
  * @author Christian Schudt
  */
 public final class TestXmppSession extends XmppSession {
-
-    private final Jid connectedResource;
 
     private final ExecutorService executorService;
 
@@ -145,10 +142,5 @@ public final class TestXmppSession extends XmppSession {
     @Override
     protected ExecutorService getStanzaListenerExecutor() {
         return executorService;
-    }
-
-    @Override
-    public Jid getConnectedResource() {
-        return connectedResource;
     }
 }

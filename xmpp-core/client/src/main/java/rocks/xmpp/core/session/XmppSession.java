@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2019 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Session;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
@@ -85,6 +86,7 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -121,7 +123,7 @@ import java.util.logging.Logger;
  * @see <a href="https://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>
  * @see <a href="https://xmpp.org/extensions/xep-0174.html">XEP-0174: Serverless Messaging</a>
  */
-public abstract class XmppSession implements StreamHandler, AutoCloseable {
+public abstract class XmppSession implements Session, StreamHandler, AutoCloseable {
 
     protected static final Collection<Consumer<XmppSession>> creationListeners = new CopyOnWriteArraySet<>();
 
@@ -205,6 +207,11 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
     protected volatile Throwable exception;
 
     protected volatile boolean wasLoggedIn;
+
+    /**
+     * The user, which is assigned by the server after resource binding.
+     */
+    protected volatile Jid connectedResource;
 
     ExecutorService stanzaListenerExecutor;
 
@@ -849,8 +856,9 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
      * @param element The XML element.
      * @return The sent stream element, which is usually the same as the parameter, but may differ in case a stanza is sent, e.g. a {@link Message} is translated to a {@link rocks.xmpp.core.stanza.model.client.ClientMessage}.
      */
-    public Future<Void> send(StreamElement element) {
-        return sendInternal(prepareElement(element), true);
+    @Override
+    public AsyncResult<Void> send(StreamElement element) {
+        return new AsyncResult<>(sendInternal(prepareElement(element), true));
     }
 
     /**
@@ -1240,6 +1248,16 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
         return instance;
     }
 
+    @Override
+    public final Jid getLocalXmppAddress() {
+        return connectedResource;
+    }
+
+    @Override
+    public final Jid getRemoteXmppAddress() {
+        return getDomain();
+    }
+
     /**
      * Explicitly closes the session and performs a clean up of all listeners. Calling this method, if the session is already closing or closed has no effect.
      *
@@ -1256,23 +1274,48 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
         } catch (Exception e) {
             throwAsXmppExceptionIfNotNull(e);
         } finally {
-            // Clear everything.
-            inboundMessageListeners.clear();
-            outboundMessageListeners.clear();
-            inboundPresenceListeners.clear();
-            outboundPresenceListeners.clear();
-            inboundIQListeners.clear();
-            outboundIQListeners.clear();
-            messageAcknowledgedListeners.clear();
-            sendSucceededListeners.clear();
-            sendFailedListeners.clear();
-            stanzaListenerExecutor.shutdown();
-            if (shutdownHook != null) {
-                Runtime.getRuntime().removeShutdownHook(shutdownHook);
-            }
-            updateStatus(Status.CLOSED);
-            sessionStatusListeners.clear();
+            closed();
         }
+    }
+
+    @Override
+    public final CompletionStage<Void> closeAsync() {
+        return closeAsync(Connection::closeAsync);
+    }
+
+    @Override
+    public final CompletionStage<Void> closeAsync(StreamError streamError) {
+        return closeAsync(connection -> connection.closeAsync(streamError));
+    }
+
+    private CompletionStage<Void> closeAsync(Function<Connection, CompletionStage<Void>> closeFuncion) {
+        if (getStatus() == Status.CLOSED || !updateStatus(Status.CLOSING)) {
+            return CompletableFuture.completedFuture(null);
+        }
+        Connection connection = getActiveConnection();
+        if (connection != null) {
+            return closeFuncion.apply(connection).whenComplete(((aVoid, throwable) -> closed()));
+        }
+        return CompletableFuture.completedFuture(null);
+    }
+
+    private void closed() {
+        // Clear everything.
+        inboundMessageListeners.clear();
+        outboundMessageListeners.clear();
+        inboundPresenceListeners.clear();
+        outboundPresenceListeners.clear();
+        inboundIQListeners.clear();
+        outboundIQListeners.clear();
+        messageAcknowledgedListeners.clear();
+        sendSucceededListeners.clear();
+        sendFailedListeners.clear();
+        stanzaListenerExecutor.shutdown();
+        if (shutdownHook != null) {
+            Runtime.getRuntime().removeShutdownHook(shutdownHook);
+        }
+        updateStatus(Status.CLOSED);
+        sessionStatusListeners.clear();
     }
 
     private void closeAndNullifyConnection() throws Exception {
@@ -1390,7 +1433,9 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
      *
      * @return The connected resource.
      */
-    public abstract Jid getConnectedResource();
+    public final Jid getConnectedResource() {
+        return connectedResource;
+    }
 
     public final Queue<Stanza> getUnacknowledgedStanzas() {
         return unacknowledgedStanzas;

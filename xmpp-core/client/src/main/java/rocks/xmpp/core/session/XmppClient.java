@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2019 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -108,11 +108,6 @@ public final class XmppClient extends XmppSession {
     private static final Logger logger = Logger.getLogger(XmppClient.class.getName());
 
     private final AuthenticationManager authenticationManager;
-
-    /**
-     * The user, which is assigned by the server after resource binding.
-     */
-    private volatile Jid connectedResource;
 
     /**
      * The resource, which the user requested during resource binding. This value is stored, so that it can be reused during reconnection.
@@ -507,20 +502,6 @@ public final class XmppClient extends XmppSession {
         // Set this status after session establishment. It's used to auto-send service discovery to a server and some servers won't response,
         // if it's send before.
         updateStatus(Status.AUTHENTICATED);
-    }
-
-    /**
-     * Gets the connected resource, which is assigned by the server after resource binding.
-     * <blockquote>
-     * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#bind-fundamentals">7.1.  Fundamentals</a></cite></p>
-     * <p>After a client has bound a resource to the stream, it is referred to as a "connected resource".</p>
-     * </blockquote>
-     *
-     * @return The connected resource.
-     */
-    @Override
-    public final Jid getConnectedResource() {
-        return connectedResource;
     }
 
     /**

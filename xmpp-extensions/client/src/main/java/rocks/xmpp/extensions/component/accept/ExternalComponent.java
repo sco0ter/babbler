@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2019 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -61,8 +61,6 @@ public final class ExternalComponent extends XmppSession {
     private volatile CompletableFuture<Void> handshakeReceived;
 
     private final String sharedSecret;
-
-    private volatile Jid connectedResource;
 
     private ExternalComponent(String componentName, String sharedSecret, XmppSessionConfiguration configuration, ClientConnectionConfiguration connectionConfiguration) {
         super(componentName, configuration, connectionConfiguration);
@@ -233,11 +231,6 @@ public final class ExternalComponent extends XmppSession {
             future2.complete(null);
             handshakeReceived = null;
         }
-    }
-
-    @Override
-    public final Jid getConnectedResource() {
-        return connectedResource;
     }
 
     @Override

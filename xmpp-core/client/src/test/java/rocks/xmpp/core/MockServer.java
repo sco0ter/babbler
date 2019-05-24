@@ -53,7 +53,9 @@ public class MockServer {
                 throw new RuntimeException(e);
             }
         } else if (stanza instanceof IQ) {
-            connections.get(stanza.getFrom()).send(((IQ) stanza).createResult());
+            if (((IQ) stanza).isRequest()) {
+                connections.get(stanza.getFrom()).send(((IQ) stanza).createResult());
+            }
         }
     }
 }

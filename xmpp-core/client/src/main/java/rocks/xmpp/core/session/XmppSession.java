@@ -218,7 +218,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     /**
      * The shutdown hook for JVM shutdown, which will disconnect each open connection before the JVM is halted.
      */
-    private volatile Thread shutdownHook;
+    private Thread shutdownHook;
 
     private volatile XmppDebugger debugger;
 
@@ -231,15 +231,19 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
         // Add a shutdown hook, which will gracefully close the connection, when the JVM is halted.
         if (configuration.isCloseOnShutdown()) {
-            shutdownHook = configuration.getThreadFactory("Shutdown Hook").newThread(() -> {
-                shutdownHook = null;
-                try {
-                    close();
-                } catch (XmppException e) {
-                    logger.log(Level.WARNING, e.getMessage(), e);
-                }
-            });
-            Runtime.getRuntime().addShutdownHook(shutdownHook);
+            synchronized (this) {
+                shutdownHook = configuration.getThreadFactory("Shutdown Hook").newThread(() -> {
+                    synchronized (this) {
+                        shutdownHook = null;
+                    }
+                    try {
+                        close();
+                    } catch (XmppException e) {
+                        logger.log(Level.WARNING, e.getMessage(), e);
+                    }
+                });
+                Runtime.getRuntime().addShutdownHook(shutdownHook);
+            }
         }
 
         if (configuration.getDebugger() != null) {
@@ -1311,8 +1315,10 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
         sendSucceededListeners.clear();
         sendFailedListeners.clear();
         stanzaListenerExecutor.shutdown();
-        if (shutdownHook != null) {
-            Runtime.getRuntime().removeShutdownHook(shutdownHook);
+        synchronized (this) {
+            if (shutdownHook != null) {
+                Runtime.getRuntime().removeShutdownHook(shutdownHook);
+            }
         }
         updateStatus(Status.CLOSED);
         sessionStatusListeners.clear();

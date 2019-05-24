@@ -125,7 +125,7 @@ import java.util.logging.Logger;
  */
 public abstract class XmppSession implements Session, StreamHandler, AutoCloseable {
 
-    protected static final Collection<Consumer<XmppSession>> creationListeners = new CopyOnWriteArraySet<>();
+    private static final Collection<Consumer<XmppSession>> creationListeners = new CopyOnWriteArraySet<>();
 
     private static final Logger logger = Logger.getLogger(XmppSession.class.getName());
 
@@ -196,24 +196,24 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      */
     private final AtomicReference<Status> status = new AtomicReference<>(Status.INITIAL);
 
+    private final ExecutorService stanzaListenerExecutor;
+
     /**
      * guarded by "connections"
      */
-    protected Connection activeConnection;
+    Connection activeConnection;
 
     /**
      * Any exception that occurred during stream negotiation ({@link #connect()}))
      */
     protected volatile Throwable exception;
 
-    protected volatile boolean wasLoggedIn;
+    volatile boolean wasLoggedIn;
 
     /**
      * The user, which is assigned by the server after resource binding.
      */
     protected volatile Jid connectedResource;
-
-    ExecutorService stanzaListenerExecutor;
 
     /**
      * The shutdown hook for JVM shutdown, which will disconnect each open connection before the JVM is halted.

@@ -3,10 +3,15 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: maven:3.3.3
+
 
 pipelines:
   default:
     - step:
-        script: # Modify the commands below to build your repository.
+        image: maven:3-jdk-8
+        script:
           - mvn clean install -pl !xmpp-debug,!xmpp-sample,!xmpp-fx,!xmpp-documentation
+    - step:
+        image: maven:3-jdk-11
+        script:
+          - mvn clean install

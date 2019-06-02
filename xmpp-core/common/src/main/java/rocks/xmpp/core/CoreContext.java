@@ -44,6 +44,7 @@ import rocks.xmpp.extensions.data.layout.model.Page;
 import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.data.validate.model.Validation;
+import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.errors.model.ResourceLimitExceeded;
@@ -53,6 +54,7 @@ import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.extensions.privatedata.model.PrivateData;
 import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
+import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.im.roster.model.Roster;
 import rocks.xmpp.im.roster.versioning.model.RosterVersioning;
 import rocks.xmpp.im.subscription.preapproval.model.SubscriptionPreApproval;
@@ -105,6 +107,12 @@ public final class CoreContext implements XmppContext {
 
                 // XEP-0141: Data Forms Layout
                 Page.class,
+
+                // XEP-0198: Stream Management
+                StreamManagement.class,
+
+                // XEP-0203: Delayed Delivery
+                DelayedDelivery.class,
 
                 // XEP-0205: Best Practices to Discourage Denial of Service Attacks
                 ResourceLimitExceeded.class, StanzaTooBig.class, TooManyStanzas.class,

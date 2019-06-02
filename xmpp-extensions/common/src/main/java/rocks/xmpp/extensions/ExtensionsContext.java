@@ -230,19 +230,13 @@ public final class ExtensionsContext implements XmppContext {
 
                 // XEP-0191: Blocking Command
                 BlockList.class,
-
-                // XEP-0198: Stream Management
-                StreamManagement.class,
-
+                
                 // XEP-0199: XMPP Ping
                 Ping.class,
 
                 // XEP-0202: Entity Time
                 EntityTime.class,
-
-                // XEP-0203: Delayed Delivery
-                DelayedDelivery.class,
-
+                
                 // XEP-0224: Attention
                 Attention.class,
 

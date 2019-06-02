@@ -286,7 +286,7 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter, Namespa
     }
 
     private boolean shouldWriteNamespacePrefix(String namespaceURI) {
-        return shouldWriteNamespace(namespaceURI) || StreamHeader.STREAM_NAMESPACE.equals(namespaceURI);
+        return shouldWriteNamespace(namespaceURI) || StreamHeader.STREAM_NAMESPACE.equals(namespaceURI) || "jabber:server:dialback".equals(namespaceURI);
     }
 
     private interface ElementWriter {

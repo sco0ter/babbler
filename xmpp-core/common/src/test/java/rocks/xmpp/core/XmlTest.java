@@ -38,6 +38,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
@@ -78,8 +79,8 @@ public abstract class XmlTest {
         this.namespace = namespace;
     }
 
-    private static XMLEventReader getStream(String stanza) throws XMLStreamException {
-        String stream = StreamHeader.responseClientToServer(FROM, null, "1", Locale.ENGLISH) + stanza + StreamHeader.CLOSING_STREAM_TAG;
+    private XMLEventReader getStream(String stanza, QName... additionalNamespaces) throws XMLStreamException {
+        String stream = StreamHeader.create(FROM, null, "1", "1.0", Locale.ENGLISH, namespace, additionalNamespaces) + stanza + StreamHeader.CLOSING_STREAM_TAG;
         Reader reader = new StringReader(stream);
         XMLEventReader xmlEventReader = INPUT_FACTORY.createXMLEventReader(reader);
         xmlEventReader.nextEvent();
@@ -88,7 +89,7 @@ public abstract class XmlTest {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T unmarshal(String xml, Class<T> type) throws XMLStreamException, JAXBException {
+    protected <T> T unmarshal(String xml, Class<T> type, QName... additionalNamespaces) throws XMLStreamException, JAXBException {
         Class<?> clazz = type;
         if (type == Message.class) {
             clazz = ClientMessage.class;
@@ -99,7 +100,7 @@ public abstract class XmlTest {
         if (type == IQ.class) {
             clazz = ClientIQ.class;
         }
-        XMLEventReader xmlEventReader = getStream(xml);
+        XMLEventReader xmlEventReader = getStream(xml, additionalNamespaces);
         return (T) unmarshaller.unmarshal(xmlEventReader, clazz).getValue();
     }
 

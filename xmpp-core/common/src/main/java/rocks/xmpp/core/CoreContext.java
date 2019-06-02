@@ -33,6 +33,7 @@ import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.core.stanza.model.server.ServerIQ;
 import rocks.xmpp.core.stanza.model.server.ServerMessage;
 import rocks.xmpp.core.stanza.model.server.ServerPresence;
+import rocks.xmpp.core.stanza.model.server.ServerStanzaError;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.tls.model.StartTls;
@@ -73,7 +74,7 @@ public final class CoreContext implements XmppContext {
         return Arrays.asList(
 
                 // Core
-                StreamFeatures.class, StreamError.class, ClientMessage.class, ClientPresence.class, ClientIQ.class, ServerMessage.class, ServerIQ.class, ServerPresence.class, Session.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class, Roster.class,
+                StreamFeatures.class, StreamError.class, ClientMessage.class, ClientPresence.class, ClientIQ.class, ServerMessage.class, ServerIQ.class, ServerPresence.class, ServerStanzaError.class, Session.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class, Roster.class,
 
                 // XEP-0004: Data Forms
                 DataForm.class,

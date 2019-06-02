@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2019 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,13 +39,11 @@ import java.util.Objects;
 
 /**
  * The implementation of a stanza's {@code <error/>} element.
- * <p>
- * This class is immutable.
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a>
  */
-public final class StanzaError {
+public class StanzaError {
 
     @XmlAttribute
     private final Jid by;
@@ -69,7 +67,7 @@ public final class StanzaError {
      * <blockquote><p>The "defined-condition" MUST correspond to one of the stanza error conditions defined under Section 8.3.3. However, because additional error conditions might be defined in the future, if an entity receives a stanza error condition that it does not understand then it MUST treat the unknown condition as equivalent to {@code <undefined-condition/>}</p></blockquote>
      */
     @SuppressWarnings("unused")
-    private StanzaError() {
+    protected StanzaError() {
         this(null, Condition.UNDEFINED_CONDITION, null, null, null, null);
     }
 

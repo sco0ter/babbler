@@ -43,7 +43,6 @@ import rocks.xmpp.extensions.component.accept.model.ComponentMessage;
 import rocks.xmpp.extensions.component.accept.model.ComponentPresence;
 import rocks.xmpp.extensions.component.accept.model.Handshake;
 import rocks.xmpp.extensions.csi.model.ClientState;
-import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
 import rocks.xmpp.extensions.forward.model.Forwarded;
 import rocks.xmpp.extensions.geoloc.model.GeoLocation;
@@ -85,7 +84,11 @@ import rocks.xmpp.extensions.seclabel.model.SecurityLabel;
 import rocks.xmpp.extensions.shim.model.Headers;
 import rocks.xmpp.extensions.si.model.StreamInitiation;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
-import rocks.xmpp.extensions.sm.model.StreamManagement;
+import rocks.xmpp.extensions.soap.model.fault.DataEncodingUnknown;
+import rocks.xmpp.extensions.soap.model.fault.MustUnderstand;
+import rocks.xmpp.extensions.soap.model.fault.Receiver;
+import rocks.xmpp.extensions.soap.model.fault.Sender;
+import rocks.xmpp.extensions.soap.model.fault.VersionMismatch;
 import rocks.xmpp.extensions.time.model.EntityTime;
 import rocks.xmpp.extensions.tune.model.Tune;
 import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
@@ -157,6 +160,9 @@ public final class ExtensionsContext implements XmppContext {
 
                 // XEP-0071: XHTML-IM
                 Html.class,
+
+                // XEP-0072: SOAP Over XMPP
+                DataEncodingUnknown.class, MustUnderstand.class, Receiver.class, Sender.class, VersionMismatch.class,
 
                 // XEP-0077: In-Band Registration
                 RegisterFeature.class, Registration.class,

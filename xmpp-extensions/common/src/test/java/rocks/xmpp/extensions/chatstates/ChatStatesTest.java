@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
 
 import javax.xml.bind.JAXBException;
@@ -38,10 +37,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class ChatStatesTest extends XmlTest {
-
-    protected ChatStatesTest() throws JAXBException {
-        super(ClientMessage.class, ChatState.class);
-    }
 
     @Test
     public void unmarshalActiveState() throws XMLStreamException, JAXBException {

@@ -39,10 +39,6 @@ import javax.xml.stream.XMLStreamException;
  */
 public class TlsTest extends XmlTest {
 
-    protected TlsTest() throws JAXBException {
-        super(StartTls.class, Proceed.class, Failure.class);
-    }
-
     @Test
     public void unmarshalStartTls() throws XMLStreamException, JAXBException {
         String xml = "<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>";

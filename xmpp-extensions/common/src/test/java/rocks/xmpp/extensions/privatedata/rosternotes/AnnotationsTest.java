@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.privatedata.model.PrivateData;
 import rocks.xmpp.extensions.privatedata.rosternotes.model.Annotation;
 
@@ -40,9 +39,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class AnnotationsTest extends XmlTest {
-    protected AnnotationsTest() throws JAXBException {
-        super(ClientIQ.class, PrivateData.class, Annotation.class);
-    }
 
     @Test
     public void unmarshalAnnotations() throws XMLStreamException, JAXBException {

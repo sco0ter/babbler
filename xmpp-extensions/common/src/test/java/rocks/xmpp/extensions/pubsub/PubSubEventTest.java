@@ -42,10 +42,6 @@ import java.net.URI;
  */
 public class PubSubEventTest extends XmlTest {
 
-    protected PubSubEventTest() throws JAXBException {
-        super(ClientMessage.class, Event.class);
-    }
-
     @Test
     public void unmarshalPubSubEventItems() throws XMLStreamException, JAXBException {
         String xml = "<message from='pubsub.shakespeare.lit' to='francisco@denmark.lit' id='foo'>\n" +

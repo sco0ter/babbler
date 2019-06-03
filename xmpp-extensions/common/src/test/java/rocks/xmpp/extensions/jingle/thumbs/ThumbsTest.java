@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.jingle.thumbs;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.jingle.thumbs.model.Thumbnail;
 
 import javax.xml.bind.JAXBException;
@@ -38,9 +37,6 @@ import java.net.URI;
  * @author Christian Schudt
  */
 public class ThumbsTest extends XmlTest {
-    protected ThumbsTest() throws JAXBException {
-        super(ClientIQ.class, Thumbnail.class);
-    }
 
     @Test
     public void unmarshalThumbs() throws XMLStreamException, JAXBException {

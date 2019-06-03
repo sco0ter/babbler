@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamException;
  */
 public class ComponentTest extends XmlTest {
     protected ComponentTest() throws JAXBException {
-        super("jabber:component:accept", ComponentMessage.class, Handshake.class);
+        super("jabber:component:accept");
     }
 
     @Test

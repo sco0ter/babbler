@@ -40,10 +40,6 @@ import java.util.Locale;
  */
 public class StreamErrorTest extends XmlTest {
 
-    protected StreamErrorTest() throws JAXBException {
-        super(StreamError.class);
-    }
-
     @Test
     public void unmarshalBadFormat() throws JAXBException, XMLStreamException {
         String xml = "<stream:error>\n" +

@@ -31,7 +31,6 @@ import rocks.xmpp.core.Text;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
@@ -50,10 +49,6 @@ import java.util.Locale;
  * @author Christian Schudt
  */
 public class MessageTest extends XmlTest {
-
-    protected MessageTest() throws JAXBException {
-        super(ClientMessage.class);
-    }
 
     @Test
     public void unmarshalSingleBody() throws XMLStreamException, JAXBException {

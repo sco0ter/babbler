@@ -36,9 +36,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class AvatarTest extends XmlTest {
-    protected AvatarTest() throws JAXBException {
-        super(AvatarUpdate.class);
-    }
 
     @Test
     public void marshalVCardUpdateWithEmptyPhotoElement() throws JAXBException, XMLStreamException {

@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.last.model.LastActivity;
 
 import javax.xml.bind.JAXBException;
@@ -38,10 +37,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class LastActivityTest extends XmlTest {
-
-    protected LastActivityTest() throws JAXBException {
-        super(ClientIQ.class, LastActivity.class);
-    }
 
     @Test
     public void unmarshalLastActivityResponse() throws XMLStreamException, JAXBException {

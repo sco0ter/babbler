@@ -37,10 +37,6 @@ import javax.xml.stream.XMLStreamException;
  */
 public class MoodTest extends XmlTest {
 
-    protected MoodTest() throws JAXBException {
-        super(Mood.class);
-    }
-
     @Test
     public void unmarshalHappy() throws XMLStreamException, JAXBException {
         String xml = "<mood xmlns='http://jabber.org/protocol/mood'>\n" +

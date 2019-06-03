@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.time.model.EntityTime;
 import rocks.xmpp.util.adapters.ZoneOffsetAdapter;
 
@@ -43,11 +42,6 @@ import java.time.ZoneOffset;
  * @author Christian Schudt
  */
 public class EntityTimeTest extends XmlTest {
-
-    protected EntityTimeTest() throws JAXBException {
-        super(ClientIQ.class, EntityTime.class);
-    }
-
 
     @Test
     public void marshalEntityTimeRequest() throws XMLStreamException, JAXBException {

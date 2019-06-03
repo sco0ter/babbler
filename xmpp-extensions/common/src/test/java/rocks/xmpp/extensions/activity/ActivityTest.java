@@ -39,10 +39,6 @@ import javax.xml.stream.XMLStreamException;
  */
 public class ActivityTest extends XmlTest {
 
-    protected ActivityTest() throws JAXBException {
-        super(Activity.class);
-    }
-
     @Test
     public void unmarshalActivityWithText() throws XMLStreamException, JAXBException {
         String xml = "<activity xmlns='http://jabber.org/protocol/activity'>\n" +

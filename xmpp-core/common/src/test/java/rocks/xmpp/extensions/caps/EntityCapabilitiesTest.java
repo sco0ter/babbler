@@ -47,9 +47,6 @@ import java.util.Locale;
  * @author Christian Schudt
  */
 public class EntityCapabilitiesTest extends XmlTest {
-    protected EntityCapabilitiesTest() throws JAXBException {
-        super(EntityCapabilities1.class);
-    }
 
     @Test
     public void unmarshalCaps() throws JAXBException, XMLStreamException {

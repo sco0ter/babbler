@@ -28,10 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.Presence;
-import rocks.xmpp.core.stanza.model.client.ClientPresence;
-import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.idle.model.Idle;
-import rocks.xmpp.extensions.last.model.LastActivity;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -43,10 +40,6 @@ import java.time.ZoneId;
  * @author Christian Schudt
  */
 public class IdleTest extends XmlTest {
-
-    protected IdleTest() throws JAXBException {
-        super(ClientPresence.class, Idle.class, LastActivity.class, DelayedDelivery.class);
-    }
 
     @Test
     public void unmarshalIdle() throws JAXBException, XMLStreamException {

@@ -36,9 +36,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class RosterVersioningTest extends XmlTest {
-    protected RosterVersioningTest() throws JAXBException {
-        super(RosterVersioning.class);
-    }
 
     @Test
     public void unmarshalPreApproval() throws JAXBException, XMLStreamException {

@@ -37,9 +37,6 @@ import java.math.BigInteger;
  * @author Christian Schudt
  */
 public class FileTransferTest extends XmlTest {
-    protected FileTransferTest() throws JAXBException {
-        super(SIFileTransferOffer.class);
-    }
 
     @Test
     public void unmarshalFileTransfer() throws XMLStreamException, JAXBException {

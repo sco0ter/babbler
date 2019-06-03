@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.soap.fault;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.extensions.soap.model.fault.DataEncodingUnknown;
 import rocks.xmpp.extensions.soap.model.fault.MustUnderstand;
 import rocks.xmpp.extensions.soap.model.fault.Receiver;
 import rocks.xmpp.extensions.soap.model.fault.Sender;
@@ -40,10 +39,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class SoapFaultTest extends XmlTest {
-
-    protected SoapFaultTest() throws JAXBException {
-        super(DataEncodingUnknown.class, MustUnderstand.class, Receiver.class, Sender.class, VersionMismatch.class);
-    }
 
     @Test
     public void testDataEncodingUnknown() throws JAXBException, XMLStreamException {

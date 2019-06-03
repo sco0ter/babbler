@@ -31,8 +31,6 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.soap.MessageFactory;
@@ -50,10 +48,6 @@ import javax.xml.transform.dom.DOMSource;
  * @author Christian Schudt
  */
 public class SoapTest extends XmlTest {
-
-    protected SoapTest() throws JAXBException {
-        super(ClientMessage.class, ClientIQ.class);
-    }
 
     @Test
     public void unmarshalSoap() throws JAXBException, XMLStreamException, SOAPException {

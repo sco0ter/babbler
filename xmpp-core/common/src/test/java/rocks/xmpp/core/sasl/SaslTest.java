@@ -43,10 +43,6 @@ import java.util.Locale;
  */
 public class SaslTest extends XmlTest {
 
-    protected SaslTest() throws JAXBException {
-        super(Auth.class, Challenge.class, Response.class, Success.class, Abort.class, Failure.class);
-    }
-
     @Test
     public void unmarshalAuth() throws XMLStreamException, JAXBException {
         String xml = "<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>";

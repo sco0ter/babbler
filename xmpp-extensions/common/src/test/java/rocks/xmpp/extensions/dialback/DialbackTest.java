@@ -30,7 +30,6 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.core.stanza.model.server.ServerStanzaError;
 import rocks.xmpp.extensions.dialback.model.Dialback;
 import rocks.xmpp.extensions.dialback.model.feature.DialbackFeature;
 
@@ -44,7 +43,7 @@ import javax.xml.stream.XMLStreamException;
 public class DialbackTest extends XmlTest {
 
     protected DialbackTest() throws JAXBException {
-        super("jabber:server", Dialback.class, ServerStanzaError.class);
+        super("jabber:server");
     }
 
     @Test

@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
@@ -48,9 +47,6 @@ import java.util.Locale;
  * @author Christian Schudt
  */
 public class ServiceDiscoveryTest extends XmlTest {
-    protected ServiceDiscoveryTest() throws JAXBException {
-        super(ClientIQ.class, ItemDiscovery.class, InfoDiscovery.class);
-    }
 
     @Test
     public void unmarshalServiceDiscoveryResponse() throws XMLStreamException, JAXBException {

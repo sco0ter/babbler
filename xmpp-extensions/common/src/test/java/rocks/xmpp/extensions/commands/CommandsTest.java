@@ -29,7 +29,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.commands.model.Command;
 import rocks.xmpp.extensions.data.model.DataForm;
 
@@ -42,9 +41,6 @@ import java.util.Collections;
  * @author Christian Schudt
  */
 public class CommandsTest extends XmlTest {
-    protected CommandsTest() throws JAXBException {
-        super(ClientIQ.class, Command.class, DataForm.class);
-    }
 
     @Test
     public void unmarshalCommands() throws XMLStreamException, JAXBException {

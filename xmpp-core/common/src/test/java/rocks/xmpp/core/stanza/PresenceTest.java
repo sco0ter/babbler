@@ -33,7 +33,6 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.util.ComparableTestHelper;
 
@@ -49,9 +48,6 @@ import java.util.Locale;
  * @author Christian Schudt
  */
 public class PresenceTest extends XmlTest {
-    protected PresenceTest() throws JAXBException {
-        super(ClientPresence.class);
-    }
 
     @Test
     public void unmarshalPresence() throws XMLStreamException, JAXBException {

@@ -37,10 +37,6 @@ import javax.xml.stream.XMLStreamException;
  */
 public class SubscriptionPreapprovalTest extends XmlTest {
 
-    protected SubscriptionPreapprovalTest() throws JAXBException {
-        super(SubscriptionPreApproval.class);
-    }
-
     @Test
     public void unmarshalPreApproval() throws JAXBException, XMLStreamException {
         String xml = "<sub xmlns='urn:xmpp:features:pre-approval'/>";

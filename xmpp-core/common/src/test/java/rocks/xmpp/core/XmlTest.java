@@ -34,6 +34,7 @@ import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.util.XmppUtils;
 
+import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -48,12 +49,20 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Locale;
 
 /**
  * @author Christian Schudt
  */
 public abstract class XmlTest {
+
+    private static final JAXBContext JAXB_CONTEXT;
+
+    static {
+        JAXB_CONTEXT = XmppUtils.createContext(Collections.emptyList());
+    }
 
     private static final Jid FROM = Jid.ofDomain("localhost");
 
@@ -67,16 +76,25 @@ public abstract class XmlTest {
 
     private final String namespace;
 
-    protected XmlTest(Class<?>... context) throws JAXBException {
-        this("jabber:client", context);
+    protected XmlTest() {
+        this("jabber:client");
     }
 
-    protected XmlTest(String namespace, Class<?>... context) throws JAXBException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(context);
-        unmarshaller = jaxbContext.createUnmarshaller();
-        marshaller = jaxbContext.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-        this.namespace = namespace;
+    protected XmlTest(String namespace, Class<?>... context) {
+        try {
+            final JAXBContext jaxbContext;
+            if (context.length > 0) {
+                jaxbContext = XmppUtils.createContext(Arrays.asList(context));
+            } else {
+                jaxbContext = JAXB_CONTEXT;
+            }
+            unmarshaller = jaxbContext.createUnmarshaller();
+            marshaller = jaxbContext.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+            this.namespace = namespace;
+        } catch (JAXBException e) {
+            throw new DataBindingException(e);
+        }
     }
 
     private XMLEventReader getStream(String stanza, QName... additionalNamespaces) throws XMLStreamException {

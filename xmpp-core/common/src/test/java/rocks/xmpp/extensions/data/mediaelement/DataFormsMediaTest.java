@@ -40,9 +40,6 @@ import java.util.Set;
  * @author Christian Schudt
  */
 public class DataFormsMediaTest extends XmlTest {
-    protected DataFormsMediaTest() throws JAXBException {
-        super(DataForm.class, Media.class);
-    }
 
     @Test
     public void unmarshalDataFormWithMedia1() throws XMLStreamException, JAXBException {

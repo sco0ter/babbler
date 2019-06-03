@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.pubsub.model.Affiliation;
 import rocks.xmpp.extensions.pubsub.model.AffiliationState;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
@@ -43,10 +42,6 @@ import java.net.URI;
  * @author Christian Schudt
  */
 public class PubSubOwnerUseCasesTest extends XmlTest {
-
-    protected PubSubOwnerUseCasesTest() throws JAXBException {
-        super(ClientIQ.class, PubSub.class, PubSubOwner.class);
-    }
 
     @Test
     public void marshalCreate() throws JAXBException, XMLStreamException {

@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.bob.model.Data;
 
 import javax.xml.bind.JAXBException;
@@ -39,10 +38,6 @@ import java.nio.charset.StandardCharsets;
  * @author Christian Schudt
  */
 public class BitOfBinaryTest extends XmlTest {
-
-    protected BitOfBinaryTest() throws JAXBException {
-        super(ClientIQ.class, Data.class);
-    }
 
     @Test
     public void unmarshalBitsOfBinaryResponse() throws JAXBException, XMLStreamException {

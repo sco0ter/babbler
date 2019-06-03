@@ -44,10 +44,6 @@ import java.util.List;
  */
 public class AddressTest extends XmlTest {
 
-    protected AddressTest() throws JAXBException {
-        super(Addresses.class, Roster.class);
-    }
-
     @Test
     public void marshalAddresses() throws JAXBException, XMLStreamException {
         List<Address> addressList = new ArrayList<>();

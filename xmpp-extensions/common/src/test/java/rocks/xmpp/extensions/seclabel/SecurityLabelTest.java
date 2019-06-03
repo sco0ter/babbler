@@ -30,8 +30,6 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.seclabel.model.SecurityLabel;
 import rocks.xmpp.extensions.seclabel.model.catalog.Catalog;
 import rocks.xmpp.extensions.seclabel.model.ess.EssSecurityLabel;
@@ -43,10 +41,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class SecurityLabelTest extends XmlTest {
-
-    protected SecurityLabelTest() throws JAXBException {
-        super(ClientIQ.class, ClientMessage.class, SecurityLabel.class);
-    }
 
     @Test
     public void unmarshalSecurityLabel() throws XMLStreamException, JAXBException {

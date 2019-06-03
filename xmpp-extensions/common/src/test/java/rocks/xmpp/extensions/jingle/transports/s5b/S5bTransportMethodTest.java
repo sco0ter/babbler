@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
-import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
 import rocks.xmpp.extensions.jingle.model.Jingle;
 import rocks.xmpp.extensions.jingle.transports.s5b.model.S5bTransportMethod;
 
@@ -43,9 +42,6 @@ import java.util.List;
  * @author Christian Schudt
  */
 public class S5bTransportMethodTest extends XmlTest {
-    protected S5bTransportMethodTest() throws JAXBException {
-        super(Jingle.class, S5bTransportMethod.class, Rtp.class);
-    }
 
     @Test
     public void unmarshalJingleWithTransport() throws XMLStreamException, JAXBException {

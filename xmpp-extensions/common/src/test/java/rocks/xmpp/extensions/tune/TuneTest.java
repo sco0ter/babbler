@@ -38,10 +38,6 @@ import java.net.URI;
  */
 public class TuneTest extends XmlTest {
 
-    protected TuneTest() throws JAXBException {
-        super(Tune.class);
-    }
-
     @Test
     public void unmarshalTune() throws XMLStreamException, JAXBException {
         String xml = "<tune xmlns='http://jabber.org/protocol/tune'>\n" +

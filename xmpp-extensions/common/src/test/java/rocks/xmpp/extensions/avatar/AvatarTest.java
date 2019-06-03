@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.avatar.model.data.AvatarData;
 import rocks.xmpp.extensions.avatar.model.metadata.AvatarMetadata;
 import rocks.xmpp.extensions.pubsub.model.Item;
@@ -41,9 +40,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class AvatarTest extends XmlTest {
-    protected AvatarTest() throws JAXBException {
-        super(ClientIQ.class, PubSub.class, AvatarData.class, AvatarMetadata.class);
-    }
 
     @Test
     public void unmarshalAvatar() throws XMLStreamException, JAXBException {

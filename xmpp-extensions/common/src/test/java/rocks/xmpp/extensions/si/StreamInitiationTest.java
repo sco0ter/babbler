@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.si.model.StreamInitiation;
 
@@ -40,9 +39,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class StreamInitiationTest extends XmlTest {
-    protected StreamInitiationTest() throws JAXBException {
-        super(ClientIQ.class, StreamInitiation.class);
-    }
 
     @Test
     public void unmarshalStreamInitiation() throws XMLStreamException, JAXBException {

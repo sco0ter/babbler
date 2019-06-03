@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 
 import javax.xml.bind.JAXBException;
@@ -39,9 +38,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class RosterItemExchangeTest extends XmlTest {
-    protected RosterItemExchangeTest() throws JAXBException {
-        super(ClientMessage.class, ContactExchange.class);
-    }
 
     @Test
     public void unmarshalRosterItemExchange() throws XMLStreamException, JAXBException {

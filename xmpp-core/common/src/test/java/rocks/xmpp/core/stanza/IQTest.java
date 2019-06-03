@@ -31,7 +31,6 @@ import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
 import javax.xml.bind.JAXBException;
@@ -41,10 +40,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class IQTest extends XmlTest {
-
-    protected IQTest() throws JAXBException {
-        super(ClientIQ.class, Bind.class);
-    }
 
     @Test
     public void unmarshalIQ() throws JAXBException, XMLStreamException {

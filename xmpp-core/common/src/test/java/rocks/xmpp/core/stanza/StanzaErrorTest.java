@@ -32,9 +32,6 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
-import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stanza.model.errors.Gone;
 import rocks.xmpp.core.stanza.model.errors.Redirect;
@@ -47,10 +44,6 @@ import java.util.Locale;
  * @author Christian Schudt
  */
 public class StanzaErrorTest extends XmlTest {
-
-    public StanzaErrorTest() throws JAXBException {
-        super(ClientIQ.class, ClientMessage.class, ClientPresence.class, StanzaError.class);
-    }
 
     @Test
     public void unmarshalBadRequest() throws JAXBException, XMLStreamException {

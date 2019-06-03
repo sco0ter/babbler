@@ -47,10 +47,6 @@ import java.util.Set;
  */
 public class DataFormsTest extends XmlTest {
 
-    protected DataFormsTest() throws JAXBException {
-        super(DataForm.class);
-    }
-
     @Test
     public void unmarshalDataForm() throws XMLStreamException, JAXBException {
         String xml = "<x xmlns='jabber:x:data' type='form'>\n" +

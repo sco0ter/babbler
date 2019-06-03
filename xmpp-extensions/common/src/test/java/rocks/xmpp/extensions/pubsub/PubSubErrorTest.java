@@ -61,10 +61,6 @@ import javax.xml.stream.XMLStreamException;
  */
 public class PubSubErrorTest extends XmlTest {
 
-    protected PubSubErrorTest() throws JAXBException {
-        super(ClientIQ.class, PubSub.class);
-    }
-
     @Test
     public void testUnsupportedErrorRetrieveSubscriptions() throws JAXBException, XMLStreamException {
         String xml = "<iq type='error'\n" +

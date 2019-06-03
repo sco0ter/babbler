@@ -40,10 +40,6 @@ import java.util.Locale;
  */
 public class GeoLocationTest extends XmlTest {
 
-    protected GeoLocationTest() throws JAXBException {
-        super(GeoLocation.class);
-    }
-
     @Test
     public void unmarshalGeoLocation() throws JAXBException, XMLStreamException {
         String xml = "<geoloc xmlns='http://jabber.org/protocol/geoloc' xml:lang='en'>\n" +

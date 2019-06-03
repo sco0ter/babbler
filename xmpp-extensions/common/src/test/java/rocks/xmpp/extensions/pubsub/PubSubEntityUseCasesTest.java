@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.pubsub.model.AffiliationState;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 import rocks.xmpp.extensions.pubsub.model.SubscriptionState;
@@ -41,10 +40,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class PubSubEntityUseCasesTest extends XmlTest {
-
-    protected PubSubEntityUseCasesTest() throws JAXBException {
-        super(ClientIQ.class, PubSub.class);
-    }
 
     @Test
     public void unmarshalPubSub() throws XMLStreamException, JAXBException {

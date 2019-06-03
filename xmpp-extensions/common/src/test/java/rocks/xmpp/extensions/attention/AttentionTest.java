@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.attention.model.Attention;
 
 import javax.xml.bind.JAXBException;
@@ -38,9 +37,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class AttentionTest extends XmlTest {
-    protected AttentionTest() throws JAXBException {
-        super(ClientMessage.class, Attention.class);
-    }
 
     @Test
     public void unmarshalAttentionInMessage() throws XMLStreamException, JAXBException {

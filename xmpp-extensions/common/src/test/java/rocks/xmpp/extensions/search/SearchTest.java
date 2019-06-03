@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.search.model.Search;
 
@@ -40,10 +39,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class SearchTest extends XmlTest {
-
-    protected SearchTest() throws JAXBException {
-        super(ClientIQ.class, Search.class);
-    }
 
     @Test
     public void unmarshalSearchRequest() throws XMLStreamException, JAXBException {

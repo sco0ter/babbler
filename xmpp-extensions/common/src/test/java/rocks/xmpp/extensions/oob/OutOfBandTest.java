@@ -29,8 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.oob.model.iq.OobIQ;
 import rocks.xmpp.extensions.oob.model.x.OobX;
 
@@ -41,9 +39,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class OutOfBandTest extends XmlTest {
-    protected OutOfBandTest() throws JAXBException {
-        super(ClientIQ.class, ClientMessage.class, OobIQ.class, OobX.class);
-    }
 
     @Test
     public void unmarshalOobIQ() throws XMLStreamException, JAXBException {

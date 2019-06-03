@@ -30,8 +30,6 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.langtrans.model.LanguageTranslation;
 import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
 
@@ -43,9 +41,6 @@ import java.util.Locale;
  * @author Christian Schudt
  */
 public class LanguageTranslationTest extends XmlTest {
-    protected LanguageTranslationTest() throws JAXBException {
-        super(ClientMessage.class, ClientIQ.class, LanguageTranslation.class);
-    }
 
     @Test
     public void marshalLanguageTranslation() throws JAXBException, XMLStreamException {

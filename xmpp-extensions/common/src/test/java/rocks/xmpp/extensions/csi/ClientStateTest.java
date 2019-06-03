@@ -38,10 +38,6 @@ import javax.xml.stream.XMLStreamException;
  */
 public class ClientStateTest extends XmlTest {
 
-    protected ClientStateTest() throws JAXBException {
-        super(ClientState.class);
-    }
-
     @Test
     public void unmarshalActiveState() throws XMLStreamException, JAXBException {
         String xml = "<active xmlns='urn:xmpp:csi:0'/>\n";

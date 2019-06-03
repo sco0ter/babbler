@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.data.layout;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.extensions.data.layout.model.Page;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.util.ComparableTestHelper;
 
@@ -39,9 +38,6 @@ import java.util.Arrays;
  * @author Christian Schudt
  */
 public class DataFormsLayoutTest extends XmlTest {
-    protected DataFormsLayoutTest() throws JAXBException {
-        super(DataForm.class, Page.class);
-    }
 
     @Test
     public void unmarshalDataFormWithPages() throws XMLStreamException, JAXBException {

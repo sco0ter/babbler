@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.forward.model.Forwarded;
 
 import javax.xml.bind.JAXBException;
@@ -38,9 +37,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class StanzaForwardingTest extends XmlTest {
-    protected StanzaForwardingTest() throws JAXBException {
-        super(ClientMessage.class, Forwarded.class);
-    }
 
     @Test
     public void unmarshalForwarded() throws XMLStreamException, JAXBException {
@@ -63,9 +59,9 @@ public class StanzaForwardingTest extends XmlTest {
 
         Message message = unmarshal(xml, Message.class);
         String xml2 = marshal(message);
-        Assert.assertEquals(xml2, "<message from=\"romeo@montague.lit/orchard\" id=\"28gs\" to=\"mercutio@verona.lit\" type=\"chat\"><body>A most courteous exposition!</body><forwarded xmlns=\"urn:xmpp:forward:0\"><delay xmlns=\"urn:xmpp:delay\" stamp=\"2010-07-10T23:08:25Z\"></delay><message xmlns=\"jabber:client\" from=\"juliet@capulet.lit/orchard\" id=\"0202197\" to=\"romeo@montague.lit\" type=\"chat\"><body>Yet I should kill thee with much cherishing.</body><mood xmlns=\"http://jabber.org/protocol/mood\">\n" +
-                "                  <amorous></amorous>\n" +
-                "              </mood></message></forwarded></message>");
+        Assert.assertEquals(xml2, "<message from=\"romeo@montague.lit/orchard\" id=\"28gs\" to=\"mercutio@verona.lit\" type=\"chat\"><body>A most courteous exposition!</body><forwarded xmlns=\"urn:xmpp:forward:0\"><delay xmlns=\"urn:xmpp:delay\" stamp=\"2010-07-10T23:08:25Z\"></delay><message xmlns=\"jabber:client\" from=\"juliet@capulet.lit/orchard\" id=\"0202197\" to=\"romeo@montague.lit\" type=\"chat\"><body>Yet I should kill thee with much cherishing.</body><mood xmlns=\"http://jabber.org/protocol/mood\">" +
+                "<amorous></amorous>" +
+                "</mood></message></forwarded></message>");
         Forwarded forwarded = message.getExtension(Forwarded.class);
         Assert.assertNotNull(forwarded);
         Assert.assertTrue(forwarded.getStanza() instanceof Message);

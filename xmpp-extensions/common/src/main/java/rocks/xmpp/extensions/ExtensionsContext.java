@@ -27,6 +27,7 @@ package rocks.xmpp.extensions;
 import rocks.xmpp.core.XmppContext;
 import rocks.xmpp.extensions.activity.model.Activity;
 import rocks.xmpp.extensions.address.model.Addresses;
+import rocks.xmpp.extensions.amp.model.AdvancedMessageProcessing;
 import rocks.xmpp.extensions.attention.model.Attention;
 import rocks.xmpp.extensions.avatar.model.data.AvatarData;
 import rocks.xmpp.extensions.avatar.model.metadata.AvatarMetadata;
@@ -43,6 +44,7 @@ import rocks.xmpp.extensions.component.accept.model.ComponentMessage;
 import rocks.xmpp.extensions.component.accept.model.ComponentPresence;
 import rocks.xmpp.extensions.component.accept.model.Handshake;
 import rocks.xmpp.extensions.csi.model.ClientState;
+import rocks.xmpp.extensions.dialback.model.Dialback;
 import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
 import rocks.xmpp.extensions.forward.model.Forwarded;
 import rocks.xmpp.extensions.geoloc.model.GeoLocation;
@@ -167,6 +169,9 @@ public final class ExtensionsContext implements XmppContext {
                 // XEP-0077: In-Band Registration
                 RegisterFeature.class, Registration.class,
 
+                // XEP-0079: Advanced Message Processing
+                AdvancedMessageProcessing.class,
+
                 // XEP-0080: User Location
                 GeoLocation.class,
 
@@ -242,7 +247,10 @@ public final class ExtensionsContext implements XmppContext {
 
                 // XEP-0202: Entity Time
                 EntityTime.class,
-                
+
+                // XEP-0220: Server Dialback
+                Dialback.class,
+
                 // XEP-0224: Attention
                 Attention.class,
 

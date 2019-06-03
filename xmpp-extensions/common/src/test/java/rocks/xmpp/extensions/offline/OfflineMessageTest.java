@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.offline.model.OfflineMessage;
 
 import javax.xml.bind.JAXBException;
@@ -38,9 +37,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class OfflineMessageTest extends XmlTest {
-    protected OfflineMessageTest() throws JAXBException {
-        super(ClientIQ.class, OfflineMessage.class);
-    }
 
     @Test
     public void unmarshalOffline() throws XMLStreamException, JAXBException {

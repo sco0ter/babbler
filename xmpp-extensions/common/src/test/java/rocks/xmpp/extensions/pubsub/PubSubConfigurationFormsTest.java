@@ -56,10 +56,6 @@ import java.util.Locale;
  */
 public class PubSubConfigurationFormsTest extends XmlTest {
 
-    protected PubSubConfigurationFormsTest() throws JAXBException {
-        super(DataForm.class);
-    }
-
     @Test
     public void testMetaData() throws JAXBException, XMLStreamException {
         Instant now = Instant.now();

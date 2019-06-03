@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.muc.model.Affiliation;
 import rocks.xmpp.extensions.muc.model.Role;
@@ -43,9 +42,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class MultiUserChatOwnerTest extends XmlTest {
-    protected MultiUserChatOwnerTest() throws JAXBException {
-        super(ClientIQ.class, MucOwner.class, MucAdmin.class);
-    }
 
     @Test
     public void testKickOccupant() throws JAXBException, XMLStreamException {

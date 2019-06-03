@@ -39,9 +39,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class BookmarkStorageTest extends XmlTest {
-    protected BookmarkStorageTest() throws JAXBException {
-        super(BookmarkStorage.class);
-    }
 
     @Test
     public void unmarshalBookmarks() throws XMLStreamException, JAXBException {

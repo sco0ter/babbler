@@ -41,10 +41,6 @@ import java.util.Locale;
  */
 public class ReachabilityTest extends XmlTest {
 
-    protected ReachabilityTest() throws JAXBException {
-        super(Reachability.class);
-    }
-
     @Test
     public void unmarshalReachability() throws XMLStreamException, JAXBException {
         String xml = "<reach xmlns='urn:xmpp:reach:0'>\n" +

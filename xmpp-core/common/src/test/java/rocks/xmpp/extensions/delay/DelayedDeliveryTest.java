@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 
 import javax.xml.bind.JAXBException;
@@ -40,9 +39,6 @@ import java.time.Instant;
  * @author Christian Schudt
  */
 public class DelayedDeliveryTest extends XmlTest {
-    protected DelayedDeliveryTest() throws JAXBException {
-        super(ClientMessage.class, DelayedDelivery.class);
-    }
 
     @Test
     public void unmarshalMessageWithDelayedDelivery() throws XMLStreamException, JAXBException {

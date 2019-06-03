@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.shim.model.Header;
 import rocks.xmpp.extensions.shim.model.Headers;
 
@@ -44,10 +43,6 @@ import java.util.Map;
  * @author Christian Schudt
  */
 public class HeadersTest extends XmlTest {
-
-    protected HeadersTest() throws JAXBException {
-        super(ClientMessage.class, Headers.class);
-    }
 
     @Test
     public void unmarshalHeaders() throws XMLStreamException, JAXBException {

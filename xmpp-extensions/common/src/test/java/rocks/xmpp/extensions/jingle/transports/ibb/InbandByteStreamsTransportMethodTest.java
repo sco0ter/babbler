@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
-import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
 import rocks.xmpp.extensions.jingle.model.Jingle;
 import rocks.xmpp.extensions.jingle.transports.ibb.model.InBandByteStreamsTransportMethod;
 
@@ -39,9 +38,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class InbandByteStreamsTransportMethodTest extends XmlTest {
-    protected InbandByteStreamsTransportMethodTest() throws JAXBException {
-        super(Jingle.class, InBandByteStreamsTransportMethod.class, Rtp.class);
-    }
 
     @Test
     public void unmarshalJingleWithTransport() throws XMLStreamException, JAXBException {

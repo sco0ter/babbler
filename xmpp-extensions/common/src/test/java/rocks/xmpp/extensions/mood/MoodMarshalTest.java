@@ -36,9 +36,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class MoodMarshalTest extends XmlTest {
-    protected MoodMarshalTest() throws JAXBException {
-        super(Mood.class);
-    }
 
     @Test
     public void marshalHappy() throws JAXBException, XMLStreamException {

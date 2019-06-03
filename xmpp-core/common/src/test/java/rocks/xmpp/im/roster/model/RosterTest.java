@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.util.ComparableTestHelper;
 
 import javax.xml.bind.JAXBException;
@@ -42,10 +41,6 @@ import java.util.List;
  * @author Christian Schudt
  */
 public class RosterTest extends XmlTest {
-
-    protected RosterTest() throws JAXBException {
-        super(ClientIQ.class, Roster.class);
-    }
 
     @Test
     public void testPlainRoster() throws XMLStreamException, JAXBException {

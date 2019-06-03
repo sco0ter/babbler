@@ -41,10 +41,6 @@ import java.util.Locale;
  */
 public class WebSocketTest extends XmlTest {
 
-    protected WebSocketTest() throws JAXBException {
-        super(Open.class, Close.class);
-    }
-
     @Test
     public void unmarshalOpen() throws XMLStreamException, JAXBException {
         Open open = unmarshal("<open xmlns=\"urn:ietf:params:xml:ns:xmpp-framing\" version=\"1.0\" to=\"test\" xml:lang=\"en\"></open>", Open.class);

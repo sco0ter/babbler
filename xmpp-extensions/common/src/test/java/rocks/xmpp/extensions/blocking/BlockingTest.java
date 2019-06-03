@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.blocking.model.Block;
 import rocks.xmpp.extensions.blocking.model.BlockList;
 import rocks.xmpp.extensions.blocking.model.Unblock;
@@ -43,9 +42,6 @@ import java.util.Collection;
  * @author Christian Schudt
  */
 public class BlockingTest extends XmlTest {
-    protected BlockingTest() throws JAXBException {
-        super(ClientIQ.class, BlockList.class);
-    }
 
     @Test
     public void unmarshalBlockList() throws XMLStreamException, JAXBException {

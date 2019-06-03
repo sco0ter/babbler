@@ -41,10 +41,6 @@ import java.util.Set;
  */
 public class HashTest extends XmlTest {
 
-    protected HashTest() throws JAXBException {
-        super(Hash.class);
-    }
-
     @Test
     public void unmarshalHash() throws JAXBException, XMLStreamException {
         String xml = "<hash xmlns='urn:xmpp:hashes:2' algo='sha-1'>2AfMGH8O7UNPTvUVAM9aK13mpCY=</hash>\n";

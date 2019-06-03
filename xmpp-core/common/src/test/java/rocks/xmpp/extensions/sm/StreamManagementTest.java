@@ -38,9 +38,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class StreamManagementTest extends XmlTest {
-    protected StreamManagementTest() throws JAXBException {
-        super(StreamManagement.class, StreamError.class);
-    }
 
     @Test
     public void unmarshalFeature() throws XMLStreamException, JAXBException {

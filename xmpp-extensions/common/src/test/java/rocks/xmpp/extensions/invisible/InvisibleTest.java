@@ -37,10 +37,6 @@ import javax.xml.stream.XMLStreamException;
  */
 public class InvisibleTest extends XmlTest {
 
-    protected InvisibleTest() throws JAXBException {
-        super(InvisibleCommand.class);
-    }
-
     @Test
     public void unmarshalInvisible() throws JAXBException, XMLStreamException {
         String xml = "<invisible xmlns='urn:xmpp:invisible:0'/>";

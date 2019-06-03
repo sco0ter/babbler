@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.info.Ringing;
 import rocks.xmpp.extensions.jingle.model.Jingle;
@@ -42,9 +41,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class JingleTest extends XmlTest {
-    protected JingleTest() throws JAXBException {
-        super(ClientIQ.class, Jingle.class, IceUdpTransportMethod.class, Rtp.class, Ringing.class);
-    }
 
     @Test
     public void unmarshalJingleSessionInitiate() throws XMLStreamException, JAXBException {

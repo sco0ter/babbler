@@ -37,9 +37,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class CompressionTest extends XmlTest {
-    protected CompressionTest() throws JAXBException {
-        super(StreamCompression.class);
-    }
 
     @Test
     public void unmarshalCompression() throws XMLStreamException, JAXBException {
@@ -107,11 +104,13 @@ public class CompressionTest extends XmlTest {
         String xml = marshal(new StreamCompression.Failure(StreamCompression.Failure.Condition.PROCESSING_FAILED));
         Assert.assertEquals(xml, "<failure xmlns=\"http://jabber.org/protocol/compress\"><processing-failed></processing-failed></failure>");
     }
+
     @Test
     public void marshalFailureSetupFailed() throws XMLStreamException, JAXBException {
         String xml = marshal(new StreamCompression.Failure(StreamCompression.Failure.Condition.UNSUPPORTED_METHOD));
         Assert.assertEquals(xml, "<failure xmlns=\"http://jabber.org/protocol/compress\"><unsupported-method></unsupported-method></failure>");
     }
+
     @Test
     public void marshalFailureUnsupportedMethod() throws XMLStreamException, JAXBException {
         String xml = marshal(new StreamCompression.Failure(StreamCompression.Failure.Condition.SETUP_FAILED));

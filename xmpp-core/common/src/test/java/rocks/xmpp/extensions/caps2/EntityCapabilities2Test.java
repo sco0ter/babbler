@@ -41,9 +41,6 @@ import java.util.Base64;
  * @author Christian Schudt
  */
 public class EntityCapabilities2Test extends XmlTest {
-    protected EntityCapabilities2Test() throws JAXBException {
-        super(InfoDiscovery.class, EntityCapabilities2.class);
-    }
 
     @Test
     public void unmarshal() throws JAXBException, XMLStreamException {

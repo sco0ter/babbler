@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
 
 import javax.xml.bind.JAXBException;
@@ -38,9 +37,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class RealTimeTextTest extends XmlTest {
-    protected RealTimeTextTest() throws JAXBException {
-        super(ClientMessage.class, RealTimeText.class);
-    }
 
     @Test
     public void unmarshalRtt() throws XMLStreamException, JAXBException {

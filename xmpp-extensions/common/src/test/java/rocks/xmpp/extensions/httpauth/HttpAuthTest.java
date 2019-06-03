@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
 
 import javax.xml.bind.JAXBException;
@@ -38,10 +37,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class HttpAuthTest extends XmlTest {
-
-    protected HttpAuthTest() throws JAXBException {
-        super(ClientIQ.class, ConfirmationRequest.class);
-    }
 
     @Test
     public void unmarshalConfirm() throws JAXBException, XMLStreamException {

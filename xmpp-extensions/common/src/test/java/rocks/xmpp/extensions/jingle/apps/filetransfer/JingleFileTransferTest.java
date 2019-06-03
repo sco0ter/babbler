@@ -28,13 +28,10 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
-import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.errors.FileTransferError;
 import rocks.xmpp.extensions.jingle.model.Jingle;
 import rocks.xmpp.extensions.jingle.thumbs.model.Thumbnail;
-import rocks.xmpp.extensions.jingle.transports.s5b.model.S5bTransportMethod;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -43,9 +40,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class JingleFileTransferTest extends XmlTest {
-    protected JingleFileTransferTest() throws JAXBException {
-        super(Hash.class, Jingle.class, JingleFileTransfer.class, S5bTransportMethod.class, ClientIQ.class);
-    }
 
     @Test
     public void unmarshalJingleFileTransfer() throws XMLStreamException, JAXBException {

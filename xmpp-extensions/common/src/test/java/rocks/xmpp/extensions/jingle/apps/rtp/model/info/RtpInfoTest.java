@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.jingle.apps.rtp.model.info;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -36,9 +35,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class RtpInfoTest extends XmlTest {
-    protected RtpInfoTest() throws JAXBException {
-        super(Rtp.class);
-    }
 
     @Test
     public void unmarshalActive() throws XMLStreamException, JAXBException {

@@ -27,7 +27,6 @@ package rocks.xmpp.extensions.jingle.apps.rtp.errors;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.extensions.jingle.apps.rtp.model.Rtp;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.errors.CryptoRequired;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.errors.InvalidCrypto;
 
@@ -38,9 +37,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class RtpErrorsTest extends XmlTest {
-    protected RtpErrorsTest() throws JAXBException {
-        super(Rtp.class);
-    }
 
     @Test
     public void unmarshalInvalidCrypto() throws XMLStreamException, JAXBException {

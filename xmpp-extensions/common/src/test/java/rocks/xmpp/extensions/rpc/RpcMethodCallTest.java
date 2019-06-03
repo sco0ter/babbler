@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rpc.model.Value;
 
@@ -44,10 +43,6 @@ import java.util.Map;
  * @author Christian Schudt
  */
 public class RpcMethodCallTest extends XmlTest {
-
-    protected RpcMethodCallTest() throws JAXBException {
-        super(ClientIQ.class, Rpc.class);
-    }
 
     @Test
     public void unmarshalRpc() throws JAXBException, XMLStreamException {

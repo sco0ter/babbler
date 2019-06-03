@@ -30,7 +30,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.extensions.xhtmlim.model.Html;
 
 import javax.xml.bind.JAXBException;
@@ -43,9 +42,6 @@ import javax.xml.stream.XMLStreamException;
  * @author Christian Schudt
  */
 public class HtmlTest extends XmlTest {
-    protected HtmlTest() throws JAXBException {
-        super(ClientIQ.class, Html.class);
-    }
 
     @Test
     public void unmarshalHtml() throws XMLStreamException, JAXBException {

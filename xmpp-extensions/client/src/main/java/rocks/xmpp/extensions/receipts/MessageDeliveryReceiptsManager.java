@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.receipts;
 
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
@@ -90,7 +91,14 @@ public final class MessageDeliveryReceiptsManager extends Manager {
             Message message = e.getMessage();
             // If a client requests a receipt, send an ack message.
             if (message.hasExtension(MessageDeliveryReceipts.Request.class) && message.getId() != null) {
-                Message receiptMessage = new Message(message.getFrom(), message.getType());
+                final Jid recipient;
+                if (message.getType() == Message.Type.GROUPCHAT) {
+                    recipient = message.getFrom().asBareJid();
+                } else {
+                    recipient = message.getFrom();
+                }
+
+                Message receiptMessage = new Message(recipient, message.getType());
                 receiptMessage.setFrom(message.getTo());
                 receiptMessage.addExtension(new MessageDeliveryReceipts.Received(message.getId()));
                 xmppSession.send(receiptMessage);

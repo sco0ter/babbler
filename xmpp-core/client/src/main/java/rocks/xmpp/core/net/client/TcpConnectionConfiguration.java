@@ -120,7 +120,7 @@ public abstract class TcpConnectionConfiguration<T> extends ClientConnectionConf
         try {
 
             final List<SrvRecord> srvRecords = new ArrayList<>();
-            if (getChannelEncryption() == ChannelEncryption.DIRECT) {
+            if (getChannelEncryption() != ChannelEncryption.DIRECT) {
                 // Don't lookup unencrypted end points, if only direct TLS is allowed.
                 srvRecords.addAll(DnsResolver.resolveSRV("xmpp-client", xmppServiceDomain, nameServer, getConnectTimeout()));
             }

@@ -33,7 +33,10 @@ import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.SrvRecord;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -72,10 +75,11 @@ public abstract class TcpConnectionConfiguration<T> extends ClientConnectionConf
      */
     protected final Connection createConnection(XmppSession xmppSession, Function<T, TcpBinding> creator) throws Exception {
         T socket;
+        final AtomicBoolean useDirectTls = new AtomicBoolean(getChannelEncryption() == ChannelEncryption.DIRECT);
         if (getHostname() != null && !getHostname().isEmpty()) {
             socket = connect(getHostname(), getPort());
         } else if (xmppSession.getDomain() != null) {
-            if ((socket = connectWithXmppServiceDomain(xmppSession.getDomain(), xmppSession.getConfiguration().getNameServer())) == null) {
+            if ((socket = connectWithXmppServiceDomain(xmppSession.getDomain(), xmppSession.getConfiguration().getNameServer(), useDirectTls::set)) == null) {
                 // 9. If the initiating entity does not receive a response to its SRV query, it SHOULD attempt the fallback process described in the next section.
                 socket = connect(xmppSession.getDomain().toString(), getPort());
             }
@@ -83,7 +87,7 @@ public abstract class TcpConnectionConfiguration<T> extends ClientConnectionConf
             throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
         }
         TcpBinding tcpBinding = creator.apply(socket);
-        if (getChannelEncryption() == ChannelEncryption.DIRECT) {
+        if (useDirectTls.get()) {
             tcpBinding.secureConnection();
         }
         return tcpBinding;
@@ -103,17 +107,29 @@ public abstract class TcpConnectionConfiguration<T> extends ClientConnectionConf
      * This is the preferred way to resolve the FQDN.
      *
      * @param xmppServiceDomain The fully qualified domain name.
-     * @return If the connection could be established.
+     * @param nameServer        The name server used for DNS resolution.
+     * @param isDirectTls       The consumer which gets notified, if direct TLS is used.
+     * @return The socket or null, if the connection could not be established.
      * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">3.2.1.  Preferred Process: SRV Lookup</a>
      */
-    private T connectWithXmppServiceDomain(final Jid xmppServiceDomain, final String nameServer) {
+    private T connectWithXmppServiceDomain(final Jid xmppServiceDomain, final String nameServer, final Consumer<Boolean> isDirectTls) {
 
         // 1. The initiating entity constructs a DNS SRV query whose inputs are:
         //
         //   * Service of "xmpp-client" (for client-to-server connections) or "xmpp-server" (for server-to-server connections)
         try {
-            final List<SrvRecord> srvRecords = DnsResolver.resolveSRV("xmpp-client", xmppServiceDomain, nameServer, getConnectTimeout());
 
+            final List<SrvRecord> srvRecords = new ArrayList<>();
+            if (getChannelEncryption() == ChannelEncryption.DIRECT) {
+                // Don't lookup unencrypted end points, if only direct TLS is allowed.
+                srvRecords.addAll(DnsResolver.resolveSRV("xmpp-client", xmppServiceDomain, nameServer, getConnectTimeout()));
+            }
+            final List<SrvRecord> srvRecordsXmpps = new ArrayList<>();
+            if (getChannelEncryption() != ChannelEncryption.DISABLED) {
+                // Only resolve SRV if TLS is not disabled.
+                srvRecordsXmpps.addAll(DnsResolver.resolveSRV("xmpps-client", xmppServiceDomain, nameServer, getConnectTimeout()));
+            }
+            srvRecords.addAll(srvRecordsXmpps);
             // 3. If a response is received, it will contain one or more combinations of a port and FDQN, each of which is weighted and prioritized as described in [DNS-SRV].
             // Sort the entries, so that the best one is tried first.
             srvRecords.sort(null);
@@ -129,7 +145,11 @@ public abstract class TcpConnectionConfiguration<T> extends ClientConnectionConf
                         // 4. The initiating entity chooses at least one of the returned FQDNs to resolve (following the rules in [DNS-SRV]), which it does by performing DNS "A" or "AAAA" lookups on the FDQN; this will result in an IPv4 or IPv6 address.
                         // 5. The initiating entity uses the IP address(es) from the successfully resolved FDQN (with the corresponding port number returned by the SRV lookup) as the connection address for the receiving entity.
                         // 6. If the initiating entity fails to connect using that IP address but the "A" or "AAAA" lookups returned more than one IP address, then the initiating entity uses the next resolved IP address for that FDQN as the connection address.
-                        return connect(srvRecord.getTarget(), srvRecord.getPort());
+                        T socket = connect(srvRecord.getTarget(), srvRecord.getPort());
+                        if (srvRecordsXmpps.contains(srvRecord)) {
+                            isDirectTls.accept(true);
+                        }
+                        return socket;
                     } catch (IOException e) {
                         // 7. If the initiating entity fails to connect using all resolved IP addresses for a given FDQN, then it repeats the process of resolution and connection for the next FQDN returned by the SRV lookup based on the priority and weight as defined in [DNS-SRV].
                         ex = e;

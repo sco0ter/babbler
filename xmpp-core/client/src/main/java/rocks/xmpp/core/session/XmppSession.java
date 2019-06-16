@@ -1298,7 +1298,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
         }
         Connection connection = getActiveConnection();
         if (connection != null) {
-            return closeFuncion.apply(connection).whenComplete(((aVoid, throwable) -> closed()));
+            return closeFuncion.apply(connection).whenComplete((aVoid, throwable) -> closed());
         }
         return CompletableFuture.completedFuture(null);
     }

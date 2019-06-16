@@ -85,6 +85,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <javac.version>9+181-r4173-1</javac.version>
+        <openjfx.version>11.0.2</openjfx.version>
     </properties>
 
     <inceptionYear>2014</inceptionYear>

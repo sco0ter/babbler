@@ -45,7 +45,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -320,8 +321,8 @@ public final class RosterManager extends Manager {
             try {
                 byte[] rosterData = rosterCacheDirectory.get(XmppUtils.hash(xmppSession.getConnectedResource().asBareJid().toString().getBytes(StandardCharsets.UTF_8)) + ".xml");
                 if (rosterData != null) {
-                    try (InputStream inputStream = new ByteArrayInputStream(rosterData)) {
-                        return (Roster) xmppSession.createUnmarshaller().unmarshal(inputStream);
+                    try (Reader reader = new InputStreamReader(new ByteArrayInputStream(rosterData), StandardCharsets.UTF_8)) {
+                        return (Roster) xmppSession.createUnmarshaller().unmarshal(reader);
                     }
                 }
             } catch (Exception e) {

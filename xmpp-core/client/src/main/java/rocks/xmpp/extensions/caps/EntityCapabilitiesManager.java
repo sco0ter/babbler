@@ -50,6 +50,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -371,8 +373,8 @@ public final class EntityCapabilitiesManager extends Manager {
             try {
                 byte[] bytes = directoryCapsCache.get(fileName);
                 if (bytes != null) {
-                    try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)) {
-                        infoNode = (InfoNode) xmppSession.createUnmarshaller().unmarshal(byteArrayInputStream);
+                    try (Reader reader = new InputStreamReader(new ByteArrayInputStream(bytes), StandardCharsets.UTF_8)) {
+                        infoNode = (InfoNode) xmppSession.createUnmarshaller().unmarshal(reader);
                         CAPS_CACHE.put(hash, infoNode);
                         return infoNode;
                     }

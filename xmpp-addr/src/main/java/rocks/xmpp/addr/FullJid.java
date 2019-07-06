@@ -24,13 +24,10 @@
 
 package rocks.xmpp.addr;
 
-import rocks.xmpp.precis.PrecisProfile;
 import rocks.xmpp.precis.PrecisProfiles;
 import rocks.xmpp.util.cache.LruCache;
 
-import java.net.IDN;
 import java.nio.charset.StandardCharsets;
-import java.text.Normalizer;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -54,8 +51,6 @@ final class FullJid extends AbstractJid {
     private static final Pattern UNESCAPE_PATTERN = Pattern.compile("\\\\(20|22|26|27|2f|3a|3c|3e|40|5c)");
 
     private static final Pattern JID = Pattern.compile("^((.*?)@)?([^/@]+)(/(.*))?$");
-
-    private static final IDNProfile IDN_PROFILE = new IDNProfile();
 
     /**
      * Whenever dots are used as label separators, the following characters MUST be recognized as dots: U+002E (full stop), U+3002 (ideographic full stop), U+FF0E (fullwidth full stop), U+FF61 (halfwidth ideographic full stop).
@@ -125,16 +120,13 @@ final class FullJid extends AbstractJid {
         // constructing an XMPP URI or IRI [RFC5122].  In particular, such a
         // character MUST be stripped before any other canonicalization steps
         // are taken.
-        // Also validate, that the domain name can be converted to ASCII, i.e. validate the domain name (e.g. must not start with "_").
-        final String strDomain = IDN.toASCII(LABEL_SEPARATOR_FINAL.matcher(Objects.requireNonNull(domain)).replaceAll(""), IDN.USE_STD3_ASCII_RULES);
+        enforcedDomainPart = PrecisProfiles.IDN.enforce(LABEL_SEPARATOR_FINAL.matcher(Objects.requireNonNull(domain)).replaceAll(""));
         enforcedLocalPart = escapedLocalPart != null ? PrecisProfiles.USERNAME_CASE_MAPPED.enforce(escapedLocalPart) : null;
         enforcedResource = resource != null ? PrecisProfiles.OPAQUE_STRING.enforce(resource) : null;
-        // See https://tools.ietf.org/html/rfc5895#section-2
-        enforcedDomainPart = IDN_PROFILE.enforce(strDomain);
 
         validateLength(enforcedLocalPart, "local");
         validateLength(enforcedResource, "resource");
-        validateDomain(strDomain);
+        validateDomain(enforcedDomainPart);
 
         this.local = unescape(enforcedLocalPart);
         this.escapedLocal = enforcedLocalPart;
@@ -425,61 +417,5 @@ final class FullJid extends AbstractJid {
     @Override
     public final Jid atSubdomain(CharSequence subdomain) {
         return new FullJid(getLocal(), Objects.requireNonNull(subdomain) + "." + getDomain(), getResource(), false, null);
-    }
-
-    /**
-     * A profile for applying the rules for IDN as in RFC 5895. Although IDN doesn't use Precis, it's still very similar so that we can use the base class.
-     *
-     * @see <a href="https://tools.ietf.org/html/rfc5895#section-2">RFC 5895</a>
-     */
-    private static final class IDNProfile extends PrecisProfile {
-
-        private IDNProfile() {
-            super(false);
-        }
-
-        @Override
-        public String prepare(CharSequence input) {
-            return IDN.toUnicode(input.toString(), IDN.USE_STD3_ASCII_RULES);
-        }
-
-        @Override
-        public String enforce(CharSequence input) {
-            // 4. Map IDEOGRAPHIC FULL STOP character (U+3002) to dot.
-            return applyAdditionalMappingRule(
-                    // 3.  All characters are mapped using Unicode Normalization Form C (NFC).
-                    applyNormalizationRule(
-                            // 2. Fullwidth and halfwidth characters (those defined with
-                            // Decomposition Types <wide> and <narrow>) are mapped to their
-                            // decomposition mappings
-                            applyWidthMappingRule(
-                                    // 1. Uppercase characters are mapped to their lowercase equivalents
-                                    applyCaseMappingRule(prepare(input))))).toString();
-        }
-
-        @Override
-        protected CharSequence applyWidthMappingRule(CharSequence charSequence) {
-            return widthMap(charSequence);
-        }
-
-        @Override
-        protected CharSequence applyAdditionalMappingRule(CharSequence charSequence) {
-            return LABEL_SEPARATOR.matcher(charSequence).replaceAll(".");
-        }
-
-        @Override
-        protected CharSequence applyCaseMappingRule(CharSequence charSequence) {
-            return charSequence.toString().toLowerCase();
-        }
-
-        @Override
-        protected CharSequence applyNormalizationRule(CharSequence charSequence) {
-            return Normalizer.normalize(charSequence, Normalizer.Form.NFC);
-        }
-
-        @Override
-        protected CharSequence applyDirectionalityRule(CharSequence charSequence) {
-            return charSequence;
-        }
     }
 }

@@ -1303,12 +1303,12 @@ public abstract class XmppSession implements StreamHandler, AutoCloseable {
         // Release a potential waiting thread.
         streamFeaturesManager.cancelNegotiation();
         if (EnumSet.of(Status.AUTHENTICATED, Status.AUTHENTICATING, Status.CONNECTED, Status.CONNECTING).contains(getStatus()) && !(e instanceof AuthenticationException)) {
+            updateStatus(Status.DISCONNECTED, e);
             try {
                 closeAndNullifyConnection();
             } catch (Exception e1) {
                 e.addSuppressed(e1);
             }
-            updateStatus(Status.DISCONNECTED, e);
         }
     }
 

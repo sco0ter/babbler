@@ -1,6 +1,12 @@
 # Changelog
 ---
 
+### Version 0.8.2 (2019-11-06)
+
+* Update the session status before closing the connection, in order to have the first exception in the event
+* Ensure UTF-8 when reading XML from file caches
+
+
 ### Version 0.8.1 (2019-03-06)
 
 * Limit the thread usage when multiple clients are running in the same JVM

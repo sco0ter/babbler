@@ -30,7 +30,7 @@
     <parent>
         <groupId>rocks.xmpp</groupId>
         <artifactId>xmpp-extensions</artifactId>
-        <version>0.8.2</version>
+        <version>0.8.3-SNAPSHOT</version>
     </parent>
     <artifactId>xmpp-extensions-common</artifactId>
     <name>XMPP.rocks - Extensions - Common</name>

@@ -30,7 +30,7 @@
     <parent>
         <groupId>rocks.xmpp</groupId>
         <artifactId>xmpp-nio-netty</artifactId>
-        <version>0.8.2</version>
+        <version>0.8.3-SNAPSHOT</version>
     </parent>
     <artifactId>xmpp-nio-netty-client</artifactId>
     <name>XMPP.rocks - NIO (Netty) - Client</name>

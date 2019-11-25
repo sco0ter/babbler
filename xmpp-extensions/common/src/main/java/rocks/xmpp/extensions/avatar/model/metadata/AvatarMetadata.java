@@ -104,7 +104,7 @@ public final class AvatarMetadata {
     public static final class Info {
 
         @XmlAttribute
-        private final Integer bytes;
+        private final Long bytes;
 
         @XmlAttribute
         private final String id;
@@ -130,12 +130,12 @@ public final class AvatarMetadata {
             this.url = null;
         }
 
-        public Info(Integer bytes, String id, String type) {
+        public Info(long bytes, String id, String type) {
             this(bytes, id, type, null, null, null);
         }
 
-        public Info(Integer bytes, String id, String type, Integer width, Integer height, URL url) {
-            this.bytes = Objects.requireNonNull(bytes);
+        public Info(long bytes, String id, String type, Integer width, Integer height, URL url) {
+            this.bytes = bytes;
             this.id = Objects.requireNonNull(id);
             this.type = Objects.requireNonNull(type);
             this.width = width;
@@ -148,7 +148,7 @@ public final class AvatarMetadata {
          *
          * @return The bytes.
          */
-        public final Integer getBytes() {
+        public final long getBytes() {
             return bytes;
         }
 

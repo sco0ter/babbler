@@ -83,7 +83,7 @@ public class AvatarTest extends XmlTest {
         Assert.assertTrue(item.getPayload() instanceof AvatarMetadata);
         AvatarMetadata avatarMetadata = (AvatarMetadata) item.getPayload();
         Assert.assertEquals(avatarMetadata.getInfoList().size(), 4);
-        Assert.assertEquals(avatarMetadata.getInfoList().get(1).getBytes(), Integer.valueOf(12345));
+        Assert.assertEquals(avatarMetadata.getInfoList().get(1).getBytes(), 12345);
         Assert.assertEquals(avatarMetadata.getInfoList().get(1).getHeight(), Integer.valueOf(64));
         Assert.assertEquals(avatarMetadata.getInfoList().get(1).getWidth(), Integer.valueOf(64));
         Assert.assertEquals(avatarMetadata.getInfoList().get(1).getType(), "image/png");

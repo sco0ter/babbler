@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.pubsub.model;
 
+import rocks.xmpp.addr.Jid;
+
 /**
  * Represents an item within a publish-subscribe node.
  *
@@ -50,6 +52,6 @@ public interface Item {
      *
      * @return The publisher.
      */
-    String getPublisher();
+    Jid getPublisher();
 
 }

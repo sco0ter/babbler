@@ -471,7 +471,7 @@ public final class PubSub {
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-publish">7.1 Publish an Item to a Node</a>
      */
     public static PubSub withPublish(String node, String id, Object item, DataForm options) {
-        return new PubSub(new Publish(node, new ItemElement(id, item)), options != null ? new PublishOptions(options) : null);
+        return new PubSub(new Publish(node, new ItemElement(id, item, null)), options != null ? new PublishOptions(options) : null);
     }
 
     /**
@@ -945,17 +945,21 @@ public final class PubSub {
         @XmlAttribute
         private final String id;
 
+        @XmlAttribute
+        private final Jid publisher;
+
         private ItemElement() {
-            this(null, null);
+            this(null, null, null);
         }
 
         private ItemElement(String id) {
-            this(id, null);
+            this(id, null, null);
         }
 
-        private ItemElement(String id, Object object) {
+        private ItemElement(String id, Object object, Jid publisher) {
             this.id = id;
             this.object = object;
+            this.publisher = publisher;
         }
 
         @Override
@@ -969,8 +973,8 @@ public final class PubSub {
         }
 
         @Override
-        public final String getPublisher() {
-            return null;
+        public final Jid getPublisher() {
+            return publisher;
         }
     }
 

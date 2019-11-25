@@ -310,6 +310,13 @@ public enum PubSubFeature implements Feature {
     @XmlEnumValue("retrieve-items")
     RETRIEVE_ITEMS,
     /**
+     * Item retrieval is supported.
+     *
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-returnsome">6.5.4 Returning Some Items</a>
+     */
+    @XmlEnumValue("rsm")
+    RESULT_SET_MANAGEMENT,
+    /**
      * Retrieval of current subscriptions is supported.
      *
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#entity-subscriptions">5.6 Retrieve Subscriptions</a>

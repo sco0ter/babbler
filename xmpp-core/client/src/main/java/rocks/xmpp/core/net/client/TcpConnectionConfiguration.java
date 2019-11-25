@@ -138,7 +138,12 @@ public abstract class TcpConnectionConfiguration<T> extends ClientConnectionConf
                 if (srvRecord != null) {
                     // (However, if the result of the SRV lookup is a single resource record with a Target of ".", i.e., the root domain, then the initiating entity MUST abort SRV processing at this point because according to [DNS-SRV] such a Target "means that the service is decidedly not available at this domain".)
                     if (".".equals(srvRecord.getTarget())) {
-                        return null;
+                        if (srvRecordsXmpps.contains(srvRecord)) {
+                            // Direct TLS is not supported, in this case try the non-direct-TLS targets.
+                            continue;
+                        } else {
+                            return null;
+                        }
                     }
 
                     try {

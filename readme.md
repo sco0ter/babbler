@@ -22,12 +22,12 @@ Since this project is quite young, the API might change. Comments on the API are
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-core-client</artifactId>
-    <version>0.8.1</version>
+    <version>0.8.2</version>
 </dependency>
 <dependency>
     <groupId>rocks.xmpp</groupId>
     <artifactId>xmpp-extensions-client</artifactId>
-    <version>0.8.1</version>
+    <version>0.8.2</version>
 </dependency>
 ```
 
@@ -144,17 +144,18 @@ Development snapshots are available on OSS Sonatype nexus:
 * ![not supported][not supported]   [XEP-0262: Use of ZRTP in Jingle RTP Sessions](https://xmpp.org/extensions/xep-0262.html)
 * ![not supported][not supported]   [XEP-0266: Codecs for Jingle Audio](https://xmpp.org/extensions/xep-0266.html)
 * ![supported][supported]           [XEP-0297: Stanza Forwarding](https://xmpp.org/extensions/xep-0297.html)
+* ![supported][supported]           [XEP-0300: Use of Cryptographic Hash Functions in XMPP](https://xmpp.org/extensions/xep-0300.html)
 * ![supported][supported]           [XEP-0301: In-Band Real Time Text](https://xmpp.org/extensions/xep-0301.html)
 * ![supported][supported]           [XEP-0308: Last Message Correction](https://xmpp.org/extensions/xep-0308.html)
 * ![supported][supported]           [XEP-0319: Last User Interaction in Presence](https://xmpp.org/extensions/xep-0319.html)
-* ![not supported][not supported]   [XEP-0368: SRV records for XMPP over TLS](https://xmpp.org/extensions/xep-0368.html)
+* ![supported][supported]           [XEP-0368: SRV records for XMPP over TLS](https://xmpp.org/extensions/xep-0368.html)
+* ![not supported][not supported]   [XEP-0410: MUC Self-Ping (Schr&ouml;dinger's Chat)](https://xmpp.org/extensions/xep-0410.html)
 
 
 Supported experimental XEPs:
 
 * ![supported][supported]           [XEP-0186: Invisible Command](https://xmpp.org/extensions/xep-0186.html)
 * ![supported][supported]           [XEP-0280: Message Carbons](https://xmpp.org/extensions/xep-0280.html)
-* ![supported][supported]           [XEP-0300: Use of Cryptographic Hash Functions in XMPP](https://xmpp.org/extensions/xep-0300.html)
 * ![supported][supported]           [XEP-0335: JSON Containers](https://xmpp.org/extensions/xep-0335.html)
 
 

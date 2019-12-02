@@ -29,6 +29,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 
 /**
+ * In certain scenarios it makes sense to communicate the hash algorithm that is used prior to the calculation of the hash value.
+ *
  * @author Christian Schudt
  */
 @XmlRootElement(name = "hash-used")

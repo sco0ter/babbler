@@ -101,8 +101,7 @@ import rocks.xmpp.extensions.vcard.temp.model.VCard;
 import rocks.xmpp.extensions.version.SoftwareVersionManager;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.security.Security;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -115,18 +114,12 @@ import java.util.Set;
  */
 public final class ExtensionModule implements Module {
 
-    private static final String[] REGISTERED_HASH_ALGORITHMS = new String[]{"md5", "sha-1", "sha-224", "sha-256", "sha-384", "sha-512"};
-
     private static final Set<String> HASH_FEATURES = new HashSet<>();
 
     static {
-        for (String algorithm : REGISTERED_HASH_ALGORITHMS) {
-            try {
-                MessageDigest.getInstance(algorithm);
-                HASH_FEATURES.add("urn:xmpp:hash-function-text-names:" + algorithm);
-            } catch (NoSuchAlgorithmException e) {
-                // ignore
-            }
+        for (String algorithm : Security.getAlgorithms("MessageDigest")) {
+            // Replace "SHA" algorith with "SHA-1".
+            HASH_FEATURES.add("urn:xmpp:hash-function-text-names:" + algorithm.replaceAll("^SHA$", "SHA-1").toLowerCase());
         }
     }
 

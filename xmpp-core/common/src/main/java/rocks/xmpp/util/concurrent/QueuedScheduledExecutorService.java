@@ -2,13 +2,14 @@ package rocks.xmpp.util.concurrent;
 
 import rocks.xmpp.util.XmppUtils;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableScheduledFuture;
 import java.util.concurrent.ScheduledExecutorService;
@@ -57,7 +58,7 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
 
         super(delegate);
 
-        this.futures = new HashSet<>();
+        this.futures = Collections.synchronizedSet(new HashSet<>());
         this.keepPeriodic = false;
         this.keepDelayed = true;
         this.removeOnCancel = false;
@@ -124,7 +125,11 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
     }
 
     private void onShutdown() {
-        for (RunnableScheduledFuture<?> future : new HashSet<>(this.futures)) {
+        Set<RunnableScheduledFuture<?>> copy;
+        synchronized (this.futures) {
+            copy = new HashSet<>(this.futures);
+        }
+        for (RunnableScheduledFuture<?> future : copy) {
             if ((future.isPeriodic() ? !keepPeriodic : !keepDelayed) || future.isCancelled()) {
                 future.cancel(false);
             }

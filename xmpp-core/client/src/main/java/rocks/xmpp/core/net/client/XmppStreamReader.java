@@ -178,12 +178,12 @@ final class XmppStreamReader {
                         xmlEventReader.nextEvent();
                     }
                     if (xmlEvent.isEndElement()) {
-                        // The stream gets closed with </stream:stream>
-                        closedByPeer.run();
                         if (debugger != null) {
                             QName qName = xmlEvent.asEndElement().getName();
                             debugger.readStanza("</" + qName.getPrefix() + ':' + qName.getLocalPart() + '>', null);
                         }
+                        // The stream gets closed with </stream:stream>
+                        closedByPeer.run();
                     }
                 }
                 xmlEventReader.close();

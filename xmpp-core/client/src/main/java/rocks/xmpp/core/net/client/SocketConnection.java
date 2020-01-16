@@ -140,6 +140,10 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
         }
     }
 
+    synchronized InputStream getInputStream() {
+        return inputStream;
+    }
+
     @Override
     public final CompletionStage<Void> open(final SessionOpen sessionOpen) {
 
@@ -149,11 +153,7 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
         }
         // Start reading from the input stream.
         xmppStreamReader = new XmppStreamReader(streamHeader.getContentNamespace(), this, this.xmppSession);
-        final InputStream is;
-        synchronized (this) {
-            is = inputStream;
-        }
-        xmppStreamReader.startReading(is, this::openedByPeer, this::closedByPeer);
+        xmppStreamReader.startReading(this::openedByPeer, this::closedByPeer);
 
         // Start writing to the output stream.
         xmppStreamWriter = new XmppStreamWriter(streamHeader.getContentNamespace(), streamManager, this.xmppSession);
@@ -276,7 +276,6 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
     @Override
     protected final synchronized void restartStream() {
         xmppStreamWriter.openStream(outputStream, (StreamHeader) sessionOpen);
-        xmppStreamReader.startReading(inputStream, this::openedByPeer, this::closedByPeer);
     }
 
     @Override

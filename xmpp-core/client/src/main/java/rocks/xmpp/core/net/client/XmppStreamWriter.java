@@ -102,7 +102,7 @@ final class XmppStreamWriter {
                         notifyException(e);
                     }
                 }
-            }, 0, keepAliveInterval, TimeUnit.SECONDS);
+            }, keepAliveInterval, keepAliveInterval, TimeUnit.SECONDS);
         }
     }
 

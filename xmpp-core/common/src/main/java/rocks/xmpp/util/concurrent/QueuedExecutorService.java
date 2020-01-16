@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -103,8 +104,7 @@ public class QueuedExecutorService extends AbstractExecutorService {
             // Adds a task to the queue and call ThreadQueue#poll in order to process it (if the queue
             // allows it, otherwise, wait for a Thread to be available).
             tasks.add(command);
-            poll();
-
+            poll(delegate);
         }
 
     }
@@ -112,34 +112,20 @@ public class QueuedExecutorService extends AbstractExecutorService {
     /**
      * Find outs if the queue contains any tasks and handle the next one if necessary.
      */
-    private void poll() {
+    private void poll(Executor executor) {
 
         // If the queue is not empty and the lock is available, then we can continue and attempt to
         // retrieve a task.
-        if (!tasks.isEmpty() && !lock.getAndSet(true)) {
-
-            Runnable task = tasks.poll();
-
-            if (task != null) {
-
-                // Queue the task for further processing
-                delegate.execute(() -> doExecute(task));
-
-            } else {
-
-                // Probably useless (if the queue wasn't empty previously, then if task should never be
-                // null ; yet, this should prevent any unforseen deadlock.
-                lock.set(false);
-                poll();
-
-            }
-
-        } else if (tasks.isEmpty()) {
+        Runnable task = tasks.peek();
+        if (task != null && !lock.getAndSet(true)) {
+            tasks.remove(task);
+            // Queue the task for further processing
+            executor.execute(() -> doExecute(task));
+        } else if (task == null) {
             synchronized (lock) {
                 lock.notifyAll();
             }
         }
-
     }
 
     /**
@@ -150,17 +136,13 @@ public class QueuedExecutorService extends AbstractExecutorService {
     private void doExecute(Runnable task) {
 
         try {
-
             task.run();
-
         } finally {
-
             // The task is complete, release the lock and queue the next task.
             lock.set(false);
-            poll();
-
+            // Don't run the next task (if any) with delegate.execute(), which creates a new thread,
+            // but in the same thread as "task" has been run.
+            poll(Runnable::run);
         }
-
     }
-
 }

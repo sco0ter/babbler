@@ -66,7 +66,7 @@ final class ReconnectionManager extends Manager {
 
     private static final Logger logger = Logger.getLogger(ReconnectionManager.class.getName());
 
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("XMPP Reconnection Thread"));
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Reconnection Thread"));
 
     private final ScheduledExecutorService scheduledExecutorService;
 

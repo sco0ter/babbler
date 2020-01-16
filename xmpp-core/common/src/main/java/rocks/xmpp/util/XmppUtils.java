@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -157,11 +158,7 @@ public final class XmppUtils {
      * @return The thread factory.
      */
     public static ThreadFactory createNamedThreadFactory(final String threadName) {
-        return r -> {
-            Thread thread = new Thread(r, threadName);
-            thread.setDaemon(true);
-            return thread;
-        };
+        return new DefaultThreadFactory(threadName);
     }
 
     /**
@@ -202,6 +199,23 @@ public final class XmppUtils {
             return JAXBContext.newInstance(classes.toArray(new Class<?>[0]));
         } catch (JAXBException e) {
             throw new DataBindingException(e);
+        }
+    }
+
+    private static final class DefaultThreadFactory implements ThreadFactory {
+        private final AtomicInteger threadNumber = new AtomicInteger(1);
+
+        private final String name;
+
+        DefaultThreadFactory(final String threadName) {
+            this.name = "XMPP.rocks - " + threadName + " (";
+        }
+
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread thread = new Thread(r, this.name + this.threadNumber.getAndIncrement() + ')');
+            thread.setDaemon(true);
+            return thread;
         }
     }
 }

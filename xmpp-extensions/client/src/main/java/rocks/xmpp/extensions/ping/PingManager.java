@@ -62,7 +62,7 @@ import java.util.function.Consumer;
  */
 public final class PingManager extends Manager {
 
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("XMPP Scheduled Ping Thread"));
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Scheduled Ping Thread"));
 
     private final QueuedScheduledExecutorService scheduledExecutorService;
 

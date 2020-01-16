@@ -58,7 +58,7 @@ import java.util.concurrent.TimeUnit;
  */
 final class XmppStreamWriter {
 
-    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("XMPP Writer Thread"));
+    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Writer Thread"));
 
     private final XmppSession xmppSession;
 

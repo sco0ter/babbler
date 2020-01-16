@@ -65,7 +65,7 @@ import rocks.xmpp.util.concurrent.QueuedExecutorService;
  */
 final class XmppStreamReader {
 
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("XMPP Reader Thread"));
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Reader Thread"));
 
     private static final QName STREAM_ID = new QName("id");
 

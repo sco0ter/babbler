@@ -87,7 +87,7 @@ public final class BoshConnection extends AbstractConnection {
     /**
      * The executor, which will execute HTTP requests.
      */
-    private static final ExecutorService HTTP_BIND_EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("XMPP BOSH Request Thread"));
+    private static final ExecutorService HTTP_BIND_EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("BOSH Request Thread"));
 
     private static final Logger logger = Logger.getLogger(BoshConnection.class.getName());
 

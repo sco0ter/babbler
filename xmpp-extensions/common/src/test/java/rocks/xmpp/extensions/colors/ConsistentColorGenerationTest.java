@@ -30,6 +30,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * @author Christian Schudt
@@ -121,6 +122,6 @@ public class ConsistentColorGenerationTest {
     }
 
     private static void assertEqualsRounded(double actual, double expected, int scale) {
-        Assert.assertEquals(BigDecimal.valueOf(actual).setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue(), expected);
+        Assert.assertEquals(BigDecimal.valueOf(actual).setScale(scale, RoundingMode.HALF_UP).doubleValue(), expected);
     }
 }

@@ -4,6 +4,7 @@ import rocks.xmpp.util.XmppUtils;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Delayed;
@@ -238,6 +239,26 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
 
             return (deltaDelay < 0) ? -1 : (deltaDelay > 0) ? 1 : 0;
 
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof ScheduledFutureTask)) {
+                return false;
+            }
+            ScheduledFutureTask other = (ScheduledFutureTask) o;
+            return Objects.equals(callable, other.callable)
+                    && Objects.equals(period, other.period)
+                    && Objects.equals(sequence, other.sequence)
+                    && Objects.equals(time, other.time);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(callable, period, sequence, time);
         }
 
         @Override

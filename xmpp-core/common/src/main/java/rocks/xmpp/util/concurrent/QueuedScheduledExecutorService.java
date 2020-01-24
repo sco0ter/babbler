@@ -247,9 +247,9 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
 
         @Override
         protected void done() {
-            synchronized (QueuedScheduledExecutorService.this.lock) {
+            synchronized (QueuedScheduledExecutorService.this.awaitTerminationLock) {
                 QueuedScheduledExecutorService.this.futures.remove(this);
-                QueuedScheduledExecutorService.this.lock.notifyAll();
+                QueuedScheduledExecutorService.this.awaitTerminationLock.notifyAll();
             }
         }
 

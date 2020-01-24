@@ -13,6 +13,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class QueuedExecutorService extends AbstractExecutorService {
 
     /**
+     * Lock to wait in {@link #awaitTermination(long, TimeUnit)}.
+     */
+    final Object awaitTerminationLock;
+
+    /**
      * Executor that will handle the tasks
      */
     private final ExecutorService delegate;
@@ -20,7 +25,7 @@ public class QueuedExecutorService extends AbstractExecutorService {
     /**
      * Lock indicating whether or not a task is pending completion.
      */
-    final AtomicBoolean lock;
+    private final AtomicBoolean hasRunningTask;
 
     /**
      * Lock indicating whether or not the delegate has been shutdown.
@@ -37,7 +42,8 @@ public class QueuedExecutorService extends AbstractExecutorService {
      */
     public QueuedExecutorService(ExecutorService delegate) {
         this.delegate = delegate;
-        this.lock = new AtomicBoolean(false);
+        this.hasRunningTask = new AtomicBoolean(false);
+        this.awaitTerminationLock = new Object();
         this.shutdown = new AtomicBoolean(false);
         this.tasks = new LinkedBlockingQueue<>();
     }
@@ -49,31 +55,25 @@ public class QueuedExecutorService extends AbstractExecutorService {
 
     @Override
     public void shutdown() {
-        synchronized (shutdown) {
-            shutdown.set(true);
-        }
+        shutdown.set(true);
     }
 
     @Override
     public List<Runnable> shutdownNow() {
-        synchronized (shutdown) {
-            shutdown();
-            List<Runnable> result = new ArrayList<>();
-            tasks.drainTo(result);
-            return result;
-        }
+        shutdown();
+        List<Runnable> result = new ArrayList<>();
+        tasks.drainTo(result);
+        return result;
     }
 
     @Override
     public boolean isShutdown() {
-        synchronized (shutdown) {
-            return shutdown.get();
-        }
+        return shutdown.get();
     }
 
     @Override
     public boolean isTerminated() {
-        return isShutdown() && tasks.isEmpty() && !lock.get();
+        return isShutdown() && tasks.isEmpty() && !hasRunningTask.get();
     }
 
     @Override
@@ -81,7 +81,7 @@ public class QueuedExecutorService extends AbstractExecutorService {
 
         long nanos = unit.toNanos(timeout);
 
-        synchronized (lock) {
+        synchronized (awaitTerminationLock) {
             while (true) {
                 if (isTerminated()) {
                     return true;
@@ -89,7 +89,7 @@ public class QueuedExecutorService extends AbstractExecutorService {
                     return false;
                 } else {
                     long now = System.nanoTime();
-                    TimeUnit.NANOSECONDS.timedWait(lock, nanos);
+                    TimeUnit.NANOSECONDS.timedWait(awaitTerminationLock, nanos);
                     nanos -= System.nanoTime() - now;
                 }
             }
@@ -114,16 +114,16 @@ public class QueuedExecutorService extends AbstractExecutorService {
      */
     private void poll(Executor executor) {
 
-        // If the queue is not empty and the lock is available, then we can continue and attempt to
+        // If the queue is not empty and no task is running, then we can continue and attempt to
         // retrieve a task.
         Runnable task = tasks.peek();
-        if (task != null && !lock.getAndSet(true)) {
+        if (task != null && !hasRunningTask.getAndSet(true)) {
             tasks.remove(task);
             // Queue the task for further processing
             executor.execute(() -> doExecute(task));
         } else if (task == null) {
-            synchronized (lock) {
-                lock.notifyAll();
+            synchronized (awaitTerminationLock) {
+                awaitTerminationLock.notifyAll();
             }
         }
     }
@@ -139,7 +139,7 @@ public class QueuedExecutorService extends AbstractExecutorService {
             task.run();
         } finally {
             // The task is complete, release the lock and queue the next task.
-            lock.set(false);
+            hasRunningTask.set(false);
             // Don't run the next task (if any) with delegate.execute(), which creates a new thread,
             // but in the same thread as "task" has been run.
             poll(Runnable::run);

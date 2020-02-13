@@ -28,6 +28,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.avatar.AvatarManager.ConversionException;
 
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.EventObject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,7 +41,7 @@ import static rocks.xmpp.extensions.avatar.AvatarManager.asBufferedImage;
  * @author Christian Schudt
  */
 public final class AvatarChangeEvent extends EventObject {
-	private static final Logger LOGGER = Logger.getLogger(AvatarManager.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AvatarManager.class.getName());
 
     private final Jid contact;
 
@@ -55,7 +56,7 @@ public final class AvatarChangeEvent extends EventObject {
     AvatarChangeEvent(AvatarManager source, Jid contact, byte[] avatar) {
         super(source);
         this.contact = contact;
-        this.avatar = avatar;
+        this.avatar = Arrays.copyOf(avatar, avatar.length);
     }
 
     /**
@@ -67,20 +68,20 @@ public final class AvatarChangeEvent extends EventObject {
         return avatar;
     }
 
-	/**
-	 * Gets the avatar image, or {@code null} if there is none.
-	 * 
-	 * @return The avatar image.
-	 */
-	public final BufferedImage getAvatarImage() {
-		try {
-			return this.avatar == null ? null : asBufferedImage(this.avatar);
-		} catch (final ConversionException e) {
-			LOGGER.log(Level.SEVERE, "Cannot convert avatar image");
-			return null;
-		}
-	}
-    
+    /**
+     * Gets the avatar image, or {@code null} if there is none.
+     *
+     * @return The avatar image.
+     */
+    public final BufferedImage getAvatarImage() {
+        try {
+            return this.avatar == null ? null : asBufferedImage(this.avatar);
+        } catch (final ConversionException e) {
+            LOGGER.log(Level.SEVERE, "Cannot convert avatar image");
+            return null;
+        }
+    }
+
     /**
      * Gets the bare JID of the contact who's associated with the avatar, i.e. who changed his or her avatar.
      *

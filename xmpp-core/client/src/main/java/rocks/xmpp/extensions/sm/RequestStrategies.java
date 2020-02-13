@@ -38,7 +38,6 @@ import java.util.function.Predicate;
  * @see StreamManager#setRequestStrategy(Predicate)
  */
 public final class RequestStrategies {
-    private static final Predicate<Stanza> FOR_EACH_MESSAGE = stanza -> stanza instanceof Message;
 
     private RequestStrategies() {
     }
@@ -79,7 +78,7 @@ public final class RequestStrategies {
      * @return The request strategy.
      */
     public static Predicate<Stanza> forEachMessage() {
-        return FOR_EACH_MESSAGE;
+        return stanza -> stanza instanceof Message;
     }
 
     /**
@@ -97,7 +96,7 @@ public final class RequestStrategies {
 
             @Override
             public final boolean test(final Stanza stanza) {
-                if (FOR_EACH_MESSAGE.test(stanza)) {
+                if (forEachMessage().test(stanza)) {
                     forEveryStanza.sentStanzas = 0;
                     return true;
                 }

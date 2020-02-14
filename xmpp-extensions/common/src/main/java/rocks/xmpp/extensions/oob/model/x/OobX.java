@@ -25,10 +25,8 @@
 package rocks.xmpp.extensions.oob.model.x;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.UncheckedIOException;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code jabber:x:oob} namespace.
@@ -54,7 +52,8 @@ public final class OobX {
     private final String desc;
 
     private OobX() {
-        this(null);
+        this.url = null;
+        this.desc = null;
     }
 
     public OobX(URI uri) {
@@ -62,7 +61,7 @@ public final class OobX {
     }
 
     public OobX(URI uri, String description) {
-        this.url = uri;
+        this.url = Objects.requireNonNull(uri);
         this.desc = description;
     }
 
@@ -86,6 +85,6 @@ public final class OobX {
 
     @Override
     public final String toString() {
-        return url != null ? url.toString() : null;
+        return String.valueOf(url);
     }
 }

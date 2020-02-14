@@ -26,10 +26,8 @@ package rocks.xmpp.extensions.oob.model.iq;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.UncheckedIOException;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
+import java.util.Objects;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:oob} namespace.
@@ -55,7 +53,9 @@ public final class OobIQ {
     private final String sid;
 
     private OobIQ() {
-        this(null);
+        this.url = null;
+        this.desc = null;
+        this.sid = null;
     }
 
     public OobIQ(URI uri) {
@@ -67,7 +67,7 @@ public final class OobIQ {
     }
 
     public OobIQ(URI uri, String description, String sessionId) {
-        this.url = uri;
+        this.url = Objects.requireNonNull(uri);
         this.desc = description;
         this.sid = sessionId;
     }
@@ -101,6 +101,6 @@ public final class OobIQ {
 
     @Override
     public final String toString() {
-        return url != null ? url.toString() : null;
+        return String.valueOf(url);
     }
 }

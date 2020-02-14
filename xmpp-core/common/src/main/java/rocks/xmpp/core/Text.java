@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.text.Collator;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -59,6 +60,17 @@ import java.util.Objects;
  * @see StanzaError
  */
 public final class Text implements CharSequence, Comparable<Text> {
+
+    private static final Comparator<Text> COMPARATOR = Comparator.<Text>nullsLast((o1, o2) -> {
+        final Collator collator;
+        if (o1.getLanguage() != null) {
+            collator = Collator.getInstance(o1.getLanguage());
+        } else {
+            collator = Collator.getInstance();
+        }
+        return collator.compare(o1.getText(), o2.getText());
+    }).thenComparing(Text::getLanguage, Comparator.nullsFirst(Comparator.comparing(Locale::toLanguageTag)));
+
 
     @XmlJavaTypeAdapter(LocaleAdapter.class)
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
@@ -131,32 +143,7 @@ public final class Text implements CharSequence, Comparable<Text> {
 
     @Override
     public final int compareTo(Text o) {
-        if (o == null) {
-            return -1;
-        }
-        final Collator collator;
-        if (lang != null) {
-            collator = Collator.getInstance(lang);
-        } else {
-            collator = Collator.getInstance();
-        }
-        int result = collator.compare(text, o.text);
-        if (result == 0) {
-            if (lang != null) {
-                if (o.lang != null) {
-                    return lang.toLanguageTag().compareTo(o.lang.toLanguageTag());
-                } else {
-                    return 1;
-                }
-            } else {
-                if (o.lang == null) {
-                    return 0;
-                } else {
-                    return -1;
-                }
-            }
-        }
-        return result;
+        return COMPARATOR.compare(this, o);
     }
 
     @Override

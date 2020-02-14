@@ -29,6 +29,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Text;
 import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
@@ -79,7 +80,7 @@ public class PresenceTest extends XmlTest {
         Assert.assertEquals(presence.getFrom().toString(), "juliet@example.com");
         Assert.assertEquals(presence.getType(), Presence.Type.ERROR);
         Assert.assertNotNull(presence.getError());
-        Assert.assertTrue(presence.getError().getCondition() == Condition.REMOTE_SERVER_NOT_FOUND);
+        Assert.assertSame(presence.getError().getCondition(), Condition.REMOTE_SERVER_NOT_FOUND);
     }
 
     @Test
@@ -290,34 +291,57 @@ public class PresenceTest extends XmlTest {
         Presence presenceAway = new Presence(Presence.Show.AWAY, (byte) 1);
         Presence presenceXa = new Presence(Presence.Show.XA, (byte) 1);
         Presence presenceChat = new Presence(Presence.Show.CHAT, (byte) 1);
+        Presence negativePrio = new Presence(Presence.Show.CHAT, (byte) -2);
+        Presence nullPrio = new Presence(Presence.Show.CHAT);
 
         Presence presencePrio1 = new Presence((byte) 1);
         Presence presencePrio2 = new Presence((byte) 2);
         Presence presencePrio1Unavailble = new Presence(Presence.Type.UNAVAILABLE, (byte) 1);
+        Presence presence1 = new Presence(Jid.of("domain"), Presence.Type.UNAVAILABLE, Presence.Show.CHAT, Collections.singleton(new Text("text")), (byte) 1, "id", Jid.of("from"), Locale.ENGLISH, null, null);
+        Presence presence2 = new Presence(Jid.of("domain"), Presence.Type.UNAVAILABLE, Presence.Show.CHAT, Collections.singleton(new Text("text")), (byte) 1, "id", Jid.of("from"), Locale.ENGLISH, null, null);
+        Presence presence3 = new Presence(Jid.of("domain"), Presence.Type.UNAVAILABLE, Presence.Show.CHAT, Collections.singleton(null), (byte) 1, "id", Jid.of("from"), null, null, null);
+        Presence presence4 = new Presence(Jid.of("domain"), Presence.Type.UNAVAILABLE, Presence.Show.CHAT, Collections.singleton(new Text("text")), (byte) 1, "id", Jid.of("from"), Locale.ENGLISH, Collections.singleton(new Bind()), null);
+
 
         List<Presence> list = new ArrayList<>();
         list.add(presenceAway);
         list.add(presenceDnd);
         list.add(presenceChat);
+        list.add(negativePrio);
+        list.add(nullPrio);
         list.add(presenceXa);
         list.add(presenceUnavailable);
         list.add(presencePrio1);
         list.add(presencePrio2);
         list.add(presencePrio1Unavailble);
+        list.add(presence1);
+        list.add(presence2);
+        list.add(presence3);
+        list.add(presence4);
 
         Collections.shuffle(list);
         list.sort(null);
 
-        Assert.assertEquals(list.get(0), presencePrio1);
-        Assert.assertEquals(list.get(1), presenceChat);
-        Assert.assertEquals(list.get(2), presenceAway);
-        Assert.assertEquals(list.get(3), presenceXa);
-        Assert.assertEquals(list.get(4), presenceDnd);
-        Assert.assertEquals(list.get(5), presencePrio2);
-        Assert.assertEquals(list.get(6), presenceUnavailable);
-        Assert.assertEquals(list.get(7), presencePrio1Unavailble);
+        Assert.assertEquals(list.get(0), presencePrio2);
+        Assert.assertEquals(list.get(1), presencePrio1);
+        Assert.assertEquals(list.get(2), presenceChat);
+        Assert.assertEquals(list.get(3), presenceAway);
+        Assert.assertEquals(list.get(4), presenceXa);
+        Assert.assertEquals(list.get(5), presenceDnd);
+        Assert.assertEquals(list.get(6), presencePrio1Unavailble);
+        Assert.assertEquals(list.get(7), presence3);
+//        Assert.assertEquals(list.get(8), presence1);
+//        Assert.assertEquals(list.get(9), presence2);
+        Assert.assertEquals(list.get(10), presence4);
+        Assert.assertEquals(list.get(11), nullPrio);
+        Assert.assertEquals(list.get(12), presenceUnavailable);
+        Assert.assertEquals(list.get(13), negativePrio);
 
+        Assert.assertEquals(presence1.compareTo(presence2), 0);
+        Assert.assertEquals(presence1.compareTo(null), -1);
+        Assert.assertEquals(presence1, presence2);
         ComparableTestHelper.checkCompareToContract(list);
+        Assert.assertTrue(ComparableTestHelper.isConsistentWithEquals(list));
     }
 
     @Test

@@ -34,9 +34,16 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsFirst;
+import static java.util.Comparator.nullsLast;
 
 /**
  * The implementation of the {@code <presence/>} element.
@@ -54,6 +61,56 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @XmlTransient
 public class Presence extends ExtensibleStanza implements Comparable<Presence> {
+
+    private static final Comparator<Presence> DEFAULT_COMPARATOR = nullsLast(
+            comparing(Presence::getPriority, (p1, p2) -> Byte.compare(p2 == null ? 0 : p2, p1 == null ? 0 : p1))
+                    .thenComparing(Presence::getType, nullsFirst(naturalOrder()))
+                    .thenComparing(Presence::getShow, nullsFirst(naturalOrder()))
+                    .thenComparing(Presence::getStatuses, nullsFirst((o1, o2) -> {
+                        int diff = o1.size() - o2.size();
+                        if (diff == 0) {
+                            if (Objects.equals(o1, o2)) {
+                                return 0;
+                            } else {
+                                for (Text text1 : o1) {
+                                    for (Text text2 : o2) {
+                                        int result = nullsFirst(Text::compareTo).compare(text1, text2);
+                                        if (result != 0) {
+                                            return result;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        return diff;
+                    }))
+                    .thenComparing(Presence::getFrom, nullsFirst(naturalOrder()))
+                    .thenComparing(Presence::getTo, nullsFirst(naturalOrder()))
+                    .thenComparing(Presence::getId, nullsFirst(naturalOrder()))
+                    .thenComparing(Presence::getError, nullsFirst((o1, o2) -> {
+                        if (Objects.equals(o1, o2)) {
+                            return 0;
+                        }
+                        return -1;
+                    }))
+                    .thenComparing(Presence::getLanguage, nullsFirst(comparing(Locale::toLanguageTag)))
+                    .thenComparing(Presence::getExtensions, nullsFirst((o1, o2) -> {
+                        int diff = o1.size() - o2.size();
+                        if (diff == 0) {
+                            if (Objects.equals(o1, o2)) {
+                                return 0;
+                            } else {
+                                for (Object ext1 : o1) {
+                                    for (Object ext2 : o2) {
+                                        if (!Objects.equals(ext1, ext2)) {
+                                            return -1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        return diff;
+                    })));
 
     private final List<Text> status = new CopyOnWriteArrayList<>();
 
@@ -293,13 +350,13 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      */
     public final String getStatus() {
         for (Text status : this.status) {
-            if (status.getLanguage() == null) {
+            if (status != null && status.getLanguage() == null) {
                 return status.getText();
             }
         }
         synchronized (this) {
             if (!status.isEmpty()) {
-                return status.get(0).getText();
+                return status.get(0) != null ? status.get(0).getText() : null;
             }
         }
         return null;
@@ -338,34 +395,34 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
     }
 
     @Override
-    public final synchronized int compareTo(Presence o) {
-        if (o == null) {
-            return -1;
+    public final boolean equals(Object o) {
+        if (o == this) {
+            return true;
         }
-        int result = Boolean.compare(o.isAvailable(), isAvailable());
+        if (!(o instanceof Presence)) {
+            return false;
+        }
+        Presence other = (Presence) o;
+        return Objects.equals(getType(), other.getType())
+                && Objects.equals(getPriority(), other.getPriority())
+                && Objects.equals(getShow(), other.getShow())
+                && Objects.equals(getTo(), other.getTo())
+                && Objects.equals(getFrom(), other.getFrom())
+                && Objects.equals(getStatuses(), other.getStatuses())
+                && Objects.equals(getError(), other.getError())
+                && Objects.equals(getId(), other.getId())
+                && Objects.equals(getLanguage(), other.getLanguage())
+                && Objects.equals(getExtensions(), other.getExtensions());
+    }
 
-        if (result == 0) {
-            // First compare the priority.
-            result = Byte.compare(priority != null ? priority : 0, o.getPriority() != null ? o.getPriority() : 0);
-            // If priority is equal, compare the show element.
-            if (result == 0) {
-                // If we have no show attribute, but the other one has, we are available and are better than the other.
-                if (show == null && o.getShow() != null) {
-                    return -1;
-                }
-                // If both have no show element, presences are equal.
-                else if (show == null) {
-                    return 0;
-                }
-                // If we have a show element, but the other not, the other has higher priority.
-                else if (o.getShow() == null) {
-                    return 1;
-                } else {
-                    return show.compareTo(o.getShow());
-                }
-            }
-        }
-        return result;
+    @Override
+    public final int hashCode() {
+        return Objects.hash(getType(), getPriority(), getShow(), getTo(), getFrom(), getStatuses(), getError(), getId(), getLanguage(), getExtensions());
+    }
+
+    @Override
+    public final synchronized int compareTo(Presence o) {
+        return DEFAULT_COMPARATOR.compare(this, o);
     }
 
     @Override
@@ -373,7 +430,7 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
         StringBuilder sb = new StringBuilder();
         if (type != null) {
             String sType = type.name();
-            sb.append(sType.substring(0, 1)).append(sType.substring(1).toLowerCase()).append(' ');
+            sb.append(sType, 0, 1).append(sType.substring(1).toLowerCase()).append(' ');
         }
         sb.append("Presence");
         if (show != null) {

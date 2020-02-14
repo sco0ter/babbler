@@ -30,7 +30,12 @@ import rocks.xmpp.im.roster.model.Contact;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnumValue;
+import java.util.Comparator;
 import java.util.Objects;
+
+import static java.util.Comparator.comparingLong;
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsLast;
 
 /**
  * A privacy rule for privacy lists, which is applied by the server.
@@ -47,7 +52,7 @@ import java.util.Objects;
  * ```java
  * // Blocks all messages from juliet@example.net
  * PrivacyRule rule1 = PrivacyRule.blockMessagesFrom(Jid.of("juliet@example.net"), 1);
- *
+ * <p>
  * // Blocks outbound presence notifications to the roster group "Bad Friends".
  * PrivacyRule rule2 = PrivacyRule.blockPresenceToRosterGroup("Bad Friends", 2);
  * ```
@@ -57,6 +62,17 @@ import java.util.Objects;
  * @author Christian Schudt
  */
 public final class PrivacyRule implements Comparable<PrivacyRule> {
+
+    private static final Comparator<PrivacyRule> COMPARATOR = nullsLast(
+            comparingLong(PrivacyRule::getOrder)
+                    .thenComparing(PrivacyRule::getAction, nullsLast(naturalOrder()))
+                    .thenComparing(PrivacyRule::getType, nullsLast(naturalOrder()))
+                    .thenComparing(PrivacyRule::getValue, nullsLast(naturalOrder()))
+                    .thenComparing(rule -> rule.message, nullsLast(naturalOrder()))
+                    .thenComparing(rule -> rule.presenceIn, nullsLast(naturalOrder()))
+                    .thenComparing(rule -> rule.presenceOut, nullsLast(naturalOrder()))
+                    .thenComparing(rule -> rule.iq, nullsLast(naturalOrder()))
+    );
 
     @XmlAttribute
     private final Type type;
@@ -534,10 +550,32 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      */
     @Override
     public final int compareTo(PrivacyRule o) {
-        if (this == o) {
-            return 0;
+        return COMPARATOR.compare(this, o);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
         }
-        return o != null ? Long.compare(order, o.order) : -1;
+        if (!(o instanceof PrivacyRule)) {
+            return false;
+        }
+        PrivacyRule other = (PrivacyRule) o;
+
+        return Objects.equals(type, other.type)
+                && Objects.equals(value, other.value)
+                && Objects.equals(action, other.action)
+                && Objects.equals(order, other.order)
+                && Objects.equals(message, other.message)
+                && Objects.equals(presenceIn, other.presenceIn)
+                && Objects.equals(presenceOut, other.presenceOut)
+                && Objects.equals(iq, other.iq);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, value, action, order, message, presenceIn, presenceOut, iq);
     }
 
     @Override

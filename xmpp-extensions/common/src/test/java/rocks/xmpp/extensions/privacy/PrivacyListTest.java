@@ -33,6 +33,7 @@ import rocks.xmpp.extensions.privacy.model.Privacy;
 import rocks.xmpp.extensions.privacy.model.PrivacyList;
 import rocks.xmpp.extensions.privacy.model.PrivacyRule;
 import rocks.xmpp.im.roster.model.Contact;
+import rocks.xmpp.util.ComparableTestHelper;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -321,6 +322,9 @@ public class PrivacyListTest extends XmlTest {
         Assert.assertEquals(list.get(2), privacyList3);
         Assert.assertEquals(list.get(3), privacyList4);
         Assert.assertEquals(list.get(4), privacyList5);
+
+        ComparableTestHelper.checkCompareToContract(list);
+        Assert.assertTrue(ComparableTestHelper.isConsistentWithEquals(list));
     }
 
     @Test
@@ -332,6 +336,8 @@ public class PrivacyListTest extends XmlTest {
         PrivacyRule privacyRule4 = PrivacyRule.of(PrivacyRule.Action.DENY, 3);
         PrivacyRule privacyRule5 = PrivacyRule.of(PrivacyRule.Action.DENY, 4);
 
+        PrivacyRule privacyRule6 = PrivacyRule.of(PrivacyRule.Action.ALLOW, 5);
+        PrivacyRule privacyRule7 = PrivacyRule.of(PrivacyRule.Action.DENY, 5);
 
         List<PrivacyRule> list = new ArrayList<>();
         list.add(privacyRule1);
@@ -339,6 +345,8 @@ public class PrivacyListTest extends XmlTest {
         list.add(privacyRule3);
         list.add(privacyRule4);
         list.add(privacyRule5);
+        list.add(privacyRule6);
+        list.add(privacyRule7);
 
         Collections.shuffle(list);
 
@@ -349,6 +357,11 @@ public class PrivacyListTest extends XmlTest {
         Assert.assertEquals(list.get(2), privacyRule3);
         Assert.assertEquals(list.get(3), privacyRule4);
         Assert.assertEquals(list.get(4), privacyRule5);
+        Assert.assertEquals(list.get(5), privacyRule6);
+        Assert.assertEquals(list.get(6), privacyRule7);
+
+        ComparableTestHelper.checkCompareToContract(list);
+        Assert.assertTrue(ComparableTestHelper.isConsistentWithEquals(list));
     }
 
     @Test

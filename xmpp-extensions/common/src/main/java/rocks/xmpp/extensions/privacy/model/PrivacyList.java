@@ -33,8 +33,11 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+
+import static java.util.Comparator.nullsFirst;
 
 /**
  * The implementation of a privacy list.
@@ -48,6 +51,29 @@ import java.util.Objects;
  * @see <a href="https://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>
  */
 public final class PrivacyList implements Comparable<PrivacyList> {
+
+    private static final Comparator<PrivacyList> COMPARATOR = Comparator
+            .comparing(PrivacyList::isDefault, Comparator.reverseOrder())
+            .thenComparing(PrivacyList::isActive, Comparator.reverseOrder())
+            .thenComparing(PrivacyList::getName, Comparator.nullsLast(((o1, o2) -> Collator.getInstance().compare(o1, o2))))
+            .thenComparing(PrivacyList::getPrivacyRules, nullsFirst((o1, o2) -> {
+                int diff = o1.size() - o2.size();
+                if (diff == 0) {
+                    if (Objects.equals(o1, o2)) {
+                        return 0;
+                    } else {
+                        for (PrivacyRule rule1 : o1) {
+                            for (PrivacyRule rule2 : o2) {
+                                int result = nullsFirst(PrivacyRule::compareTo).compare(rule1, rule2);
+                                if (result != 0) {
+                                    return result;
+                                }
+                            }
+                        }
+                    }
+                }
+                return diff;
+            }));
 
     private final List<PrivacyRule> item = new ArrayList<>();
 
@@ -239,33 +265,27 @@ public final class PrivacyList implements Comparable<PrivacyList> {
      */
     @Override
     public final int compareTo(PrivacyList o) {
-        if (this == o) {
-            return 0;
+        return COMPARATOR.compare(this, o);
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (o == this) {
+            return true;
         }
-        if (o != null) {
-            if (isDefault) {
-                if (o.isDefault) {
-                    return name != null ? Collator.getInstance().compare(name, o.name) : 1;
-                } else {
-                    return -1;
-                }
-            } else if (isActive) {
-                if (o.isDefault) {
-                    return 1;
-                } else if (o.isActive) {
-                    return name != null ? Collator.getInstance().compare(name, o.name) : 1;
-                } else {
-                    return -1;
-                }
-            } else {
-                if (o.isDefault || o.isActive) {
-                    return 1;
-                } else {
-                    return name != null ? Collator.getInstance().compare(name, o.name) : 1;
-                }
-            }
+        if (!(o instanceof PrivacyList)) {
+            return false;
         }
-        return -1;
+        PrivacyList other = (PrivacyList) o;
+        return Objects.equals(item, other.item)
+                && Objects.equals(name, other.name)
+                && Objects.equals(isDefault, other.isDefault)
+                && Objects.equals(isActive, other.isActive);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(item, name, isDefault, isActive);
     }
 
     @Override

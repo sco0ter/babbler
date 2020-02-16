@@ -469,16 +469,9 @@
                     <version>2.3.2</version>
                 </dependency>
                 <dependency>
-                    <groupId>com.sun.xml.bind</groupId>
-                    <artifactId>jaxb-impl</artifactId>
-                    <version>2.3.1</version>
-                    <scope>test</scope>
-                </dependency>
-                <dependency>
-                    <groupId>com.sun.xml.bind</groupId>
-                    <artifactId>jaxb-core</artifactId>
-                    <version>2.3.0.1</version>
-                    <scope>test</scope>
+                    <groupId>org.glassfish.jaxb</groupId>
+                    <artifactId>jaxb-runtime</artifactId>
+                    <version>2.3.2</version>
                 </dependency>
                 <dependency>
                     <groupId>jakarta.xml.soap</groupId>

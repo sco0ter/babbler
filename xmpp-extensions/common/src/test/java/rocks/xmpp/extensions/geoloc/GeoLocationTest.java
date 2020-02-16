@@ -53,11 +53,11 @@ public class GeoLocationTest extends XmlTest {
         GeoLocation geoLocation = unmarshal(xml, GeoLocation.class);
         Assert.assertNotNull(geoLocation);
         Assert.assertEquals(geoLocation.getLanguage(), Locale.ENGLISH);
-        Assert.assertEquals(geoLocation.getAccuracy(), 20.0);
+        Assert.assertEquals(geoLocation.getAccuracy(), Double.valueOf(20.0));
         Assert.assertEquals(geoLocation.getCountry(), "Italy");
-        Assert.assertEquals(geoLocation.getLatitude(), 45.44);
+        Assert.assertEquals(geoLocation.getLatitude(), Double.valueOf(45.44));
         Assert.assertEquals(geoLocation.getLocality(), "Venice");
-        Assert.assertEquals(geoLocation.getLongitude(), 12.33);
+        Assert.assertEquals(geoLocation.getLongitude(), Double.valueOf(12.33));
         Assert.assertEquals(geoLocation.getTimeZoneOffset(), ZoneOffset.of("-08:00"));
     }
 

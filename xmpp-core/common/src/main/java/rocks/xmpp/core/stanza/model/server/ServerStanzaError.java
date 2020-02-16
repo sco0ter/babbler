@@ -51,7 +51,7 @@ public final class ServerStanzaError extends StanzaError {
      * Creates a stanza error in the {@code jabber:server} namespace from an unqualified stanza error.
      *
      * @param e The stanza error.
-     * @return The stanza error in the {@codejabber:server} namespace.
+     * @return The stanza error in the {@code jabber:server} namespace.
      */
     public static ServerStanzaError from(StanzaError e) {
         if (e instanceof ServerStanzaError) {

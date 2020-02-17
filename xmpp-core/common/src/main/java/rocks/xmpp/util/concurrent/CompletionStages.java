@@ -75,7 +75,7 @@ public final class CompletionStages {
     public static <T> CompletionStage<List<T>> allOf(final Collection<? extends CompletionStage<List<T>>> stages) {
         // First convert the list of stages to an array of CompletableFuture.
         // Then use CompletableFuture.allOf to combine them all.
-        return CompletableFuture.allOf(stages.stream().map(CompletionStage::toCompletableFuture).collect(Collectors.toList()).toArray(new CompletableFuture[stages.size()]))
+        return CompletableFuture.allOf(stages.stream().map(CompletionStage::toCompletableFuture).toArray(CompletableFuture[]::new))
                 .thenApply(result ->
                         stages.stream()
                                 // Get the result of each future (List<T>)

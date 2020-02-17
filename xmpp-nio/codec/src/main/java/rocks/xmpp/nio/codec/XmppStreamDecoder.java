@@ -160,7 +160,7 @@ public final class XmppStreamDecoder {
                                     version,
                                     lang != null ? Locale.forLanguageTag(lang) : null,
                                     contentNamespace,
-                                    additionalNamespaces.toArray(new QName[additionalNamespaces.size()]));
+                                    additionalNamespaces.toArray(new QName[0]));
 
                             out.accept(streamHeader, header);
                         }

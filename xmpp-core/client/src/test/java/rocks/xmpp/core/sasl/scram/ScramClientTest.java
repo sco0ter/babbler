@@ -67,7 +67,7 @@ public class ScramClientTest {
     @Test
     public void testSasl() throws SaslException {
         List<String> saslMechs = XmppSessionConfiguration.getDefault().getAuthenticationMechanisms();
-        String[] preferredMechanisms = saslMechs.toArray(new String[saslMechs.size()]);
+        String[] preferredMechanisms = saslMechs.toArray(new String[0]);
         SaslClient sc = Sasl.createSaslClient(preferredMechanisms, "authorizationId", "xmpp", "localhost", null, callbacks -> {
             for (Callback callback : callbacks) {
                 if (callback instanceof NameCallback) {

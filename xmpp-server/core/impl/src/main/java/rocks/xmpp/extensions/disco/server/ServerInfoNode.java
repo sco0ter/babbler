@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2019 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,39 +22,50 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.last.server;
+package rocks.xmpp.extensions.disco.server;
 
-import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.extensions.last.model.LastActivity;
-import rocks.xmpp.core.net.server.NettyServer;
+import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.disco.handler.DiscoInfoHandler;
+import rocks.xmpp.extensions.disco.model.info.Identity;
+import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
+import rocks.xmpp.extensions.disco.model.info.InfoNode;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import java.time.Duration;
-import java.time.Instant;
+import javax.enterprise.inject.Produces;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Christian Schudt
  */
 @ApplicationScoped
-public final class LastActivityHandler extends AbstractIQHandler {
+public class ServerInfoNode implements InfoNode {
 
-    @Inject
-    private NettyServer server;
-
-    public LastActivityHandler() {
-        super(LastActivity.class, IQ.Type.GET);
+    @Override
+    public String getNode() {
+        return null;
     }
 
     @Override
-    protected IQ processRequest(IQ iq) {
+    public Set<Identity> getIdentities() {
+        return Collections.singleton(Identity.serverInstantMessaging());
+    }
 
-        if (iq.getTo().isDomainJid()) {
-            return iq.createResult(new LastActivity(Duration.between(server.getStartTime(), Instant.now()).getSeconds(), null));
-        }
-        return iq.createError(Condition.SERVICE_UNAVAILABLE);
+    @Override
+    public Set<String> getFeatures() {
+        return Collections.singleton(InfoDiscovery.NAMESPACE);
+    }
+
+    @Override
+    public List<DataForm> getExtensions() {
+        return Collections.emptyList();
+    }
+
+    @Produces
+    private DiscoInfoHandler discoInfoHandler() {
+        DiscoInfoHandler discoInfoHandler = new DiscoInfoHandler();
+        discoInfoHandler.addInfoNode(this);
+        return discoInfoHandler;
     }
 }

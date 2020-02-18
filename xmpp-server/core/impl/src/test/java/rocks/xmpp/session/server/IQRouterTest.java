@@ -291,6 +291,11 @@ public class IQRouterTest extends XmlTest {
     private static class DummyIQHandler implements IQHandler {
 
         @Override
+        public Class<?> getPayloadClass() {
+            return DummyIQ.class;
+        }
+
+        @Override
         public IQ handleRequest(IQ iq) {
             return iq.createResult();
         }
@@ -302,6 +307,11 @@ public class IQRouterTest extends XmlTest {
     private static class NullIQHandler implements IQHandler {
 
         @Override
+        public Class<?> getPayloadClass() {
+            return NullIQ.class;
+        }
+
+        @Override
         public IQ handleRequest(IQ iq) {
             return null;
         }
@@ -311,6 +321,11 @@ public class IQRouterTest extends XmlTest {
     }
 
     private static class ExceptionIQHandler implements IQHandler {
+
+        @Override
+        public Class<?> getPayloadClass() {
+            return ExceptionIQ.class;
+        }
 
         @Override
         public IQ handleRequest(IQ iq) {

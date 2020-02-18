@@ -25,24 +25,8 @@
 package rocks.xmpp.session.server;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.bind.model.Bind;
-import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.server.ServerConfiguration;
-import rocks.xmpp.core.session.model.Session;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
-import rocks.xmpp.core.stanza.model.client.ClientPresence;
-import rocks.xmpp.core.stream.model.StreamError;
-import rocks.xmpp.core.stream.model.StreamFeatures;
-import rocks.xmpp.core.tls.model.StartTls;
-import rocks.xmpp.extensions.compress.model.StreamCompression;
-import rocks.xmpp.extensions.httpbind.model.Body;
-import rocks.xmpp.extensions.last.model.LastActivity;
-import rocks.xmpp.extensions.ping.model.Ping;
-import rocks.xmpp.extensions.time.model.EntityTime;
-import rocks.xmpp.im.roster.model.Roster;
-import rocks.xmpp.websocket.model.Close;
-import rocks.xmpp.websocket.model.Open;
+import rocks.xmpp.util.XmppUtils;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.xml.bind.DataBindingException;
@@ -50,6 +34,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import java.util.Collections;
 
 /**
  * @author Christian Schudt
@@ -78,15 +63,11 @@ public class DefaultServerConfiguration implements ServerConfiguration {
     });
 
     static {
-        try {
-            JAXB_CONTEXT = JAXBContext.newInstance(StreamFeatures.class, StreamError.class, ClientMessage.class, ClientPresence.class, ClientIQ.class, Session.class, Bind.class, Mechanisms.class, StartTls.class, StreamCompression.class, Roster.class, Open.class, Close.class, Body.class, Ping.class, EntityTime.class, LastActivity.class);
-        } catch (JAXBException e) {
-            throw new DataBindingException(e);
-        }
+        JAXB_CONTEXT = XmppUtils.createContext(Collections.emptyList());
     }
 
     @Override
-    public JAXBContext getJAXBContext(){
+    public JAXBContext getJAXBContext() {
         return JAXB_CONTEXT;
     }
 

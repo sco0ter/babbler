@@ -52,7 +52,7 @@ public class RosterHandler extends AbstractIQHandler {
     private RosterItemProvider rosterItemProvider;
 
     public RosterHandler() {
-        super(IQ.Type.GET, IQ.Type.SET);
+        super(Roster.class, IQ.Type.GET, IQ.Type.SET);
     }
 
     @Override

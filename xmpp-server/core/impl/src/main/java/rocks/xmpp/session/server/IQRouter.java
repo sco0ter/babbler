@@ -28,17 +28,13 @@ import rocks.xmpp.core.Session;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.extensions.last.model.LastActivity;
-import rocks.xmpp.extensions.last.server.LastActivityHandler;
 import rocks.xmpp.extensions.ping.handler.PingHandler;
-import rocks.xmpp.extensions.ping.model.Ping;
 import rocks.xmpp.extensions.time.handler.EntityTimeHandler;
-import rocks.xmpp.extensions.time.model.EntityTime;
-import rocks.xmpp.im.roster.model.Roster;
-import rocks.xmpp.im.roster.server.RosterHandler;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,18 +54,25 @@ public class IQRouter {
     private SessionManager sessionManager;
 
     @Inject
-    private RosterHandler rosterHandler;
-
-    @Inject
-    private LastActivityHandler lastActivityHandler;
+    private Instance<IQHandler> iqHandlers;
 
     @PostConstruct
     void init() {
-        this.iqHandlerMap.put(Roster.class, rosterHandler);
-        this.iqHandlerMap.put(Ping.class, new PingHandler());
-        this.iqHandlerMap.put(EntityTime.class, new EntityTimeHandler());
-        this.iqHandlerMap.put(LastActivity.class, lastActivityHandler);
+        iqHandlers.stream().forEach(iqHandler -> this.iqHandlerMap.put(iqHandler.getPayloadClass(), iqHandler));
     }
+
+    @Produces
+    @ApplicationScoped
+    private IQHandler produceEntityTimeHandler() {
+        return new EntityTimeHandler();
+    }
+
+    @Produces
+    @ApplicationScoped
+    private IQHandler producePingHandler() {
+        return new PingHandler();
+    }
+
 
     public boolean process(IQ iq) {
         Session sessionSender = sessionManager.getSession(iq.getFrom());

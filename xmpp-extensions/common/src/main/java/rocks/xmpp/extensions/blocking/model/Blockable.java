@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,33 +26,36 @@ package rocks.xmpp.extensions.blocking.model;
 
 import rocks.xmpp.addr.Jid;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * The implementation of the {@code <block/>} element in the {@code urn:xmpp:blocking} namespace.
- * <p>
- * This class is immutable.
+ * Blockable JIDs in the blocking command.
  *
  * @author Christian Schudt
- * @see <a href="https://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>
- * @see <a href="https://xmpp.org/extensions/xep-0191.html#schema-blocking">XML Schema</a>
  */
-@XmlRootElement
-public final class Block extends Blockable {
+@XmlTransient
+public abstract class Blockable {
 
-    private Block() {
+    private final List<Item> item = new ArrayList<>();
+
+    Blockable() {
+    }
+
+    Blockable(Collection<Jid> blockedItems) {
+        blockedItems.stream().map(Item::new).forEach(item::add);
     }
 
     /**
-     * @param blockedItems The blocked items.
+     * Gets the blocked items.
+     *
+     * @return The blocked items.
      */
-    public Block(Collection<Jid> blockedItems) {
-        super(blockedItems);
-    }
-
-    @Override
-    public final String toString() {
-        return "Blocked: " + getItems();
+    public final List<Jid> getItems() {
+        return Collections.unmodifiableList(item.stream().map(Item::getJid).collect(Collectors.toList()));
     }
 }

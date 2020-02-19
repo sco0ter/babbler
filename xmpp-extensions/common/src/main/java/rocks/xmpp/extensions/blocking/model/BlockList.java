@@ -29,10 +29,7 @@ import rocks.xmpp.extensions.blocking.model.errors.Blocked;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The implementation of the {@code <blocklist/>} element in the {@code urn:xmpp:blocking} namespace.
@@ -45,14 +42,12 @@ import java.util.stream.Collectors;
  */
 @XmlRootElement(name = "blocklist")
 @XmlSeeAlso({Block.class, Unblock.class, Blocked.class})
-public final class BlockList {
+public final class BlockList extends Blockable {
 
     /**
      * urn:xmpp:blocking
      */
     public static final String NAMESPACE = "urn:xmpp:blocking";
-
-    private final List<Item> item = new ArrayList<>();
 
     /**
      * Creates an empty {@code <blocklist/>} element, used to ask the server for the block list.
@@ -66,20 +61,11 @@ public final class BlockList {
      * @param blockedItems The blocked items.
      */
     public BlockList(List<Jid> blockedItems) {
-        this.item.addAll(blockedItems.stream().map(Item::new).collect(Collectors.toList()));
-    }
-
-    /**
-     * Gets the items.
-     *
-     * @return The items.
-     */
-    public final List<Jid> getItems() {
-        return Collections.unmodifiableList(item.stream().map(Item::getJid).collect(Collectors.toList()));
+        super(blockedItems);
     }
 
     @Override
     public final String toString() {
-        return item.toString();
+        return "Blocklist: " + getItems();
     }
 }

@@ -27,11 +27,7 @@ package rocks.xmpp.extensions.blocking.model;
 import rocks.xmpp.addr.Jid;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The implementation of the {@code <unblock/>} element in the {@code urn:xmpp:blocking} namespace.
@@ -43,31 +39,20 @@ import java.util.stream.Collectors;
  * @see <a href="https://xmpp.org/extensions/xep-0191.html#schema-blocking">XML Schema</a>
  */
 @XmlRootElement
-public final class Unblock {
-
-    private final List<Item> item = new ArrayList<>();
-
-    /**
-     * @param unblockedItems The unblocked items.
-     */
-    public Unblock(Collection<Jid> unblockedItems) {
-        this.item.addAll(unblockedItems.stream().map(Item::new).collect(Collectors.toList()));
-    }
+public final class Unblock extends Blockable {
 
     private Unblock() {
     }
 
     /**
-     * Gets the unblocked items.
-     *
-     * @return The unblocked items.
+     * @param unblockedItems The unblocked items.
      */
-    public final List<Jid> getItems() {
-        return Collections.unmodifiableList(item.stream().map(Item::getJid).collect(Collectors.toList()));
+    public Unblock(Collection<Jid> unblockedItems) {
+        super(unblockedItems);
     }
 
     @Override
     public final String toString() {
-        return item.toString();
+        return "Unblocked: " + getItems();
     }
 }

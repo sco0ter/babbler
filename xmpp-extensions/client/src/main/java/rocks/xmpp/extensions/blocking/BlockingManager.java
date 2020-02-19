@@ -33,6 +33,7 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.blocking.model.Block;
 import rocks.xmpp.extensions.blocking.model.BlockList;
+import rocks.xmpp.extensions.blocking.model.Blockable;
 import rocks.xmpp.extensions.blocking.model.Unblock;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
@@ -70,8 +71,8 @@ public final class BlockingManager extends Manager {
             @Override
             protected IQ processRequest(IQ iq) {
                 if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
-                    Block block = iq.getExtension(Block.class);
-                    if (block != null) {
+                    Blockable block = iq.getExtension(Blockable.class);
+                    if (block instanceof Block) {
                         List<Jid> pushedContacts = new ArrayList<>();
                         synchronized (blockedContacts) {
                             for (Jid item : block.getItems()) {
@@ -81,25 +82,22 @@ public final class BlockingManager extends Manager {
                         }
                         XmppUtils.notifyEventListeners(blockingListeners, new BlockingEvent(BlockingManager.this, pushedContacts, Collections.emptyList()));
                         return iq.createResult();
-                    } else {
-                        Unblock unblock = iq.getExtension(Unblock.class);
-                        if (unblock != null) {
-                            List<Jid> pushedContacts = new ArrayList<>();
-                            synchronized (blockedContacts) {
-                                if (unblock.getItems().isEmpty()) {
-                                    // Empty means, the user has unblocked communications with all contacts.
-                                    pushedContacts.addAll(blockedContacts);
-                                    blockedContacts.clear();
-                                } else {
-                                    for (Jid item : unblock.getItems()) {
-                                        blockedContacts.remove(item);
-                                        pushedContacts.add(item);
-                                    }
+                    } else if (block instanceof Unblock) {
+                        List<Jid> pushedContacts = new ArrayList<>();
+                        synchronized (blockedContacts) {
+                            if (block.getItems().isEmpty()) {
+                                // Empty means, the user has unblocked communications with all contacts.
+                                pushedContacts.addAll(blockedContacts);
+                                blockedContacts.clear();
+                            } else {
+                                for (Jid item : block.getItems()) {
+                                    blockedContacts.remove(item);
+                                    pushedContacts.add(item);
                                 }
                             }
-                            XmppUtils.notifyEventListeners(blockingListeners, new BlockingEvent(BlockingManager.this, Collections.emptyList(), pushedContacts));
-                            return iq.createResult();
                         }
+                        XmppUtils.notifyEventListeners(blockingListeners, new BlockingEvent(BlockingManager.this, Collections.emptyList(), pushedContacts));
+                        return iq.createResult();
                     }
                 }
                 return iq.createError(Condition.NOT_ACCEPTABLE);
@@ -111,8 +109,7 @@ public final class BlockingManager extends Manager {
     protected final void onEnable() {
         super.onEnable();
         // Listen for "un/block pushes"
-        xmppSession.addIQHandler(Block.class, iqHandler, false);
-        xmppSession.addIQHandler(Unblock.class, iqHandler, false);
+        xmppSession.addIQHandler(iqHandler, false);
     }
 
     @Override

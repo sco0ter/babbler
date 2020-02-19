@@ -30,6 +30,8 @@ import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
+import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
@@ -60,12 +62,20 @@ public class CustomIQHandlerResponder {
                 XmppClient xmppSession = XmppClient.create("localhost", configuration, tcpConfiguration);
 
                 // Reqister an IQ Handler, which will return the sum of two values.
-                xmppSession.addIQHandler(Addition.class, iq -> {
-                    Addition addition = iq.getExtension(Addition.class);
-                    if (addition.getSummand1() == null) {
-                        return iq.createError(new StanzaError(Condition.BAD_REQUEST, "No summand provided."));
+                xmppSession.addIQHandler(new IQHandler() {
+                    @Override
+                    public Class<?> getPayloadClass() {
+                        return Addition.class;
                     }
-                    return iq.createResult(new Addition(addition.getSummand1() + addition.getSummand2()));
+
+                    @Override
+                    public IQ handleRequest(IQ iq) {
+                        Addition addition = iq.getExtension(Addition.class);
+                        if (addition.getSummand1() == null) {
+                            return iq.createError(new StanzaError(Condition.BAD_REQUEST, "No summand provided."));
+                        }
+                        return iq.createResult(new Addition(addition.getSummand1() + addition.getSummand2()));
+                    }
                 });
 
                 // Connect

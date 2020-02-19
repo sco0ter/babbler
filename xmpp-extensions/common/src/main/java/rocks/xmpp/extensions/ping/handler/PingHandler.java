@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.ping.handler;
 
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.extensions.ping.model.Ping;
 
 /**
  * Handles an XMPP-level ping request, by returning a pong.
@@ -35,7 +36,7 @@ import rocks.xmpp.core.stanza.model.IQ;
 public final class PingHandler extends AbstractIQHandler {
 
     public PingHandler() {
-        super(IQ.Type.GET);
+        super(Ping.class, IQ.Type.GET);
     }
 
     @Override

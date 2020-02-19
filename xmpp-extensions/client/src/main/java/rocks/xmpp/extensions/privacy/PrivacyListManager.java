@@ -69,7 +69,7 @@ public final class PrivacyListManager extends Manager {
 
     private PrivacyListManager(final XmppSession xmppSession) {
         super(xmppSession, true);
-        iqHandler = new AbstractIQHandler(IQ.Type.SET) {
+        iqHandler = new AbstractIQHandler(Privacy.class, IQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
@@ -92,13 +92,13 @@ public final class PrivacyListManager extends Manager {
     @Override
     protected void onEnable() {
         super.onEnable();
-        xmppSession.addIQHandler(Privacy.class, iqHandler, false);
+        xmppSession.addIQHandler(iqHandler, false);
     }
 
     @Override
     protected void onDisable() {
         super.onDisable();
-        xmppSession.removeIQHandler(Privacy.class);
+        xmppSession.removeIQHandler(iqHandler);
     }
 
     /**

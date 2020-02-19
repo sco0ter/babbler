@@ -100,7 +100,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
             fileTransferManager.fileTransferOffered(iq, streamInitiation.getId(), streamInitiation.getMimeType(), (FileTransferOffer) streamInitiation.getProfileElement(), streamInitiation, StreamInitiationManager.this);
         });
 
-        iqHandler = new AbstractIQHandler(IQ.Type.SET) {
+        iqHandler = new AbstractIQHandler(StreamInitiation.class, IQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 StreamInitiation streamInitiation = iq.getExtension(StreamInitiation.class);
@@ -140,13 +140,13 @@ public final class StreamInitiationManager extends Manager implements FileTransf
     @Override
     protected void onEnable() {
         super.onEnable();
-        xmppSession.addIQHandler(StreamInitiation.class, iqHandler);
+        xmppSession.addIQHandler(iqHandler);
     }
 
     @Override
     protected void onDisable() {
         super.onDisable();
-        xmppSession.removeIQHandler(StreamInitiation.class);
+        xmppSession.removeIQHandler(iqHandler);
     }
 
     /**

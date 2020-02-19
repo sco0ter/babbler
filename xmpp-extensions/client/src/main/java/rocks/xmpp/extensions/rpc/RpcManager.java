@@ -61,7 +61,7 @@ public final class RpcManager extends Manager {
     private RpcManager(final XmppSession xmppSession) {
         super(xmppSession);
 
-        this.iqHandler = new AbstractIQHandler(IQ.Type.SET) {
+        this.iqHandler = new AbstractIQHandler(Rpc.class, IQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 Rpc rpc = iq.getExtension(Rpc.class);
@@ -92,13 +92,13 @@ public final class RpcManager extends Manager {
     @Override
     protected void onEnable() {
         super.onEnable();
-        xmppSession.addIQHandler(Rpc.class, iqHandler);
+        xmppSession.addIQHandler(iqHandler);
     }
 
     @Override
     protected void onDisable() {
         super.onDisable();
-        xmppSession.removeIQHandler(Rpc.class);
+        xmppSession.removeIQHandler(iqHandler);
     }
 
     /**

@@ -44,10 +44,14 @@ public abstract class AbstractIQHandler implements IQHandler {
 
     private final Set<IQ.Type> type;
 
+    private final Class<?> clazz;
+
     /**
-     * @param type The IQ type which is handled by this handler (get or set).
+     * @param clazz The payload type.
+     * @param type  The IQ type which is handled by this handler (get or set).
      */
-    protected AbstractIQHandler(IQ.Type... type) {
+    protected AbstractIQHandler(Class<?> clazz, IQ.Type... type) {
+        this.clazz = clazz;
         if (type.length == 0) {
             throw new IllegalArgumentException("type type list must not be empty.");
         }
@@ -61,6 +65,11 @@ public abstract class AbstractIQHandler implements IQHandler {
         if (this.type.contains(IQ.Type.ERROR) || this.type.contains(IQ.Type.RESULT)) {
             throw new IllegalArgumentException("type must be 'get' and/or 'set'");
         }
+    }
+
+    @Override
+    public final Class<?> getPayloadClass() {
+        return clazz;
     }
 
     @Override

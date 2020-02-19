@@ -60,7 +60,7 @@ public final class HttpAuthenticationManager extends Manager {
         // TODO: Include namespace here for Service Discovery? (no mentioning in XEP-0070)
         super(xmppSession, true);
 
-        iqHandler = new AbstractIQHandler(IQ.Type.GET) {
+        iqHandler = new AbstractIQHandler(ConfirmationRequest.class, IQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
@@ -83,14 +83,14 @@ public final class HttpAuthenticationManager extends Manager {
     @Override
     protected void onEnable() {
         super.onEnable();
-        xmppSession.addIQHandler(ConfirmationRequest.class, iqHandler);
+        xmppSession.addIQHandler(iqHandler);
         xmppSession.addInboundMessageListener(inboundMessageListener);
     }
 
     @Override
     protected void onDisable() {
         super.onDisable();
-        xmppSession.removeIQHandler(ConfirmationRequest.class);
+        xmppSession.removeIQHandler(iqHandler);
         xmppSession.removeInboundMessageListener(inboundMessageListener);
     }
 

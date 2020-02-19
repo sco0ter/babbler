@@ -39,7 +39,7 @@ import java.time.ZoneId;
 public final class EntityTimeHandler extends AbstractIQHandler {
 
     public EntityTimeHandler() {
-        super(IQ.Type.GET);
+        super(EntityTime.class, IQ.Type.GET);
     }
 
     @Override

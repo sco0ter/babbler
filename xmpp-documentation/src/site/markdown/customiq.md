@@ -111,7 +111,12 @@ which will handle inbound requests (of type `Addition`) and return either an err
 
 ```java
 // Reqister an IQ Handler, which will return the sum of two values.
-xmppClient.addIQHandler(Addition.class, new IQHandler() {
+xmppClient.addIQHandler(new IQHandler() {
+    @Override
+    public Class<?> getPayloadClass() {
+        return Addition.class;
+    }
+
     @Override
     public IQ handleRequest(IQ iq) {
         Addition addition = iq.getExtension(Addition.class);

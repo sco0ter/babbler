@@ -81,7 +81,7 @@ public final class ContactExchangeManager extends Manager {
                 }
             }
         };
-        this.iqHandler = new AbstractIQHandler(IQ.Type.SET) {
+        this.iqHandler = new AbstractIQHandler(ContactExchange.class, IQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 ContactExchange contactExchange = iq.getExtension(ContactExchange.class);
@@ -103,14 +103,14 @@ public final class ContactExchangeManager extends Manager {
     protected void onEnable() {
         super.onEnable();
         xmppSession.addInboundMessageListener(inboundMessageListener);
-        xmppSession.addIQHandler(ContactExchange.class, iqHandler);
+        xmppSession.addIQHandler(iqHandler);
     }
 
     @Override
     protected void onDisable() {
         super.onDisable();
         xmppSession.removeInboundMessageListener(inboundMessageListener);
-        xmppSession.removeIQHandler(ContactExchange.class);
+        xmppSession.removeIQHandler(iqHandler);
     }
 
     private void processItems(List<ContactExchange.Item> items, Jid sender, String message, Instant date) {

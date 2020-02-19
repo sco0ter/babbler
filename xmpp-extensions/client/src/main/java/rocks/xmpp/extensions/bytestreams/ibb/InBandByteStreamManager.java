@@ -74,7 +74,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
 
     private InBandByteStreamManager(final XmppSession xmppSession) {
         super(xmppSession);
-        openIQHandler = new AbstractIQHandler(IQ.Type.SET) {
+        openIQHandler = new AbstractIQHandler(InBandByteStream.Open.class, IQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 InBandByteStream.Open open = iq.getExtension(InBandByteStream.Open.class);
@@ -88,7 +88,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
                 }
             }
         };
-        dataIQHandler = new AbstractIQHandler(IQ.Type.SET) {
+        dataIQHandler = new AbstractIQHandler(InBandByteStream.Data.class, IQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 InBandByteStream.Data data = iq.getExtension(InBandByteStream.Data.class);
@@ -106,7 +106,7 @@ public final class InBandByteStreamManager extends ByteStreamManager {
                 }
             }
         };
-        closeIQHandler = new AbstractIQHandler(IQ.Type.SET) {
+        closeIQHandler = new AbstractIQHandler(InBandByteStream.Close.class, IQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 // Must be a close element.
@@ -148,9 +148,9 @@ public final class InBandByteStreamManager extends ByteStreamManager {
     protected final void onEnable() {
         super.onEnable();
 
-        xmppSession.addIQHandler(InBandByteStream.Open.class, openIQHandler, false);
-        xmppSession.addIQHandler(InBandByteStream.Data.class, dataIQHandler, false);
-        xmppSession.addIQHandler(InBandByteStream.Close.class, closeIQHandler, false);
+        xmppSession.addIQHandler(openIQHandler, false);
+        xmppSession.addIQHandler(dataIQHandler, false);
+        xmppSession.addIQHandler(closeIQHandler, false);
 
         // 4. Use of Message Stanzas
         // an application MAY use message stanzas instead.
@@ -160,9 +160,9 @@ public final class InBandByteStreamManager extends ByteStreamManager {
     @Override
     protected final void onDisable() {
         super.onDisable();
-        xmppSession.removeIQHandler(InBandByteStream.Open.class);
-        xmppSession.removeIQHandler(InBandByteStream.Data.class);
-        xmppSession.removeIQHandler(InBandByteStream.Close.class);
+        xmppSession.removeIQHandler(openIQHandler);
+        xmppSession.removeIQHandler(dataIQHandler);
+        xmppSession.removeIQHandler(closeIQHandler);
         xmppSession.removeInboundMessageListener(messageListener);
     }
 

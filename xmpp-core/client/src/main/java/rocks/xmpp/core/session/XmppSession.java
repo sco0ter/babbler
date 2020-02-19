@@ -652,13 +652,12 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     /**
      * Adds an IQ handler for a given payload type. The handler will be processed asynchronously, which means it won't block the inbound stanza processing queue.
      *
-     * @param type      The payload type.
      * @param iqHandler The IQ handler.
-     * @see #removeIQHandler(Class)
-     * @see #addIQHandler(Class, IQHandler, boolean)
+     * @see #removeIQHandler(IQHandler)
+     * @see #addIQHandler(IQHandler, boolean)
      */
-    public final void addIQHandler(Class<?> type, IQHandler iqHandler) {
-        addIQHandler(type, iqHandler, true);
+    public final void addIQHandler(IQHandler iqHandler) {
+        addIQHandler(iqHandler, true);
     }
 
     /**
@@ -667,28 +666,27 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      * In other words synchronous processing means, the IQ requests are processed in the same order as they arrive and no other stanzas can be
      * processed until the handler has returned.
      *
-     * @param type        The payload type.
      * @param iqHandler   The IQ handler.
      * @param invokeAsync True, if the handler should be processed asynchronously; false, if the handler should be processed asynchronously.
-     * @see #removeIQHandler(Class)
+     * @see #removeIQHandler(IQHandler)
      */
-    public final void addIQHandler(Class<?> type, IQHandler iqHandler, boolean invokeAsync) {
+    public final void addIQHandler(IQHandler iqHandler, boolean invokeAsync) {
         synchronized (iqHandlerMap) {
-            iqHandlerMap.put(type, iqHandler);
-            iqHandlerInvocationModes.put(type, invokeAsync);
+            iqHandlerMap.put(iqHandler.getPayloadClass(), iqHandler);
+            iqHandlerInvocationModes.put(iqHandler.getPayloadClass(), invokeAsync);
         }
     }
 
     /**
      * Removes an IQ handler.
      *
-     * @param type The payload type.
-     * @see #addIQHandler(Class, IQHandler)
+     * @param iqHandler The IQ handler.
+     * @see #addIQHandler(IQHandler)
      */
-    public final void removeIQHandler(Class<?> type) {
+    public final void removeIQHandler(IQHandler iqHandler) {
         synchronized (iqHandlerMap) {
-            iqHandlerMap.remove(type);
-            iqHandlerInvocationModes.remove(type);
+            iqHandlerMap.remove(iqHandler.getPayloadClass());
+            iqHandlerInvocationModes.remove(iqHandler.getPayloadClass());
         }
     }
 

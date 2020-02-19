@@ -103,7 +103,7 @@ public final class ServiceDiscoveryManager extends Manager {
     private ServiceDiscoveryManager(final XmppSession xmppSession) {
         super(xmppSession, true);
 
-        this.discoInfoHandler = new AbstractIQHandler(IQ.Type.GET) {
+        this.discoInfoHandler = new AbstractIQHandler(InfoDiscovery.class, IQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
@@ -121,7 +121,7 @@ public final class ServiceDiscoveryManager extends Manager {
                 }
             }
         };
-        this.discoItemHandler = new AbstractIQHandler(IQ.Type.GET) {
+        this.discoItemHandler = new AbstractIQHandler(ItemDiscovery.class, IQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
@@ -145,15 +145,15 @@ public final class ServiceDiscoveryManager extends Manager {
     @Override
     protected void onEnable() {
         super.onEnable();
-        xmppSession.addIQHandler(InfoDiscovery.class, discoInfoHandler);
-        xmppSession.addIQHandler(ItemDiscovery.class, discoItemHandler);
+        xmppSession.addIQHandler(discoInfoHandler);
+        xmppSession.addIQHandler(discoItemHandler);
     }
 
     @Override
     protected void onDisable() {
         super.onDisable();
-        xmppSession.removeIQHandler(InfoDiscovery.class);
-        xmppSession.removeIQHandler(ItemDiscovery.class);
+        xmppSession.removeIQHandler(discoInfoHandler);
+        xmppSession.removeIQHandler(discoItemHandler);
     }
 
     /**

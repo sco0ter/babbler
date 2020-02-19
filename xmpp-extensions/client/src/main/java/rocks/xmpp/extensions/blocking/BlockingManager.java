@@ -67,7 +67,7 @@ public final class BlockingManager extends Manager {
     private BlockingManager(final XmppSession xmppSession) {
         super(xmppSession, true);
 
-        this.iqHandler = new AbstractIQHandler(IQ.Type.SET) {
+        this.iqHandler = new AbstractIQHandler(Blockable.class, IQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
@@ -115,8 +115,7 @@ public final class BlockingManager extends Manager {
     @Override
     protected final void onDisable() {
         super.onDisable();
-        xmppSession.removeIQHandler(Block.class);
-        xmppSession.removeIQHandler(Unblock.class);
+        xmppSession.removeIQHandler(iqHandler);
     }
 
     /**

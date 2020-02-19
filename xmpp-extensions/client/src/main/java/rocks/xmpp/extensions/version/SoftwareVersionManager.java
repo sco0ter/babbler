@@ -68,7 +68,7 @@ public final class SoftwareVersionManager extends Manager {
 
     private SoftwareVersionManager(final XmppSession xmppSession) {
         super(xmppSession);
-        iqHandler = new AbstractIQHandler(IQ.Type.GET) {
+        iqHandler = new AbstractIQHandler(SoftwareVersion.class, IQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 synchronized (SoftwareVersionManager.this) {
@@ -87,13 +87,13 @@ public final class SoftwareVersionManager extends Manager {
     @Override
     protected void onEnable() {
         super.onEnable();
-        xmppSession.addIQHandler(SoftwareVersion.class, iqHandler);
+        xmppSession.addIQHandler(iqHandler);
     }
 
     @Override
     protected void onDisable() {
         super.onDisable();
-        xmppSession.removeIQHandler(SoftwareVersion.class);
+        xmppSession.removeIQHandler(iqHandler);
     }
 
     /**

@@ -28,7 +28,7 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.IQ.Type;
 
 /**
- * Handles an inbound IQ request, (IQ stanzas of type {@link Type#GET} or {@link Type#SET}) by processing the request and returning an IQ response of type {@link Type#RESULT result} or {@link Type#ERROR error}.
+ * Handles an inbound IQ request (IQ stanzas of type {@link Type#GET} or {@link Type#SET}) by processing the request and returning an IQ response of type {@link Type#RESULT result} or {@link Type#ERROR error}.
  * <p>
  * <blockquote>
  * <cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-semantics-iq">8.2.3.  IQ Semantics</a></cite>
@@ -38,8 +38,15 @@ import rocks.xmpp.core.stanza.model.IQ.Type;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-semantics-iq">8.2.3.  IQ Semantics</a>
  */
-@FunctionalInterface
 public interface IQHandler {
+
+    /**
+     * Gets the IQ's payload class. Only payloads of this type are handled by this handler.
+     *
+     * @return The IQ's payload class.
+     * @see IQ#getExtension(Class)
+     */
+    Class<?> getPayloadClass();
 
     /**
      * Handles an inbound IQ stanza of type {@link Type#GET get} or {@link Type#SET set}.

@@ -100,7 +100,7 @@ public final class ReachabilityManager extends Manager {
 
         this.inboundMessageEvent = e -> checkStanzaForReachabilityAndNotify(e.getMessage());
 
-        this.iqHandler = new AbstractIQHandler(IQ.Type.GET) {
+        this.iqHandler = new AbstractIQHandler(Reachability.class, IQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
@@ -120,7 +120,7 @@ public final class ReachabilityManager extends Manager {
         xmppSession.addInboundMessageListener(inboundMessageEvent);
 
         // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
-        xmppSession.addIQHandler(Reachability.class, iqHandler);
+        xmppSession.addIQHandler(iqHandler);
 
         // TODO: implement similar logic for PEP
     }
@@ -131,7 +131,7 @@ public final class ReachabilityManager extends Manager {
         xmppSession.removeInboundPresenceListener(inboundPresenceListener);
         xmppSession.removeOutboundPresenceListener(outboundPresenceListener);
         xmppSession.removeInboundMessageListener(inboundMessageEvent);
-        xmppSession.removeIQHandler(Reachability.class);
+        xmppSession.removeIQHandler(iqHandler);
     }
 
     public List<Address> getReachabilityAddresses() {

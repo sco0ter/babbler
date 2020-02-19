@@ -24,7 +24,6 @@
 
 package rocks.xmpp.sample.component;
 
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -75,7 +74,7 @@ public class ExternalComponentSample {
                 // Don't advertise the SOCKS bytestreams feature. We are no stream proxy.
                 serviceDiscoveryManager.removeFeature(Socks5ByteStream.NAMESPACE);
 
-                myComponent.addIQHandler(LanguageSupport.class, new AbstractIQHandler(IQ.Type.GET) {
+                myComponent.addIQHandler(new AbstractIQHandler(LanguageSupport.class, IQ.Type.GET) {
                     @Override
                     protected IQ processRequest(IQ iq) {
                         Collection<LanguageSupport.Item> items = new ArrayDeque<>();
@@ -84,7 +83,7 @@ public class ExternalComponentSample {
                     }
                 });
 
-                myComponent.addIQHandler(LanguageTranslation.class, new AbstractIQHandler(IQ.Type.GET) {
+                myComponent.addIQHandler(new AbstractIQHandler(LanguageTranslation.class, IQ.Type.GET) {
                     @Override
                     protected IQ processRequest(IQ iq) {
 

@@ -55,13 +55,13 @@ public final class EntityTimeManager extends Manager {
     @Override
     protected void onEnable() {
         super.onEnable();
-        xmppSession.addIQHandler(EntityTime.class, iqHandler);
+        xmppSession.addIQHandler(iqHandler);
     }
 
     @Override
     protected void onDisable() {
         super.onDisable();
-        xmppSession.removeIQHandler(EntityTime.class);
+        xmppSession.removeIQHandler(iqHandler);
     }
 
     /**

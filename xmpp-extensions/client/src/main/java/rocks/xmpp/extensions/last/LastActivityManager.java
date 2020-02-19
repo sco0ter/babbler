@@ -115,7 +115,7 @@ public final class LastActivityManager extends Manager {
                 }
             }
         };
-        this.iqHandler = new AbstractIQHandler(IQ.Type.GET) {
+        this.iqHandler = new AbstractIQHandler(LastActivity.class, IQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 // If someone asks me to get my last activity, reply.
@@ -177,7 +177,7 @@ public final class LastActivityManager extends Manager {
         super.onEnable();
         xmppSession.addOutboundPresenceListener(outboundPresenceListener);
         xmppSession.addOutboundMessageListener(outboundMessageListener);
-        xmppSession.addIQHandler(LastActivity.class, iqHandler);
+        xmppSession.addIQHandler(iqHandler);
     }
 
     @Override
@@ -185,7 +185,7 @@ public final class LastActivityManager extends Manager {
         super.onDisable();
         xmppSession.removeOutboundPresenceListener(outboundPresenceListener);
         xmppSession.removeOutboundMessageListener(outboundMessageListener);
-        xmppSession.removeIQHandler(LastActivity.class);
+        xmppSession.removeIQHandler(iqHandler);
     }
 
     /**

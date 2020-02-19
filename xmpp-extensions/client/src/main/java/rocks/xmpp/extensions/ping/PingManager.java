@@ -43,8 +43,8 @@ import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 
 import java.time.Duration;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -104,7 +104,7 @@ public final class PingManager extends Manager {
     @Override
     protected final void onEnable() {
         super.onEnable();
-        xmppSession.addIQHandler(Ping.class, iqHandler);
+        xmppSession.addIQHandler(iqHandler);
 
         // Reschedule server pings whenever we receive a stanza from the server.
         // When we receive a stanza, we are obviously connected.
@@ -118,7 +118,7 @@ public final class PingManager extends Manager {
     @Override
     protected final void onDisable() {
         super.onDisable();
-        xmppSession.removeIQHandler(Ping.class);
+        xmppSession.removeIQHandler(iqHandler);
         xmppSession.removeInboundMessageListener(inboundMessageListener);
         xmppSession.removeInboundPresenceListener(inboundPresenceListener);
         xmppSession.removeInboundIQListener(inboundIQListener);

@@ -118,7 +118,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
     @Override
     protected void initialize() {
         super.initialize();
-        xmppSession.addIQHandler(Socks5ByteStream.class, new AbstractIQHandler(IQ.Type.SET) {
+        xmppSession.addIQHandler(new AbstractIQHandler(Socks5ByteStream.class, IQ.Type.SET) {
             @Override
             protected IQ processRequest(IQ iq) {
                 Socks5ByteStream socks5ByteStream = iq.getExtension(Socks5ByteStream.class);

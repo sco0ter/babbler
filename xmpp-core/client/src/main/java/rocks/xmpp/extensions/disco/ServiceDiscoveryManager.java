@@ -28,18 +28,16 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Extension;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.disco.handler.DiscoInfoHandler;
+import rocks.xmpp.extensions.disco.handler.DiscoItemsHandler;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
-import rocks.xmpp.extensions.rsm.ResultSet;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.util.XmppUtils;
@@ -55,8 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -78,23 +74,13 @@ import java.util.stream.Collectors;
  */
 public final class ServiceDiscoveryManager extends Manager {
 
-    private static final Set<Identity> DEFAULT_IDENTITY = Collections.singleton(Identity.clientPc());
-
-    private final Set<Identity> identities = Collections.newSetFromMap(new ConcurrentHashMap<>());
-
-    private final Set<String> features = Collections.newSetFromMap(new ConcurrentHashMap<>());
-
-    private final CopyOnWriteArrayList<DataForm> extensions = new CopyOnWriteArrayList<>();
-
-    private final Map<String, InfoNode> infoNodeMap = new ConcurrentHashMap<>();
-
-    private final Map<String, ResultSetProvider<Item>> itemProviders = new ConcurrentHashMap<>();
+    private static final Identity DEFAULT_IDENTITY = Identity.clientPc();
 
     private final Set<Consumer<EventObject>> capabilitiesChangeListeners = new CopyOnWriteArraySet<>();
 
-    private final IQHandler discoInfoHandler;
+    private final DiscoInfoHandler discoInfoHandler;
 
-    private final IQHandler discoItemHandler;
+    private final DiscoItemsHandler discoItemHandler;
 
     private final Map<String, Extension> featureToExtension = new HashMap<>();
 
@@ -103,43 +89,9 @@ public final class ServiceDiscoveryManager extends Manager {
     private ServiceDiscoveryManager(final XmppSession xmppSession) {
         super(xmppSession, true);
 
-        this.discoInfoHandler = new AbstractIQHandler(InfoDiscovery.class, IQ.Type.GET) {
-            @Override
-            protected IQ processRequest(IQ iq) {
-                InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
-                if (infoDiscovery.getNode() == null) {
-                    return iq.createResult(new InfoDiscovery(getIdentities(), getFeatures(), getExtensions()));
-                } else {
-                    InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
-                    if (infoNode != null) {
-                        return iq.createResult(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions()));
-                    } else {
-                        // Returns <feature-not-implemented/> here.
-                        // XEP-0030 is not clear on that, but XEP-0045 and XEP-0079 specify to return a <feature-not-implemented/> on unknown nodes.
-                        return iq.createError(Condition.FEATURE_NOT_IMPLEMENTED);
-                    }
-                }
-            }
-        };
-        this.discoItemHandler = new AbstractIQHandler(ItemDiscovery.class, IQ.Type.GET) {
-            @Override
-            protected IQ processRequest(IQ iq) {
-                ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
-                ResultSetProvider<Item> itemProvider = itemProviders.get(itemDiscovery.getNode() == null ? "" : itemDiscovery.getNode());
-                if (itemProvider != null) {
-                    ResultSet<Item> resultSet = ResultSet.create(itemProvider, itemDiscovery.getResultSetManagement());
-                    return iq.createResult(new ItemDiscovery(itemDiscovery.getNode(), resultSet.getItems(), resultSet.getResultSetManagement()));
-                } else {
-                    if (itemDiscovery.getNode() == null) {
-                        // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
-                        return iq.createResult(new ItemDiscovery(itemDiscovery.getNode()));
-                    } else {
-                        // <item-not-found/>: The JID or JID+NodeID of the specified target entity does not exist.
-                        return iq.createError(Condition.ITEM_NOT_FOUND);
-                    }
-                }
-            }
-        };
+        this.discoInfoHandler = new DiscoInfoHandler();
+        this.discoInfoHandler.setDefaultIdentity(DEFAULT_IDENTITY);
+        this.discoItemHandler = new DiscoItemsHandler();
     }
 
     @Override
@@ -182,12 +134,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @return The items.
      */
     public final List<Item> getItems() {
-        ResultSetProvider<Item> rootItemProvider = itemProviders.get("");
-        if (rootItemProvider != null) {
-            return Collections.unmodifiableList(rootItemProvider.getItems());
-        } else {
-            return Collections.emptyList();
-        }
+        return discoItemHandler.getItems();
     }
 
     /**
@@ -198,7 +145,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #removeIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
      */
     public final Set<Identity> getIdentities() {
-        return identities.isEmpty() ? DEFAULT_IDENTITY : Collections.unmodifiableSet(new HashSet<>(identities));
+        return discoInfoHandler.getIdentities();
     }
 
     /**
@@ -209,7 +156,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #removeFeature(String)
      */
     public final Set<String> getFeatures() {
-        return Collections.unmodifiableSet(new HashSet<>(features));
+        return discoInfoHandler.getFeatures();
     }
 
     /**
@@ -220,9 +167,8 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #removeExtension(rocks.xmpp.extensions.data.model.DataForm)
      * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
-    @SuppressWarnings("unchecked")
     public final List<DataForm> getExtensions() {
-        return Collections.unmodifiableList((List<DataForm>) extensions.clone());
+        return discoInfoHandler.getExtensions();
     }
 
     /**
@@ -233,7 +179,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #getIdentities()
      */
     public final void addIdentity(Identity identity) {
-        if (identities.add(identity) && xmppSession.isConnected()) {
+        if (discoInfoHandler.addIdentity(identity) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
     }
@@ -246,7 +192,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #getIdentities()
      */
     public final void removeIdentity(Identity identity) {
-        if (identities.remove(identity) && xmppSession.isConnected()) {
+        if (discoInfoHandler.removeIdentity(identity) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
     }
@@ -260,7 +206,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #getFeatures()
      */
     public final void addFeature(String feature) {
-        if (features.add(feature)) {
+        if (discoInfoHandler.addFeature(feature)) {
             Extension extension = featureToExtension.get(feature);
             setEnabled(extension != null ? Collections.singleton(extension) : null, feature, true);
             if (xmppSession.isConnected()) {
@@ -277,7 +223,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #getFeatures()
      */
     public final void removeFeature(String feature) {
-        if (features.remove(feature)) {
+        if (discoInfoHandler.removeFeature(feature)) {
             Extension extension = featureToExtension.get(feature);
             setEnabled(extension != null ? Collections.singleton(extension) : null, feature, false);
             if (xmppSession.isConnected()) {
@@ -319,7 +265,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public final void addExtension(DataForm extension) {
-        if (extensions.add(extension) && xmppSession.isConnected()) {
+        if (discoInfoHandler.addExtension(extension) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
     }
@@ -333,7 +279,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public final void removeExtension(DataForm extension) {
-        if (extensions.remove(extension) && xmppSession.isConnected()) {
+        if (discoInfoHandler.removeExtension(extension) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
     }
@@ -477,7 +423,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @param infoNode The info node.
      */
     public final void addInfoNode(InfoNode infoNode) {
-        infoNodeMap.put(infoNode.getNode(), infoNode);
+        discoInfoHandler.addInfoNode(infoNode);
     }
 
     /**
@@ -486,7 +432,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @param node The node name.
      */
     public final void removeInfoNode(String node) {
-        infoNodeMap.remove(node);
+        discoInfoHandler.removeInfoNode(node);
     }
 
     /**
@@ -497,11 +443,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @param itemProvider The item provider.
      */
     public final void setItemProvider(ResultSetProvider<Item> itemProvider) {
-        if (itemProvider == null) {
-            itemProviders.remove("");
-        } else {
-            itemProviders.put("", itemProvider);
-        }
+        discoItemHandler.setItemProvider(itemProvider);
     }
 
     /**
@@ -513,18 +455,14 @@ public final class ServiceDiscoveryManager extends Manager {
      * @param itemProvider The item provider.
      */
     public final void setItemProvider(String node, ResultSetProvider<Item> itemProvider) {
-        if (itemProvider == null) {
-            itemProviders.remove(node);
-        } else {
-            itemProviders.put(node, itemProvider);
-        }
+        discoItemHandler.setItemProvider(node, itemProvider);
     }
 
     @Override
     protected void dispose() {
         capabilitiesChangeListeners.clear();
-        infoNodeMap.clear();
-        itemProviders.clear();
+        discoInfoHandler.clear();
+        discoItemHandler.clear();
     }
 
     private void setEnabled(Iterable<Extension> extensions, String feature, boolean enabled) {
@@ -540,7 +478,7 @@ public final class ServiceDiscoveryManager extends Manager {
                     if (feature != null && !enabled) {
                         Set<Extension> ex = managersToExtensions.get(managerClass);
                         for (Extension e : ex) {
-                            if (features.contains(e.getNamespace())) {
+                            if (discoInfoHandler.getFeatures().contains(e.getNamespace())) {
                                 mayDisable = false;
                                 break;
                             }

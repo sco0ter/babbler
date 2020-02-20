@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.disco.handler;
 
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -36,6 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -43,7 +45,9 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Christian Schudt
  */
-public final class DiscoItemsHandler extends AbstractIQHandler {
+public final class DiscoItemsHandler extends AbstractIQHandler implements ExtensionProtocol {
+
+    private static final Set<String> FEATURES = Collections.singleton(ItemDiscovery.NAMESPACE);
 
     private final Map<String, ResultSetProvider<Item>> itemProviders = new ConcurrentHashMap<>();
 
@@ -115,5 +119,10 @@ public final class DiscoItemsHandler extends AbstractIQHandler {
      */
     public void clear() {
         itemProviders.clear();
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return FEATURES;
     }
 }

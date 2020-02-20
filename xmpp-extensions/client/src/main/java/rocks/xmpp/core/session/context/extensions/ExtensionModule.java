@@ -46,7 +46,6 @@ import rocks.xmpp.extensions.forward.StanzaForwardingManager;
 import rocks.xmpp.extensions.forward.model.Forwarded;
 import rocks.xmpp.extensions.geoloc.GeoLocationManager;
 import rocks.xmpp.extensions.geoloc.model.GeoLocation;
-import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.httpauth.HttpAuthenticationManager;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
 import rocks.xmpp.extensions.idle.model.Idle;
@@ -70,7 +69,7 @@ import rocks.xmpp.extensions.offline.model.OfflineMessage;
 import rocks.xmpp.extensions.oob.OutOfBandFileTransferManager;
 import rocks.xmpp.extensions.oob.model.iq.OobIQ;
 import rocks.xmpp.extensions.ping.PingManager;
-import rocks.xmpp.extensions.ping.model.Ping;
+import rocks.xmpp.extensions.ping.handler.PingHandler;
 import rocks.xmpp.extensions.privacy.PrivacyListManager;
 import rocks.xmpp.extensions.privacy.model.Privacy;
 import rocks.xmpp.extensions.reach.ReachabilityManager;
@@ -93,7 +92,7 @@ import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.extensions.time.EntityTimeManager;
-import rocks.xmpp.extensions.time.model.EntityTime;
+import rocks.xmpp.extensions.time.handler.EntityTimeHandler;
 import rocks.xmpp.extensions.tune.model.Tune;
 import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
 import rocks.xmpp.extensions.vcard.temp.VCardManager;
@@ -101,11 +100,8 @@ import rocks.xmpp.extensions.vcard.temp.model.VCard;
 import rocks.xmpp.extensions.version.SoftwareVersionManager;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 
-import java.security.Security;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Registers extensions and manager classes, (which should be initialized during the start of a session) to the {@link rocks.xmpp.core.session.XmppSession}.
@@ -113,15 +109,6 @@ import java.util.Set;
  * @author Christian Schudt
  */
 public final class ExtensionModule implements Module {
-
-    private static final Set<String> HASH_FEATURES = new HashSet<>();
-
-    static {
-        for (String algorithm : Security.getAlgorithms("MessageDigest")) {
-            // Replace "SHA" algorith with "SHA-1".
-            HASH_FEATURES.add("urn:xmpp:hash-function-text-names:" + algorithm.replaceAll("^SHA$", "SHA-1").toLowerCase());
-        }
-    }
 
     @Override
     public final Collection<Extension> getExtensions() {
@@ -219,10 +206,10 @@ public final class ExtensionModule implements Module {
                 Extension.of(StreamManagement.NAMESPACE, StreamManager.class, false),
 
                 // XEP-0199: XMPP Ping
-                Extension.of(Ping.NAMESPACE, PingManager.class, true),
+                Extension.of(new PingHandler(), PingManager.class, true),
 
                 // XEP-0202: Entity Time
-                Extension.of(EntityTime.NAMESPACE, EntityTimeManager.class, true),
+                Extension.of(new EntityTimeHandler(), EntityTimeManager.class, true),
 
                 // XEP-0234: Jingle File Transfer
                 Extension.of(JingleFileTransfer.NAMESPACE, JingleFileTransferManager.class, false),
@@ -241,9 +228,6 @@ public final class ExtensionModule implements Module {
 
                 // XEP-0297: Stanza Forwarding
                 Extension.of(Forwarded.NAMESPACE, StanzaForwardingManager.class, false),
-
-                // XEP-0300: Use of Cryptographic Hash Functions in XMPP
-                Extension.of(Hash.NAMESPACE, null, HASH_FEATURES, true),
 
                 // XEP-0301: In-Band Real Time Text
                 Extension.of(RealTimeText.NAMESPACE, RealTimeTextManager.class, false),

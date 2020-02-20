@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,36 +22,36 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.ping.handler;
+package rocks.xmpp.extensions.hashes;
 
 import rocks.xmpp.core.ExtensionProtocol;
-import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.extensions.ping.model.Ping;
+import rocks.xmpp.extensions.hashes.model.Hash;
 
+import java.security.Security;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * Handles an XMPP-level ping request, by returning a pong.
+ * Represents the XEP-0300: Use of Cryptographic Hash Functions in XMPP.
  *
  * @author Christian Schudt
+ * @see <a href="https://xmpp.org/extensions/xep-0300.html">XEP-0300: Use of Cryptographic Hash Functions in XMPP</a>
  */
-public final class PingHandler extends AbstractIQHandler implements ExtensionProtocol {
+public final class CryptographicHashFunctionsProtocol implements ExtensionProtocol {
 
-    private static final Set<String> FEATURES = Collections.singleton(Ping.NAMESPACE);
+    private static final Set<String> FEATURES = new LinkedHashSet<>();
 
-    public PingHandler() {
-        super(Ping.class, IQ.Type.GET);
-    }
-
-    @Override
-    protected final IQ processRequest(IQ iq) {
-        return iq.createResult();
+    static {
+        FEATURES.add(Hash.NAMESPACE);
+        for (String algorithm : Security.getAlgorithms("MessageDigest")) {
+            // Replace "SHA" algorithm with "SHA-1".
+            FEATURES.add("urn:xmpp:hash-function-text-names:" + algorithm.replaceAll("^SHA$", "SHA-1").toLowerCase());
+        }
     }
 
     @Override
     public final Set<String> getFeatures() {
-        return FEATURES;
+        return Collections.unmodifiableSet(FEATURES);
     }
 }

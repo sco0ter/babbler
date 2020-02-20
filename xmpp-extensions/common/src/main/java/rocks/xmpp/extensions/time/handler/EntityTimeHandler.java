@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,19 +24,24 @@
 
 package rocks.xmpp.extensions.time.handler;
 
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.time.model.EntityTime;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Handles an time request by returning the current time.
  *
  * @author Christian Schudt
  */
-public final class EntityTimeHandler extends AbstractIQHandler {
+public final class EntityTimeHandler extends AbstractIQHandler implements ExtensionProtocol {
+
+    private static final Set<String> FEATURES = Collections.singleton(EntityTime.NAMESPACE);
 
     public EntityTimeHandler() {
         super(EntityTime.class, IQ.Type.GET);
@@ -45,6 +50,11 @@ public final class EntityTimeHandler extends AbstractIQHandler {
     @Override
     protected final IQ processRequest(IQ iq) {
         return iq.createResult(new EntityTime(OffsetDateTime.now(ZoneId.systemDefault())));
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return FEATURES;
     }
 }
 

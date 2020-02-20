@@ -31,7 +31,8 @@ import rocks.xmpp.extensions.caps2.model.EntityCapabilities2;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
-import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
+import rocks.xmpp.extensions.hashes.CryptographicHashFunctionsProtocol;
+import rocks.xmpp.extensions.rsm.ResultSetManagementProtocol;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.roster.model.Roster;
 import rocks.xmpp.im.subscription.PresenceManager;
@@ -51,19 +52,21 @@ public final class CoreModule implements Module {
     public final Collection<Extension> getExtensions() {
         return Arrays.asList(
 
-
                 // XEP-0030: Service Discovery
                 Extension.of(InfoDiscovery.NAMESPACE, ServiceDiscoveryManager.class, true),
                 Extension.of(ItemDiscovery.NAMESPACE, ServiceDiscoveryManager.class, true),
 
                 // XEP-0059: Result Set Management
-                Extension.of(ResultSetManagement.NAMESPACE, true),
+                Extension.of(new ResultSetManagementProtocol(), true),
 
                 // XEP-0106: JID Escaping
                 Extension.of(Jid.ESCAPING_FEATURE, true),
 
                 // XEP-0115: Entity Capabilities
                 Extension.of(EntityCapabilities1.NAMESPACE, EntityCapabilitiesManager.class, true),
+
+                // XEP-0300: Use of Cryptographic Hash Functions in XMPP
+                Extension.of(new CryptographicHashFunctionsProtocol(), true),
 
                 // XEP-0390 Entity Capabilities 2.0
                 Extension.of(EntityCapabilities2.NAMESPACE, EntityCapabilitiesManager.class, true),

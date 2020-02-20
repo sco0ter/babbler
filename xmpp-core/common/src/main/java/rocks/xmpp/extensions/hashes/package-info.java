@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Christian Schudt
+ * Copyright (c) 2014-2016 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,36 +22,8 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.ping.handler;
-
-import rocks.xmpp.core.ExtensionProtocol;
-import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.extensions.ping.model.Ping;
-
-import java.util.Collections;
-import java.util.Set;
-
 /**
- * Handles an XMPP-level ping request, by returning a pong.
- *
- * @author Christian Schudt
+ * Provides classes for <a href="https://xmpp.org/extensions/xep-0300.html">XEP-0300: Use of Cryptographic Hash Functions in XMPP</a>.
  */
-public final class PingHandler extends AbstractIQHandler implements ExtensionProtocol {
+package rocks.xmpp.extensions.hashes;
 
-    private static final Set<String> FEATURES = Collections.singleton(Ping.NAMESPACE);
-
-    public PingHandler() {
-        super(Ping.class, IQ.Type.GET);
-    }
-
-    @Override
-    protected final IQ processRequest(IQ iq) {
-        return iq.createResult();
-    }
-
-    @Override
-    public final Set<String> getFeatures() {
-        return FEATURES;
-    }
-}

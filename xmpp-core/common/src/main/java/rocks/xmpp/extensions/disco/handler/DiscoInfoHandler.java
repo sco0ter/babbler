@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.disco.handler;
 
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -44,11 +45,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author Christian Schudt
  */
-public final class DiscoInfoHandler extends AbstractIQHandler {
+public final class DiscoInfoHandler extends AbstractIQHandler implements ExtensionProtocol {
+
+    private static final Set<String> FEATURES = Collections.singleton(InfoDiscovery.NAMESPACE);
 
     private final Map<String, InfoNode> infoNodeMap = new ConcurrentHashMap<>();
-
-    private Identity defaultIdentity;
 
     public DiscoInfoHandler() {
         super(InfoDiscovery.class, IQ.Type.GET);
@@ -57,10 +58,7 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
     @Override
     protected final IQ processRequest(IQ iq) {
         InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
-        if (infoDiscovery.getNode() == null) {
-            return iq.createResult(new InfoDiscovery(null, getIdentities(), getFeatures(), getExtensions()));
-        }
-        InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode());
+        InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode() == null ? "" : infoDiscovery.getNode());
         if (infoNode != null) {
             return iq.createResult(new InfoDiscovery(infoNode.getNode(), infoNode.getIdentities(), infoNode.getFeatures(), infoNode.getExtensions()));
         } else {
@@ -90,135 +88,24 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
     }
 
     /**
-     * Gets an unmodifiable set of identities.
-     *
-     * @return The identities.
-     * @see #addIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
-     * @see #removeIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
-     */
-    public final Set<Identity> getIdentities() {
-        Set<Identity> identities = getRootNode().getIdentities();
-        return Collections.unmodifiableSet(identities.isEmpty() ? Collections.singleton(getDefaultIdentity()) : identities);
-    }
-
-    /**
-     * Gets an unmodifiable set of features.
-     *
-     * @return The features.
-     * @see #addFeature(String)
-     * @see #removeFeature(String)
-     */
-    public final Set<String> getFeatures() {
-        return Collections.unmodifiableSet(getRootNode().getFeatures());
-    }
-
-    /**
-     * Gets an unmodifiable list of extensions.
-     *
-     * @return The extensions.
-     * @see #addExtension(rocks.xmpp.extensions.data.model.DataForm)
-     * @see #removeExtension(rocks.xmpp.extensions.data.model.DataForm)
-     * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
-     */
-    public final List<DataForm> getExtensions() {
-        return Collections.unmodifiableList(getRootNode().getExtensions());
-    }
-
-    /**
-     * Adds an identity.
-     *
-     * @param identity The identity.
-     * @see #removeIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
-     * @see #getIdentities()
-     */
-    public final boolean addIdentity(Identity identity) {
-        return getRootNode().getIdentities().add(identity);
-    }
-
-    /**
-     * Removes an identity.
-     *
-     * @param identity The identity.
-     * @see #addIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
-     * @see #getIdentities()
-     */
-    public final boolean removeIdentity(Identity identity) {
-        return getRootNode().getIdentities().remove(identity);
-    }
-
-    /**
-     * Adds a feature.
-     *
-     * @param feature The feature.
-     * @see #removeFeature(String)
-     * @see #getFeatures()
-     */
-    public final boolean addFeature(String feature) {
-        return getRootNode().getFeatures().add(feature);
-    }
-
-    /**
-     * Removes a feature.
-     *
-     * @param feature The feature.
-     * @see #addFeature(String)
-     * @see #getFeatures()
-     */
-    public final boolean removeFeature(String feature) {
-        return getRootNode().getFeatures().remove(feature);
-    }
-
-    /**
-     * Adds an extension.
-     *
-     * @param extension The extension.
-     * @see #removeExtension(rocks.xmpp.extensions.data.model.DataForm)
-     * @see #getExtensions()
-     * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
-     */
-    public final boolean addExtension(DataForm extension) {
-        return getRootNode().getExtensions().add(extension);
-    }
-
-    /**
-     * Removes an extension.
-     *
-     * @param extension The extension.
-     * @see #addExtension(rocks.xmpp.extensions.data.model.DataForm)
-     * @see #getExtensions()
-     * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
-     */
-    public final boolean removeExtension(DataForm extension) {
-        return getRootNode().getExtensions().remove(extension);
-    }
-
-    /**
-     * Gets the default identity.
-     *
-     * @return The default identity.
-     */
-    public final Identity getDefaultIdentity() {
-        return this.defaultIdentity;
-    }
-
-    /**
-     * Sets the default identity.
-     *
-     * @param identity The default identity.
-     */
-    public final void setDefaultIdentity(Identity identity) {
-        this.defaultIdentity = identity;
-    }
-
-    /**
      * Clears all nodes except the root node.
      */
     public final void clear() {
         infoNodeMap.clear();
     }
 
-    private InfoNode getRootNode() {
+    /**
+     * Gets the root node.
+     *
+     * @return The root node.
+     */
+    public InfoNode getRootNode() {
         return infoNodeMap.computeIfAbsent("", key -> new RootNode());
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return FEATURES;
     }
 
     /**

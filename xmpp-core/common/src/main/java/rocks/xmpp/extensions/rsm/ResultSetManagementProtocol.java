@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,33 +22,23 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.ping.handler;
+package rocks.xmpp.extensions.rsm;
 
 import rocks.xmpp.core.ExtensionProtocol;
-import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.extensions.ping.model.Ping;
+import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 import java.util.Collections;
 import java.util.Set;
 
 /**
- * Handles an XMPP-level ping request, by returning a pong.
+ * Represents the XEP-0059: Result Set Management.
  *
  * @author Christian Schudt
+ * @see <a href="https://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>
  */
-public final class PingHandler extends AbstractIQHandler implements ExtensionProtocol {
+public final class ResultSetManagementProtocol implements ExtensionProtocol {
 
-    private static final Set<String> FEATURES = Collections.singleton(Ping.NAMESPACE);
-
-    public PingHandler() {
-        super(Ping.class, IQ.Type.GET);
-    }
-
-    @Override
-    protected final IQ processRequest(IQ iq) {
-        return iq.createResult();
-    }
+    private static final Set<String> FEATURES = Collections.singleton(ResultSetManagement.NAMESPACE);
 
     @Override
     public final Set<String> getFeatures() {

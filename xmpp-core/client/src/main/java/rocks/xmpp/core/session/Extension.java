@@ -24,6 +24,8 @@
 
 package rocks.xmpp.core.session;
 
+import rocks.xmpp.core.ExtensionProtocol;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -58,7 +60,7 @@ import java.util.StringJoiner;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>
  */
-public final class Extension {
+public final class Extension implements ExtensionProtocol {
 
     private final String namespace;
 
@@ -165,6 +167,14 @@ public final class Extension {
         return new Extension(namespace, manager, features, enabled, classes);
     }
 
+    public static Extension of(ExtensionProtocol extensionProtocol, boolean enabled) {
+        return new Extension(null, null, extensionProtocol.getFeatures(), enabled);
+    }
+
+    public static Extension of(ExtensionProtocol extensionProtocol, Class<? extends Manager> manager, boolean enabled) {
+        return new Extension(extensionProtocol.getFeatures().iterator().next(), manager, extensionProtocol.getFeatures(), enabled);
+    }
+
     /**
      * Gets the protocol namespace.
      *
@@ -197,7 +207,8 @@ public final class Extension {
      *
      * @return The features.
      */
-    public final Collection<String> getFeatures() {
+    @Override
+    public final Set<String> getFeatures() {
         return features;
     }
 

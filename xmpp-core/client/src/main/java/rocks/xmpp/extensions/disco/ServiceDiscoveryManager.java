@@ -90,7 +90,7 @@ public final class ServiceDiscoveryManager extends Manager {
         super(xmppSession, true);
 
         this.discoInfoHandler = new DiscoInfoHandler();
-        this.discoInfoHandler.setDefaultIdentity(DEFAULT_IDENTITY);
+        this.discoInfoHandler.getRootNode().getIdentities().add(DEFAULT_IDENTITY);
         this.discoItemHandler = new DiscoItemsHandler();
     }
 
@@ -145,7 +145,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #removeIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
      */
     public final Set<Identity> getIdentities() {
-        return discoInfoHandler.getIdentities();
+        return Collections.unmodifiableSet(discoInfoHandler.getRootNode().getIdentities());
     }
 
     /**
@@ -156,7 +156,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #removeFeature(String)
      */
     public final Set<String> getFeatures() {
-        return discoInfoHandler.getFeatures();
+        return Collections.unmodifiableSet(discoInfoHandler.getRootNode().getFeatures());
     }
 
     /**
@@ -168,7 +168,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public final List<DataForm> getExtensions() {
-        return discoInfoHandler.getExtensions();
+        return Collections.unmodifiableList(discoInfoHandler.getRootNode().getExtensions());
     }
 
     /**
@@ -179,7 +179,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #getIdentities()
      */
     public final void addIdentity(Identity identity) {
-        if (discoInfoHandler.addIdentity(identity) && xmppSession.isConnected()) {
+        if (discoInfoHandler.getRootNode().getIdentities().add(identity) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
     }
@@ -192,7 +192,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #getIdentities()
      */
     public final void removeIdentity(Identity identity) {
-        if (discoInfoHandler.removeIdentity(identity) && xmppSession.isConnected()) {
+        if (discoInfoHandler.getRootNode().getIdentities().remove(identity) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
     }
@@ -206,7 +206,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #getFeatures()
      */
     public final void addFeature(String feature) {
-        if (discoInfoHandler.addFeature(feature)) {
+        if (discoInfoHandler.getRootNode().getFeatures().add(feature)) {
             Extension extension = featureToExtension.get(feature);
             setEnabled(extension != null ? Collections.singleton(extension) : null, feature, true);
             if (xmppSession.isConnected()) {
@@ -223,7 +223,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #getFeatures()
      */
     public final void removeFeature(String feature) {
-        if (discoInfoHandler.removeFeature(feature)) {
+        if (discoInfoHandler.getRootNode().getFeatures().remove(feature)) {
             Extension extension = featureToExtension.get(feature);
             setEnabled(extension != null ? Collections.singleton(extension) : null, feature, false);
             if (xmppSession.isConnected()) {
@@ -265,7 +265,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public final void addExtension(DataForm extension) {
-        if (discoInfoHandler.addExtension(extension) && xmppSession.isConnected()) {
+        if (discoInfoHandler.getRootNode().getExtensions().add(extension) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
     }
@@ -279,7 +279,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public final void removeExtension(DataForm extension) {
-        if (discoInfoHandler.removeExtension(extension) && xmppSession.isConnected()) {
+        if (discoInfoHandler.getRootNode().getExtensions().remove(extension) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
     }
@@ -478,7 +478,7 @@ public final class ServiceDiscoveryManager extends Manager {
                     if (feature != null && !enabled) {
                         Set<Extension> ex = managersToExtensions.get(managerClass);
                         for (Extension e : ex) {
-                            if (discoInfoHandler.getFeatures().contains(e.getNamespace())) {
+                            if (discoInfoHandler.getRootNode().getFeatures().contains(e.getNamespace())) {
                                 mayDisable = false;
                                 break;
                             }

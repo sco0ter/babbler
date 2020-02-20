@@ -46,12 +46,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public final class DiscoInfoHandler extends AbstractIQHandler {
 
-    private final Set<Identity> identities = Collections.newSetFromMap(new ConcurrentHashMap<>());
-
-    private final Set<String> features = Collections.newSetFromMap(new ConcurrentHashMap<>());
-
-    private final CopyOnWriteArrayList<DataForm> extensions = new CopyOnWriteArrayList<>();
-
     private final Map<String, InfoNode> infoNodeMap = new ConcurrentHashMap<>();
 
     private Identity defaultIdentity;
@@ -82,7 +76,8 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
      * @param infoNode The info node.
      */
     public final void addInfoNode(InfoNode infoNode) {
-        infoNodeMap.put(infoNode.getNode(), infoNode);
+        String key = infoNode.getNode() == null ? "" : infoNode.getNode();
+        infoNodeMap.put(key, infoNode);
     }
 
     /**
@@ -91,7 +86,7 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
      * @param node The node name.
      */
     public final void removeInfoNode(String node) {
-        infoNodeMap.remove(node);
+        infoNodeMap.remove(node == null ? "" : node);
     }
 
     /**
@@ -102,6 +97,7 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
      * @see #removeIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
      */
     public final Set<Identity> getIdentities() {
+        Set<Identity> identities = getRootNode().getIdentities();
         return Collections.unmodifiableSet(identities.isEmpty() ? Collections.singleton(getDefaultIdentity()) : identities);
     }
 
@@ -113,7 +109,7 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
      * @see #removeFeature(String)
      */
     public final Set<String> getFeatures() {
-        return Collections.unmodifiableSet(features);
+        return Collections.unmodifiableSet(getRootNode().getFeatures());
     }
 
     /**
@@ -125,7 +121,7 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
      * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public final List<DataForm> getExtensions() {
-        return Collections.unmodifiableList(extensions);
+        return Collections.unmodifiableList(getRootNode().getExtensions());
     }
 
     /**
@@ -136,7 +132,7 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
      * @see #getIdentities()
      */
     public final boolean addIdentity(Identity identity) {
-        return identities.add(identity);
+        return getRootNode().getIdentities().add(identity);
     }
 
     /**
@@ -147,7 +143,7 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
      * @see #getIdentities()
      */
     public final boolean removeIdentity(Identity identity) {
-        return identities.remove(identity);
+        return getRootNode().getIdentities().remove(identity);
     }
 
     /**
@@ -158,7 +154,7 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
      * @see #getFeatures()
      */
     public final boolean addFeature(String feature) {
-        return features.add(feature);
+        return getRootNode().getFeatures().add(feature);
     }
 
     /**
@@ -169,7 +165,7 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
      * @see #getFeatures()
      */
     public final boolean removeFeature(String feature) {
-        return features.remove(feature);
+        return getRootNode().getFeatures().remove(feature);
     }
 
     /**
@@ -181,7 +177,7 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
      * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public final boolean addExtension(DataForm extension) {
-        return extensions.add(extension);
+        return getRootNode().getExtensions().add(extension);
     }
 
     /**
@@ -193,7 +189,7 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
      * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public final boolean removeExtension(DataForm extension) {
-        return extensions.remove(extension);
+        return getRootNode().getExtensions().remove(extension);
     }
 
     /**
@@ -219,5 +215,41 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
      */
     public final void clear() {
         infoNodeMap.clear();
+    }
+
+    private InfoNode getRootNode() {
+        return infoNodeMap.computeIfAbsent("", key -> new RootNode());
+    }
+
+    /**
+     * The default root node.
+     */
+    private static final class RootNode implements InfoNode {
+
+        private final Set<Identity> identities = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+        private final Set<String> features = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+        private final CopyOnWriteArrayList<DataForm> extensions = new CopyOnWriteArrayList<>();
+
+        @Override
+        public String getNode() {
+            return null;
+        }
+
+        @Override
+        public Set<Identity> getIdentities() {
+            return identities;
+        }
+
+        @Override
+        public Set<String> getFeatures() {
+            return features;
+        }
+
+        @Override
+        public List<DataForm> getExtensions() {
+            return extensions;
+        }
     }
 }

@@ -24,23 +24,30 @@
 
 package rocks.xmpp.extensions.disco.server;
 
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.handler.DiscoInfoHandler;
 import rocks.xmpp.extensions.disco.model.info.Identity;
-import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * @author Christian Schudt
  */
 @ApplicationScoped
 public class ServerInfoNode implements InfoNode {
+    
+    @Inject
+    private Instance<ExtensionProtocol> extensionProtocols;
 
     @Override
     public String getNode() {
@@ -54,7 +61,9 @@ public class ServerInfoNode implements InfoNode {
 
     @Override
     public Set<String> getFeatures() {
-        return Collections.singleton(InfoDiscovery.NAMESPACE);
+        return extensionProtocols.stream()
+                .flatMap(extensionProtocol -> extensionProtocol.getFeatures().stream())
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     @Override
@@ -63,6 +72,7 @@ public class ServerInfoNode implements InfoNode {
     }
 
     @Produces
+    @ApplicationScoped
     private DiscoInfoHandler discoInfoHandler() {
         DiscoInfoHandler discoInfoHandler = new DiscoInfoHandler();
         discoInfoHandler.addInfoNode(this);

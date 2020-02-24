@@ -51,6 +51,11 @@ public final class CryptographicHashFunctionsProtocol implements ExtensionProtoc
     }
 
     @Override
+    public final boolean isEnabled() {
+        return true;
+    }
+
+    @Override
     public final Set<String> getFeatures() {
         return Collections.unmodifiableSet(FEATURES);
     }

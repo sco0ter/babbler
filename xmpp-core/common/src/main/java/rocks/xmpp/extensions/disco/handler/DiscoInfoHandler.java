@@ -104,6 +104,11 @@ public final class DiscoInfoHandler extends AbstractIQHandler implements Extensi
     }
 
     @Override
+    public final boolean isEnabled() {
+        return true;
+    }
+
+    @Override
     public final Set<String> getFeatures() {
         return FEATURES;
     }

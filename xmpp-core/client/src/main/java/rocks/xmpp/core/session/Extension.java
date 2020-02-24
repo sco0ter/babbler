@@ -217,6 +217,7 @@ public final class Extension implements ExtensionProtocol {
      *
      * @return True, if the extension is enabled; false if disabled.
      */
+    @Override
     public final boolean isEnabled() {
         return enabled;
     }

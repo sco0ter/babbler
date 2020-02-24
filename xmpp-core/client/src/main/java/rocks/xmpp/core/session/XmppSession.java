@@ -25,6 +25,7 @@
 package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.Session;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.Connection;
@@ -263,7 +264,19 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
             this.connectionConfigurations.addAll(Arrays.asList(connectionConfigurations));
         }
 
-        configuration.getExtensions().forEach(serviceDiscoveryManager::registerFeature);
+        configuration.getExtensions().forEach(extension -> {
+            if (extension.getManager() != null) {
+                Manager manager = getManager(extension.getManager());
+                if (manager instanceof ExtensionProtocol) {
+                    manager.setEnabled(extension.isEnabled());
+                    serviceDiscoveryManager.registerFeature((ExtensionProtocol) manager);
+                } else {
+                    serviceDiscoveryManager.registerFeature(extension);
+                }
+            } else {
+                serviceDiscoveryManager.registerFeature(extension);
+            }
+        });
     }
 
     protected static void throwAsXmppExceptionIfNotNull(Throwable e) throws XmppException {

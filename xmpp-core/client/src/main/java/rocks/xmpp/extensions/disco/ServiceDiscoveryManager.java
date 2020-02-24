@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.disco;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.Extension;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
@@ -53,10 +54,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Manages <a href="https://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>.
@@ -86,12 +90,57 @@ public final class ServiceDiscoveryManager extends Manager {
 
     private final Map<Class<? extends Manager>, Set<Extension>> managersToExtensions = new HashMap<>();
 
+    private final Set<ExtensionProtocol> extensions = new HashSet<>();
+
+    private final RootNode rootNode = new RootNode();
+
     private ServiceDiscoveryManager(final XmppSession xmppSession) {
         super(xmppSession, true);
 
         this.discoInfoHandler = new DiscoInfoHandler();
-        this.discoInfoHandler.getRootNode().getIdentities().add(DEFAULT_IDENTITY);
+        this.discoInfoHandler.addInfoNode(rootNode);
         this.discoItemHandler = new DiscoItemsHandler();
+    }
+
+    private final class RootNode implements InfoNode {
+
+        private final Set<Identity> identities = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+        private final Set<String> features = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+        private final CopyOnWriteArrayList<DataForm> extensions = new CopyOnWriteArrayList<>();
+
+        private RootNode() {
+            identities.add(DEFAULT_IDENTITY);
+        }
+
+        @Override
+        public String getNode() {
+            return null;
+        }
+
+        @Override
+        public Set<Identity> getIdentities() {
+            return identities;
+        }
+
+        @Override
+        public Set<String> getFeatures() {
+            // Concat manually added features, with enabled known extensions
+            return Stream.concat(features.stream(),
+                    ServiceDiscoveryManager.this.extensions
+                            .stream()
+                            // Extensions with manager currently get excluded, because they are manually added to the feature set.
+                            // This shall change in the future
+                            .filter(ExtensionProtocol::isEnabled)
+                            .flatMap(extension -> extension.getFeatures().stream()))
+                    .collect(Collectors.toSet());
+        }
+
+        @Override
+        public List<DataForm> getExtensions() {
+            return extensions;
+        }
     }
 
     @Override
@@ -145,7 +194,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #removeIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
      */
     public final Set<Identity> getIdentities() {
-        return Collections.unmodifiableSet(discoInfoHandler.getRootNode().getIdentities());
+        return Collections.unmodifiableSet(rootNode.getIdentities());
     }
 
     /**
@@ -206,7 +255,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #getFeatures()
      */
     public final void addFeature(String feature) {
-        if (discoInfoHandler.getRootNode().getFeatures().add(feature)) {
+        if (rootNode.features.add(feature)) {
             Extension extension = featureToExtension.get(feature);
             setEnabled(extension != null ? Collections.singleton(extension) : null, feature, true);
             if (xmppSession.isConnected()) {
@@ -223,7 +272,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #getFeatures()
      */
     public final void removeFeature(String feature) {
-        if (discoInfoHandler.getRootNode().getFeatures().remove(feature)) {
+        if (rootNode.features.remove(feature)) {
             Extension extension = featureToExtension.get(feature);
             setEnabled(extension != null ? Collections.singleton(extension) : null, feature, false);
             if (xmppSession.isConnected()) {
@@ -528,5 +577,9 @@ public final class ServiceDiscoveryManager extends Manager {
         if (extension.isEnabled()) {
             setEnabled(Collections.singleton(extension), null, true);
         }
+    }
+
+    public final void registerFeature(ExtensionProtocol extension) {
+        extensions.add(extension);
     }
 }

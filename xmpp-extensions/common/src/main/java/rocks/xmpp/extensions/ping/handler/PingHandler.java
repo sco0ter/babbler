@@ -51,6 +51,11 @@ public final class PingHandler extends AbstractIQHandler implements ExtensionPro
     }
 
     @Override
+    public final boolean isEnabled() {
+        return true;
+    }
+
+    @Override
     public final Set<String> getFeatures() {
         return FEATURES;
     }

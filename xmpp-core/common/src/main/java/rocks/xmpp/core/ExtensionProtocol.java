@@ -35,6 +35,13 @@ import java.util.Set;
 public interface ExtensionProtocol {
 
     /**
+     * Indicates whether this protocol is enabled.
+     *
+     * @return true, if enabled; false if disabled.
+     */
+    boolean isEnabled();
+
+    /**
      * Gets the features of this protocol, which can be discovered by service discovery.
      *
      * @return The features.

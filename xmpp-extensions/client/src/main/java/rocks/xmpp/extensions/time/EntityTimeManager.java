@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.time;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.IQHandler;
@@ -34,6 +35,7 @@ import rocks.xmpp.extensions.time.model.EntityTime;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.time.OffsetDateTime;
+import java.util.Set;
 
 /**
  * This manager implements <a href="https://xmpp.org/extensions/xep-0202.html">XEP-0202: Entity Time</a>.
@@ -43,9 +45,9 @@ import java.time.OffsetDateTime;
  *
  * @author Christian Schudt
  */
-public final class EntityTimeManager extends Manager {
+public final class EntityTimeManager extends Manager implements IQHandler, ExtensionProtocol {
 
-    private final IQHandler iqHandler;
+    private final EntityTimeHandler iqHandler;
 
     private EntityTimeManager(final XmppSession xmppSession) {
         super(xmppSession);
@@ -76,5 +78,20 @@ public final class EntityTimeManager extends Manager {
             EntityTime entityTime = result.getExtension(EntityTime.class);
             return entityTime != null ? entityTime.getDateTime() : null;
         });
+    }
+
+    @Override
+    public Set<String> getFeatures() {
+        return iqHandler.getFeatures();
+    }
+
+    @Override
+    public Class<?> getPayloadClass() {
+        return iqHandler.getPayloadClass();
+    }
+
+    @Override
+    public IQ handleRequest(IQ iq) {
+        return iqHandler.handleRequest(iq);
     }
 }

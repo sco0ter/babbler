@@ -41,6 +41,11 @@ public final class ResultSetManagementProtocol implements ExtensionProtocol {
     private static final Set<String> FEATURES = Collections.singleton(ResultSetManagement.NAMESPACE);
 
     @Override
+    public final boolean isEnabled() {
+        return true;
+    }
+
+    @Override
     public final Set<String> getFeatures() {
         return FEATURES;
     }

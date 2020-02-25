@@ -55,7 +55,7 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     private static final Comparator<PrivacyList> COMPARATOR = Comparator
             .comparing(PrivacyList::isDefault, Comparator.reverseOrder())
             .thenComparing(PrivacyList::isActive, Comparator.reverseOrder())
-            .thenComparing(PrivacyList::getName, Comparator.nullsLast(((o1, o2) -> Collator.getInstance().compare(o1, o2))))
+            .thenComparing(PrivacyList::getName, Comparator.nullsLast((o1, o2) -> Collator.getInstance().compare(o1, o2)))
             .thenComparing(PrivacyList::getPrivacyRules, nullsFirst((o1, o2) -> {
                 int diff = o1.size() - o2.size();
                 if (diff == 0) {

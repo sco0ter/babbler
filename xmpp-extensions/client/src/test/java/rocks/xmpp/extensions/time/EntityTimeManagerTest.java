@@ -72,9 +72,9 @@ public class EntityTimeManagerTest extends BaseTest {
         Assert.assertTrue(entityTimeManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         String feature = "urn:xmpp:time";
-        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
+        Assert.assertTrue(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
         entityTimeManager.setEnabled(false);
         Assert.assertFalse(entityTimeManager.isEnabled());
-        Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
+        Assert.assertFalse(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
     }
 }

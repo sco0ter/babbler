@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
  */
 
 /**
- * Provides classes for <a href="https://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a> (#info).
+ * Provides classes for <a href="https://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>.
  */
 package rocks.xmpp.extensions.disco;
 

@@ -35,7 +35,7 @@ import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
 import rocks.xmpp.extensions.caps2.model.EntityCapabilities2;
 import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.client.ClientServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
@@ -101,7 +101,7 @@ public final class EntityCapabilitiesManager extends Manager {
 
     private static final Map<Jid, AsyncResult<InfoNode>> REQUESTS = new ConcurrentHashMap<>();
 
-    private final ServiceDiscoveryManager serviceDiscoveryManager;
+    private final ClientServiceDiscoveryManager serviceDiscoveryManager;
 
     private final Map<InfoNode, Collection<EntityCapabilities>> publishedNodes;
 
@@ -123,7 +123,7 @@ public final class EntityCapabilitiesManager extends Manager {
 
     private EntityCapabilitiesManager(final XmppSession xmppSession) {
         super(xmppSession);
-        serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
+        serviceDiscoveryManager = xmppSession.getManager(ClientServiceDiscoveryManager.class);
 
         directoryCapsCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("caps")) : null;
         // no need for a synchronized map, since access to this is already synchronized by this class.

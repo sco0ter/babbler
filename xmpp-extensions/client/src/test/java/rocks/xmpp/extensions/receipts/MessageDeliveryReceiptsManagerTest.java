@@ -171,9 +171,9 @@ public class MessageDeliveryReceiptsManagerTest extends BaseTest {
         Assert.assertFalse(messageDeliveryReceiptsManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         String feature = "urn:xmpp:receipts";
-        Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
+        Assert.assertFalse(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
         messageDeliveryReceiptsManager.setEnabled(true);
         Assert.assertTrue(messageDeliveryReceiptsManager.isEnabled());
-        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
+        Assert.assertTrue(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
     }
 }

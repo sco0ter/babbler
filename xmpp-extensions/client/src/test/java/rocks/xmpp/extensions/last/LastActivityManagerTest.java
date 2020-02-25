@@ -119,10 +119,10 @@ public class LastActivityManagerTest extends BaseTest {
         Assert.assertTrue(lastActivityManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession1.getManager(ServiceDiscoveryManager.class);
         String feature = "jabber:iq:last";
-        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
+        Assert.assertTrue(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
         lastActivityManager.setEnabled(false);
         Assert.assertFalse(lastActivityManager.isEnabled());
-        Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
+        Assert.assertFalse(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
     }
 
     @Test

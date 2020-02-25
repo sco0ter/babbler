@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.disco.handler;
 
-import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -45,9 +44,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author Christian Schudt
  */
-public final class DiscoInfoHandler extends AbstractIQHandler implements ExtensionProtocol {
-
-    private static final Set<String> FEATURES = Collections.singleton(InfoDiscovery.NAMESPACE);
+public final class DiscoInfoHandler extends AbstractIQHandler {
 
     private final Map<String, InfoNode> infoNodeMap = new ConcurrentHashMap<>();
 
@@ -101,16 +98,6 @@ public final class DiscoInfoHandler extends AbstractIQHandler implements Extensi
      */
     public InfoNode getRootNode() {
         return infoNodeMap.computeIfAbsent("", key -> new RootNode());
-    }
-
-    @Override
-    public final boolean isEnabled() {
-        return true;
-    }
-
-    @Override
-    public final Set<String> getFeatures() {
-        return FEATURES;
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.disco.model.info;
 
 import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.disco.model.ServiceDiscoveryNode;
 
 import java.util.List;
 import java.util.Set;
@@ -34,14 +35,7 @@ import java.util.Set;
  *
  * @author Christian Schudt
  */
-public interface InfoNode {
-
-    /**
-     * Gets the node name.
-     *
-     * @return The node.
-     */
-    String getNode();
+public interface InfoNode extends ServiceDiscoveryNode {
 
     /**
      * Gets the identities.

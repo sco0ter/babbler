@@ -64,7 +64,7 @@ public final class Extension implements ExtensionProtocol {
 
     private final String namespace;
 
-    private final Class<? extends Manager> manager;
+    private final Class<?> manager;
 
     private final Set<Class<?>> classes;
 
@@ -72,7 +72,7 @@ public final class Extension implements ExtensionProtocol {
 
     private final boolean enabled;
 
-    private Extension(String namespace, Class<? extends Manager> manager, Set<String> features, boolean enabled, Class<?>... classes) {
+    private Extension(String namespace, Class<?> manager, Set<String> features, boolean enabled, Class<?>... classes) {
         this.namespace = namespace;
         this.manager = manager;
         this.classes = new HashSet<>(Arrays.asList(classes));
@@ -135,7 +135,7 @@ public final class Extension implements ExtensionProtocol {
      * @param classes   The XML schema classes.
      * @return The extension.
      */
-    public static Extension of(String namespace, Class<? extends Manager> manager, boolean enabled, Class<?>... classes) {
+    public static Extension of(String namespace, Class<?> manager, boolean enabled, Class<?>... classes) {
         return new Extension(Objects.requireNonNull(namespace), manager, Collections.emptySet(), enabled, classes);
     }
 
@@ -189,7 +189,7 @@ public final class Extension implements ExtensionProtocol {
      *
      * @return The manager class or null.
      */
-    public final Class<? extends Manager> getManager() {
+    public final Class<?> getManager() {
         return manager;
     }
 

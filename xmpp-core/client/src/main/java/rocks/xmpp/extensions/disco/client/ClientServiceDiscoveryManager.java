@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.disco;
+package rocks.xmpp.extensions.disco.client;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
@@ -31,15 +31,13 @@ import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.disco.handler.DiscoInfoHandler;
-import rocks.xmpp.extensions.disco.handler.DiscoItemsHandler;
+import rocks.xmpp.extensions.disco.AbstractServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
-import rocks.xmpp.extensions.rsm.ResultSetProvider;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
@@ -76,30 +74,25 @@ import java.util.stream.Stream;
  *
  * @author Christian Schudt
  */
-public final class ServiceDiscoveryManager extends Manager {
+public final class ClientServiceDiscoveryManager extends AbstractServiceDiscoveryManager {
 
     private static final Identity DEFAULT_IDENTITY = Identity.clientPc();
 
     private final Set<Consumer<EventObject>> capabilitiesChangeListeners = new CopyOnWriteArraySet<>();
 
-    private final DiscoInfoHandler discoInfoHandler;
-
-    private final DiscoItemsHandler discoItemHandler;
-
     private final Map<String, Extension> featureToExtension = new HashMap<>();
 
-    private final Map<Class<? extends Manager>, Set<Extension>> managersToExtensions = new HashMap<>();
+    private final Map<Class<?>, Set<Extension>> managersToExtensions = new HashMap<>();
 
     private final Set<ExtensionProtocol> extensions = new HashSet<>();
 
     private final RootNode rootNode = new RootNode();
 
-    private ServiceDiscoveryManager(final XmppSession xmppSession) {
-        super(xmppSession, true);
+    private final XmppSession xmppSession;
 
-        this.discoInfoHandler = new DiscoInfoHandler();
-        this.discoInfoHandler.addInfoNode(rootNode);
-        this.discoItemHandler = new DiscoItemsHandler();
+    private ClientServiceDiscoveryManager(final XmppSession xmppSession) {
+        this.xmppSession = xmppSession;
+        addInfoNode(rootNode);
     }
 
     private final class RootNode implements InfoNode {
@@ -128,7 +121,7 @@ public final class ServiceDiscoveryManager extends Manager {
         public Set<String> getFeatures() {
             // Concat manually added features, with enabled known extensions
             return Stream.concat(features.stream(),
-                    ServiceDiscoveryManager.this.extensions
+                    ClientServiceDiscoveryManager.this.extensions
                             .stream()
                             // Extensions with manager currently get excluded, because they are manually added to the feature set.
                             // This shall change in the future
@@ -141,20 +134,6 @@ public final class ServiceDiscoveryManager extends Manager {
         public List<DataForm> getExtensions() {
             return extensions;
         }
-    }
-
-    @Override
-    protected void onEnable() {
-        super.onEnable();
-        xmppSession.addIQHandler(discoInfoHandler);
-        xmppSession.addIQHandler(discoItemHandler);
-    }
-
-    @Override
-    protected void onDisable() {
-        super.onDisable();
-        xmppSession.removeIQHandler(discoInfoHandler);
-        xmppSession.removeIQHandler(discoItemHandler);
     }
 
     /**
@@ -204,7 +183,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #addFeature(String)
      * @see #removeFeature(String)
      */
-    public final Set<String> getFeatures() {
+    public final Set<String> getFeatures0() {
         return Collections.unmodifiableSet(discoInfoHandler.getRootNode().getFeatures());
     }
 
@@ -227,6 +206,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #removeIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
      * @see #getIdentities()
      */
+    @Override
     public final void addIdentity(Identity identity) {
         if (discoInfoHandler.getRootNode().getIdentities().add(identity) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
@@ -240,6 +220,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #addIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
      * @see #getIdentities()
      */
+    @Override
     public final void removeIdentity(Identity identity) {
         if (discoInfoHandler.getRootNode().getIdentities().remove(identity) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
@@ -254,6 +235,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #removeFeature(String)
      * @see #getFeatures()
      */
+    @Override
     public final void addFeature(String feature) {
         if (rootNode.features.add(feature)) {
             Extension extension = featureToExtension.get(feature);
@@ -271,6 +253,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #addFeature(String)
      * @see #getFeatures()
      */
+    @Override
     public final void removeFeature(String feature) {
         if (rootNode.features.remove(feature)) {
             Extension extension = featureToExtension.get(feature);
@@ -288,7 +271,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #addFeature(String)
      * @see #getFeatures()
      */
-    public final void addFeature(Class<? extends Manager> managerClass) {
+    public final void addFeature(Class<?> managerClass) {
         // This will eventually call addFeature(String)
         setEnabled(managersToExtensions.get(managerClass), null, true);
     }
@@ -300,7 +283,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @see #addFeature(String)
      * @see #getFeatures()
      */
-    public final void removeFeature(Class<? extends Manager> managerClass) {
+    public final void removeFeature(Class<?> managerClass) {
         // This will eventually call addFeature(String)
         setEnabled(managersToExtensions.get(managerClass), null, false);
     }
@@ -347,6 +330,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @param jid The entity's JID.
      * @return The async service discovery result.
      */
+    @Override
     public final AsyncResult<InfoNode> discoverInformation(Jid jid) {
         return discoverInformation(jid, null);
     }
@@ -363,6 +347,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @return The async service discovery result.
      * @see #discoverInformation(Jid)
      */
+    @Override
     public final AsyncResult<InfoNode> discoverInformation(Jid jid, String node) {
         return xmppSession.query(IQ.get(jid, new InfoDiscovery(node)), InfoNode.class);
     }
@@ -373,6 +358,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @param jid The JID.
      * @return The async result with the discovered items.
      */
+    @Override
     public final AsyncResult<ItemNode> discoverItems(Jid jid) {
         return discoverItems(jid, null, null);
     }
@@ -384,6 +370,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @param resultSet The result set management.
      * @return The async result with the discovered items.
      */
+    @Override
     public final AsyncResult<ItemNode> discoverItems(Jid jid, ResultSetManagement resultSet) {
         return discoverItems(jid, null, resultSet);
     }
@@ -395,6 +382,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @param node The node.
      * @return The async result with the discovered items.
      */
+    @Override
     public final AsyncResult<ItemNode> discoverItems(Jid jid, String node) {
         return discoverItems(jid, node, null);
     }
@@ -407,6 +395,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @param resultSetManagement The result set management.
      * @return The async result with the discovered items.
      */
+    @Override
     public final AsyncResult<ItemNode> discoverItems(Jid jid, String node, ResultSetManagement resultSetManagement) {
         return xmppSession.query(IQ.get(jid, new ItemDiscovery(node, resultSetManagement)), ItemNode.class);
     }
@@ -421,6 +410,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @param identity The identity.
      * @return The services, that belong to the namespace.
      */
+    @Override
     public final AsyncResult<List<Item>> discoverServices(Identity identity) {
         return discoverServices(infoNode -> {
             for (Identity id : infoNode.getIdentities()) {
@@ -438,6 +428,7 @@ public final class ServiceDiscoveryManager extends Manager {
      * @param feature The feature namespace.
      * @return The async result with the services, that belong to the namespace.
      */
+    @Override
     public final AsyncResult<List<Item>> discoverServices(String feature) {
         return discoverServices(infoNode -> infoNode.getFeatures().contains(feature));
     }
@@ -466,61 +457,13 @@ public final class ServiceDiscoveryManager extends Manager {
         });
     }
 
-    /**
-     * Adds an info node.
-     *
-     * @param infoNode The info node.
-     */
-    public final void addInfoNode(InfoNode infoNode) {
-        discoInfoHandler.addInfoNode(infoNode);
-    }
-
-    /**
-     * Removes an info node.
-     *
-     * @param node The node name.
-     */
-    public final void removeInfoNode(String node) {
-        discoInfoHandler.removeInfoNode(node);
-    }
-
-    /**
-     * Sets an item provider for the root node.
-     * <p>
-     * If you want to manage items in memory, you can use {@link ResultSetProvider#forItems(Collection)}}.
-     *
-     * @param itemProvider The item provider.
-     */
-    public final void setItemProvider(ResultSetProvider<Item> itemProvider) {
-        discoItemHandler.setItemProvider(itemProvider);
-    }
-
-    /**
-     * Sets an item provider for a node.
-     * <p>
-     * If you want to manage items in memory, you can use {@link ResultSetProvider#forItems(Collection)}}.
-     *
-     * @param node         The node name.
-     * @param itemProvider The item provider.
-     */
-    public final void setItemProvider(String node, ResultSetProvider<Item> itemProvider) {
-        discoItemHandler.setItemProvider(node, itemProvider);
-    }
-
-    @Override
-    protected void dispose() {
-        capabilitiesChangeListeners.clear();
-        discoInfoHandler.clear();
-        discoItemHandler.clear();
-    }
-
     private void setEnabled(Iterable<Extension> extensions, String feature, boolean enabled) {
         if (extensions != null) {
             for (Extension extension : extensions) {
                 // Check if the extension has an associated manager class, which we need to enable/disable.
-                Class<? extends Manager> managerClass = extension.getManager();
+                Class<?> managerClass = extension.getManager();
                 if (managerClass != null) {
-                    Manager manager = xmppSession.getManager(managerClass);
+                    Object manager = xmppSession.getManager(managerClass);
                     // A manager can manage multiple features (e.g. ServiceDiscoveryManager manages disco#items and disco#info feature)
                     // If we disable one feature, but not the other one, the manager should still be enabled.
                     boolean mayDisable = true;
@@ -533,8 +476,8 @@ public final class ServiceDiscoveryManager extends Manager {
                             }
                         }
                     }
-                    if (mayDisable && enabled != manager.isEnabled()) {
-                        manager.setEnabled(enabled);
+                    if (manager instanceof Manager && mayDisable && enabled != ((Manager) manager).isEnabled()) {
+                        ((Manager) manager).setEnabled(enabled);
                     }
                 }
 

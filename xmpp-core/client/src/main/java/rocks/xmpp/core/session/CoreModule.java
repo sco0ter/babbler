@@ -28,7 +28,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
 import rocks.xmpp.extensions.caps2.model.EntityCapabilities2;
-import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.client.ClientServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.hashes.CryptographicHashFunctionsProtocol;
@@ -53,8 +53,8 @@ public final class CoreModule implements Module {
         return Arrays.asList(
 
                 // XEP-0030: Service Discovery
-                Extension.of(InfoDiscovery.NAMESPACE, ServiceDiscoveryManager.class, true),
-                Extension.of(ItemDiscovery.NAMESPACE, ServiceDiscoveryManager.class, true),
+                Extension.of(InfoDiscovery.NAMESPACE, ClientServiceDiscoveryManager.class, true),
+                Extension.of(ItemDiscovery.NAMESPACE, ClientServiceDiscoveryManager.class, true),
 
                 // XEP-0059: Result Set Management
                 Extension.of(new ResultSetManagementProtocol(), true),

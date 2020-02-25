@@ -76,10 +76,10 @@ public class SoftwareVersionManagerTest extends BaseTest {
         Assert.assertTrue(softwareVersionManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         String feature = "jabber:iq:version";
-        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
+        Assert.assertTrue(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
         softwareVersionManager.setEnabled(false);
         Assert.assertFalse(softwareVersionManager.isEnabled());
-        Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
+        Assert.assertFalse(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
     }
 
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,31 +22,24 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.disco.model.items;
+package rocks.xmpp.extensions.disco.model;
 
-import rocks.xmpp.extensions.disco.model.ServiceDiscoveryNode;
-import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
-
-import java.util.List;
+import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.items.ItemNode;
 
 /**
- * A generic service discovery item node.
+ * Represents one of the two service discovery node types, info or item node.
  *
  * @author Christian Schudt
+ * @see InfoNode
+ * @see ItemNode
  */
-public interface ItemNode extends ServiceDiscoveryNode {
+public interface ServiceDiscoveryNode {
 
     /**
-     * Gets the items.
+     * Gets the node name.
      *
-     * @return The items.
+     * @return The node.
      */
-    List<Item> getItems();
-
-    /**
-     * Gets the result set.
-     *
-     * @return The result set.
-     */
-    ResultSetManagement getResultSetManagement();
+    String getNode();
 }

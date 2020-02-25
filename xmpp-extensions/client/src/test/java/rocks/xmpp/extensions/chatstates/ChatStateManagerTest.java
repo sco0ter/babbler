@@ -86,9 +86,9 @@ public class ChatStateManagerTest extends BaseTest {
         Assert.assertFalse(chatStateManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession1.getManager(ServiceDiscoveryManager.class);
         String feature = "http://jabber.org/protocol/chatstates";
-        Assert.assertFalse(serviceDiscoveryManager.getFeatures().contains(feature));
+        Assert.assertFalse(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
         chatStateManager.setEnabled(true);
         Assert.assertTrue(chatStateManager.isEnabled());
-        Assert.assertTrue(serviceDiscoveryManager.getFeatures().contains(feature));
+        Assert.assertTrue(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
     }
 }

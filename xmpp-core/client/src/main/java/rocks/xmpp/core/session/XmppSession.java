@@ -56,7 +56,7 @@ import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
-import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.client.ClientServiceDiscoveryManager;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.util.XmppUtils;
@@ -80,10 +80,12 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.EventObject;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -138,7 +140,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
     protected final XmppSessionConfiguration configuration;
 
-    protected final ServiceDiscoveryManager serviceDiscoveryManager;
+    protected final ClientServiceDiscoveryManager serviceDiscoveryManager;
 
     protected final StreamFeaturesManager streamFeaturesManager;
 
@@ -163,13 +165,13 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
     private final Set<Consumer<IQEvent>> outboundIQListeners = new CopyOnWriteArraySet<>();
 
-    private final Map<Class<?>, IQHandler> iqHandlerMap = new HashMap<>();
+    private final Set<IQHandler> iqHandlerMap = new HashSet<>();
 
-    private final Map<Class<?>, Boolean> iqHandlerInvocationModes = new HashMap<>();
+    private final Map<IQHandler, Boolean> iqHandlerInvocationModes = new HashMap<>();
 
     private final Set<Consumer<SessionStatusEvent>> sessionStatusListeners = new CopyOnWriteArraySet<>();
 
-    private final Map<Class<? extends Manager>, Manager> instances = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Object> instances = new ConcurrentHashMap<>();
 
     private final Set<Consumer<MessageEvent>> messageAcknowledgedListeners = new CopyOnWriteArraySet<>();
 
@@ -227,7 +229,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
         this.xmppServiceDomain = Jid.of(Objects.requireNonNull(xmppServiceDomain, "The XMPP service domain must not be null. It's a required attribute in the stream header"));
         this.configuration = configuration;
         this.stanzaListenerExecutor = new QueuedExecutorService(STANZA_LISTENER_EXECUTOR);
-        this.serviceDiscoveryManager = getManager(ServiceDiscoveryManager.class);
+        this.serviceDiscoveryManager = getManager(ClientServiceDiscoveryManager.class);
         this.streamFeaturesManager = getManager(StreamFeaturesManager.class);
 
         // Add a shutdown hook, which will gracefully close the connection, when the JVM is halted.
@@ -266,9 +268,13 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
         configuration.getExtensions().forEach(extension -> {
             if (extension.getManager() != null) {
-                Manager manager = getManager(extension.getManager());
+                Object manager = getManager(extension.getManager());
                 if (manager instanceof ExtensionProtocol) {
-                    manager.setEnabled(extension.isEnabled());
+                    if (manager instanceof Manager) {
+                        ((Manager) manager).setEnabled(extension.isEnabled());
+                    } else if (manager instanceof IQHandler) {
+                        addIQHandler((IQHandler) manager);
+                    }
                     serviceDiscoveryManager.registerFeature((ExtensionProtocol) manager);
                 } else {
                     serviceDiscoveryManager.registerFeature(extension);
@@ -685,8 +691,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      */
     public final void addIQHandler(IQHandler iqHandler, boolean invokeAsync) {
         synchronized (iqHandlerMap) {
-            iqHandlerMap.put(iqHandler.getPayloadClass(), iqHandler);
-            iqHandlerInvocationModes.put(iqHandler.getPayloadClass(), invokeAsync);
+            iqHandlerMap.add(iqHandler);
+            iqHandlerInvocationModes.put(iqHandler, invokeAsync);
         }
     }
 
@@ -698,8 +704,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      */
     public final void removeIQHandler(IQHandler iqHandler) {
         synchronized (iqHandlerMap) {
-            iqHandlerMap.remove(iqHandler.getPayloadClass());
-            iqHandlerInvocationModes.remove(iqHandler.getPayloadClass());
+            iqHandlerMap.remove(iqHandler);
+            iqHandlerInvocationModes.remove(iqHandler);
         }
     }
 
@@ -1186,9 +1192,9 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                     Executor executor;
                     final IQHandler iqHandler;
                     synchronized (iqHandlerMap) {
-                        iqHandler = iqHandlerMap.get(payload.getClass());
+                        iqHandler = iqHandlerMap.stream().filter(handler -> handler.getPayloadClass().isAssignableFrom(payload.getClass())).findFirst().orElse(null);
                         // If the handler is to be invoked asynchronously, get the iqHandlerExecutor, otherwise use stanzaListenerExecutor (which is a single thread executor).
-                        executor = iqHandler != null ? (iqHandlerInvocationModes.get(payload.getClass()) ? getIqHandlerExecutor() : getStanzaListenerExecutor()) : null;
+                        executor = iqHandler != null ? (iqHandlerInvocationModes.get(iqHandler) ? getIqHandlerExecutor() : getStanzaListenerExecutor()) : null;
                     }
 
                     if (iqHandler != null) {
@@ -1243,17 +1249,29 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      * @return An instance of the specified manager.
      */
     @SuppressWarnings("unchecked")
-    public final <T extends Manager> T getManager(Class<T> clazz) {
+    public final <T> T getManager(Class<T> clazz) {
         T instance;
         if ((instance = (T) instances.get(clazz)) == null) {
             synchronized (instances) {
                 if ((instance = (T) instances.get(clazz)) == null) {
+                    Optional<Object> in = instances.values().stream().filter(i -> clazz.isAssignableFrom(i.getClass())).findFirst();
+                    if (in.isPresent()) {
+                        return (T) in.get();
+                    }
                     try {
-                        Constructor<T> constructor = clazz.getDeclaredConstructor(XmppSession.class);
-                        constructor.setAccessible(true);
-                        instance = constructor.newInstance(this);
-                        instance.initialize();
-                        instances.put(clazz, instance);
+                        try {
+                            Constructor<T> constructor = clazz.getDeclaredConstructor(XmppSession.class);
+                            constructor.setAccessible(true);
+                            instance = constructor.newInstance(this);
+                            if (instance instanceof Manager) {
+                                ((Manager) instance).initialize();
+                            }
+                            instances.put(clazz, instance);
+                        } catch (Exception e) {
+                            Constructor<T> constructor = clazz.getDeclaredConstructor();
+                            instance = constructor.newInstance();
+                            instances.put(clazz, instance);
+                        }
                     } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                         throw new IllegalArgumentException("Can't instantiate the provided class:" + clazz, e);
                     }
@@ -1423,7 +1441,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      *
      * @param managerClass The associated manager class.
      */
-    public final void enableFeature(Class<? extends Manager> managerClass) {
+    public final void enableFeature(Class<?> managerClass) {
         serviceDiscoveryManager.addFeature(managerClass);
     }
 
@@ -1442,7 +1460,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      * @return The enabled features.
      */
     public final Set<String> getEnabledFeatures() {
-        return serviceDiscoveryManager.getFeatures();
+        return serviceDiscoveryManager.getRootNode().getFeatures();
     }
 
     /**

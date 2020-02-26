@@ -107,7 +107,7 @@ public final class Extension implements ExtensionProtocol {
      * @param enabled If this manager is enabled.
      * @return The extension.
      */
-    public static Extension of(Class<? extends Manager> manager, boolean enabled) {
+    public static Extension of(Class<?> manager, boolean enabled) {
         return new Extension(null, Objects.requireNonNull(manager), Collections.emptySet(), enabled);
     }
 

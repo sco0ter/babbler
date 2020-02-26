@@ -22,15 +22,13 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.version;
+package rocks.xmpp.extensions.version.client;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.extensions.version.AbstractSoftwareVersionManager;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
@@ -46,14 +44,14 @@ import java.util.Properties;
  *
  * @author Christian Schudt
  */
-public final class SoftwareVersionManager extends Manager {
+public final class ClientSoftwareVersionManager extends AbstractSoftwareVersionManager {
 
     private static final SoftwareVersion DEFAULT_VERSION;
 
     static {
         Properties properties = new Properties();
         SoftwareVersion version;
-        try (InputStream inputStream = SoftwareVersionManager.class.getResourceAsStream("/META-INF/maven/rocks.xmpp/xmpp-extensions-client/pom.properties")) {
+        try (InputStream inputStream = ClientSoftwareVersionManager.class.getResourceAsStream("/META-INF/maven/rocks.xmpp/xmpp-extensions-client/pom.properties")) {
             properties.load(inputStream);
             version = new SoftwareVersion("Babbler", properties.getProperty("version"));
         } catch (Exception e) {
@@ -62,38 +60,15 @@ public final class SoftwareVersionManager extends Manager {
         DEFAULT_VERSION = version;
     }
 
-    private final IQHandler iqHandler;
+    private final XmppSession xmppSession;
 
-    private SoftwareVersion softwareVersion;
+    private final Manager manager;
 
-    private SoftwareVersionManager(final XmppSession xmppSession) {
-        super(xmppSession);
-        iqHandler = new AbstractIQHandler(SoftwareVersion.class, IQ.Type.GET) {
-            @Override
-            protected IQ processRequest(IQ iq) {
-                synchronized (SoftwareVersionManager.this) {
-                    if (softwareVersion != null) {
-                        return iq.createResult(softwareVersion);
-                    }
-                }
-                if (DEFAULT_VERSION != null) {
-                    return iq.createResult(DEFAULT_VERSION);
-                }
-                return iq.createError(Condition.SERVICE_UNAVAILABLE);
-            }
-        };
-    }
-
-    @Override
-    protected void onEnable() {
-        super.onEnable();
-        xmppSession.addIQHandler(iqHandler);
-    }
-
-    @Override
-    protected void onDisable() {
-        super.onDisable();
-        xmppSession.removeIQHandler(iqHandler);
+    private ClientSoftwareVersionManager(final XmppSession xmppSession) {
+        manager = new Manager(xmppSession);
+        this.xmppSession = xmppSession;
+        setEnabled(true);
+        setSoftwareVersion(DEFAULT_VERSION);
     }
 
     /**
@@ -102,27 +77,18 @@ public final class SoftwareVersionManager extends Manager {
      * @param jid The JID of the entity you want get the software version from. You can also pass null, if you want to get the server's software version.
      * @return The async result with the software version or null, if this protocol is not supported.
      */
+    @Override
     public AsyncResult<SoftwareVersion> getSoftwareVersion(Jid jid) {
         return xmppSession.query(IQ.get(jid, new SoftwareVersion()), SoftwareVersion.class);
     }
 
-    /**
-     * Gets my own software version, which should be set first.
-     *
-     * @return My software version.
-     * @see #setSoftwareVersion(SoftwareVersion)
-     */
-    public synchronized SoftwareVersion getSoftwareVersion() {
-        return softwareVersion;
+    @Override
+    public void setEnabled(boolean enabled) {
+        manager.setEnabled(enabled);
     }
 
-    /**
-     * Sets my own software version.
-     *
-     * @param softwareVersion My software version.
-     * @see #getSoftwareVersion()
-     */
-    public synchronized void setSoftwareVersion(SoftwareVersion softwareVersion) {
-        this.softwareVersion = softwareVersion;
+    @Override
+    public boolean isEnabled() {
+        return manager.isEnabled();
     }
 }

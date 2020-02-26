@@ -96,8 +96,7 @@ import rocks.xmpp.extensions.tune.model.Tune;
 import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
 import rocks.xmpp.extensions.vcard.temp.VCardManager;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
-import rocks.xmpp.extensions.version.SoftwareVersionManager;
-import rocks.xmpp.extensions.version.model.SoftwareVersion;
+import rocks.xmpp.extensions.version.client.ClientSoftwareVersionManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -160,7 +159,7 @@ public final class ExtensionModule implements Module {
                 Extension.of(ChatState.NAMESPACE, ChatStateManager.class, false),
 
                 // XEP-0092: Software Version
-                Extension.of(SoftwareVersion.NAMESPACE, SoftwareVersionManager.class, true),
+                Extension.of(ClientSoftwareVersionManager.class, true),
 
                 // XEP-0095: Stream Initiation
                 Extension.of(StreamInitiation.NAMESPACE, StreamInitiationManager.class, true),

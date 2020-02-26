@@ -29,14 +29,14 @@ package rocks.xmpp.core.session;
  *
  * @author Christian Schudt
  */
-public abstract class Manager {
+public class Manager {
     protected final XmppSession xmppSession;
 
-    protected Manager(XmppSession xmppSession) {
+    public Manager(XmppSession xmppSession) {
         this(xmppSession, false);
     }
 
-    protected Manager(XmppSession xmppSession, boolean disposable) {
+    public Manager(XmppSession xmppSession, boolean disposable) {
         this.xmppSession = xmppSession;
         if (disposable) {
             xmppSession.addSessionStatusListener(e -> {

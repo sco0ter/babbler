@@ -53,8 +53,8 @@ public final class CoreModule implements Module {
         return Arrays.asList(
 
                 // XEP-0030: Service Discovery
-                Extension.of(InfoDiscovery.NAMESPACE, ClientServiceDiscoveryManager.class, true),
-                Extension.of(ItemDiscovery.NAMESPACE, ClientServiceDiscoveryManager.class, true),
+                Extension.of(ClientServiceDiscoveryManager.class, true),
+                Extension.of(ClientServiceDiscoveryManager.class, true),
 
                 // XEP-0059: Result Set Management
                 Extension.of(new ResultSetManagementProtocol(), true),

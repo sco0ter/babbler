@@ -113,7 +113,7 @@ public final class ExtensionModule implements Module {
         return Arrays.asList(
 
                 // XEP-0009: Jabber-RPC
-                Extension.of(Rpc.NAMESPACE, RpcManager.class, false),
+                Extension.of(RpcManager.class, false),
 
                 // XEP-0012: Last Activity
                 Extension.of(LastActivity.NAMESPACE, LastActivityManager.class, true),

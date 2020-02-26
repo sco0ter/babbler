@@ -48,7 +48,7 @@ public class RpcManagerTest extends BaseTest {
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         String feature = "jabber:iq:rpc";
         Assert.assertFalse(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
-        rpcManager.setEnabled(true);
+        rpcManager.setRpcHandler((requester, methodName, parameters) -> null);
         Assert.assertTrue(rpcManager.isEnabled());
         Assert.assertTrue(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
     }
@@ -62,7 +62,6 @@ public class RpcManagerTest extends BaseTest {
 
         RpcManager rpcManager = xmppSession1.getManager(RpcManager.class);
         //rpcManager.executorService = new SameThreadExecutorService();
-        rpcManager.setEnabled(true);
         rpcManager.setRpcHandler((requester, methodName, parameters) -> {
             if (methodName.equals("square")) {
                 return Value.of(parameters.get(0).getAsInteger() * parameters.get(0).getAsInteger());
@@ -82,7 +81,6 @@ public class RpcManagerTest extends BaseTest {
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         RpcManager rpcManager = xmppSession1.getManager(RpcManager.class);
-        rpcManager.setEnabled(true);
 
         //rpcManager.executorService = new SameThreadExecutorService();
 

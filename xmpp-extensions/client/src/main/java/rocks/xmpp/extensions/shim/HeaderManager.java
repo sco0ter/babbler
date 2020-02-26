@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.shim;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.data.model.DataForm;
@@ -34,6 +35,7 @@ import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.shim.model.Headers;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -47,11 +49,15 @@ import java.util.stream.Collectors;
  *
  * @author Christian Schudt
  */
-public final class HeaderManager extends Manager implements InfoNode {
+public final class HeaderManager extends Manager implements ExtensionProtocol {
+
+    private static final Set<String> FEATURES = Collections.singleton(Headers.NAMESPACE);
 
     private final Set<String> supportedHeaders;
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
+
+    private final InfoNode infoNode = new HeaderInfoNode();
 
     private HeaderManager(XmppSession xmppSession) {
         super(xmppSession);
@@ -72,11 +78,6 @@ public final class HeaderManager extends Manager implements InfoNode {
         return supportedHeaders;
     }
 
-    @Override
-    public String getNode() {
-        return Headers.NAMESPACE;
-    }
-
     /**
      * Discovers the supported headers of another entity.
      *
@@ -94,28 +95,41 @@ public final class HeaderManager extends Manager implements InfoNode {
     @Override
     protected void onEnable() {
         super.onEnable();
-        serviceDiscoveryManager.addInfoNode(this);
+        serviceDiscoveryManager.addInfoNode(infoNode);
     }
 
     @Override
     protected void onDisable() {
         super.onDisable();
-        serviceDiscoveryManager.removeInfoNode(getNode());
+        serviceDiscoveryManager.removeInfoNode(infoNode.getNode());
     }
 
     @Override
-    public Set<String> getFeatures() {
-        // https://xmpp.org/extensions/xep-0131.html#disco-header
-        return supportedHeaders.stream().map(supportedHeader -> Headers.NAMESPACE + '#' + supportedHeader).collect(Collectors.toSet());
+    public final Set<String> getFeatures() {
+        return FEATURES;
     }
 
-    @Override
-    public Set<Identity> getIdentities() {
-        return null;
-    }
+    private final class HeaderInfoNode implements InfoNode {
 
-    @Override
-    public List<DataForm> getExtensions() {
-        return null;
+        @Override
+        public final String getNode() {
+            return Headers.NAMESPACE;
+        }
+
+        @Override
+        public final Set<Identity> getIdentities() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public final Set<String> getFeatures() {
+            // https://xmpp.org/extensions/xep-0131.html#disco-header
+            return supportedHeaders.stream().map(supportedHeader -> Headers.NAMESPACE + '#' + supportedHeader).collect(Collectors.toSet());
+        }
+
+        @Override
+        public final List<DataForm> getExtensions() {
+            return Collections.emptyList();
+        }
     }
 }

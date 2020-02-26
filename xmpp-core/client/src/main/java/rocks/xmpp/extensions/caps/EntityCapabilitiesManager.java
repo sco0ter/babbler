@@ -27,6 +27,8 @@ package rocks.xmpp.extensions.caps;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.InboundPresenceHandler;
+import rocks.xmpp.core.stanza.OutboundPresenceHandler;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
@@ -68,7 +70,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -87,7 +88,7 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>
  */
-public final class EntityCapabilitiesManager extends Manager {
+public final class EntityCapabilitiesManager extends Manager implements InboundPresenceHandler, OutboundPresenceHandler {
 
     private static final Logger logger = Logger.getLogger(EntityCapabilitiesManager.class.getName());
 
@@ -106,10 +107,6 @@ public final class EntityCapabilitiesManager extends Manager {
     private final Map<InfoNode, Collection<EntityCapabilities>> publishedNodes;
 
     private final DirectoryCache directoryCapsCache;
-
-    private final Consumer<PresenceEvent> inboundPresenceListener;
-
-    private final Consumer<PresenceEvent> outboundPresenceListener;
 
     /**
      * Guarded by "serviceDiscoveryManager".
@@ -139,48 +136,20 @@ public final class EntityCapabilitiesManager extends Manager {
                 return false;
             }
         };
-
-        this.inboundPresenceListener = e -> {
-            final Presence presence = e.getPresence();
-            if (!presence.getFrom().equals(xmppSession.getConnectedResource())) {
-                final List<EntityCapabilities> entityCapabilities = presence.getExtensions(EntityCapabilities.class);
-                processNextEntityCaps(entityCapabilities.iterator(), presence.getFrom());
-            }
-        };
-
-        this.outboundPresenceListener = e -> {
-            final Presence presence = e.getPresence();
-            if (presence.isAvailable()) {
-                // Synchronize on sdm, to make sure no features/identities are added removed, while computing the hash.
-                synchronized (publishedNodes) {
-                    if (publishedNodes.isEmpty()) {
-                        publishCapsNode();
-                    }
-                    // a client SHOULD include entity capabilities with every presence notification it sends.
-                    // Get the last generated verification string here.
-                    Deque<Collection<EntityCapabilities>> publishedEntityCaps = new ArrayDeque<>(publishedNodes.values());
-                    Collection<EntityCapabilities> lastPublishedEntityCaps = publishedEntityCaps.getLast();
-                    for (EntityCapabilities entityCapabilities : lastPublishedEntityCaps) {
-                        presence.putExtension(entityCapabilities);
-                    }
-                    capsSent = true;
-                }
-            }
-        };
     }
 
     @Override
     protected void onEnable() {
         super.onEnable();
-        xmppSession.addInboundPresenceListener(inboundPresenceListener);
-        xmppSession.addOutboundPresenceListener(outboundPresenceListener);
+        xmppSession.addInboundPresenceListener(this::handleInboundPresence);
+        xmppSession.addOutboundPresenceListener(this::handleOutboundPresence);
     }
 
     @Override
     protected void onDisable() {
         super.onDisable();
-        xmppSession.removeInboundPresenceListener(inboundPresenceListener);
-        xmppSession.removeOutboundPresenceListener(outboundPresenceListener);
+        xmppSession.removeInboundPresenceListener(this::handleInboundPresence);
+        xmppSession.removeOutboundPresenceListener(this::handleOutboundPresence);
     }
 
     @Override
@@ -484,6 +453,36 @@ public final class EntityCapabilitiesManager extends Manager {
         } else {
             // No more hashes, try next entity capabilities, if present.
             processNextEntityCaps(entityCapabilities, entity);
+        }
+    }
+
+    @Override
+    public void handleInboundPresence(PresenceEvent e) {
+        final Presence presence = e.getPresence();
+        if (!presence.getFrom().equals(xmppSession.getConnectedResource())) {
+            final List<EntityCapabilities> entityCapabilities = presence.getExtensions(EntityCapabilities.class);
+            processNextEntityCaps(entityCapabilities.iterator(), presence.getFrom());
+        }
+    }
+
+    @Override
+    public void handleOutboundPresence(PresenceEvent e) {
+        final Presence presence = e.getPresence();
+        if (presence.isAvailable()) {
+            // Synchronize on sdm, to make sure no features/identities are added removed, while computing the hash.
+            synchronized (publishedNodes) {
+                if (publishedNodes.isEmpty()) {
+                    publishCapsNode();
+                }
+                // a client SHOULD include entity capabilities with every presence notification it sends.
+                // Get the last generated verification string here.
+                Deque<Collection<EntityCapabilities>> publishedEntityCaps = new ArrayDeque<>(publishedNodes.values());
+                Collection<EntityCapabilities> lastPublishedEntityCaps = publishedEntityCaps.getLast();
+                for (EntityCapabilities entityCapabilities : lastPublishedEntityCaps) {
+                    presence.putExtension(entityCapabilities);
+                }
+                capsSent = true;
+            }
         }
     }
 }

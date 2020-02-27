@@ -26,6 +26,7 @@ package rocks.xmpp.util.adapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Converts an {@link java.time.OffsetDateTime} to a string representation according to <a href="https://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a> and vice versa.
@@ -41,6 +42,6 @@ public final class OffsetDateTimeAdapter extends XmlAdapter<String, OffsetDateTi
 
     @Override
     public final String marshal(OffsetDateTime value) {
-        return value != null ? value.toString() : null;
+        return value != null ? value.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) : null;
     }
 }

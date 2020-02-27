@@ -26,7 +26,9 @@ package rocks.xmpp.extensions.shim.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
+import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /**
@@ -69,6 +71,77 @@ public final class Header {
     }
 
     /**
+     * Creates a 'Classification' header.
+     * <p>
+     * The Classification header enables a sender or other entity to classify a stanza according to some classification scheme.
+     *
+     * @param value The value.
+     * @return The 'Classification' header.
+     * @see <a href="https://xmpp.org/extensions/xep-0131.html#headers-classification">5.1 Classification</a>
+     */
+    public static Header ofClassification(String value) {
+        return of("Classification", value);
+    }
+
+    /**
+     * Creates a header which specifies the date and time when a stanza was created by the originating entity.
+     *
+     * @param dateTime The date time.
+     * @return The 'Created' header.
+     * @see <a href="https://xmpp.org/extensions/xep-0131.html#headers-created">5.2 Created</a>
+     */
+    public static Header ofCreated(OffsetDateTime dateTime) {
+        return of("Created", dateTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+    }
+
+    /**
+     * The Distribute header enables a sender to specify whether the stanza may be further distributed by the recipient to other entities on the network. The allowable values for this header are "true" and "false". If the sender specifies a value of "false", the recipient MUST NOT further distribute the stanza or any information contained therein; if the sender specifies a value of "true", the recipient MAY further distribute the stanza or any information contained therein; if the value is anything other than "true" or "false" and the recipient does not understand the value, the recipient MUST assume the default value of "false".
+     *
+     * @param distribute If the stanza may be further distributed by the recipient.
+     * @return The header.
+     * @see <a href="https://xmpp.org/extensions/xep-0131.html#headers-distribute">5.3 Distribute</a>
+     */
+    public static Header ofDistribute(boolean distribute) {
+        return of("Distribute", Boolean.toString(distribute));
+    }
+
+    /**
+     * The Store header enables a sender to specify whether the stanza may be stored or archived by the recipient.
+     *
+     * @param store If the stanza may be stored by the recipient.
+     * @return The header.
+     * @see <a href="https://xmpp.org/extensions/xep-0131.html#headers-store">5.4 Store</a>
+     */
+    public static Header ofStore(boolean store) {
+        return of("Store", Boolean.toString(store));
+    }
+
+    /**
+     * Specifies that the information contained in a stanza is valid only for a limited period of time.
+     *
+     * @param timeToLive The time to live.
+     * @return The header.
+     * @see <a href="https://xmpp.org/extensions/xep-0131.html#headers-ttl">5.5 TTL</a>
+     */
+    public static Header ofTimeToLive(Duration timeToLive) {
+        return of("TTL", String.valueOf(timeToLive.getSeconds()));
+    }
+
+    /**
+     * Specifies that the information contained in a stanza is more or less time-sensitive.
+     *
+     * @param urgency The urgency, must be "high", "medium" or "low".
+     * @return The header.
+     * @see <a href="https://xmpp.org/extensions/xep-0131.html#headers-urgency">5.6 Urgency</a>
+     */
+    public static Header ofUrgency(String urgency) {
+        if (!urgency.equals("high") && !urgency.equals("medium") && !urgency.equals("low")) {
+            throw new IllegalArgumentException("urgency must be 'high', 'medium' or 'value', but is '" + urgency + "'");
+        }
+        return of("Urgency", urgency);
+    }
+
+    /**
      * Creates a header with a start date.
      *
      * @param dateTime The start date.
@@ -76,7 +149,7 @@ public final class Header {
      * @see <a href="https://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
      */
     public static Header ofStartDate(OffsetDateTime dateTime) {
-        return new Header("Start", dateTime.toString());
+        return of("Start", dateTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
     }
 
     /**
@@ -87,7 +160,7 @@ public final class Header {
      * @see <a href="https://xmpp.org/extensions/xep-0149.html">XEP-0149: Time Periods</a>
      */
     public static Header ofStopDate(OffsetDateTime dateTime) {
-        return new Header("Stop", dateTime.toString());
+        return of("Stop", dateTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
     }
 
     /**

@@ -33,6 +33,7 @@ import rocks.xmpp.extensions.shim.model.Headers;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -91,5 +92,47 @@ public class HeadersTest extends XmlTest {
         Assert.assertEquals(marshal(headers.withHeader("Header2", "newValue")), "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Header1\">Value1</header><header name=\"Header3\">Value3</header><header name=\"Header4\">Value4</header><header name=\"Header2\">newValue</header></headers>");
         Assert.assertEquals(marshal(headers.withHeader("Header5", "Value5")), "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Header1\">Value1</header><header name=\"Header2\">Value2</header><header name=\"Header3\">Value3</header><header name=\"Header4\">Value4</header><header name=\"Header5\">Value5</header></headers>");
         Assert.assertEquals(marshal(headers.withoutHeader("Header3")), "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Header1\">Value1</header><header name=\"Header2\">Value2</header><header name=\"Header4\">Value4</header></headers>");
+    }
+
+    @Test
+    public void testHeaders() {
+        Header header = Header.ofClassification("class");
+        Assert.assertEquals(header.getName(), "Classification");
+        Assert.assertEquals(header.getValue(), "class");
+
+        header = Header.ofCreated(OffsetDateTime.of(2020, 2, 2, 0, 0, 0, 0, ZoneOffset.UTC));
+        Assert.assertEquals(header.getName(), "Created");
+        Assert.assertEquals(header.getValue(), "2020-02-02T00:00:00Z");
+
+        header = Header.ofStartDate(OffsetDateTime.of(2020, 2, 2, 0, 0, 0, 0, ZoneOffset.UTC));
+        Assert.assertEquals(header.getName(), "Start");
+        Assert.assertEquals(header.getValue(), "2020-02-02T00:00:00Z");
+
+        header = Header.ofStopDate(OffsetDateTime.of(2020, 2, 2, 0, 0, 0, 0, ZoneOffset.ofHours(2)));
+        Assert.assertEquals(header.getName(), "Stop");
+        Assert.assertEquals(header.getValue(), "2020-02-02T00:00:00+02:00");
+
+        header = Header.ofDistribute(true);
+        Assert.assertEquals(header.getName(), "Distribute");
+        Assert.assertEquals(header.getValue(), "true");
+
+        header = Header.ofStore(true);
+        Assert.assertEquals(header.getName(), "Store");
+        Assert.assertEquals(header.getValue(), "true");
+
+        header = Header.ofTimeToLive(Duration.ofMinutes(1));
+        Assert.assertEquals(header.getName(), "TTL");
+        Assert.assertEquals(header.getValue(), "60");
+
+        header = Header.ofUrgency("high");
+        Assert.assertEquals(header.getName(), "Urgency");
+        Assert.assertEquals(header.getValue(), "high");
+        Assert.assertEquals(Header.ofUrgency("medium").getValue(), "medium");
+        Assert.assertEquals(Header.ofUrgency("low").getValue(), "low");
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void testInvalidUrgency() {
+        Assert.assertEquals(Header.ofUrgency("test").getValue(), "high");
     }
 }

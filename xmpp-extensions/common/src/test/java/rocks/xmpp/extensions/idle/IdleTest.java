@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2015 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.idle.model.Idle;
+import rocks.xmpp.util.adapters.OffsetDateTimeAdapter;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -45,12 +46,12 @@ public class IdleTest extends XmlTest {
     public void unmarshalIdle() throws JAXBException, XMLStreamException {
         String xml = "<presence from='juliet@capulet.com/balcony'>\n" +
                 "  <show>away</show>\n" +
-                "  <idle xmlns='urn:xmpp:idle:1' since='1969-07-21T02:56:15Z'/>\n" +
+                "  <idle xmlns='urn:xmpp:idle:1' since='1969-07-21T02:56:15.123456Z'/>\n" +
                 "</presence>\n";
         Presence presence = unmarshal(xml, Presence.class);
         Idle idle = presence.getExtension(Idle.class);
         Assert.assertNotNull(idle);
-        Assert.assertEquals(idle.getSince(), OffsetDateTime.parse("1969-07-21T02:56:15Z"));
+        Assert.assertEquals(idle.getSince(), OffsetDateTime.parse("1969-07-21T02:56:15.123456Z"));
     }
 
     @Test
@@ -59,7 +60,7 @@ public class IdleTest extends XmlTest {
         Idle idle = Idle.since(now);
         String xml = marshal(idle);
         Assert.assertNotNull(idle);
-        Assert.assertEquals(xml, "<idle xmlns=\"urn:xmpp:idle:1\" since=\"" + now.toString() + "\"></idle>");
+        Assert.assertEquals(xml, "<idle xmlns=\"urn:xmpp:idle:1\" since=\"" + new OffsetDateTimeAdapter().marshal(now) + "\"></idle>");
     }
 
     @Test

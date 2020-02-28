@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,12 @@ package rocks.xmpp.util.adapters;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+
+import static java.time.temporal.ChronoField.HOUR_OF_DAY;
+import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
+import static java.time.temporal.ChronoField.NANO_OF_SECOND;
+import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 
 /**
  * Converts an {@link java.time.OffsetDateTime} to a string representation according to <a href="https://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a> and vice versa.
@@ -35,13 +41,41 @@ import java.time.format.DateTimeFormatter;
  */
 public final class OffsetDateTimeAdapter extends XmlAdapter<String, OffsetDateTime> {
 
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
+            .append(DateTimeFormatter.ISO_LOCAL_DATE)
+            .appendLiteral('T')
+            .appendValue(HOUR_OF_DAY, 2)
+            .appendLiteral(':')
+            .appendValue(MINUTE_OF_HOUR, 2)
+            .optionalStart()
+            .appendLiteral(':')
+            .appendValue(SECOND_OF_MINUTE, 2)
+            .optionalStart()
+            .appendFraction(NANO_OF_SECOND, 0, 3, true)
+            .appendOffsetId()
+            .toFormatter();
+
+    static OffsetDateTime toOffsetDateTime(String value) {
+        if (value != null) {
+            return OffsetDateTime.parse(value, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        }
+        return null;
+    }
+
+    static String fromOffsetDateTime(OffsetDateTime value) {
+        if (value != null) {
+            return value.format(DATE_TIME_FORMATTER);
+        }
+        return null;
+    }
+
     @Override
     public final OffsetDateTime unmarshal(String value) {
-        return value != null ? OffsetDateTime.parse(value) : null;
+        return toOffsetDateTime(value);
     }
 
     @Override
     public final String marshal(OffsetDateTime value) {
-        return value != null ? value.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME) : null;
+        return fromOffsetDateTime(value);
     }
 }

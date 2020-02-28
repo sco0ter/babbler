@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,8 @@ package rocks.xmpp.util.adapters;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
 
 /**
  * Converts an {@link java.time.Instant} to a string representation according to <a href="https://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a> and vice versa.
@@ -35,11 +37,12 @@ public final class InstantAdapter extends XmlAdapter<String, Instant> {
 
     @Override
     public final Instant unmarshal(String v) {
-        return v != null ? OffsetDateTime.parse(v).toInstant() : null;
+        OffsetDateTime offsetDateTime = OffsetDateTimeAdapter.toOffsetDateTime(v);
+        return offsetDateTime != null ? offsetDateTime.toInstant() : null;
     }
 
     @Override
     public final String marshal(Instant v) {
-        return v != null ? v.toString() : null;
+        return v != null ? OffsetDateTimeAdapter.fromOffsetDateTime(OffsetDateTime.ofInstant(v, ZoneOffset.UTC)) : null;
     }
 }

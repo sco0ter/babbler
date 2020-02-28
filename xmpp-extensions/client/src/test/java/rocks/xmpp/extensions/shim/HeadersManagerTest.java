@@ -29,6 +29,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 
@@ -43,13 +44,8 @@ public class HeadersManagerTest extends BaseTest {
     @Test
     public void testServiceDiscoveryIfHeadersAreDisabled() throws InterruptedException {
         MockServer mockServer = new MockServer();
-        TestXmppSession connection1 = new TestXmppSession(JULIET, mockServer);
+        new TestXmppSession(JULIET, mockServer);
         TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);
-
-        // JULIET supports the following headers:
-        HeaderManager headerManager = connection1.getManager(HeaderManager.class);
-        headerManager.getSupportedHeaders().add("In-Reply-To");
-        headerManager.getSupportedHeaders().add("Keywords");
 
         ServiceDiscoveryManager serviceDiscoveryManager = connection2.getManager(ServiceDiscoveryManager.class);
         InfoNode infoNode = null;
@@ -58,7 +54,6 @@ public class HeadersManagerTest extends BaseTest {
         } catch (ExecutionException e) {
             Assert.fail();
         }
-        // By default headers are not support, unless they are enabled.
         Assert.assertFalse(infoNode.getFeatures().contains("http://jabber.org/protocol/shim"));
     }
 
@@ -72,7 +67,6 @@ public class HeadersManagerTest extends BaseTest {
         HeaderManager headerManager = connection1.getManager(HeaderManager.class);
         headerManager.getSupportedHeaders().add("In-Reply-To");
         headerManager.getSupportedHeaders().add("Keywords");
-        headerManager.setEnabled(true);
 
         ServiceDiscoveryManager serviceDiscoveryManager = connection2.getManager(ServiceDiscoveryManager.class);
         InfoNode infoNode = null;
@@ -102,7 +96,6 @@ public class HeadersManagerTest extends BaseTest {
         HeaderManager headerManager = connection1.getManager(HeaderManager.class);
         headerManager.getSupportedHeaders().add("In-Reply-To");
         headerManager.getSupportedHeaders().add("Keywords");
-        headerManager.setEnabled(true);
 
         HeaderManager headerManager2 = connection2.getManager(HeaderManager.class);
         List<String> headers = headerManager2.discoverSupportedHeaders(JULIET).get();
@@ -110,5 +103,21 @@ public class HeadersManagerTest extends BaseTest {
         Assert.assertEquals(headers.size(), 2);
         Assert.assertTrue(headers.contains("In-Reply-To"));
         Assert.assertTrue(headers.contains("Keywords"));
+    }
+
+    @Test
+    public void testDiscoverSupportedHeadersIfProtocolIsNotEnabled() throws InterruptedException {
+        MockServer mockServer = new MockServer();
+        new TestXmppSession(JULIET, mockServer);
+        TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);
+
+        HeaderManager headerManager2 = connection2.getManager(HeaderManager.class);
+        try {
+            headerManager2.discoverSupportedHeaders(JULIET).get();
+        } catch (ExecutionException e) {
+            Assert.assertTrue(e.getCause() instanceof StanzaErrorException);
+            return;
+        }
+        Assert.fail();
     }
 }

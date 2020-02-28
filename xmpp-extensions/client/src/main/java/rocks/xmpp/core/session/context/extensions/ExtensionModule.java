@@ -81,10 +81,9 @@ import rocks.xmpp.extensions.register.model.Registration;
 import rocks.xmpp.extensions.rosterx.ContactExchangeManager;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 import rocks.xmpp.extensions.rpc.RpcManager;
-import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rtt.RealTimeTextManager;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
-import rocks.xmpp.extensions.shim.HeaderManager;
+import rocks.xmpp.extensions.shim.client.ClientHeaderManager;
 import rocks.xmpp.extensions.si.StreamInitiationManager;
 import rocks.xmpp.extensions.si.model.StreamInitiation;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
@@ -177,7 +176,7 @@ public final class ExtensionModule implements Module {
                 Extension.of(Tune.NAMESPACE, null, true, false),
 
                 // XEP-0131: Stanza Headers and Internet Metadata
-                Extension.of(HeaderManager.class, false),
+                Extension.of(ClientHeaderManager.class, false),
 
                 // XEP-0144: Roster Item Exchange
                 Extension.of(ContactExchange.NAMESPACE, ContactExchangeManager.class, false),

@@ -57,6 +57,7 @@ import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.disco.client.ClientServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.util.XmppUtils;
@@ -279,9 +280,13 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                 } else {
                     serviceDiscoveryManager.registerFeature(extension);
                 }
+                if (manager instanceof InfoNodeProvider) {
+                    serviceDiscoveryManager.addInfoNodeProvider((InfoNodeProvider) manager);
+                }
             } else {
                 serviceDiscoveryManager.registerFeature(extension);
             }
+
         });
     }
 

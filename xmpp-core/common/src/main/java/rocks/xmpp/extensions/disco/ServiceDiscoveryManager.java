@@ -29,6 +29,7 @@ import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
@@ -161,6 +162,24 @@ public interface ServiceDiscoveryManager extends IQHandler, ExtensionProtocol {
      * @see #addFeature(String)
      */
     void removeFeature(String feature);
+
+    /**
+     * Adds an info node provider.
+     *
+     * @param infoNodeProvider The info node provider.
+     * @return true, if it has been successfully added.
+     * @see #removeInfoNodeProvider(InfoNodeProvider)
+     */
+    boolean addInfoNodeProvider(InfoNodeProvider infoNodeProvider);
+
+    /**
+     * Removes an info node provider.
+     *
+     * @param infoNodeProvider The info node provider.
+     * @return true, if it has been successfully remove.
+     * @see #addInfoNodeProvider(InfoNodeProvider)
+     */
+    boolean removeInfoNodeProvider(InfoNodeProvider infoNodeProvider);
 
     /**
      * Adds an info node.

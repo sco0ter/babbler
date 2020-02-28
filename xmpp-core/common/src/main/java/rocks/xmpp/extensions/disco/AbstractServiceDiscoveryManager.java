@@ -31,6 +31,7 @@ import rocks.xmpp.extensions.disco.handler.DiscoItemsHandler;
 import rocks.xmpp.extensions.disco.model.ServiceDiscoveryNode;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
@@ -86,6 +87,16 @@ public abstract class AbstractServiceDiscoveryManager implements ServiceDiscover
             return discoItemHandler.handleRequest(iq);
         }
         return iq.createError(Condition.SERVICE_UNAVAILABLE);
+    }
+
+    @Override
+    public final boolean addInfoNodeProvider(final InfoNodeProvider infoNodeProvider) {
+        return discoInfoHandler.addInfoNodeProvider(infoNodeProvider);
+    }
+
+    @Override
+    public final boolean removeInfoNodeProvider(final InfoNodeProvider infoNodeProvider) {
+        return discoInfoHandler.removeInfoNodeProvider(infoNodeProvider);
     }
 
     @Override

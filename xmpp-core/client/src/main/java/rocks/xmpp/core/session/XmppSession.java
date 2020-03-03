@@ -80,8 +80,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.EventObject;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -89,6 +87,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
@@ -166,9 +165,13 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
     private final Set<Consumer<IQEvent>> outboundIQListeners = new CopyOnWriteArraySet<>();
 
-    private final Set<IQHandler> iqHandlerMap = new HashSet<>();
+    private final Set<IQHandler> iqHandlers = new CopyOnWriteArraySet<>();
 
-    private final Map<IQHandler, Boolean> iqHandlerInvocationModes = new HashMap<>();
+    /**
+     * Maps handlers to executors. Each handler should get their own {@link QueuedExecutorService}, so that
+     * stanzas handled by the same handler are handled in order.
+     */
+    private final Map<Object, Executor> executorMap = Collections.synchronizedMap(new WeakHashMap<>());
 
     private final Set<Consumer<SessionStatusEvent>> sessionStatusListeners = new CopyOnWriteArraySet<>();
 
@@ -674,14 +677,15 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Adds an IQ handler for a given payload type. The handler will be processed asynchronously, which means it won't block the inbound stanza processing queue.
+     * Adds an IQ handler for a given payload type. The handler will process the IQ stanzas asynchronously, but in order,
+     * i.e. IQ stanzas handled by the same handler are handled synchronously, but IQ stanzas with different payloads can be handled in parallel.
      *
      * @param iqHandler The IQ handler.
      * @see #removeIQHandler(IQHandler)
-     * @see #addIQHandler(IQHandler, boolean)
      */
     public final void addIQHandler(IQHandler iqHandler) {
-        addIQHandler(iqHandler, true);
+        executorMap.computeIfAbsent(iqHandler, k -> new QueuedExecutorService(IQ_HANDLER_EXECUTOR));
+        iqHandlers.add(iqHandler);
     }
 
     /**
@@ -693,12 +697,11 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      * @param iqHandler   The IQ handler.
      * @param invokeAsync True, if the handler should be processed asynchronously; false, if the handler should be processed asynchronously.
      * @see #removeIQHandler(IQHandler)
+     * @deprecated Simply use {@link #addIQHandler(IQHandler)}, this method now behaves the same.
      */
+    @Deprecated
     public final void addIQHandler(IQHandler iqHandler, boolean invokeAsync) {
-        synchronized (iqHandlerMap) {
-            iqHandlerMap.add(iqHandler);
-            iqHandlerInvocationModes.put(iqHandler, invokeAsync);
-        }
+        addIQHandler(iqHandler);
     }
 
     /**
@@ -708,10 +711,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      * @see #addIQHandler(IQHandler)
      */
     public final void removeIQHandler(IQHandler iqHandler) {
-        synchronized (iqHandlerMap) {
-            iqHandlerMap.remove(iqHandler);
-            iqHandlerInvocationModes.remove(iqHandler);
-        }
+        iqHandlers.remove(iqHandler);
     }
 
     /**
@@ -1194,18 +1194,15 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                     // return <bad-request/> if the <iq/> has no payload.
                     send(iq.createError(Condition.BAD_REQUEST));
                 } else {
-                    Executor executor;
-                    final IQHandler iqHandler;
-                    synchronized (iqHandlerMap) {
-                        iqHandler = iqHandlerMap.stream().filter(handler -> handler.getPayloadClass().isAssignableFrom(payload.getClass())).findFirst().orElse(null);
-                        // If the handler is to be invoked asynchronously, get the iqHandlerExecutor, otherwise use stanzaListenerExecutor (which is a single thread executor).
-                        executor = iqHandler != null ? (iqHandlerInvocationModes.get(iqHandler) ? getIqHandlerExecutor() : getStanzaListenerExecutor()) : null;
-                    }
+                    final Optional<IQHandler> iqHandler = iqHandlers.stream()
+                            .filter(handler -> handler.getPayloadClass() != null && handler.getPayloadClass().isAssignableFrom(payload.getClass()))
+                            .findFirst();
 
-                    if (iqHandler != null) {
-                        executor.execute(() -> {
+                    if (iqHandler.isPresent()) {
+                        Executor iqExecutor = executorMap.get(iqHandler.get());
+                        Runnable runnable = () -> {
                             try {
-                                IQ response = iqHandler.handleRequest(iq);
+                                IQ response = iqHandler.get().handleRequest(iq);
                                 if (response != null) {
                                     send(response);
                                 }
@@ -1214,7 +1211,14 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                                 // If any exception occurs during processing the IQ, return <service-unavailable/>.
                                 send(iq.createError(Condition.SERVICE_UNAVAILABLE));
                             }
-                        });
+                        };
+                        if (iqExecutor != null) {
+                            iqExecutor.execute(runnable);
+                        } else {
+                            // Should never happen.
+                            logger.warning("No Executor found for IQHandler, handling IQ directly");
+                            runnable.run();
+                        }
                     } else {
                         // return <service-unavailable/> if the <iq/> is not understood.
                         send(iq.createError(Condition.SERVICE_UNAVAILABLE));

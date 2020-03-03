@@ -109,7 +109,7 @@ public final class BlockingManager extends Manager {
     protected final void onEnable() {
         super.onEnable();
         // Listen for "un/block pushes"
-        xmppSession.addIQHandler(iqHandler, false);
+        xmppSession.addIQHandler(iqHandler);
     }
 
     @Override

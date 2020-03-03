@@ -124,7 +124,7 @@ public final class InBandByteStreamManager extends ByteStreamManager implements 
     @Override
     protected final void onEnable() {
         super.onEnable();
-        xmppSession.addIQHandler(this, false);
+        xmppSession.addIQHandler(this);
         xmppSession.addInboundMessageListener(messageHandler);
     }
 

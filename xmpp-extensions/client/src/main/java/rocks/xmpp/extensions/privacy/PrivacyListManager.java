@@ -92,7 +92,7 @@ public final class PrivacyListManager extends Manager {
     @Override
     protected void onEnable() {
         super.onEnable();
-        xmppSession.addIQHandler(iqHandler, false);
+        xmppSession.addIQHandler(iqHandler);
     }
 
     @Override

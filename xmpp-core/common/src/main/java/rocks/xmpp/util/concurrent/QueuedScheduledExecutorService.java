@@ -1,3 +1,27 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014-2020 Christian Schudt
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 package rocks.xmpp.util.concurrent;
 
 import rocks.xmpp.util.XmppUtils;
@@ -9,9 +33,10 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RunnableScheduledFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -20,6 +45,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * A {@link ScheduledExecutorService} implementation of a queued executor service.
+ *
+ * @see QueuedExecutorService
+ */
 public class QueuedScheduledExecutorService extends QueuedExecutorService implements ScheduledExecutorService {
 
     /**
@@ -55,7 +85,7 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
     /**
      * @param delegate the executor that will handle the tasks
      */
-    public QueuedScheduledExecutorService(ExecutorService delegate) {
+    public QueuedScheduledExecutorService(Executor delegate) {
 
         super(delegate);
 
@@ -63,7 +93,10 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
         this.keepPeriodic = false;
         this.keepDelayed = true;
         this.removeOnCancel = false;
+    }
 
+    private static long getInitialDelay(long delay, TimeUnit unit) {
+        return System.nanoTime() + unit.toNanos(delay);
     }
 
     @Override
@@ -73,22 +106,29 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
 
     @Override
     public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
-        return new ScheduledFutureTask<Void>(Executors.callable(command, null), getInitialDelay(delay, unit), unit);
+        return newScheduledFuture(Executors.callable(command, null), getInitialDelay(delay, unit), 0, unit);
     }
 
     @Override
     public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
-        return new ScheduledFutureTask<>(callable, getInitialDelay(delay, unit), unit);
+        return newScheduledFuture(Objects.requireNonNull(callable), getInitialDelay(delay, unit), 0, unit);
     }
 
     @Override
     public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
-        return new ScheduledFutureTask<Void>(Executors.callable(command, null), getInitialDelay(initialDelay, unit), period, unit);
+        return newScheduledFuture(Executors.callable(command, null), getInitialDelay(initialDelay, unit), period, unit);
     }
 
     @Override
     public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
-        return new ScheduledFutureTask<Void>(Executors.callable(command, null), getInitialDelay(initialDelay, unit), -delay, unit);
+        return newScheduledFuture(Executors.callable(command, null), getInitialDelay(initialDelay, unit), -delay, unit);
+    }
+
+    private <V> ScheduledFuture<V> newScheduledFuture(Callable<V> callable, long initialDelay, long delay, TimeUnit unit) {
+        if (isShutdown()) {
+            throw new RejectedExecutionException("Executor is shutdown");
+        }
+        return new ScheduledFutureTask<>(callable, initialDelay, delay, unit);
     }
 
     @Override
@@ -98,31 +138,23 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
     }
 
     public void setContinueExistingPeriodicTasksAfterShutdownPolicy(boolean value) {
-
         keepPeriodic = value;
 
         if (!value && isShutdown()) {
             onShutdown();
         }
-
     }
 
     public void setExecuteExistingDelayedTasksAfterShutdownPolicy(boolean value) {
-
         keepDelayed = value;
 
         if (!value && isShutdown()) {
             onShutdown();
         }
-
     }
 
     public void setRemoveOnCancelPolicy(boolean removeOnCancel) {
         this.removeOnCancel = removeOnCancel;
-    }
-
-    private long getInitialDelay(long delay, TimeUnit unit) {
-        return System.nanoTime() + unit.toNanos(delay);
     }
 
     private void onShutdown() {
@@ -147,10 +179,6 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
 
         private long time;
 
-        private ScheduledFutureTask(Callable<V> callable, long initial, TimeUnit unit) {
-            this(callable, initial, 0, unit);
-        }
-
         private ScheduledFutureTask(Callable<V> callable, long time, long period, TimeUnit unit) {
 
             super(callable);
@@ -163,7 +191,6 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
             QueuedScheduledExecutorService.this.futures.add(this);
 
             queueNextRun();
-
         }
 
         @Override
@@ -174,9 +201,7 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
             if (cancelled && QueuedScheduledExecutorService.this.removeOnCancel) {
                 SCHEDULER.remove(this);
             }
-
             return cancelled;
-
         }
 
         @Override
@@ -238,7 +263,6 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
             long deltaDelay = getDelay(TimeUnit.NANOSECONDS) - other.getDelay(TimeUnit.NANOSECONDS);
 
             return (deltaDelay < 0) ? -1 : (deltaDelay > 0) ? 1 : 0;
-
         }
 
         @Override
@@ -263,13 +287,17 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
 
         @Override
         public void run() {
-            QueuedScheduledExecutorService.this.execute(this::doRun, canRun());
+            if (canRun()) {
+                QueuedScheduledExecutorService.this.execute(this::doRun, true);
+            } else {
+                cancel(false);
+            }
         }
 
         @Override
         protected void done() {
+            QueuedScheduledExecutorService.this.futures.remove(this);
             synchronized (QueuedScheduledExecutorService.this.awaitTerminationLock) {
-                QueuedScheduledExecutorService.this.futures.remove(this);
                 QueuedScheduledExecutorService.this.awaitTerminationLock.notifyAll();
             }
         }
@@ -279,11 +307,8 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
         }
 
         private void doRun() {
-
             boolean isPeriodic = isPeriodic();
-
             try {
-
                 if (!canRun()) {
                     cancel(false);
                 } else if (!isPeriodic) {
@@ -291,15 +316,10 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
                 } else {
                     callable.call();
                 }
-
             } catch (Exception e) {
-
                 setException(e);
-
             } finally {
-
                 if (isPeriodic) {
-
                     if (period > 0) {
                         time += period;
                     } else {
@@ -307,15 +327,11 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
                     }
 
                     queueNextRun();
-
                 }
-
             }
-
         }
 
         private void queueNextRun() {
-
             SCHEDULER.getQueue().add(this);
 
             if (QueuedScheduledExecutorService.this.isShutdown() && !canRun() && SCHEDULER.remove(this)) {
@@ -323,9 +339,6 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
             } else {
                 SCHEDULER.prestartCoreThread();
             }
-
         }
-
     }
-
 }

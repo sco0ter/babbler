@@ -82,13 +82,13 @@ import rocks.xmpp.extensions.rosterx.ContactExchangeManager;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 import rocks.xmpp.extensions.rpc.RpcManager;
 import rocks.xmpp.extensions.rtt.RealTimeTextManager;
-import rocks.xmpp.extensions.rtt.model.RealTimeText;
 import rocks.xmpp.extensions.shim.client.ClientHeaderManager;
 import rocks.xmpp.extensions.si.StreamInitiationManager;
 import rocks.xmpp.extensions.si.model.StreamInitiation;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 import rocks.xmpp.extensions.sm.StreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
+import rocks.xmpp.extensions.softwareinfo.SoftwareInformationProtocol;
 import rocks.xmpp.extensions.time.EntityTimeManager;
 import rocks.xmpp.extensions.time.handler.EntityTimeHandler;
 import rocks.xmpp.extensions.tune.model.Tune;
@@ -207,6 +207,9 @@ public final class ExtensionModule implements Module {
 
                 // XEP-0202: Entity Time
                 Extension.of(new EntityTimeHandler(), EntityTimeManager.class, true),
+
+                // XEP-0232: Software Information
+                Extension.of(SoftwareInformationProtocol.class, true),
 
                 // XEP-0234: Jingle File Transfer
                 Extension.of(JingleFileTransfer.NAMESPACE, JingleFileTransferManager.class, false),

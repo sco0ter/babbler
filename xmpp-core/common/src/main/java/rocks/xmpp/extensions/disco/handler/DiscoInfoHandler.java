@@ -82,9 +82,18 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
         if (infoNode != null) {
             infoNodes.add(infoNode);
         }
-        Set<String> features = infoNodes.stream().flatMap(infoNode1 -> infoNode1.getFeatures().stream()).collect(Collectors.toSet());
-        Set<Identity> identities = infoNodes.stream().flatMap(infoNode1 -> infoNode1.getIdentities().stream()).collect(Collectors.toSet());
-        List<DataForm> extensions = infoNodes.stream().flatMap(infoNode1 -> infoNode1.getExtensions().stream()).collect(Collectors.toList());
+        Set<String> features = infoNodes.stream()
+                .filter(infoNode1 -> Objects.nonNull(infoNode1.getFeatures()))
+                .flatMap(infoNode1 -> infoNode1.getFeatures().stream())
+                .collect(Collectors.toSet());
+        Set<Identity> identities = infoNodes.stream()
+                .filter(infoNode1 -> Objects.nonNull(infoNode1.getIdentities()))
+                .flatMap(infoNode1 -> infoNode1.getIdentities().stream())
+                .collect(Collectors.toSet());
+        List<DataForm> extensions = infoNodes.stream()
+                .filter(infoNode1 -> Objects.nonNull(infoNode1.getExtensions()))
+                .flatMap(infoNode1 -> infoNode1.getExtensions().stream())
+                .collect(Collectors.toList());
 
         if (!infoNodes.isEmpty()) {
             return iq.createResult(new InfoDiscovery(infoDiscovery.getNode(), identities, features, extensions));

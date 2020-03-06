@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,10 @@
 
 package rocks.xmpp.extensions.rtt;
 
+import rocks.xmpp.util.XmppUtils;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -32,6 +36,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Christian Schudt
  */
 abstract class RealTimeMessage {
+
+    static final ExecutorService REAL_TIME_TEXT_EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Real-time Text Processing Thread"));
 
     volatile boolean complete;
 

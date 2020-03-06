@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,8 +33,6 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -45,8 +43,6 @@ import java.util.function.Consumer;
  * @author Christian Schudt
  */
 public final class InboundRealTimeMessage extends RealTimeMessage {
-
-    private static final ExecutorService PROCESS_ACTIONS_EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Real-time Text Processing Thread"));
 
     private final StringBuilder sb;
 
@@ -63,7 +59,7 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
         this.id = id;
 
         if (xmppSession != null) {
-            PROCESS_ACTIONS_EXECUTOR.execute(() -> {
+            REAL_TIME_TEXT_EXECUTOR.execute(() -> {
                         try {
                             RealTimeText.Action action;
                             // Periodically poll for new action elements until the message is complete.

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,6 @@ import rocks.xmpp.core.session.SendTask;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
 import rocks.xmpp.im.chat.Chat;
-import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 
 import java.text.Normalizer;
@@ -37,8 +36,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
@@ -51,21 +48,11 @@ import java.util.concurrent.TimeUnit;
  */
 public final class OutboundRealTimeMessage extends RealTimeMessage {
 
-    private static final ExecutorService TRANSMISSION_EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Real-time Text Transmission Thread"));
-
     private final Collection<RealTimeText.Action> actions = new ArrayDeque<>();
 
     private final Chat chat;
 
     private final ScheduledExecutorService transmissionExecutor;
-
-    private CharSequence text;
-
-    private ScheduledFuture<?> nextRefresh;
-
-    private ScheduledFuture<?> nextTransmission;
-
-    private long lastTextChange;
 
     /**
      * The message refresh SHOULD be transmitted at intervals during active typing or composing. The RECOMMENDED interval is 10 seconds.
@@ -76,6 +63,14 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
      * For the best balance between interoperability and usability, the default transmission interval of {@code <rtt/>} elements for a continuously-changing message SHOULD be approximately 700 milliseconds.
      */
     private final long transmissionInterval;
+
+    private CharSequence text;
+
+    private ScheduledFuture<?> nextRefresh;
+
+    private ScheduledFuture<?> nextTransmission;
+
+    private long lastTextChange;
 
     private boolean isNew = true;
 
@@ -92,7 +87,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
         this.refreshInterval = refreshInterval;
 
         // Set up two executors, which periodically send RTT messages and "refresh messages".
-        transmissionExecutor = new QueuedScheduledExecutorService(TRANSMISSION_EXECUTOR);
+        transmissionExecutor = new QueuedScheduledExecutorService(REAL_TIME_TEXT_EXECUTOR);
 
         // This executor periodically sends RTT messages in the preferred transmission interval.
         nextTransmission = transmissionExecutor.schedule(new Runnable() {
@@ -138,7 +133,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
      *
      * @return The sequence number.
      */
-    static int generateSequenceNumber() {
+    private static int generateSequenceNumber() {
         return ThreadLocalRandom.current().nextInt(100000);
     }
 
@@ -244,7 +239,7 @@ public final class OutboundRealTimeMessage extends RealTimeMessage {
      *
      * @param id   The message id for the message which is edited.
      * @param text The text to reset this message to.
-     * @see <a href="http://www.xmpp.org/extensions/xep-0301.html#usage_with_last_message_correction">7.5.3 Usage with Last Message Correction</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0301.html#usage_with_last_message_correction">7.5.3 Usage with Last Message Correction</a>
      */
     public final synchronized void reset(String id, CharSequence text) {
         // Senders clients need to transmit a Message Refresh when transmitting <rtt/> for a different message than the previously transmitted <rtt/> (i.e., the value of the 'id' attribute changes, 'id' becomes included, or 'id' becomes not included). This keeps real-time text synchronized when beginning to edit a previously delivered message versus continuing to compose a new message.

@@ -36,6 +36,7 @@ import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.InboundMessageHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.ExtensibleStanza;
@@ -278,6 +279,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                         ((Manager) manager).setEnabled(extension.isEnabled());
                     } else if (manager instanceof IQHandler) {
                         addIQHandler((IQHandler) manager);
+                    } else if (manager instanceof InboundMessageHandler) {
+                        addInboundMessageListener(((InboundMessageHandler) manager)::handleInboundMessage);
                     }
                     serviceDiscoveryManager.registerFeature((ExtensionProtocol) manager);
                 } else {

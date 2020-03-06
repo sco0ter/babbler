@@ -227,7 +227,7 @@ public final class ExtensionModule implements Module {
                 Extension.of(Forwarded.NAMESPACE, StanzaForwardingManager.class, false),
 
                 // XEP-0301: In-Band Real Time Text
-                Extension.of(RealTimeText.NAMESPACE, RealTimeTextManager.class, false),
+                Extension.of(RealTimeTextManager.class, false),
 
                 // XEP-0319: Last User Interaction in Presence
                 Extension.of(Idle.NAMESPACE, true)

@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.muc.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.util.ArrayDeque;
@@ -40,18 +41,18 @@ import java.util.Collection;
  * To build a form:
  * ```java
  * RequestVoice requestVoice = RequestVoice.builder()
- *     .jid(Jid.of("hag66@shakespeare.lit/pda"))
- *     .role(Role.PARTICIPANT)
- *     .roomNick("thirdwitch")
- *     .allowRequest(true)
- *     .build();
+ * .jid(Jid.of("hag66@shakespeare.lit/pda"))
+ * .role(Role.PARTICIPANT)
+ * .roomNick("thirdwitch")
+ * .allowRequest(true)
+ * .build();
  * ```
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#requestvoice">7.13 Requesting Voice</a>
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#registrar-formtype-request">15.5.2 muc#request FORM_TYPE</a>
  */
-public final class RequestVoice {
+public final class RequestVoice implements StandardizedDataForm {
 
     private static final String FORM_TYPE = "http://jabber.org/protocol/muc#request";
 
@@ -95,12 +96,18 @@ public final class RequestVoice {
         return new Builder();
     }
 
+    @Override
+    public final String getFormType() {
+        return FORM_TYPE;
+    }
+
     /**
      * Gets the underlying data form.
      *
      * @return The underlying data form.
      */
-    public DataForm getDataForm() {
+    @Override
+    public final DataForm getDataForm() {
         return dataForm;
     }
 

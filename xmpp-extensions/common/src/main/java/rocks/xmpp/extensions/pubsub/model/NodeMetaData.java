@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.pubsub.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.time.Instant;
@@ -43,24 +44,24 @@ import java.util.Locale;
  * To build a form:
  * ```java
  * NodeMetaData nodeMetaData = NodeMetaData.builder()
- *     .contacts(Collections.singleton(Jid.of("contact")))
- *     .creationDate(date)
- *     .creator(Jid.of("creator"))
- *     .description("desc")
- *     .language("de")
- *     .numberOfSubscribers(2)
- *     .owners(Collections.singleton(Jid.of("owner")))
- *     .publishers(Collections.singleton(Jid.of("publisher")))
- *     .title("title")
- *     .payloadType("namespace")
- *     .build();
+ * .contacts(Collections.singleton(Jid.of("contact")))
+ * .creationDate(date)
+ * .creator(Jid.of("creator"))
+ * .description("desc")
+ * .language("de")
+ * .numberOfSubscribers(2)
+ * .owners(Collections.singleton(Jid.of("owner")))
+ * .publishers(Collections.singleton(Jid.of("publisher")))
+ * .title("title")
+ * .payloadType("namespace")
+ * .build();
  * ```
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0060.html#entity-metadata">5.4 Discover Node Metadata</a>
  * @see <a href="https://xmpp.org/extensions/xep-0060.html#registrar-formtypes-metadata">16.4.3 pubsub#meta-data FORM_TYPE</a>
  */
-public final class NodeMetaData {
+public final class NodeMetaData implements StandardizedDataForm {
 
     public static final String FORM_TYPE = "http://jabber.org/protocol/pubsub#meta-data";
 
@@ -134,11 +135,17 @@ public final class NodeMetaData {
         return new Builder();
     }
 
+    @Override
+    public final String getFormType() {
+        return FORM_TYPE;
+    }
+
     /**
      * Gets the underlying data form.
      *
      * @return The underlying data form.
      */
+    @Override
     public final DataForm getDataForm() {
         return dataForm;
     }

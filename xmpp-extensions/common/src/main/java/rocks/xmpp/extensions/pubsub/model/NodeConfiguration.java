@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.pubsub.model;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.net.MalformedURLException;
@@ -84,7 +85,7 @@ import java.util.Locale;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0060.html#registrar-formtypes-config">16.4.4 pubsub#node_config FORM_TYPE</a>
  */
-public final class NodeConfiguration {
+public final class NodeConfiguration implements StandardizedDataForm {
 
     private static final String FORM_TYPE = "http://jabber.org/protocol/pubsub#node_config";
 
@@ -169,11 +170,17 @@ public final class NodeConfiguration {
         return new Builder();
     }
 
+    @Override
+    public final String getFormType() {
+        return FORM_TYPE;
+    }
+
     /**
      * Gets the underlying data form.
      *
      * @return The underlying data form.
      */
+    @Override
     public final DataForm getDataForm() {
         return dataForm;
     }

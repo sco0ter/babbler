@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.pubsub.model;
 
+import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.util.ArrayDeque;
@@ -61,7 +62,7 @@ import java.util.List;
  * @see <a href="https://xmpp.org/extensions/xep-0222.html">XEP-0222: Persistent Storage of Public Data via PubSub</a>
  * @see <a href="https://xmpp.org/extensions/xep-0223.html">XEP-0223: Persistent Storage of Private Data via PubSub</a>
  */
-public final class PublishOptions {
+public final class PublishOptions implements StandardizedDataForm {
 
     private static final String FORM_TYPE = "http://jabber.org/protocol/pubsub#publish-options";
 
@@ -109,11 +110,17 @@ public final class PublishOptions {
         return builder().persistItems(true).accessModel(AccessModel.WHITELIST).build();
     }
 
+    @Override
+    public final String getFormType() {
+        return FORM_TYPE;
+    }
+
     /**
      * Gets the underlying data form.
      *
      * @return The underlying data form.
      */
+    @Override
     public final DataForm getDataForm() {
         return dataForm;
     }

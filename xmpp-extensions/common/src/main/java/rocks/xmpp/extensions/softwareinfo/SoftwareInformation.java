@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.softwareinfo;
 
+import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.model.DataForm;
 
@@ -38,7 +39,7 @@ import java.util.Arrays;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0232.html#registrar-formtype">5.1 Field Standardization</a>
  */
-public final class SoftwareInformation {
+public final class SoftwareInformation implements StandardizedDataForm {
 
     static final String FORM_TYPE = "urn:xmpp:dataforms:softwareinfo";
 
@@ -149,11 +150,17 @@ public final class SoftwareInformation {
         return dataForm.findValue(SOFTWARE_VERSION);
     }
 
+    @Override
+    public final String getFormType() {
+        return FORM_TYPE;
+    }
+
     /**
      * Gets the underlying data form.
      *
      * @return The underlying data form.
      */
+    @Override
     public final DataForm getDataForm() {
         return dataForm;
     }

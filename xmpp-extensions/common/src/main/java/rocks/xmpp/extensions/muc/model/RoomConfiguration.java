@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.muc.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.net.URI;
@@ -75,7 +76,7 @@ import java.util.stream.Collectors;
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#registrar-formtype-owner">15.5.3 muc#roomconfig FORM_TYPE</a>
  */
-public final class RoomConfiguration {
+public final class RoomConfiguration implements StandardizedDataForm {
 
     private static final String FORM_TYPE = "http://jabber.org/protocol/muc#roomconfig";
 
@@ -374,11 +375,17 @@ public final class RoomConfiguration {
         return valueToRoles(dataForm.findValue(WHOIS));
     }
 
+    @Override
+    public final String getFormType() {
+        return FORM_TYPE;
+    }
+
     /**
      * Gets the underlying form.
      *
      * @return The underlying data form.
      */
+    @Override
     public DataForm getDataForm() {
         return dataForm;
     }

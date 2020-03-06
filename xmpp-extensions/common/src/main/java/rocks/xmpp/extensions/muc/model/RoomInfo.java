@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.muc.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.net.MalformedURLException;
@@ -44,23 +45,23 @@ import java.util.Locale;
  * To build a form:
  * ```java
  * RoomInfo roomInfo = RoomInfo.builder()
- *     .maxHistoryMessages(50)
- *     .contacts(Arrays.asList(Jid.of("contact1"), Jid.of("contact2")))
- *     .description("The place for all good witches!")
- *     .language("en")
- *     .ldapGroup("cn=witches,dc=shakespeare,dc=lit")
- *     .logs(new URL("http://www.shakespeare.lit/chatlogs/coven/"))
- *     .currentNumberOfOccupants(45)
- *     .subject("Spells")
- *     .changeSubjectAllowed(true)
- *     .build();
+ * .maxHistoryMessages(50)
+ * .contacts(Arrays.asList(Jid.of("contact1"), Jid.of("contact2")))
+ * .description("The place for all good witches!")
+ * .language("en")
+ * .ldapGroup("cn=witches,dc=shakespeare,dc=lit")
+ * .logs(new URL("http://www.shakespeare.lit/chatlogs/coven/"))
+ * .currentNumberOfOccupants(45)
+ * .subject("Spells")
+ * .changeSubjectAllowed(true)
+ * .build();
  * ```
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#disco-roominfo">6.4 Querying for Room Information</a>
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#registrar-formtype-roominfo">15.5.4 muc#roominfo FORM_TYPE</a>
  */
-public final class RoomInfo {
+public final class RoomInfo implements StandardizedDataForm {
 
     public static final String FORM_TYPE = "http://jabber.org/protocol/muc#roominfo";
 
@@ -219,12 +220,18 @@ public final class RoomInfo {
         return dataForm.findValueAsBoolean(SUBJECT_MOD);
     }
 
+    @Override
+    public final String getFormType() {
+        return FORM_TYPE;
+    }
+
     /**
      * Gets the underlying data form.
      *
      * @return The underlying data form.
      */
-    public DataForm getDataForm() {
+    @Override
+    public final DataForm getDataForm() {
         return dataForm;
     }
 

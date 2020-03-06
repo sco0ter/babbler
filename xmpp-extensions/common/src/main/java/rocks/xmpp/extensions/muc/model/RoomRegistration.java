@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.muc.model;
 
+import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.net.MalformedURLException;
@@ -41,21 +42,21 @@ import java.util.Collection;
  * To build a form:
  * ```java
  * RoomRegistration roomRegistration = RoomRegistration.builder()
- *     .allowRegister(true)
- *     .email("hag66@witchesonline")
- *     .familyName("Entwhistle-Throckmorton")
- *     .givenName("Brunhilde")
- *     .faqEntry("Just another witch.")
- *     .nickname("thirdwitch")
- *     .webPage(new URL("http://witchesonline/~hag66/"))
- *     .build();
+ * .allowRegister(true)
+ * .email("hag66@witchesonline")
+ * .familyName("Entwhistle-Throckmorton")
+ * .givenName("Brunhilde")
+ * .faqEntry("Just another witch.")
+ * .nickname("thirdwitch")
+ * .webPage(new URL("http://witchesonline/~hag66/"))
+ * .build();
  * ```
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#registrar-formtype-register">15.5.1 muc#register FORM_TYPE</a>
  */
-public final class RoomRegistration {
+public final class RoomRegistration implements StandardizedDataForm {
 
     private static final String FORM_TYPE = "http://jabber.org/protocol/muc#register";
 
@@ -175,12 +176,18 @@ public final class RoomRegistration {
         return dataForm.findValueAsBoolean(REGISTER_ALLOW);
     }
 
+    @Override
+    public final String getFormType() {
+        return FORM_TYPE;
+    }
+
     /**
      * Gets the underlying data form.
      *
      * @return The underlying data form.
      */
-    public DataForm getDataForm() {
+    @Override
+    public final DataForm getDataForm() {
         return dataForm;
     }
 

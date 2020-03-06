@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.pubsub.model;
 
 import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 import java.time.Instant;
@@ -57,7 +58,7 @@ import java.util.List;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0060.html#registrar-formtypes-subscribe">16.4.2 pubsub#subscribe_options FORM_TYPE</a>
  */
-public final class SubscribeOptions {
+public final class SubscribeOptions implements StandardizedDataForm {
 
     private static final String FORM_TYPE = "http://jabber.org/protocol/pubsub#subscribe_options";
 
@@ -118,11 +119,17 @@ public final class SubscribeOptions {
         return new Builder();
     }
 
+    @Override
+    public final String getFormType() {
+        return FORM_TYPE;
+    }
+
     /**
      * Gets the underlying data form.
      *
      * @return The underlying data form.
      */
+    @Override
     public final DataForm getDataForm() {
         return dataForm;
     }

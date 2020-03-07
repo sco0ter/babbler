@@ -201,7 +201,7 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      */
     public AsyncResult<List<StreamHost>> discoverProxies() {
         // First discover the items which identify the proxy host.
-        return serviceDiscoveryManager.discoverServices(Identity.proxyByteStreams()).thenCompose(items -> {
+        return serviceDiscoveryManager.discoverServices(xmppSession.getRemoteXmppAddress(), Identity.proxyByteStreams()).thenCompose(items -> {
 
             // For each proxy service, send a disco request to it (to discover stream hosts)
             Collection<CompletionStage<List<StreamHost>>> stages = items.stream()

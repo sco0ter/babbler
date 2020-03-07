@@ -65,7 +65,7 @@ public final class LanguageTranslationManager extends Manager {
      * @see <a href="https://xmpp.org/extensions/xep-0171.html#disco">4.2 Discovering Translation Providers</a>
      */
     public AsyncResult<List<Item>> discoverTranslationProviders() {
-        return serviceDiscoveryManager.discoverServices(Identity.automationTranslation());
+        return serviceDiscoveryManager.discoverServices(xmppSession.getRemoteXmppAddress(), Identity.automationTranslation());
     }
 
     /**

@@ -62,7 +62,7 @@ public final class PubSubManager extends Manager {
      * @return The async result with the list of publish-subscribe services.
      */
     public AsyncResult<List<PubSubService>> discoverPubSubServices() {
-        return serviceDiscoveryManager.discoverServices(Identity.pubsubService())
+        return serviceDiscoveryManager.discoverServices(xmppSession.getRemoteXmppAddress(), Identity.pubsubService())
                 .thenApply(services -> services.stream()
                         .map(service -> new PubSubService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager))
                         .collect(Collectors.toList()));

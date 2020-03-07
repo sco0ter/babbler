@@ -400,63 +400,6 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
         return xmppSession.query(IQ.get(jid, new ItemDiscovery(node, resultSetManagement)), ItemNode.class);
     }
 
-    /**
-     * Discovers a service on the connected server by its identity.
-     * <p>
-     * E.g. to discover MUC services you could call this method with {@link Identity#conferenceText()};
-     * <p>
-     * This method is generally preferred over {@link #discoverServices(String)}.
-     *
-     * @param identity The identity.
-     * @return The services, that belong to the namespace.
-     */
-    @Override
-    public final AsyncResult<List<Item>> discoverServices(Identity identity) {
-        return discoverServices(infoNode -> {
-            for (Identity id : infoNode.getIdentities()) {
-                if (id.getCategory().equals(identity.getCategory()) && id.getType().equals(identity.getType())) {
-                    return true;
-                }
-            }
-            return false;
-        });
-    }
-
-    /**
-     * Discovers a service on the connected server by its feature namespace.
-     *
-     * @param feature The feature namespace.
-     * @return The async result with the services, that belong to the namespace.
-     */
-    @Override
-    public final AsyncResult<List<Item>> discoverServices(String feature) {
-        return discoverServices(infoNode -> infoNode.getFeatures().contains(feature));
-    }
-
-    private AsyncResult<List<Item>> discoverServices(Predicate<InfoNode> predicate) {
-        // First discover the items of the server.
-        // Then, for each item, discover the features of the item, but ignore any exceptions.
-        return discoverItems(xmppSession.getDomain()).thenCompose(itemDiscovery -> {
-            Collection<CompletionStage<List<Item>>> stages = itemDiscovery.getItems().stream()
-                    .map(item -> discoverInformation(item.getJid()).thenApply(infoDiscovery -> {
-                        if (predicate.test(infoDiscovery)) {
-                            return Collections.singletonList(item);
-                        }
-                        return Collections.<Item>emptyList();
-                    }).handle((items, throwable) -> {
-                        // If one disco#info fails, don't let the whole discoverServices() method fail.
-                        // Instead of failing, return an empty list, other services can hopefully be discovered successfully.
-                        if (throwable != null) {
-                            return Collections.<Item>emptyList();
-                        } else {
-                            return items;
-                        }
-                    }))
-                    .collect(Collectors.toList());
-            return CompletionStages.allOf(stages);
-        });
-    }
-
     private void setEnabled(Iterable<Extension> extensions, String feature, boolean enabled) {
         if (extensions != null) {
             for (Extension extension : extensions) {

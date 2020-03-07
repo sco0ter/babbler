@@ -111,24 +111,26 @@ public interface ServiceDiscoveryManager extends IQHandler, ExtensionProtocol {
     AsyncResult<ItemNode> discoverItems(Jid jid, String node, ResultSetManagement resultSetManagement);
 
     /**
-     * Discovers a service on the connected server by its identity.
+     * Discovers a service on the given entity by its identity.
      * <p>
      * E.g. to discover MUC services you could call this method with {@link Identity#conferenceText()};
      * <p>
-     * This method is generally preferred over {@link #discoverServices(String)}.
+     * This method is generally preferred over {@link #discoverServices(Jid, String)}.
      *
      * @param identity The identity.
+     * @param jid      The XMPP entity, usually a server.
      * @return The services, that belong to the namespace.
      */
-    AsyncResult<List<Item>> discoverServices(Identity identity);
+    AsyncResult<List<Item>> discoverServices(Jid jid, Identity identity);
 
     /**
-     * Discovers a service on the connected server by its feature namespace.
+     * Discovers a service on the given entity by its feature namespace.
      *
      * @param feature The feature namespace.
+     * @param jid     The XMPP entity, usually a server.
      * @return The async result with the services, that belong to the namespace.
      */
-    AsyncResult<List<Item>> discoverServices(String feature);
+    AsyncResult<List<Item>> discoverServices(Jid jid, String feature);
 
     /**
      * Adds an identity.

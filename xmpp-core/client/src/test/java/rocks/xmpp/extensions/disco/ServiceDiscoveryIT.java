@@ -57,7 +57,7 @@ public class ServiceDiscoveryIT extends IntegrationTest {
     @Test
     public void testDiscoverService() throws ExecutionException, InterruptedException {
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-        Collection<Item> items = serviceDiscoveryManager.discoverServices("http://jabber.org/protocol/pubsub").get();
+        Collection<Item> items = serviceDiscoveryManager.discoverServices(xmppSession.getRemoteXmppAddress(), "http://jabber.org/protocol/pubsub").get();
         Assert.assertEquals(items.size(), 1);
     }
 }

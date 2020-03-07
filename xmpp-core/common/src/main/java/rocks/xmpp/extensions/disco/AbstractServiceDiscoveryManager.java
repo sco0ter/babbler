@@ -24,11 +24,13 @@
 
 package rocks.xmpp.extensions.disco;
 
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.disco.handler.DiscoInfoHandler;
 import rocks.xmpp.extensions.disco.handler.DiscoItemsHandler;
 import rocks.xmpp.extensions.disco.model.ServiceDiscoveryNode;
+import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
@@ -36,10 +38,17 @@ import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
+import rocks.xmpp.util.concurrent.AsyncResult;
+import rocks.xmpp.util.concurrent.CompletionStages;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * @author Christian Schudt
@@ -122,5 +131,46 @@ public abstract class AbstractServiceDiscoveryManager implements ServiceDiscover
     @Override
     public final void setItemProvider(String node, ResultSetProvider<Item> itemProvider) {
         discoItemHandler.setItemProvider(node, itemProvider);
+    }
+
+    @Override
+    public final AsyncResult<List<Item>> discoverServices(Jid jid, Identity identity) {
+        return discoverServices(jid, infoNode -> {
+            for (Identity id : infoNode.getIdentities()) {
+                if (id.getCategory().equals(identity.getCategory()) && id.getType().equals(identity.getType())) {
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+
+    @Override
+    public final AsyncResult<List<Item>> discoverServices(Jid jid, String feature) {
+        return discoverServices(jid, infoNode -> infoNode.getFeatures().contains(feature));
+    }
+
+    private AsyncResult<List<Item>> discoverServices(Jid jid, Predicate<InfoNode> predicate) {
+        // First discover the items of the server.
+        // Then, for each item, discover the features of the item, but ignore any exceptions.
+        return discoverItems(jid).thenCompose(itemDiscovery -> {
+            Collection<CompletionStage<List<Item>>> stages = itemDiscovery.getItems().stream()
+                    .map(item -> discoverInformation(item.getJid()).thenApply(infoDiscovery -> {
+                        if (predicate.test(infoDiscovery)) {
+                            return Collections.singletonList(item);
+                        }
+                        return Collections.<Item>emptyList();
+                    }).handle((items, throwable) -> {
+                        // If one disco#info fails, don't let the whole discoverServices() method fail.
+                        // Instead of failing, return an empty list, other services can hopefully be discovered successfully.
+                        if (throwable != null) {
+                            return Collections.<Item>emptyList();
+                        } else {
+                            return items;
+                        }
+                    }))
+                    .collect(Collectors.toList());
+            return CompletionStages.allOf(stages);
+        });
     }
 }

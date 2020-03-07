@@ -132,7 +132,7 @@ public final class MultiUserChatManager extends Manager {
      * @see <a href="https://xmpp.org/extensions/xep-0045.html#disco-service">6.1 Discovering a MUC Service</a>
      */
     public AsyncResult<List<ChatService>> discoverChatServices() {
-        return serviceDiscoveryManager.discoverServices(Identity.conferenceText()).thenApply(services ->
+        return serviceDiscoveryManager.discoverServices(xmppSession.getRemoteXmppAddress(), Identity.conferenceText()).thenApply(services ->
                 services.stream()
                         .map(service -> new ChatService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager, this))
                         .collect(Collectors.toList()));

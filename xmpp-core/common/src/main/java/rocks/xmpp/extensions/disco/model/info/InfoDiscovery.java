@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -142,6 +143,27 @@ public final class InfoDiscovery implements InfoNode {
     @Override
     public final List<DataForm> getExtensions() {
         return Collections.unmodifiableList(extensions);
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof InfoDiscovery)) {
+            return false;
+        }
+        InfoDiscovery other = (InfoDiscovery) o;
+
+        return Objects.equals(getNode(), other.getNode())
+                && Objects.equals(getIdentities(), other.getIdentities())
+                && Objects.equals(getFeatures(), other.getFeatures())
+                && Objects.equals(getExtensions(), other.getExtensions());
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(getNode(), getIdentities(), getFeatures(), getExtensions());
     }
 
     @Override

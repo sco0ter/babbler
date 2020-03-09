@@ -399,6 +399,21 @@ public final class DataForm implements Comparable<DataForm> {
         return Objects.hash(instructions, pages, field, item, type, title, reportedFields);
     }
 
+    @Override
+    public final String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (title != null) {
+            sb.append("Title         : ").append(title).append("\n");
+        }
+        sb.append("Data Form Type: ").append(type.name().toLowerCase()).append('\n');
+        String ft = getFormType();
+        if (ft != null) {
+            sb.append("Form Type     : ").append(ft).append('\n');
+        }
+        sb.append("Field Count   : ").append(field.size());
+        return sb.toString();
+    }
+
     /**
      * The form type.
      */

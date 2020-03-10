@@ -63,7 +63,7 @@ public abstract class AbstractSoftwareVersionManager extends AbstractIQHandler i
         }
         return iq.createError(Condition.SERVICE_UNAVAILABLE);
     }
-    
+
     @Override
     public final synchronized SoftwareVersion getSoftwareVersion() {
         return softwareVersion;
@@ -72,6 +72,11 @@ public abstract class AbstractSoftwareVersionManager extends AbstractIQHandler i
     @Override
     public final synchronized void setSoftwareVersion(SoftwareVersion softwareVersion) {
         this.softwareVersion = softwareVersion;
+    }
+
+    @Override
+    public final boolean isEnabled() {
+        return getSoftwareVersion() != null;
     }
 
     @Override

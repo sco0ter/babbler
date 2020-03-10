@@ -62,12 +62,8 @@ public final class ClientSoftwareVersionManager extends AbstractSoftwareVersionM
 
     private final XmppSession xmppSession;
 
-    private final Manager manager;
-
     private ClientSoftwareVersionManager(final XmppSession xmppSession) {
-        manager = new Manager(xmppSession);
         this.xmppSession = xmppSession;
-        setEnabled(true);
         setSoftwareVersion(DEFAULT_VERSION);
     }
 
@@ -80,15 +76,5 @@ public final class ClientSoftwareVersionManager extends AbstractSoftwareVersionM
     @Override
     public AsyncResult<SoftwareVersion> getSoftwareVersion(Jid jid) {
         return xmppSession.query(IQ.get(jid, new SoftwareVersion()), SoftwareVersion.class);
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        manager.setEnabled(enabled);
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return manager.isEnabled();
     }
 }

@@ -58,7 +58,7 @@ public class SoftwareVersionManagerTest extends BaseTest {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
-        connection2.getManager(SoftwareVersionManager.class).setEnabled(false);
+        connection2.getManager(SoftwareVersionManager.class).setSoftwareVersion(null);
         SoftwareVersionManager softwareVersionManager = connection1.getManager(SoftwareVersionManager.class);
         try {
             softwareVersionManager.getSoftwareVersion(JULIET).get();
@@ -72,12 +72,13 @@ public class SoftwareVersionManagerTest extends BaseTest {
     public void testServiceDiscoveryEntry() {
         TestXmppSession connection1 = new TestXmppSession();
         SoftwareVersionManager softwareVersionManager = connection1.getManager(SoftwareVersionManager.class);
+        softwareVersionManager.setSoftwareVersion(new SoftwareVersion());
         // By default, the manager should be enabled.
         Assert.assertTrue(softwareVersionManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         String feature = "jabber:iq:version";
         Assert.assertTrue(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
-        softwareVersionManager.setEnabled(false);
+        softwareVersionManager.setSoftwareVersion(null);
         Assert.assertFalse(softwareVersionManager.isEnabled());
         Assert.assertFalse(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
     }

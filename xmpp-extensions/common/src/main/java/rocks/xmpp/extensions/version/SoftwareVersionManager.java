@@ -63,11 +63,4 @@ public interface SoftwareVersionManager extends IQHandler, ExtensionProtocol {
      * @see #getSoftwareVersion()
      */
     void setSoftwareVersion(SoftwareVersion softwareVersion);
-
-    /**
-     * Enables this protocol.
-     *
-     * @param enabled true if enabled, otherwise false.
-     */
-    void setEnabled(boolean enabled);
 }

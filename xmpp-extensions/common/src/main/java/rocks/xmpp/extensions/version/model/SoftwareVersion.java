@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.version.model;
 
+import rocks.xmpp.extensions.softwareinfo.SoftwareInfo;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 
@@ -37,7 +39,7 @@ import java.util.Objects;
  * @see <a href="https://xmpp.org/extensions/xep-0092.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "query")
-public final class SoftwareVersion {
+public final class SoftwareVersion implements SoftwareInfo {
 
     /**
      * jabber:iq:version
@@ -90,6 +92,7 @@ public final class SoftwareVersion {
      *
      * @return The operating system.
      */
+    @Override
     public final String getOs() {
         return os;
     }
@@ -98,8 +101,15 @@ public final class SoftwareVersion {
      * Gets the version.
      *
      * @return The version.
+     * @deprecated Use {@link #getSoftwareVersion()}
      */
+    @Deprecated
     public final String getVersion() {
+        return version;
+    }
+
+    @Override
+    public final String getSoftwareVersion() {
         return version;
     }
 
@@ -107,8 +117,15 @@ public final class SoftwareVersion {
      * Gets the software's name.
      *
      * @return The software's name.
+     * @deprecated Use {@link #getSoftware()}
      */
+    @Deprecated
     public final String getName() {
+        return name;
+    }
+
+    @Override
+    public final String getSoftware() {
         return name;
     }
 

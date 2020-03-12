@@ -39,7 +39,7 @@ import java.util.Arrays;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0232.html#registrar-formtype">5.1 Field Standardization</a>
  */
-public final class SoftwareInformation implements StandardizedDataForm {
+public final class SoftwareInformation implements StandardizedDataForm, SoftwareInfo {
 
     static final String FORM_TYPE = "urn:xmpp:dataforms:softwareinfo";
 
@@ -114,11 +114,7 @@ public final class SoftwareInformation implements StandardizedDataForm {
         return null;
     }
 
-    /**
-     * The operating system on which the XMPP software is running.
-     *
-     * @return The operating system.
-     */
+    @Override
     public final String getOs() {
         return dataForm.findValue(OS);
     }
@@ -132,11 +128,7 @@ public final class SoftwareInformation implements StandardizedDataForm {
         return dataForm.findValue(OS_VERSION);
     }
 
-    /**
-     * Gets the XMPP software running at the entity.
-     *
-     * @return The XMPP software running at the entity.
-     */
+    @Override
     public final String getSoftware() {
         return dataForm.findValue(SOFTWARE);
     }
@@ -146,6 +138,7 @@ public final class SoftwareInformation implements StandardizedDataForm {
      *
      * @return The XMPP software version.
      */
+    @Override
     public final String getSoftwareVersion() {
         return dataForm.findValue(SOFTWARE_VERSION);
     }

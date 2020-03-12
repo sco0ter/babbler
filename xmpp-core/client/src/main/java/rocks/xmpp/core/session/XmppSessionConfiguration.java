@@ -41,6 +41,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -148,7 +149,7 @@ public final class XmppSessionConfiguration {
         this.nameServer = builder.nameServer;
         this.threadFactory = builder.threadFactory;
         this.closeOnShutdown = builder.closeOnShutdown;
-        this.extensions = new HashSet<>();
+        this.extensions = new LinkedHashSet<>();
 
         // Find all modules, then add all extension from each module.
         ServiceLoader<Module> loader = ServiceLoader.load(Module.class);

@@ -56,6 +56,7 @@ import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
+import rocks.xmpp.extensions.caps.client.ClientEntityCapabilitiesManager;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.disco.client.ClientServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
@@ -236,7 +237,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
         this.stanzaListenerExecutor = new QueuedExecutorService(STANZA_LISTENER_EXECUTOR);
         this.serviceDiscoveryManager = getManager(ClientServiceDiscoveryManager.class);
         this.streamFeaturesManager = getManager(StreamFeaturesManager.class);
-
+        getManager(ClientEntityCapabilitiesManager.class);
         // Add a shutdown hook, which will gracefully close the connection, when the JVM is halted.
         if (configuration.isCloseOnShutdown()) {
             synchronized (this) {

@@ -26,7 +26,10 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
+import rocks.xmpp.extensions.caps.client.ClientEntityCapabilities1Protocol;
+import rocks.xmpp.extensions.caps.client.ClientEntityCapabilitiesManager;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
+import rocks.xmpp.extensions.caps2.client.ClientEntityCapabilities2Protocol;
 import rocks.xmpp.extensions.caps2.model.EntityCapabilities2;
 import rocks.xmpp.extensions.disco.client.ClientServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
@@ -62,14 +65,16 @@ public final class CoreModule implements Module {
                 // XEP-0106: JID Escaping
                 Extension.of(Jid.ESCAPING_FEATURE, true),
 
+                Extension.of(ClientEntityCapabilitiesManager.class, true),
+
                 // XEP-0115: Entity Capabilities
-                Extension.of(EntityCapabilities1.NAMESPACE, EntityCapabilitiesManager.class, true),
+                Extension.of(ClientEntityCapabilities1Protocol.class, true),
 
                 // XEP-0300: Use of Cryptographic Hash Functions in XMPP
                 Extension.of(new CryptographicHashFunctionsProtocol(), true),
 
                 // XEP-0390 Entity Capabilities 2.0
-                Extension.of(EntityCapabilities2.NAMESPACE, EntityCapabilitiesManager.class, true),
+                Extension.of(ClientEntityCapabilities2Protocol.class, true),
 
                 Extension.of(PresenceManager.class, true),
 

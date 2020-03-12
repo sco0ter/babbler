@@ -31,6 +31,7 @@ import rocks.xmpp.core.stanza.InboundPresenceHandler;
 import rocks.xmpp.core.stanza.OutboundPresenceHandler;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
 import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
 import rocks.xmpp.extensions.vcard.temp.VCardManager;
@@ -47,6 +48,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -67,7 +69,7 @@ public final class VCardBasedAvatarsProtocol implements InboundPresenceHandler, 
     /**
      * Stores the current hash for a user. The Jid is a bare Jid.
      */
-    private final Map<Jid, String> userHashes = new ConcurrentHashMap<>();
+    final Map<Jid, String> userHashes = new ConcurrentHashMap<>();
 
     private final Map<String, byte[]> hashesLocalStore;
 
@@ -87,12 +89,26 @@ public final class VCardBasedAvatarsProtocol implements InboundPresenceHandler, 
                                      BiConsumer<Jid, byte[]> notifyListeners,
                                      Function<String, byte[]> loadFromCache,
                                      BiConsumer<String, byte[]> storeToCache) {
+        this(xmppSession,
+                notifyListeners,
+                loadFromCache,
+                storeToCache,
+                xmppSession.getManager(VCardManager.class),
+                xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("userhashes")) : null);
+    }
+
+    VCardBasedAvatarsProtocol(XmppSession xmppSession,
+                              BiConsumer<Jid, byte[]> notifyListeners,
+                              Function<String, byte[]> loadFromCache,
+                              BiConsumer<String, byte[]> storeToCache,
+                              VCardManager vCardManager,
+                              Map<String, byte[]> hashesLocalStore) {
         this.xmppSession = xmppSession;
         this.notifyListeners = notifyListeners;
         this.loadFromCache = loadFromCache;
         this.storeToCache = storeToCache;
-        vCardManager = xmppSession.getManager(VCardManager.class);
-        hashesLocalStore = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("userhashes")) : null;
+        this.vCardManager = vCardManager;
+        this.hashesLocalStore = hashesLocalStore;
         restoreUserHashes();
     }
 
@@ -217,7 +233,7 @@ public final class VCardBasedAvatarsProtocol implements InboundPresenceHandler, 
     public final AsyncResult<byte[]> getAvatarByVCard(Jid contact) {
 
         // Let's see, if there's a stored image already.
-        String hash = userHashes.get(contact);
+        String hash = userHashes.get(contact.asBareJid());
         // "" means, the user is known to have no avatar. Therefore don't try to load anything.
         if (!"".equals(hash)) {
             if (hash != null) {
@@ -227,23 +243,20 @@ public final class VCardBasedAvatarsProtocol implements InboundPresenceHandler, 
                 }
             }
 
-            return avatarRequests.computeIfAbsent(contact, key -> {
+            return avatarRequests.computeIfAbsent(contact.asBareJid(), key -> {
 
-                VCardManager vCardManager = xmppSession.getManager(VCardManager.class);
                 // Load the vCard for that user
-                AsyncResult<VCard> vCard;
-
-                if (contact.equals(xmppSession.getLocalXmppAddress().asBareJid())) {
-                    vCard = vCardManager.getVCard();
-                } else {
-                    vCard = vCardManager.getVCard(contact);
-                }
+                AsyncResult<VCard> vCard = vCardManager.getVCard(contact);
                 return vCard.handle((result, exc) -> {
+                    // If the user has no vCard (e.g. server returned <item-not-found/> or <service-unavailable/>),
+                    // the user also has no avatar obviously.
+                    if (exc != null && !(exc instanceof StanzaErrorException)) {
+                        throw new CompletionException(exc);
+                    }
                     // If there's no avatar for that user, create an empty avatar and load it.
                     byte[] avatar = new byte[0];
                     String hash1 = "";
-                    // If the user has no vCard (e.g. server returned <item-not-found/> or <service-unavailable/>),
-                    // the user also has no avatar obviously.
+
                     if (result != null) {
                         // And check if it has a photo.
                         VCard.Image image = result.getPhoto();
@@ -252,14 +265,13 @@ public final class VCardBasedAvatarsProtocol implements InboundPresenceHandler, 
                             avatar = image.getValue();
                         }
                     }
-                    userHashes.put(contact, hash1);
+                    userHashes.put(contact.asBareJid(), hash1);
                     if (!Arrays.equals(avatar, new byte[0])) {
                         storeToCache.accept(hash1, avatar);
                     }
-                    avatarRequests.remove(contact);
                     return avatar;
                 });
-            });
+            }).whenComplete((avatar, exc) -> avatarRequests.remove(contact.asBareJid()));
         }
 
         return new AsyncResult<>(CompletableFuture.completedFuture(new byte[0]));

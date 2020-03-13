@@ -45,6 +45,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -68,7 +69,7 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager imple
 
     private final Consumer<PresenceEvent> outboundPresenceListener = this::handleOutboundPresence;
 
-    private final Set<String> nonConformingResources = Collections.synchronizedSet(new HashSet<>());
+    final Set<String> nonConformingResources = Collections.synchronizedSet(new HashSet<>());
 
     /**
      * Stores the current hash for a user. The Jid is a bare Jid.
@@ -84,7 +85,7 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager imple
     public VCardBasedAvatarsProtocol(XmppSession xmppSession) {
         this(xmppSession,
                 xmppSession.getManager(VCardManager.class),
-                xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("userhashes")) : null);
+                xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("userhashes")) : Collections.synchronizedMap(new HashMap<>()));
     }
 
     VCardBasedAvatarsProtocol(XmppSession xmppSession,
@@ -179,7 +180,7 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager imple
         }
     }
 
-    private void resetHash() {
+    void resetHash() {
         // Remove our own hash and send an empty presence.
         // The lack of our own hash, will download the vCard and either broadcasts the image hash or an empty hash.
         userHashes.remove(xmppSession.getLocalXmppAddress().asBareJid());
@@ -286,10 +287,10 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager imple
     public final AsyncResult<Void> publishAvatar(byte[] avatar) {
 
         String hash = avatar != null ? XmppUtils.hash(avatar) : null;
-        return vCardManager.getVCard().thenApply(result -> {
+        return vCardManager.getVCard().handle((result, exc) -> {
             // If there's no vCard yet (e.g. <item-not-found/>), create a new one.
             return result != null ? result : new VCard();
-        }).thenAccept(vCard -> {
+        }).thenCompose(vCard -> {
             if (avatar != null) {
                 // Within a given session, a client MUST NOT attempt to upload a given avatar image more than once.
                 // The client MAY upload the avatar image to the vCard on login and after that MUST NOT upload the vCard again
@@ -298,16 +299,17 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager imple
                     userHashes.put(xmppSession.getLocalXmppAddress().asBareJid(), hash);
                     // If either there is avatar yet, or the old avatar is different from the new one: update
                     vCard.setPhoto(new VCard.Image(null, avatar));
-                    vCardManager.setVCard(vCard);
+                    return vCardManager.setVCard(vCard);
                 }
             } else {
                 userHashes.put(xmppSession.getLocalXmppAddress().asBareJid(), "");
                 // If there's currently a photo, we want to reset it.
                 if (vCard.getPhoto() != null && vCard.getPhoto().getValue() != null) {
                     vCard.setPhoto(null);
-                    vCardManager.setVCard(vCard);
+                    return vCardManager.setVCard(vCard);
                 }
             }
+            return CompletableFuture.completedFuture(null);
         });
     }
 

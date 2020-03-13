@@ -29,7 +29,7 @@ import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Presence;
-import rocks.xmpp.extensions.avatar.AvatarManager;
+import rocks.xmpp.extensions.vcard.avatar.VCardBasedAvatarsProtocol;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
 import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.util.concurrent.AsyncResult;
@@ -78,7 +78,7 @@ public final class VCardManager extends Manager {
         AsyncResult<IQ> query = xmppSession.query(IQ.set(vCard));
         return query.thenRun(() -> {
             // Then inform about the update by sending a presence. The avatar manager will add the update extension.
-            AvatarManager avatarManager = xmppSession.getManager(AvatarManager.class);
+            VCardBasedAvatarsProtocol avatarManager = xmppSession.getManager(VCardBasedAvatarsProtocol.class);
             if (isEnabled() && avatarManager.isEnabled()) {
                 Presence presence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
                 if (presence == null) {

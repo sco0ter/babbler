@@ -32,7 +32,6 @@ import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
-import rocks.xmpp.extensions.avatar.AvatarManager;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.last.model.LastActivity;
 
@@ -74,7 +73,6 @@ public class LastActivityManagerTest extends BaseTest {
     @Test
     public void testLastActivityInAwayPresence() {
         final TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
-        xmppSession1.getManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addOutboundPresenceListener(new Consumer<PresenceEvent>() {
             @Override
             public void accept(PresenceEvent e) {
@@ -89,7 +87,6 @@ public class LastActivityManagerTest extends BaseTest {
     @Test
     public void testLastActivityInXAPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
-        xmppSession1.getManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addOutboundPresenceListener(e -> Assert.assertTrue(e.getPresence().hasExtension(LastActivity.class)));
         xmppSession1.send(new Message(JULIET));
         xmppSession1.send(new Presence(Presence.Show.AWAY));
@@ -98,7 +95,6 @@ public class LastActivityManagerTest extends BaseTest {
     @Test
     public void testLastActivityInChatPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
-        xmppSession1.getManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addOutboundPresenceListener(e -> Assert.assertFalse(e.getPresence().hasExtension(LastActivity.class)));
         xmppSession1.send(new Presence(Presence.Show.CHAT));
     }
@@ -106,7 +102,6 @@ public class LastActivityManagerTest extends BaseTest {
     @Test
     public void testLastActivityInDndPresence() {
         TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, new MockServer());
-        xmppSession1.getManager(AvatarManager.class).setEnabled(false);
         xmppSession1.addOutboundPresenceListener(e -> Assert.assertFalse(e.getPresence().hasExtension(LastActivity.class)));
         xmppSession1.send(new Presence(Presence.Show.DND));
     }

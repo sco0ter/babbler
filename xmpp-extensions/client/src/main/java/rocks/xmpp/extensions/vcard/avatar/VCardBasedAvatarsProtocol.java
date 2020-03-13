@@ -32,6 +32,7 @@ import rocks.xmpp.core.stanza.OutboundPresenceHandler;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
+import rocks.xmpp.extensions.avatar.AbstractAvatarManager;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
 import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
 import rocks.xmpp.extensions.vcard.temp.VCardManager;
@@ -50,8 +51,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -60,9 +60,13 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class VCardBasedAvatarsProtocol implements InboundPresenceHandler, OutboundPresenceHandler, ExtensionProtocol {
+public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager implements InboundPresenceHandler, OutboundPresenceHandler, ExtensionProtocol {
 
     private static final Logger logger = Logger.getLogger(VCardBasedAvatarsProtocol.class.getName());
+
+    private final Consumer<PresenceEvent> inboundPresenceListener = this::handleInboundPresence;
+
+    private final Consumer<PresenceEvent> outboundPresenceListener = this::handleOutboundPresence;
 
     private final Set<String> nonConformingResources = Collections.synchronizedSet(new HashSet<>());
 
@@ -73,43 +77,37 @@ public final class VCardBasedAvatarsProtocol implements InboundPresenceHandler, 
 
     private final Map<String, byte[]> hashesLocalStore;
 
-    private final XmppSession xmppSession;
-
     private final VCardManager vCardManager;
 
     private final Map<Jid, AsyncResult<byte[]>> avatarRequests = new ConcurrentHashMap<>();
 
-    private final BiConsumer<Jid, byte[]> notifyListeners;
-
-    private final Function<String, byte[]> loadFromCache;
-
-    private final BiConsumer<String, byte[]> storeToCache;
-
-    public VCardBasedAvatarsProtocol(XmppSession xmppSession,
-                                     BiConsumer<Jid, byte[]> notifyListeners,
-                                     Function<String, byte[]> loadFromCache,
-                                     BiConsumer<String, byte[]> storeToCache) {
+    public VCardBasedAvatarsProtocol(XmppSession xmppSession) {
         this(xmppSession,
-                notifyListeners,
-                loadFromCache,
-                storeToCache,
                 xmppSession.getManager(VCardManager.class),
                 xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("userhashes")) : null);
     }
 
     VCardBasedAvatarsProtocol(XmppSession xmppSession,
-                              BiConsumer<Jid, byte[]> notifyListeners,
-                              Function<String, byte[]> loadFromCache,
-                              BiConsumer<String, byte[]> storeToCache,
                               VCardManager vCardManager,
                               Map<String, byte[]> hashesLocalStore) {
-        this.xmppSession = xmppSession;
-        this.notifyListeners = notifyListeners;
-        this.loadFromCache = loadFromCache;
-        this.storeToCache = storeToCache;
+        super(xmppSession);
         this.vCardManager = vCardManager;
         this.hashesLocalStore = hashesLocalStore;
         restoreUserHashes();
+    }
+
+    @Override
+    protected final void onEnable() {
+        super.onEnable();
+        xmppSession.addInboundPresenceListener(inboundPresenceListener);
+        xmppSession.addOutboundPresenceListener(outboundPresenceListener);
+    }
+
+    @Override
+    protected final void onDisable() {
+        super.onDisable();
+        xmppSession.removeInboundPresenceListener(inboundPresenceListener);
+        xmppSession.removeOutboundPresenceListener(outboundPresenceListener);
     }
 
     @Override
@@ -160,18 +158,18 @@ public final class VCardBasedAvatarsProtocol implements InboundPresenceHandler, 
             // If the user sends the same hash as we already know, it's the same avatar. Therefore do nothing.
             if (!avatarUpdate.getHash().equals(userHashes.put(contact, avatarUpdate.getHash()))) {
                 // When the recipient's client receives the hash of the avatar image, it SHOULD check the hash to determine if it already has a cached copy of that avatar image.
-                byte[] imageData = loadFromCache.apply(avatarUpdate.getHash());
+                byte[] imageData = loadFromCache(avatarUpdate.getHash());
                 byte[] avatar = null;
                 if (imageData != null) {
                     avatar = imageData;
                 }
                 if (avatar != null) {
-                    notifyListeners.accept(contact, avatar);
+                    notifyListeners(contact, avatar);
                 } else {
                     // If the avatar was either known before or could be successfully retrieved from the vCard.
-                    getAvatarByVCard(contact).whenComplete((avatarResult, ex) -> {
+                    getAvatar(contact).whenComplete((avatarResult, ex) -> {
                         if (ex == null) {
-                            notifyListeners.accept(contact, avatarResult);
+                            notifyListeners(contact, avatarResult);
                         } else {
                             logger.log(Level.WARNING, ex, () -> "Failed to retrieve vCard based avatar for user: " + contact);
                         }
@@ -206,9 +204,9 @@ public final class VCardBasedAvatarsProtocol implements InboundPresenceHandler, 
                 presence.putExtension(new AvatarUpdate());
 
                 // Load my own avatar in order to advertise an image.
-                getAvatarByVCard(xmppSession.getLocalXmppAddress().asBareJid()).whenComplete((avatarResult, ex) -> {
+                getAvatar(xmppSession.getLocalXmppAddress().asBareJid()).whenComplete((avatarResult, ex) -> {
                     if (ex == null) {
-                        notifyListeners.accept(xmppSession.getLocalXmppAddress().asBareJid(), avatarResult);
+                        notifyListeners(xmppSession.getLocalXmppAddress().asBareJid(), avatarResult);
 
                         // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
                         Presence lastPresence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
@@ -230,14 +228,15 @@ public final class VCardBasedAvatarsProtocol implements InboundPresenceHandler, 
         }
     }
 
-    public final AsyncResult<byte[]> getAvatarByVCard(Jid contact) {
+    @Override
+    public final AsyncResult<byte[]> getAvatar(Jid contact) {
 
         // Let's see, if there's a stored image already.
         String hash = userHashes.get(contact.asBareJid());
         // "" means, the user is known to have no avatar. Therefore don't try to load anything.
         if (!"".equals(hash)) {
             if (hash != null) {
-                byte[] imageData = loadFromCache.apply(hash);
+                byte[] imageData = loadFromCache(hash);
                 if (imageData != null) {
                     return new AsyncResult<>(CompletableFuture.completedFuture(imageData));
                 }
@@ -267,7 +266,7 @@ public final class VCardBasedAvatarsProtocol implements InboundPresenceHandler, 
                     }
                     userHashes.put(contact.asBareJid(), hash1);
                     if (!Arrays.equals(avatar, new byte[0])) {
-                        storeToCache.accept(hash1, avatar);
+                        storeToCache(hash1, avatar);
                     }
                     return avatar;
                 });
@@ -281,12 +280,12 @@ public final class VCardBasedAvatarsProtocol implements InboundPresenceHandler, 
      * Publishes an avatar to the VCard and uses XEP-0153 to notify the contacts about the update.
      *
      * @param avatar The avatar or null, if the avatar is reset.
-     * @param type   The image type.
-     * @param hash   The hash.
      * @return The async result.
      */
-    public AsyncResult<Void> publishToVCard(byte[] avatar, String type, String hash) {
+    @Override
+    public final AsyncResult<Void> publishAvatar(byte[] avatar) {
 
+        String hash = avatar != null ? XmppUtils.hash(avatar) : null;
         return vCardManager.getVCard().thenApply(result -> {
             // If there's no vCard yet (e.g. <item-not-found/>), create a new one.
             return result != null ? result : new VCard();
@@ -298,7 +297,7 @@ public final class VCardBasedAvatarsProtocol implements InboundPresenceHandler, 
                 if (vCard.getPhoto() == null || !Arrays.equals(vCard.getPhoto().getValue(), avatar)) {
                     userHashes.put(xmppSession.getLocalXmppAddress().asBareJid(), hash);
                     // If either there is avatar yet, or the old avatar is different from the new one: update
-                    vCard.setPhoto(new VCard.Image(type, avatar));
+                    vCard.setPhoto(new VCard.Image(null, avatar));
                     vCardManager.setVCard(vCard);
                 }
             } else {
@@ -312,7 +311,7 @@ public final class VCardBasedAvatarsProtocol implements InboundPresenceHandler, 
         });
     }
 
-    public final void backupUserHashes() {
+    private void backupUserHashes() {
         this.userHashes.forEach((jid, hash) -> this.hashesLocalStore.put(jid + ".userhash", hash.getBytes(StandardCharsets.UTF_16)));
     }
 
@@ -321,12 +320,12 @@ public final class VCardBasedAvatarsProtocol implements InboundPresenceHandler, 
     }
 
     @Override
-    public final boolean isEnabled() {
-        return true;
+    public final Set<String> getFeatures() {
+        return Collections.emptySet();
     }
 
     @Override
-    public final Set<String> getFeatures() {
-        return Collections.emptySet();
+    protected void dispose() {
+        backupUserHashes();
     }
 }

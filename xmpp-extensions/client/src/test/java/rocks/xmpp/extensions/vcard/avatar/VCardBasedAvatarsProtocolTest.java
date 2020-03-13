@@ -35,6 +35,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -45,8 +46,6 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 /**
  * @author Christian Schudt
@@ -61,22 +60,13 @@ public class VCardBasedAvatarsProtocolTest {
     private XmppSession xmppSession;
 
     @Mock
-    private BiConsumer<Jid, byte[]> notifyListeners;
-
-    @Mock
-    private Function<String, byte[]> loadFromCache;
-
-    @Mock
-    private BiConsumer<String, byte[]> storeToCache;
-
-    @Mock
     private VCardManager vCardManager;
 
     @BeforeClass
     private void beforeClass() {
         MockitoAnnotations.initMocks(this);
         Mockito.when(xmppSession.getLocalXmppAddress()).thenReturn(Jid.of("user"));
-
+        Mockito.when(xmppSession.getConfiguration()).thenReturn(Mockito.mock(XmppSessionConfiguration.class));
         VCard vCard = new VCard();
         vCard.setPhoto(new VCard.Image("image/png", IMAGE));
 
@@ -85,123 +75,126 @@ public class VCardBasedAvatarsProtocolTest {
 
     @BeforeMethod
     private void reset() {
-        Mockito.clearInvocations(vCardManager, loadFromCache, storeToCache);
+        Mockito.clearInvocations(vCardManager);
     }
 
     @Test
-    public void getAvatarByVCardWithEmptyCache() throws XmppException {
+    public void getAvatarWithEmptyCache() throws XmppException {
 
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = new VCardBasedAvatarsProtocol(xmppSession, notifyListeners, loadFromCache, storeToCache, vCardManager, new HashMap<>());
-        byte[] avatar = vCardBasedAvatarsProtocol.getAvatarByVCard(Jid.of("contact")).getResult();
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+        byte[] avatar = vCardBasedAvatarsProtocol.getAvatar(Jid.of("contact")).getResult();
         Assert.assertEquals(avatar, IMAGE);
         Assert.assertTrue(vCardBasedAvatarsProtocol.userHashes.containsKey(Jid.of("contact")));
         Assert.assertEquals(vCardBasedAvatarsProtocol.userHashes.get(Jid.of("contact")), IMAGE_HASH);
 
         ArgumentCaptor<String> hashCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<byte[]> avatarCaptor = ArgumentCaptor.forClass(byte[].class);
-        Mockito.verify(storeToCache).accept(hashCaptor.capture(), avatarCaptor.capture());
+        Mockito.verify(vCardBasedAvatarsProtocol).storeToCache(hashCaptor.capture(), avatarCaptor.capture());
         Assert.assertEquals(hashCaptor.getValue(), IMAGE_HASH);
         Assert.assertEquals(avatarCaptor.getValue(), IMAGE);
         Mockito.verify(vCardManager).getVCard(Mockito.eq(Jid.of("contact")));
     }
 
     @Test
-    public void getAvatarByVCardWithCacheHit() throws XmppException {
-
-        Mockito.when(loadFromCache.apply(Mockito.anyString())).thenReturn(IMAGE);
-
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = new VCardBasedAvatarsProtocol(xmppSession, notifyListeners, loadFromCache, storeToCache, vCardManager, new HashMap<>());
+    public void getAvatarWithCacheHit() throws XmppException {
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
         vCardBasedAvatarsProtocol.userHashes.put(Jid.of("contact"), IMAGE_HASH);
-        byte[] avatar = vCardBasedAvatarsProtocol.getAvatarByVCard(Jid.of("contact")).getResult();
+
+        Mockito.when(vCardBasedAvatarsProtocol.loadFromCache(Mockito.anyString())).thenReturn(IMAGE);
+
+        byte[] avatar = vCardBasedAvatarsProtocol.getAvatar(Jid.of("contact")).getResult();
 
         Assert.assertEquals(avatar, IMAGE);
 
         Mockito.verifyNoInteractions(vCardManager);
 
         ArgumentCaptor<String> hashCaptor = ArgumentCaptor.forClass(String.class);
-        Mockito.verify(loadFromCache).apply(hashCaptor.capture());
+        Mockito.verify(vCardBasedAvatarsProtocol).loadFromCache(hashCaptor.capture());
         Assert.assertEquals(hashCaptor.getValue(), IMAGE_HASH);
     }
 
     @Test
-    public void getAvatarByVCardWithUserHashOnly() throws XmppException {
-
-        Mockito.when(loadFromCache.apply(Mockito.anyString())).thenReturn(null);
-
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = new VCardBasedAvatarsProtocol(xmppSession, notifyListeners, loadFromCache, storeToCache, vCardManager, new HashMap<>());
+    public void getAvatarWithUserHashOnly() throws XmppException {
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
         vCardBasedAvatarsProtocol.userHashes.put(Jid.of("contact"), IMAGE_HASH);
-        byte[] avatar = vCardBasedAvatarsProtocol.getAvatarByVCard(Jid.of("contact")).getResult();
+
+        Mockito.when(vCardBasedAvatarsProtocol.loadFromCache(Mockito.anyString())).thenReturn(null);
+
+        byte[] avatar = vCardBasedAvatarsProtocol.getAvatar(Jid.of("contact")).getResult();
 
         Assert.assertEquals(avatar, IMAGE);
 
         ArgumentCaptor<String> hashCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<byte[]> avatarCaptor = ArgumentCaptor.forClass(byte[].class);
-        Mockito.verify(storeToCache).accept(hashCaptor.capture(), avatarCaptor.capture());
+        Mockito.verify(vCardBasedAvatarsProtocol).storeToCache(hashCaptor.capture(), avatarCaptor.capture());
         Assert.assertEquals(hashCaptor.getValue(), IMAGE_HASH);
         Assert.assertEquals(avatarCaptor.getValue(), IMAGE);
         Mockito.verify(vCardManager).getVCard(Mockito.eq(Jid.of("contact")));
     }
 
     @Test
-    public void getAvatarByVCardWithEmptyVCard() throws XmppException {
-
+    public void getAvatarWithEmptyVCard() throws XmppException {
         VCardManager vCardManager = Mockito.mock(VCardManager.class);
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+
+
         Mockito.when(vCardManager.getVCard(Mockito.any())).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(new VCard())));
-        Mockito.when(loadFromCache.apply(Mockito.anyString())).thenReturn(null);
+        Mockito.when(vCardBasedAvatarsProtocol.loadFromCache(Mockito.anyString())).thenReturn(null);
 
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = new VCardBasedAvatarsProtocol(xmppSession, notifyListeners, loadFromCache, storeToCache, vCardManager, new HashMap<>());
-        byte[] avatar = vCardBasedAvatarsProtocol.getAvatarByVCard(Jid.of("contact")).getResult();
+        byte[] avatar = vCardBasedAvatarsProtocol.getAvatar(Jid.of("contact")).getResult();
 
         Assert.assertEquals(avatar, new byte[0]);
 
-        Mockito.verifyNoInteractions(storeToCache);
+        Mockito.verify(vCardBasedAvatarsProtocol, Mockito.times(0)).storeToCache(Mockito.anyString(), Mockito.any());
         Mockito.verify(vCardManager).getVCard(Mockito.eq(Jid.of("contact")));
     }
 
     @Test
-    public void getAvatarByVCardWithNoVCardAtAll() throws XmppException {
+    public void getAvatarWithNoVCardAtAll() throws XmppException {
 
         VCardManager vCardManager = Mockito.mock(VCardManager.class);
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+
         Mockito.when(vCardManager.getVCard(Mockito.any())).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(null)));
-        Mockito.when(loadFromCache.apply(Mockito.anyString())).thenReturn(null);
+        Mockito.when(vCardBasedAvatarsProtocol.loadFromCache(Mockito.anyString())).thenReturn(null);
 
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = new VCardBasedAvatarsProtocol(xmppSession, notifyListeners, loadFromCache, storeToCache, vCardManager, new HashMap<>());
-        byte[] avatar = vCardBasedAvatarsProtocol.getAvatarByVCard(Jid.of("contact")).getResult();
+        byte[] avatar = vCardBasedAvatarsProtocol.getAvatar(Jid.of("contact")).getResult();
 
         Assert.assertEquals(avatar, new byte[0]);
 
-        Mockito.verifyNoInteractions(storeToCache);
+        Mockito.verify(vCardBasedAvatarsProtocol, Mockito.times(0)).storeToCache(Mockito.any(), Mockito.any());
         Mockito.verify(vCardManager).getVCard(Mockito.eq(Jid.of("contact")));
     }
 
     @Test
-    public void getAvatarByVCardWithVCardReturnedStanzaError() throws XmppException {
+    public void getAvatarWithVCardReturnedStanzaError() throws XmppException {
 
         VCardManager vCardManager = Mockito.mock(VCardManager.class);
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+
         CompletableFuture<VCard> completableFuture = new CompletableFuture<>();
         completableFuture.completeExceptionally(new StanzaErrorException(new IQ(IQ.Type.GET, null).createError(Condition.ITEM_NOT_FOUND)));
         Mockito.when(vCardManager.getVCard(Mockito.any())).thenReturn(new AsyncResult<>(completableFuture));
-        Mockito.when(loadFromCache.apply(Mockito.anyString())).thenReturn(null);
+        Mockito.when(vCardBasedAvatarsProtocol.loadFromCache(Mockito.anyString())).thenReturn(null);
 
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = new VCardBasedAvatarsProtocol(xmppSession, notifyListeners, loadFromCache, storeToCache, vCardManager, new HashMap<>());
-        byte[] avatar = vCardBasedAvatarsProtocol.getAvatarByVCard(Jid.of("contact")).getResult();
+        byte[] avatar = vCardBasedAvatarsProtocol.getAvatar(Jid.of("contact")).getResult();
 
         Assert.assertEquals(avatar, new byte[0]);
 
-        Mockito.verifyNoInteractions(storeToCache);
+        Mockito.verify(vCardBasedAvatarsProtocol, Mockito.times(0)).storeToCache(Mockito.any(), Mockito.any());
         Mockito.verify(vCardManager).getVCard(Mockito.eq(Jid.of("contact")));
     }
 
     @Test(expectedExceptions = Exception.class)
-    public void getAvatarByVCardWithVCardRetrievalThrew() throws XmppException {
+    public void getAvatarWithVCardRetrievalThrew() throws XmppException {
 
         VCardManager vCardManager = Mockito.mock(VCardManager.class);
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+        vCardBasedAvatarsProtocol.getAvatar(Jid.of("contact")).getResult();
+
         CompletableFuture<VCard> completableFuture = new CompletableFuture<>();
         completableFuture.completeExceptionally(new Exception());
         Mockito.when(vCardManager.getVCard(Mockito.any())).thenReturn(new AsyncResult<>(completableFuture));
-        Mockito.when(loadFromCache.apply(Mockito.anyString())).thenReturn(null);
-
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = new VCardBasedAvatarsProtocol(xmppSession, notifyListeners, loadFromCache, storeToCache, vCardManager, new HashMap<>());
-        vCardBasedAvatarsProtocol.getAvatarByVCard(Jid.of("contact")).getResult();
+        Mockito.when(vCardBasedAvatarsProtocol.loadFromCache(Mockito.anyString())).thenReturn(null);
     }
 }

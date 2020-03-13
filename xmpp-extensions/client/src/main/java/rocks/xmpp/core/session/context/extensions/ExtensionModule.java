@@ -27,7 +27,7 @@ package rocks.xmpp.core.session.context.extensions;
 import rocks.xmpp.core.session.Extension;
 import rocks.xmpp.core.session.Module;
 import rocks.xmpp.extensions.activity.model.Activity;
-import rocks.xmpp.extensions.avatar.AvatarManager;
+import rocks.xmpp.extensions.avatar.UserAvatarProtocol;
 import rocks.xmpp.extensions.avatar.model.data.AvatarData;
 import rocks.xmpp.extensions.avatar.model.metadata.AvatarMetadata;
 import rocks.xmpp.extensions.blocking.BlockingManager;
@@ -92,6 +92,7 @@ import rocks.xmpp.extensions.softwareinfo.SoftwareInformationProtocol;
 import rocks.xmpp.extensions.time.EntityTimeManager;
 import rocks.xmpp.extensions.time.handler.EntityTimeHandler;
 import rocks.xmpp.extensions.tune.model.Tune;
+import rocks.xmpp.extensions.vcard.avatar.VCardBasedAvatarsProtocol;
 import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
 import rocks.xmpp.extensions.vcard.temp.VCardManager;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
@@ -151,8 +152,8 @@ public final class ExtensionModule implements Module {
                 Extension.of(GeoLocation.NAMESPACE, GeoLocationManager.class, true, false),
 
                 // XEP-0084: User Avatar
-                Extension.of(AvatarMetadata.NAMESPACE, AvatarManager.class, true, false),
-                Extension.of(AvatarData.NAMESPACE, AvatarManager.class, false),
+                Extension.of(AvatarMetadata.NAMESPACE, UserAvatarProtocol.class, true, false),
+                Extension.of(AvatarData.NAMESPACE, UserAvatarProtocol.class, false),
 
                 // XEP-0085: Chat State Notifications
                 Extension.of(ChatState.NAMESPACE, ChatStateManager.class, false),
@@ -185,7 +186,7 @@ public final class ExtensionModule implements Module {
                 Extension.of(Reachability.NAMESPACE, ReachabilityManager.class, false),
 
                 // XEP-0153: vCard-Based Avatars
-                Extension.of(AvatarUpdate.NAMESPACE, AvatarManager.class, false),
+                Extension.of(AvatarUpdate.NAMESPACE, VCardBasedAvatarsProtocol.class, false),
 
                 // XEP-0166: Jingle
                 Extension.of(Jingle.NAMESPACE, JingleManager.class, false),

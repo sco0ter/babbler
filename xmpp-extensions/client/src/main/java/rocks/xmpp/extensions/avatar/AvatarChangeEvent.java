@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.avatar;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.avatar.AvatarManager.ConversionException;
 
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
@@ -33,15 +32,13 @@ import java.util.EventObject;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static rocks.xmpp.extensions.avatar.AvatarManager.asBufferedImage;
-
 /**
  * The avatar change event to notify about avatar updates.
  *
  * @author Christian Schudt
  */
 public final class AvatarChangeEvent extends EventObject {
-    private static final Logger LOGGER = Logger.getLogger(AvatarManager.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AvatarChangeEvent.class.getName());
 
     private final Jid contact;
 
@@ -75,8 +72,8 @@ public final class AvatarChangeEvent extends EventObject {
      */
     public final BufferedImage getAvatarImage() {
         try {
-            return this.avatar == null ? null : asBufferedImage(this.avatar);
-        } catch (final ConversionException e) {
+            return this.avatar == null ? null : AbstractAvatarManager.asBufferedImage(this.avatar);
+        } catch (final AbstractAvatarManager.ConversionException e) {
             LOGGER.log(Level.SEVERE, "Cannot convert avatar image");
             return null;
         }

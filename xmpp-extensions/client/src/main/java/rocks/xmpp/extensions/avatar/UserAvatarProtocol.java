@@ -38,6 +38,7 @@ import rocks.xmpp.extensions.pubsub.PubSubManager;
 import rocks.xmpp.extensions.pubsub.PubSubService;
 import rocks.xmpp.extensions.pubsub.model.Item;
 import rocks.xmpp.extensions.pubsub.model.event.Event;
+import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.io.ByteArrayOutputStream;
@@ -46,8 +47,7 @@ import java.io.InputStream;
 import java.net.URLConnection;
 import java.util.Collections;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,31 +56,26 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class UserAvatarProtocol implements InboundMessageHandler, ExtensionProtocol {
+public final class UserAvatarProtocol extends AbstractAvatarManager implements InboundMessageHandler, ExtensionProtocol {
 
     private static final Logger logger = Logger.getLogger(UserAvatarProtocol.class.getName());
 
-    private final XmppSession xmppSession;
+    private Consumer<MessageEvent> inboundMessageListener = this::handleInboundMessage;
 
-    private final BiConsumer<Jid, byte[]> notifyListeners;
-
-    private final Function<String, byte[]> loadFromCache;
-
-    private final BiConsumer<String, byte[]> storeToCache;
-
-    public UserAvatarProtocol(XmppSession xmppSession,
-                              BiConsumer<Jid, byte[]> notifyListeners,
-                              Function<String, byte[]> loadFromCache,
-                              BiConsumer<String, byte[]> storeToCache) {
-        this.xmppSession = xmppSession;
-        this.notifyListeners = notifyListeners;
-        this.loadFromCache = loadFromCache;
-        this.storeToCache = storeToCache;
+    public UserAvatarProtocol(XmppSession xmppSession) {
+        super(xmppSession);
     }
 
     @Override
-    public final boolean isEnabled() {
-        return true;
+    protected final void onEnable() {
+        super.onEnable();
+        xmppSession.addInboundMessageListener(inboundMessageListener);
+    }
+
+    @Override
+    protected final void onDisable() {
+        super.onDisable();
+        xmppSession.removeInboundMessageListener(inboundMessageListener);
     }
 
     @Override
@@ -109,13 +104,13 @@ public final class UserAvatarProtocol implements InboundMessageHandler, Extensio
 
                     // Empty avatar
                     if (avatarMetadata.getInfoList().isEmpty()) {
-                        notifyListeners.accept(message.getFrom().asBareJid(), null);
+                        notifyListeners(message.getFrom().asBareJid(), null);
                     } else {
 
                         // Check if we have a cached avatar.
-                        byte[] cachedImage = loadFromCache.apply(item.getId());
+                        byte[] cachedImage = loadFromCache(item.getId());
                         if (cachedImage != null) {
-                            notifyListeners.accept(message.getFrom().asBareJid(), cachedImage);
+                            notifyListeners(message.getFrom().asBareJid(), cachedImage);
                         } else {
                             // We don't have a cached copy, let's retrieve it.
 
@@ -151,8 +146,8 @@ public final class UserAvatarProtocol implements InboundMessageHandler, Extensio
                                         }
                                     }
                                     byte[] data = baos.toByteArray();
-                                    storeToCache.accept(item.getId(), data);
-                                    notifyListeners.accept(message.getFrom().asBareJid(), data);
+                                    storeToCache(item.getId(), data);
+                                    notifyListeners(message.getFrom().asBareJid(), data);
                                 } catch (IOException e1) {
                                     logger.log(Level.WARNING, "Failed to download avatar from advertised URL: {0}.", chosenInfo.getUrl());
                                 }
@@ -166,8 +161,8 @@ public final class UserAvatarProtocol implements InboundMessageHandler, Extensio
                                             Item i = items.get(0);
                                             if (i.getPayload() instanceof AvatarData) {
                                                 AvatarData avatarData = (AvatarData) i.getPayload();
-                                                storeToCache.accept(item.getId(), avatarData.getData());
-                                                notifyListeners.accept(message.getFrom().asBareJid(), avatarData.getData());
+                                                storeToCache(item.getId(), avatarData.getData());
+                                                notifyListeners(message.getFrom().asBareJid(), avatarData.getData());
                                             }
                                         }
                                     }
@@ -180,25 +175,35 @@ public final class UserAvatarProtocol implements InboundMessageHandler, Extensio
         }
     }
 
+    @Override
+    public AsyncResult<byte[]> getAvatar(Jid contact) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Publishes an avatar to the personal eventing service.
      *
-     * @param avatar The avatar or null, if the avatar is reset.
-     * @param itemId The item id.
+     * @param imageData The avatar or null, if the avatar is reset.
      * @return The async result.
      */
-    public AsyncResult<String> publishToPersonalEventingService(byte[] avatar, String itemId) {
-        AvatarMetadata.Info info = avatar != null ? new AvatarMetadata.Info(avatar.length, itemId, itemId) : null;
-        PubSubService personalEventingService = xmppSession.getManager(PubSubManager.class).createPersonalEventingService();
-        if (avatar != null) {
+    @Override
+    public final AsyncResult<Void> publishAvatar(byte[] imageData) {
+        final String hash = imageData != null ? XmppUtils.hash(imageData) : null;
+        final AvatarMetadata.Info info = imageData != null ? new AvatarMetadata.Info(imageData.length, hash, hash) : null;
+        final PubSubService personalEventingService = xmppSession.getManager(PubSubManager.class).createPersonalEventingService();
+        final AsyncResult<String> publishResult;
+        if (imageData != null) {
             if (info.getUrl() == null) {
                 // Publish image.
-                return personalEventingService.node(AvatarData.NAMESPACE).publish(itemId, new AvatarData(avatar));
+                publishResult = personalEventingService.node(AvatarData.NAMESPACE).publish(hash, new AvatarData(imageData));
+            } else {
+                // Publish meta data.
+                publishResult = personalEventingService.node(AvatarMetadata.NAMESPACE).publish(hash, new AvatarMetadata(info));
             }
-            // Publish meta data.
-            return personalEventingService.node(AvatarMetadata.NAMESPACE).publish(itemId, new AvatarMetadata(info));
         } else {
-            return personalEventingService.node(AvatarMetadata.NAMESPACE).publish(itemId, new AvatarMetadata());
+            publishResult = personalEventingService.node(AvatarMetadata.NAMESPACE).publish(hash, new AvatarMetadata());
         }
+        return publishResult.thenRun(() -> {
+        });
     }
 }

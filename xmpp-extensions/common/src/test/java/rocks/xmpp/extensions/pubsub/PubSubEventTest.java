@@ -30,12 +30,16 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
+import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.pubsub.model.Item;
 import rocks.xmpp.extensions.pubsub.model.SubscriptionState;
 import rocks.xmpp.extensions.pubsub.model.event.Event;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.net.URI;
+import java.time.Instant;
+import java.util.Collections;
 
 /**
  * @author Christian Schudt
@@ -56,6 +60,7 @@ public class PubSubEventTest extends XmlTest {
         Assert.assertNotNull(message);
         Event pubSubEvent = message.getExtension(Event.class);
         Assert.assertNotNull(pubSubEvent);
+        Assert.assertTrue(pubSubEvent.hasItems());
         Assert.assertNotNull(pubSubEvent.getItems());
         Assert.assertEquals(pubSubEvent.getNode(), "princely_musings");
         Assert.assertEquals(pubSubEvent.getItems().size(), 1);
@@ -74,9 +79,9 @@ public class PubSubEventTest extends XmlTest {
         Assert.assertNotNull(message);
         Event event = message.getExtension(Event.class);
         Assert.assertNotNull(event);
-        Assert.assertNotNull(event.getItems());
-        //Assert.assertNotNull(event.getItems().getRetract());
-        //Assert.assertEquals(event.getItems().getRetract().getId(), "ae890ac52d0df67ed7cfdf51b644e901");
+        Assert.assertTrue(event.isRetract());
+        Assert.assertNotNull(event.getRetractedItems());
+        Assert.assertEquals(event.getRetractedItems().get(0), "ae890ac52d0df67ed7cfdf51b644e901");
     }
 
     @Test
@@ -194,5 +199,66 @@ public class PubSubEventTest extends XmlTest {
         Assert.assertEquals(event.getSubscription().getJid(), Jid.of("francisco@denmark.lit"));
         Assert.assertEquals(event.getSubscription().getSubscriptionState(), SubscriptionState.SUBSCRIBED);
         Assert.assertEquals(event.getSubscription().getSubId(), "ba49252aaa4f5d320c24d3766f0bdcade78c78d3");
+    }
+
+    @Test
+    public void marshalEventWithConfiguration() throws JAXBException, XMLStreamException {
+        String xml = marshal(Event.withConfiguration("123", new DataForm(DataForm.Type.RESULT)));
+        Assert.assertEquals(xml, "<event xmlns=\"http://jabber.org/protocol/pubsub#event\"><configuration node=\"123\"><x xmlns=\"jabber:x:data\" type=\"result\"></x></configuration></event>");
+    }
+
+    @Test
+    public void marshalEventWithDeletion() throws JAXBException, XMLStreamException {
+        String xml = marshal(Event.withDeletion("123"));
+        Assert.assertEquals(xml, "<event xmlns=\"http://jabber.org/protocol/pubsub#event\"><delete node=\"123\"></delete></event>");
+
+        String xml2 = marshal(Event.withDeletion("123", URI.create("http://test")));
+        Assert.assertEquals(xml2, "<event xmlns=\"http://jabber.org/protocol/pubsub#event\"><delete node=\"123\"><redirect uri=\"http://test\"></redirect></delete></event>");
+    }
+
+    @Test
+    public void marshalEventWithItems() throws JAXBException, XMLStreamException {
+        String xml = marshal(Event.withItems("123", Collections.singletonList(new Item() {
+            @Override
+            public Object getPayload() {
+                return ClientMessage.from(new Message());
+            }
+
+            @Override
+            public String getId() {
+                return "ID";
+            }
+
+            @Override
+            public Jid getPublisher() {
+                return Jid.of("test");
+            }
+        })));
+        Assert.assertEquals(xml, "<event xmlns=\"http://jabber.org/protocol/pubsub#event\"><items node=\"123\"><item id=\"ID\" publisher=\"test\"><message xmlns=\"jabber:client\"></message></item></items></event>");
+
+        String xml2 = marshal(Event.withItem("123", ClientMessage.from(new Message()), "ID", Jid.of("test")));
+        Assert.assertEquals(xml2, "<event xmlns=\"http://jabber.org/protocol/pubsub#event\"><items node=\"123\"><item id=\"ID\" publisher=\"test\"><message xmlns=\"jabber:client\"></message></item></items></event>");
+    }
+
+    @Test
+    public void marshalEventWithRetractedItems() throws JAXBException, XMLStreamException {
+        String xml = marshal(Event.withRetractedItems("123", Collections.singletonList("1")));
+        Assert.assertEquals(xml, "<event xmlns=\"http://jabber.org/protocol/pubsub#event\"><items node=\"123\"><retract id=\"1\"></retract></items></event>");
+    }
+
+    @Test
+    public void marshalEventWithPurge() throws JAXBException, XMLStreamException {
+        String xml = marshal(Event.withPurge("123"));
+        Assert.assertEquals(xml, "<event xmlns=\"http://jabber.org/protocol/pubsub#event\"><purge node=\"123\"></purge></event>");
+    }
+
+    @Test
+    public void marshalEventWithSubscription() throws JAXBException, XMLStreamException {
+        String xml = marshal(Event.withSubscription("123", Jid.of("test"), SubscriptionState.SUBSCRIBED));
+        Assert.assertEquals(xml, "<event xmlns=\"http://jabber.org/protocol/pubsub#event\"><subscription node=\"123\" jid=\"test\" subscription=\"subscribed\"></subscription></event>");
+
+        Instant expiry = Instant.parse("2020-03-18T00:00:00Z");
+        String xml2 = marshal(Event.withSubscription("123", Jid.of("test"), SubscriptionState.PENDING, expiry, "subid"));
+        Assert.assertEquals(xml2, "<event xmlns=\"http://jabber.org/protocol/pubsub#event\"><subscription node=\"123\" expiry=\"2020-03-18T00:00:00Z\" jid=\"test\" subid=\"subid\" subscription=\"pending\"></subscription></event>");
     }
 }

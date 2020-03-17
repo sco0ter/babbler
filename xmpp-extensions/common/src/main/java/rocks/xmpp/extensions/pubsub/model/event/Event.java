@@ -41,9 +41,11 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.time.Instant;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * The implementation of the {@code <event/>} element in the {@code http://jabber.org/protocol/pubsub#event} namespace.
@@ -52,6 +54,7 @@ import java.util.List;
  * @see <a href="https://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>
  * @see <a href="https://xmpp.org/extensions/xep-0060.html#schemas-event">XML Schema</a>
  */
+@SuppressWarnings("unused")
 @XmlRootElement(name = "event")
 public final class Event {
 
@@ -68,6 +71,128 @@ public final class Event {
         this.type = null;
     }
 
+    private Event(PubSubEventChildElement type) {
+        this.type = type;
+    }
+
+    /**
+     * Creates a pub-sub event with a configuration form.
+     *
+     * @param node          The node (required).
+     * @param configuration The configuration form (required).
+     * @return The pub-sub event.
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#example-152">Example 152</a>
+     */
+    public static Event withConfiguration(String node, DataForm configuration) {
+        return new Event(new Configuration(node, configuration));
+    }
+
+    /**
+     * Creates a pub-sub event with delete information.
+     *
+     * @param node The node (required).
+     * @return The pub-sub event.
+     * @see #withDeletion(String) (String, URI)
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#example-160">Example 160</a>
+     */
+    public static Event withDeletion(String node) {
+        return new Event(new Delete(node));
+    }
+
+    /**
+     * Creates a pub-sub event with delete information.
+     *
+     * @param node        The node (required).
+     * @param redirectUri The redirect URI (optional).
+     * @return The pub-sub event.
+     * @see #withDeletion(String)
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#example-160">Example 160</a>
+     */
+    public static Event withDeletion(String node, URI redirectUri) {
+        return new Event(new Delete(node, redirectUri));
+    }
+
+    /**
+     * Creates a pub-sub event with a single item.
+     *
+     * @param node      The node (required).
+     * @param payload   The item payload.
+     * @param id        The item id (optional).
+     * @param publisher The publisher (optional).
+     * @return The pub-sub event.
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#example-2">Example 2</a>
+     */
+    public static Event withItem(String node, Object payload, String id, Jid publisher) {
+        return new Event(new Items(node, Collections.singletonList(new ItemElement(Objects.requireNonNull(payload), id, publisher)), null));
+    }
+
+    /**
+     * Creates a pub-sub event with items.
+     *
+     * @param node  The node (required).
+     * @param items The items.
+     * @return The pub-sub event.
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#example-2">Example 2</a>
+     */
+    public static Event withItems(String node, List<Item> items) {
+        return new Event(new Items(node, items, null));
+    }
+
+    /**
+     * Creates a pub-sub event with delete information.
+     *
+     * @param node           The node (required).
+     * @param deletedItemIds The deleted items' ids.
+     * @return The pub-sub event.
+     * @see rocks.xmpp.extensions.pubsub.model.PubSubFeature#DELETE_ITEMS
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-delete-success">7.2.2.1 Delete And Notify</a>
+     */
+    public static Event withRetractedItems(String node, List<String> deletedItemIds) {
+        return new Event(new Items(node, null, deletedItemIds));
+    }
+
+    /**
+     * Creates a pub-sub event with purge information.
+     *
+     * @param node The purged node (required).
+     * @return The pub-sub event.
+     * @see rocks.xmpp.extensions.pubsub.model.PubSubFeature#PURGE_NODES
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-purge"></a>
+     */
+    public static Event withPurge(String node) {
+        return new Event(new Purge(node));
+    }
+
+    /**
+     * Creates a pub-sub event with subscription information.
+     *
+     * @param node         The node (required).
+     * @param jid          The JID.
+     * @param subscription The subscription state.
+     * @return The pub-sub event.
+     * @see #withSubscription(String, Jid, SubscriptionState, Instant, String)
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#example-172">Example 172</a>
+     */
+    public static Event withSubscription(String node, Jid jid, SubscriptionState subscription) {
+        return new Event(new SubscriptionInfo(node, null, jid, null, subscription));
+    }
+
+    /**
+     * Creates a pub-sub event with subscription information.
+     *
+     * @param node         The node (required).
+     * @param expiry       The expiration date.
+     * @param jid          The JID.
+     * @param subid        The sub id.
+     * @param subscription The subscription state.
+     * @return The pub-sub event.
+     * @see #withSubscription(String, Jid, SubscriptionState)
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#example-172">Example 172</a>
+     */
+    public static Event withSubscription(String node, Jid jid, SubscriptionState subscription, Instant expiry, String subid) {
+        return new Event(new SubscriptionInfo(node, expiry, jid, subid, subscription));
+    }
+
     /**
      * Gets the 'node' attribute of the child element.
      *
@@ -81,15 +206,17 @@ public final class Event {
      * Indicates, whether the event is a configuration change event.
      *
      * @return True, if the configuration has changed.
+     * @see #getConfigurationForm()
      */
     public final boolean isConfiguration() {
         return type instanceof Configuration;
     }
 
     /**
-     * Indicates, whether the event is a delete event.
+     * Indicates, whether the event is a delete event, i.e. if a node has been deleted.
      *
      * @return True, if a node has been deleted.
+     * @see #getRedirectUri()
      */
     public final boolean isDelete() {
         return type instanceof Delete;
@@ -102,6 +229,26 @@ public final class Event {
      */
     public final boolean isPurge() {
         return type instanceof Purge;
+    }
+
+    /**
+     * Indicates, whether the has items.
+     *
+     * @return True, if it has items.
+     * @see #getItems()
+     */
+    public final boolean hasItems() {
+        return type instanceof Items && ((Items) type).item != null;
+    }
+
+    /**
+     * Indicates, whether the event is a retract event.
+     *
+     * @return True, if items have been retracted.
+     * @see #getRetractedItems()
+     */
+    public final boolean isRetract() {
+        return type instanceof Items && ((Items) type).retract != null;
     }
 
     /**
@@ -122,8 +269,20 @@ public final class Event {
      * @return The items of the event or an empty list, if the event did not include any items.
      */
     public final List<Item> getItems() {
-        if (type instanceof Items) {
+        if (type instanceof Items && (((Items) type).item) != null) {
             return Collections.unmodifiableList(((Items) type).item);
+        }
+        return Collections.emptyList();
+    }
+
+    /**
+     * Gets the retracted (deleted) items.
+     *
+     * @return The retracted items.
+     */
+    public final List<String> getRetractedItems() {
+        if (type instanceof Items && (((Items) type).retract) != null) {
+            return Collections.unmodifiableList(((Items) type).retract.stream().map(retract -> retract.id).collect(Collectors.toList()));
         }
         return Collections.emptyList();
     }
@@ -162,6 +321,11 @@ public final class Event {
         private Configuration() {
             this.dataForm = null;
         }
+
+        private Configuration(String node, DataForm dataForm) {
+            super(node);
+            this.dataForm = dataForm;
+        }
     }
 
     private static final class Delete extends PubSubEventChildElement {
@@ -172,41 +336,54 @@ public final class Event {
             this.redirect = null;
         }
 
+        private Delete(String node) {
+            super(node);
+            this.redirect = null;
+        }
+
+        private Delete(String node, URI redirect) {
+            super(node);
+            this.redirect = new Redirect(redirect);
+        }
+
         private static final class Redirect {
+
             @XmlAttribute
             private final URI uri;
 
             private Redirect() {
-                this(null);
+                this.uri = null;
             }
 
             private Redirect(URI uri) {
-                this.uri = uri;
+                this.uri = Objects.requireNonNull(uri);
             }
         }
     }
 
     private static final class Items extends PubSubEventChildElement {
 
-        private final List<ItemElement> item = new ArrayList<>();
+        private final List<ItemElement> item;
 
-        @XmlAttribute(name = "max_items")
-        private final Long maxItems;
-
-        @XmlAttribute
-        private final String subid;
-
-        private final Retract retract;
+        private final List<Retract> retract;
 
         private Items() {
-            this(null, null);
+            this.item = null;
+            this.retract = null;
         }
 
-        private Items(String node, Long maxItems) {
-            super(node);
-            this.maxItems = maxItems;
-            this.subid = null;
-            this.retract = null;
+        private Items(String node, Collection<Item> items, Collection<String> retractedItems) {
+            super(Objects.requireNonNull(node));
+            if (items != null) {
+                this.item = items.stream().map(i -> new ItemElement(i.getPayload(), i.getId(), i.getPublisher())).collect(Collectors.toList());
+            } else {
+                this.item = null;
+            }
+            if (retractedItems != null) {
+                this.retract = retractedItems.stream().map(Retract::new).collect(Collectors.toList());
+            } else {
+                this.retract = null;
+            }
         }
     }
 
@@ -214,29 +391,23 @@ public final class Event {
 
         private Purge() {
         }
+
+        private Purge(String node) {
+            super(node);
+        }
     }
 
     private static final class Retract {
-        @XmlAttribute
-        private final String node;
-
-        @XmlAttribute
-        private final Boolean notify;
-
-        private final ItemElement item;
 
         @XmlAttribute
         private final String id;
 
         private Retract() {
-            this(null, null, null);
+            this.id = null;
         }
 
-        private Retract(String node, ItemElement item, Boolean notify) {
-            this.node = node;
-            this.item = item;
-            this.notify = notify;
-            this.id = null;
+        private Retract(String id) {
+            this.id = Objects.requireNonNull(id);
         }
     }
 
@@ -260,6 +431,14 @@ public final class Event {
             this.jid = null;
             this.subid = null;
             this.subscription = null;
+        }
+
+        private SubscriptionInfo(String node, Instant expiry, Jid jid, String subid, SubscriptionState subscription) {
+            super(node);
+            this.expiry = expiry;
+            this.jid = jid;
+            this.subid = subid;
+            this.subscription = subscription;
         }
 
         @Override
@@ -310,6 +489,12 @@ public final class Event {
             this.publisher = null;
         }
 
+        private ItemElement(Object object, String id, Jid publisher) {
+            this.object = object;
+            this.id = id;
+            this.publisher = publisher;
+        }
+
         @Override
         public final Object getPayload() {
             return object;
@@ -333,11 +518,11 @@ public final class Event {
         private final String node;
 
         private PubSubEventChildElement() {
-            this(null);
+            this.node = null;
         }
 
         private PubSubEventChildElement(String node) {
-            this.node = node;
+            this.node = Objects.requireNonNull(node);
         }
 
         public final String getNode() {

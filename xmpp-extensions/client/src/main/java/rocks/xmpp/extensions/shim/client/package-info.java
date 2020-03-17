@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,10 +23,7 @@
  */
 
 /**
- * Provides classes for <a href="https://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>.
- * <p>
- * It defines an XMPP protocol extension for representing non-address-related headers in an XML format that is appropriate for use in XMPP. While the protocol provides a flexible mechanism for representing many kinds of standard Internet metadata, a registry of values is defined to structure the possible range of headers, and the initial registration includes headers from email, HTTP, MIME, and SIP.
- * </p>
+ * Provides client specific classes for <a href="https://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>.
  */
-package rocks.xmpp.extensions.shim;
+package rocks.xmpp.extensions.shim.client;
 

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,30 +22,8 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.rpc;
-
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.rpc.model.Value;
-
-import java.util.List;
-
 /**
- * Handles an inbound remote procedure call.
- *
- * @author Christian Schudt
- * @see RpcManager#setRpcHandler(rocks.xmpp.extensions.rpc.RpcHandler)
+ * Provides client specific classes for <a href="https://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>.
  */
-@FunctionalInterface
-public interface RpcHandler {
+package rocks.xmpp.extensions.rpc.client;
 
-    /**
-     * Processes the remote procedure call.
-     *
-     * @param requester  The requester.
-     * @param methodName The method name.
-     * @param parameters The parameter list.
-     * @return The result.
-     * @throws RpcException If this exception is thrown, an application-level error (fault) is returned in the XML-RPC structure.
-     */
-    Value process(Jid requester, String methodName, List<Value> parameters) throws RpcException;
-}

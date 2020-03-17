@@ -22,25 +22,19 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.rpc;
+package rocks.xmpp.extensions.rpc.client;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.extensions.rpc.AbstractRpcManager;
+import rocks.xmpp.extensions.rpc.RpcException;
+import rocks.xmpp.extensions.rpc.RpcHandler;
 import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rpc.model.Value;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This manager allows you to call remote procedures and handle inbound calls, if enabled.
@@ -51,29 +45,15 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
  */
-public final class RpcManager extends AbstractIQHandler implements ExtensionProtocol {
-
-    private static final Set<String> FEATURES = Collections.singleton(Rpc.NAMESPACE);
-
-    private static final Logger logger = Logger.getLogger(RpcManager.class.getName());
-
-    private RpcHandler rpcHandler;
-
+public final class ClientRpcManager extends AbstractRpcManager {
+    
     private XmppSession xmppSession;
 
-    private RpcManager(final XmppSession xmppSession) {
-        super(Rpc.class, IQ.Type.SET);
+    private ClientRpcManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
     }
 
-    /**
-     * Calls a remote procedure.
-     *
-     * @param jid        The JID, which will receive the RPC.
-     * @param methodName The method name.
-     * @param parameters The parameters.
-     * @return The async result with the returned value.
-     */
+    @Override
     public AsyncResult<Value> call(Jid jid, String methodName, Value... parameters) {
         AsyncResult<IQ> query = xmppSession.query(IQ.set(jid, Rpc.ofMethodCall(methodName, parameters)));
         return query.thenApply(result -> {
@@ -91,49 +71,5 @@ public final class RpcManager extends AbstractIQHandler implements ExtensionProt
             }
             return null;
         });
-    }
-
-    /**
-     * Sets the RPC handler, which will handle RPCs.
-     *
-     * @param rpcHandler The RPC handler.
-     */
-    public synchronized void setRpcHandler(RpcHandler rpcHandler) {
-        this.rpcHandler = rpcHandler;
-    }
-
-    @Override
-    public final synchronized boolean isEnabled() {
-        return rpcHandler != null;
-    }
-
-    @Override
-    public final Set<String> getFeatures() {
-        return FEATURES;
-    }
-
-    @Override
-    protected final IQ processRequest(IQ iq) {
-        Rpc rpc = iq.getExtension(Rpc.class);
-        // If there's an inbound RPC
-        RpcHandler rpcHandler1;
-        synchronized (this) {
-            rpcHandler1 = rpcHandler;
-        }
-        if (rpcHandler1 != null) {
-            final Rpc.MethodCall methodCall = rpc.getMethodCall();
-            final List<Value> parameters = new ArrayList<>(methodCall.getParameters());
-
-            try {
-                Value value = rpcHandler1.process(iq.getFrom(), methodCall.getMethodName(), parameters);
-                return iq.createResult(Rpc.ofMethodResponse(value));
-            } catch (RpcException e1) {
-                return iq.createResult(Rpc.ofFaultResponse(e1.getFaultCode(), e1.getFaultString()));
-            } catch (Throwable e1) {
-                logger.log(Level.WARNING, e1.getMessage(), e1);
-                return iq.createError(Condition.INTERNAL_SERVER_ERROR);
-            }
-        }
-        return iq.createError(Condition.SERVICE_UNAVAILABLE);
     }
 }

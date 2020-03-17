@@ -80,7 +80,7 @@ import rocks.xmpp.extensions.register.RegistrationManager;
 import rocks.xmpp.extensions.register.model.Registration;
 import rocks.xmpp.extensions.rosterx.ContactExchangeManager;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
-import rocks.xmpp.extensions.rpc.RpcManager;
+import rocks.xmpp.extensions.rpc.client.ClientRpcManager;
 import rocks.xmpp.extensions.rtt.RealTimeTextManager;
 import rocks.xmpp.extensions.shim.client.ClientHeaderManager;
 import rocks.xmpp.extensions.si.StreamInitiationManager;
@@ -113,7 +113,7 @@ public final class ExtensionModule implements Module {
         return Arrays.asList(
 
                 // XEP-0009: Jabber-RPC
-                Extension.of(RpcManager.class, false),
+                Extension.of(ClientRpcManager.class, false),
 
                 // XEP-0012: Last Activity
                 Extension.of(LastActivity.NAMESPACE, LastActivityManager.class, true),

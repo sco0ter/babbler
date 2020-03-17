@@ -31,6 +31,7 @@ import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.rpc.client.ClientRpcManager;
 import rocks.xmpp.extensions.rpc.model.Value;
 
 import java.util.concurrent.ExecutionException;
@@ -43,7 +44,7 @@ public class RpcManagerTest extends BaseTest {
     @Test
     public void testServiceDiscoveryEntry() {
         TestXmppSession connection1 = new TestXmppSession();
-        RpcManager rpcManager = connection1.getManager(RpcManager.class);
+        ClientRpcManager rpcManager = connection1.getManager(ClientRpcManager.class);
         Assert.assertFalse(rpcManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         String feature = "jabber:iq:rpc";

@@ -47,6 +47,8 @@ import java.io.InputStream;
 import java.net.URLConnection;
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -98,86 +100,95 @@ public final class UserAvatarProtocol extends AbstractAvatarManager implements I
                     }
                 }
             }
-            for (final Item item : event.getItems()) {
-                if (item.getPayload() instanceof AvatarMetadata) {
-                    AvatarMetadata avatarMetadata = (AvatarMetadata) item.getPayload();
+            handleMetaData(event.getItems(), message.getFrom().asBareJid()).thenAccept(avatar -> {
+                notifyListeners(message.getFrom().asBareJid(), avatar);
+            });
+        }
+    }
 
-                    // Empty avatar
-                    if (avatarMetadata.getInfoList().isEmpty()) {
-                        notifyListeners(message.getFrom().asBareJid(), null);
+    private CompletionStage<byte[]> handleMetaData(Iterable<Item> metadata, Jid contact) {
+        for (final Item item : metadata) {
+            if (item.getPayload() instanceof AvatarMetadata) {
+                AvatarMetadata avatarMetadata = (AvatarMetadata) item.getPayload();
+
+                // Empty avatar
+                if (avatarMetadata.getInfoList().isEmpty()) {
+                    return CompletableFuture.completedFuture(new byte[0]);
+                } else {
+
+                    // Check if we have a cached avatar.
+                    byte[] cachedImage = loadFromCache(item.getId());
+                    if (cachedImage != null) {
+                        return CompletableFuture.completedFuture(cachedImage);
                     } else {
+                        // We don't have a cached copy, let's retrieve it.
 
-                        // Check if we have a cached avatar.
-                        byte[] cachedImage = loadFromCache(item.getId());
-                        if (cachedImage != null) {
-                            notifyListeners(message.getFrom().asBareJid(), cachedImage);
-                        } else {
-                            // We don't have a cached copy, let's retrieve it.
+                        // Determine the best info
+                        AvatarMetadata.Info chosenInfo = null;
+                        // Check if there's an avatar, which is stored in PubSub node (and therefore must be in PNG format).
+                        for (AvatarMetadata.Info info : avatarMetadata.getInfoList()) {
+                            if (info.getUrl() == null) {
+                                chosenInfo = info;
+                            }
+                        }
 
-                            // Determine the best info
-                            AvatarMetadata.Info chosenInfo = null;
-                            // Check if there's an avatar, which is stored in PubSub node (and therefore must be in PNG format).
+                        // If only URLs are available, choose the first URL.
+                        if (chosenInfo == null) {
                             for (AvatarMetadata.Info info : avatarMetadata.getInfoList()) {
-                                if (info.getUrl() == null) {
+                                if (info.getUrl() != null) {
                                     chosenInfo = info;
+                                    break;
                                 }
                             }
+                        }
 
-                            // If only URLs are available, choose the first URL.
-                            if (chosenInfo == null) {
-                                for (AvatarMetadata.Info info : avatarMetadata.getInfoList()) {
-                                    if (info.getUrl() != null) {
-                                        chosenInfo = info;
-                                        break;
+                        if (chosenInfo != null && chosenInfo.getUrl() != null) {
+                            try {
+                                URLConnection urlConnection = chosenInfo.getUrl().openConnection();
+                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                // Download the image file.
+                                try (InputStream in = urlConnection.getInputStream()) {
+                                    byte[] data = new byte[4096];
+                                    int n;
+                                    while ((n = in.read(data, 0, 4096)) != -1) {
+                                        baos.write(data, 0, n);
                                     }
                                 }
+                                byte[] data = baos.toByteArray();
+                                storeToCache(item.getId(), data);
+                                return CompletableFuture.completedFuture(data);
+                            } catch (IOException e1) {
+                                logger.log(Level.WARNING, "Failed to download avatar from advertised URL: {0}.", chosenInfo.getUrl());
                             }
-
-                            if (chosenInfo != null && chosenInfo.getUrl() != null) {
-                                try {
-                                    URLConnection urlConnection = chosenInfo.getUrl().openConnection();
-                                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                    // Download the image file.
-                                    try (InputStream in = urlConnection.getInputStream()) {
-                                        byte[] data = new byte[4096];
-                                        int n;
-                                        while ((n = in.read(data, 0, 4096)) != -1) {
-                                            baos.write(data, 0, n);
-                                        }
+                        } else {
+                            PubSubService pubSubService = xmppSession.getManager(PubSubManager.class).createPubSubService(contact.asBareJid());
+                            return pubSubService.node(AvatarData.NAMESPACE).getItems(item.getId()).thenCompose(items -> {
+                                if (!items.isEmpty()) {
+                                    Item i = items.get(0);
+                                    if (i.getPayload() instanceof AvatarData) {
+                                        AvatarData avatarData = (AvatarData) i.getPayload();
+                                        storeToCache(item.getId(), avatarData.getData());
+                                        return CompletableFuture.completedFuture(avatarData.getData());
                                     }
-                                    byte[] data = baos.toByteArray();
-                                    storeToCache(item.getId(), data);
-                                    notifyListeners(message.getFrom().asBareJid(), data);
-                                } catch (IOException e1) {
-                                    logger.log(Level.WARNING, "Failed to download avatar from advertised URL: {0}.", chosenInfo.getUrl());
                                 }
-                            } else {
-                                PubSubService pubSubService = xmppSession.getManager(PubSubManager.class).createPubSubService(message.getFrom());
-                                pubSubService.node(AvatarData.NAMESPACE).getItems(item.getId()).whenComplete((items, ex) -> {
-                                    if (ex != null) {
-                                        logger.log(Level.WARNING, () -> String.format("Failed to retrieve avatar '%s' from PEP service for user '%s'", item.getId(), message.getFrom()));
-                                    } else {
-                                        if (!items.isEmpty()) {
-                                            Item i = items.get(0);
-                                            if (i.getPayload() instanceof AvatarData) {
-                                                AvatarData avatarData = (AvatarData) i.getPayload();
-                                                storeToCache(item.getId(), avatarData.getData());
-                                                notifyListeners(message.getFrom().asBareJid(), avatarData.getData());
-                                            }
-                                        }
-                                    }
-                                });
-                            }
+                                return CompletableFuture.completedFuture(new byte[0]);
+                            }).whenComplete((items, ex) -> {
+                                if (ex != null) {
+                                    logger.log(Level.WARNING, () -> String.format("Failed to retrieve avatar '%s' from PEP service for user '%s'", item.getId(), contact.asBareJid()));
+                                }
+                            });
                         }
                     }
                 }
             }
         }
+        return CompletableFuture.completedFuture(new byte[0]);
     }
 
     @Override
-    public AsyncResult<byte[]> getAvatar(Jid contact) {
-        throw new UnsupportedOperationException();
+    public final AsyncResult<byte[]> getAvatar(Jid contact) {
+        PubSubService pubSubService = xmppSession.getManager(PubSubManager.class).createPubSubService(contact.asBareJid());
+        return pubSubService.node(AvatarMetadata.NAMESPACE).getItems(1).thenCompose(items -> handleMetaData(items, contact));
     }
 
     /**
@@ -187,21 +198,23 @@ public final class UserAvatarProtocol extends AbstractAvatarManager implements I
      * @return The async result.
      */
     @Override
-    public final AsyncResult<Void> publishAvatar(byte[] imageData) {
+    public final AsyncResult<Void> publishAvatar(final byte[] imageData) {
         final String hash = imageData != null ? XmppUtils.hash(imageData) : null;
-        final AvatarMetadata.Info info = imageData != null ? new AvatarMetadata.Info(imageData.length, hash, hash) : null;
         final PubSubService personalEventingService = xmppSession.getManager(PubSubManager.class).createPersonalEventingService();
         final AsyncResult<String> publishResult;
         if (imageData != null) {
-            if (info.getUrl() == null) {
-                // Publish image.
-                publishResult = personalEventingService.node(AvatarData.NAMESPACE).publish(hash, new AvatarData(imageData));
-            } else {
-                // Publish meta data.
-                publishResult = personalEventingService.node(AvatarMetadata.NAMESPACE).publish(hash, new AvatarMetadata(info));
-            }
+            // See https://xmpp.org/extensions/xep-0084.html#process-pubdata
+            publishResult = personalEventingService.node(AvatarData.NAMESPACE).publish(hash, new AvatarData(imageData))
+                    .thenCompose(nodeId -> {
+                        // Publish image.
+                        final AvatarMetadata.Info info = new AvatarMetadata.Info(imageData.length, hash, "image/png");
+                        // Publish meta data.
+                        // See https://xmpp.org/extensions/xep-0084.html#process-pubmeta
+                        return personalEventingService.node(AvatarMetadata.NAMESPACE).publish(hash, new AvatarMetadata(info));
+                    });
         } else {
-            publishResult = personalEventingService.node(AvatarMetadata.NAMESPACE).publish(hash, new AvatarMetadata());
+            // See https://xmpp.org/extensions/xep-0084.html#pub-disable
+            publishResult = personalEventingService.node(AvatarMetadata.NAMESPACE).publish(new AvatarMetadata());
         }
         return publishResult.thenRun(() -> {
         });

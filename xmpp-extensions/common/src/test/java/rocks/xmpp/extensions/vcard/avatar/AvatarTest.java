@@ -28,9 +28,12 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
+import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * @author Christian Schudt
@@ -40,6 +43,8 @@ public class AvatarTest extends XmlTest {
     @Test
     public void marshalVCardUpdateWithEmptyPhotoElement() throws JAXBException, XMLStreamException {
         AvatarUpdate avatarUpdate = new AvatarUpdate("");
+        Assert.assertEquals(avatarUpdate.getHashAlgorithm(), "SHA-1");
+        Assert.assertEquals(avatarUpdate.getHashValue(), new byte[0]);
         String xml = marshal(avatarUpdate);
         Assert.assertEquals("<x xmlns=\"vcard-temp:x:update\"><photo></photo></x>", xml);
     }
@@ -47,7 +52,19 @@ public class AvatarTest extends XmlTest {
     @Test
     public void marshalVCardUpdateWithNoPhotoElement() throws JAXBException, XMLStreamException {
         AvatarUpdate avatarUpdate = new AvatarUpdate();
+        Assert.assertNull(avatarUpdate.getHashValue());
         String xml = marshal(avatarUpdate);
         Assert.assertEquals("<x xmlns=\"vcard-temp:x:update\"></x>", xml);
+    }
+
+    @Test
+    public void marshalVCardUpdateWithPhotoElement() throws JAXBException, XMLStreamException, NoSuchAlgorithmException {
+        byte[] image = new byte[]{1, 2, 3, 4};
+        String sha1 = XmppUtils.hash(image);
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
+        AvatarUpdate avatarUpdate = new AvatarUpdate(sha1);
+        Assert.assertEquals(avatarUpdate.getHashValue(), messageDigest.digest(image));
+        String xml = marshal(avatarUpdate);
+        Assert.assertEquals("<x xmlns=\"vcard-temp:x:update\"><photo>" + sha1 + "</photo></x>", xml);
     }
 }

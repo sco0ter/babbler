@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.vcard.avatar.model;
 
+import rocks.xmpp.extensions.hashes.model.Hashed;
+
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -34,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @see <a href="https://xmpp.org/extensions/xep-0153.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "x")
-public final class AvatarUpdate {
+public final class AvatarUpdate implements Hashed {
 
     /**
      * vcard-temp:x:update
@@ -63,7 +66,20 @@ public final class AvatarUpdate {
      *
      * @return The hash.
      */
-    public String getHash() {
+    public final String getHash() {
         return photo;
+    }
+
+    @Override
+    public final String getHashAlgorithm() {
+        return "SHA-1";
+    }
+
+    @Override
+    public final byte[] getHashValue() {
+        if (photo != null) {
+            return DatatypeConverter.parseHexBinary(photo);
+        }
+        return null;
     }
 }

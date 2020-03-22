@@ -269,7 +269,7 @@ public final class Event {
      * @return The items of the event or an empty list, if the event did not include any items.
      */
     public final List<Item> getItems() {
-        if (type instanceof Items && (((Items) type).item) != null) {
+        if (type instanceof Items && ((Items) type).item != null) {
             return Collections.unmodifiableList(((Items) type).item);
         }
         return Collections.emptyList();
@@ -281,7 +281,7 @@ public final class Event {
      * @return The retracted items.
      */
     public final List<String> getRetractedItems() {
-        if (type instanceof Items && (((Items) type).retract) != null) {
+        if (type instanceof Items && ((Items) type).retract != null) {
             return Collections.unmodifiableList(((Items) type).retract.stream().map(retract -> retract.id).collect(Collectors.toList()));
         }
         return Collections.emptyList();

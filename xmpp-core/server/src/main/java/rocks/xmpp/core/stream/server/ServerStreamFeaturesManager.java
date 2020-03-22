@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.stream.server;
 
+import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamFeature;
@@ -86,7 +87,7 @@ public final class ServerStreamFeaturesManager {
      * @param element The stream element.
      * @return The negotiation result. If no negotiator was found returns {@link StreamNegotiationResult#IGNORE}
      */
-    public final StreamNegotiationResult handleElement(final StreamElement element) {
+    public final StreamNegotiationResult handleElement(final StreamElement element) throws StreamNegotiationException {
         for (ServerStreamFeatureNegotiator<? extends StreamFeature> streamNegotiator : toBeNegotiated.keySet()) {
             StreamNegotiationResult result = streamNegotiator.processNegotiation(element);
             switch (result) {

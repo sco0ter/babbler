@@ -25,7 +25,6 @@
 package rocks.xmpp.core.stream.server;
 
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
-import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
@@ -34,42 +33,12 @@ import rocks.xmpp.core.stream.model.StreamFeature;
  * @author Christian Schudt
  * @see ServerStreamFeaturesManager
  */
-public abstract class ServerStreamFeatureNegotiator<T extends StreamFeature> implements StreamFeatureNegotiator<T> {
-
-    private final Class<T> featureClass;
-
-    /**
-     * Constructs the negotiator.
-     *
-     * @param featureClass The feature class.
-     */
-    protected ServerStreamFeatureNegotiator(final Class<T> featureClass) {
-        this.featureClass = featureClass;
-    }
+public interface ServerStreamFeatureNegotiator<T extends StreamFeature> extends StreamFeatureNegotiator<T> {
 
     /**
      * Creates a concrete stream feature for inclusion in the stream features element after sending the response stream header.
      *
      * @return The stream feature.
      */
-    public abstract T createStreamFeature();
-
-    /**
-     * Processes an element.
-     *
-     * @param element The element.
-     * @return The stream feature negotiation result.
-     */
-    @Override
-    public abstract StreamNegotiationResult processNegotiation(Object element);
-
-    /**
-     * Gets the feature class, this negotiator is responsible for.
-     *
-     * @return The feature class.
-     */
-    @Override
-    public final Class<T> getFeatureClass() {
-        return featureClass;
-    }
+    T createStreamFeature();
 }

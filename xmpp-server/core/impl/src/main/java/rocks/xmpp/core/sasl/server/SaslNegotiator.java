@@ -58,7 +58,7 @@ import java.util.Collections;
  *
  * @author Christian Schudt
  */
-public final class SaslNegotiator extends ServerStreamFeatureNegotiator<Mechanisms> {
+public final class SaslNegotiator implements ServerStreamFeatureNegotiator<Mechanisms> {
 
     static {
         Security.insertProviderAt(new XmppSaslProvider(), 1);
@@ -72,7 +72,6 @@ public final class SaslNegotiator extends ServerStreamFeatureNegotiator<Mechanis
     private SaslServer saslServer;
 
     public SaslNegotiator(final InboundClientSession session) {
-        super(Mechanisms.class);
         this.session = session;
     }
 
@@ -130,8 +129,13 @@ public final class SaslNegotiator extends ServerStreamFeatureNegotiator<Mechanis
     }
 
     @Override
-    public boolean canProcess(Object element) {
+    public final boolean canProcess(Object element) {
         return false;
+    }
+
+    @Override
+    public final Class<Mechanisms> getFeatureClass() {
+        return Mechanisms.class;
     }
 
     /**

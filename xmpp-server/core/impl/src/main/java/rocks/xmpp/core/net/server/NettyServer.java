@@ -39,6 +39,7 @@ import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.server.ServerConfiguration;
 import rocks.xmpp.core.tls.server.StartTlsNegotiator;
+import rocks.xmpp.extensions.caps.ServerEntityCapabilities;
 import rocks.xmpp.nio.netty.net.NettyChannelConnection;
 import rocks.xmpp.session.server.InboundClientSession;
 
@@ -132,6 +133,7 @@ public class NettyServer {
                         session.setConnection(connection);
                         session.getStreamFeatureManager().registerStreamFeatureNegotiator(new StartTlsNegotiator(connection));
                         session.getStreamFeatureManager().registerStreamFeatureNegotiator(new CompressionNegotiator(connection));
+                        session.getStreamFeatureManager().registerStreamFeatureNegotiator(CDI.current().select(ServerEntityCapabilities.class).get());
                         ch.pipeline().addLast(new InboundXmppHandler(session));
                     }
                 })

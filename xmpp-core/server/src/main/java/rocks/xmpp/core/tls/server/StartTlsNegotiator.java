@@ -24,10 +24,10 @@
 
 package rocks.xmpp.core.tls.server;
 
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.server.ServerStreamFeatureNegotiator;
-import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.tls.model.Failure;
 import rocks.xmpp.core.tls.model.Proceed;
 import rocks.xmpp.core.tls.model.StartTls;
@@ -37,12 +37,11 @@ import rocks.xmpp.core.tls.model.StartTls;
  *
  * @author Christian Schudt
  */
-public final class StartTlsNegotiator extends ServerStreamFeatureNegotiator<StartTls> {
+public final class StartTlsNegotiator implements ServerStreamFeatureNegotiator<StartTls> {
 
     private final TcpBinding connection;
 
     public StartTlsNegotiator(final TcpBinding connection) {
-        super(StartTls.class);
         this.connection = connection;
     }
 
@@ -67,7 +66,12 @@ public final class StartTlsNegotiator extends ServerStreamFeatureNegotiator<Star
     }
 
     @Override
-    public boolean canProcess(final Object element) {
+    public final boolean canProcess(final Object element) {
         return element instanceof StartTls;
+    }
+
+    @Override
+    public final Class<StartTls> getFeatureClass() {
+        return StartTls.class;
     }
 }

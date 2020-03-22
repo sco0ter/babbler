@@ -30,8 +30,8 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.server.ServerStreamFeatureNegotiator;
-import rocks.xmpp.session.server.InboundClientSession;
 import rocks.xmpp.im.roster.server.spi.IdGenerator;
+import rocks.xmpp.session.server.InboundClientSession;
 import rocks.xmpp.session.server.SessionManager;
 
 import javax.enterprise.inject.spi.CDI;
@@ -43,14 +43,13 @@ import java.util.Optional;
  *
  * @author Christian Schudt
  */
-public final class ResourceBindingNegotiator extends ServerStreamFeatureNegotiator<Bind> {
+public final class ResourceBindingNegotiator implements ServerStreamFeatureNegotiator<Bind> {
 
     private final InboundClientSession session;
 
     private IdGenerator resourceIdentifierGenerator;
 
     public ResourceBindingNegotiator(InboundClientSession session) {
-        super(Bind.class);
         this.session = session;
         this.resourceIdentifierGenerator = CDI.current().select(IdGenerator.class).get();
     }
@@ -97,5 +96,10 @@ public final class ResourceBindingNegotiator extends ServerStreamFeatureNegotiat
     @Override
     public boolean canProcess(Object element) {
         return false;
+    }
+
+    @Override
+    public final Class<Bind> getFeatureClass() {
+        return Bind.class;
     }
 }

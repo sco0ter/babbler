@@ -39,7 +39,7 @@ import java.util.Arrays;
  *
  * @author Christian Schudt
  */
-public final class CompressionNegotiator extends ServerStreamFeatureNegotiator<CompressionFeature> {
+public final class CompressionNegotiator implements ServerStreamFeatureNegotiator<CompressionFeature> {
 
     private final CompressionFeature feature;
 
@@ -52,7 +52,6 @@ public final class CompressionNegotiator extends ServerStreamFeatureNegotiator<C
      * @param method     The method.
      */
     public CompressionNegotiator(final TcpBinding connection, final String... method) {
-        super(CompressionFeature.class);
         this.connection = connection;
         this.feature = new CompressionFeature(Arrays.asList(method));
     }
@@ -80,6 +79,11 @@ public final class CompressionNegotiator extends ServerStreamFeatureNegotiator<C
     @Override
     public final boolean canProcess(final Object element) {
         return element instanceof StreamCompression.Compress;
+    }
+
+    @Override
+    public final Class<CompressionFeature> getFeatureClass() {
+        return CompressionFeature.class;
     }
 }
 

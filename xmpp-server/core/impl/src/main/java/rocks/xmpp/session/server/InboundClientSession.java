@@ -41,6 +41,7 @@ import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.core.stream.StreamHandler;
+import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
@@ -148,7 +149,7 @@ public class InboundClientSession implements Session, StreamHandler, AutoCloseab
     }
 
     @Override
-    public final boolean handleElement(Object element) {
+    public final boolean handleElement(Object element) throws StreamNegotiationException {
         if (element instanceof SessionOpen) {
             SessionOpen initialStreamHeader = (SessionOpen) element;
             SessionOpen responseStreamHeader = StreamHeader.create(Jid.ofDomain("domain"), initialStreamHeader.getTo(), getId(), "1.0", Locale.ENGLISH, "jabber:client");

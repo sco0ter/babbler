@@ -33,6 +33,7 @@ import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 import rocks.xmpp.extensions.last.LastActivityManager;
 import rocks.xmpp.extensions.ping.PingManager;
@@ -145,7 +146,7 @@ public class SampleApplication {
 
                     xmppClient.getManager(RosterManager.class).addContact(new Contact(Jid.of("admin@test"), "test", "group"), false, "").getResult();
                     xmppClient.getManager(LastActivityManager.class).getLastActivity(Jid.ofDomain(xmppClient.getConnectedResource().getDomain())).getResult();
-
+                    xmppClient.getManager(ServiceDiscoveryManager.class).discoverInformation(xmppClient.getDomain());
                     now = System.currentTimeMillis();
                     // xmppClient.close();
                     System.out.println(System.currentTimeMillis() - now);

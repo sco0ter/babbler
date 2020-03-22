@@ -24,11 +24,20 @@
 
 package rocks.xmpp.extensions.disco.server;
 
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.disco.handler.DiscoInfoHandler;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
+import rocks.xmpp.extensions.hashes.CryptographicHashFunctionsProtocol;
+import rocks.xmpp.extensions.rsm.ResultSetManagementProtocol;
+import rocks.xmpp.extensions.softwareinfo.SoftwareInformation;
+import rocks.xmpp.extensions.softwareinfo.SoftwareInformationProtocol;
+import rocks.xmpp.extensions.version.AbstractSoftwareVersionManager;
+import rocks.xmpp.extensions.version.SoftwareVersionManager;
+import rocks.xmpp.extensions.version.model.SoftwareVersion;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -45,9 +54,12 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class ServerInfoNode implements InfoNode {
-    
+
     @Inject
     private Instance<ExtensionProtocol> extensionProtocols;
+
+    @Inject
+    private Instance<InfoNodeProvider> infoNodeProviders;
 
     @Override
     public String getNode() {
@@ -73,9 +85,43 @@ public class ServerInfoNode implements InfoNode {
 
     @Produces
     @ApplicationScoped
-    private DiscoInfoHandler discoInfoHandler() {
-        DiscoInfoHandler discoInfoHandler = new DiscoInfoHandler();
-        discoInfoHandler.addInfoNode(this);
-        return discoInfoHandler;
+    private ServerServiceDiscoveryManager serviceDiscoveryManager() {
+        ServerServiceDiscoveryManager serverServiceDiscoveryManager = new ServerServiceDiscoveryManager();
+        serverServiceDiscoveryManager.addInfoNode(this);
+        infoNodeProviders.stream().forEach(serverServiceDiscoveryManager::addInfoNodeProvider);
+        return serverServiceDiscoveryManager;
+    }
+
+    @Produces
+    @ApplicationScoped
+    private CryptographicHashFunctionsProtocol cryptographicHashFunctionsProtocol() {
+        return new CryptographicHashFunctionsProtocol();
+    }
+
+    @Produces
+    @ApplicationScoped
+    private ResultSetManagementProtocol resultSetManagementProtocol() {
+        return new ResultSetManagementProtocol();
+    }
+
+    @Produces
+    @ApplicationScoped
+    private SoftwareVersionManager softwareVersionManager() {
+        SoftwareVersionManager softwareVersionManager = new AbstractSoftwareVersionManager() {
+            @Override
+            public AsyncResult<SoftwareVersion> getSoftwareVersion(Jid jid) {
+                return null;
+            }
+        };
+        softwareVersionManager.setSoftwareVersion(new SoftwareVersion("xmpp.rocks", "1.0", System.getProperty("os.name")));
+        return softwareVersionManager;
+    }
+
+    @Produces
+    @ApplicationScoped
+    private SoftwareInformationProtocol softwareInformationProtocol() {
+        SoftwareInformationProtocol softwareInformationProtocol = new SoftwareInformationProtocol();
+        softwareInformationProtocol.setSoftwareInformation(new SoftwareInformation(null, "xmpp.rocks", "1.0"));
+        return softwareInformationProtocol;
     }
 }

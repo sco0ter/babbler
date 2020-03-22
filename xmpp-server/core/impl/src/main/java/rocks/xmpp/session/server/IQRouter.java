@@ -31,21 +31,17 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.ping.handler.PingHandler;
 import rocks.xmpp.extensions.time.handler.EntityTimeHandler;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Christian Schudt
  */
 @ApplicationScoped
 public class IQRouter {
-
-    final Map<Class<?>, IQHandler> iqHandlerMap = new HashMap<>();
 
     @Inject
     private UserManager userManager;
@@ -55,11 +51,6 @@ public class IQRouter {
 
     @Inject
     private Instance<IQHandler> iqHandlers;
-
-    @PostConstruct
-    void init() {
-        iqHandlers.stream().forEach(iqHandler -> this.iqHandlerMap.put(iqHandler.getPayloadClass(), iqHandler));
-    }
 
     @Produces
     @ApplicationScoped
@@ -111,10 +102,13 @@ public class IQRouter {
                 }
             }
 
-            IQHandler iqHandler = iqHandlerMap.get(payload.getClass());
-            if (iqHandler != null) {
+            final Optional<IQHandler> iqHandler = iqHandlers.stream()
+                    .filter(handler -> handler.getPayloadClass() != null && handler.getPayloadClass().isAssignableFrom(payload.getClass()))
+                    .findFirst();
 
-                IQ result = iqHandler.handleRequest(iq);
+            if (iqHandler.isPresent()) {
+
+                IQ result = iqHandler.get().handleRequest(iq);
                 if (result != null) {
                     sessionSender.send(result);
                     return true;

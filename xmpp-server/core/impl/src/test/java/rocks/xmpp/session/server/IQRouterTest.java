@@ -43,8 +43,10 @@ import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.StreamElement;
 
+import javax.enterprise.inject.Instance;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+import java.util.stream.Stream;
 
 /**
  * @author Christian Schudt
@@ -73,14 +75,17 @@ public class IQRouterTest extends XmlTest {
     @Spy
     private ExceptionIQHandler exceptionIQHandler = new ExceptionIQHandler();
 
-    @Mock
-    private NullIQHandler nullIQHandler;
+    @Spy
+    private NullIQHandler nullIQHandler = new NullIQHandler();
 
     @Mock
     private InboundClientSession testSession1;
 
     @Mock
     private InboundClientSession testSession2;
+
+    @Mock
+    private Instance<IQHandler> iqHandlers;
 
     @Captor
     private ArgumentCaptor<StreamElement> argumentCaptor;
@@ -93,10 +98,6 @@ public class IQRouterTest extends XmlTest {
     private void before() {
         MockitoAnnotations.initMocks(this);
 
-        iqRouter.iqHandlerMap.put(DummyIQ.class, dummyIQHandler);
-        iqRouter.iqHandlerMap.put(NullIQ.class, nullIQHandler);
-        iqRouter.iqHandlerMap.put(ExceptionIQ.class, exceptionIQHandler);
-
         testSession1.setAddress(JID_1_FULL);
         testSession2.setAddress(JID_2_FULL);
 
@@ -107,9 +108,13 @@ public class IQRouterTest extends XmlTest {
 
     @BeforeMethod
     private void clear() {
+        Mockito.when(iqHandlers.stream()).thenReturn(Stream.of(dummyIQHandler, nullIQHandler, exceptionIQHandler));
+
         Mockito.reset(testSession1);
         Mockito.reset(testSession2);
         Mockito.reset(dummyIQHandler);
+        Mockito.reset(nullIQHandler);
+        Mockito.reset(exceptionIQHandler);
     }
 
     /**

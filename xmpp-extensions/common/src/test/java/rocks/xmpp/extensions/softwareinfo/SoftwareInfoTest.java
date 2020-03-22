@@ -41,7 +41,7 @@ public class SoftwareInfoTest extends XmlTest {
 
     @Test
     public void testSoftwareInfoCreation() throws JAXBException, XMLStreamException {
-        SoftwareInformation softwareInfo = new SoftwareInformation(new Media(), "Windows", "10", "xmpp.rocks", "1.0");
+        SoftwareInformation softwareInfo = new SoftwareInformation(new Media(), "xmpp.rocks", "1.0", "Windows", "10");
         String xml = marshal(softwareInfo.getDataForm());
 
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"result\">" +

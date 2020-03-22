@@ -63,19 +63,19 @@ public final class SoftwareInformation implements StandardizedDataForm, Software
      * @param softwareVersion The XMPP software version.
      */
     public SoftwareInformation(final Media icon, final String software, final String softwareVersion) {
-        this(icon, System.getProperty("os.name"), System.getProperty("os.version"), software, softwareVersion);
+        this(icon, software, softwareVersion, System.getProperty("os.name"), System.getProperty("os.version"));
     }
 
     /**
      * Creates a new Software Info data form.
      *
      * @param icon            A default icon to show for a device running the software.
-     * @param os              The operating system on which the XMPP software is running.
-     * @param osVersion       The operating system version.
      * @param software        The XMPP software running at the entity.
      * @param softwareVersion The XMPP software version.
+     * @param os              The operating system on which the XMPP software is running.
+     * @param osVersion       The operating system version.
      */
-    public SoftwareInformation(final Media icon, final String os, final String osVersion, final String software, final String softwareVersion) {
+    public SoftwareInformation(final Media icon, final String software, final String softwareVersion, final String os, final String osVersion) {
         this.dataForm = new DataForm(DataForm.Type.RESULT,
                 Arrays.asList(
                         DataForm.Field.builder().var(DataForm.FORM_TYPE).value(FORM_TYPE).type(DataForm.Field.Type.HIDDEN).build(),

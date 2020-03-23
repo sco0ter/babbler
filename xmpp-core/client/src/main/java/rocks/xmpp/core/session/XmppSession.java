@@ -37,7 +37,10 @@ import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.InboundMessageHandler;
+import rocks.xmpp.core.stanza.InboundPresenceHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.OutboundMessageHandler;
+import rocks.xmpp.core.stanza.OutboundPresenceHandler;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.ExtensibleStanza;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -278,10 +281,21 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                 if (manager instanceof ExtensionProtocol) {
                     if (manager instanceof Manager) {
                         ((Manager) manager).setEnabled(extension.isEnabled());
-                    } else if (manager instanceof IQHandler) {
+                    }
+                    if (manager instanceof IQHandler) {
                         addIQHandler((IQHandler) manager);
-                    } else if (manager instanceof InboundMessageHandler) {
+                    }
+                    if (manager instanceof InboundMessageHandler) {
                         addInboundMessageListener(((InboundMessageHandler) manager)::handleInboundMessage);
+                    }
+                    if (manager instanceof OutboundMessageHandler) {
+                        addOutboundMessageListener(((OutboundMessageHandler) manager)::handleOutboundMessage);
+                    }
+                    if (manager instanceof InboundPresenceHandler) {
+                        addInboundPresenceListener(((InboundPresenceHandler) manager)::handleInboundPresence);
+                    }
+                    if (manager instanceof OutboundPresenceHandler) {
+                        addOutboundPresenceListener(((OutboundPresenceHandler) manager)::handleOutboundPresence);
                     }
                     serviceDiscoveryManager.registerFeature((ExtensionProtocol) manager);
                 } else {

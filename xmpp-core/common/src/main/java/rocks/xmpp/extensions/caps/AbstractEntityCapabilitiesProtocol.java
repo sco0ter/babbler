@@ -87,7 +87,8 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
         final Collection<EntityCapabilities> caps = new ArrayList<>();
 
         EntityCapabilities entityCapabilities = produceEntityCapabilities(infoDiscovery);
-
+        caps.add(entityCapabilities);
+        
         List<InfoNode> infoNodes = new ArrayList<>();
         Set<Hashed> capabilityHashSet = entityCapabilities.getCapabilityHashSet();
         for (Hashed hashed : capabilityHashSet) {

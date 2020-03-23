@@ -25,7 +25,6 @@
 package rocks.xmpp.im.roster;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -89,7 +88,8 @@ import java.util.stream.Collectors;
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#roster-versioning">2.6.  Roster Versioning</a>
  * @see <a href="https://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
  */
-public final class RosterManager extends Manager {
+public final class RosterManager extends AbstractIQHandler {
+    
     private static final Logger logger = Logger.getLogger(RosterManager.class.getName());
 
     private final Map<Jid, Contact> contactMap = new ConcurrentHashMap<>();
@@ -115,6 +115,8 @@ public final class RosterManager extends Manager {
 
     private final PrivateDataManager privateDataManager;
 
+    private final XmppSession xmppSession;
+
     /**
      * guarded by "this"
      */
@@ -131,9 +133,9 @@ public final class RosterManager extends Manager {
     private String groupDelimiter;
 
     RosterManager(final XmppSession xmppSession) {
-        super(xmppSession, true);
+        super(Roster.class, IQ.Type.SET);
         privateDataManager = xmppSession.getManager(PrivateDataManager.class);
-
+        this.xmppSession = xmppSession;
         this.rosterCacheDirectory = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("rosterver")) : null;
     }
 
@@ -176,26 +178,6 @@ public final class RosterManager extends Manager {
         if (!contactExists) {
             contacts.add(contact);
         }
-    }
-
-    @Override
-    protected final void initialize() {
-        xmppSession.addIQHandler(new AbstractIQHandler(Roster.class, IQ.Type.SET) {
-            @Override
-            public IQ processRequest(IQ iq) {
-                Roster roster = iq.getExtension(Roster.class);
-                // 2.1.6.  Roster Push
-                // A receiving client MUST ignore the stanza unless it has no 'from' attribute (i.e., implicitly from the bare JID of the user's account) or it has a 'from' attribute whose value matches the user's bare JID <user@domainpart>.
-                if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
-                    updateRoster(roster, true);
-                    // Gracefully send an empty result.
-                    return iq.createResult();
-                } else {
-                    // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data; in addition, the client can either return a stanza error of <service-unavailable/> error
-                    return iq.createError(Condition.SERVICE_UNAVAILABLE);
-                }
-            }
-        }); // Roster pushes should be processed in order as they arrive, so that they don't mess up the roster.
     }
 
     /**
@@ -699,7 +681,17 @@ public final class RosterManager extends Manager {
     }
 
     @Override
-    protected void dispose() {
-        rosterListeners.clear();
+    protected IQ processRequest(IQ iq) {
+        Roster roster = iq.getExtension(Roster.class);
+        // 2.1.6.  Roster Push
+        // A receiving client MUST ignore the stanza unless it has no 'from' attribute (i.e., implicitly from the bare JID of the user's account) or it has a 'from' attribute whose value matches the user's bare JID <user@domainpart>.
+        if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
+            updateRoster(roster, true);
+            // Gracefully send an empty result.
+            return iq.createResult();
+        } else {
+            // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data; in addition, the client can either return a stanza error of <service-unavailable/> error
+            return iq.createError(Condition.SERVICE_UNAVAILABLE);
+        }
     }
 }

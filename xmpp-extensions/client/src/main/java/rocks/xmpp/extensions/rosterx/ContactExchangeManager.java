@@ -237,9 +237,6 @@ public final class ContactExchangeManager extends Manager {
      */
     public ContactExchange.Item.Action approve(ContactExchange.Item item) {
         RosterManager rosterManager = xmppSession.getManager(RosterManager.class);
-        if (!rosterManager.isEnabled()) {
-            return null;
-        }
         Contact contact = rosterManager.getContact(item.getJid());
         if (item.getAction() == null || item.getAction() == ContactExchange.Item.Action.ADD) {
             // If the contact does not exist yes, add it and request subscription.

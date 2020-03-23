@@ -31,6 +31,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
+import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.im.roster.model.Roster;
 
@@ -50,7 +51,7 @@ public class ContactExchangeManagerTest extends BaseTest {
         Roster roster = new Roster(new Contact(Jid.of("juliet@example.net"), "juliet", "friends", "friends2"),
                 new Contact(Jid.of("romeo@example.net"), "romeo", "friends"));
         // Simulate a roster push in order to fill the roster.
-        xmppSession.handleElement(IQ.set(roster));
+        xmppSession.getManager(RosterManager.class).handleRequest(IQ.set(roster));
     }
 
     @Test

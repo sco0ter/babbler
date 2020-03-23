@@ -66,7 +66,7 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
-    private final Map<Collection<InfoNode>, Collection<EntityCapabilities>> publishedNodes;
+    private final Map<Collection<InfoNode>, EntityCapabilities> publishedNodes;
 
     private final Class<T> entityCapabilitiesClass;
 
@@ -84,11 +84,9 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
     public void publishCapsNode() {
 
         final InfoDiscovery infoDiscovery = new InfoDiscovery(serviceDiscoveryManager.getRootNode().getIdentities(), serviceDiscoveryManager.getRootNode().getFeatures(), serviceDiscoveryManager.getRootNode().getExtensions());
-        final Collection<EntityCapabilities> caps = new ArrayList<>();
 
         EntityCapabilities entityCapabilities = produceEntityCapabilities(infoDiscovery);
-        caps.add(entityCapabilities);
-        
+
         List<InfoNode> infoNodes = new ArrayList<>();
         Set<Hashed> capabilityHashSet = entityCapabilities.getCapabilityHashSet();
         for (Hashed hashed : capabilityHashSet) {
@@ -99,7 +97,7 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
             final String node = entityCapabilities.createCapabilityHashNode(hashed);
             infoNodes.add(new InfoDiscovery(node, infoDiscovery.getIdentities(), infoDiscovery.getFeatures(), infoDiscovery.getExtensions()));
         }
-        publishedNodes.put(infoNodes, caps);
+        publishedNodes.put(infoNodes, entityCapabilities);
     }
 
     public void processCapabilitiesHashSet(final Iterator<Hashed> hashedIterator, final Jid entity, final EntityCapabilities caps) {
@@ -212,11 +210,9 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
             }
             // a client SHOULD include entity capabilities with every presence notification it sends.
             // Get the last generated verification string here.
-            Deque<Collection<EntityCapabilities>> publishedEntityCaps = new ArrayDeque<>(publishedNodes.values());
-            Collection<EntityCapabilities> lastPublishedEntityCaps = publishedEntityCaps.getLast();
-            for (EntityCapabilities entityCapabilities : lastPublishedEntityCaps) {
-                presence.putExtension(entityCapabilities);
-            }
+            Deque<EntityCapabilities> publishedEntityCaps = new ArrayDeque<>(publishedNodes.values());
+            EntityCapabilities lastPublishedEntityCaps = publishedEntityCaps.getLast();
+            presence.putExtension(lastPublishedEntityCaps);
         }
     }
 

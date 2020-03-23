@@ -130,7 +130,7 @@ public final class RosterManager extends Manager {
      */
     private String groupDelimiter;
 
-    private RosterManager(final XmppSession xmppSession) {
+    RosterManager(final XmppSession xmppSession) {
         super(xmppSession, true);
         privateDataManager = xmppSession.getManager(PrivateDataManager.class);
 

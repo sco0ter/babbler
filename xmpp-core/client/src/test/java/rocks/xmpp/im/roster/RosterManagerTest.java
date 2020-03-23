@@ -24,6 +24,8 @@
 
 package rocks.xmpp.im.roster;
 
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -188,5 +190,41 @@ public class RosterManagerTest extends BaseTest {
         Roster roster4 = new Roster(new Contact(Jid.of("contact3@domain"), "", false, null, Contact.Subscription.REMOVE, Collections.emptyList()));
         rosterManager.updateRoster(roster4, true);
         Assert.assertTrue(rosterManager.getUnaffiliatedContacts().isEmpty());
+    }
+
+    /**
+     * Tests the behavior of contact group removal. All roster items in the removed group should become a member of the group's parent group.
+     */
+    @Test
+    public void contactGroupRemovalShouldMoveAllContactsToParent() {
+        ContactGroup contactGroup = new ContactGroup("group1", "group1", null);
+        ContactGroup subGroup1 = new ContactGroup("subGroup1", "group1::subGroup1", contactGroup);
+        ContactGroup subGroup2 = new ContactGroup("subGroup2", "group1::subGroup2", contactGroup);
+        contactGroup.getGroups().add(subGroup1);
+        contactGroup.getGroups().add(subGroup2);
+
+        Contact contact1 = new Contact(Jid.of("1@roster"), "1", contactGroup.getFullName());
+        Contact contact2 = new Contact(Jid.of("2@roster"), "2", subGroup1.getFullName());
+        Contact contact3 = new Contact(Jid.of("3@roster"), "3", subGroup2.getFullName());
+        contactGroup.getContacts().add(contact1);
+        subGroup1.getContacts().add(contact2);
+        subGroup2.getContacts().add(contact3);
+
+        RosterManager rosterManager = Mockito.spy(new RosterManager(new TestXmppSession()));
+
+        rosterManager.removeContactGroup(subGroup2);
+        ArgumentCaptor<Contact> contactArgumentCaptor = ArgumentCaptor.forClass(Contact.class);
+        Mockito.verify(rosterManager).addContact(contactArgumentCaptor.capture(), Mockito.eq(false), Mockito.isNull());
+        Assert.assertEquals(contactArgumentCaptor.getValue(), contact3.withGroups("group1"));
+
+        Mockito.clearInvocations(rosterManager);
+        rosterManager.removeContactGroup(contactGroup);
+
+        contactArgumentCaptor = ArgumentCaptor.forClass(Contact.class);
+        Mockito.verify(rosterManager, Mockito.times(3)).addContact(contactArgumentCaptor.capture(), Mockito.eq(false), Mockito.isNull());
+
+        Assert.assertEquals(contactArgumentCaptor.getAllValues().get(0), contact1.withoutGroups());
+        Assert.assertEquals(contactArgumentCaptor.getAllValues().get(1), contact2.withoutGroups());
+        Assert.assertEquals(contactArgumentCaptor.getAllValues().get(2), contact3.withoutGroups());
     }
 }

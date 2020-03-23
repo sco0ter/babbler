@@ -918,9 +918,12 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                 }
                 // If resource binding has not completed and it's tried to send a stanza which doesn't serve the purpose
                 // of resource binding, throw an exception, because otherwise the server will terminate the connection with a stream error.
-                if (!EnumSet.of(Status.AUTHENTICATED, Status.CLOSING, Status.DISCONNECTED).contains(getStatus())
+                if (!EnumSet.of(Status.AUTHENTICATED, Status.DISCONNECTED).contains(getStatus())
                         && !Stanza.isToItselfOrServer(stanza, getDomain(), getConnectedResource())) {
                     throw new IllegalStateException("Cannot send stanzas before resource binding has completed.");
+                }
+                if (EnumSet.of(Status.CLOSED, Status.CLOSING).contains(getStatus())) {
+                    throw new IllegalStateException("Session already closed, cannot send stanzas anymore");
                 }
                 if (stanza instanceof Message) {
                     MessageEvent messageEvent = new MessageEvent(this, (Message) stanza, false);

@@ -258,7 +258,11 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
         // If the stanza count will be request immediately after, don't flush now, but later.
         CompletableFuture<Void> future = xmppStreamWriter.write(element, !requestStanzaCount);
         if (requestStanzaCount) {
-            return future.thenRun(() -> xmppStreamWriter.write(StreamManagement.REQUEST, true));
+            return future.thenRun(() -> {
+                if (!isClosed()) {
+                    xmppStreamWriter.write(StreamManagement.REQUEST, true);
+                }
+            });
         }
         return future;
     }

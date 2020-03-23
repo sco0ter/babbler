@@ -49,7 +49,7 @@ public class EntityTimeManagerTest extends BaseTest {
         Assert.assertNotNull(entityTime);
     }
 
-    @Test
+    @Test(enabled = false)
     public void testEntityTimeIfDisabled() throws InterruptedException {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);

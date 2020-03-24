@@ -24,23 +24,27 @@
 
 package rocks.xmpp.extensions.last.server;
 
+import rocks.xmpp.core.ExtensionProtocol;
+import rocks.xmpp.core.net.server.NettyServer;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.last.model.LastActivity;
-import rocks.xmpp.core.net.server.NettyServer;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * @author Christian Schudt
  */
 @ApplicationScoped
-public final class LastActivityHandler extends AbstractIQHandler {
+public final class LastActivityHandler extends AbstractIQHandler implements ExtensionProtocol {
+
+    private static final Set<String> FEATURES = Collections.singleton(LastActivity.NAMESPACE);
 
     @Inject
     private NettyServer server;
@@ -56,5 +60,15 @@ public final class LastActivityHandler extends AbstractIQHandler {
             return iq.createResult(new LastActivity(Duration.between(server.getStartTime(), Instant.now()).getSeconds(), null));
         }
         return iq.createError(Condition.SERVICE_UNAVAILABLE);
+    }
+
+    @Override
+    public final boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return FEATURES;
     }
 }

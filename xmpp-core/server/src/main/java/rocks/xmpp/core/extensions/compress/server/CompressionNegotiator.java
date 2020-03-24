@@ -28,7 +28,7 @@ import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.errors.Condition;
-import rocks.xmpp.core.stream.server.ServerStreamFeatureNegotiator;
+import rocks.xmpp.core.stream.server.StreamFeatureProvider;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
 import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
 
@@ -39,7 +39,7 @@ import java.util.Arrays;
  *
  * @author Christian Schudt
  */
-public final class CompressionNegotiator implements ServerStreamFeatureNegotiator<CompressionFeature> {
+public final class CompressionNegotiator implements StreamFeatureProvider<CompressionFeature> {
 
     private final CompressionFeature feature;
 

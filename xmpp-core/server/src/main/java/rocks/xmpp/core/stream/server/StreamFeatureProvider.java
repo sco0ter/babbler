@@ -28,12 +28,13 @@ import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
- * An abstract stream feature negotiator from a server perspective.
+ * Provides a stream feature for inclusion in the stream features element.
  *
  * @author Christian Schudt
  * @see ServerStreamFeaturesManager
+ * @see StreamFeature
  */
-public interface ServerStreamFeatureNegotiator<T extends StreamFeature> extends StreamFeatureNegotiator<T> {
+public interface StreamFeatureProvider<T extends StreamFeature> extends StreamFeatureNegotiator<T> {
 
     /**
      * Creates a concrete stream feature for inclusion in the stream features element after sending the response stream header.

@@ -29,7 +29,7 @@ import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
-import rocks.xmpp.core.stream.server.ServerStreamFeatureNegotiator;
+import rocks.xmpp.core.stream.server.StreamFeatureProvider;
 import rocks.xmpp.im.roster.server.spi.IdGenerator;
 import rocks.xmpp.session.server.InboundClientSession;
 import rocks.xmpp.session.server.SessionManager;
@@ -43,7 +43,7 @@ import java.util.Optional;
  *
  * @author Christian Schudt
  */
-public final class ResourceBindingNegotiator implements ServerStreamFeatureNegotiator<Bind> {
+public final class ResourceBindingNegotiator implements StreamFeatureProvider<Bind> {
 
     private final InboundClientSession session;
 

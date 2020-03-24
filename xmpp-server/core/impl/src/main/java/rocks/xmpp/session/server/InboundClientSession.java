@@ -48,7 +48,7 @@ import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.core.stream.model.errors.Condition;
-import rocks.xmpp.core.stream.server.ServerStreamFeatureNegotiator;
+import rocks.xmpp.core.stream.server.StreamFeatureProvider;
 import rocks.xmpp.core.stream.server.ServerStreamFeaturesManager;
 
 import javax.annotation.PostConstruct;
@@ -76,7 +76,7 @@ public class InboundClientSession implements Session, StreamHandler, AutoCloseab
     private ServerConfiguration serverConfiguration;
 
     @Inject
-    private Instance<ServerStreamFeatureNegotiator<?>> streamFeatureNegotiators;
+    private Instance<StreamFeatureProvider<?>> streamFeatureNegotiators;
 
     private final String id = UUID.randomUUID().toString();
 
@@ -91,13 +91,13 @@ public class InboundClientSession implements Session, StreamHandler, AutoCloseab
     private Jid address;
 
     public InboundClientSession() {
-        this.streamFeaturesManager.registerStreamFeatureNegotiator(new SaslNegotiator(this));
-        this.streamFeaturesManager.registerStreamFeatureNegotiator(new ResourceBindingNegotiator(this));
+        this.streamFeaturesManager.registerStreamFeatureProvider(new SaslNegotiator(this));
+        this.streamFeaturesManager.registerStreamFeatureProvider(new ResourceBindingNegotiator(this));
     }
 
     @PostConstruct
     private void init() {
-        streamFeatureNegotiators.stream().forEach(this.streamFeaturesManager::registerStreamFeatureNegotiator);
+        streamFeatureNegotiators.stream().forEach(this.streamFeaturesManager::registerStreamFeatureProvider);
     }
 
     public void setConnection(Connection connection) {

@@ -31,7 +31,7 @@ import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.sasl.model.Response;
 import rocks.xmpp.core.sasl.model.Success;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
-import rocks.xmpp.core.stream.server.ServerStreamFeatureNegotiator;
+import rocks.xmpp.core.stream.server.StreamFeatureProvider;
 import rocks.xmpp.im.roster.server.spi.ScramIdentityStore;
 import rocks.xmpp.session.server.InboundClientSession;
 import rocks.xmpp.core.sasl.plain.server.PlainSaslServer;
@@ -58,7 +58,7 @@ import java.util.Collections;
  *
  * @author Christian Schudt
  */
-public final class SaslNegotiator implements ServerStreamFeatureNegotiator<Mechanisms> {
+public final class SaslNegotiator implements StreamFeatureProvider<Mechanisms> {
 
     static {
         Security.insertProviderAt(new XmppSaslProvider(), 1);

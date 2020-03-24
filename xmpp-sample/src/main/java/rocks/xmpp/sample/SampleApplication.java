@@ -121,7 +121,7 @@ public class SampleApplication {
                             .build();
 
 
-                    XmppClient xmppClient = XmppClient.create("localhost", configuration, webSocketConfiguration);
+                    XmppClient xmppClient = XmppClient.create("localhost", configuration, socketConnectionConfiguration);
 
 
                     // Listen for inbound messages.

@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.caps.server;
 
 import rocks.xmpp.core.stream.StreamNegotiationResult;
-import rocks.xmpp.core.stream.server.ServerStreamFeatureNegotiator;
+import rocks.xmpp.core.stream.server.StreamFeatureProvider;
 import rocks.xmpp.extensions.caps.EntityCapabilities1Protocol;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
@@ -34,7 +34,7 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 /**
  * @author Christian Schudt
  */
-public class ServerEntityCapabilities1 extends EntityCapabilities1Protocol implements ServerStreamFeatureNegotiator<EntityCapabilities1> {
+public class ServerEntityCapabilities1 extends EntityCapabilities1Protocol implements StreamFeatureProvider<EntityCapabilities1> {
 
     public ServerEntityCapabilities1(ServiceDiscoveryManager serviceDiscoveryManager, EntityCapabilitiesCache entityCapabilitiesCache) {
         super(serviceDiscoveryManager, entityCapabilitiesCache);

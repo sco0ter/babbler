@@ -38,22 +38,22 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Negotiates stream features from a server perspective.
  * <p>
- * Each feature which shall be advertised during stream negotiation, must be {@linkplain #registerStreamFeatureNegotiator(ServerStreamFeatureNegotiator) registered} first.
+ * Each feature which shall be advertised during stream negotiation, must be {@linkplain #registerStreamFeatureProvider(StreamFeatureProvider) registered} first.
  *
  * @author Christian Schudt
- * @see ServerStreamFeatureNegotiator
+ * @see StreamFeatureProvider
  */
 public final class ServerStreamFeaturesManager {
 
-    private final Map<ServerStreamFeatureNegotiator<? extends StreamFeature>, StreamFeature> toBeNegotiated = new ConcurrentHashMap<>();
+    private final Map<StreamFeatureProvider<? extends StreamFeature>, StreamFeature> toBeNegotiated = new ConcurrentHashMap<>();
 
     /**
-     * Registers a stream features negotiator.
+     * Registers a stream feature negotiator.
      *
-     * @param streamFeaturesNegotiator The negotiator.
+     * @param streamFeatureProvider The negotiator.
      */
-    public final void registerStreamFeatureNegotiator(final ServerStreamFeatureNegotiator<? extends StreamFeature> streamFeaturesNegotiator) {
-        toBeNegotiated.put(streamFeaturesNegotiator, streamFeaturesNegotiator.createStreamFeature());
+    public final void registerStreamFeatureProvider(final StreamFeatureProvider<? extends StreamFeature> streamFeatureProvider) {
+        toBeNegotiated.put(streamFeatureProvider, streamFeatureProvider.createStreamFeature());
     }
 
     /**
@@ -72,8 +72,8 @@ public final class ServerStreamFeaturesManager {
             // Remaining stream features will be offered on the next features advertisement.
             // Remove all stream features, which are not required now.
             if (streamFeature.isMandatory() && streamFeature.requiresRestart()) {
-                for (int j = size - 1; j > i; j--) {
-                    streamFeatures.remove(j);
+                if (size > i + 1) {
+                    streamFeatures.subList(i + 1, size).clear();
                 }
                 break;
             }
@@ -88,7 +88,7 @@ public final class ServerStreamFeaturesManager {
      * @return The negotiation result. If no negotiator was found returns {@link StreamNegotiationResult#IGNORE}
      */
     public final StreamNegotiationResult handleElement(final StreamElement element) throws StreamNegotiationException {
-        for (ServerStreamFeatureNegotiator<? extends StreamFeature> streamNegotiator : toBeNegotiated.keySet()) {
+        for (StreamFeatureProvider<? extends StreamFeature> streamNegotiator : toBeNegotiated.keySet()) {
             StreamNegotiationResult result = streamNegotiator.processNegotiation(element);
             switch (result) {
                 case RESTART:

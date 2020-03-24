@@ -38,7 +38,6 @@ import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.server.ServerConfiguration;
-import rocks.xmpp.core.stream.server.ServerStreamFeatureNegotiator;
 import rocks.xmpp.core.tls.server.StartTlsNegotiator;
 import rocks.xmpp.nio.netty.net.NettyChannelConnection;
 import rocks.xmpp.session.server.InboundClientSession;
@@ -47,7 +46,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Destroyed;
 import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.net.ssl.KeyManagerFactory;
@@ -132,8 +130,8 @@ public class NettyServer {
                         // Create a new session for the new client connection.
 
                         session.setConnection(connection);
-                        session.getStreamFeatureManager().registerStreamFeatureNegotiator(new StartTlsNegotiator(connection));
-                        session.getStreamFeatureManager().registerStreamFeatureNegotiator(new CompressionNegotiator(connection));
+                        session.getStreamFeatureManager().registerStreamFeatureProvider(new StartTlsNegotiator(connection));
+                        session.getStreamFeatureManager().registerStreamFeatureProvider(new CompressionNegotiator(connection));
                         ch.pipeline().addLast(new InboundXmppHandler(session));
                     }
                 })

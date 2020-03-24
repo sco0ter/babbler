@@ -48,9 +48,12 @@ import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.core.stream.model.errors.Condition;
+import rocks.xmpp.core.stream.server.ServerStreamFeatureNegotiator;
 import rocks.xmpp.core.stream.server.ServerStreamFeaturesManager;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.security.Principal;
@@ -72,6 +75,9 @@ public class InboundClientSession implements Session, StreamHandler, AutoCloseab
     @Inject
     private ServerConfiguration serverConfiguration;
 
+    @Inject
+    private Instance<ServerStreamFeatureNegotiator<?>> streamFeatureNegotiators;
+
     private final String id = UUID.randomUUID().toString();
 
     private Connection connection;
@@ -87,6 +93,11 @@ public class InboundClientSession implements Session, StreamHandler, AutoCloseab
     public InboundClientSession() {
         this.streamFeaturesManager.registerStreamFeatureNegotiator(new SaslNegotiator(this));
         this.streamFeaturesManager.registerStreamFeatureNegotiator(new ResourceBindingNegotiator(this));
+    }
+
+    @PostConstruct
+    private void init() {
+        streamFeatureNegotiators.stream().forEach(this.streamFeaturesManager::registerStreamFeatureNegotiator);
     }
 
     public void setConnection(Connection connection) {

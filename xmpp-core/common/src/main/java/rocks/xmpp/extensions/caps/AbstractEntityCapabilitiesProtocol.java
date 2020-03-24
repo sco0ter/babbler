@@ -80,11 +80,15 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
         this.publishedNodes = new LruCache<>(10);
     }
 
-    public Map<Collection<InfoNode>, EntityCapabilities> getPublishedNodes() {
+    public final Class<T> getEntityCapabilitiesClass() {
+        return entityCapabilitiesClass;
+    }
+
+    public final Map<Collection<InfoNode>, EntityCapabilities> getPublishedNodes() {
         return Collections.unmodifiableMap(publishedNodes);
     }
 
-    public void publishCapsNode() {
+    public final InfoDiscovery publishCapsNode() {
 
         final InfoDiscovery infoDiscovery = new InfoDiscovery(serviceDiscoveryManager.getRootNode().getIdentities(), serviceDiscoveryManager.getRootNode().getFeatures(), serviceDiscoveryManager.getRootNode().getExtensions());
 
@@ -101,6 +105,7 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
             infoNodes.add(new InfoDiscovery(node, infoDiscovery.getIdentities(), infoDiscovery.getFeatures(), infoDiscovery.getExtensions()));
         }
         publishedNodes.put(infoNodes, entityCapabilities);
+        return infoDiscovery;
     }
 
     public void handleEntityCapabilities(final EntityCapabilities entityCapabilities, final Jid entity) {
@@ -129,7 +134,7 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
 
                     // 3.1 Send a service discovery information request to the generating entity.
                     // 3.2 Receive a service discovery information response from the generating entity.
-                    logger.log(Level.FINE, "Discovering capabilities for '{0}' at node {1}", new Object[]{entity, nodeToDiscover});
+                    logger.log(Level.FINE, "Discovering capabilities for ''{0}'' at node {1}", new Object[]{entity, nodeToDiscover});
                     serviceDiscoveryManager.discoverInformation(entity, nodeToDiscover).whenComplete((infoDiscovery, e1) -> {
                         if (e1 != null) {
                             processCapabilitiesHashSet(hashedIterator, entity, caps);

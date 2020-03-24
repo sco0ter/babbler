@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.caps2.model;
 
+import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.Identity;
@@ -52,7 +53,7 @@ import java.util.Set;
  * @see <a href="https://xmpp.org/extensions/xep-0390.html">XEP-0390: Entity Capabilities 2.0</a>
  */
 @XmlRootElement(name = "c")
-public final class EntityCapabilities2 implements EntityCapabilities {
+public final class EntityCapabilities2 extends StreamFeature implements EntityCapabilities {
 
     /**
      * urn:xmpp:caps

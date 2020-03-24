@@ -22,10 +22,12 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.caps;
+package rocks.xmpp.extensions.caps.server;
 
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.server.ServerStreamFeatureNegotiator;
+import rocks.xmpp.extensions.caps.EntityCapabilities1Protocol;
+import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
@@ -34,16 +36,13 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
  */
 public class ServerEntityCapabilities1 extends EntityCapabilities1Protocol implements ServerStreamFeatureNegotiator<EntityCapabilities1> {
 
-    private final ServiceDiscoveryManager serviceDiscoveryManager;
-
     public ServerEntityCapabilities1(ServiceDiscoveryManager serviceDiscoveryManager, EntityCapabilitiesCache entityCapabilitiesCache) {
         super(serviceDiscoveryManager, entityCapabilitiesCache);
-        this.serviceDiscoveryManager = serviceDiscoveryManager;
     }
 
     @Override
     public EntityCapabilities1 createStreamFeature() {
-        return produceEntityCapabilities(serviceDiscoveryManager.getRootNode());
+        return produceEntityCapabilities(publishCapsNode());
     }
 
     @Override

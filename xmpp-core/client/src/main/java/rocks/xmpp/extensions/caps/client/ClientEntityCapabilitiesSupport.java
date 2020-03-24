@@ -7,7 +7,6 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.extensions.caps.AbstractEntityCapabilitiesProtocol;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
-import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
 import rocks.xmpp.extensions.disco.client.ClientServiceDiscoveryManager;
 import rocks.xmpp.im.subscription.PresenceManager;
 
@@ -39,16 +38,15 @@ public final class ClientEntityCapabilitiesSupport implements OutboundPresenceHa
             if (lastPresence != null) {
                 // Whenever the verification string has changed, publish the info node.
                 entityCapabilitiesProtocol.publishCapsNode();
-
                 xmppSession.send(new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null));
             }
         });
         xmppSession.addSessionStatusListener(e -> {
             if (e.getStatus() == XmppSession.Status.AUTHENTICATED) {// As soon as we are authenticated, check if the server has advertised Entity Capabilities in its stream features.
-                List<EntityCapabilities1> serverCapabilities1 = xmppSession.getManager(StreamFeaturesManager.class).getFeatures(EntityCapabilities1.class);
+                List<? extends EntityCapabilities> serverCapabilities = xmppSession.getManager(StreamFeaturesManager.class).getFeatures(entityCapabilitiesProtocol.getEntityCapabilitiesClass());
                 // If yes, treat it as other caps.
-                if (!serverCapabilities1.isEmpty()) {
-                    entityCapabilitiesProtocol.handleEntityCapabilities(serverCapabilities1.get(0), xmppSession.getDomain());
+                if (!serverCapabilities.isEmpty()) {
+                    entityCapabilitiesProtocol.handleEntityCapabilities(serverCapabilities.get(0), xmppSession.getDomain());
                 }
             }
         });

@@ -60,7 +60,7 @@ public final class CompressionManager extends ClientStreamFeatureNegotiator<Comp
     private CompressionMethod negotiatedCompressionMethod;
 
     public CompressionManager(final XmppSession xmppSession, final TcpBinding tcpBinding) {
-        super(xmppSession, CompressionFeature.class);
+        super(xmppSession);
         this.tcpBinding = tcpBinding;
     }
 
@@ -104,12 +104,7 @@ public final class CompressionManager extends ClientStreamFeatureNegotiator<Comp
         }
         return StreamNegotiationResult.IGNORE;
     }
-
-    @Override
-    public final boolean canProcess(Object element) {
-        return element instanceof StreamCompression;
-    }
-
+    
     /**
      * Gets the negotiated compression method.
      *

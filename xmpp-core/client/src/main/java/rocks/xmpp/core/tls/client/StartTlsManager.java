@@ -47,7 +47,7 @@ public final class StartTlsManager extends ClientStreamFeatureNegotiator<StartTl
     private final ChannelEncryption channelEncryption;
 
     public StartTlsManager(XmppSession xmppSession, TcpBinding tcpBinding, ChannelEncryption channelEncryption) {
-        super(xmppSession, StartTls.class);
+        super(xmppSession);
         this.tcpBinding = tcpBinding;
         this.channelEncryption = channelEncryption;
     }
@@ -61,6 +61,7 @@ public final class StartTlsManager extends ClientStreamFeatureNegotiator<StartTl
             }
             if (channelEncryption == ChannelEncryption.OPTIONAL || channelEncryption == ChannelEncryption.REQUIRED) {
                 xmppSession.send(new StartTls());
+                return StreamNegotiationResult.INCOMPLETE;
             } else {
                 return StreamNegotiationResult.IGNORE;
             }
@@ -75,11 +76,6 @@ public final class StartTlsManager extends ClientStreamFeatureNegotiator<StartTl
             throw new StreamNegotiationException("Failure during TLS negotiation.");
         }
 
-        return StreamNegotiationResult.INCOMPLETE;
-    }
-
-    @Override
-    public boolean canProcess(Object element) {
-        return element instanceof Proceed || element instanceof Failure;
+        return StreamNegotiationResult.IGNORE;
     }
 }

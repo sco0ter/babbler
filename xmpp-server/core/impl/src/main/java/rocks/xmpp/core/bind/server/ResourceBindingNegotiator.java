@@ -92,14 +92,4 @@ public final class ResourceBindingNegotiator implements ServerStreamFeatureNegot
         }
         return StreamNegotiationResult.IGNORE;
     }
-
-    @Override
-    public boolean canProcess(Object element) {
-        return false;
-    }
-
-    @Override
-    public final Class<Bind> getFeatureClass() {
-        return Bind.class;
-    }
 }

@@ -44,19 +44,4 @@ public interface StreamFeatureNegotiator<T extends StreamFeature> {
      * @throws StreamNegotiationException Any exception which might be thrown during a feature negotiation.
      */
     StreamNegotiationResult processNegotiation(Object element) throws StreamNegotiationException;
-
-    /**
-     * Checks, whether the element can be processed by the feature negotiator.
-     *
-     * @param element The feature protocol element, e.g. {@code <challenge/>}. The element is never the feature element itself, e.g. {@code <mechanisms/>}, which is advertised in the {@code <stream:features/>} element.
-     * @return True, if the element can be processed by the feature negotiator.
-     */
-    boolean canProcess(Object element);
-
-    /**
-     * Gets the feature class, this negotiator is responsible for.
-     *
-     * @return The feature class.
-     */
-    Class<T> getFeatureClass();
 }

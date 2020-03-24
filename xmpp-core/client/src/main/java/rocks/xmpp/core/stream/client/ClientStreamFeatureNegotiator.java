@@ -39,27 +39,13 @@ import rocks.xmpp.core.stream.model.StreamFeature;
  * @author Christian Schudt
  */
 public abstract class ClientStreamFeatureNegotiator<T extends StreamFeature> extends Manager implements StreamFeatureNegotiator<T> {
-
-    private final Class<T> featureClass;
-
+    
     /**
      * Constructs a feature negotiator.
      *
      * @param xmppSession  The XMPP session.
-     * @param featureClass The feature class, which represents the feature, which will be negotiated.
      */
-    public ClientStreamFeatureNegotiator(XmppSession xmppSession, Class<T> featureClass) {
+    public ClientStreamFeatureNegotiator(XmppSession xmppSession) {
         super(xmppSession, false);
-        this.featureClass = featureClass;
-    }
-
-    /**
-     * Gets the feature class, this negotiator is responsible for.
-     *
-     * @return The feature class.
-     */
-    @Override
-    public final Class<T> getFeatureClass() {
-        return featureClass;
     }
 }

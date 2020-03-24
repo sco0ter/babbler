@@ -208,31 +208,29 @@ public final class StreamFeaturesManager extends Manager implements StreamHandle
         StreamNegotiationResult streamNegotiationResult = StreamNegotiationResult.IGNORE;
         // Check if the element is known to any feature negotiator.
         for (StreamFeatureNegotiator<? extends StreamFeature> streamFeatureNegotiator : streamFeatureNegotiators) {
-            if (streamFeatureNegotiator.getFeatureClass() == element.getClass() || streamFeatureNegotiator.canProcess(element)) {
-                streamNegotiationResult = streamFeatureNegotiator.processNegotiation(element);
-                if (streamNegotiationResult != StreamNegotiationResult.IGNORE && element instanceof StreamFeature) {
-                    synchronized (this) {
-                        streamWillBeRestarted = ((StreamFeature) element).requiresRestart();
-                    }
+            streamNegotiationResult = streamFeatureNegotiator.processNegotiation(element);
+            if (streamNegotiationResult != StreamNegotiationResult.IGNORE && element instanceof StreamFeature) {
+                synchronized (this) {
+                    streamWillBeRestarted = ((StreamFeature) element).requiresRestart();
                 }
-                break;
+            }
+            // If the feature has been successfully negotiated.
+            switch (streamNegotiationResult) {
+                case RESTART:
+                    synchronized (this) {
+                        featuresToNegotiate.clear();
+                        streamWillBeRestarted = false;
+                    }
+                    return true;
+                case SUCCESS:
+                    break;
+                case INCOMPLETE:
+                    return false;
+                default:
             }
         }
-        // If the feature has been successfully negotiated.
-        switch (streamNegotiationResult) {
-            case RESTART:
-                synchronized (this) {
-                    featuresToNegotiate.clear();
-                    streamWillBeRestarted = false;
-                }
-                return true;
-            case SUCCESS:
-            case IGNORE:
-                negotiateNextFeature();
-                return false;
-            default:
-                return false;
-        }
+        negotiateNextFeature();
+        return false;
     }
 
     /**

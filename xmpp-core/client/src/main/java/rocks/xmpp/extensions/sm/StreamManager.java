@@ -104,7 +104,7 @@ public final class StreamManager extends ClientStreamFeatureNegotiator<StreamMan
     private CompletableFuture<Boolean> resumeFuture;
 
     private StreamManager(XmppSession xmppSession) {
-        super(xmppSession, StreamManagement.class);
+        super(xmppSession);
         xmppSession.addSessionStatusListener(sessionStatusEvent -> {
                     if (sessionStatusEvent.getStatus() == XmppSession.Status.CLOSING) {
                         // When the client closes the session, acknowledge the receipt stanza count to the server,
@@ -140,6 +140,7 @@ public final class StreamManager extends ClientStreamFeatureNegotiator<StreamMan
                 }
                 unacknowledgedStanzas.clear();
                 xmppSession.send(new StreamManagement.Enable(true));
+                return StreamNegotiationResult.INCOMPLETE;
             } else if (element instanceof StreamManagement.Enabled) {
                 // In addition, client sets inbound count to zero.
                 synchronized (this) {
@@ -157,6 +158,7 @@ public final class StreamManager extends ClientStreamFeatureNegotiator<StreamMan
                 // Therefore don't throw an exception.
                 // Most likely Stream Resumption failed, because the server session timed out.
                 // Return Status.INCOMPLETE here, so that SM negotiation can be renegotiated normally.
+                return StreamNegotiationResult.INCOMPLETE;
             } else if (element instanceof StreamManagement.Request) {
                 // Server wants to know how many stanzas we have received.
                 StreamManagement.Answer answer;
@@ -164,12 +166,14 @@ public final class StreamManager extends ClientStreamFeatureNegotiator<StreamMan
                     answer = new StreamManagement.Answer(inboundCount);
                 }
                 xmppSession.send(answer);
+                return StreamNegotiationResult.IGNORE;
             } else if (element instanceof StreamManagement.Answer) {
                 StreamManagement.Answer answer = (StreamManagement.Answer) element;
                 // When receiving an <a/> element with an 'h' attribute,
                 // all stanzas whose paired value (X at the time of queueing) is less than or equal to the value of 'h'
                 // can be removed from the unacknowledged queue.
                 markAcknowledged(answer.getLastHandledStanza());
+                return StreamNegotiationResult.IGNORE;
             } else if (element instanceof StreamManagement.Resumed) {
                 StreamManagement.Resumed resumed = (StreamManagement.Resumed) element;
                 markAcknowledged(resumed.getLastHandledStanza());
@@ -185,7 +189,7 @@ public final class StreamManager extends ClientStreamFeatureNegotiator<StreamMan
             }
             return StreamNegotiationResult.IGNORE;
         }
-        return StreamNegotiationResult.INCOMPLETE;
+        return StreamNegotiationResult.IGNORE;
     }
 
     private void resumed(boolean resumed) {
@@ -216,11 +220,6 @@ public final class StreamManager extends ClientStreamFeatureNegotiator<StreamMan
                 xmppSession.markAcknowledged(unacknowledgedStanzas.poll());
             }
         }
-    }
-
-    @Override
-    public final boolean canProcess(Object element) {
-        return element instanceof StreamManagement.Request || element instanceof StreamManagement.Answer || element instanceof StreamManagement.Enabled || element instanceof StreamManagement.Failed || element instanceof StreamManagement.Resumed;
     }
 
     /**

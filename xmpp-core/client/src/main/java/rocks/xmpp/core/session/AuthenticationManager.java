@@ -92,7 +92,7 @@ final class AuthenticationManager extends ClientStreamFeatureNegotiator<Mechanis
      * @param xmppSession The session.
      */
     AuthenticationManager(final XmppSession xmppSession) {
-        super(xmppSession, Mechanisms.class);
+        super(xmppSession);
         this.supportedMechanisms = new ArrayList<>();
     }
 
@@ -138,8 +138,10 @@ final class AuthenticationManager extends ClientStreamFeatureNegotiator<Mechanis
             if (element instanceof Mechanisms) {
                 supportedMechanisms.clear();
                 supportedMechanisms.addAll(((Mechanisms) element).getMechanisms());
+                return StreamNegotiationResult.INCOMPLETE;
             } else if (element instanceof Challenge) {
                 xmppSession.send(new Response(saslClient.evaluateChallenge(((Challenge) element).getValue())));
+                return StreamNegotiationResult.INCOMPLETE;
             } else if (element instanceof Failure) {
                 Failure authenticationFailure = (Failure) element;
                 String failureText = saslClient.getMechanismName() + " authentication failed with condition " + authenticationFailure.toString();
@@ -173,12 +175,7 @@ final class AuthenticationManager extends ClientStreamFeatureNegotiator<Mechanis
             throw authenticationException;
         }
 
-        return StreamNegotiationResult.INCOMPLETE;
-    }
-
-    @Override
-    public final boolean canProcess(Object element) {
-        return element instanceof Challenge || element instanceof Failure || element instanceof Success;
+        return StreamNegotiationResult.IGNORE;
     }
 
     synchronized byte[] getSuccessData() {

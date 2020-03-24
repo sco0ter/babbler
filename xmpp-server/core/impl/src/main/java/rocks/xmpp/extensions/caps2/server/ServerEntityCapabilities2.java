@@ -49,14 +49,4 @@ public class ServerEntityCapabilities2 extends EntityCapabilities2Protocol imple
     public StreamNegotiationResult processNegotiation(Object element) {
         return StreamNegotiationResult.IGNORE;
     }
-
-    @Override
-    public boolean canProcess(Object element) {
-        return false;
-    }
-
-    @Override
-    public Class<EntityCapabilities2> getFeatureClass() {
-        return EntityCapabilities2.class;
-    }
 }

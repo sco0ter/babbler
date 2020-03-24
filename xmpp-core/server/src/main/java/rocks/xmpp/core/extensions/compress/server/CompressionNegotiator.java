@@ -75,15 +75,5 @@ public final class CompressionNegotiator implements ServerStreamFeatureNegotiato
         }
         return StreamNegotiationResult.IGNORE;
     }
-
-    @Override
-    public final boolean canProcess(final Object element) {
-        return element instanceof StreamCompression.Compress;
-    }
-
-    @Override
-    public final Class<CompressionFeature> getFeatureClass() {
-        return CompressionFeature.class;
-    }
 }
 

@@ -128,16 +128,6 @@ public final class SaslNegotiator implements ServerStreamFeatureNegotiator<Mecha
         return StreamNegotiationResult.IGNORE;
     }
 
-    @Override
-    public final boolean canProcess(Object element) {
-        return false;
-    }
-
-    @Override
-    public final Class<Mechanisms> getFeatureClass() {
-        return Mechanisms.class;
-    }
-
     /**
      * Evaluates a (possibly initial) response from a client and sends an answer to the client.
      *

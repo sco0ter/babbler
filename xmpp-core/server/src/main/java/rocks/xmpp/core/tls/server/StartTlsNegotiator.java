@@ -64,14 +64,4 @@ public final class StartTlsNegotiator implements ServerStreamFeatureNegotiator<S
         }
         return StreamNegotiationResult.IGNORE;
     }
-
-    @Override
-    public final boolean canProcess(final Object element) {
-        return element instanceof StartTls;
-    }
-
-    @Override
-    public final Class<StartTls> getFeatureClass() {
-        return StartTls.class;
-    }
 }

@@ -29,31 +29,21 @@ import rocks.xmpp.core.stream.server.ServerStreamFeatureNegotiator;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 /**
  * @author Christian Schudt
  */
-@ApplicationScoped
-public class ServerEntityCapabilities extends EntityCapabilities1Protocol implements ServerStreamFeatureNegotiator<EntityCapabilities1> {
+public class ServerEntityCapabilities1 extends EntityCapabilities1Protocol implements ServerStreamFeatureNegotiator<EntityCapabilities1> {
 
-    @Inject
-    private ServiceDiscoveryManager serviceDiscoveryManager;
+    private final ServiceDiscoveryManager serviceDiscoveryManager;
 
-    public ServerEntityCapabilities(ServiceDiscoveryManager serviceDiscoveryManager, EntityCapabilitiesCache entityCapabilitiesCache) {
+    public ServerEntityCapabilities1(ServiceDiscoveryManager serviceDiscoveryManager, EntityCapabilitiesCache entityCapabilitiesCache) {
         super(serviceDiscoveryManager, entityCapabilitiesCache);
+        this.serviceDiscoveryManager = serviceDiscoveryManager;
     }
 
     @Override
     public EntityCapabilities1 createStreamFeature() {
-        try {
-            return new EntityCapabilities1("http://xmpp.rocks", serviceDiscoveryManager.getRootNode(), MessageDigest.getInstance("SHA-1"));
-        } catch (NoSuchAlgorithmException e) {
-            throw new AssertionError(e);
-        }
+        return produceEntityCapabilities(serviceDiscoveryManager.getRootNode());
     }
 
     @Override

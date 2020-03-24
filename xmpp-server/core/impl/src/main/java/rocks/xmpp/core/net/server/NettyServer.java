@@ -38,8 +38,9 @@ import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.server.ServerConfiguration;
+import rocks.xmpp.core.stream.server.ServerStreamFeatureNegotiator;
 import rocks.xmpp.core.tls.server.StartTlsNegotiator;
-import rocks.xmpp.extensions.caps.ServerEntityCapabilities;
+import rocks.xmpp.extensions.caps.ServerEntityCapabilities1;
 import rocks.xmpp.nio.netty.net.NettyChannelConnection;
 import rocks.xmpp.session.server.InboundClientSession;
 
@@ -47,6 +48,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.Destroyed;
 import javax.enterprise.context.Initialized;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import javax.net.ssl.KeyManagerFactory;
@@ -79,6 +81,9 @@ public class NettyServer {
 
     @Inject
     private ServerConfiguration serverConfiguration;
+
+    @Inject
+    private Instance<ServerStreamFeatureNegotiator<?>> streamFeatureNegotiators;
 
     static {
         try {
@@ -117,7 +122,7 @@ public class NettyServer {
                         final InboundClientSession session = CDI.current().select(InboundClientSession.class).get();
 
                         // Create a new connection for the client.
-                        final TcpBinding connection = new NettyChannelConnection(ch, session::handleElement, null, serverConfiguration::getUnmarshaller, null, serverConfiguration::getMarshaller, null, new ConnectionConfiguration() {
+                        final TcpBinding connection = new NettyChannelConnection(ch, session, null, serverConfiguration::getUnmarshaller, null, serverConfiguration::getMarshaller, null, new ConnectionConfiguration() {
                             @Override
                             public ChannelEncryption getChannelEncryption() {
                                 return ChannelEncryption.DIRECT;
@@ -133,7 +138,7 @@ public class NettyServer {
                         session.setConnection(connection);
                         session.getStreamFeatureManager().registerStreamFeatureNegotiator(new StartTlsNegotiator(connection));
                         session.getStreamFeatureManager().registerStreamFeatureNegotiator(new CompressionNegotiator(connection));
-                        session.getStreamFeatureManager().registerStreamFeatureNegotiator(CDI.current().select(ServerEntityCapabilities.class).get());
+                        streamFeatureNegotiators.stream().forEach(serverStreamFeatureNegotiator -> session.getStreamFeatureManager().registerStreamFeatureNegotiator(serverStreamFeatureNegotiator));
                         ch.pipeline().addLast(new InboundXmppHandler(session));
                     }
                 })

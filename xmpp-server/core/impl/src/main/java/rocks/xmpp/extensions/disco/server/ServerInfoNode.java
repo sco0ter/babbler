@@ -26,11 +26,15 @@ package rocks.xmpp.extensions.disco.server;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
+import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
+import rocks.xmpp.extensions.caps.ServerEntityCapabilities1;
 import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
 import rocks.xmpp.extensions.hashes.CryptographicHashFunctionsProtocol;
+import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.rsm.ResultSetManagementProtocol;
 import rocks.xmpp.extensions.softwareinfo.SoftwareInformation;
 import rocks.xmpp.extensions.softwareinfo.SoftwareInformationProtocol;
@@ -54,6 +58,9 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class ServerInfoNode implements InfoNode {
+
+    @Inject
+    private ServiceDiscoveryManager serviceDiscoveryManager;
 
     @Inject
     private Instance<ExtensionProtocol> extensionProtocols;
@@ -123,5 +130,31 @@ public class ServerInfoNode implements InfoNode {
         SoftwareInformationProtocol softwareInformationProtocol = new SoftwareInformationProtocol();
         softwareInformationProtocol.setSoftwareInformation(new SoftwareInformation(null, "xmpp.rocks", "1.0"));
         return softwareInformationProtocol;
+    }
+
+    @Produces
+    @ApplicationScoped
+    private ServerEntityCapabilities1 entityCapabilities1() {
+        return new ServerEntityCapabilities1(serviceDiscoveryManager, new EntityCapabilitiesCache() {
+            @Override
+            public InfoNode readCapabilities(Hash hash) {
+                return null;
+            }
+
+            @Override
+            public void writeCapabilities(Hash hash, InfoNode infoNode) {
+
+            }
+
+            @Override
+            public InfoNode readEntityCapabilities(Jid entity) {
+                return null;
+            }
+
+            @Override
+            public void writeEntityCapabilities(Jid entity, InfoNode infoNode) {
+
+            }
+        });
     }
 }

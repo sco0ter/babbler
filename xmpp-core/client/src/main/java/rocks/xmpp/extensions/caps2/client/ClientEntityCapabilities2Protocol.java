@@ -25,18 +25,28 @@
 package rocks.xmpp.extensions.caps2.client;
 
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.OutboundPresenceHandler;
+import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
 import rocks.xmpp.extensions.caps.client.ClientEntityCapabilities1Protocol;
+import rocks.xmpp.extensions.caps.client.ClientEntityCapabilitiesSupport;
 import rocks.xmpp.extensions.caps2.EntityCapabilities2Protocol;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
 /**
  * @author Christian Schudt
  */
-public class ClientEntityCapabilities2Protocol extends EntityCapabilities2Protocol {
+public class ClientEntityCapabilities2Protocol extends EntityCapabilities2Protocol implements OutboundPresenceHandler {
+
+    private final ClientEntityCapabilitiesSupport capsSupport;
 
     public ClientEntityCapabilities2Protocol(XmppSession xmppSession) {
         super(xmppSession.getManager(ServiceDiscoveryManager.class), xmppSession.getManager(EntityCapabilitiesCache.class));
-        ClientEntityCapabilities1Protocol.init(xmppSession, this);
+        this.capsSupport = new ClientEntityCapabilitiesSupport(xmppSession, this);
+    }
+
+    @Override
+    public final void handleOutboundPresence(PresenceEvent e) {
+        capsSupport.handleOutboundPresence(e);
     }
 }

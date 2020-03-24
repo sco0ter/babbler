@@ -28,7 +28,6 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.Session;
 import rocks.xmpp.core.stanza.InboundPresenceHandler;
-import rocks.xmpp.core.stanza.OutboundPresenceHandler;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
@@ -47,7 +46,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Deque;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +59,7 @@ import java.util.stream.Collectors;
 /**
  * @author Christian Schudt
  */
-public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabilities> implements InboundPresenceHandler, OutboundPresenceHandler, InfoNodeProvider, ExtensionProtocol {
+public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabilities> implements InboundPresenceHandler, InfoNodeProvider, ExtensionProtocol {
 
     private static final Logger logger = Logger.getLogger(AbstractEntityCapabilitiesProtocol.class.getName());
 
@@ -79,6 +78,10 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
         this.entityCapabilitiesClass = Objects.requireNonNull(entityCapabilitiesClass);
         this.entityCapabilitiesCache = Objects.requireNonNull(entityCapabilitiesCache);
         this.publishedNodes = new LruCache<>(10);
+    }
+
+    public Map<Collection<InfoNode>, EntityCapabilities> getPublishedNodes() {
+        return Collections.unmodifiableMap(publishedNodes);
     }
 
     public void publishCapsNode() {
@@ -100,7 +103,11 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
         publishedNodes.put(infoNodes, entityCapabilities);
     }
 
-    public void processCapabilitiesHashSet(final Iterator<Hashed> hashedIterator, final Jid entity, final EntityCapabilities caps) {
+    public void handleEntityCapabilities(final EntityCapabilities entityCapabilities, final Jid entity) {
+        processCapabilitiesHashSet(entityCapabilities.getCapabilityHashSet().iterator(), entity, entityCapabilities);
+    }
+
+    private void processCapabilitiesHashSet(final Iterator<Hashed> hashedIterator, final Jid entity, final EntityCapabilities caps) {
         if (hashedIterator.hasNext()) {
             // 1. Verify that the <c/> element includes a 'hash' attribute. If it does not, ignore the 'ver'
             final Hashed hashed = hashedIterator.next();
@@ -196,23 +203,8 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
             final EntityCapabilities caps = presence.getExtension(entityCapabilitiesClass);
             if (caps != null) {
                 logger.log(Level.FINE, "Processing {0}", caps);
-                processCapabilitiesHashSet(caps.getCapabilityHashSet().iterator(), presence.getFrom(), caps);
+                handleEntityCapabilities(caps, presence.getFrom());
             }
-        }
-    }
-
-    @Override
-    public final void handleOutboundPresence(PresenceEvent e) {
-        final Presence presence = e.getPresence();
-        if (presence.isAvailable()) {
-            if (publishedNodes.isEmpty()) {
-                publishCapsNode();
-            }
-            // a client SHOULD include entity capabilities with every presence notification it sends.
-            // Get the last generated verification string here.
-            Deque<EntityCapabilities> publishedEntityCaps = new ArrayDeque<>(publishedNodes.values());
-            EntityCapabilities lastPublishedEntityCaps = publishedEntityCaps.getLast();
-            presence.putExtension(lastPublishedEntityCaps);
         }
     }
 

@@ -27,8 +27,8 @@ package rocks.xmpp.extensions.disco.server;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
-import rocks.xmpp.extensions.caps.server.ServerEntityCapabilities1;
-import rocks.xmpp.extensions.caps2.server.ServerEntityCapabilities2;
+import rocks.xmpp.extensions.caps.server.ServerEntityCapabilities1Protocol;
+import rocks.xmpp.extensions.caps2.server.ServerEntityCapabilities2Protocol;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
@@ -135,8 +135,8 @@ public class ServerInfoNode implements InfoNode {
 
     @Produces
     @ApplicationScoped
-    private ServerEntityCapabilities1 entityCapabilities1() {
-        return new ServerEntityCapabilities1(serviceDiscoveryManager, new EntityCapabilitiesCache() {
+    private ServerEntityCapabilities1Protocol entityCapabilities1() {
+        return new ServerEntityCapabilities1Protocol(serviceDiscoveryManager, new EntityCapabilitiesCache() {
             @Override
             public InfoNode readCapabilities(Hash hash) {
                 return null;
@@ -161,8 +161,8 @@ public class ServerInfoNode implements InfoNode {
 
     @Produces
     @ApplicationScoped
-    private ServerEntityCapabilities2 entityCapabilities2() {
-        return new ServerEntityCapabilities2(serviceDiscoveryManager, new EntityCapabilitiesCache() {
+    private ServerEntityCapabilities2Protocol entityCapabilities2() {
+        return new ServerEntityCapabilities2Protocol(serviceDiscoveryManager, new EntityCapabilitiesCache() {
             @Override
             public InfoNode readCapabilities(Hash hash) {
                 return null;

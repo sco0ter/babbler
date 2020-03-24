@@ -36,7 +36,7 @@ import java.util.Set;
 /**
  * @author Christian Schudt
  */
-public class EntityCapabilities1Protocol extends AbstractEntityCapabilitiesProtocol<EntityCapabilities1> {
+public abstract class AbstractEntityCapabilities1Protocol extends AbstractEntityCapabilitiesProtocol<EntityCapabilities1> {
 
     private static final Set<String> FEATURES = Collections.singleton(EntityCapabilities1.NAMESPACE);
 
@@ -47,7 +47,7 @@ public class EntityCapabilities1Protocol extends AbstractEntityCapabilitiesProto
      */
     private String node;
 
-    public EntityCapabilities1Protocol(ServiceDiscoveryManager serviceDiscoveryManager, EntityCapabilitiesCache entityCapabilitiesCache) {
+    public AbstractEntityCapabilities1Protocol(ServiceDiscoveryManager serviceDiscoveryManager, EntityCapabilitiesCache entityCapabilitiesCache) {
         super(EntityCapabilities1.class, serviceDiscoveryManager, entityCapabilitiesCache);
     }
 

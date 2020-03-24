@@ -27,14 +27,14 @@ package rocks.xmpp.extensions.caps.client;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.OutboundPresenceHandler;
 import rocks.xmpp.core.stanza.PresenceEvent;
-import rocks.xmpp.extensions.caps.EntityCapabilities1Protocol;
+import rocks.xmpp.extensions.caps.AbstractEntityCapabilities1Protocol;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
 /**
  * @author Christian Schudt
  */
-public class ClientEntityCapabilities1Protocol extends EntityCapabilities1Protocol implements OutboundPresenceHandler {
+public class ClientEntityCapabilities1Protocol extends AbstractEntityCapabilities1Protocol implements OutboundPresenceHandler {
 
     private final ClientEntityCapabilitiesSupport capsSupport;
 

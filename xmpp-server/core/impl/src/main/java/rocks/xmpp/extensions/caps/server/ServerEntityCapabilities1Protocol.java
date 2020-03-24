@@ -22,26 +22,26 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.caps2.server;
+package rocks.xmpp.extensions.caps.server;
 
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.server.StreamFeatureProvider;
+import rocks.xmpp.extensions.caps.AbstractEntityCapabilities1Protocol;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
-import rocks.xmpp.extensions.caps2.EntityCapabilities2Protocol;
-import rocks.xmpp.extensions.caps2.model.EntityCapabilities2;
+import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
 /**
  * @author Christian Schudt
  */
-public class ServerEntityCapabilities2 extends EntityCapabilities2Protocol implements StreamFeatureProvider<EntityCapabilities2> {
+public class ServerEntityCapabilities1Protocol extends AbstractEntityCapabilities1Protocol implements StreamFeatureProvider<EntityCapabilities1> {
 
-    public ServerEntityCapabilities2(ServiceDiscoveryManager serviceDiscoveryManager, EntityCapabilitiesCache entityCapabilitiesCache) {
+    public ServerEntityCapabilities1Protocol(ServiceDiscoveryManager serviceDiscoveryManager, EntityCapabilitiesCache entityCapabilitiesCache) {
         super(serviceDiscoveryManager, entityCapabilitiesCache);
     }
 
     @Override
-    public EntityCapabilities2 createStreamFeature() {
+    public EntityCapabilities1 createStreamFeature() {
         return produceEntityCapabilities(publishCapsNode());
     }
 

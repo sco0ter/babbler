@@ -38,11 +38,11 @@ import java.util.Set;
 /**
  * @author Christian Schudt
  */
-public class EntityCapabilities2Protocol extends AbstractEntityCapabilitiesProtocol<EntityCapabilities2> {
+public abstract class AbstractEntityCapabilities2Protocol extends AbstractEntityCapabilitiesProtocol<EntityCapabilities2> {
 
     private static final Set<String> FEATURES = Collections.singleton(EntityCapabilities2.NAMESPACE);
 
-    public EntityCapabilities2Protocol(ServiceDiscoveryManager serviceDiscoveryManager, EntityCapabilitiesCache entityCapabilitiesCache) {
+    public AbstractEntityCapabilities2Protocol(ServiceDiscoveryManager serviceDiscoveryManager, EntityCapabilitiesCache entityCapabilitiesCache) {
         super(EntityCapabilities2.class, serviceDiscoveryManager, entityCapabilitiesCache);
     }
 

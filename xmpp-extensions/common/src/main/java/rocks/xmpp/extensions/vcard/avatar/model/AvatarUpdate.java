@@ -82,4 +82,13 @@ public final class AvatarUpdate implements Hashed {
         }
         return null;
     }
+
+    @Override
+    public final String toString() {
+        StringBuilder sb = new StringBuilder(NAMESPACE);
+        if (photo != null) {
+            sb.append(": ").append(photo);
+        }
+        return sb.toString();
+    }
 }

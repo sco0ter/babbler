@@ -61,27 +61,7 @@ public class ServerServiceDiscoveryManager extends AbstractServiceDiscoveryManag
     }
 
     @Override
-    public AsyncResult<InfoNode> discoverInformation(Jid jid) {
-        return null;
-    }
-
-    @Override
     public AsyncResult<InfoNode> discoverInformation(Jid jid, String node) {
-        return null;
-    }
-
-    @Override
-    public AsyncResult<ItemNode> discoverItems(Jid jid) {
-        return null;
-    }
-
-    @Override
-    public AsyncResult<ItemNode> discoverItems(Jid jid, ResultSetManagement resultSet) {
-        return null;
-    }
-
-    @Override
-    public AsyncResult<ItemNode> discoverItems(Jid jid, String node) {
         return null;
     }
 

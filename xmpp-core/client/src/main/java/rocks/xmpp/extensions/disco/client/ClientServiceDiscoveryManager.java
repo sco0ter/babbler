@@ -317,25 +317,6 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
     }
 
     /**
-     * Discovers information about another XMPP entity.
-     * <blockquote>
-     * <p><cite><a href="https://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber Entity</a></cite></p>
-     * <p>A requesting entity may want to discover information about another entity on the network. The information desired generally is of two kinds:</p>
-     * <ol>
-     * <li>The target entity's identity.</li>
-     * <li>The features offered and protocols supported by the target entity.</li>
-     * </ol>
-     * </blockquote>
-     *
-     * @param jid The entity's JID.
-     * @return The async service discovery result.
-     */
-    @Override
-    public final AsyncResult<InfoNode> discoverInformation(Jid jid) {
-        return discoverInformation(jid, null);
-    }
-
-    /**
      * Discovers information about another XMPP entity targeted at a specific node.
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/extensions/xep-0030.html#info-nodes">3.2 Info Nodes</a></cite></p>
@@ -350,41 +331,6 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
     @Override
     public final AsyncResult<InfoNode> discoverInformation(Jid jid, String node) {
         return xmppSession.query(IQ.get(jid, new InfoDiscovery(node)), InfoNode.class);
-    }
-
-    /**
-     * Discovers item associated with another XMPP entity.
-     *
-     * @param jid The JID.
-     * @return The async result with the discovered items.
-     */
-    @Override
-    public final AsyncResult<ItemNode> discoverItems(Jid jid) {
-        return discoverItems(jid, null, null);
-    }
-
-    /**
-     * Discovers item associated with another XMPP entity.
-     *
-     * @param jid       The JID.
-     * @param resultSet The result set management.
-     * @return The async result with the discovered items.
-     */
-    @Override
-    public final AsyncResult<ItemNode> discoverItems(Jid jid, ResultSetManagement resultSet) {
-        return discoverItems(jid, null, resultSet);
-    }
-
-    /**
-     * Discovers item associated with another XMPP entity.
-     *
-     * @param jid  The JID.
-     * @param node The node.
-     * @return The async result with the discovered items.
-     */
-    @Override
-    public final AsyncResult<ItemNode> discoverItems(Jid jid, String node) {
-        return discoverItems(jid, node, null);
     }
 
     /**

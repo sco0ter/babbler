@@ -38,6 +38,7 @@ import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
+import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.util.concurrent.CompletionStages;
 
@@ -96,6 +97,27 @@ public abstract class AbstractServiceDiscoveryManager implements ServiceDiscover
             return discoItemHandler.handleRequest(iq);
         }
         return iq.createError(Condition.SERVICE_UNAVAILABLE);
+    }
+
+
+    @Override
+    public final AsyncResult<InfoNode> discoverInformation(Jid jid) {
+        return discoverInformation(jid, null);
+    }
+
+    @Override
+    public final AsyncResult<ItemNode> discoverItems(Jid jid) {
+        return discoverItems(jid, null, null);
+    }
+
+    @Override
+    public final AsyncResult<ItemNode> discoverItems(Jid jid, ResultSetManagement resultSet) {
+        return discoverItems(jid, null, resultSet);
+    }
+
+    @Override
+    public final AsyncResult<ItemNode> discoverItems(Jid jid, String node) {
+        return discoverItems(jid, node, null);
     }
 
     @Override

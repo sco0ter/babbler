@@ -66,9 +66,6 @@ public class ServerInfoNode implements InfoNode {
     @Inject
     private Instance<ExtensionProtocol> extensionProtocols;
 
-    @Inject
-    private Instance<InfoNodeProvider> infoNodeProviders;
-
     @Override
     public String getNode() {
         return null;
@@ -89,15 +86,6 @@ public class ServerInfoNode implements InfoNode {
     @Override
     public List<DataForm> getExtensions() {
         return Collections.emptyList();
-    }
-
-    @Produces
-    @ApplicationScoped
-    private ServerServiceDiscoveryManager serviceDiscoveryManager() {
-        ServerServiceDiscoveryManager serverServiceDiscoveryManager = new ServerServiceDiscoveryManager();
-        serverServiceDiscoveryManager.addInfoNode(this);
-        infoNodeProviders.stream().forEach(serverServiceDiscoveryManager::addInfoNodeProvider);
-        return serverServiceDiscoveryManager;
     }
 
     @Produces

@@ -28,16 +28,38 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.disco.AbstractServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
+import rocks.xmpp.session.server.SessionManager;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 
 /**
  * @author Christian Schudt
  */
+@ApplicationScoped
 public class ServerServiceDiscoveryManager extends AbstractServiceDiscoveryManager {
+
+    @Inject
+    private SessionManager sessionManager;
+
+    @Inject
+    private Instance<InfoNodeProvider> infoNodeProviders;
+
+    @Inject
+    private ServerInfoNode serverInfoNode;
+
+    @PostConstruct
+    private void init() {
+        addInfoNode(serverInfoNode);
+        infoNodeProviders.stream().forEach(this::addInfoNodeProvider);
+    }
+
     @Override
     public AsyncResult<InfoNode> discoverInformation(Jid jid) {
         return null;

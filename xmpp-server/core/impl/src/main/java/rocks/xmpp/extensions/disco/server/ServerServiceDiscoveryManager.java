@@ -25,12 +25,15 @@
 package rocks.xmpp.extensions.disco.server;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.disco.AbstractServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
+import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
+import rocks.xmpp.session.server.InboundClientSession;
 import rocks.xmpp.session.server.SessionManager;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
@@ -62,7 +65,8 @@ public class ServerServiceDiscoveryManager extends AbstractServiceDiscoveryManag
 
     @Override
     public AsyncResult<InfoNode> discoverInformation(Jid jid, String node) {
-        return null;
+        InboundClientSession session = (InboundClientSession) sessionManager.getSession(jid);
+        return session.query(IQ.get(new InfoDiscovery(node))).thenApply(result -> result.getExtension(InfoNode.class));
     }
 
     @Override

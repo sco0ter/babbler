@@ -30,12 +30,19 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.ping.handler.PingHandler;
 import rocks.xmpp.extensions.time.handler.EntityTimeHandler;
+import rocks.xmpp.util.concurrent.CompletionStages;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import java.time.Duration;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * @author Christian Schudt
@@ -64,64 +71,77 @@ public class IQRouter {
         return new PingHandler();
     }
 
+    private final Map<String, CompletableFuture<IQ>> pendingResults = new ConcurrentHashMap<>();
 
     public boolean process(IQ iq) {
         Session sessionSender = sessionManager.getSession(iq.getFrom());
-        try {
-            Object payload = iq.getExtension(Object.class);
 
-            if (iq.getType() == null || payload == null) {
-                // return <bad-request/> if the <iq/> has no payload or unknown type.
-                sessionSender.send(iq.createError(Condition.BAD_REQUEST));
-                return true;
-            }
-            if (iq.getTo() == null) {
-                // 10.3.  No 'to' Address
-                // the server MUST handle it directly on behalf of the entity that sent it
-                iq.setTo(iq.getFrom().asBareJid());
-            }
-
-            // 10.5.3.  localpart@domainpart
-            // 10.5.3.1.  No Such User
-            if (iq.getTo().getLocal() != null && !userManager.userExists(iq.getTo().getLocal())) {
-                // For an IQ stanza, the server MUST return a <service-unavailable/> stanza error (Section 8.3.3.19) to the sender.
-                sessionSender.send(iq.createError(Condition.SERVICE_UNAVAILABLE));
-                return true;
-            }
-
-            // 10.5.4.  localpart@domainpart/resourcepart
-            if (iq.getTo().isFullJid() && iq.getTo().getLocal() != null) {
-                Session sessionRecipient = sessionManager.getSession(iq.getTo());
-                if (sessionRecipient == null) {
-                    // If there is no connected resource that exactly matches the full JID, the stanza SHOULD be processed as if the JID were of the form <localpart@domainpart>
-                    iq.setTo(iq.getTo().asBareJid());
-                } else {
-                    // If the JID contained in the 'to' attribute is of the form <localpart@domainpart/resourcepart>, the user exists, and there is a connected resource that exactly matches the full JID, the server MUST deliver the stanza to that connected resource.
-                    sessionRecipient.send(iq);
-                    return true;
-                }
-            }
-
-            final Optional<IQHandler> iqHandler = iqHandlers.stream()
-                    .filter(handler -> handler.getPayloadClass() != null && handler.getPayloadClass().isAssignableFrom(payload.getClass()))
-                    .findFirst();
-
-            if (iqHandler.isPresent()) {
-
-                IQ result = iqHandler.get().handleRequest(iq);
-                if (result != null) {
-                    sessionSender.send(result);
-                    return true;
-                }
-
-            } else {
-                sessionSender.send(iq.createError(Condition.SERVICE_UNAVAILABLE));
-                return true;
-            }
-        } catch (Exception e) {
-            sessionSender.send(iq.createError(Condition.INTERNAL_SERVER_ERROR));
+        Object payload = iq.getExtension(Object.class);
+        if (iq.getType() == null || payload == null) {
+            // return <bad-request/> if the <iq/> has no payload or unknown type.
+            sessionSender.send(iq.createError(Condition.BAD_REQUEST));
             return true;
         }
+
+        if (iq.isRequest()) {
+            try {
+                if (iq.getTo() == null) {
+                    // 10.3.  No 'to' Address
+                    // the server MUST handle it directly on behalf of the entity that sent it
+                    iq.setTo(iq.getFrom().asBareJid());
+                }
+
+                // 10.5.3.  localpart@domainpart
+                // 10.5.3.1.  No Such User
+                if (iq.getTo().getLocal() != null && !userManager.userExists(iq.getTo().getLocal())) {
+                    // For an IQ stanza, the server MUST return a <service-unavailable/> stanza error (Section 8.3.3.19) to the sender.
+                    sessionSender.send(iq.createError(Condition.SERVICE_UNAVAILABLE));
+                    return true;
+                }
+
+                // 10.5.4.  localpart@domainpart/resourcepart
+                if (iq.getTo().isFullJid() && iq.getTo().getLocal() != null) {
+                    Session sessionRecipient = sessionManager.getSession(iq.getTo());
+                    if (sessionRecipient == null) {
+                        // If there is no connected resource that exactly matches the full JID, the stanza SHOULD be processed as if the JID were of the form <localpart@domainpart>
+                        iq.setTo(iq.getTo().asBareJid());
+                    } else {
+                        // If the JID contained in the 'to' attribute is of the form <localpart@domainpart/resourcepart>, the user exists, and there is a connected resource that exactly matches the full JID, the server MUST deliver the stanza to that connected resource.
+                        sessionRecipient.send(iq);
+                        return true;
+                    }
+                }
+
+                final Optional<IQHandler> iqHandler = iqHandlers.stream()
+                        .filter(handler -> handler.getPayloadClass() != null && handler.getPayloadClass().isAssignableFrom(payload.getClass()))
+                        .findFirst();
+
+                if (iqHandler.isPresent()) {
+
+                    IQ result = iqHandler.get().handleRequest(iq);
+                    if (result != null) {
+                        sessionSender.send(result);
+                        return true;
+                    }
+
+                } else {
+                    sessionSender.send(iq.createError(Condition.SERVICE_UNAVAILABLE));
+                    return true;
+                }
+            } catch (Exception e) {
+                sessionSender.send(iq.createError(Condition.INTERNAL_SERVER_ERROR));
+                return true;
+            }
+        } else {
+            CompletableFuture<IQ> resultFuture = pendingResults.remove(iq.getId());
+            resultFuture.complete(iq);
+        }
         return false;
+    }
+
+    CompletableFuture<IQ> waitForResult(IQ iq, Duration duration) {
+        CompletableFuture<IQ> resultFuture = new CompletableFuture<>();
+        pendingResults.put(iq.getId(), resultFuture);
+        return resultFuture.applyToEither(CompletionStages.timeoutAfter(duration.toMillis(), TimeUnit.MILLISECONDS), Function.identity());
     }
 }

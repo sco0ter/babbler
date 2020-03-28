@@ -37,12 +37,14 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.StreamElement;
 
+import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -65,6 +67,9 @@ public class IQRouterTest extends XmlTest {
 
     @Mock
     private UserManager userManager;
+
+    @Mock
+    private Event<IQEvent> iqEvent;
 
     @Mock
     private SessionManager sessionManager;

@@ -25,6 +25,8 @@
 package rocks.xmpp.session.server;
 
 import rocks.xmpp.core.Session;
+import rocks.xmpp.core.stanza.InboundPresenceHandler;
+import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.im.roster.model.Contact;
@@ -34,6 +36,7 @@ import rocks.xmpp.im.roster.model.RosterItem;
 import rocks.xmpp.im.roster.server.spi.RosterItemProvider;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.stream.Stream;
@@ -50,7 +53,13 @@ public class PresenceHandler {
     @Inject
     private RosterItemProvider rosterItemProvider;
 
+    @Inject
+    private Instance<InboundPresenceHandler> inboundPresenceHandlers;
+
     public boolean process(Presence presence) {
+
+        inboundPresenceHandlers.forEach(inboundPresenceHandler -> inboundPresenceHandler.handleInboundPresence(new PresenceEvent(sessionManager.getSession(presence.getFrom()), presence, true)));
+
         // RFC 6120 § 10.3.2.  Presence
         // If the server receives a presence stanza with no 'to' attribute,
         // it MUST broadcast it to the entities that are subscribed to the sending entity's presence

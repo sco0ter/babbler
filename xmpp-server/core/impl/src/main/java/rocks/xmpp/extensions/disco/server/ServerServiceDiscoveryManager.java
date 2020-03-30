@@ -58,7 +58,7 @@ public class ServerServiceDiscoveryManager extends AbstractServiceDiscoveryManag
     private ServerInfoNode serverInfoNode;
 
     @PostConstruct
-    private void init() {
+    public void init() {
         addInfoNode(serverInfoNode);
         infoNodeProviders.stream().forEach(this::addInfoNodeProvider);
     }

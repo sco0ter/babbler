@@ -374,6 +374,7 @@ public final class RoomInfo implements StandardizedDataForm {
          *
          * @return The room info.
          */
+        @SuppressWarnings("PreferJavaTimeOverload")
         public RoomInfo build() {
             Collection<DataForm.Field> fields = new ArrayDeque<>();
             if (maxHistoryMessages != null) {

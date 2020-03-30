@@ -680,6 +680,7 @@ public final class RoomConfiguration implements StandardizedDataForm {
          *
          * @return The room configuration.
          */
+        @SuppressWarnings("PreferJavaTimeOverload")
         public RoomConfiguration build() {
             Collection<DataForm.Field> fields = new ArrayDeque<>();
             if (maxHistoryFetch != null) {

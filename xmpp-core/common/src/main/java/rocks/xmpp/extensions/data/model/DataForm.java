@@ -482,6 +482,7 @@ public final class DataForm implements Comparable<DataForm> {
      *
      * @see <a href="https://xmpp.org/extensions/xep-0004.html#protocol-field">3.2 The Field Element</a>
      */
+    @SuppressWarnings("SameNameButDifferent")
     @XmlRootElement
     public static final class Field implements Comparable<Field> {
 
@@ -809,6 +810,7 @@ public final class DataForm implements Comparable<DataForm> {
         /**
          * A builder class to build a data form field.
          */
+        @SuppressWarnings("PreferJavaTimeOverload")
         public static final class Builder {
             private final List<String> values = new ArrayList<>();
 

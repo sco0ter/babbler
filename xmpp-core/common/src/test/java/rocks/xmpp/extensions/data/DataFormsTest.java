@@ -214,6 +214,7 @@ public class DataFormsTest extends XmlTest {
     }
 
     @Test
+    @SuppressWarnings("PreferJavaTimeOverload")
     public void marshalIntegerField() throws JAXBException, XMLStreamException {
         DataForm.Field field = DataForm.Field.builder().var("test").value(2).build();
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(field));

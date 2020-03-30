@@ -90,19 +90,19 @@ public class ServerInfoNode implements InfoNode {
 
     @Produces
     @ApplicationScoped
-    private CryptographicHashFunctionsProtocol cryptographicHashFunctionsProtocol() {
+    public CryptographicHashFunctionsProtocol cryptographicHashFunctionsProtocol() {
         return new CryptographicHashFunctionsProtocol();
     }
 
     @Produces
     @ApplicationScoped
-    private ResultSetManagementProtocol resultSetManagementProtocol() {
+    public ResultSetManagementProtocol resultSetManagementProtocol() {
         return new ResultSetManagementProtocol();
     }
 
     @Produces
     @ApplicationScoped
-    private SoftwareVersionManager softwareVersionManager() {
+    public SoftwareVersionManager softwareVersionManager() {
         SoftwareVersionManager softwareVersionManager = new AbstractSoftwareVersionManager() {
             @Override
             public AsyncResult<SoftwareVersion> getSoftwareVersion(Jid jid) {
@@ -115,7 +115,7 @@ public class ServerInfoNode implements InfoNode {
 
     @Produces
     @ApplicationScoped
-    private SoftwareInformationProtocol softwareInformationProtocol() {
+    public SoftwareInformationProtocol softwareInformationProtocol() {
         SoftwareInformationProtocol softwareInformationProtocol = new SoftwareInformationProtocol();
         softwareInformationProtocol.setSoftwareInformation(new SoftwareInformation(null, "xmpp.rocks", "1.0"));
         return softwareInformationProtocol;
@@ -123,7 +123,7 @@ public class ServerInfoNode implements InfoNode {
 
     @Produces
     @ApplicationScoped
-    private ServerEntityCapabilities1Protocol entityCapabilities1() {
+    public ServerEntityCapabilities1Protocol entityCapabilities1() {
         return new ServerEntityCapabilities1Protocol(serviceDiscoveryManager, new EntityCapabilitiesCache() {
             @Override
             public InfoNode readCapabilities(Hash hash) {
@@ -149,7 +149,7 @@ public class ServerInfoNode implements InfoNode {
 
     @Produces
     @ApplicationScoped
-    private ServerEntityCapabilities2Protocol entityCapabilities2() {
+    public ServerEntityCapabilities2Protocol entityCapabilities2() {
         return new ServerEntityCapabilities2Protocol(serviceDiscoveryManager, new EntityCapabilitiesCache() {
             @Override
             public InfoNode readCapabilities(Hash hash) {

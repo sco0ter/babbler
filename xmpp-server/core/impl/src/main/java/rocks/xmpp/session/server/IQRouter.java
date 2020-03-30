@@ -61,13 +61,13 @@ public class IQRouter {
 
     @Produces
     @ApplicationScoped
-    private EntityTimeHandler produceEntityTimeHandler() {
+    public EntityTimeHandler produceEntityTimeHandler() {
         return new EntityTimeHandler();
     }
 
     @Produces
     @ApplicationScoped
-    private PingHandler producePingHandler() {
+    public PingHandler producePingHandler() {
         return new PingHandler();
     }
 

@@ -80,7 +80,7 @@ public class MessageRouterTest extends XmlTest {
     }
 
     @BeforeClass
-    private void before() {
+    public void before() {
         MockitoAnnotations.initMocks(this);
 
         testSession1.setAddress(JID_1_FULL);
@@ -94,7 +94,7 @@ public class MessageRouterTest extends XmlTest {
     }
 
     @BeforeMethod
-    private void clear() {
+    public void clear() {
         Mockito.reset(testSession1);
         Mockito.reset(testSession2);
     }

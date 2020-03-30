@@ -100,7 +100,7 @@ public class IQRouterTest extends XmlTest {
     }
 
     @BeforeClass
-    private void before() {
+    public void before() {
         MockitoAnnotations.initMocks(this);
 
         testSession1.setAddress(JID_1_FULL);
@@ -112,7 +112,7 @@ public class IQRouterTest extends XmlTest {
     }
 
     @BeforeMethod
-    private void clear() {
+    public void clear() {
         Mockito.when(iqHandlers.stream()).thenReturn(Stream.of(dummyIQHandler, nullIQHandler, exceptionIQHandler));
 
         Mockito.reset(testSession1);

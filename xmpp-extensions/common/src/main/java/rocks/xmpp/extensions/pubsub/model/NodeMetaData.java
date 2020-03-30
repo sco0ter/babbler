@@ -388,6 +388,7 @@ public final class NodeMetaData implements StandardizedDataForm {
          *
          * @return The meta data form.
          */
+        @SuppressWarnings("PreferJavaTimeOverload")
         public final NodeMetaData build() {
             Collection<DataForm.Field> fields = new ArrayDeque<>();
 

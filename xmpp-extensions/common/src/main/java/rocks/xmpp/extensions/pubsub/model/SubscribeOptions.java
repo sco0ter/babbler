@@ -402,6 +402,7 @@ public final class SubscribeOptions implements StandardizedDataForm {
          *
          * @return The subscribe options.
          */
+        @SuppressWarnings("PreferJavaTimeOverload")
         public final SubscribeOptions build() {
             Collection<DataForm.Field> fields = new ArrayDeque<>();
             if (deliver != null) {

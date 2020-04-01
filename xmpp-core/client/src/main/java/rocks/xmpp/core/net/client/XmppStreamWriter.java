@@ -29,7 +29,7 @@ import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamHeader;
-import rocks.xmpp.extensions.sm.StreamManager;
+import rocks.xmpp.extensions.sm.client.ClientStreamManager;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 
@@ -70,7 +70,7 @@ final class XmppStreamWriter {
 
     private final String namespace;
 
-    private final StreamManager streamManager;
+    private final ClientStreamManager streamManager;
 
     /**
      * Will be accessed only by the writer thread.
@@ -82,7 +82,7 @@ final class XmppStreamWriter {
      */
     private boolean streamOpened;
 
-    XmppStreamWriter(String namespace, StreamManager streamManager, final XmppSession xmppSession) {
+    XmppStreamWriter(String namespace, ClientStreamManager streamManager, final XmppSession xmppSession) {
         this.namespace = namespace;
         this.xmppSession = xmppSession;
         this.marshaller = xmppSession.createMarshaller();

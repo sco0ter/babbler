@@ -45,7 +45,7 @@ import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamErrorException;
-import rocks.xmpp.extensions.sm.StreamManager;
+import rocks.xmpp.extensions.sm.client.ClientStreamManager;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.subscription.PresenceManager;
 
@@ -384,7 +384,7 @@ public final class XmppClient extends XmppSession {
 
                 // Stream resumption.
                 try {
-                    StreamManager streamManager = getManager(StreamManager.class);
+                    ClientStreamManager streamManager = getManager(ClientStreamManager.class);
                     if (streamManager.resume().getResult(timeout, TimeUnit.MILLISECONDS)) {
                         logger.fine("Stream resumed.");
                         updateStatus(Status.AUTHENTICATED);

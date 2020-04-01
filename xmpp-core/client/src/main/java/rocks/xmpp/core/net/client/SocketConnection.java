@@ -40,7 +40,7 @@ import rocks.xmpp.core.tls.client.StartTlsManager;
 import rocks.xmpp.extensions.compress.CompressionManager;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
-import rocks.xmpp.extensions.sm.StreamManager;
+import rocks.xmpp.extensions.sm.client.ClientStreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 
 import javax.net.ssl.HostnameVerifier;
@@ -82,7 +82,7 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
 
     private final CompressionManager compressionManager;
 
-    private final StreamManager streamManager;
+    private final ClientStreamManager streamManager;
 
     private final TcpConnectionConfiguration tcpConnectionConfiguration;
 
@@ -126,7 +126,7 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
             this.xmppSession = xmppSession;
             this.tcpConnectionConfiguration = configuration;
             this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
-            this.streamManager = xmppSession.getManager(StreamManager.class);
+            this.streamManager = xmppSession.getManager(ClientStreamManager.class);
             this.securityManager = new StartTlsManager(xmppSession, this, tcpConnectionConfiguration.getChannelEncryption());
             this.compressionManager = new CompressionManager(xmppSession, this);
             compressionManager.getConfiguredCompressionMethods().clear();

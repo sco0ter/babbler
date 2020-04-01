@@ -29,7 +29,7 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.extensions.sm.StreamManager;
+import rocks.xmpp.extensions.sm.client.ClientStreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
@@ -63,7 +63,7 @@ public final class WebSocketClientConnection extends WebSocketConnection {
 
     private final StreamFeaturesManager streamFeaturesManager;
 
-    private final StreamManager streamManager;
+    private final ClientStreamManager streamManager;
 
     private final Set<String> pings = new CopyOnWriteArraySet<>();
 
@@ -82,7 +82,7 @@ public final class WebSocketClientConnection extends WebSocketConnection {
     WebSocketClientConnection(Session session, CompletableFuture<Void> closeFuture, XmppSession xmppSession, WebSocketConnectionConfiguration connectionConfiguration) {
         super(session, xmppSession, xmppSession::notifyException, closeFuture, connectionConfiguration);
         this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
-        this.streamManager = xmppSession.getManager(StreamManager.class);
+        this.streamManager = xmppSession.getManager(ClientStreamManager.class);
         this.streamFeaturesManager.addFeatureNegotiator(streamManager);
         this.streamManager.reset();
         this.executorService = new QueuedScheduledExecutorService(EXECUTOR_SERVICE);

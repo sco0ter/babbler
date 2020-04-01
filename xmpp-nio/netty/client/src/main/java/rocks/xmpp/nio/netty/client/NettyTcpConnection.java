@@ -41,7 +41,7 @@ import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.core.tls.client.StartTlsManager;
 import rocks.xmpp.extensions.compress.CompressionManager;
-import rocks.xmpp.extensions.sm.StreamManager;
+import rocks.xmpp.extensions.sm.client.ClientStreamManager;
 import rocks.xmpp.nio.netty.net.NettyChannelConnection;
 
 import javax.net.ssl.HostnameVerifier;
@@ -64,7 +64,7 @@ public final class NettyTcpConnection extends NettyChannelConnection {
 
     private final StreamFeaturesManager streamFeaturesManager;
 
-    private final StreamManager streamManager;
+    private final ClientStreamManager streamManager;
 
     private final StartTlsManager startTlsManager;
 
@@ -112,7 +112,7 @@ public final class NettyTcpConnection extends NettyChannelConnection {
             }
         });
 
-        this.streamManager = xmppSession.getManager(StreamManager.class);
+        this.streamManager = xmppSession.getManager(ClientStreamManager.class);
         this.streamManager.reset();
 
         this.startTlsManager = new StartTlsManager(xmppSession, this, connectionConfiguration.getChannelEncryption());

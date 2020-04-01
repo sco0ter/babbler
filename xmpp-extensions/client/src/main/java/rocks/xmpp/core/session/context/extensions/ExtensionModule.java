@@ -86,7 +86,7 @@ import rocks.xmpp.extensions.shim.client.ClientHeaderManager;
 import rocks.xmpp.extensions.si.StreamInitiationManager;
 import rocks.xmpp.extensions.si.model.StreamInitiation;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
-import rocks.xmpp.extensions.sm.StreamManager;
+import rocks.xmpp.extensions.sm.client.ClientStreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.extensions.softwareinfo.SoftwareInformationProtocol;
 import rocks.xmpp.extensions.time.EntityTimeManager;
@@ -97,8 +97,6 @@ import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
 import rocks.xmpp.extensions.vcard.temp.VCardManager;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
 import rocks.xmpp.extensions.version.client.ClientSoftwareVersionManager;
-import rocks.xmpp.extensions.version.SoftwareVersionManager;
-import rocks.xmpp.extensions.version.model.SoftwareVersion;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -203,7 +201,7 @@ public final class ExtensionModule implements Module {
                 Extension.of(BlockList.NAMESPACE, BlockingManager.class, false),
 
                 // XEP-0198: Stream Management
-                Extension.of(StreamManagement.NAMESPACE, StreamManager.class, false),
+                Extension.of(StreamManagement.NAMESPACE, ClientStreamManager.class, false),
 
                 // XEP-0199: XMPP Ping
                 Extension.of(new PingHandler(), PingManager.class, true),

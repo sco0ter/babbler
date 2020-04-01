@@ -36,9 +36,11 @@ import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.InboundIQHandler;
 import rocks.xmpp.core.stanza.InboundMessageHandler;
 import rocks.xmpp.core.stanza.InboundPresenceHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.OutboundIQHandler;
 import rocks.xmpp.core.stanza.OutboundMessageHandler;
 import rocks.xmpp.core.stanza.OutboundPresenceHandler;
 import rocks.xmpp.core.stanza.PresenceEvent;
@@ -64,7 +66,7 @@ import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.disco.client.ClientServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
-import rocks.xmpp.extensions.sm.StreamManager;
+import rocks.xmpp.extensions.sm.client.ClientStreamManager;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.util.concurrent.CompletionStages;
@@ -296,6 +298,12 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                     }
                     if (manager instanceof OutboundPresenceHandler) {
                         addOutboundPresenceListener(((OutboundPresenceHandler) manager)::handleOutboundPresence);
+                    }
+                    if (manager instanceof InboundIQHandler) {
+                        addInboundIQListener(((InboundIQHandler) manager)::handleInboundIQ);
+                    }
+                    if (manager instanceof OutboundIQHandler) {
+                        addOutboundIQListener(((OutboundIQHandler) manager)::handleOutboundIQ);
                     }
                     serviceDiscoveryManager.registerFeature((ExtensionProtocol) manager);
                 } else {
@@ -1201,7 +1209,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     @Override
     public boolean handleElement(final Object element) throws XmppException {
 
-        StreamManager streamManager = getManager(StreamManager.class);
+        ClientStreamManager streamManager = getManager(ClientStreamManager.class);
 
         if (element instanceof IQ) {
             final IQ iq = (IQ) element;

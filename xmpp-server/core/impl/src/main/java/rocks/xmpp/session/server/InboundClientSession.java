@@ -50,6 +50,7 @@ import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.core.stream.server.StreamFeatureProvider;
 import rocks.xmpp.core.stream.server.ServerStreamFeaturesManager;
+import rocks.xmpp.extensions.sm.server.ServerStreamManager;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 import javax.annotation.PostConstruct;
@@ -101,6 +102,7 @@ public class InboundClientSession implements Session, StreamHandler, AutoCloseab
     public InboundClientSession() {
         this.streamFeaturesManager.registerStreamFeatureProvider(new SaslNegotiator(this));
         this.streamFeaturesManager.registerStreamFeatureProvider(new ResourceBindingNegotiator(this));
+        this.streamFeaturesManager.registerStreamFeatureProvider(new ServerStreamManager(this));
     }
 
     @PostConstruct

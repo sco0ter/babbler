@@ -35,7 +35,7 @@ import java.util.function.Predicate;
  * Requests could be sent after every message or after X stanzas.
  *
  * @author Christian Schudt
- * @see StreamManager#setRequestStrategy(Predicate)
+ * @see AbstractStreamManager#setRequestStrategy(Predicate)
  */
 public final class RequestStrategies {
 

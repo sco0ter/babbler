@@ -118,6 +118,24 @@ public interface SubscriptionState {
          * At any time, a client can delete an item from his or her roster by sending a roster set and specifying a value of "remove" for the 'subscription' attribute.
          */
         @XmlEnumValue("remove")
-        REMOVE
+        REMOVE;
+
+        /**
+         * Returns true, if the user has a subscription to the contact, e.g. if the subscription state is {@link #TO} or {@link #BOTH}.
+         *
+         * @return True, if the subscription state is {@link #TO} or {@link #BOTH}.
+         */
+        public final boolean userHasSubscriptionToContact() {
+            return this == TO || this == BOTH;
+        }
+
+        /**
+         * Returns true, if the contact has a subscription to the user, e.g. if the subscription state is {@link #FROM} or {@link #BOTH}.
+         *
+         * @return True, if the subscription state is {@link #FROM} or {@link #BOTH}.
+         */
+        public final boolean contactHasSubscriptionToUser() {
+            return this == FROM || this == BOTH;
+        }
     }
 }

@@ -32,12 +32,10 @@ import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.im.roster.model.Roster;
 import rocks.xmpp.im.roster.model.RosterItem;
 import rocks.xmpp.im.roster.model.SubscriptionState;
-import rocks.xmpp.im.roster.server.spi.RosterItemProvider;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,7 +47,7 @@ import java.util.stream.Collectors;
 public class RosterHandler extends AbstractIQHandler {
 
     @Inject
-    private RosterItemProvider rosterItemProvider;
+    private ServerRosterManager rosterManager;
 
     public RosterHandler() {
         super(Roster.class, IQ.Type.GET, IQ.Type.SET);
@@ -65,20 +63,14 @@ public class RosterHandler extends AbstractIQHandler {
                     // the <query/> element MUST NOT contain any <item/> child elements.
                     return iq.createError(Condition.BAD_REQUEST);
                 }
-                Collection<? extends RosterItem> rosterItems = rosterItemProvider.getRosterItems(iq.getFrom().getLocal());
+                Collection<? extends RosterItem> rosterItems = rosterManager.getRosterItems(iq.getFrom().getLocal());
                 return iq.createResult(new Roster(rosterItems.stream().map(Contact::new).collect(Collectors.toList())));
             } else if (roster.getContacts().size() == 1) {
                 RosterItem rosterItem = roster.getContacts().get(0);
 
                 if (rosterItem.getSubscription() == SubscriptionState.Subscription.REMOVE) {
-                    RosterItem deletedItem = rosterItemProvider.delete(iq.getFrom().getLocal(), rosterItem.getJid());
+                    RosterItem deletedItem = rosterManager.delete(iq.getFrom().getLocal(), rosterItem.getJid());
                     if (deletedItem != null) {
-                        if (deletedItem.getSubscription() == SubscriptionState.Subscription.TO || deletedItem.getSubscription() == SubscriptionState.Subscription.BOTH) {
-                            // TODO send unsubscribe to contact
-                        }
-                        if (deletedItem.getSubscription() == SubscriptionState.Subscription.FROM || deletedItem.getSubscription() == SubscriptionState.Subscription.BOTH) {
-                            // TODO send unsubscribed to contact
-                        }
                         return iq.createResult();
                     } else {
                         // RFC 6121 2.5.3.  Error Cases
@@ -92,17 +84,8 @@ public class RosterHandler extends AbstractIQHandler {
                     if (stanzaError != null) {
                         return iq.createError(stanzaError);
                     }
+                    rosterManager.setRosterItem(iq.getFrom().getLocal(), rosterItem);
 
-                    RosterItem existingRosterItem = rosterItemProvider.get(iq.getFrom().getLocal(), rosterItem.getJid());
-                    if (existingRosterItem != null) {
-                        //existingRosterItem.setName(rosterItem.getName());
-                        existingRosterItem.getGroups().clear();
-                        existingRosterItem.getGroups().addAll(rosterItem.getGroups());
-                        rosterItemProvider.update(iq.getFrom().getLocal(), existingRosterItem);
-                    } else {
-                        RosterItem rosterItemNew = new Contact(rosterItem.getJid(), rosterItem.getName(), false, false, SubscriptionState.Subscription.NONE, Collections.emptyList());
-                        rosterItemProvider.create(iq.getFrom().getLocal(), rosterItemNew);
-                    }
                     return iq.createResult();
                 }
             }

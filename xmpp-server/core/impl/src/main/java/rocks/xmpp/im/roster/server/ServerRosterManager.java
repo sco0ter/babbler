@@ -77,6 +77,17 @@ public class ServerRosterManager {
     }
 
     /**
+     * Gets the roster item.
+     *
+     * @param username The user.
+     * @param contact  The contact.
+     * @return The roster item or null, if it does not exist.
+     */
+    public RosterItem getRosterItem(String username, Jid contact) {
+        return rosterItemProvider.get(username, contact);
+    }
+
+    /**
      * Gets all roster items in the user's roster.
      *
      * @param username The user.

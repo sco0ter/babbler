@@ -62,6 +62,7 @@ public class PresenceTest extends XmlTest {
         Assert.assertEquals(presence.getFrom().toString(), "romeo@example.net");
         Assert.assertEquals(presence.getType(), Presence.Type.SUBSCRIBE);
         Assert.assertEquals(presence.getId(), "xk3h1v69");
+        Assert.assertTrue(presence.isSubscription());
     }
 
     @Test
@@ -81,6 +82,7 @@ public class PresenceTest extends XmlTest {
         Assert.assertEquals(presence.getType(), Presence.Type.ERROR);
         Assert.assertNotNull(presence.getError());
         Assert.assertSame(presence.getError().getCondition(), Condition.REMOTE_SERVER_NOT_FOUND);
+        Assert.assertFalse(presence.isSubscription());
     }
 
     @Test
@@ -94,6 +96,7 @@ public class PresenceTest extends XmlTest {
         Assert.assertEquals(presence.getTo().toString(), "romeo@example.net");
         Assert.assertEquals(presence.getType(), Presence.Type.SUBSCRIBED);
         Assert.assertEquals(presence.getId(), "xk3h1v69");
+        Assert.assertTrue(presence.isSubscription());
     }
 
     @Test
@@ -105,6 +108,7 @@ public class PresenceTest extends XmlTest {
         Assert.assertEquals(presence.getTo().toString(), "romeo@example.net");
         Assert.assertEquals(presence.getType(), Presence.Type.UNSUBSCRIBED);
         Assert.assertEquals(presence.getId(), "tb2m1b59");
+        Assert.assertTrue(presence.isSubscription());
     }
 
     @Test
@@ -116,6 +120,7 @@ public class PresenceTest extends XmlTest {
         Assert.assertEquals(presence.getTo().toString(), "romeo@example.net");
         Assert.assertEquals(presence.getType(), Presence.Type.UNSUBSCRIBE);
         Assert.assertEquals(presence.getId(), "tb2m1b59");
+        Assert.assertTrue(presence.isSubscription());
     }
 
     @Test
@@ -127,6 +132,7 @@ public class PresenceTest extends XmlTest {
         Assert.assertEquals(presence.getTo().toString(), "romeo@example.net");
         Assert.assertEquals(presence.getType(), Presence.Type.PROBE);
         Assert.assertEquals(presence.getId(), "tb2m1b59");
+        Assert.assertFalse(presence.isSubscription());
     }
 
     @Test
@@ -138,6 +144,7 @@ public class PresenceTest extends XmlTest {
         Assert.assertEquals(presence.getTo().toString(), "romeo@example.net");
         Assert.assertEquals(presence.getType(), Presence.Type.UNAVAILABLE);
         Assert.assertEquals(presence.getId(), "tb2m1b59");
+        Assert.assertFalse(presence.isSubscription());
     }
 
     @Test
@@ -152,6 +159,7 @@ public class PresenceTest extends XmlTest {
         Assert.assertEquals(presence.getShow(), Presence.Show.DND);
         Assert.assertEquals(presence.getLanguage(), Locale.ENGLISH);
         Assert.assertEquals(presence.getStatus(), "Wooing Juliet");
+        Assert.assertFalse(presence.isSubscription());
     }
 
     @Test

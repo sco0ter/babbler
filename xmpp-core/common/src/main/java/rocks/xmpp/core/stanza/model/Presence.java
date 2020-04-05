@@ -35,9 +35,11 @@ import javax.xml.bind.annotation.XmlType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.util.Comparator.comparing;
@@ -61,6 +63,8 @@ import static java.util.Comparator.nullsLast;
  */
 @XmlTransient
 public class Presence extends ExtensibleStanza implements Comparable<Presence> {
+
+    private static final Set<Type> SUBSCRIPTION_TYPES = EnumSet.of(Type.SUBSCRIBE, Type.SUBSCRIBED, Type.UNSUBSCRIBE, Type.UNSUBSCRIBED);
 
     private static final Comparator<Presence> DEFAULT_COMPARATOR = nullsLast(
             comparing(Presence::getPriority, (p1, p2) -> Byte.compare(p2 == null ? 0 : p2, p1 == null ? 0 : p1))
@@ -382,6 +386,16 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
         } else {
             this.status.clear();
         }
+    }
+
+    /**
+     * Indicates whether this presence is a subscription presence.
+     * This is the case if it has as type of {@link Type#SUBSCRIBE}, {@link Type#SUBSCRIBED}, {@link Type#UNSUBSCRIBE} or {@link Type#UNSUBSCRIBED}.
+     *
+     * @return True, if this presence is a subscription presence, otherwise false.
+     */
+    public final boolean isSubscription() {
+        return SUBSCRIPTION_TYPES.contains(getType());
     }
 
     @Override

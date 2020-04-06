@@ -24,16 +24,12 @@
 
 package rocks.xmpp.session.server;
 
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.server.ServerConfiguration;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.im.roster.model.DefinedState;
 import rocks.xmpp.im.roster.model.RosterItem;
-import rocks.xmpp.im.roster.server.ServerRosterManager;
 
 import javax.inject.Inject;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Handles outbound presence subscription requests, approvals, cancellations and unsubscriptions.
@@ -43,10 +39,7 @@ import java.util.List;
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-cancel-outbound">3.2.2.  Server Processing of Outbound Subscription Cancellation</a>
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-unsub-outbound">3.3.2.  Server Processing of Outbound Unsubscribe</a>
  */
-public class OutboundSubscriptionHandler {
-
-    @Inject
-    private ServerRosterManager rosterManager;
+public class OutboundSubscriptionHandler extends AbstractSubscriptionHandler {
 
     @Inject
     private SessionManager sessionManager;
@@ -77,7 +70,7 @@ public class OutboundSubscriptionHandler {
                 case SUBSCRIBE:
                 case SUBSCRIBED:
                 case UNSUBSCRIBE:
-                    updateRosterAndPush(username, presence, rosterItem);
+                    updateRosterAndPush(username, presence, rosterItem, DefinedState::onOutboundSubscriptionChange);
                     break;
                 case UNSUBSCRIBED:
                     if (rosterItem != null) {
@@ -100,7 +93,7 @@ public class OutboundSubscriptionHandler {
                                             // TODO send
                                         }
                                 );
-                                updateRosterAndPush(username, presence, rosterItem);
+                                updateRosterAndPush(username, presence, rosterItem, DefinedState::onOutboundSubscriptionChange);
                                 break;
                         }
                     }
@@ -109,96 +102,6 @@ public class OutboundSubscriptionHandler {
                     break;
             }
             // TODO deliver or route
-        }
-    }
-
-    /**
-     * Updates the roster and initiates a roster push to the user's interested resources.
-     *
-     * @param username The user.
-     * @param presence The presence.
-     * @param item     The roster item to update. If null, a new item is created.
-     */
-    private void updateRosterAndPush(String username, Presence presence, RosterItem item) {
-
-        if (item != null) {
-            DefinedState oldState = DefinedState.valueOf(item);
-            DefinedState newState = oldState.onOutboundSubscriptionChange(presence.getType());
-            if (newState != oldState) {
-                rosterManager.setRosterItem(username, new RosterItem() {
-                    @Override
-                    public Jid getJid() {
-                        return item.getJid();
-                    }
-
-                    @Override
-                    public String getName() {
-                        return item.getName();
-                    }
-
-                    @Override
-                    public boolean isApproved() {
-                        return item.isApproved();
-                    }
-
-                    @Override
-                    public List<String> getGroups() {
-                        return item.getGroups();
-                    }
-
-                    @Override
-                    public Subscription getSubscription() {
-                        return newState.getSubscription();
-                    }
-
-                    @Override
-                    public boolean isPendingOut() {
-                        return newState.isPendingOut();
-                    }
-
-                    @Override
-                    public boolean isPendingIn() {
-                        return newState.isPendingIn();
-                    }
-                });
-            }
-        } else {
-            rosterManager.setRosterItem(username, new RosterItem() {
-                @Override
-                public Jid getJid() {
-                    return presence.getTo();
-                }
-
-                @Override
-                public String getName() {
-                    return null;
-                }
-
-                @Override
-                public boolean isApproved() {
-                    return false;
-                }
-
-                @Override
-                public List<String> getGroups() {
-                    return Collections.emptyList();
-                }
-
-                @Override
-                public Subscription getSubscription() {
-                    return Subscription.NONE;
-                }
-
-                @Override
-                public boolean isPendingOut() {
-                    return true;
-                }
-
-                @Override
-                public boolean isPendingIn() {
-                    return false;
-                }
-            });
         }
     }
 }

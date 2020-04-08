@@ -169,7 +169,7 @@ public class InboundClientSession implements Session, StreamHandler, AutoCloseab
         return connection.closeAsync(streamError);
     }
 
-    public AsyncResult<IQ> query(IQ iq){
+    public AsyncResult<IQ> query(IQ iq) {
         CompletableFuture<IQ> resultFuture = iqRouter.waitForResult(iq, QUERY_TIMEOUT);
         send(iq);
         return new AsyncResult<>(resultFuture);
@@ -198,7 +198,15 @@ public class InboundClientSession implements Session, StreamHandler, AutoCloseab
                 Stanza stanza = (Stanza) element;
                 Optional<Jid> address = getAddress();
                 if (address.isPresent()) {
-                    stanza.setFrom(address.get());
+                    // RFC 6120 § 8.1.2.1.  Client-to-Server Streams
+                    // When a server receives an XML stanza from a connected client, the server MUST add a 'from' attribute to the stanza
+                    // or override the 'from' attribute specified by the client, where the value of the 'from' attribute MUST be the full JID (<localpart@domainpart/resource>) determined by the server for the connected resource that generated the stanza (see Section 4.3.6),
+                    // or the bare JID (<localpart@domainpart>) in the case of subscription-related presence stanzas
+                    if (stanza instanceof Presence && ((Presence) stanza).isSubscription()) {
+                        stanza.setFrom(address.get().asBareJid());
+                    } else {
+                        stanza.setFrom(address.get());
+                    }
                 } else {
                     // Resource binding not completed.
                     closeAsync(new StreamError(Condition.NOT_AUTHORIZED));

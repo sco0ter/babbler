@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.vcard.temp.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -51,7 +52,7 @@ import java.util.Objects;
  * @see <a href="https://xmpp.org/extensions/xep-0054.html#dtd">DTD</a>
  */
 @XmlRootElement(name = "vCard")
-public final class VCard {
+public final class VCard implements Addressable {
 
     /**
      * vcard-temp
@@ -433,6 +434,7 @@ public final class VCard {
      * @return The JID.
      * @see #setJid(Jid)
      */
+    @Override
     public Jid getJid() {
         return jid;
     }

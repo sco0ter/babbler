@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.rosterx.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;
@@ -73,7 +74,7 @@ public final class ContactExchange {
     /**
      * The roster exchange item.
      */
-    public static final class Item {
+    public static final class Item implements Addressable {
 
         @XmlAttribute
         private final Action action;
@@ -106,6 +107,7 @@ public final class ContactExchange {
          *
          * @return The JID.
          */
+        @Override
         public final Jid getJid() {
             return jid;
         }

@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.address.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -54,7 +55,7 @@ import java.util.Objects;
  * @see <a href="https://xmpp.org/extensions/xep-0033.html#schema">XML Schema</a>
  * @see Addresses
  */
-public final class Address {
+public final class Address implements Addressable {
 
     /**
      * http://jabber.org/protocol/address
@@ -159,6 +160,7 @@ public final class Address {
      * @return The JID.
      * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-jid">4.1 'jid' attribute</a>
      */
+    @Override
     public final Jid getJid() {
         return jid;
     }

@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.langtrans.model.items;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -74,7 +75,7 @@ public final class LanguageSupport {
     /**
      * The implementation of the the {@code <item/>} element in the {@code urn:xmpp:langtrans:items} namespace.
      */
-    public static final class Item {
+    public static final class Item implements Addressable {
 
         @XmlAttribute(name = "source_lang")
         private final Locale sourceLanguage;
@@ -130,6 +131,7 @@ public final class LanguageSupport {
          *
          * @return The JID.
          */
+        @Override
         public final Jid getJid() {
             return jid;
         }

@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.disco.model.items;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 import rocks.xmpp.extensions.rsm.model.ResultSetItem;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -39,7 +40,7 @@ import java.util.UUID;
  *
  * @author Christian Schudt
  */
-public final class Item implements ResultSetItem {
+public final class Item implements Addressable, ResultSetItem {
 
     @XmlTransient
     private final String id;
@@ -90,6 +91,7 @@ public final class Item implements ResultSetItem {
      *
      * @return The JID.
      */
+    @Override
     public final Jid getJid() {
         return jid;
     }

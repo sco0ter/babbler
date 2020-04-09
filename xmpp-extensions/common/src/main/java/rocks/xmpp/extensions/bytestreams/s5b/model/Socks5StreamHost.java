@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.bytestreams.s5b.model;
 
-import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 
 /**
  * A SOCKS5 stream host interface which is shared by the XEP-0065 implementation and the XEP-0260 implementation.
  *
  * @author Christian Schudt
  */
-public interface Socks5StreamHost {
+public interface Socks5StreamHost extends Addressable {
 
     /**
      * Gets the IP address or DNS domain name of the StreamHost for SOCKS5 communication over TCP.
@@ -39,14 +39,7 @@ public interface Socks5StreamHost {
      * @return The hostname.
      */
     String getHostname();
-
-    /**
-     * Gets the JabberID of the StreamHost for communication over XMPP.
-     *
-     * @return The JID.
-     */
-    Jid getJid();
-
+    
     /**
      * Get the port on which to connect for SOCKS5 communication over TCP.
      *

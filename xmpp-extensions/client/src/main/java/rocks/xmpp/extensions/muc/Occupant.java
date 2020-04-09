@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.muc;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.muc.model.Affiliation;
 import rocks.xmpp.extensions.muc.model.Role;
@@ -38,7 +39,7 @@ import java.text.Collator;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#user">7. Occupant Use Cases</a>
  */
-public final class Occupant implements Comparable<Occupant> {
+public final class Occupant implements Addressable, Comparable<Occupant> {
 
     private final Affiliation affiliation;
 
@@ -92,6 +93,7 @@ public final class Occupant implements Comparable<Occupant> {
      *
      * @return The JID or null for (semi-)anonymous rooms.
      */
+    @Override
     public Jid getJid() {
         return jid;
     }

@@ -25,13 +25,14 @@
 package rocks.xmpp.extensions.muc.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 
 /**
  * The {@code <item/>} element, which is used in both <code>#admin</code> and <code>#user</code> namespace to manage members and indicate users in a chat room.
  *
  * @author Christian Schudt
  */
-public interface Item {
+public interface Item extends Addressable {
     /**
      * Gets the nick name.
      *
@@ -45,13 +46,6 @@ public interface Item {
      * @return The role.
      */
     Role getRole();
-
-    /**
-     * Gets the JID.
-     *
-     * @return The JID.
-     */
-    Jid getJid();
 
     /**
      * Gets the affiliation.

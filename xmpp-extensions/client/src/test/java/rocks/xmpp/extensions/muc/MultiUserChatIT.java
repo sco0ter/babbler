@@ -76,7 +76,7 @@ public class MultiUserChatIT extends IntegrationTest {
 
         chatRoom[0] = chatService0.createRoom("test");
         chatRoom[1] = chatService1.createRoom("test");
-        Assert.assertEquals(chatRoom[0].getAddress(), chatService0.getAddress().withLocal("test"));
+        Assert.assertEquals(chatRoom[0].getAddress(), chatService0.getJid().withLocal("test"));
     }
 
     @Test

@@ -25,13 +25,14 @@
 package rocks.xmpp.extensions.pubsub.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 
 /**
  * Represents the {@code <affiliation/>} element, which is used in both 'pubsub' and 'pubsub#owner' namespace.
  *
  * @author Christian Schudt
  */
-public interface Affiliation {
+public interface Affiliation extends Addressable {
 
     /**
      * Gets the affiliation to a node.
@@ -46,11 +47,4 @@ public interface Affiliation {
      * @return The node.
      */
     String getNode();
-
-    /**
-     * Gets the JID.
-     *
-     * @return The JID.
-     */
-    Jid getJid();
 }

@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.privatedata.rosternotes.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -81,7 +82,7 @@ public final class Annotation {
     /**
      * Represents a note for a contact in the roster (roster item).
      */
-    public static final class Note {
+    public static final class Note implements Addressable {
 
         @XmlAttribute
         private final Jid jid;
@@ -159,6 +160,7 @@ public final class Annotation {
          *
          * @return The JID.
          */
+        @Override
         public final Jid getJid() {
             return jid;
         }

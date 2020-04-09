@@ -25,6 +25,7 @@
 package rocks.xmpp.im.roster.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 
 import java.util.List;
 
@@ -36,14 +37,7 @@ import java.util.List;
  *
  * @author Christian Schudt
  */
-public interface RosterItem extends SubscriptionState {
-
-    /**
-     * Gets the JID of the contact.
-     *
-     * @return The JID.
-     */
-    Jid getJid();
+public interface RosterItem extends Addressable, SubscriptionState {
 
     /**
      * Gets the name of the contact.

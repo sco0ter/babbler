@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,41 +22,21 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.blocking.model;
+package rocks.xmpp.core;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.Addressable;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import java.util.Objects;
 
 /**
- * The implementation of the {@code <item/>} element in the {@code urn:xmpp:blocking} namespace.
- *
- * @author Christian Schudt
- * @see <a href="https://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>
- * @see <a href="https://xmpp.org/extensions/xep-0191.html#schema-blocking">XML Schema</a>
+ * Represents any instance which is addressable by a {@linkplain Jid JID}.
+ * <p>
+ * Examples include client-to-server sessions, service discovery items, services or user accounts.
  */
-final class Item implements Addressable {
+public interface Addressable {
 
-    @XmlAttribute
-    private Jid jid;
-
-    private Item() {
-    }
-
-    public Item(Jid jid) {
-        this.jid = Objects.requireNonNull(jid);
-    }
-
-    @Override
-    public final Jid getJid() {
-        return jid;
-    }
-
-    @Override
-    public final String toString() {
-        return jid.toString();
-    }
+    /**
+     * Gets the JID of the addressable.
+     *
+     * @return The JID.
+     */
+    Jid getJid();
 }
-

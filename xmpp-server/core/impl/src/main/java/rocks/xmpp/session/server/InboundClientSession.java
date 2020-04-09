@@ -26,6 +26,7 @@ package rocks.xmpp.session.server;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.addr.MalformedJid;
+import rocks.xmpp.core.Addressable;
 import rocks.xmpp.core.Session;
 import rocks.xmpp.core.bind.server.ResourceBindingNegotiator;
 import rocks.xmpp.core.net.Connection;
@@ -71,7 +72,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Christian Schudt
  */
 @Dependent
-public class InboundClientSession implements Session, StreamHandler, AutoCloseable {
+public class InboundClientSession implements Addressable, Session, StreamHandler, AutoCloseable {
 
     private static final Duration QUERY_TIMEOUT = Duration.ofSeconds(5);
 
@@ -250,5 +251,10 @@ public class InboundClientSession implements Session, StreamHandler, AutoCloseab
 
     public final Locale getLanguage() {
         return Locale.ENGLISH;
+    }
+
+    @Override
+    public Jid getJid() {
+        return getRemoteXmppAddress();
     }
 }

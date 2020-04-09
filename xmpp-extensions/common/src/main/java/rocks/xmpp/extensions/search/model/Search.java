@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.search.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
@@ -194,7 +195,7 @@ public final class Search {
      * <p>
      * This class is immutable.
      */
-    public static final class Item {
+    public static final class Item implements Addressable {
 
         @XmlAttribute
         private final Jid jid;
@@ -264,6 +265,7 @@ public final class Search {
          *
          * @return The JID.
          */
+        @Override
         public final Jid getJid() {
             return jid;
         }

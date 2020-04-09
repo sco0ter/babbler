@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.pubsub.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 
 import java.time.Instant;
 
@@ -33,13 +34,14 @@ import java.time.Instant;
  *
  * @author Christian Schudt
  */
-public interface Subscription {
+public interface Subscription extends Addressable {
 
     /**
      * Gets the subscriber.
      *
      * @return The subscriber.
      */
+    @Override
     Jid getJid();
 
     /**

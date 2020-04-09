@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.muc.model;
 
-import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 
 /**
  * The {@code <actor/>} element, which is used in both <code>#admin</code> and <code>#user</code> namespace to indicate who has kicked or banned another user.
  *
  * @author Christian Schudt
  */
-public interface Actor {
+public interface Actor extends Addressable {
 
     /**
      * Gets the nick name.
@@ -39,11 +39,4 @@ public interface Actor {
      * @return The nick name.
      */
     String getNick();
-
-    /**
-     * Gets the JID.
-     *
-     * @return The JID.
-     */
-    Jid getJid();
 }

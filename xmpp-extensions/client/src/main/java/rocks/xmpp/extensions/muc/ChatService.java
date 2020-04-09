@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.muc;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.items.Item;
@@ -43,7 +44,7 @@ import java.util.List;
  * @author Christian Schudt
  * @see MultiUserChatManager#createChatService(Jid)
  */
-public final class ChatService implements Comparable<ChatService> {
+public final class ChatService implements Addressable, Comparable<ChatService> {
 
     private final XmppSession xmppSession;
 
@@ -96,8 +97,20 @@ public final class ChatService implements Comparable<ChatService> {
      * Gets the service address.
      *
      * @return The service address.
+     * @deprecated Use {@link #getJid()}
      */
+    @Deprecated
     public Jid getAddress() {
+        return serviceAddress;
+    }
+
+    /**
+     * Gets the service address.
+     *
+     * @return The service address.
+     */
+    @Override
+    public Jid getJid() {
         return serviceAddress;
     }
 

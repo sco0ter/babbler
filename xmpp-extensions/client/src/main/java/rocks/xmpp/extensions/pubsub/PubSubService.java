@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.pubsub;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.data.model.DataForm;
@@ -56,7 +57,7 @@ import java.util.stream.Collectors;
  *
  * @author Christian Schudt
  */
-public final class PubSubService {
+public final class PubSubService implements Addressable {
 
     private static final Logger logger = Logger.getLogger(PubSubService.class.getName());
 
@@ -182,8 +183,20 @@ public final class PubSubService {
      * Gets the service address.
      *
      * @return The service address.
+     * @deprecated Use {@link #getJid()}
      */
+    @Deprecated
     public Jid getAddress() {
+        return service;
+    }
+
+    /**
+     * Gets the service address.
+     *
+     * @return The service address.
+     */
+    @Override
+    public Jid getJid() {
         return service;
     }
 

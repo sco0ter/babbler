@@ -53,12 +53,12 @@ final class CollectionBasedItemProvider<T extends ResultSetItem> implements Resu
 
     @Override
     public final List<T> getItems(final int index, final int maxSize) {
-        final int toIndex = index + maxSize;
         final List<T> list = new ArrayList<>(items);
-        if (index < 0 || toIndex > list.size() || index > toIndex) {
+        final int toIndex = Math.min(index + maxSize, list.size());
+        if (index > toIndex) {
             return Collections.emptyList();
         }
-        return Collections.unmodifiableList(list.subList(index, toIndex));
+        return Collections.unmodifiableList(list.subList(Math.max(0, index), toIndex));
     }
 
     @Override

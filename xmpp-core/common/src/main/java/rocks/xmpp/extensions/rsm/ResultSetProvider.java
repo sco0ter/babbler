@@ -100,4 +100,16 @@ public interface ResultSetProvider<T extends ResultSetItem> {
     static <T extends ResultSetItem> ResultSetProvider<T> forItems(Collection<T> items) {
         return new CollectionBasedItemProvider<>(items);
     }
+
+    /**
+     * Combines multiple result set providers into one.
+     *
+     * @param resultSetProviders The result set providers to combine.
+     * @param <T>                The result set item.
+     * @return The combined result set provider.
+     * @since 0.9.0
+     */
+    static <T extends ResultSetItem> ResultSetProvider<T> combine(Iterable<ResultSetProvider<T>> resultSetProviders) {
+        return new CombinedResultSetProvider<T>(resultSetProviders);
+    }
 }

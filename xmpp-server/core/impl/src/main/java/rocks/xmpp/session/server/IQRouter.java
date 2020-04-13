@@ -76,14 +76,21 @@ public class IQRouter {
     public boolean process(IQ iq) {
         Session sessionSender = sessionManager.getSession(iq.getFrom());
 
-        Object payload = iq.getExtension(Object.class);
-        if (iq.getType() == null || payload == null) {
-            // return <bad-request/> if the <iq/> has no payload or unknown type.
+        if (iq.getType() == null) {
+            // return <bad-request/> if the <iq/> has unknown type.
             sessionSender.send(iq.createError(Condition.BAD_REQUEST));
             return true;
         }
 
         if (iq.isRequest()) {
+            Object payload = iq.getExtension(Object.class);
+
+            if (payload == null) {
+                // return <bad-request/> if the <iq/> has unknown type.
+                sessionSender.send(iq.createError(Condition.BAD_REQUEST));
+                return true;
+            }
+
             try {
                 if (iq.getTo() == null) {
                     // 10.3.  No 'to' Address
@@ -134,7 +141,9 @@ public class IQRouter {
             }
         } else {
             CompletableFuture<IQ> resultFuture = pendingResults.remove(iq.getId());
-            resultFuture.complete(iq);
+            if (resultFuture != null) {
+                resultFuture.complete(iq);
+            }
         }
         return false;
     }

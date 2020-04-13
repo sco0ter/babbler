@@ -35,15 +35,12 @@ import rocks.xmpp.extensions.disco.AbstractServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
-import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
-import rocks.xmpp.util.concurrent.CompletionStages;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.HashMap;
@@ -51,12 +48,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -137,7 +132,7 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
     }
 
     /**
-     * Adds a property change listener, which listens for changes in the {@linkplain #getIdentities() identities}, {@linkplain #getFeatures() features}, {@linkplain #getExtensions() extensions} and {@linkplain #getItems() items} collections.
+     * Adds a property change listener, which listens for changes in the {@linkplain #getIdentities() identities}, {@linkplain #getFeatures() features} and {@linkplain #getExtensions() extensions} collections.
      *
      * @param listener The listener.
      * @see #removeCapabilitiesChangeListener(Consumer)
@@ -154,15 +149,6 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
      */
     public final void removeCapabilitiesChangeListener(Consumer<EventObject> listener) {
         this.capabilitiesChangeListeners.remove(listener);
-    }
-
-    /**
-     * Gets an unmodifiable list of items.
-     *
-     * @return The items.
-     */
-    public final List<Item> getItems() {
-        return discoItemHandler.getItems();
     }
 
     /**

@@ -37,6 +37,7 @@ import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
+import rocks.xmpp.extensions.disco.model.items.ItemProvider;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.util.concurrent.AsyncResult;
@@ -147,12 +148,22 @@ public abstract class AbstractServiceDiscoveryManager implements ServiceDiscover
 
     @Override
     public final void setItemProvider(ResultSetProvider<Item> itemProvider) {
-        discoItemHandler.setItemProvider(itemProvider);
+        discoItemHandler.addItemProvider((to, from, node, locale) -> itemProvider);
     }
 
     @Override
     public final void setItemProvider(String node, ResultSetProvider<Item> itemProvider) {
-        discoItemHandler.setItemProvider(node, itemProvider);
+        setItemProvider(itemProvider);
+    }
+
+    @Override
+    public final boolean addItemProvider(ItemProvider itemProvider) {
+        return discoItemHandler.addItemProvider(itemProvider);
+    }
+
+    @Override
+    public final boolean removeItemProvider(ItemProvider itemProvider) {
+        return discoItemHandler.removeItemProvider(itemProvider);
     }
 
     @Override

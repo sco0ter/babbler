@@ -26,26 +26,27 @@ package rocks.xmpp.extensions.disco.handler;
 
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
+import rocks.xmpp.extensions.disco.model.items.ItemProvider;
 import rocks.xmpp.extensions.rsm.ResultSet;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Handles 'disco#items' request by responding with the items at the specified node.
+ * Handles 'disco#items' request by responding with the items at the specified address and/or node.
  *
  * @author Christian Schudt
  */
 public final class DiscoItemsHandler extends AbstractIQHandler {
 
-    private final Map<String, ResultSetProvider<Item>> itemProviders = new ConcurrentHashMap<>();
+    private final Set<ItemProvider> itemProviders = ConcurrentHashMap.newKeySet();
 
     public DiscoItemsHandler() {
         super(ItemDiscovery.class, IQ.Type.GET);
@@ -54,60 +55,50 @@ public final class DiscoItemsHandler extends AbstractIQHandler {
     @Override
     protected IQ processRequest(IQ iq) {
         ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
-        ResultSetProvider<Item> itemProvider = itemProviders.get(itemDiscovery.getNode() == null ? "" : itemDiscovery.getNode());
-        if (itemProvider != null) {
-            ResultSet<Item> resultSet = ResultSet.create(itemProvider, itemDiscovery.getResultSetManagement());
-            return iq.createResult(new ItemDiscovery(itemDiscovery.getNode(), resultSet.getItems(), resultSet.getResultSetManagement()));
-        } else {
-            if (itemDiscovery.getNode() == null) {
-                // If there are no items associated with an entity (or if those items are not publicly available), the target entity MUST return an empty query element to the requesting entity.
-                return iq.createResult(new ItemDiscovery());
-            } else {
-                // <item-not-found/>: The JID or JID+NodeID of the specified target entity does not exist.
-                return iq.createError(Condition.ITEM_NOT_FOUND);
+
+        List<ResultSetProvider<Item>> providers = new ArrayList<>();
+        for (ItemProvider itemProvider : itemProviders) {
+            try {
+                ResultSetProvider<Item> itemResultSetProvider = itemProvider.getItems(iq.getTo(), iq.getFrom(), itemDiscovery.getNode(), iq.getLanguage());
+                if (itemResultSetProvider != null) {
+                    providers.add(itemResultSetProvider);
+                }
+            } catch (StanzaErrorException e) {
+                return iq.createError(e.getError());
             }
         }
-    }
 
-    /**
-     * Gets an unmodifiable list of items at the root node.
-     *
-     * @return The items.
-     */
-    public final List<Item> getItems() {
-        ResultSetProvider<Item> rootItemProvider = itemProviders.get("");
-        if (rootItemProvider != null) {
-            return Collections.unmodifiableList(rootItemProvider.getItems());
+        if (!providers.isEmpty()) {
+            ResultSetProvider<Item> combinedResultSetProvider = ResultSetProvider.combine(providers);
+            ResultSet<Item> resultSet = ResultSet.create(combinedResultSetProvider, itemDiscovery.getResultSetManagement());
+            return iq.createResult(new ItemDiscovery(itemDiscovery.getNode(), resultSet.getItems(), resultSet.getResultSetManagement()));
         } else {
-            return Collections.emptyList();
+            // No providers have been found to handle JID or JID+NodeID
+            // <item-not-found/>: The JID or JID+NodeID of the specified target entity does not exist.
+            return iq.createError(Condition.ITEM_NOT_FOUND);
         }
     }
 
     /**
-     * Sets an item provider for the root node.
-     * <p>
-     * If you want to manage items in memory, you can use {@link ResultSetProvider#forItems(Collection)}}.
+     * Adds an item provider. Requests to this handler will return items returned by the provider if appropriate.
      *
      * @param itemProvider The item provider.
+     * @return If the provider could be added.
+     * @see #removeItemProvider(ItemProvider)
      */
-    public final void setItemProvider(ResultSetProvider<Item> itemProvider) {
-        setItemProvider("", itemProvider);
+    public final boolean addItemProvider(ItemProvider itemProvider) {
+        return itemProviders.add(itemProvider);
     }
 
     /**
-     * Sets an item provider for a node.
-     * <p>
-     * If you want to manage items in memory, you can use {@link ResultSetProvider#forItems(Collection)}}.
+     * Removes an item provider.
      *
-     * @param node         The node name.
      * @param itemProvider The item provider.
+     * @return If the provider could be removed .
+     * @see #addItemProvider(ItemProvider)
      */
-    public final void setItemProvider(String node, ResultSetProvider<Item> itemProvider) {
-        if (itemProvider == null) {
-            itemProviders.remove(node);
-        } else {
-            itemProviders.put(node, itemProvider);
-        }
+    public final boolean removeItemProvider(ItemProvider itemProvider) {
+        return itemProviders.remove(itemProvider);
     }
 
     /**

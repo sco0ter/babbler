@@ -32,6 +32,7 @@ import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
+import rocks.xmpp.extensions.disco.model.items.ItemProvider;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.session.server.InboundClientSession;
 import rocks.xmpp.session.server.SessionManager;
@@ -55,12 +56,16 @@ public class ServerServiceDiscoveryManager extends AbstractServiceDiscoveryManag
     private Instance<InfoNodeProvider> infoNodeProviders;
 
     @Inject
+    private Instance<ItemProvider> itemProviders;
+
+    @Inject
     private ServerInfoNode serverInfoNode;
 
     @PostConstruct
     public void init() {
         addInfoNode(serverInfoNode);
         infoNodeProviders.stream().forEach(this::addInfoNodeProvider);
+        itemProviders.stream().forEach(this::addItemProvider);
     }
 
     @Override

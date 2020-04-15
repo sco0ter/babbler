@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2020 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,105 +24,18 @@
 
 package rocks.xmpp.extensions.disco.model.items;
 
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Addressable;
-import rocks.xmpp.extensions.rsm.model.ResultSetItem;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlTransient;
-import java.util.Objects;
-import java.util.UUID;
+import rocks.xmpp.extensions.disco.model.ServiceDiscoveryNode;
 
 /**
- * The implementation of the {@code <item/>} element in the {@code http://jabber.org/protocol/disco#item} namespace, used for item discovery.
- * <p>
- * This class is immutable.
- *
- * @author Christian Schudt
+ * Represents a disco item as it is returned in Service Discovery (disco#items) responses.
  */
-public final class Item implements Addressable, ResultSetItem {
-
-    @XmlTransient
-    private final String id;
-
-    @XmlAttribute
-    private final Jid jid;
-
-    @XmlAttribute
-    private final String name;
-
-    @XmlAttribute
-    private final String node;
-
-    private Item() {
-        this.jid = null;
-        this.node = null;
-        this.name = null;
-        this.id = null;
-    }
-
-    public Item(Jid jid, String node, String name, String id) {
-        this.jid = Objects.requireNonNull(jid);
-        this.node = node;
-        this.name = name;
-        this.id = id;
-    }
-
-    public Item(Jid jid, String node) {
-        this(jid, node, null, UUID.randomUUID().toString());
-    }
-
-    public Item(Jid jid, String node, String name) {
-        this(jid, node, name, UUID.randomUUID().toString());
-    }
+public interface Item extends Addressable, ServiceDiscoveryNode {
 
     /**
-     * Gets the id of this item.
+     * The item's name, e.g. "Play-Specific Chatrooms".
      *
-     * @return The id.
+     * @return The item's name.
      */
-    @Override
-    public final String getId() {
-        return id;
-    }
-
-    /**
-     * Gets the JID.
-     *
-     * @return The JID.
-     */
-    @Override
-    public final Jid getJid() {
-        return jid;
-    }
-
-    /**
-     * Gets the name.
-     *
-     * @return The name.
-     */
-    public final String getName() {
-        return name;
-    }
-
-    /**
-     * Gets the node.
-     *
-     * @return The node.
-     */
-    public final String getNode() {
-        return node;
-    }
-
-    @Override
-    public final String toString() {
-        StringBuilder sb = new StringBuilder(jid);
-        if (node != null) {
-            sb.append(" / ").append(node);
-        }
-        if (name != null) {
-            sb.append(" (").append(name).append(')');
-        }
-        return sb.toString();
-    }
+    String getName();
 }

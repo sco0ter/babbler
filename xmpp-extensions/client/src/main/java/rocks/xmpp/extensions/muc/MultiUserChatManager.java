@@ -29,10 +29,13 @@ import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
+import rocks.xmpp.extensions.disco.model.items.DiscoverableItem;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
+import rocks.xmpp.extensions.disco.model.items.ItemProvider;
 import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
 import rocks.xmpp.extensions.muc.model.user.Invite;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
@@ -41,6 +44,7 @@ import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -54,7 +58,7 @@ import java.util.stream.Collectors;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
  */
-public final class MultiUserChatManager extends Manager {
+public final class MultiUserChatManager extends Manager implements ItemProvider {
 
     private static final String ROOMS_NODE = "http://jabber.org/protocol/muc#rooms";
 
@@ -62,11 +66,9 @@ public final class MultiUserChatManager extends Manager {
 
     private final Set<Consumer<InvitationEvent>> invitationListeners = new CopyOnWriteArraySet<>();
 
-    private final Map<Jid, Item> enteredRoomsMap = new ConcurrentSkipListMap<>();
+    private final Map<Jid, DiscoverableItem> enteredRoomsMap = new ConcurrentSkipListMap<>();
 
     private final Consumer<MessageEvent> messageListener;
-
-    private final ResultSetProvider<Item> itemProvider;
 
     private MultiUserChatManager(final XmppSession xmppSession) {
         super(xmppSession, true);
@@ -87,7 +89,6 @@ public final class MultiUserChatManager extends Manager {
                 }
             }
         };
-        itemProvider = ResultSetProvider.forItems(enteredRoomsMap.values());
     }
 
     @Override
@@ -95,14 +96,12 @@ public final class MultiUserChatManager extends Manager {
         super.onEnable();
         // Listen for inbound invitations.
         xmppSession.addInboundMessageListener(messageListener);
-        serviceDiscoveryManager.setItemProvider(ROOMS_NODE, itemProvider);
     }
 
     @Override
     protected void onDisable() {
         super.onDisable();
         xmppSession.removeInboundMessageListener(messageListener);
-        serviceDiscoveryManager.setItemProvider(ROOMS_NODE, null);
     }
 
     /**
@@ -142,7 +141,7 @@ public final class MultiUserChatManager extends Manager {
      * Discovers the rooms, where a contact is in.
      *
      * @param contact The contact, which must be a full JID.
-     * @return The async result with the items, {@link rocks.xmpp.extensions.disco.model.items.Item#getJid()} has the room address, and {@link rocks.xmpp.extensions.disco.model.items.Item#getName()}} has the nickname.
+     * @return The async result with the items, {@link Item#getJid()} has the room address, and {@link Item#getName()}} has the nickname.
      * @see <a href="https://xmpp.org/extensions/xep-0045.html#disco-client">6.7 Discovering Client Support for MUC</a>
      */
     public AsyncResult<List<Item>> discoverEnteredRooms(Jid contact) {
@@ -170,7 +169,27 @@ public final class MultiUserChatManager extends Manager {
     }
 
     void roomEntered(ChatRoom chatRoom, String nick) {
-        enteredRoomsMap.put(chatRoom.getAddress(), new Item(chatRoom.getAddress(), null, nick));
+        enteredRoomsMap.put(chatRoom.getAddress(), new DiscoverableItem() {
+            @Override
+            public String getName() {
+                return nick;
+            }
+
+            @Override
+            public Jid getJid() {
+                return chatRoom.getAddress();
+            }
+
+            @Override
+            public String getNode() {
+                return null;
+            }
+
+            @Override
+            public String getId() {
+                return nick;
+            }
+        });
     }
 
     void roomExited(ChatRoom chatRoom) {
@@ -180,5 +199,13 @@ public final class MultiUserChatManager extends Manager {
     @Override
     protected void dispose() {
         invitationListeners.clear();
+    }
+
+    @Override
+    public ResultSetProvider<DiscoverableItem> getItems(Jid to, Jid from, String node, Locale locale) throws StanzaErrorException {
+        if (isEnabled() && ROOMS_NODE.equals(node)) {
+            return ResultSetProvider.forItems(enteredRoomsMap.values());
+        }
+        return null;
     }
 }

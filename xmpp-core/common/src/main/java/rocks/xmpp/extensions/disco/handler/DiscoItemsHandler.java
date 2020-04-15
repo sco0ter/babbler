@@ -28,7 +28,7 @@ import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.extensions.disco.model.items.Item;
+import rocks.xmpp.extensions.disco.model.items.DiscoverableItem;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemProvider;
 import rocks.xmpp.extensions.rsm.ResultSet;
@@ -56,10 +56,10 @@ public final class DiscoItemsHandler extends AbstractIQHandler {
     protected IQ processRequest(IQ iq) {
         ItemDiscovery itemDiscovery = iq.getExtension(ItemDiscovery.class);
 
-        List<ResultSetProvider<Item>> providers = new ArrayList<>();
+        List<ResultSetProvider<DiscoverableItem>> providers = new ArrayList<>();
         for (ItemProvider itemProvider : itemProviders) {
             try {
-                ResultSetProvider<Item> itemResultSetProvider = itemProvider.getItems(iq.getTo(), iq.getFrom(), itemDiscovery.getNode(), iq.getLanguage());
+                ResultSetProvider<DiscoverableItem> itemResultSetProvider = itemProvider.getItems(iq.getTo(), iq.getFrom(), itemDiscovery.getNode(), iq.getLanguage());
                 if (itemResultSetProvider != null) {
                     providers.add(itemResultSetProvider);
                 }
@@ -69,8 +69,8 @@ public final class DiscoItemsHandler extends AbstractIQHandler {
         }
 
         if (!providers.isEmpty()) {
-            ResultSetProvider<Item> combinedResultSetProvider = ResultSetProvider.combine(providers);
-            ResultSet<Item> resultSet = ResultSet.create(combinedResultSetProvider, itemDiscovery.getResultSetManagement());
+            ResultSetProvider<DiscoverableItem> combinedResultSetProvider = ResultSetProvider.combine(providers);
+            ResultSet<DiscoverableItem> resultSet = ResultSet.create(combinedResultSetProvider, itemDiscovery.getResultSetManagement());
             return iq.createResult(new ItemDiscovery(itemDiscovery.getNode(), resultSet.getItems(), resultSet.getResultSetManagement()));
         } else {
             // No providers have been found to handle JID or JID+NodeID

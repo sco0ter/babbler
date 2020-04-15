@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.disco.server;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.disco.model.items.Item;
+import rocks.xmpp.extensions.disco.model.items.DiscoverableItem;
 import rocks.xmpp.extensions.disco.model.items.ItemProvider;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
 import rocks.xmpp.im.roster.model.RosterItem;
@@ -58,7 +58,7 @@ public class AvailableResourcesItemProvider implements ItemProvider {
     private ServerRosterManager rosterManager;
 
     @Override
-    public ResultSetProvider<Item> getItems(Jid to, Jid from, String node, Locale locale) {
+    public ResultSetProvider<DiscoverableItem> getItems(Jid to, Jid from, String node, Locale locale) {
         if (to.getLocal() != null && node == null) {
             // The following rules apply to the handling of service discovery requests sent to bare JIDs:
             // In response to a disco#items request, the server MUST return an empty result set if:
@@ -81,9 +81,29 @@ public class AvailableResourcesItemProvider implements ItemProvider {
         return null;
     }
 
-    private ResultSetProvider<Item> getAvailableResourcesAsItems(Jid user) {
+    private ResultSetProvider<DiscoverableItem> getAvailableResourcesAsItems(Jid user) {
         return ResultSetProvider.forItems(sessionManager.getUserSessions(user.asBareJid())
-                .map(session -> new Item(session.getRemoteXmppAddress(), null, null, session.getRemoteXmppAddress().toEscapedString()))
+                .map(session -> new DiscoverableItem() {
+                    @Override
+                    public String getName() {
+                        return null;
+                    }
+
+                    @Override
+                    public Jid getJid() {
+                        return session.getRemoteXmppAddress();
+                    }
+
+                    @Override
+                    public String getNode() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getId() {
+                        return session.getRemoteXmppAddress().toEscapedString();
+                    }
+                })
                 .collect(Collectors.toList()));
     }
 }

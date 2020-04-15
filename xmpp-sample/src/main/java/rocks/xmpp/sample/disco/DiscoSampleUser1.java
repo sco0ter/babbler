@@ -31,7 +31,7 @@ import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.items.Item;
+import rocks.xmpp.extensions.disco.model.items.DiscoverableItem;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
 
 import java.util.ArrayList;
@@ -65,13 +65,34 @@ public class DiscoSampleUser1 {
                 // Login
                 xmppSession.login("111", "111", "disco");
 
-                List<Item> myItems = Collections.synchronizedList(new ArrayList<>());
+                List<DiscoverableItem> myItems = Collections.synchronizedList(new ArrayList<>());
                 for (int i = 0; i < 100; i++) {
-                    myItems.add(new Item(Jid.of("test"), "myNode" + i, "test" + i));
+                    int finalI = i;
+                    myItems.add(new DiscoverableItem() {
+                        @Override
+                        public String getId() {
+                            return "test" + finalI;
+                        }
+
+                        @Override
+                        public String getNode() {
+                            return "myNode";
+                        }
+
+                        @Override
+                        public Jid getJid() {
+                            return Jid.of("test");
+                        }
+
+                        @Override
+                        public String getName() {
+                            return "myNode" + finalI;
+                        }
+                    });
                 }
 
                 ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-                serviceDiscoveryManager.setItemProvider(ResultSetProvider.forItems(myItems));
+                serviceDiscoveryManager.addItemProvider((to, from, node, locale) -> ResultSetProvider.forItems(myItems));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

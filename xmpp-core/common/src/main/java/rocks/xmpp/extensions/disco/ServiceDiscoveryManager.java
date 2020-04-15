@@ -33,11 +33,9 @@ import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.disco.model.items.ItemProvider;
-import rocks.xmpp.extensions.rsm.ResultSetProvider;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -204,29 +202,6 @@ public interface ServiceDiscoveryManager extends IQHandler, ExtensionProtocol {
      * @return The root node.
      */
     InfoNode getRootNode();
-
-    /**
-     * Sets an item provider for the root node.
-     * <p>
-     * If you want to manage items in memory, you can use {@link ResultSetProvider#forItems(Collection)}}.
-     *
-     * @param itemProvider The item provider.
-     * @deprecated Use {@link #addItemProvider(ItemProvider)}
-     */
-    @Deprecated
-    void setItemProvider(ResultSetProvider<Item> itemProvider);
-
-    /**
-     * Sets an item provider for a node.
-     * <p>
-     * If you want to manage items in memory, you can use {@link ResultSetProvider#forItems(Collection)}}.
-     *
-     * @param node         The node name.
-     * @param itemProvider The item provider.
-     * @deprecated Use {@link #addItemProvider(ItemProvider)}
-     */
-    @Deprecated
-    void setItemProvider(String node, ResultSetProvider<Item> itemProvider);
 
     /**
      * Adds an item provider. Requests to this handler will return items returned by the provider if appropriate.

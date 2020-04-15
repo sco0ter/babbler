@@ -51,7 +51,7 @@ public final class ItemDiscovery implements ItemNode {
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/disco#items";
 
-    private final List<Item> item = new ArrayList<>();
+    private final List<ItemElement> item = new ArrayList<>();
 
     @XmlAttribute
     private final String node;
@@ -121,10 +121,12 @@ public final class ItemDiscovery implements ItemNode {
      * @param items               The items.
      * @param resultSetManagement The result set management extension.
      */
-    public ItemDiscovery(String node, Collection<Item> items, ResultSetManagement resultSetManagement) {
+    public ItemDiscovery(String node, Collection<? extends Item> items, ResultSetManagement resultSetManagement) {
         this.node = node;
         if (items != null) {
-            this.item.addAll(items);
+            items.forEach(i -> {
+                this.item.add(new ItemElement(i));
+            });
         }
         this.resultSetManagement = resultSetManagement;
     }

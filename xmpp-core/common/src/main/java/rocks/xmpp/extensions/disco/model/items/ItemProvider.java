@@ -35,7 +35,7 @@ import java.util.Locale;
  * Provides items, which can be discovered via Service Discovery.
  *
  * @author Christian Schudt
- * @see Item
+ * @see DiscoverableItem
  */
 public interface ItemProvider {
 
@@ -53,5 +53,5 @@ public interface ItemProvider {
      * @return The result set provider or null, if no result set can be returned for the given parameters.
      * @throws StanzaErrorException If an error should be returned to the requesting entity.
      */
-    ResultSetProvider<Item> getItems(Jid to, Jid from, String node, Locale locale) throws StanzaErrorException;
+    ResultSetProvider<DiscoverableItem> getItems(Jid to, Jid from, String node, Locale locale) throws StanzaErrorException;
 }

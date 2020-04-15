@@ -32,9 +32,9 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.AbstractServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
@@ -81,16 +81,21 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
 
     private final Set<ExtensionProtocol> extensions = new HashSet<>();
 
-    private final RootNode rootNode = new RootNode();
+    private final ClientInfo clientInfo = new ClientInfo();
 
     private final XmppSession xmppSession;
 
     private ClientServiceDiscoveryManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
-        addInfoNode(rootNode);
+        addInfoProvider((to, from, node, locale) -> {
+            if (node == null) {
+                return clientInfo;
+            }
+            return null;
+        });
     }
 
-    private final class RootNode implements InfoNode {
+    private final class ClientInfo implements DiscoverableInfo {
 
         private final Set<Identity> identities = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
@@ -98,13 +103,8 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
 
         private final CopyOnWriteArrayList<DataForm> extensions = new CopyOnWriteArrayList<>();
 
-        private RootNode() {
+        private ClientInfo() {
             identities.add(DEFAULT_IDENTITY);
-        }
-
-        @Override
-        public String getNode() {
-            return null;
         }
 
         @Override
@@ -159,18 +159,7 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
      * @see #removeIdentity(rocks.xmpp.extensions.disco.model.info.Identity)
      */
     public final Set<Identity> getIdentities() {
-        return Collections.unmodifiableSet(rootNode.getIdentities());
-    }
-
-    /**
-     * Gets an unmodifiable set of features.
-     *
-     * @return The features.
-     * @see #addFeature(String)
-     * @see #removeFeature(String)
-     */
-    public final Set<String> getFeatures0() {
-        return Collections.unmodifiableSet(discoInfoHandler.getRootNode().getFeatures());
+        return Collections.unmodifiableSet(clientInfo.getIdentities());
     }
 
     /**
@@ -182,7 +171,7 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
      * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public final List<DataForm> getExtensions() {
-        return Collections.unmodifiableList(discoInfoHandler.getRootNode().getExtensions());
+        return Collections.unmodifiableList(clientInfo.getExtensions());
     }
 
     /**
@@ -194,7 +183,7 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
      */
     @Override
     public final void addIdentity(Identity identity) {
-        if (discoInfoHandler.getRootNode().getIdentities().add(identity) && xmppSession.isConnected()) {
+        if (clientInfo.getIdentities().add(identity) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
     }
@@ -208,7 +197,7 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
      */
     @Override
     public final void removeIdentity(Identity identity) {
-        if (discoInfoHandler.getRootNode().getIdentities().remove(identity) && xmppSession.isConnected()) {
+        if (clientInfo.getIdentities().remove(identity) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
     }
@@ -223,7 +212,7 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
      */
     @Override
     public final void addFeature(String feature) {
-        if (rootNode.features.add(feature)) {
+        if (clientInfo.features.add(feature)) {
             Extension extension = featureToExtension.get(feature);
             setEnabled(extension != null ? Collections.singleton(extension) : null, feature, true);
             if (xmppSession.isConnected()) {
@@ -241,13 +230,18 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
      */
     @Override
     public final void removeFeature(String feature) {
-        if (rootNode.features.remove(feature)) {
+        if (clientInfo.features.remove(feature)) {
             Extension extension = featureToExtension.get(feature);
             setEnabled(extension != null ? Collections.singleton(extension) : null, feature, false);
             if (xmppSession.isConnected()) {
                 XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
             }
         }
+    }
+
+    @Override
+    public final DiscoverableInfo getDefaultInfo() {
+        return clientInfo;
     }
 
     /**
@@ -283,7 +277,7 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
      * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public final void addExtension(DataForm extension) {
-        if (discoInfoHandler.getRootNode().getExtensions().add(extension) && xmppSession.isConnected()) {
+        if (clientInfo.getExtensions().add(extension) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
     }
@@ -297,7 +291,7 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
      * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public final void removeExtension(DataForm extension) {
-        if (discoInfoHandler.getRootNode().getExtensions().remove(extension) && xmppSession.isConnected()) {
+        if (clientInfo.getExtensions().remove(extension) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
     }
@@ -315,8 +309,8 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
      * @see #discoverInformation(Jid)
      */
     @Override
-    public final AsyncResult<InfoNode> discoverInformation(Jid jid, String node) {
-        return xmppSession.query(IQ.get(jid, new InfoDiscovery(node)), InfoNode.class);
+    public final AsyncResult<DiscoverableInfo> discoverInformation(Jid jid, String node) {
+        return xmppSession.query(IQ.get(jid, new InfoDiscovery(node)), DiscoverableInfo.class);
     }
 
     /**
@@ -345,7 +339,7 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
                     if (feature != null && !enabled) {
                         Set<Extension> ex = managersToExtensions.get(managerClass);
                         for (Extension e : ex) {
-                            if (discoInfoHandler.getRootNode().getFeatures().contains(e.getNamespace())) {
+                            if (clientInfo.getFeatures().contains(e.getNamespace())) {
                                 mayDisable = false;
                                 break;
                             }

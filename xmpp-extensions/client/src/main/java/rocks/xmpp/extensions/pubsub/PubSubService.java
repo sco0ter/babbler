@@ -30,7 +30,7 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.pubsub.model.Affiliation;
 import rocks.xmpp.extensions.pubsub.model.NodeType;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
@@ -86,9 +86,9 @@ public final class PubSubService implements Addressable {
         return serviceDiscoveryManager.discoverInformation(service).thenApply(this::getFeatures);
     }
 
-    Collection<PubSubFeature> getFeatures(InfoNode infoNode) {
+    Collection<PubSubFeature> getFeatures(DiscoverableInfo discoverableInfo) {
         Collection<PubSubFeature> features = EnumSet.noneOf(PubSubFeature.class);
-        infoNode.getFeatures().stream().filter(feature -> feature.startsWith(PubSub.NAMESPACE + '#')).forEach(feature -> {
+        discoverableInfo.getFeatures().stream().filter(feature -> feature.startsWith(PubSub.NAMESPACE + '#')).forEach(feature -> {
             String f = feature.substring(feature.indexOf('#') + 1);
             try {
                 PubSubFeature pubSubFeature = PubSubFeature.valueOf(f.toUpperCase().replace('-', '_'));

@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.shim;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
-import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
+import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.List;
@@ -37,7 +37,7 @@ import java.util.Set;
  *
  * @author Christian Schudt
  */
-public interface HeaderManager extends InfoNodeProvider, ExtensionProtocol {
+public interface HeaderManager extends InfoProvider, ExtensionProtocol {
 
     /**
      * Discovers the supported headers of another entity.

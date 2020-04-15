@@ -43,9 +43,9 @@ public class ReachabilityManagerTest extends BaseTest {
         Assert.assertFalse(reachabilityManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         String feature = "urn:xmpp:reach:0";
-        Assert.assertFalse(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
+        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
         reachabilityManager.setEnabled(true);
         Assert.assertTrue(reachabilityManager.isEnabled());
-        Assert.assertTrue(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
+        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
     }
 }

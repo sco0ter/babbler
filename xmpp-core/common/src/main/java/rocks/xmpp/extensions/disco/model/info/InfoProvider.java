@@ -24,37 +24,32 @@
 
 package rocks.xmpp.extensions.disco.model.info;
 
-import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.disco.model.ServiceDiscoveryNode;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
+import rocks.xmpp.extensions.disco.model.items.ItemProvider;
 
-import java.util.List;
-import java.util.Set;
+import java.util.Locale;
 
 /**
- * A generic service discovery info node.
+ * Provides discoverable info, so that it can be discovered via Service Discovery (disco#info).
+ * <p>
+ * This is the pendant to {@link ItemProvider}.
  *
  * @author Christian Schudt
+ * @see ItemProvider
+ * @see DiscoverableInfo
  */
-public interface InfoNode extends ServiceDiscoveryNode {
+public interface InfoProvider {
 
     /**
-     * Gets the identities.
+     * Gets the info appropriate to the given parameters.
      *
-     * @return The identities.
+     * @param to     The receiving entity.
+     * @param from   The requesting entity.
+     * @param node   The requested node, if any. May be null.
+     * @param locale The locale of the requesting entity's stream or stanza.
+     * @return The info or null, if no information could be found.
+     * @throws StanzaErrorException If an error should be returned to the requesting entity.
      */
-    Set<Identity> getIdentities();
-
-    /**
-     * Gets the features.
-     *
-     * @return The features.
-     */
-    Set<String> getFeatures();
-
-    /**
-     * Gets the service discovery extensions as described in <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
-     *
-     * @return The service discovery extensions.
-     */
-    List<DataForm> getExtensions();
+    DiscoverableInfo getInfo(Jid to, Jid from, String node, Locale locale) throws StanzaErrorException;
 }

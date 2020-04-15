@@ -30,16 +30,14 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.disco.handler.DiscoInfoHandler;
 import rocks.xmpp.extensions.disco.handler.DiscoItemsHandler;
 import rocks.xmpp.extensions.disco.model.ServiceDiscoveryNode;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
-import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
-import rocks.xmpp.extensions.disco.model.items.DiscoverableItem;
+import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.disco.model.items.ItemProvider;
-import rocks.xmpp.extensions.rsm.ResultSetProvider;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.util.concurrent.CompletionStages;
@@ -93,7 +91,7 @@ public abstract class AbstractServiceDiscoveryManager implements ServiceDiscover
 
     @Override
     public final IQ handleRequest(IQ iq) {
-        if (iq.hasExtension(InfoNode.class)) {
+        if (iq.hasExtension(InfoDiscovery.class)) {
             return discoInfoHandler.handleRequest(iq);
         } else if (iq.hasExtension(ItemNode.class)) {
             return discoItemHandler.handleRequest(iq);
@@ -103,7 +101,7 @@ public abstract class AbstractServiceDiscoveryManager implements ServiceDiscover
 
 
     @Override
-    public final AsyncResult<InfoNode> discoverInformation(Jid jid) {
+    public final AsyncResult<DiscoverableInfo> discoverInformation(Jid jid) {
         return discoverInformation(jid, null);
     }
 
@@ -123,28 +121,13 @@ public abstract class AbstractServiceDiscoveryManager implements ServiceDiscover
     }
 
     @Override
-    public final boolean addInfoNodeProvider(final InfoNodeProvider infoNodeProvider) {
-        return discoInfoHandler.addInfoNodeProvider(infoNodeProvider);
+    public final boolean addInfoProvider(final InfoProvider infoProvider) {
+        return discoInfoHandler.addInfoProvider(infoProvider);
     }
 
     @Override
-    public final boolean removeInfoNodeProvider(final InfoNodeProvider infoNodeProvider) {
-        return discoInfoHandler.removeInfoNodeProvider(infoNodeProvider);
-    }
-
-    @Override
-    public final void addInfoNode(InfoNode infoNode) {
-        discoInfoHandler.addInfoNode(infoNode);
-    }
-
-    @Override
-    public final void removeInfoNode(String node) {
-        discoInfoHandler.removeInfoNode(node);
-    }
-
-    @Override
-    public final InfoNode getRootNode() {
-        return discoInfoHandler.getRootNode();
+    public final boolean removeInfoProvider(final InfoProvider infoNodeProvider) {
+        return discoInfoHandler.removeInfoProvider(infoNodeProvider);
     }
 
     @Override
@@ -174,7 +157,7 @@ public abstract class AbstractServiceDiscoveryManager implements ServiceDiscover
         return discoverServices(jid, infoNode -> infoNode.getFeatures().contains(feature));
     }
 
-    private AsyncResult<List<Item>> discoverServices(Jid jid, Predicate<InfoNode> predicate) {
+    private AsyncResult<List<Item>> discoverServices(Jid jid, Predicate<DiscoverableInfo> predicate) {
         // First discover the items of the server.
         // Then, for each item, discover the features of the item, but ignore any exceptions.
         return discoverItems(jid).thenCompose(itemDiscovery -> {

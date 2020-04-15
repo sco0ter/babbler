@@ -31,7 +31,7 @@ import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -48,13 +48,13 @@ public class HeadersManagerTest extends BaseTest {
         TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);
 
         ServiceDiscoveryManager serviceDiscoveryManager = connection2.getManager(ServiceDiscoveryManager.class);
-        InfoNode infoNode = null;
+        DiscoverableInfo discoverableInfo = null;
         try {
-            infoNode = serviceDiscoveryManager.discoverInformation(JULIET).get();
+            discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
         } catch (ExecutionException e) {
             Assert.fail();
         }
-        Assert.assertFalse(infoNode.getFeatures().contains("http://jabber.org/protocol/shim"));
+        Assert.assertFalse(discoverableInfo.getFeatures().contains("http://jabber.org/protocol/shim"));
     }
 
     @Test
@@ -69,18 +69,18 @@ public class HeadersManagerTest extends BaseTest {
         headerManager.getSupportedHeaders().add("Keywords");
 
         ServiceDiscoveryManager serviceDiscoveryManager = connection2.getManager(ServiceDiscoveryManager.class);
-        InfoNode infoNode = null;
+        DiscoverableInfo discoverableInfo = null;
         try {
-            infoNode = serviceDiscoveryManager.discoverInformation(JULIET).get();
+            discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
         } catch (ExecutionException e) {
             Assert.fail();
         }
-        Assert.assertTrue(infoNode.getFeatures().contains("http://jabber.org/protocol/shim"));
+        Assert.assertTrue(discoverableInfo.getFeatures().contains("http://jabber.org/protocol/shim"));
 
         try {
-            InfoNode infoNode1 = serviceDiscoveryManager.discoverInformation(JULIET, "http://jabber.org/protocol/shim").get();
-            Assert.assertTrue(infoNode1.getFeatures().contains("http://jabber.org/protocol/shim#In-Reply-To"));
-            Assert.assertTrue(infoNode1.getFeatures().contains("http://jabber.org/protocol/shim#Keywords"));
+            DiscoverableInfo discoverableInfo1 = serviceDiscoveryManager.discoverInformation(JULIET, "http://jabber.org/protocol/shim").get();
+            Assert.assertTrue(discoverableInfo1.getFeatures().contains("http://jabber.org/protocol/shim#In-Reply-To"));
+            Assert.assertTrue(discoverableInfo1.getFeatures().contains("http://jabber.org/protocol/shim#Keywords"));
         } catch (ExecutionException e) {
             Assert.fail();
         }

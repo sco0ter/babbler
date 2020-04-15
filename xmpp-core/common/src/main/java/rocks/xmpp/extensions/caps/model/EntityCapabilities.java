@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.caps.model;
 
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.hashes.model.Hashed;
 
 import java.util.Set;
@@ -53,10 +53,10 @@ public interface EntityCapabilities {
      * The returned byte array is neither hashed nor base64 encoded.
      * It should be used as input for generating the capability hash set.
      *
-     * @param infoNode The query.
+     * @param discoverableInfo The query.
      * @return The caps string, aka. verification string.
      */
-    byte[] createVerificationString(InfoNode infoNode);
+    byte[] createVerificationString(DiscoverableInfo discoverableInfo);
 
     /**
      * Creates the Capability Hash Node.

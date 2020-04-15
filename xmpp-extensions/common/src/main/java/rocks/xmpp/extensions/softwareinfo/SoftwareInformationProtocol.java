@@ -24,12 +24,14 @@
 
 package rocks.xmpp.extensions.softwareinfo;
 
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
-import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
+import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -43,7 +45,7 @@ import java.util.Set;
  * @see <a href="https://xmpp.org/extensions/xep-0232.html">XEP-0232: Software Information</a>
  * @since 0.9.0
  */
-public final class SoftwareInformationProtocol implements InfoNodeProvider, ExtensionProtocol {
+public final class SoftwareInformationProtocol implements InfoProvider, ExtensionProtocol {
 
     private SoftwareInformation softwareInformation;
 
@@ -76,10 +78,10 @@ public final class SoftwareInformationProtocol implements InfoNodeProvider, Exte
     }
 
     @Override
-    public final synchronized Set<InfoNode> getInfoNodes(final String node) {
+    public final synchronized DiscoverableInfo getInfo(Jid to, Jid from, String node, Locale locale) {
         if (softwareInformation != null) {
-            return Collections.singleton(new InfoDiscovery(Collections.emptyList(), Collections.emptyList(), Collections.singletonList(softwareInformation.getDataForm())));
+            return new InfoDiscovery(Collections.emptyList(), Collections.emptyList(), Collections.singletonList(softwareInformation.getDataForm()));
         }
-        return Collections.emptySet();
+        return null;
     }
 }

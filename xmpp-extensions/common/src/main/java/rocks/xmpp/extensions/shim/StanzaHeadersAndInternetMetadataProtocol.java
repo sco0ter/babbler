@@ -27,13 +27,14 @@ package rocks.xmpp.extensions.shim;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.shim.model.Headers;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
@@ -49,7 +50,7 @@ public class StanzaHeadersAndInternetMetadataProtocol implements HeaderManager {
 
     private final Set<String> supportedHeaders = new CopyOnWriteArraySet<>();
 
-    private final InfoNode infoNode = new HeaderInfoNode();
+    private final DiscoverableInfo discoverableInfo = new HeaderInfo();
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
@@ -82,19 +83,14 @@ public class StanzaHeadersAndInternetMetadataProtocol implements HeaderManager {
     }
 
     @Override
-    public final Set<InfoNode> getInfoNodes(String node) {
-        if (isEnabled()) {
-            return Collections.singleton(infoNode);
+    public final DiscoverableInfo getInfo(Jid to, Jid from, String node, Locale locale) {
+        if (isEnabled() && Headers.NAMESPACE.equals(node)) {
+            return discoverableInfo;
         }
-        return Collections.emptySet();
+        return null;
     }
 
-    private final class HeaderInfoNode implements InfoNode {
-
-        @Override
-        public final String getNode() {
-            return Headers.NAMESPACE;
-        }
+    private final class HeaderInfo implements DiscoverableInfo {
 
         @Override
         public final Set<Identity> getIdentities() {

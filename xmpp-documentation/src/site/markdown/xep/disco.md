@@ -16,10 +16,10 @@ You discover information about another XMPP entity by sending a request to it:
 
 ```java
 ServiceDiscoveryManager serviceDiscoveryManager = xmppClient.getManager(ServiceDiscoveryManager.class);
-InfoNode infoNode = serviceDiscoveryManager.discoverInformation(Jid.of("example.net")).getResult();
+DiscoverableInfo discoverableInfo = serviceDiscoveryManager.discoverInformation(Jid.of("example.net")).getResult();
 ```
 
-`infoNode` will contain information about the entity, i.e. its identity and features it supports.
+`discoverableInfo` will contain information about the entity, i.e. its identity and features it supports.
 
 ### Determining Feature Support
 

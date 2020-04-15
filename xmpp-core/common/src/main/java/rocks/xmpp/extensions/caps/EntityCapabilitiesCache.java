@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.caps;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.hashes.model.Hash;
 
 /**
@@ -33,11 +33,11 @@ import rocks.xmpp.extensions.hashes.model.Hash;
  */
 public interface EntityCapabilitiesCache {
 
-    InfoNode readCapabilities(Hash hash);
+    DiscoverableInfo readCapabilities(Hash hash);
 
-    void writeCapabilities(Hash hash, InfoNode infoNode);
+    void writeCapabilities(Hash hash, DiscoverableInfo discoverableInfo);
 
-    InfoNode readEntityCapabilities(Jid entity);
+    DiscoverableInfo readEntityCapabilities(Jid entity);
 
-    void writeEntityCapabilities(Jid entity, InfoNode infoNode);
+    void writeEntityCapabilities(Jid entity, DiscoverableInfo discoverableInfo);
 }

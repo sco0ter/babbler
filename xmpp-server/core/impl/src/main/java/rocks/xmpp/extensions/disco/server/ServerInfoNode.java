@@ -26,14 +26,16 @@ package rocks.xmpp.extensions.disco.server;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
+import rocks.xmpp.core.server.ServerConfiguration;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
 import rocks.xmpp.extensions.caps.server.ServerEntityCapabilities1Protocol;
 import rocks.xmpp.extensions.caps2.server.ServerEntityCapabilities2Protocol;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
-import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
+import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 import rocks.xmpp.extensions.hashes.CryptographicHashFunctionsProtocol;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.rsm.ResultSetManagementProtocol;
@@ -50,6 +52,7 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -58,7 +61,7 @@ import java.util.stream.Collectors;
  * @author Christian Schudt
  */
 @ApplicationScoped
-public class ServerInfoNode implements InfoNode {
+public class ServerInfoNode implements DiscoverableInfo, InfoProvider {
 
     @Inject
     private ServiceDiscoveryManager serviceDiscoveryManager;
@@ -66,10 +69,8 @@ public class ServerInfoNode implements InfoNode {
     @Inject
     private Instance<ExtensionProtocol> extensionProtocols;
 
-    @Override
-    public String getNode() {
-        return null;
-    }
+    @Inject
+    private ServerConfiguration serverConfiguration;
 
     @Override
     public Set<Identity> getIdentities() {
@@ -126,22 +127,22 @@ public class ServerInfoNode implements InfoNode {
     public ServerEntityCapabilities1Protocol entityCapabilities1() {
         return new ServerEntityCapabilities1Protocol(serviceDiscoveryManager, new EntityCapabilitiesCache() {
             @Override
-            public InfoNode readCapabilities(Hash hash) {
+            public DiscoverableInfo readCapabilities(Hash hash) {
                 return null;
             }
 
             @Override
-            public void writeCapabilities(Hash hash, InfoNode infoNode) {
+            public void writeCapabilities(Hash hash, DiscoverableInfo discoverableInfo) {
 
             }
 
             @Override
-            public InfoNode readEntityCapabilities(Jid entity) {
+            public DiscoverableInfo readEntityCapabilities(Jid entity) {
                 return null;
             }
 
             @Override
-            public void writeEntityCapabilities(Jid entity, InfoNode infoNode) {
+            public void writeEntityCapabilities(Jid entity, DiscoverableInfo discoverableInfo) {
 
             }
         });
@@ -152,24 +153,32 @@ public class ServerInfoNode implements InfoNode {
     public ServerEntityCapabilities2Protocol entityCapabilities2() {
         return new ServerEntityCapabilities2Protocol(serviceDiscoveryManager, new EntityCapabilitiesCache() {
             @Override
-            public InfoNode readCapabilities(Hash hash) {
+            public DiscoverableInfo readCapabilities(Hash hash) {
                 return null;
             }
 
             @Override
-            public void writeCapabilities(Hash hash, InfoNode infoNode) {
+            public void writeCapabilities(Hash hash, DiscoverableInfo discoverableInfo) {
 
             }
 
             @Override
-            public InfoNode readEntityCapabilities(Jid entity) {
+            public DiscoverableInfo readEntityCapabilities(Jid entity) {
                 return null;
             }
 
             @Override
-            public void writeEntityCapabilities(Jid entity, InfoNode infoNode) {
+            public void writeEntityCapabilities(Jid entity, DiscoverableInfo discoverableInfo) {
 
             }
         });
+    }
+
+    @Override
+    public DiscoverableInfo getInfo(Jid to, Jid from, String node, Locale locale) throws StanzaErrorException {
+        if (serverConfiguration.getDomain().equals(to) && node == null) {
+            return this;
+        }
+        return null;
     }
 }

@@ -34,8 +34,8 @@ import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
-import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
+import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.hashes.model.Hashed;
 import rocks.xmpp.util.cache.LruCache;
@@ -49,23 +49,23 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * @author Christian Schudt
  */
-public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabilities> implements InboundPresenceHandler, InfoNodeProvider, ExtensionProtocol {
+public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabilities> implements InboundPresenceHandler, InfoProvider, ExtensionProtocol {
 
     private static final Logger logger = Logger.getLogger(AbstractEntityCapabilitiesProtocol.class.getName());
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
-    private final Map<Collection<InfoNode>, EntityCapabilities> publishedNodes;
+    private final Map<Collection<InfoDiscovery>, EntityCapabilities> publishedNodes;
 
     private final Class<T> entityCapabilitiesClass;
 
@@ -84,17 +84,17 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
         return entityCapabilitiesClass;
     }
 
-    public final Map<Collection<InfoNode>, EntityCapabilities> getPublishedNodes() {
+    public final Map<Collection<InfoDiscovery>, EntityCapabilities> getPublishedNodes() {
         return Collections.unmodifiableMap(publishedNodes);
     }
 
     public final InfoDiscovery publishCapsNode() {
 
-        final InfoDiscovery infoDiscovery = new InfoDiscovery(serviceDiscoveryManager.getRootNode().getIdentities(), serviceDiscoveryManager.getRootNode().getFeatures(), serviceDiscoveryManager.getRootNode().getExtensions());
+        final InfoDiscovery infoDiscovery = new InfoDiscovery(serviceDiscoveryManager.getDefaultInfo().getIdentities(), serviceDiscoveryManager.getDefaultInfo().getFeatures(), serviceDiscoveryManager.getDefaultInfo().getExtensions());
 
         EntityCapabilities entityCapabilities = produceEntityCapabilities(infoDiscovery);
 
-        List<InfoNode> infoNodes = new ArrayList<>();
+        List<InfoDiscovery> infoDiscoveries = new ArrayList<>();
         Set<Hashed> capabilityHashSet = entityCapabilities.getCapabilityHashSet();
         for (Hashed hashed : capabilityHashSet) {
 
@@ -102,9 +102,9 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
             entityCapabilitiesCache.writeCapabilities(Hash.from(hashed), infoDiscovery);
 
             final String node = entityCapabilities.createCapabilityHashNode(hashed);
-            infoNodes.add(new InfoDiscovery(node, infoDiscovery.getIdentities(), infoDiscovery.getFeatures(), infoDiscovery.getExtensions()));
+            infoDiscoveries.add(new InfoDiscovery(node, infoDiscovery.getIdentities(), infoDiscovery.getFeatures(), infoDiscovery.getExtensions()));
         }
-        publishedNodes.put(infoNodes, entityCapabilities);
+        publishedNodes.put(infoDiscoveries, entityCapabilities);
         return infoDiscovery;
     }
 
@@ -121,11 +121,11 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
             }
             final Hash hash = Hash.from(hashed);
             // Check if the hash is already known.
-            final InfoNode infoNode = entityCapabilitiesCache.readCapabilities(hash);
+            final DiscoverableInfo discoverableInfo = entityCapabilitiesCache.readCapabilities(hash);
 
-            if (infoNode != null) {
+            if (discoverableInfo != null) {
                 // If its known, just update the information for this entity.
-                entityCapabilitiesCache.writeEntityCapabilities(entity, infoNode);
+                entityCapabilitiesCache.writeEntityCapabilities(entity, discoverableInfo);
             } else {
                 final String nodeToDiscover = caps.createCapabilityHashNode(hash);
                 try {
@@ -214,13 +214,13 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
     }
 
     @Override
-    public final Set<InfoNode> getInfoNodes(final String node) {
+    public final DiscoverableInfo getInfo(Jid to, Jid from, String node, Locale locale) {
         return publishedNodes.keySet()
                 .stream()
                 .flatMap(Collection::stream)
                 .filter(infoNode -> Objects.equals(infoNode.getNode(), node))
-                .collect(Collectors.toSet());
+                .findFirst().orElse(null);
     }
 
-    protected abstract T produceEntityCapabilities(InfoNode infoNode);
+    protected abstract T produceEntityCapabilities(DiscoverableInfo discoverableInfo);
 }

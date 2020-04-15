@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.disco.model.info;
 
 import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.disco.model.ServiceDiscoveryNode;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
@@ -49,7 +50,7 @@ import java.util.stream.Collectors;
  * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
  */
 @XmlRootElement(name = "query")
-public final class InfoDiscovery implements InfoNode {
+public final class InfoDiscovery implements DiscoverableInfo, ServiceDiscoveryNode {
 
     /**
      * http://jabber.org/protocol/disco#info

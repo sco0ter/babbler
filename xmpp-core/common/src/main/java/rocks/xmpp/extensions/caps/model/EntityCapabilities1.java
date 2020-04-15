@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.caps.model;
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.Identity;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.hashes.model.Hashed;
 import rocks.xmpp.util.Strings;
 
@@ -82,16 +82,16 @@ public final class EntityCapabilities1 extends StreamFeature implements EntityCa
     }
 
     /**
-     * Creates an entity caps from an info node and hash function.
+     * Creates an entity caps from discoverable info and hash function.
      *
-     * @param node          The node.
-     * @param infoNode      The info node.
-     * @param messageDigest The hash function.
+     * @param node             The node.
+     * @param discoverableInfo The discoverable info.
+     * @param messageDigest    The hash function.
      */
-    public EntityCapabilities1(final String node, final InfoNode infoNode, final MessageDigest messageDigest) {
+    public EntityCapabilities1(final String node, final DiscoverableInfo discoverableInfo, final MessageDigest messageDigest) {
         this.node = Objects.requireNonNull(node);
         this.hash = messageDigest.getAlgorithm();
-        this.ver = messageDigest.digest(createVerificationString(infoNode));
+        this.ver = messageDigest.digest(createVerificationString(discoverableInfo));
     }
 
     @Override
@@ -132,11 +132,11 @@ public final class EntityCapabilities1 extends StreamFeature implements EntityCa
     }
 
     @Override
-    public final byte[] createVerificationString(final InfoNode infoNode) {
+    public final byte[] createVerificationString(final DiscoverableInfo discoverableInfo) {
 
-        final Set<Identity> identities = infoNode.getIdentities();
-        final Set<String> features = infoNode.getFeatures();
-        final List<DataForm> dataForms = new ArrayList<>(infoNode.getExtensions());
+        final Set<Identity> identities = discoverableInfo.getIdentities();
+        final Set<String> features = discoverableInfo.getFeatures();
+        final List<DataForm> dataForms = new ArrayList<>(discoverableInfo.getExtensions());
 
         // 1. Initialize an empty string S.
         final StringBuilder sb = new StringBuilder();

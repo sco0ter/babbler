@@ -65,9 +65,9 @@ public class PingManagerTest extends BaseTest {
         Assert.assertTrue(pingManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         String feature = "urn:xmpp:ping";
-        Assert.assertTrue(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
+        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
         pingManager.setEnabled(false);
         Assert.assertFalse(pingManager.isEnabled());
-        Assert.assertFalse(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
+        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
     }
 }

@@ -27,8 +27,8 @@ package rocks.xmpp.extensions.caps2.model;
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.hashes.model.Hashed;
 import rocks.xmpp.util.Strings;
@@ -66,11 +66,11 @@ public final class EntityCapabilities2 extends StreamFeature implements EntityCa
     private EntityCapabilities2() {
     }
 
-    public EntityCapabilities2(final InfoNode infoNode, final MessageDigest... messageDigest) {
+    public EntityCapabilities2(final DiscoverableInfo discoverableInfo, final MessageDigest... messageDigest) {
         if (messageDigest.length == 0) {
             throw new IllegalArgumentException("At least one hash function must be provided.");
         }
-        final byte[] verificationString = createVerificationString(infoNode);
+        final byte[] verificationString = createVerificationString(discoverableInfo);
         for (MessageDigest digest : messageDigest) {
             hashes.add(new Hash(digest.digest(verificationString), digest.getAlgorithm()));
         }
@@ -82,11 +82,11 @@ public final class EntityCapabilities2 extends StreamFeature implements EntityCa
     }
 
     @Override
-    public final byte[] createVerificationString(final InfoNode infoNode) {
+    public final byte[] createVerificationString(final DiscoverableInfo discoverableInfo) {
 
         final StringBuilder sb = new StringBuilder();
 
-        for (String feature : infoNode.getFeatures()) {
+        for (String feature : discoverableInfo.getFeatures()) {
             // 4.1. For each <feature/> element: Encode the character data of the 'var' attribute
             // and append an octet of value 0x1f (ASCII Unit Separator)
             // 4.2. Join the resulting octet strings together, ordered from lesser to greater.
@@ -97,7 +97,7 @@ public final class EntityCapabilities2 extends StreamFeature implements EntityCa
         sb.appendCodePoint('\u001C');
 
         // 5.1. For each <identity/> node:
-        for (Identity identity : infoNode.getIdentities()) {
+        for (Identity identity : discoverableInfo.getIdentities()) {
             // 5.1.1. Encode the character data of the 'category', 'type', 'xml:lang' and 'name' attributes.
             if (identity.getCategory() != null) {
                 sb.append(identity.getCategory());
@@ -125,7 +125,7 @@ public final class EntityCapabilities2 extends StreamFeature implements EntityCa
         sb.appendCodePoint('\u001C');
 
         // 6.1. For each <x/> element
-        for (DataForm dataForm : infoNode.getExtensions()) {
+        for (DataForm dataForm : discoverableInfo.getExtensions()) {
             List<DataForm.Field> fields = new ArrayList<>(dataForm.getFields());
             fields.sort(null);
 

@@ -27,10 +27,10 @@ package rocks.xmpp.extensions.disco.server;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.disco.AbstractServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
-import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
+import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.disco.model.items.ItemProvider;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
@@ -53,7 +53,7 @@ public class ServerServiceDiscoveryManager extends AbstractServiceDiscoveryManag
     private SessionManager sessionManager;
 
     @Inject
-    private Instance<InfoNodeProvider> infoNodeProviders;
+    private Instance<InfoProvider> infoProviders;
 
     @Inject
     private Instance<ItemProvider> itemProviders;
@@ -63,15 +63,14 @@ public class ServerServiceDiscoveryManager extends AbstractServiceDiscoveryManag
 
     @PostConstruct
     public void init() {
-        addInfoNode(serverInfoNode);
-        infoNodeProviders.stream().forEach(this::addInfoNodeProvider);
+        infoProviders.stream().forEach(this::addInfoProvider);
         itemProviders.stream().forEach(this::addItemProvider);
     }
 
     @Override
-    public AsyncResult<InfoNode> discoverInformation(Jid jid, String node) {
+    public AsyncResult<DiscoverableInfo> discoverInformation(Jid jid, String node) {
         InboundClientSession session = (InboundClientSession) sessionManager.getSession(jid);
-        return session.query(IQ.get(new InfoDiscovery(node))).thenApply(result -> result.getExtension(InfoNode.class));
+        return session.query(IQ.get(new InfoDiscovery(node))).thenApply(result -> result.getExtension(DiscoverableInfo.class));
     }
 
     @Override
@@ -97,5 +96,10 @@ public class ServerServiceDiscoveryManager extends AbstractServiceDiscoveryManag
     @Override
     public void removeFeature(String feature) {
 
+    }
+
+    @Override
+    public DiscoverableInfo getDefaultInfo() {
+        return serverInfoNode;
     }
 }

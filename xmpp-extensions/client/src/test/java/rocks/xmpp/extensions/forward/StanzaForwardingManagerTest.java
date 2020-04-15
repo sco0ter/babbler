@@ -43,9 +43,9 @@ public class StanzaForwardingManagerTest extends BaseTest {
         Assert.assertFalse(stanzaForwardingManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         String feature = "urn:xmpp:forward:0";
-        Assert.assertFalse(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
+        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
         stanzaForwardingManager.setEnabled(true);
         Assert.assertTrue(stanzaForwardingManager.isEnabled());
-        Assert.assertTrue(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
+        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
     }
 }

@@ -27,9 +27,9 @@ package rocks.xmpp.extensions.disco;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
-import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
+import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.disco.model.items.ItemProvider;
@@ -57,7 +57,7 @@ public interface ServiceDiscoveryManager extends IQHandler, ExtensionProtocol {
      * @param jid The entity's JID.
      * @return The async service discovery result.
      */
-    AsyncResult<InfoNode> discoverInformation(Jid jid);
+    AsyncResult<DiscoverableInfo> discoverInformation(Jid jid);
 
     /**
      * Discovers information about another XMPP entity targeted at a specific node.
@@ -71,7 +71,7 @@ public interface ServiceDiscoveryManager extends IQHandler, ExtensionProtocol {
      * @return The async service discovery result.
      * @see #discoverInformation(Jid)
      */
-    AsyncResult<InfoNode> discoverInformation(Jid jid, String node);
+    AsyncResult<DiscoverableInfo> discoverInformation(Jid jid, String node);
 
     /**
      * Discovers item associated with another XMPP entity.
@@ -165,43 +165,29 @@ public interface ServiceDiscoveryManager extends IQHandler, ExtensionProtocol {
     void removeFeature(String feature);
 
     /**
-     * Adds an info node provider.
+     * Adds an info provider.
      *
-     * @param infoNodeProvider The info node provider.
+     * @param infoProvider The info provider.
      * @return true, if it has been successfully added.
-     * @see #removeInfoNodeProvider(InfoNodeProvider)
+     * @see #removeInfoProvider(InfoProvider)
      */
-    boolean addInfoNodeProvider(InfoNodeProvider infoNodeProvider);
+    boolean addInfoProvider(InfoProvider infoProvider);
 
     /**
-     * Removes an info node provider.
+     * Removes an info provider.
      *
-     * @param infoNodeProvider The info node provider.
+     * @param infoProvider The info provider.
      * @return true, if it has been successfully remove.
-     * @see #addInfoNodeProvider(InfoNodeProvider)
+     * @see #addInfoProvider(InfoProvider)
      */
-    boolean removeInfoNodeProvider(InfoNodeProvider infoNodeProvider);
-
-    /**
-     * Adds an info node.
-     *
-     * @param infoNode The info node.
-     */
-    void addInfoNode(InfoNode infoNode);
-
-    /**
-     * Removes an info node.
-     *
-     * @param node The node name.
-     */
-    void removeInfoNode(String node);
+    boolean removeInfoProvider(InfoProvider infoProvider);
 
     /**
      * Gets the root node.
      *
      * @return The root node.
      */
-    InfoNode getRootNode();
+    DiscoverableInfo getDefaultInfo();
 
     /**
      * Adds an item provider. Requests to this handler will return items returned by the provider if appropriate.

@@ -28,7 +28,7 @@ import rocks.xmpp.extensions.caps.AbstractEntityCapabilitiesProtocol;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
 import rocks.xmpp.extensions.caps2.model.EntityCapabilities2;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -47,9 +47,9 @@ public abstract class AbstractEntityCapabilities2Protocol extends AbstractEntity
     }
 
     @Override
-    protected final EntityCapabilities2 produceEntityCapabilities(InfoNode infoNode) {
+    protected final EntityCapabilities2 produceEntityCapabilities(DiscoverableInfo discoverableInfo) {
         try {
-            return new EntityCapabilities2(infoNode, MessageDigest.getInstance("sha-256"));
+            return new EntityCapabilities2(discoverableInfo, MessageDigest.getInstance("sha-256"));
         } catch (NoSuchAlgorithmException e) {
             throw new AssertionError(e);
         }

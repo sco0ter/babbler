@@ -35,8 +35,8 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
 import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
 import rocks.xmpp.extensions.muc.model.Actor;
 import rocks.xmpp.extensions.muc.model.Affiliation;
@@ -1072,7 +1072,7 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://www.xmpp.org/extensions/xep-0045.html#impl-service-traffic">17.1.1 Allowable Traffic</a>
      */
     public AsyncResult<Set<String>> discoverAllowableTraffic() {
-        return serviceDiscoveryManager.discoverInformation(roomJid, "http://jabber.org/protocol/muc#traffic").thenApply(InfoNode::getFeatures);
+        return serviceDiscoveryManager.discoverInformation(roomJid, "http://jabber.org/protocol/muc#traffic").thenApply(DiscoverableInfo::getFeatures);
     }
 
     @Override

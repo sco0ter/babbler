@@ -29,9 +29,9 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
 import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -156,8 +156,8 @@ public class EntityCapabilitiesTest extends XmlTest {
         features.add("http://jabber.org/protocol/muc");
         features.add("http://jabber.org/protocol/caps");
 
-        InfoNode infoNode = new InfoDiscovery(identities, features);
-        EntityCapabilities1 entityCaps = new EntityCapabilities1("", infoNode, MessageDigest.getInstance("sha-1"));
+        DiscoverableInfo discoverableInfo = new InfoDiscovery(identities, features);
+        EntityCapabilities1 entityCaps = new EntityCapabilities1("", discoverableInfo, MessageDigest.getInstance("sha-1"));
         Assert.assertEquals(entityCaps.getVerificationString(), "QgayPKawpkPSDYmwT/WM94uAlu0=");
     }
 
@@ -237,8 +237,8 @@ public class EntityCapabilitiesTest extends XmlTest {
         features.add("http://jabber.org/protocol/shim");
         features.add("http://jabber.org/protocol/caps");
 
-        InfoNode infoNode = new InfoDiscovery(identities, features);
-        EntityCapabilities1 entityCaps = new EntityCapabilities1("", infoNode, MessageDigest.getInstance("sha-1"));
+        DiscoverableInfo discoverableInfo = new InfoDiscovery(identities, features);
+        EntityCapabilities1 entityCaps = new EntityCapabilities1("", discoverableInfo, MessageDigest.getInstance("sha-1"));
         Assert.assertEquals(entityCaps.getVerificationString(), "40K55pBx86cs2cR44flP35MpLCk=");
     }
 }

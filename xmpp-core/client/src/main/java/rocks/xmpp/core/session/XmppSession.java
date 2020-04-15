@@ -64,7 +64,7 @@ import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.caps.client.ClientEntityCapabilitiesManager;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.disco.client.ClientServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
+import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 import rocks.xmpp.extensions.sm.client.ClientStreamManager;
 import rocks.xmpp.util.XmppUtils;
@@ -309,8 +309,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                 } else {
                     serviceDiscoveryManager.registerFeature(extension);
                 }
-                if (manager instanceof InfoNodeProvider) {
-                    serviceDiscoveryManager.addInfoNodeProvider((InfoNodeProvider) manager);
+                if (manager instanceof InfoProvider) {
+                    serviceDiscoveryManager.addInfoProvider((InfoProvider) manager);
                 }
             } else {
                 serviceDiscoveryManager.registerFeature(extension);
@@ -1498,7 +1498,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      * @return The enabled features.
      */
     public final Set<String> getEnabledFeatures() {
-        return serviceDiscoveryManager.getRootNode().getFeatures();
+        return serviceDiscoveryManager.getDefaultInfo().getFeatures();
     }
 
     /**

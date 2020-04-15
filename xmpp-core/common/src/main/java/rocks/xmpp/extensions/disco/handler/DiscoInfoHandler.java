@@ -29,19 +29,15 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
-import rocks.xmpp.extensions.disco.model.info.InfoNodeProvider;
+import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
@@ -52,9 +48,7 @@ import java.util.stream.Collectors;
  */
 public final class DiscoInfoHandler extends AbstractIQHandler {
 
-    private final Set<InfoNodeProvider> infoNodeProviders = new CopyOnWriteArraySet<>();
-
-    private final Map<String, InfoNode> infoNodeMap = new ConcurrentHashMap<>();
+    private final Set<InfoProvider> infoProviders = new CopyOnWriteArraySet<>();
 
     public DiscoInfoHandler() {
         super(InfoDiscovery.class, IQ.Type.GET);
@@ -64,38 +58,32 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
     protected final IQ processRequest(IQ iq) {
 
         InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
-        Set<InfoNode> infoNodes = new HashSet<>();
-        for (InfoNodeProvider infoNodeProvider : infoNodeProviders) {
+        Set<DiscoverableInfo> discoverableInfos = new HashSet<>();
+        for (InfoProvider infoNodeProvider : infoProviders) {
             try {
-                Set<InfoNode> nodes = infoNodeProvider.getInfoNodes(infoDiscovery.getNode());
-                if (nodes != null) {
-                    nodes.stream()
-                            .filter(infoNode -> Objects.equals(infoNode.getNode(), infoDiscovery.getNode()))
-                            .forEach(infoNodes::add);
+                DiscoverableInfo info = infoNodeProvider.getInfo(iq.getTo(), iq.getFrom(), infoDiscovery.getNode(), iq.getLanguage());
+                if (info != null) {
+                    discoverableInfos.add(info);
                 }
             } catch (StanzaErrorException e) {
                 return iq.createError(e.getError());
             }
         }
 
-        InfoNode infoNode = infoNodeMap.get(infoDiscovery.getNode() == null ? "" : infoDiscovery.getNode());
-        if (infoNode != null) {
-            infoNodes.add(infoNode);
-        }
-        Set<String> features = infoNodes.stream()
+        Set<String> features = discoverableInfos.stream()
                 .filter(infoNode1 -> Objects.nonNull(infoNode1.getFeatures()))
                 .flatMap(infoNode1 -> infoNode1.getFeatures().stream())
                 .collect(Collectors.toSet());
-        Set<Identity> identities = infoNodes.stream()
+        Set<Identity> identities = discoverableInfos.stream()
                 .filter(infoNode1 -> Objects.nonNull(infoNode1.getIdentities()))
                 .flatMap(infoNode1 -> infoNode1.getIdentities().stream())
                 .collect(Collectors.toSet());
-        List<DataForm> extensions = infoNodes.stream()
+        List<DataForm> extensions = discoverableInfos.stream()
                 .filter(infoNode1 -> Objects.nonNull(infoNode1.getExtensions()))
                 .flatMap(infoNode1 -> infoNode1.getExtensions().stream())
                 .collect(Collectors.toList());
 
-        if (!infoNodes.isEmpty()) {
+        if (!discoverableInfos.isEmpty()) {
             return iq.createResult(new InfoDiscovery(infoDiscovery.getNode(), identities, features, extensions));
         } else {
             return iq.createError(Condition.ITEM_NOT_FOUND);
@@ -103,91 +91,24 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
     }
 
     /**
-     * Adds an info node provider.
+     * Adds an info provider.
      *
-     * @param infoNodeProvider The info node provider.
+     * @param infoProvider The info provider.
      * @return true, if it has been successfully added.
-     * @see #removeInfoNodeProvider(InfoNodeProvider)
+     * @see #removeInfoProvider(InfoProvider)
      */
-    public final boolean addInfoNodeProvider(InfoNodeProvider infoNodeProvider) {
-        return infoNodeProviders.add(infoNodeProvider);
+    public final boolean addInfoProvider(InfoProvider infoProvider) {
+        return infoProviders.add(infoProvider);
     }
 
     /**
-     * Removes an info node provider.
+     * Removes an info provider.
      *
-     * @param infoNodeProvider The info node provider.
+     * @param infoProvider The info provider.
      * @return true, if it has been successfully remove.
-     * @see #addInfoNodeProvider(InfoNodeProvider)
+     * @see #addInfoProvider(InfoProvider)
      */
-    public final boolean removeInfoNodeProvider(InfoNodeProvider infoNodeProvider) {
-        return infoNodeProviders.remove(infoNodeProvider);
-    }
-
-    /**
-     * Adds an info node.
-     *
-     * @param infoNode The info node.
-     */
-    public final void addInfoNode(InfoNode infoNode) {
-        String key = infoNode.getNode() == null ? "" : infoNode.getNode();
-        infoNodeMap.put(key, infoNode);
-    }
-
-    /**
-     * Removes an info node.
-     *
-     * @param node The node name.
-     */
-    public final void removeInfoNode(String node) {
-        infoNodeMap.remove(node == null ? "" : node);
-    }
-
-    /**
-     * Clears all nodes except the root node.
-     */
-    public final void clear() {
-        infoNodeMap.clear();
-    }
-
-    /**
-     * Gets the root node.
-     *
-     * @return The root node.
-     */
-    public InfoNode getRootNode() {
-        return infoNodeMap.computeIfAbsent("", key -> new RootNode());
-    }
-
-    /**
-     * The default root node.
-     */
-    private static final class RootNode implements InfoNode {
-
-        private final Set<Identity> identities = Collections.newSetFromMap(new ConcurrentHashMap<>());
-
-        private final Set<String> features = Collections.newSetFromMap(new ConcurrentHashMap<>());
-
-        private final CopyOnWriteArrayList<DataForm> extensions = new CopyOnWriteArrayList<>();
-
-        @Override
-        public String getNode() {
-            return null;
-        }
-
-        @Override
-        public Set<Identity> getIdentities() {
-            return identities;
-        }
-
-        @Override
-        public Set<String> getFeatures() {
-            return features;
-        }
-
-        @Override
-        public List<DataForm> getExtensions() {
-            return extensions;
-        }
+    public final boolean removeInfoProvider(InfoProvider infoProvider) {
+        return infoProviders.remove(infoProvider);
     }
 }

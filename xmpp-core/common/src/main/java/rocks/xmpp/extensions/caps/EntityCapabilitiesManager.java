@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.caps;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
@@ -33,7 +33,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  */
 public interface EntityCapabilitiesManager {
 
-    AsyncResult<InfoNode> discoverCapabilities(Jid jid);
+    AsyncResult<DiscoverableInfo> discoverCapabilities(Jid jid);
 
     AsyncResult<Boolean> isSupported(String feature, Jid jid);
 }

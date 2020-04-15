@@ -24,14 +24,38 @@
 
 package rocks.xmpp.extensions.disco.model.info;
 
-import rocks.xmpp.core.stanza.model.StanzaErrorException;
+import rocks.xmpp.extensions.data.model.DataForm;
 
+import java.util.List;
 import java.util.Set;
 
 /**
+ * Information which can be discovered via Service Discovery.
+ * <p>
+ * It includes, an entity's identities, features and extensions.
+ *
  * @author Christian Schudt
  */
-public interface InfoNodeProvider {
+public interface DiscoverableInfo {
 
-    Set<InfoNode> getInfoNodes(String node) throws StanzaErrorException;
+    /**
+     * Gets the identities.
+     *
+     * @return The identities.
+     */
+    Set<Identity> getIdentities();
+
+    /**
+     * Gets the features.
+     *
+     * @return The features.
+     */
+    Set<String> getFeatures();
+
+    /**
+     * Gets the service discovery extensions as described in <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
+     *
+     * @return The service discovery extensions.
+     */
+    List<DataForm> getExtensions();
 }

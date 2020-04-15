@@ -32,7 +32,7 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.util.ComparableTestHelper;
@@ -165,7 +165,7 @@ public class ServiceDiscoveryTest extends XmlTest {
                 "  </query>\n" +
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
-        InfoNode infoDiscovery = iq.getExtension(InfoDiscovery.class);
+        DiscoverableInfo infoDiscovery = iq.getExtension(InfoDiscovery.class);
         Assert.assertNotNull(infoDiscovery);
         Assert.assertEquals(infoDiscovery.getExtensions().size(), 1);
         Assert.assertEquals(infoDiscovery.getExtensions().get(0).getType(), DataForm.Type.RESULT);

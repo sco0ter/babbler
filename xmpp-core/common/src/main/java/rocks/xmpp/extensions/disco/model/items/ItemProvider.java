@@ -49,7 +49,7 @@ public interface ItemProvider {
      * @param to     The receiving entity.
      * @param from   The requesting entity.
      * @param node   The requested node, if any. May be null.
-     * @param locale The locale of the requesting entities stream or stanza.
+     * @param locale The locale of the requesting entity's stream or stanza.
      * @return The result set provider or null, if no result set can be returned for the given parameters.
      * @throws StanzaErrorException If an error should be returned to the requesting entity.
      */

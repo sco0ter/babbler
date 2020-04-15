@@ -31,7 +31,7 @@ import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.cache.DirectoryCache;
@@ -59,12 +59,12 @@ public class ClientEntityCapabilitiesManager extends Manager implements EntityCa
     private static final Logger logger = Logger.getLogger(ClientEntityCapabilitiesManager.class.getName());
 
     // Cache up to 100 capability hashes in memory.
-    private static final Map<Hash, InfoNode> CAPS_CACHE = new LruCache<>(100);
+    private static final Map<Hash, DiscoverableInfo> CAPS_CACHE = new LruCache<>(100);
 
     // Cache the capabilities of an entity.
-    private static final Map<Jid, InfoNode> ENTITY_CAPABILITIES = new ConcurrentHashMap<>();
+    private static final Map<Jid, DiscoverableInfo> ENTITY_CAPABILITIES = new ConcurrentHashMap<>();
 
-    private static final Map<Jid, AsyncResult<InfoNode>> REQUESTS = new ConcurrentHashMap<>();
+    private static final Map<Jid, AsyncResult<DiscoverableInfo>> REQUESTS = new ConcurrentHashMap<>();
 
     private final DirectoryCache directoryCache;
 
@@ -74,12 +74,12 @@ public class ClientEntityCapabilitiesManager extends Manager implements EntityCa
     }
 
     @Override
-    public InfoNode readCapabilities(Hash hash) {
+    public DiscoverableInfo readCapabilities(Hash hash) {
         if (directoryCache != null) {
             // First check the in-memory cache.
-            InfoNode infoNode = CAPS_CACHE.get(hash);
-            if (infoNode != null) {
-                return infoNode;
+            DiscoverableInfo discoverableInfo = CAPS_CACHE.get(hash);
+            if (discoverableInfo != null) {
+                return discoverableInfo;
             }
             // If it's not present, check the persistent cache.
             String fileName = XmppUtils.hash(hash.toString().getBytes(StandardCharsets.UTF_8)) + ".caps";
@@ -87,9 +87,9 @@ public class ClientEntityCapabilitiesManager extends Manager implements EntityCa
                 byte[] bytes = directoryCache.get(fileName);
                 if (bytes != null) {
                     try (Reader reader = new InputStreamReader(new ByteArrayInputStream(bytes), StandardCharsets.UTF_8)) {
-                        infoNode = (InfoNode) xmppSession.createUnmarshaller().unmarshal(reader);
-                        CAPS_CACHE.put(hash, infoNode);
-                        return infoNode;
+                        discoverableInfo = (DiscoverableInfo) xmppSession.createUnmarshaller().unmarshal(reader);
+                        CAPS_CACHE.put(hash, discoverableInfo);
+                        return discoverableInfo;
                     }
                 }
             } catch (Exception e) {
@@ -101,17 +101,17 @@ public class ClientEntityCapabilitiesManager extends Manager implements EntityCa
     }
 
     @Override
-    public void writeCapabilities(Hash hash, InfoNode infoNode) {
+    public void writeCapabilities(Hash hash, DiscoverableInfo discoverableInfo) {
         if (directoryCache != null) {
             // Write to in-memory cache.
-            CAPS_CACHE.put(hash, infoNode);
+            CAPS_CACHE.put(hash, discoverableInfo);
 
             // Write to persistent cache.
             try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
                 XMLStreamWriter xmppStreamWriter = null;
                 try {
                     xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(byteArrayOutputStream, StandardCharsets.UTF_8.name()));
-                    xmppSession.createMarshaller().marshal(infoNode, xmppStreamWriter);
+                    xmppSession.createMarshaller().marshal(discoverableInfo, xmppStreamWriter);
                     xmppStreamWriter.flush();
                 } finally {
                     if (xmppStreamWriter != null) {
@@ -126,26 +126,26 @@ public class ClientEntityCapabilitiesManager extends Manager implements EntityCa
     }
 
     @Override
-    public InfoNode readEntityCapabilities(Jid entity) {
+    public DiscoverableInfo readEntityCapabilities(Jid entity) {
         return ENTITY_CAPABILITIES.get(entity);
     }
 
     @Override
-    public void writeEntityCapabilities(Jid entity, InfoNode infoNode) {
-        ENTITY_CAPABILITIES.put(entity, infoNode);
+    public void writeEntityCapabilities(Jid entity, DiscoverableInfo discoverableInfo) {
+        ENTITY_CAPABILITIES.put(entity, discoverableInfo);
     }
 
     /**
      * Discovers the capabilities of another XMPP entity.
      *
      * @param jid The JID, which should usually be a full JID.
-     * @return The async result with the capabilities in form of a info node, which contains the identities, the features and service discovery extensions.
+     * @return The async result with the capabilities in form of the discovered info, which contains the identities, the features and service discovery extensions.
      * @see <a href="https://xmpp.org/extensions/xep-0115.html#discover">6.2 Discovering Capabilities</a>
      */
     @Override
-    public final AsyncResult<InfoNode> discoverCapabilities(Jid jid) {
-        InfoNode infoNode = readEntityCapabilities(jid);
-        if (infoNode == null) {
+    public final AsyncResult<DiscoverableInfo> discoverCapabilities(Jid jid) {
+        DiscoverableInfo discoverableInfo = readEntityCapabilities(jid);
+        if (discoverableInfo == null) {
             // Make sure, that for the same JID no multiple concurrent queries are sent. One is enough.
             return REQUESTS.computeIfAbsent(jid, key -> xmppSession.getManager(ServiceDiscoveryManager.class).discoverInformation(jid)
                     .whenComplete((result, e) -> {
@@ -155,7 +155,7 @@ public class ClientEntityCapabilitiesManager extends Manager implements EntityCa
                         REQUESTS.remove(jid);
                     }));
         }
-        return new AsyncResult<>(CompletableFuture.completedFuture(infoNode));
+        return new AsyncResult<>(CompletableFuture.completedFuture(discoverableInfo));
     }
 
     /**

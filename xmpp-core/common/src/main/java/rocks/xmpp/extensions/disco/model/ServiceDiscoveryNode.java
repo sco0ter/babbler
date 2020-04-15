@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.disco.model;
 
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 
 /**
  * Represents one of the two service discovery node types, info or item node.
  *
  * @author Christian Schudt
- * @see InfoNode
+ * @see DiscoverableInfo
  * @see ItemNode
  */
 public interface ServiceDiscoveryNode {

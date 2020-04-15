@@ -48,10 +48,10 @@ public class RpcManagerTest extends BaseTest {
         Assert.assertFalse(rpcManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         String feature = "jabber:iq:rpc";
-        Assert.assertFalse(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
+        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
         rpcManager.setRpcHandler((requester, methodName, parameters) -> null);
         Assert.assertTrue(rpcManager.isEnabled());
-        Assert.assertTrue(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
+        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
     }
 
     @Test

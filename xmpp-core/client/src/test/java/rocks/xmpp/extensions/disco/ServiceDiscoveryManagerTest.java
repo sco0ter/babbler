@@ -33,7 +33,7 @@ import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.client.ClientServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
-import rocks.xmpp.extensions.disco.model.info.InfoNode;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.items.DiscoverableItem;
 import rocks.xmpp.extensions.disco.model.items.ItemElement;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
@@ -96,7 +96,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
     public void testFeatureEquals() {
         ClientServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ClientServiceDiscoveryManager.class);
         serviceDiscoveryManager.addFeature("http://jabber.org/protocol/muc");
-        Assert.assertTrue(serviceDiscoveryManager.getRootNode().getFeatures().contains("http://jabber.org/protocol/muc"));
+        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains("http://jabber.org/protocol/muc"));
     }
 
     @Test
@@ -114,7 +114,7 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
         new TestXmppSession(JULIET, mockServer);
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        InfoNode result = serviceDiscoveryManager.discoverInformation(JULIET).get();
+        DiscoverableInfo result = serviceDiscoveryManager.discoverInformation(JULIET).get();
         Assert.assertNotNull(result);
         Assert.assertTrue(result.getFeatures().size() > 1);
         //  Every entity MUST have at least one identity
@@ -129,12 +129,12 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         Assert.assertTrue(serviceDiscoveryManager.isEnabled());
         String featureInfo = "http://jabber.org/protocol/disco#info";
         String featureItems = "http://jabber.org/protocol/disco#items";
-        Assert.assertTrue(serviceDiscoveryManager.getRootNode().getFeatures().contains(featureInfo));
-        Assert.assertTrue(serviceDiscoveryManager.getRootNode().getFeatures().contains(featureItems));
+        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(featureInfo));
+        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(featureItems));
         //serviceDiscoveryManager.setEnabled(false);
         Assert.assertFalse(serviceDiscoveryManager.isEnabled());
-        Assert.assertFalse(serviceDiscoveryManager.getRootNode().getFeatures().contains(featureInfo));
-        Assert.assertFalse(serviceDiscoveryManager.getRootNode().getFeatures().contains(featureItems));
+        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(featureInfo));
+        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(featureItems));
 
         // Enable it by adding the features.
         //serviceDiscoveryManager.addFeature(featureInfo);

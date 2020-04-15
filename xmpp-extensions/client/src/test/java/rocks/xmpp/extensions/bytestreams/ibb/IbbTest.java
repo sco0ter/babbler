@@ -56,10 +56,10 @@ public class IbbTest extends BaseTest {
         Assert.assertTrue(inBandBytestreamManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
         String feature = "http://jabber.org/protocol/ibb";
-        Assert.assertTrue(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
+        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
         inBandBytestreamManager.setEnabled(false);
         Assert.assertFalse(inBandBytestreamManager.isEnabled());
-        Assert.assertFalse(serviceDiscoveryManager.getRootNode().getFeatures().contains(feature));
+        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
     }
 
     @Test

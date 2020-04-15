@@ -28,7 +28,7 @@ package rocks.xmpp.extensions.disco.model.info;
  * A feature which can be advertised by an XMPP entity.
  *
  * @author Christian Schudt
- * @see InfoNode
+ * @see DiscoverableInfo
  */
 public interface Feature {
 

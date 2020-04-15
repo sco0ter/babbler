@@ -28,13 +28,10 @@ import rocks.xmpp.core.Session;
 import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.extensions.ping.handler.PingHandler;
-import rocks.xmpp.extensions.time.handler.EntityTimeHandler;
 import rocks.xmpp.util.concurrent.CompletionStages;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import java.time.Duration;
 import java.util.Map;
@@ -59,17 +56,7 @@ public class IQRouter {
     @Inject
     private Instance<IQHandler> iqHandlers;
 
-    @Produces
-    @ApplicationScoped
-    public EntityTimeHandler produceEntityTimeHandler() {
-        return new EntityTimeHandler();
-    }
 
-    @Produces
-    @ApplicationScoped
-    public PingHandler producePingHandler() {
-        return new PingHandler();
-    }
 
     private final Map<String, CompletableFuture<IQ>> pendingResults = new ConcurrentHashMap<>();
 

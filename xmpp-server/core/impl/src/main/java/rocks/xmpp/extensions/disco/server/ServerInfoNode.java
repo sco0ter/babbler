@@ -27,28 +27,13 @@ package rocks.xmpp.extensions.disco.server;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.server.ServerConfiguration;
-import rocks.xmpp.core.stanza.model.StanzaErrorException;
-import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
-import rocks.xmpp.extensions.caps.server.ServerEntityCapabilities1Protocol;
-import rocks.xmpp.extensions.caps2.server.ServerEntityCapabilities2Protocol;
 import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoProvider;
-import rocks.xmpp.extensions.hashes.CryptographicHashFunctionsProtocol;
-import rocks.xmpp.extensions.hashes.model.Hash;
-import rocks.xmpp.extensions.rsm.ResultSetManagementProtocol;
-import rocks.xmpp.extensions.softwareinfo.SoftwareInformation;
-import rocks.xmpp.extensions.softwareinfo.SoftwareInformationProtocol;
-import rocks.xmpp.extensions.version.AbstractSoftwareVersionManager;
-import rocks.xmpp.extensions.version.SoftwareVersionManager;
-import rocks.xmpp.extensions.version.model.SoftwareVersion;
-import rocks.xmpp.util.concurrent.AsyncResult;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
@@ -62,9 +47,6 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class ServerInfoNode implements DiscoverableInfo, InfoProvider {
-
-    @Inject
-    private ServiceDiscoveryManager serviceDiscoveryManager;
 
     @Inject
     private Instance<ExtensionProtocol> extensionProtocols;
@@ -89,93 +71,8 @@ public class ServerInfoNode implements DiscoverableInfo, InfoProvider {
         return Collections.emptyList();
     }
 
-    @Produces
-    @ApplicationScoped
-    public CryptographicHashFunctionsProtocol cryptographicHashFunctionsProtocol() {
-        return new CryptographicHashFunctionsProtocol();
-    }
-
-    @Produces
-    @ApplicationScoped
-    public ResultSetManagementProtocol resultSetManagementProtocol() {
-        return new ResultSetManagementProtocol();
-    }
-
-    @Produces
-    @ApplicationScoped
-    public SoftwareVersionManager softwareVersionManager() {
-        SoftwareVersionManager softwareVersionManager = new AbstractSoftwareVersionManager() {
-            @Override
-            public AsyncResult<SoftwareVersion> getSoftwareVersion(Jid jid) {
-                return null;
-            }
-        };
-        softwareVersionManager.setSoftwareVersion(new SoftwareVersion("xmpp.rocks", "1.0", System.getProperty("os.name")));
-        return softwareVersionManager;
-    }
-
-    @Produces
-    @ApplicationScoped
-    public SoftwareInformationProtocol softwareInformationProtocol() {
-        SoftwareInformationProtocol softwareInformationProtocol = new SoftwareInformationProtocol();
-        softwareInformationProtocol.setSoftwareInformation(new SoftwareInformation(null, "xmpp.rocks", "1.0"));
-        return softwareInformationProtocol;
-    }
-
-    @Produces
-    @ApplicationScoped
-    public ServerEntityCapabilities1Protocol entityCapabilities1() {
-        return new ServerEntityCapabilities1Protocol(serviceDiscoveryManager, new EntityCapabilitiesCache() {
-            @Override
-            public DiscoverableInfo readCapabilities(Hash hash) {
-                return null;
-            }
-
-            @Override
-            public void writeCapabilities(Hash hash, DiscoverableInfo discoverableInfo) {
-
-            }
-
-            @Override
-            public DiscoverableInfo readEntityCapabilities(Jid entity) {
-                return null;
-            }
-
-            @Override
-            public void writeEntityCapabilities(Jid entity, DiscoverableInfo discoverableInfo) {
-
-            }
-        });
-    }
-
-    @Produces
-    @ApplicationScoped
-    public ServerEntityCapabilities2Protocol entityCapabilities2() {
-        return new ServerEntityCapabilities2Protocol(serviceDiscoveryManager, new EntityCapabilitiesCache() {
-            @Override
-            public DiscoverableInfo readCapabilities(Hash hash) {
-                return null;
-            }
-
-            @Override
-            public void writeCapabilities(Hash hash, DiscoverableInfo discoverableInfo) {
-
-            }
-
-            @Override
-            public DiscoverableInfo readEntityCapabilities(Jid entity) {
-                return null;
-            }
-
-            @Override
-            public void writeEntityCapabilities(Jid entity, DiscoverableInfo discoverableInfo) {
-
-            }
-        });
-    }
-
     @Override
-    public DiscoverableInfo getInfo(Jid to, Jid from, String node, Locale locale) throws StanzaErrorException {
+    public DiscoverableInfo getInfo(Jid to, Jid from, String node, Locale locale) {
         if (serverConfiguration.getDomain().equals(to) && node == null) {
             return this;
         }

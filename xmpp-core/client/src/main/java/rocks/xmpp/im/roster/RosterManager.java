@@ -173,6 +173,7 @@ public final class RosterManager extends AbstractIQHandler {
         for (Contact c : contacts) {
             if (c.getJid().equals(contact.getJid())) {
                 contactExists = true;
+                break;
             }
         }
         if (!contactExists) {

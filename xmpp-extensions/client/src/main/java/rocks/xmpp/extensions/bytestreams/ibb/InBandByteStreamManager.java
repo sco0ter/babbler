@@ -158,12 +158,17 @@ public final class InBandByteStreamManager extends ByteStreamManager implements 
      * @param blockSize The block size.
      * @return The async result with the in-band byte stream session.
      */
-    public final AsyncResult<ByteStreamSession> initiateSession(Jid receiver, final String sessionId, int blockSize) {
+    public final AsyncResult<ByteStreamSession> initiateSession(final Jid receiver, final String sessionId, int blockSize) {
         if (blockSize > 65535) {
             throw new IllegalArgumentException("blockSize must not be greater than 65535.");
         }
         IbbSession ibbSession = createSession(receiver, sessionId, blockSize, getStanzaType());
         return ibbSession.open().thenApply(result -> ibbSession);
+    }
+
+    @Override
+    public final AsyncResult<ByteStreamSession> initiateSession(final Jid receiver, final String sessionId) {
+        return initiateSession(receiver, sessionId, 4096);
     }
 
     /**

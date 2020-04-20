@@ -294,7 +294,8 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
      * @param sessionId The session id.
      * @return The async result with the SOCKS5 byte stream session.
      */
-    public AsyncResult<ByteStreamSession> initiateSession(Jid target, String sessionId) {
+    @Override
+    public final AsyncResult<ByteStreamSession> initiateSession(final Jid target, final String sessionId) {
 
         if (isLocalHostEnabled()) {
             localSocks5Server.start();

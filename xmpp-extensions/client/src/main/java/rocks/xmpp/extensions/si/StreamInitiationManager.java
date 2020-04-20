@@ -33,6 +33,7 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
+import rocks.xmpp.extensions.bytestreams.ByteStreamManager;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
@@ -82,9 +83,9 @@ public final class StreamInitiationManager extends Manager implements FileTransf
 
     private final Map<String, ProfileManager> profileManagers = new ConcurrentHashMap<>();
 
-    private final InBandByteStreamManager inBandByteStreamManager;
+    private final ByteStreamManager inBandByteStreamManager;
 
-    private final Socks5ByteStreamManager socks5ByteStreamManager;
+    private final ByteStreamManager socks5ByteStreamManager;
 
     private final IQHandler iqHandler;
 
@@ -195,12 +196,12 @@ public final class StreamInitiationManager extends Manager implements FileTransf
                     byteStreamSessionStage = CompletionStages.withFallback(socks5ByteStreamManager.initiateSession(receiver, sessionId), (future, throwable) -> {
                                 // As fallback, if SOCKS5 negotiation failed, try IBB.
                                 logger.log(Level.FINE, "SOCKS5 file transfer failed, falling back to IBB", throwable);
-                                return inBandByteStreamManager.initiateSession(receiver, sessionId, 4096);
+                                return inBandByteStreamManager.initiateSession(receiver, sessionId);
                             }
                     );
                     break;
                 case InBandByteStream.NAMESPACE:
-                    byteStreamSessionStage = inBandByteStreamManager.initiateSession(receiver, sessionId, 4096);
+                    byteStreamSessionStage = inBandByteStreamManager.initiateSession(receiver, sessionId);
                     break;
                 default:
                     throw new CompletionException(new IOException("Receiver returned unsupported stream method."));

@@ -24,8 +24,10 @@
 
 package rocks.xmpp.extensions.bytestreams;
 
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -65,6 +67,15 @@ public abstract class ByteStreamManager extends Manager {
     public final void removeByteStreamListener(Consumer<ByteStreamEvent> byteStreamListener) {
         byteStreamListeners.remove(byteStreamListener);
     }
+
+    /**
+     * Initiates a byte stream session with another entity.
+     *
+     * @param receiver  The peer entity.
+     * @param sessionId The session id.
+     * @return The async result containing the session.
+     */
+    public abstract AsyncResult<ByteStreamSession> initiateSession(Jid receiver, String sessionId);
 
     @Override
     protected void dispose() {

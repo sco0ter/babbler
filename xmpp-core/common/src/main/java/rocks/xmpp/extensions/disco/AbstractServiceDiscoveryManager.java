@@ -27,8 +27,6 @@ package rocks.xmpp.extensions.disco;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.extensions.disco.handler.DiscoInfoHandler;
-import rocks.xmpp.extensions.disco.handler.DiscoItemsHandler;
 import rocks.xmpp.extensions.disco.model.ServiceDiscoveryNode;
 import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
@@ -65,9 +63,9 @@ public abstract class AbstractServiceDiscoveryManager implements ServiceDiscover
         FEATURES = Collections.unmodifiableSet(features);
     }
 
-    protected final DiscoInfoHandler discoInfoHandler;
+    private final DiscoInfoHandler discoInfoHandler;
 
-    protected final DiscoItemsHandler discoItemHandler;
+    private final DiscoItemsHandler discoItemHandler;
 
     protected AbstractServiceDiscoveryManager() {
         this.discoInfoHandler = new DiscoInfoHandler();
@@ -98,7 +96,6 @@ public abstract class AbstractServiceDiscoveryManager implements ServiceDiscover
         }
         return iq.createError(Condition.SERVICE_UNAVAILABLE);
     }
-
 
     @Override
     public final AsyncResult<DiscoverableInfo> discoverInformation(Jid jid) {

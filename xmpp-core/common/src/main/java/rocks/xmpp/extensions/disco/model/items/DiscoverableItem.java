@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.disco.model.items;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.disco.AbstractServiceDiscoveryManager;
 import rocks.xmpp.extensions.rsm.model.ResultSetItem;
 
 import java.util.Objects;
@@ -33,7 +34,7 @@ import java.util.Objects;
  * A Service Discovery item which has an id, in order to provide a limited result set.
  * <p>
  * Implementations of this class are provided by the {@link ItemProvider}, which in turn is used by the
- * {@link rocks.xmpp.extensions.disco.handler.DiscoItemsHandler} to returned a limited result set to the requesting entity
+ * {@link AbstractServiceDiscoveryManager} to returned a limited result set to the requesting entity
  * (only if a limited result set has been requested).
  */
 public interface DiscoverableItem extends Item, ResultSetItem {

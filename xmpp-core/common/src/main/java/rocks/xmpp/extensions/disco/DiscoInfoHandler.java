@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.disco.handler;
+package rocks.xmpp.extensions.disco;
 
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -46,11 +46,11 @@ import java.util.stream.Collectors;
  *
  * @author Christian Schudt
  */
-public final class DiscoInfoHandler extends AbstractIQHandler {
+final class DiscoInfoHandler extends AbstractIQHandler {
 
     private final Set<InfoProvider> infoProviders = new CopyOnWriteArraySet<>();
 
-    public DiscoInfoHandler() {
+    DiscoInfoHandler() {
         super(InfoDiscovery.class, IQ.Type.GET);
     }
 
@@ -97,7 +97,7 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
      * @return true, if it has been successfully added.
      * @see #removeInfoProvider(InfoProvider)
      */
-    public final boolean addInfoProvider(InfoProvider infoProvider) {
+    final boolean addInfoProvider(InfoProvider infoProvider) {
         return infoProviders.add(infoProvider);
     }
 
@@ -108,7 +108,7 @@ public final class DiscoInfoHandler extends AbstractIQHandler {
      * @return true, if it has been successfully remove.
      * @see #addInfoProvider(InfoProvider)
      */
-    public final boolean removeInfoProvider(InfoProvider infoProvider) {
+    final boolean removeInfoProvider(InfoProvider infoProvider) {
         return infoProviders.remove(infoProvider);
     }
 }

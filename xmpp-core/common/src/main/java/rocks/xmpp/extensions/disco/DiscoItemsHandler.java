@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.disco.handler;
+package rocks.xmpp.extensions.disco;
 
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -37,18 +37,18 @@ import rocks.xmpp.extensions.rsm.ResultSetProvider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Handles 'disco#items' request by responding with the items at the specified address and/or node.
  *
  * @author Christian Schudt
  */
-public final class DiscoItemsHandler extends AbstractIQHandler {
+final class DiscoItemsHandler extends AbstractIQHandler {
 
-    private final Set<ItemProvider> itemProviders = ConcurrentHashMap.newKeySet();
+    private final Set<ItemProvider> itemProviders = new CopyOnWriteArraySet<>();
 
-    public DiscoItemsHandler() {
+    DiscoItemsHandler() {
         super(ItemDiscovery.class, IQ.Type.GET);
     }
 
@@ -86,7 +86,7 @@ public final class DiscoItemsHandler extends AbstractIQHandler {
      * @return If the provider could be added.
      * @see #removeItemProvider(ItemProvider)
      */
-    public final boolean addItemProvider(ItemProvider itemProvider) {
+    final boolean addItemProvider(ItemProvider itemProvider) {
         return itemProviders.add(itemProvider);
     }
 
@@ -97,14 +97,7 @@ public final class DiscoItemsHandler extends AbstractIQHandler {
      * @return If the provider could be removed .
      * @see #addItemProvider(ItemProvider)
      */
-    public final boolean removeItemProvider(ItemProvider itemProvider) {
+    final boolean removeItemProvider(ItemProvider itemProvider) {
         return itemProviders.remove(itemProvider);
-    }
-
-    /**
-     * Clears all items.
-     */
-    public void clear() {
-        itemProviders.clear();
     }
 }

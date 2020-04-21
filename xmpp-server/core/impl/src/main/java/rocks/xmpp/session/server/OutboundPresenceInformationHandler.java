@@ -25,6 +25,7 @@
 package rocks.xmpp.session.server;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Session;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.im.roster.model.RosterItem;
 import rocks.xmpp.im.roster.server.ServerRosterManager;
@@ -49,6 +50,9 @@ public class OutboundPresenceInformationHandler {
     @Inject
     private ServerRosterManager rosterManager;
 
+    @Inject
+    private SessionManager sessionManager;
+
     final Map<Jid, Set<Jid>> directPresences = new ConcurrentHashMap<>();
 
     public void process(final Presence presence) {
@@ -57,12 +61,22 @@ public class OutboundPresenceInformationHandler {
             if (presence.getTo() == null) {
                 if (presence.isAvailable()) {
 
+                    Session session = sessionManager.getSession(presence.getFrom());
+                    if (session instanceof InboundClientSession) {
+                        ((InboundClientSession) session).setPresence(presence);
+                    }
+
                     broadcastToContacts(presence);
 
                     // The user's server MUST also broadcast initial presence from the user's newly available resource to all of the user's available resources, including the resource that generated the presence notification in the first place (i.e., an entity is implicitly subscribed to its own presence).
                     Presence selfPresence = new Presence(presence.getFrom().asBareJid(), presence.getType(), presence.getShow(), presence.getStatuses(), presence.getPriority(), presence.getId(), presence.getFrom(), presence.getLanguage(), presence.getExtensions(), presence.getError());
                     // TODO send
                 } else if (presence.getType() == Presence.Type.UNAVAILABLE) {
+                    Session session = sessionManager.getSession(presence.getFrom());
+                    if (session instanceof InboundClientSession) {
+                        ((InboundClientSession) session).setPresence(presence);
+                    }
+
                     Set<Jid> contacts = broadcastToContacts(presence);
 
                     // Get the direct available presences sent by the user

@@ -38,6 +38,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.StreamElement;
@@ -83,20 +84,21 @@ public class MessageRouterTest extends XmlTest {
     public void before() {
         MockitoAnnotations.initMocks(this);
 
-        testSession1.setAddress(JID_1_FULL);
-        testSession2.setAddress(JID_2_FULL);
+        Mockito.when(testSession1.getPresence()).thenReturn(new Presence());
+        Mockito.when(testSession2.getPresence()).thenReturn(new Presence());
 
         Mockito.when(userManager.userExists(Mockito.anyString())).thenAnswer(invocationOnMock -> !invocationOnMock.getArgument(0, String.class).equals("nosuchuser"));
         Mockito.when(sessionManager.getSession(JID_1_FULL)).thenReturn(testSession1);
         Mockito.when(sessionManager.getSession(JID_2_FULL)).thenReturn(testSession2);
-        Mockito.when(sessionManager.getUserSessions(JID_1_FULL.asBareJid())).thenReturn(Stream.of(testSession1));
-        Mockito.when(sessionManager.getUserSessions(JID_2_FULL.asBareJid())).thenReturn(Stream.of(testSession2));
+
     }
 
     @BeforeMethod
     public void clear() {
-        Mockito.reset(testSession1);
-        Mockito.reset(testSession2);
+        Mockito.clearInvocations(testSession1);
+        Mockito.clearInvocations(testSession2);
+        Mockito.when(sessionManager.getUserSessions(JID_1_FULL.asBareJid())).thenReturn(Stream.of(testSession1));
+        Mockito.when(sessionManager.getUserSessions(JID_2_FULL.asBareJid())).thenReturn(Stream.of(testSession2));
     }
 
     /**
@@ -113,7 +115,7 @@ public class MessageRouterTest extends XmlTest {
         Assert.assertTrue(argumentCaptor.getValue() instanceof Message);
         Message message1 = (Message) argumentCaptor.getValue();
         Assert.assertSame(message1, message);
-        Mockito.verifyZeroInteractions(testSession2);
+        Mockito.verifyNoInteractions(testSession2);
     }
 
     /**
@@ -124,31 +126,33 @@ public class MessageRouterTest extends XmlTest {
         Message message = new Message(Jid.of("nosuchuser@domain"));
         message.setFrom(JID_1_FULL);
         messageRouter.process(message);
-        Mockito.verifyZeroInteractions(testSession1, testSession2);
+        Mockito.verifyNoInteractions(testSession1, testSession2);
     }
 
     /**
      * Tests the routing to an available resource.
      */
     @Test
-    public void testMessageToKnownUser() {
+    public void testMessageToKnownUserAvailableResource() {
         Message message = new Message(JID_2_FULL);
         message.setFrom(JID_1_FULL);
         messageRouter.process(message);
         Mockito.verify(testSession2).send(argumentCaptor.capture());
         Message message1 = (Message) argumentCaptor.getValue();
         Assert.assertSame(message1, message);
-        Mockito.verifyZeroInteractions(testSession1);
+        Mockito.verifyNoInteractions(testSession1);
     }
 
     /**
+     * RFC 6121 8.5.2.1.1.  Message
+     * <p>
      * For a message stanza of type "groupchat",
      * the server MUST NOT deliver the stanza to any of the available resources but instead
      * MUST return a stanza error to the sender, which SHOULD be {@code <service-unavailable/>}.
      */
     @Test
-    public void testGroupChatMessageShouldReturnServiceUnavailable() {
-        Message message = new Message(JID_1_FULL, Message.Type.GROUPCHAT);
+    public void testGroupChatMessageToBareJidShouldReturnServiceUnavailable() {
+        Message message = new Message(JID_1_FULL.asBareJid(), Message.Type.GROUPCHAT);
         message.setFrom(JID_1_FULL);
         messageRouter.process(message);
         Mockito.verify(testSession1).send(argumentCaptor.capture());

@@ -24,12 +24,15 @@
 
 package rocks.xmpp.session.server;
 
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Session;
 import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.Iterator;
 import java.util.stream.Stream;
 
 /**
@@ -52,28 +55,97 @@ public class MessageRouter {
             message.setTo(message.getFrom().asBareJid());
         }
 
-        // For a message stanza, the server MUST either (a) silently ignore the stanza or (b) return a <service-unavailable/> stanza error (Section 8.3.3.19) to the sender.
-        if (!userManager.userExists(message.getTo().getLocal())) {
-            // silently ignore the stanza
-            return true;
-        }
+        if (message.getTo().getLocal() != null) {
+            // 8.5.  Local User
 
-        // 8.5.2.1.1.  Message
-        // https://xmpp.org/rfcs/rfc6121.html#rules-localpart-barejid-resource-message
-        if (message.isNormal() || message.getType() == Message.Type.CHAT) {
-            Stream<Session> userSessions = sessionManager.getUserSessions(message.getTo().asBareJid());
-            userSessions.forEach(session -> session.send(message));
-        } else if (message.getType() == Message.Type.GROUPCHAT) {
-            // For a message stanza of type "groupchat", the server MUST NOT deliver the stanza to any
-            // of the available resources but instead MUST return a stanza error to the sender, which SHOULD be <service-unavailable/>.
-            Session session = sessionManager.getSession(message.getFrom());
-            // TODO from attribute?
-            session.send(message.createError(Condition.SERVICE_UNAVAILABLE));
-        } else if (message.getType() == Message.Type.HEADLINE) {
-            Stream<Session> userSessions = sessionManager.getUserSessions(message.getTo().asBareJid());
-            userSessions.forEach(session -> session.send(message));
-        }
+            if (!userManager.userExists(message.getTo().getLocal())) {
+                // 8.5.1.  No Such User
+                // For a message stanza, the server MUST either
+                // (a) silently ignore the stanza or
+                // (b) return a <service-unavailable/> stanza error (Section 8.3.3.19) to the sender.
+                return true;
+            }
 
+            if (message.getTo().getResource() == null) {
+                // 8.5.2.  localpart@domainpart
+                // 8.5.2.1.1.  Message
+                // https://xmpp.org/rfcs/rfc6121.html#rules-localpart-barejid-resource-message
+                if (message.isNormal() || message.getType() == Message.Type.CHAT) {
+                    Iterator<? extends Session> userSessions = getNonNegativeResources(message.getTo());
+                    if (userSessions.hasNext()) {
+                        // 8.5.2.1.  Available or Connected Resources
+                        // 8.5.2.1.1.  Message
+                        deliverToMostAvailableResources(userSessions, message);
+                    } else {
+                        // 8.5.2.2.  No Available or Connected Resources
+                        // 8.5.2.2.1.  Message
+                        storeOfflineOrReturnError(message);
+                    }
+                } else if (message.getType() == Message.Type.GROUPCHAT) {
+                    // For a message stanza of type "groupchat", the server MUST NOT deliver the stanza to any
+                    // of the available resources but instead MUST return a stanza error to the sender, which SHOULD be <service-unavailable/>.
+                    Session session = sessionManager.getSession(message.getFrom());
+                    session.send(message.createError(Condition.SERVICE_UNAVAILABLE));
+                } else if (message.getType() == Message.Type.HEADLINE) {
+                    // For a message stanza of type "headline":
+                    // If there is more than one resource with a non-negative presence priority then the server MUST deliver the message to all of the non-negative resources.
+                    Iterator<? extends Session> userSessions = getNonNegativeResources(message.getTo());
+                    userSessions.forEachRemaining(session -> session.send(message));
+                }
+            } else {
+                // 8.5.3.  localpart@domainpart/resourcepart
+                Session session = sessionManager.getSession(message.getTo());
+                if (session != null) {
+                    // 8.5.3.1.  Resource Matches
+                    // For a message stanza, the server MUST deliver the stanza to the resource.
+                    session.send(message);
+                } else {
+                    // // 8.5.3.2.1.  Message
+                    if (message.getType() == Message.Type.CHAT) {
+                        // 8.5.3.2.  No Resource Matches
+                        Iterator<? extends Session> userSessions = getNonNegativeResources(message.getTo().asBareJid());
+                        if (userSessions.hasNext()) {
+                            deliverToMostAvailableResources(userSessions, message);
+                        } else {
+                            storeOfflineOrReturnError(message);
+                        }
+                    } else if (message.getType() != Message.Type.ERROR) {
+                        // For a message stanza of type "normal", "groupchat", or "headline", the server MUST either
+                        // (a) silently ignore the stanza or
+                        // (b) return an error stanza to the sender, which SHOULD be <service-unavailable/>.
+                        ignoreOrReturnError(message);
+                    }
+                    // else: For a message stanza of type "error", the server MUST silently ignore the stanza.
+                }
+            }
+        }
         return false;
+    }
+
+    private void ignoreOrReturnError(Message message) {
+        Session session = sessionManager.getSession(message.getFrom());
+        if (session != null) {
+            session.send(message.createError(Condition.SERVICE_UNAVAILABLE));
+        }
+    }
+
+    private void deliverToMostAvailableResources(Iterator<? extends Session> nonNegativeResources, Message message) {
+        nonNegativeResources.forEachRemaining(availableResource -> availableResource.send(message));
+    }
+
+    private void storeOfflineOrReturnError(Message message) {
+        Session session = sessionManager.getSession(message.getFrom());
+        if (session != null) {
+            session.send(message.createError(Condition.SERVICE_UNAVAILABLE));
+        }
+    }
+
+    private Iterator<? extends Session> getNonNegativeResources(Jid bareJid) {
+        Stream<Session> userSessions = sessionManager.getUserSessions(bareJid);
+        return userSessions.map(session -> (InboundClientSession) session)
+                .filter(inboundClientSession -> {
+                    Presence presence = inboundClientSession.getPresence();
+                    return presence != null && presence.getPriority() >= 0;
+                }).iterator();
     }
 }

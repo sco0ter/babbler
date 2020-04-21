@@ -72,7 +72,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Christian Schudt
  */
 @Dependent
-public class InboundClientSession implements Addressable, Session, StreamHandler, AutoCloseable {
+public class InboundClientSession implements Addressable, Session, StreamHandler {
 
     private static final Duration QUERY_TIMEOUT = Duration.ofSeconds(5);
 
@@ -99,6 +99,8 @@ public class InboundClientSession implements Addressable, Session, StreamHandler
     private Principal principal;
 
     private Jid address;
+
+    private Presence presence;
 
     public InboundClientSession() {
         this.streamFeaturesManager.registerStreamFeatureProvider(new SaslNegotiator(this));
@@ -256,5 +258,13 @@ public class InboundClientSession implements Addressable, Session, StreamHandler
     @Override
     public Jid getJid() {
         return getRemoteXmppAddress();
+    }
+
+    public void setPresence(Presence presence) {
+        this.presence = presence;
+    }
+
+    public Presence getPresence() {
+        return presence;
     }
 }

@@ -150,7 +150,7 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      * @param show The 'show' value.
      */
     public Presence(Show show) {
-        this(show, null);
+        this(show, (byte) 0);
     }
 
     /**
@@ -159,7 +159,7 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      * @param show     The 'show' value.
      * @param priority The priority.
      */
-    public Presence(Show show, Byte priority) {
+    public Presence(Show show, byte priority) {
         this(null, null, show, null, priority, null, null, null, null, null);
     }
 
@@ -169,7 +169,7 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      * @param type The type.
      */
     public Presence(Type type) {
-        this(type, null);
+        this(type, (byte) 0);
     }
 
     /**
@@ -178,7 +178,7 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      * @param type     The type.
      * @param priority The priority.
      */
-    public Presence(Type type, Byte priority) {
+    public Presence(Type type, byte priority) {
         this(null, type, null, null, priority, null, null, null, null, null);
     }
 
@@ -199,7 +199,7 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      * @param status The status.
      */
     public Presence(Jid to, Show show, String status) {
-        this(to, null, show, status != null ? Collections.singleton(new Text(status)) : null, null, null, null, null, null, null);
+        this(to, null, show, status != null ? Collections.singleton(new Text(status)) : null, (byte) 0, null, null, null, null, null);
     }
 
     /**
@@ -222,7 +222,7 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      * @param id     The id.
      */
     public Presence(Jid to, Type type, String status, String id) {
-        this(to, type, null, status != null ? Collections.singleton(new Text(status)) : null, null, id, null, null, null, null);
+        this(to, type, null, status != null ? Collections.singleton(new Text(status)) : null, (byte) 0, id, null, null, null, null);
     }
 
     /**
@@ -239,14 +239,14 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      * @param extensions The extensions.
      * @param error      The stanza error.
      */
-    public Presence(Jid to, Type type, Show show, Collection<Text> status, Byte priority, String id, Jid from, Locale language, Collection<?> extensions, StanzaError error) {
+    public Presence(Jid to, Type type, Show show, Collection<Text> status, byte priority, String id, Jid from, Locale language, Collection<?> extensions, StanzaError error) {
         super(to, from, id, language, extensions, error);
         this.show = show;
         this.type = type;
         if (status != null) {
             this.status.addAll(status);
         }
-        this.priority = priority;
+        this.priority = priority == 0 ? null : priority;
     }
 
     /**
@@ -291,8 +291,8 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      *
      * @return The priority.
      */
-    public final synchronized Byte getPriority() {
-        return priority;
+    public final synchronized byte getPriority() {
+        return priority != null ? priority : 0;
     }
 
     /**

@@ -227,40 +227,40 @@ public class PresenceTest extends XmlTest {
                 "  <priority>1</priority>\n" +
                 "</presence>";
         Presence presence = unmarshal(xml, Presence.class);
-        Assert.assertEquals(presence.getPriority(), Byte.valueOf((byte) 1));
+        Assert.assertEquals(presence.getPriority(), 1);
     }
 
     @Test
     public void marshalPresenceMultipleStatus() throws JAXBException, XMLStreamException {
-        Presence presence = new Presence(Jid.ofLocalAndDomain("to", "domain"), Presence.Type.SUBSCRIBE, null, Arrays.asList(new Text("status", Locale.GERMAN), new Text("status2", Locale.ENGLISH)), null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
+        Presence presence = new Presence(Jid.ofLocalAndDomain("to", "domain"), Presence.Type.SUBSCRIBE, null, Arrays.asList(new Text("status", Locale.GERMAN), new Text("status2", Locale.ENGLISH)), (byte) 0, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"subscribe\"><status xml:lang=\"de\">status</status><status xml:lang=\"en\">status2</status></presence>");
     }
 
     @Test
     public void marshalPresenceShowDnd() throws JAXBException, XMLStreamException {
-        Presence presence = new Presence(Jid.ofLocalAndDomain("to", "domain"), Presence.Type.SUBSCRIBED, Presence.Show.DND, Collections.emptyList(), null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
+        Presence presence = new Presence(Jid.ofLocalAndDomain("to", "domain"), Presence.Type.SUBSCRIBED, Presence.Show.DND, Collections.emptyList(), (byte) 0, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"subscribed\"><show>dnd</show></presence>");
     }
 
     @Test
     public void marshalPresenceShowAway() throws JAXBException, XMLStreamException {
-        Presence presence = new Presence(Jid.ofLocalAndDomain("to", "domain"), Presence.Type.UNSUBSCRIBE, Presence.Show.AWAY, Collections.emptyList(), null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
+        Presence presence = new Presence(Jid.ofLocalAndDomain("to", "domain"), Presence.Type.UNSUBSCRIBE, Presence.Show.AWAY, Collections.emptyList(), (byte) 0, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"unsubscribe\"><show>away</show></presence>");
     }
 
     @Test
     public void marshalPresenceShowXA() throws JAXBException, XMLStreamException {
-        Presence presence = new Presence(Jid.ofLocalAndDomain("to", "domain"), Presence.Type.UNSUBSCRIBED, Presence.Show.XA, Collections.emptyList(), null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
+        Presence presence = new Presence(Jid.ofLocalAndDomain("to", "domain"), Presence.Type.UNSUBSCRIBED, Presence.Show.XA, Collections.emptyList(), (byte) 0, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"unsubscribed\"><show>xa</show></presence>");
     }
 
     @Test
     public void marshalPresenceShowChat() throws JAXBException, XMLStreamException {
-        Presence presence = new Presence(Jid.ofLocalAndDomain("to", "domain"), Presence.Type.UNAVAILABLE, Presence.Show.CHAT, Collections.emptyList(), null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
+        Presence presence = new Presence(Jid.ofLocalAndDomain("to", "domain"), Presence.Type.UNAVAILABLE, Presence.Show.CHAT, Collections.emptyList(), (byte) 0, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
         String xml = marshal(presence);
         Assert.assertEquals(xml, "<presence from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"unavailable\"><show>chat</show></presence>");
     }

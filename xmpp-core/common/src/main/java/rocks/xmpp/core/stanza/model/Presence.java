@@ -140,7 +140,7 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      *
      * @param priority The priority.
      */
-    public Presence(Byte priority) {
+    public Presence(byte priority) {
         this(null, null, null, null, priority, null, null, null, null, null);
     }
 

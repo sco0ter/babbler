@@ -58,14 +58,6 @@ public class MessageRouter {
         if (message.getTo().getLocal() != null) {
             // 8.5.  Local User
 
-            if (!userManager.userExists(message.getTo().getLocal())) {
-                // 8.5.1.  No Such User
-                // For a message stanza, the server MUST either
-                // (a) silently ignore the stanza or
-                // (b) return a <service-unavailable/> stanza error (Section 8.3.3.19) to the sender.
-                return true;
-            }
-
             if (message.getTo().getResource() == null) {
                 // 8.5.2.  localpart@domainpart
                 // 8.5.2.1.1.  Message
@@ -122,21 +114,28 @@ public class MessageRouter {
         return false;
     }
 
-    private void ignoreOrReturnError(Message message) {
+    void ignoreOrReturnError(Message message) {
+        if (message.getType() == Message.Type.GROUPCHAT) {
+            returnError(message);
+        }
+    }
+
+    private void returnError(Message message) {
         Session session = sessionManager.getSession(message.getFrom());
         if (session != null) {
             session.send(message.createError(Condition.SERVICE_UNAVAILABLE));
         }
     }
 
-    private void deliverToMostAvailableResources(Iterator<? extends Session> nonNegativeResources, Message message) {
+    void deliverToMostAvailableResources(Iterator<? extends Session> nonNegativeResources, Message message) {
         nonNegativeResources.forEachRemaining(availableResource -> availableResource.send(message));
     }
 
-    private void storeOfflineOrReturnError(Message message) {
-        Session session = sessionManager.getSession(message.getFrom());
-        if (session != null) {
-            session.send(message.createError(Condition.SERVICE_UNAVAILABLE));
+    void storeOfflineOrReturnError(Message message) {
+        if (userManager.userExists(message.getTo().getLocal())) {
+
+        } else {
+            ignoreOrReturnError(message);
         }
     }
 

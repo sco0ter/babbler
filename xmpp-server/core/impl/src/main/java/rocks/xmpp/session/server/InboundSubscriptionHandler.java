@@ -25,10 +25,13 @@
 package rocks.xmpp.session.server;
 
 import rocks.xmpp.core.Session;
+import rocks.xmpp.core.stanza.InboundPresenceHandler;
+import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.im.roster.model.DefinedState;
 import rocks.xmpp.im.roster.model.RosterItem;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.stream.Stream;
 
@@ -40,10 +43,17 @@ import java.util.stream.Stream;
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-cancel-inbound">3.2.3.  Server Processing of Inbound Subscription Cancellation</a>
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-unsub-inbound">3.3.3.  Server Processing of Inbound Unsubscribe</a>
  */
-public class InboundSubscriptionHandler extends AbstractSubscriptionHandler {
+@ApplicationScoped
+public class InboundSubscriptionHandler extends AbstractSubscriptionHandler implements InboundPresenceHandler {
 
     @Inject
     private SessionManager sessionManager;
+
+    @Inject
+    private InboundStanzaProcessor inboundStanzaProcessor;
+
+    @Inject
+    private InboundStanzaProcessor outboundStanzaProcessor;
 
     public void process(Presence presence) {
 
@@ -64,7 +74,7 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler {
                         // then the contact's server MUST auto-reply on behalf of the contact by sending a presence stanza of type "subscribed" from the contact's bare JID to the user's bare JID.
                         Presence subscribed = new Presence(presence.getFrom(), Presence.Type.SUBSCRIBED, null, presence.getId());
                         subscribed.setFrom(presence.getTo());
-                        // TODO send
+                        outboundStanzaProcessor.process(subscribed);
                     } else {
                         Stream<Session> userSessions = sessionManager.getUserSessions(presence.getTo());
                         userSessions.forEach(session -> session.send(presence));
@@ -90,7 +100,7 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler {
                             contactSessions.forEach(session -> {
                                 Presence availablePresence = new Presence(presence.getTo());
                                 availablePresence.setFrom(session.getRemoteXmppAddress());
-                                // TODO send
+                                inboundStanzaProcessor.process(availablePresence);
                             });
                         }
                         // TODO optionally store presence
@@ -110,14 +120,15 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler {
                         contactSessions.forEach(session -> {
                             Presence unavailablePresence = new Presence(presence.getTo(), Presence.Type.UNAVAILABLE, null);
                             unavailablePresence.setFrom(session.getRemoteXmppAddress());
-                            // TODO send
+                            inboundStanzaProcessor.process(unavailablePresence);
                         });
                     }
                     break;
                 case UNSUBSCRIBE:
                     if (rosterItem != null && rosterItem.getSubscription().contactHasSubscriptionToUser()) {
                         // Deliver the inbound unsubscribe to all of the user's interested resources
-                        // TODO send
+                        Stream<Session> userSessions = sessionManager.getUserSessions(presence.getTo());
+                        userSessions.forEach(session -> session.send(presence));
 
                         // Initiate a roster push to all of the user's interested resources
                         updateRosterAndPush(username, presence, rosterItem, DefinedState::onInboundSubscriptionChange);
@@ -127,7 +138,7 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler {
                         contactSessions.forEach(session -> {
                             Presence unavailablePresence = new Presence(presence.getFrom(), Presence.Type.UNAVAILABLE, null);
                             unavailablePresence.setFrom(session.getRemoteXmppAddress());
-                            // TODO send
+                            outboundStanzaProcessor.process(unavailablePresence);
                         });
                     }
                     break;
@@ -135,5 +146,10 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler {
                     break;
             }
         }
+    }
+
+    @Override
+    public void handleInboundPresence(PresenceEvent e) {
+        process(e.getPresence());
     }
 }

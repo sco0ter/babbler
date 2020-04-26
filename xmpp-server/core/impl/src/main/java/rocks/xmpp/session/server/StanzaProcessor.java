@@ -24,40 +24,80 @@
 
 package rocks.xmpp.session.server;
 
+import rocks.xmpp.core.Session;
+import rocks.xmpp.core.server.ServerConfiguration;
+import rocks.xmpp.core.stanza.IQEvent;
+import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.OutboundIQHandler;
+import rocks.xmpp.core.stanza.OutboundMessageHandler;
+import rocks.xmpp.core.stanza.OutboundPresenceHandler;
+import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 
-import javax.enterprise.context.Dependent;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 /**
  * @author Christian Schudt
  */
-@Dependent
+@ApplicationScoped
 public class StanzaProcessor {
 
     @Inject
-    private IQRouter iqHandler;
+    private ServerConfiguration serverConfiguration;
 
     @Inject
-    private MessageRouter messageHandler;
+    private SessionManager sessionManager;
 
     @Inject
-    private PresenceHandler presenceHandler;
+    private InboundStanzaProcessor inboundStanzaProcessor;
 
     @Inject
-    private DefaultServerConfiguration serverConfiguration;
+    private Instance<OutboundMessageHandler> outboundMessageHandlers;
+
+    @Inject
+    private Instance<OutboundPresenceHandler> outboundPresenceHandlers;
+
+    @Inject
+    private Instance<OutboundIQHandler> outboundIQHandlers;
 
     public boolean process(Stanza stanza) {
         if (stanza instanceof Message) {
-            return messageHandler.process((Message) stanza);
-        } else if (stanza instanceof IQ) {
-            return iqHandler.process((IQ) stanza);
+            MessageEvent messageEvent = new MessageEvent(sessionManager.getSession(stanza.getFrom()), (Message) stanza, false);
+            outboundMessageHandlers.forEach(outboundMessageHandler -> outboundMessageHandler.handleOutboundMessage(messageEvent));
         } else if (stanza instanceof Presence) {
-            return presenceHandler.process((Presence) stanza);
+            PresenceEvent presenceEvent = new PresenceEvent(sessionManager.getSession(stanza.getFrom()), (Presence) stanza, false);
+            outboundPresenceHandlers.forEach(outboundPresenceHandler -> outboundPresenceHandler.handleOutboundPresence(presenceEvent));
+        } else if (stanza instanceof IQ) {
+            IQEvent iqEvent = new IQEvent(sessionManager.getSession(stanza.getFrom()), (IQ) stanza, false);
+            outboundIQHandlers.forEach(outboundIQHandler -> outboundIQHandler.handleOutboundIQ(iqEvent));
         }
-        return false;
+
+        if (stanza instanceof Message) {
+            if (stanza.getTo() == null) {
+                stanza.setTo(stanza.getFrom().asBareJid());
+            }
+        }
+        if (stanza instanceof IQ) {
+            if (stanza.getTo() == null) {
+                stanza.setTo(stanza.getFrom().asBareJid());
+            }
+        }
+        if (stanza.getTo() == null || stanza.getTo().getDomain().endsWith(serverConfiguration.getDomain().toString())) {
+            inboundStanzaProcessor.process(stanza);
+        } else {
+            // s2s not implemented.
+            Stanza errorResponse = stanza.createError(Condition.REMOTE_SERVER_NOT_FOUND);
+            Session session = sessionManager.getSession(errorResponse.getTo());
+            if (session != null) {
+                session.send(errorResponse);
+            }
+        }
+        return true;
     }
 }

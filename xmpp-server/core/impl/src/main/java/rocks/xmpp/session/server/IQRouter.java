@@ -25,7 +25,9 @@
 package rocks.xmpp.session.server;
 
 import rocks.xmpp.core.Session;
+import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.InboundIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.util.concurrent.CompletionStages;
@@ -45,7 +47,7 @@ import java.util.function.Function;
  * @author Christian Schudt
  */
 @ApplicationScoped
-public class IQRouter {
+public class IQRouter implements InboundIQHandler {
 
     @Inject
     private UserManager userManager;
@@ -55,8 +57,6 @@ public class IQRouter {
 
     @Inject
     private Instance<IQHandler> iqHandlers;
-
-
 
     private final Map<String, CompletableFuture<IQ>> pendingResults = new ConcurrentHashMap<>();
 
@@ -139,5 +139,10 @@ public class IQRouter {
         CompletableFuture<IQ> resultFuture = new CompletableFuture<>();
         pendingResults.put(iq.getId(), resultFuture);
         return resultFuture.applyToEither(CompletionStages.timeoutAfter(duration.toMillis(), TimeUnit.MILLISECONDS), Function.identity());
+    }
+
+    @Override
+    public void handleInboundIQ(IQEvent e) {
+        process(e.getIQ());
     }
 }

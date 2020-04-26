@@ -25,10 +25,13 @@
 package rocks.xmpp.session.server;
 
 import rocks.xmpp.core.server.ServerConfiguration;
+import rocks.xmpp.core.stanza.OutboundPresenceHandler;
+import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.im.roster.model.DefinedState;
 import rocks.xmpp.im.roster.model.RosterItem;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 /**
@@ -39,7 +42,8 @@ import javax.inject.Inject;
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-cancel-outbound">3.2.2.  Server Processing of Outbound Subscription Cancellation</a>
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-unsub-outbound">3.3.2.  Server Processing of Outbound Unsubscribe</a>
  */
-public class OutboundSubscriptionHandler extends AbstractSubscriptionHandler {
+@ApplicationScoped
+public class OutboundSubscriptionHandler extends AbstractSubscriptionHandler implements OutboundPresenceHandler {
 
     @Inject
     private SessionManager sessionManager;
@@ -103,5 +107,10 @@ public class OutboundSubscriptionHandler extends AbstractSubscriptionHandler {
             }
             // TODO deliver or route
         }
+    }
+
+    @Override
+    public void handleOutboundPresence(PresenceEvent e) {
+        process(e.getPresence());
     }
 }

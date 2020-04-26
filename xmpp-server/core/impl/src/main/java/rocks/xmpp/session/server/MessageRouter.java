@@ -26,6 +26,9 @@ package rocks.xmpp.session.server;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Session;
+import rocks.xmpp.core.stanza.InboundIQHandler;
+import rocks.xmpp.core.stanza.InboundMessageHandler;
+import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -39,7 +42,7 @@ import java.util.stream.Stream;
  * @author Christian Schudt
  */
 @ApplicationScoped
-public class MessageRouter {
+public class MessageRouter implements InboundMessageHandler {
 
     @Inject
     private UserManager userManager;
@@ -146,5 +149,10 @@ public class MessageRouter {
                     Presence presence = inboundClientSession.getPresence();
                     return presence != null && presence.getPriority() >= 0;
                 }).iterator();
+    }
+
+    @Override
+    public void handleInboundMessage(MessageEvent e) {
+        process(e.getMessage());
     }
 }

@@ -26,10 +26,13 @@ package rocks.xmpp.session.server;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Session;
+import rocks.xmpp.core.stanza.OutboundPresenceHandler;
+import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.im.roster.model.RosterItem;
 import rocks.xmpp.im.roster.server.ServerRosterManager;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Map;
 import java.util.Set;
@@ -45,13 +48,17 @@ import java.util.stream.Collectors;
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-unavailable-outbound">4.5.2.  Server Processing of Outbound Unavailable Presence</a>
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-directed-outbound">4.6.3.  Server Processing of Outbound Directed Presence</a>
  */
-public class OutboundPresenceInformationHandler {
+@ApplicationScoped
+public class OutboundPresenceInformationHandler implements OutboundPresenceHandler {
 
     @Inject
     private ServerRosterManager rosterManager;
 
     @Inject
     private SessionManager sessionManager;
+
+    @Inject
+    private StanzaProcessor stanzaProcessor;
 
     final Map<Jid, Set<Jid>> directPresences = new ConcurrentHashMap<>();
 
@@ -70,7 +77,8 @@ public class OutboundPresenceInformationHandler {
 
                     // The user's server MUST also broadcast initial presence from the user's newly available resource to all of the user's available resources, including the resource that generated the presence notification in the first place (i.e., an entity is implicitly subscribed to its own presence).
                     Presence selfPresence = new Presence(presence.getFrom().asBareJid(), presence.getType(), presence.getShow(), presence.getStatuses(), presence.getPriority(), presence.getId(), presence.getFrom(), presence.getLanguage(), presence.getExtensions(), presence.getError());
-                    // TODO send
+                    stanzaProcessor.process(selfPresence);
+
                 } else if (presence.getType() == Presence.Type.UNAVAILABLE) {
                     Session session = sessionManager.getSession(presence.getFrom());
                     if (session instanceof InboundClientSession) {
@@ -86,8 +94,7 @@ public class OutboundPresenceInformationHandler {
                     broadcast(presence, directAvailablePresences);
 
                     Presence selfPresence = new Presence(presence.getFrom().asBareJid(), presence.getType(), presence.getShow(), presence.getStatuses(), presence.getPriority(), presence.getId(), presence.getFrom(), presence.getLanguage(), presence.getExtensions(), presence.getError());
-                    // TODO send
-
+                    stanzaProcessor.process(selfPresence);
                 }
             } else {
                 // Handle direct presence sessions with unsubscribed recipients.
@@ -139,7 +146,12 @@ public class OutboundPresenceInformationHandler {
     private void broadcast(Presence presence, Iterable<Jid> recipients) {
         recipients.forEach(contact -> {
             Presence p = new Presence(contact, presence.getType(), presence.getShow(), presence.getStatuses(), presence.getPriority(), presence.getId(), presence.getFrom(), presence.getLanguage(), presence.getExtensions(), presence.getError());
-            // TODO send
+            stanzaProcessor.process(p);
         });
+    }
+
+    @Override
+    public void handleOutboundPresence(PresenceEvent e) {
+        process(e.getPresence());
     }
 }

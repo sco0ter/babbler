@@ -25,8 +25,11 @@
 package rocks.xmpp.session.server;
 
 import rocks.xmpp.core.Session;
+import rocks.xmpp.core.stanza.InboundPresenceHandler;
+import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.Presence;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 /*
@@ -38,7 +41,8 @@ import javax.inject.Inject;
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-unavailable-inbound">4.5.3.  Server Processing of Inbound Unavailable Presence</a>
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-directed-inbound">4.6.4.  Server Processing of Inbound Directed Presence</a>
  */
-public class InboundPresenceInformationHandler {
+@ApplicationScoped
+public class InboundPresenceInformationHandler implements InboundPresenceHandler {
 
     @Inject
     private SessionManager sessionManager;
@@ -69,5 +73,10 @@ public class InboundPresenceInformationHandler {
                 // For a presence stanza with no 'type' attribute or a 'type' attribute of "unavailable", the server MUST silently ignore the stanza.
             }
         }
+    }
+
+    @Override
+    public void handleInboundPresence(PresenceEvent e) {
+        process(e.getPresence());
     }
 }

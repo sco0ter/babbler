@@ -53,7 +53,7 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler impl
     private InboundStanzaProcessor inboundStanzaProcessor;
 
     @Inject
-    private InboundStanzaProcessor outboundStanzaProcessor;
+    private StanzaProcessor outboundStanzaProcessor;
 
     public void process(Presence presence) {
 
@@ -96,7 +96,7 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler impl
                             updateRosterAndPush(username, presence, rosterItem, DefinedState::onInboundSubscriptionChange);
 
                             // The user's server MUST also deliver the available presence stanza received from each of the contact's available resources to each of the user's available resources.
-                            Stream<Session> contactSessions = sessionManager.getUserSessions(presence.getFrom());
+                            Stream<Session> contactSessions = sessionManager.getUserSessions(presence.getFrom().asBareJid());
                             contactSessions.forEach(session -> {
                                 Presence availablePresence = new Presence(presence.getTo());
                                 availablePresence.setFrom(session.getRemoteXmppAddress());
@@ -128,18 +128,18 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler impl
                     if (rosterItem != null && rosterItem.getSubscription().contactHasSubscriptionToUser()) {
                         // Deliver the inbound unsubscribe to all of the user's interested resources
                         Stream<Session> userSessions = sessionManager.getUserSessions(presence.getTo());
-                        userSessions.forEach(session -> session.send(presence));
+                        userSessions.forEach(session -> {
+                                    session.send(presence);
+
+                                    // Generate an outbound presence stanza of type "unavailable" from each of the contact's available resources to the user.
+                                    Presence unavailablePresence = new Presence(presence.getFrom(), Presence.Type.UNAVAILABLE, null);
+                                    unavailablePresence.setFrom(session.getRemoteXmppAddress());
+                                    outboundStanzaProcessor.process(unavailablePresence);
+                                }
+                        );
 
                         // Initiate a roster push to all of the user's interested resources
                         updateRosterAndPush(username, presence, rosterItem, DefinedState::onInboundSubscriptionChange);
-
-                        // Generate an outbound presence stanza of type "unavailable" from each of the contact's available resources to the user.
-                        Stream<Session> contactSessions = sessionManager.getUserSessions(presence.getTo());
-                        contactSessions.forEach(session -> {
-                            Presence unavailablePresence = new Presence(presence.getFrom(), Presence.Type.UNAVAILABLE, null);
-                            unavailablePresence.setFrom(session.getRemoteXmppAddress());
-                            outboundStanzaProcessor.process(unavailablePresence);
-                        });
                     }
                     break;
                 default:

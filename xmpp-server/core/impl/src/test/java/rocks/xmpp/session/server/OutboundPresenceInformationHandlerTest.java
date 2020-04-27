@@ -24,6 +24,7 @@
 
 package rocks.xmpp.session.server;
 
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -39,8 +40,6 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.im.roster.model.SubscriptionState;
 import rocks.xmpp.im.roster.server.ServerRosterManager;
-import rocks.xmpp.session.server.OutboundPresenceInformationHandler;
-import rocks.xmpp.session.server.SessionManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,6 +64,9 @@ public class OutboundPresenceInformationHandlerTest {
     @Mock
     private Session resource2;
 
+    @Mock
+    private StanzaProcessor stanzaProcessor;
+
     @InjectMocks
     private OutboundPresenceInformationHandler presenceInformationHandler;
 
@@ -88,7 +90,7 @@ public class OutboundPresenceInformationHandlerTest {
 
     @BeforeMethod
     public void reset() {
-        Mockito.clearInvocations(rosterManager);
+        Mockito.clearInvocations(rosterManager, stanzaProcessor);
         Mockito.when(sessionManager.getUserSessions(Mockito.eq(Jid.of("user@server")))).thenReturn(Stream.of(resource1, resource2));
     }
 
@@ -100,8 +102,13 @@ public class OutboundPresenceInformationHandlerTest {
 
         Mockito.verify(rosterManager).getRosterItems(Mockito.eq("user"));
 
-        // TODO test broadcast
-        // TODO test self presence
+        ArgumentCaptor<Presence> presenceArgumentCaptor = ArgumentCaptor.forClass(Presence.class);
+        Mockito.verify(stanzaProcessor, Mockito.times(3)).process(presenceArgumentCaptor.capture());
+
+        Assert.assertEquals(presenceArgumentCaptor.getAllValues().get(0).getTo(), Jid.of("contact1@server"));
+        Assert.assertEquals(presenceArgumentCaptor.getAllValues().get(1).getTo(), Jid.of("contact3@server"));
+        Assert.assertEquals(presenceArgumentCaptor.getAllValues().get(2).getTo(), Jid.of("user@server"));
+        Assert.assertNull(presenceArgumentCaptor.getValue().getType());
     }
 
     @Test

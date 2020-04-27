@@ -40,8 +40,10 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.im.roster.model.RosterItem;
 import rocks.xmpp.im.roster.model.SubscriptionState;
+import rocks.xmpp.session.server.InboundStanzaProcessor;
 import rocks.xmpp.session.server.InboundSubscriptionHandler;
 import rocks.xmpp.session.server.SessionManager;
+import rocks.xmpp.session.server.StanzaProcessor;
 
 import java.util.Collections;
 import java.util.List;
@@ -64,6 +66,18 @@ public class InboundSubscriptionHandlerTest {
     @Mock
     private Session resource2;
 
+    @Mock
+    private Session contactResource1;
+
+    @Mock
+    private Session contactResource2;
+
+    @Mock
+    private InboundStanzaProcessor inboundStanzaProcessor;
+
+    @Mock
+    private StanzaProcessor outboundStanzaProcessor;
+
     @InjectMocks
     private InboundSubscriptionHandler subscriptionHandler;
 
@@ -73,12 +87,15 @@ public class InboundSubscriptionHandlerTest {
         Mockito.when(serverConfiguration.getDomain()).thenReturn(Jid.of("server"));
         Mockito.when(resource1.getRemoteXmppAddress()).thenReturn(Jid.of("user@server/resource1"));
         Mockito.when(resource2.getRemoteXmppAddress()).thenReturn(Jid.of("user@server/resource2"));
+        Mockito.when(resource1.getRemoteXmppAddress()).thenReturn(Jid.of("contact@server/resource1"));
+        Mockito.when(resource2.getRemoteXmppAddress()).thenReturn(Jid.of("contact@server/resource2"));
     }
 
     @BeforeMethod
     public void reset() {
-        Mockito.clearInvocations(rosterManager);
+        Mockito.clearInvocations(rosterManager, inboundStanzaProcessor, outboundStanzaProcessor, resource1, resource2, contactResource1, contactResource2);
         Mockito.when(sessionManager.getUserSessions(Mockito.eq(Jid.of("user@server")))).thenReturn(Stream.of(resource1, resource2));
+        Mockito.when(sessionManager.getUserSessions(Mockito.eq(Jid.of("contact@server")))).thenReturn(Stream.of(contactResource1, contactResource2));
     }
 
     /**
@@ -103,7 +120,10 @@ public class InboundSubscriptionHandlerTest {
 
         subscriptionHandler.process(presence);
 
-        // TODO subscribed should be sent to contact
+        ArgumentCaptor<Presence> presenceArgumentCaptor = ArgumentCaptor.forClass(Presence.class);
+        Mockito.verify(outboundStanzaProcessor).process(presenceArgumentCaptor.capture());
+        Assert.assertEquals(presenceArgumentCaptor.getValue().getType(), Presence.Type.SUBSCRIBED);
+        Assert.assertEquals(presenceArgumentCaptor.getValue().getTo(), presence.getFrom());
 
         Mockito.verify(rosterManager, Mockito.times(0)).setRosterItem(Mockito.eq("user"), Mockito.any());
     }
@@ -199,6 +219,16 @@ public class InboundSubscriptionHandlerTest {
 
         subscriptionHandler.process(presence);
 
+        ArgumentCaptor<Presence> subscribedArgumentCaptor = ArgumentCaptor.forClass(Presence.class);
+        Mockito.verify(resource1, Mockito.times(1)).send(subscribedArgumentCaptor.capture());
+        Assert.assertEquals(subscribedArgumentCaptor.getValue().getType(), Presence.Type.SUBSCRIBED);
+        Assert.assertEquals(subscribedArgumentCaptor.getValue().getTo(), presence.getTo());
+
+        ArgumentCaptor<Presence> subscribedArgumentCaptor2 = ArgumentCaptor.forClass(Presence.class);
+        Mockito.verify(resource2, Mockito.times(1)).send(subscribedArgumentCaptor2.capture());
+        Assert.assertEquals(subscribedArgumentCaptor2.getValue().getType(), Presence.Type.SUBSCRIBED);
+        Assert.assertEquals(subscribedArgumentCaptor2.getValue().getTo(), presence.getTo());
+
         ArgumentCaptor<RosterItem> rosterItemCaptor = ArgumentCaptor.forClass(RosterItem.class);
         Mockito.verify(rosterManager).setRosterItem(Mockito.eq("user"), rosterItemCaptor.capture());
 
@@ -207,7 +237,10 @@ public class InboundSubscriptionHandlerTest {
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingOut());
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingIn());
 
-        // TODO test contact's available presence sent to user
+        ArgumentCaptor<Presence> presenceArgumentCaptor = ArgumentCaptor.forClass(Presence.class);
+        Mockito.verify(inboundStanzaProcessor, Mockito.times(2)).process(presenceArgumentCaptor.capture());
+        Assert.assertNull(presenceArgumentCaptor.getValue().getType());
+        Assert.assertEquals(presenceArgumentCaptor.getValue().getTo(), presence.getTo());
     }
 
     @Test
@@ -262,7 +295,10 @@ public class InboundSubscriptionHandlerTest {
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingOut());
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingIn());
 
-        // TODO test contact's available presence sent to user
+        ArgumentCaptor<Presence> presenceArgumentCaptor = ArgumentCaptor.forClass(Presence.class);
+        Mockito.verify(inboundStanzaProcessor, Mockito.times(2)).process(presenceArgumentCaptor.capture());
+        Assert.assertNull(presenceArgumentCaptor.getValue().getType());
+        Assert.assertEquals(presenceArgumentCaptor.getValue().getTo(), presence.getTo());
     }
 
     @Test
@@ -369,8 +405,16 @@ public class InboundSubscriptionHandlerTest {
         subscriptionHandler.process(presence);
 
         ArgumentCaptor<RosterItem> rosterItemCaptor = ArgumentCaptor.forClass(RosterItem.class);
+        
+        ArgumentCaptor<Presence> subscribedArgumentCaptor = ArgumentCaptor.forClass(Presence.class);
+        Mockito.verify(resource1, Mockito.times(1)).send(subscribedArgumentCaptor.capture());
+        Assert.assertEquals(subscribedArgumentCaptor.getValue().getType(), Presence.Type.UNSUBSCRIBED);
+        Assert.assertEquals(subscribedArgumentCaptor.getValue().getTo(), presence.getTo());
 
-        // TODO test send unsubscribed to user's interested resources
+        ArgumentCaptor<Presence> subscribedArgumentCaptor2 = ArgumentCaptor.forClass(Presence.class);
+        Mockito.verify(resource2, Mockito.times(1)).send(subscribedArgumentCaptor2.capture());
+        Assert.assertEquals(subscribedArgumentCaptor2.getValue().getType(), Presence.Type.UNSUBSCRIBED);
+        Assert.assertEquals(subscribedArgumentCaptor2.getValue().getTo(), presence.getTo());
 
         Mockito.verify(rosterManager).setRosterItem(Mockito.eq("user"), rosterItemCaptor.capture());
 
@@ -379,7 +423,10 @@ public class InboundSubscriptionHandlerTest {
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingOut());
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingIn());
 
-        // TODO test unavailable presence sent to contact from all user's resources.
+        ArgumentCaptor<Presence> presenceArgumentCaptor = ArgumentCaptor.forClass(Presence.class);
+        Mockito.verify(inboundStanzaProcessor, Mockito.times(2)).process(presenceArgumentCaptor.capture());
+        Assert.assertEquals(presenceArgumentCaptor.getValue().getType(), Presence.Type.UNAVAILABLE);
+        Assert.assertEquals(presenceArgumentCaptor.getValue().getTo(), presence.getTo());
     }
 
     @Test

@@ -33,6 +33,8 @@ import rocks.xmpp.im.roster.model.RosterItem;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * Handles outbound presence subscription requests, approvals, cancellations and unsubscriptions.
@@ -41,15 +43,21 @@ import javax.inject.Inject;
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-request-approvalout">3.1.5.  Server Processing of Outbound Subscription Approval</a>
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-cancel-outbound">3.2.2.  Server Processing of Outbound Subscription Cancellation</a>
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-unsub-outbound">3.3.2.  Server Processing of Outbound Unsubscribe</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#substates-out">A.2.  Server Processing of Outbound Presence Subscription Stanzas</a>
  */
 @ApplicationScoped
 public class OutboundSubscriptionHandler extends AbstractSubscriptionHandler implements OutboundPresenceHandler {
+
+    private static final Set<DefinedState> PRE_APPROVAL_STATES = EnumSet.of(DefinedState.TO, DefinedState.NONE, DefinedState.NONE_PENDING_OUT);
 
     @Inject
     private SessionManager sessionManager;
 
     @Inject
     private ServerConfiguration serverConfiguration;
+
+    @Inject
+    private StanzaRouter stanzaRouter;
 
     public void process(final Presence presence) {
 
@@ -70,42 +78,54 @@ public class OutboundSubscriptionHandler extends AbstractSubscriptionHandler imp
 
             final String username = presence.getFrom().getLocal();
             final RosterItem rosterItem = rosterManager.getRosterItem(username, presence.getTo());
+            final boolean approved;
             switch (presence.getType()) {
                 case SUBSCRIBE:
-                case SUBSCRIBED:
                 case UNSUBSCRIBE:
-                    updateRosterAndPush(username, presence, rosterItem, DefinedState::onOutboundSubscriptionChange);
+                    updateRosterAndPush(username, presence, rosterItem, DefinedState::onOutboundSubscriptionChange, rosterItem != null && rosterItem.isApproved());
+                    // Always route the presence, no matter if the subscription state has changed.
+                    stanzaRouter.route(presence);
+                    break;
+                case SUBSCRIBED:
+                    if (rosterItem != null) {
+                        if (PRE_APPROVAL_STATES.contains(DefinedState.valueOf(rosterItem))) {
+                            approved = true;
+                        } else {
+                            approved = rosterItem.isApproved();
+                        }
+                    } else {
+                        approved = true;
+                    }
+                    // Only route the presence stanza, if the subscription state has changed
+                    if (updateRosterAndPush(username, presence, rosterItem, DefinedState::onOutboundSubscriptionChange, approved)) {
+                        stanzaRouter.route(presence);
+                    }
                     break;
                 case UNSUBSCRIBED:
                     if (rosterItem != null) {
-                        DefinedState definedState = DefinedState.valueOf(rosterItem);
-                        switch (definedState) {
-                            case NONE:
-                            case NONE_PENDING_OUT:
-                            case TO:
-                                // If the user's bare JID is not yet in the contact's roster or is in the contact's roster with a state
-                                // of "None", "None + Pending Out", or "To", the contact's server SHOULD NOT route or deliver the presence stanza
-                                // of type "unsubscribed"to the user and MUST NOT send presence notifications of type "unavailable" to the user.
-                                break;
-                            default:
-                                // While the user is still subscribed to the contact's presence (i.e., before the contact's server routes or delivers the presence stanza
-                                // of type "unsubscribed" to the user), the contact's server MUST send a presence stanza of type "unavailable" from all of the contact's online resources to the user.
-                                sessionManager.getUserSessions(serverConfiguration.getDomain().withLocal(username)).forEach(session -> {
-                                            Presence unavailablePresence = new Presence(Presence.Type.UNAVAILABLE);
-                                            unavailablePresence.setFrom(session.getRemoteXmppAddress());
-                                            unavailablePresence.setTo(presence.getTo());
-                                            // TODO send
-                                        }
-                                );
-                                updateRosterAndPush(username, presence, rosterItem, DefinedState::onOutboundSubscriptionChange);
-                                break;
+                        if (PRE_APPROVAL_STATES.contains(DefinedState.valueOf(rosterItem))) {
+                            approved = false;
+                        } else {
+                            approved = rosterItem.isApproved();
+                        }
+
+                        if (updateRosterAndPush(username, presence, rosterItem, DefinedState::onOutboundSubscriptionChange, approved)) {
+                            // While the user is still subscribed to the contact's presence (i.e., before the contact's server routes or delivers the presence stanza
+                            // of type "unsubscribed" to the user), the contact's server MUST send a presence stanza of type "unavailable" from all of the contact's online resources to the user.
+                            sessionManager.getUserSessions(serverConfiguration.getDomain().withLocal(username)).forEach(session -> {
+                                        Presence unavailablePresence = new Presence(Presence.Type.UNAVAILABLE);
+                                        unavailablePresence.setFrom(session.getRemoteXmppAddress());
+                                        unavailablePresence.setTo(presence.getTo());
+                                        stanzaRouter.route(unavailablePresence);
+                                    }
+                            );
+                            stanzaRouter.route(presence);
                         }
                     }
                     break;
                 default:
                     break;
             }
-            // TODO deliver or route
         }
     }
 

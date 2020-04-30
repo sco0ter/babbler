@@ -42,12 +42,16 @@ import rocks.xmpp.im.roster.model.RosterItem;
 import rocks.xmpp.im.roster.model.SubscriptionState;
 import rocks.xmpp.session.server.OutboundSubscriptionHandler;
 import rocks.xmpp.session.server.SessionManager;
+import rocks.xmpp.session.server.StanzaRouter;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class OutboundSubscriptionHandlerTest {
+
+    @Mock
+    private StanzaRouter stanzaRouter;
 
     @Mock
     private ServerRosterManager rosterManager;
@@ -78,7 +82,7 @@ public class OutboundSubscriptionHandlerTest {
 
     @BeforeMethod
     public void reset() {
-        Mockito.clearInvocations(rosterManager);
+        Mockito.clearInvocations(rosterManager, stanzaRouter);
     }
 
     /**
@@ -115,6 +119,8 @@ public class OutboundSubscriptionHandlerTest {
         Assert.assertEquals(rosterItemCaptor.getValue().getSubscription(), SubscriptionState.Subscription.NONE);
         Assert.assertTrue(rosterItemCaptor.getValue().isPendingOut());
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingIn());
+
+        Mockito.verify(stanzaRouter).route(presence);
     }
 
     @Test
@@ -180,6 +186,55 @@ public class OutboundSubscriptionHandlerTest {
         Assert.assertEquals(rosterItemCaptor.getValue().getSubscription(), SubscriptionState.Subscription.BOTH);
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingOut());
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingIn());
+        Mockito.verify(stanzaRouter).route(presence);
+    }
+
+    @Test
+    public void testProcessingOfOutboundSubscriptionApprovalIfUserHasMutualSubscriptionToContact() {
+        Presence presence = new Presence(Presence.Type.SUBSCRIBED);
+        presence.setFrom(Jid.of("user@server"));
+        presence.setTo(Jid.of("contact@server"));
+        Mockito.when(rosterManager.getRosterItem(Mockito.eq("user"), Mockito.eq(presence.getTo()))).thenReturn(new RosterItem() {
+            @Override
+            public Jid getJid() {
+                return presence.getTo();
+            }
+
+            @Override
+            public String getName() {
+                return "contact";
+            }
+
+            @Override
+            public boolean isApproved() {
+                return false;
+            }
+
+            @Override
+            public List<String> getGroups() {
+                return Collections.emptyList();
+            }
+
+            @Override
+            public Subscription getSubscription() {
+                return Subscription.BOTH;
+            }
+
+            @Override
+            public boolean isPendingOut() {
+                return false;
+            }
+
+            @Override
+            public boolean isPendingIn() {
+                return true;
+            }
+        });
+
+        subscriptionHandler.process(presence);
+
+        Mockito.verify(rosterManager, Mockito.times(0)).setRosterItem(Mockito.eq("user"), Mockito.any());
+        Mockito.verify(stanzaRouter, Mockito.times(0)).route(presence);
     }
 
     @Test
@@ -233,6 +288,7 @@ public class OutboundSubscriptionHandlerTest {
         Assert.assertEquals(rosterItemCaptor.getValue().getSubscription(), SubscriptionState.Subscription.FROM);
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingOut());
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingIn());
+        Mockito.verify(stanzaRouter).route(presence);
     }
 
     @Test
@@ -245,6 +301,7 @@ public class OutboundSubscriptionHandlerTest {
         subscriptionHandler.process(presence);
 
         Mockito.verify(rosterManager, Mockito.times(0)).setRosterItem(Mockito.any(), Mockito.any());
+        Mockito.verify(stanzaRouter, Mockito.times(0)).route(presence);
     }
 
     @Test
@@ -292,6 +349,7 @@ public class OutboundSubscriptionHandlerTest {
         subscriptionHandler.process(presence);
 
         Mockito.verify(rosterManager, Mockito.times(0)).setRosterItem(Mockito.any(), Mockito.any());
+        Mockito.verify(stanzaRouter, Mockito.times(0)).route(presence);
     }
 
     @Test
@@ -346,7 +404,11 @@ public class OutboundSubscriptionHandlerTest {
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingOut());
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingIn());
 
-        // TODO test unavailable presence sent to contact from all user's resources.
+        ArgumentCaptor<Presence> presenceArgumentCaptor = ArgumentCaptor.forClass(Presence.class);
+        Mockito.verify(stanzaRouter, Mockito.times(3)).route(presenceArgumentCaptor.capture());
+        Assert.assertEquals(presenceArgumentCaptor.getAllValues().get(0).getType(), Presence.Type.UNAVAILABLE);
+        Assert.assertEquals(presenceArgumentCaptor.getAllValues().get(1).getType(), Presence.Type.UNAVAILABLE);
+        Assert.assertEquals(presenceArgumentCaptor.getAllValues().get(2).getType(), Presence.Type.UNSUBSCRIBED);
     }
 
     @Test
@@ -400,6 +462,7 @@ public class OutboundSubscriptionHandlerTest {
         Assert.assertEquals(rosterItemCaptor.getValue().getSubscription(), SubscriptionState.Subscription.FROM);
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingOut());
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingIn());
+        Mockito.verify(stanzaRouter).route(presence);
     }
 
     @Test
@@ -453,5 +516,6 @@ public class OutboundSubscriptionHandlerTest {
         Assert.assertEquals(rosterItemCaptor.getValue().getSubscription(), SubscriptionState.Subscription.NONE);
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingOut());
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingIn());
+        Mockito.verify(stanzaRouter).route(presence);
     }
 }

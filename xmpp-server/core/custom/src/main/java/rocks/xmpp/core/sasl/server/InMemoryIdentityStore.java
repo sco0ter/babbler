@@ -60,6 +60,8 @@ public class InMemoryIdentityStore implements ScramIdentityStore {
 
     public InMemoryIdentityStore() {
         credentialInfoMap.put("admin", createAccount("admin", "admin"));
+        credentialInfoMap.put("111", createAccount("111", "111"));
+        credentialInfoMap.put("222", createAccount("222", "222"));
     }
 
     private static CredentialInfo createAccount(String username, String password) {

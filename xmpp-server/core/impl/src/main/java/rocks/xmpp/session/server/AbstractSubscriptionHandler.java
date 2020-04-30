@@ -46,13 +46,14 @@ public abstract class AbstractSubscriptionHandler {
      * @param username The user.
      * @param presence The presence.
      * @param item     The roster item to update. If null, a new item is created.
+     * @return True, if the subscription state has changed; false otherwise.
      */
-    protected void updateRosterAndPush(String username, Presence presence, RosterItem item, BiFunction<DefinedState, Presence.Type, DefinedState> function) {
+    protected boolean updateRosterAndPush(String username, Presence presence, RosterItem item, BiFunction<DefinedState, Presence.Type, DefinedState> function, boolean approved) {
 
         if (item != null) {
             DefinedState oldState = DefinedState.valueOf(item);
             DefinedState newState = function.apply(oldState, presence.getType());
-            if (newState != oldState) {
+            if (newState != oldState || item.isApproved() != approved) {
                 rosterManager.setRosterItem(username, new RosterItem() {
                     @Override
                     public Jid getJid() {
@@ -66,7 +67,7 @@ public abstract class AbstractSubscriptionHandler {
 
                     @Override
                     public boolean isApproved() {
-                        return item.isApproved();
+                        return approved;
                     }
 
                     @Override
@@ -90,6 +91,7 @@ public abstract class AbstractSubscriptionHandler {
                     }
                 });
             }
+            return newState != oldState;
         } else {
             rosterManager.setRosterItem(username, new RosterItem() {
                 @Override
@@ -104,7 +106,7 @@ public abstract class AbstractSubscriptionHandler {
 
                 @Override
                 public boolean isApproved() {
-                    return false;
+                    return approved;
                 }
 
                 @Override
@@ -128,5 +130,6 @@ public abstract class AbstractSubscriptionHandler {
                 }
             });
         }
+        return true;
     }
 }

@@ -79,7 +79,7 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler impl
                         Stream<Session> userSessions = sessionManager.getUserSessions(presence.getTo());
                         userSessions.forEach(session -> session.send(presence));
 
-                        updateRosterAndPush(username, presence, rosterItem, DefinedState::onInboundSubscriptionChange);
+                        updateRosterAndPush(username, presence, rosterItem, DefinedState::onInboundSubscriptionChange, rosterItem != null && rosterItem.isApproved());
                     }
                     break;
                 case SUBSCRIBED:
@@ -93,7 +93,7 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler impl
                             userSessions.forEach(session -> session.send(presence));
 
                             // Initiate a roster push to all of the user's interested resources
-                            updateRosterAndPush(username, presence, rosterItem, DefinedState::onInboundSubscriptionChange);
+                            updateRosterAndPush(username, presence, rosterItem, DefinedState::onInboundSubscriptionChange, rosterItem.isApproved());
 
                             // The user's server MUST also deliver the available presence stanza received from each of the contact's available resources to each of the user's available resources.
                             Stream<Session> contactSessions = sessionManager.getUserSessions(presence.getFrom().asBareJid());
@@ -113,7 +113,7 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler impl
                         userSessions.forEach(session -> session.send(presence));
 
                         // Initiate a roster push to all of the user's interested resources
-                        updateRosterAndPush(username, presence, rosterItem, DefinedState::onInboundSubscriptionChange);
+                        updateRosterAndPush(username, presence, rosterItem, DefinedState::onInboundSubscriptionChange, rosterItem.isApproved());
 
                         // The user's server MUST also deliver the inbound presence stanzas of type "unavailable".
                         Stream<Session> contactSessions = sessionManager.getUserSessions(presence.getFrom());
@@ -139,7 +139,7 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler impl
                         );
 
                         // Initiate a roster push to all of the user's interested resources
-                        updateRosterAndPush(username, presence, rosterItem, DefinedState::onInboundSubscriptionChange);
+                        updateRosterAndPush(username, presence, rosterItem, DefinedState::onInboundSubscriptionChange, rosterItem.isApproved());
                     }
                     break;
                 default:

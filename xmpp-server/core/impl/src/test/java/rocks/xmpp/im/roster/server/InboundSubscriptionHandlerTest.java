@@ -44,7 +44,7 @@ import rocks.xmpp.im.roster.model.SubscriptionState;
 import rocks.xmpp.session.server.InboundStanzaProcessor;
 import rocks.xmpp.session.server.InboundSubscriptionHandler;
 import rocks.xmpp.session.server.SessionManager;
-import rocks.xmpp.session.server.StanzaProcessor;
+import rocks.xmpp.session.server.OutboundStanzaProcessor;
 
 import java.util.Collections;
 import java.util.List;
@@ -77,7 +77,7 @@ public class InboundSubscriptionHandlerTest {
     private InboundStanzaProcessor inboundStanzaProcessor;
 
     @Mock
-    private StanzaProcessor outboundStanzaProcessor;
+    private OutboundStanzaProcessor outboundStanzaProcessor;
 
     @InjectMocks
     private InboundSubscriptionHandler subscriptionHandler;

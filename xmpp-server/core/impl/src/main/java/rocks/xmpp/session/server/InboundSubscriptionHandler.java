@@ -54,7 +54,7 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler impl
     private InboundStanzaProcessor inboundStanzaProcessor;
 
     @Inject
-    private StanzaProcessor outboundStanzaProcessor;
+    private OutboundStanzaProcessor outboundStanzaProcessor;
 
     public void process(Presence presence) {
 

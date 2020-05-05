@@ -43,7 +43,7 @@ import javax.inject.Inject;
  * @author Christian Schudt
  */
 @ApplicationScoped
-public class StanzaProcessor {
+public class OutboundStanzaProcessor {
 
     @Inject
     private Instance<OutboundMessageHandler> outboundMessageHandlers;

@@ -77,7 +77,7 @@ public class InboundClientSession implements Addressable, Session, StreamHandler
     private static final Duration QUERY_TIMEOUT = Duration.ofSeconds(5);
 
     @Inject
-    private StanzaProcessor stanzaProcessor;
+    private OutboundStanzaProcessor outboundStanzaProcessor;
 
     @Inject
     private ServerConfiguration serverConfiguration;
@@ -221,7 +221,7 @@ public class InboundClientSession implements Addressable, Session, StreamHandler
                     return false;
                 }
 
-                stanzaProcessor.process(stanza);
+                outboundStanzaProcessor.process(stanza);
             }
         }
         return false;

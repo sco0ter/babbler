@@ -65,7 +65,7 @@ public class OutboundPresenceInformationHandlerTest {
     private Session resource2;
 
     @Mock
-    private StanzaProcessor stanzaProcessor;
+    private OutboundStanzaProcessor outboundStanzaProcessor;
 
     @InjectMocks
     private OutboundPresenceInformationHandler presenceInformationHandler;
@@ -90,7 +90,7 @@ public class OutboundPresenceInformationHandlerTest {
 
     @BeforeMethod
     public void reset() {
-        Mockito.clearInvocations(rosterManager, stanzaProcessor);
+        Mockito.clearInvocations(rosterManager, outboundStanzaProcessor);
         Mockito.when(sessionManager.getUserSessions(Mockito.eq(Jid.of("user@server")))).thenReturn(Stream.of(resource1, resource2));
     }
 
@@ -103,7 +103,7 @@ public class OutboundPresenceInformationHandlerTest {
         Mockito.verify(rosterManager).getRosterItems(Mockito.eq("user"));
 
         ArgumentCaptor<Presence> presenceArgumentCaptor = ArgumentCaptor.forClass(Presence.class);
-        Mockito.verify(stanzaProcessor, Mockito.times(3)).process(presenceArgumentCaptor.capture());
+        Mockito.verify(outboundStanzaProcessor, Mockito.times(3)).process(presenceArgumentCaptor.capture());
 
         Assert.assertEquals(presenceArgumentCaptor.getAllValues().get(0).getTo(), Jid.of("contact1@server"));
         Assert.assertEquals(presenceArgumentCaptor.getAllValues().get(1).getTo(), Jid.of("contact3@server"));

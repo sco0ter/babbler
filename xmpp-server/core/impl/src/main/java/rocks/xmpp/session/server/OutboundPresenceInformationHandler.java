@@ -58,7 +58,7 @@ public class OutboundPresenceInformationHandler implements OutboundPresenceHandl
     private SessionManager sessionManager;
 
     @Inject
-    private StanzaProcessor stanzaProcessor;
+    private OutboundStanzaProcessor outboundStanzaProcessor;
 
     final Map<Jid, Set<Jid>> directPresences = new ConcurrentHashMap<>();
 
@@ -77,7 +77,7 @@ public class OutboundPresenceInformationHandler implements OutboundPresenceHandl
 
                     // The user's server MUST also broadcast initial presence from the user's newly available resource to all of the user's available resources, including the resource that generated the presence notification in the first place (i.e., an entity is implicitly subscribed to its own presence).
                     Presence selfPresence = new Presence(presence.getFrom().asBareJid(), presence.getType(), presence.getShow(), presence.getStatuses(), presence.getPriority(), presence.getId(), presence.getFrom(), presence.getLanguage(), presence.getExtensions(), presence.getError());
-                    stanzaProcessor.process(selfPresence);
+                    outboundStanzaProcessor.process(selfPresence);
 
                 } else if (presence.getType() == Presence.Type.UNAVAILABLE) {
                     Session session = sessionManager.getSession(presence.getFrom());
@@ -94,7 +94,7 @@ public class OutboundPresenceInformationHandler implements OutboundPresenceHandl
                     broadcast(presence, directAvailablePresences);
 
                     Presence selfPresence = new Presence(presence.getFrom().asBareJid(), presence.getType(), presence.getShow(), presence.getStatuses(), presence.getPriority(), presence.getId(), presence.getFrom(), presence.getLanguage(), presence.getExtensions(), presence.getError());
-                    stanzaProcessor.process(selfPresence);
+                    outboundStanzaProcessor.process(selfPresence);
                 }
             } else {
                 // Handle direct presence sessions with unsubscribed recipients.
@@ -146,7 +146,7 @@ public class OutboundPresenceInformationHandler implements OutboundPresenceHandl
     private void broadcast(Presence presence, Iterable<Jid> recipients) {
         recipients.forEach(contact -> {
             Presence p = new Presence(contact, presence.getType(), presence.getShow(), presence.getStatuses(), presence.getPriority(), presence.getId(), presence.getFrom(), presence.getLanguage(), presence.getExtensions(), presence.getError());
-            stanzaProcessor.process(p);
+            outboundStanzaProcessor.process(p);
         });
     }
 

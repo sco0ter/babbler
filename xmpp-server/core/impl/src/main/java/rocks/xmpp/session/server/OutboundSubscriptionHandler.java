@@ -82,9 +82,9 @@ public class OutboundSubscriptionHandler extends AbstractSubscriptionHandler imp
             switch (presence.getType()) {
                 case SUBSCRIBE:
                 case UNSUBSCRIBE:
-                    updateRosterAndPush(username, presence, rosterItem, DefinedState::onOutboundSubscriptionChange, rosterItem != null && rosterItem.isApproved());
                     // Always route the presence, no matter if the subscription state has changed.
                     stanzaRouter.route(presence);
+                    updateRosterAndPush(username, presence, null, rosterItem, DefinedState::onOutboundSubscriptionChange, rosterItem != null && rosterItem.isApproved());
                     break;
                 case SUBSCRIBED:
                     if (rosterItem != null) {
@@ -97,9 +97,7 @@ public class OutboundSubscriptionHandler extends AbstractSubscriptionHandler imp
                         approved = true;
                     }
                     // Only route the presence stanza, if the subscription state has changed
-                    if (updateRosterAndPush(username, presence, rosterItem, DefinedState::onOutboundSubscriptionChange, approved)) {
-                        stanzaRouter.route(presence);
-                    }
+                    updateRosterAndPush(username, presence, () -> stanzaRouter.route(presence), rosterItem, DefinedState::onOutboundSubscriptionChange, approved);
                     break;
                 case UNSUBSCRIBED:
                     if (rosterItem != null) {
@@ -109,7 +107,7 @@ public class OutboundSubscriptionHandler extends AbstractSubscriptionHandler imp
                             approved = rosterItem.isApproved();
                         }
 
-                        if (updateRosterAndPush(username, presence, rosterItem, DefinedState::onOutboundSubscriptionChange, approved)) {
+                        updateRosterAndPush(username, presence, () -> {
                             // While the user is still subscribed to the contact's presence (i.e., before the contact's server routes or delivers the presence stanza
                             // of type "unsubscribed" to the user), the contact's server MUST send a presence stanza of type "unavailable" from all of the contact's online resources to the user.
                             sessionManager.getUserSessions(serverConfiguration.getDomain().withLocal(username)).forEach(session -> {
@@ -120,7 +118,7 @@ public class OutboundSubscriptionHandler extends AbstractSubscriptionHandler imp
                                     }
                             );
                             stanzaRouter.route(presence);
-                        }
+                        }, rosterItem, DefinedState::onOutboundSubscriptionChange, approved);
                     }
                     break;
                 default:

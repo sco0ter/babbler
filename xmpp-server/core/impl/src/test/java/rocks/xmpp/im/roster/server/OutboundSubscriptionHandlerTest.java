@@ -25,6 +25,7 @@
 package rocks.xmpp.im.roster.server;
 
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -133,6 +134,7 @@ public class OutboundSubscriptionHandlerTest {
         subscriptionHandler.process(presence);
 
         Mockito.verify(rosterManager, Mockito.times(0)).setRosterItem(Mockito.eq("user"), Mockito.any());
+        Mockito.verify(stanzaRouter).route(presence);
     }
 
     @Test
@@ -179,14 +181,15 @@ public class OutboundSubscriptionHandlerTest {
 
         subscriptionHandler.process(presence);
 
-        ArgumentCaptor<RosterItem> rosterItemCaptor = ArgumentCaptor.forClass(RosterItem.class);
-        Mockito.verify(rosterManager).setRosterItem(Mockito.eq("user"), rosterItemCaptor.capture());
+        InOrder inOrder = Mockito.inOrder(stanzaRouter, rosterManager);
+        inOrder.verify(stanzaRouter).route(presence);
 
+        ArgumentCaptor<RosterItem> rosterItemCaptor = ArgumentCaptor.forClass(RosterItem.class);
+        inOrder.verify(rosterManager).setRosterItem(Mockito.eq("user"), rosterItemCaptor.capture());
         Assert.assertEquals(rosterItemCaptor.getValue().getJid(), presence.getTo());
         Assert.assertEquals(rosterItemCaptor.getValue().getSubscription(), SubscriptionState.Subscription.BOTH);
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingOut());
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingIn());
-        Mockito.verify(stanzaRouter).route(presence);
     }
 
     @Test
@@ -281,14 +284,16 @@ public class OutboundSubscriptionHandlerTest {
 
         subscriptionHandler.process(presence);
 
+        InOrder inOrder = Mockito.inOrder(stanzaRouter, rosterManager);
+        inOrder.verify(stanzaRouter).route(presence);
+
         ArgumentCaptor<RosterItem> rosterItemCaptor = ArgumentCaptor.forClass(RosterItem.class);
-        Mockito.verify(rosterManager).setRosterItem(Mockito.eq("user"), rosterItemCaptor.capture());
+        inOrder.verify(rosterManager).setRosterItem(Mockito.eq("user"), rosterItemCaptor.capture());
 
         Assert.assertEquals(rosterItemCaptor.getValue().getJid(), presence.getTo());
         Assert.assertEquals(rosterItemCaptor.getValue().getSubscription(), SubscriptionState.Subscription.FROM);
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingOut());
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingIn());
-        Mockito.verify(stanzaRouter).route(presence);
     }
 
     @Test
@@ -396,19 +401,21 @@ public class OutboundSubscriptionHandlerTest {
 
         subscriptionHandler.process(presence);
 
+        InOrder inOrder = Mockito.inOrder(stanzaRouter, rosterManager);
+
+        ArgumentCaptor<Presence> presenceArgumentCaptor = ArgumentCaptor.forClass(Presence.class);
+        inOrder.verify(stanzaRouter, Mockito.times(3)).route(presenceArgumentCaptor.capture());
+        Assert.assertEquals(presenceArgumentCaptor.getAllValues().get(0).getType(), Presence.Type.UNAVAILABLE);
+        Assert.assertEquals(presenceArgumentCaptor.getAllValues().get(1).getType(), Presence.Type.UNAVAILABLE);
+        Assert.assertEquals(presenceArgumentCaptor.getAllValues().get(2).getType(), Presence.Type.UNSUBSCRIBED);
+
         ArgumentCaptor<RosterItem> rosterItemCaptor = ArgumentCaptor.forClass(RosterItem.class);
-        Mockito.verify(rosterManager).setRosterItem(Mockito.eq("user"), rosterItemCaptor.capture());
+        inOrder.verify(rosterManager).setRosterItem(Mockito.eq("user"), rosterItemCaptor.capture());
 
         Assert.assertEquals(rosterItemCaptor.getValue().getJid(), presence.getTo());
         Assert.assertEquals(rosterItemCaptor.getValue().getSubscription(), SubscriptionState.Subscription.TO);
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingOut());
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingIn());
-
-        ArgumentCaptor<Presence> presenceArgumentCaptor = ArgumentCaptor.forClass(Presence.class);
-        Mockito.verify(stanzaRouter, Mockito.times(3)).route(presenceArgumentCaptor.capture());
-        Assert.assertEquals(presenceArgumentCaptor.getAllValues().get(0).getType(), Presence.Type.UNAVAILABLE);
-        Assert.assertEquals(presenceArgumentCaptor.getAllValues().get(1).getType(), Presence.Type.UNAVAILABLE);
-        Assert.assertEquals(presenceArgumentCaptor.getAllValues().get(2).getType(), Presence.Type.UNSUBSCRIBED);
     }
 
     @Test
@@ -455,14 +462,16 @@ public class OutboundSubscriptionHandlerTest {
 
         subscriptionHandler.process(presence);
 
+        InOrder inOrder = Mockito.inOrder(stanzaRouter, rosterManager);
+        inOrder.verify(stanzaRouter).route(presence);
+
         ArgumentCaptor<RosterItem> rosterItemCaptor = ArgumentCaptor.forClass(RosterItem.class);
-        Mockito.verify(rosterManager).setRosterItem(Mockito.eq("user"), rosterItemCaptor.capture());
+        inOrder.verify(rosterManager).setRosterItem(Mockito.eq("user"), rosterItemCaptor.capture());
 
         Assert.assertEquals(rosterItemCaptor.getValue().getJid(), presence.getTo());
         Assert.assertEquals(rosterItemCaptor.getValue().getSubscription(), SubscriptionState.Subscription.FROM);
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingOut());
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingIn());
-        Mockito.verify(stanzaRouter).route(presence);
     }
 
     @Test
@@ -509,13 +518,15 @@ public class OutboundSubscriptionHandlerTest {
 
         subscriptionHandler.process(presence);
 
+        InOrder inOrder = Mockito.inOrder(stanzaRouter, rosterManager);
+        inOrder.verify(stanzaRouter).route(presence);
+
         ArgumentCaptor<RosterItem> rosterItemCaptor = ArgumentCaptor.forClass(RosterItem.class);
-        Mockito.verify(rosterManager).setRosterItem(Mockito.eq("user"), rosterItemCaptor.capture());
+        inOrder.verify(rosterManager).setRosterItem(Mockito.eq("user"), rosterItemCaptor.capture());
 
         Assert.assertEquals(rosterItemCaptor.getValue().getJid(), presence.getTo());
         Assert.assertEquals(rosterItemCaptor.getValue().getSubscription(), SubscriptionState.Subscription.NONE);
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingOut());
         Assert.assertFalse(rosterItemCaptor.getValue().isPendingIn());
-        Mockito.verify(stanzaRouter).route(presence);
     }
 }

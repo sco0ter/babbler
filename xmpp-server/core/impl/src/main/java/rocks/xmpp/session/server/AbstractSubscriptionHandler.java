@@ -48,12 +48,16 @@ public abstract class AbstractSubscriptionHandler {
      * @param item     The roster item to update. If null, a new item is created.
      * @return True, if the subscription state has changed; false otherwise.
      */
-    protected boolean updateRosterAndPush(String username, Presence presence, RosterItem item, BiFunction<DefinedState, Presence.Type, DefinedState> function, boolean approved) {
+    protected boolean updateRosterAndPush(String username, Presence presence, Runnable onStateChange, RosterItem item, BiFunction<DefinedState, Presence.Type, DefinedState> function, boolean approved) {
 
         if (item != null) {
             DefinedState oldState = DefinedState.valueOf(item);
             DefinedState newState = function.apply(oldState, presence.getType());
-            if (newState != oldState || item.isApproved() != approved) {
+            final boolean stateChanged = newState != oldState;
+            if (stateChanged || item.isApproved() != approved) {
+                if (stateChanged && onStateChange != null) {
+                    onStateChange.run();
+                }
                 rosterManager.setRosterItem(username, new RosterItem() {
                     @Override
                     public Jid getJid() {
@@ -91,8 +95,11 @@ public abstract class AbstractSubscriptionHandler {
                     }
                 });
             }
-            return newState != oldState;
+            return stateChanged;
         } else {
+            if (onStateChange != null) {
+                onStateChange.run();
+            }
             rosterManager.setRosterItem(username, new RosterItem() {
                 @Override
                 public Jid getJid() {

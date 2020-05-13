@@ -193,6 +193,44 @@ public class EntityCapabilitiesTest extends XmlTest {
     }
 
     @Test
+    public void testVerificationStringComplexFromDiscoInfo() throws NoSuchAlgorithmException, JAXBException, XMLStreamException {
+
+        InfoDiscovery infoDiscovery = unmarshal("<query xmlns='http://jabber.org/protocol/disco#info'\n" +
+                "         node='http://psi-im.org#q07IKJEyjvHSyhy//CH0CxmKi8w='>\n" +
+                "    <identity xml:lang='en' category='client' name='Psi 0.11' type='pc'/>\n" +
+                "    <identity xml:lang='el' category='client' name='Ψ 0.11' type='pc'/>\n" +
+                "    <feature var='http://jabber.org/protocol/caps'/>\n" +
+                "    <feature var='http://jabber.org/protocol/disco#info'/>\n" +
+                "    <feature var='http://jabber.org/protocol/disco#items'/>\n" +
+                "    <feature var='http://jabber.org/protocol/muc'/>\n" +
+                "    <x xmlns='jabber:x:data' type='result'>\n" +
+                "      <field var='FORM_TYPE' type='hidden'>\n" +
+                "        <value>urn:xmpp:dataforms:softwareinfo</value>\n" +
+                "      </field>\n" +
+                "      <field var='ip_version' type='text-multi' >\n" +
+                "        <value>ipv4</value>\n" +
+                "        <value>ipv6</value>\n" +
+                "      </field>\n" +
+                "      <field var='os'>\n" +
+                "        <value>Mac</value>\n" +
+                "      </field>\n" +
+                "      <field var='os_version'>\n" +
+                "        <value>10.5.1</value>\n" +
+                "      </field>\n" +
+                "      <field var='software'>\n" +
+                "        <value>Psi</value>\n" +
+                "      </field>\n" +
+                "      <field var='software_version'>\n" +
+                "        <value>0.11</value>\n" +
+                "      </field>\n" +
+                "    </x>\n" +
+                "  </query>", InfoDiscovery.class);
+
+        EntityCapabilities1 entityCaps = new EntityCapabilities1("", infoDiscovery, MessageDigest.getInstance("sha-1"));
+        Assert.assertEquals(entityCaps.getVerificationString(), "q07IKJEyjvHSyhy//CH0CxmKi8w=");
+    }
+
+    @Test
     public void testVerificationStringWithExtendedForm() throws NoSuchAlgorithmException {
         List<Identity> identities = new ArrayList<>();
         identities.add(Identity.clientPc().withName("Exodus 0.9.1"));

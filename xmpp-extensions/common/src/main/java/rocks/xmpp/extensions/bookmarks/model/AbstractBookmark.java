@@ -25,65 +25,61 @@
 package rocks.xmpp.extensions.bookmarks.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import java.net.URL;
-import java.util.Objects;
+import javax.xml.bind.annotation.XmlTransient;
+import java.text.Collator;
 
 /**
- * A web page bookmark.
- * <p>
- * This class is immutable.
+ * An abstract base class for bookmarks.
  *
  * @author Christian Schudt
+ * @see ChatRoomBookmark
+ * @see WebPageBookmark
  */
-public final class WebPageBookmark extends AbstractBookmark {
+@XmlTransient
+public abstract class AbstractBookmark implements Bookmark {
     @XmlAttribute
-    private final URL url;
+    private final String name;
 
-    private WebPageBookmark() {
-        super(null);
-        this.url = null;
+    protected AbstractBookmark(String name) {
+        this.name = name;
     }
 
     /**
-     * Creates a web page bookmark.
+     * Gets a friendly name for the bookmark.
      *
-     * @param name The bookmark name.
-     * @param url  The URL of the web page.
+     * @return The name.
      */
-    public WebPageBookmark(String name, URL url) {
-        super(name);
-        this.url = Objects.requireNonNull(url);
+    public final String getName() {
+        return name;
     }
 
     /**
-     * Gets the URL of the web page.
+     * Compares this bookmark by its name.
      *
-     * @return The URL.
+     * @param o The other bookmark.
+     * @return The comparison result.
      */
-    public final URL getUrl() {
-        return url;
-    }
-
     @Override
-    public final boolean equals(Object o) {
-        if (o == this) {
-            return true;
+    public final int compareTo(Bookmark o) {
+        if (this == o) {
+            return 0;
         }
-        if (!(o instanceof WebPageBookmark)) {
-            return false;
+        if (o != null) {
+            if (name != null) {
+                if (o.getName() != null) {
+                    return Collator.getInstance().compare(name, o.getName());
+                } else {
+                    return -1;
+                }
+            } else {
+                if (o.getName() != null) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        } else {
+            return -1;
         }
-        WebPageBookmark other = (WebPageBookmark) o;
-
-        return Objects.equals(url, other.url);
-    }
-
-    @Override
-    public final int hashCode() {
-        return Objects.hash(url);
-    }
-
-    @Override
-    public final String toString() {
-        return getName() + ": " + (url != null ? url.toString() : "");
     }
 }

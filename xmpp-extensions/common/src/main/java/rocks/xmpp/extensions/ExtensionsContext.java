@@ -34,6 +34,7 @@ import rocks.xmpp.extensions.avatar.model.metadata.AvatarMetadata;
 import rocks.xmpp.extensions.blocking.model.BlockList;
 import rocks.xmpp.extensions.bob.model.Data;
 import rocks.xmpp.extensions.bookmarks.model.BookmarkStorage;
+import rocks.xmpp.extensions.bookmarks.pep.model.PepNativeBookmark;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.carbons.model.MessageCarbons;
@@ -297,7 +298,9 @@ public final class ExtensionsContext implements XmppContext {
                 Json.class,
 
                 // XEP-0352: Client State Indication
-                ClientState.class
+                ClientState.class,
+
+                PepNativeBookmark.class
         );
     }
 }

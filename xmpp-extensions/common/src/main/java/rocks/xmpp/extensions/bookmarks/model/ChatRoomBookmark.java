@@ -36,7 +36,7 @@ import java.util.Objects;
  *
  * @author Christian Schudt
  */
-public final class ChatRoomBookmark extends Bookmark {
+public final class ChatRoomBookmark extends AbstractBookmark implements ConferenceBookmark {
 
     private final String nick;
 
@@ -92,6 +92,7 @@ public final class ChatRoomBookmark extends Bookmark {
      *
      * @return The nick.
      */
+    @Override
     public final String getNick() {
         return nick;
     }
@@ -101,6 +102,7 @@ public final class ChatRoomBookmark extends Bookmark {
      *
      * @return The password.
      */
+    @Override
     public final String getPassword() {
         return password;
     }
@@ -110,6 +112,7 @@ public final class ChatRoomBookmark extends Bookmark {
      *
      * @return True, if the client should automatically join the conference room on login.
      */
+    @Override
     public final boolean isAutojoin() {
         return autojoin != null && autojoin;
     }

@@ -22,17 +22,14 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.bookmarks.model;
-
 /**
- * A bookmark.
+ * Provides XML schema implementations for <a href="https://xmpp.org/extensions/xep-0402.html">XEP-0402: PEP Native Bookmarks</a>
  */
-public interface Bookmark extends Comparable<Bookmark> {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlSchema(namespace = PepNativeBookmark.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.bookmarks.pep.model;
 
-    /**
-     * A friendly name for the bookmark, specified by the user.
-     *
-     * @return The name.
-     */
-    String getName();
-}
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlNsForm;
+import javax.xml.bind.annotation.XmlSchema;

@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.bookmarks;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.extensions.bookmarks.model.Bookmark;
+import rocks.xmpp.extensions.bookmarks.model.AbstractBookmark;
 import rocks.xmpp.extensions.bookmarks.model.BookmarkStorage;
 import rocks.xmpp.extensions.bookmarks.model.ChatRoomBookmark;
 import rocks.xmpp.extensions.bookmarks.model.WebPageBookmark;
@@ -80,9 +80,9 @@ public final class BookmarkManager extends Manager {
      * @param bookmark The bookmark.
      * @return The async result.
      */
-    public final AsyncResult<Void> addBookmark(Bookmark bookmark) {
+    public final AsyncResult<Void> addBookmark(AbstractBookmark bookmark) {
         return privateDataManager.getData(BookmarkStorage.class).thenCompose(bookmarkStorage -> {
-            Collection<Bookmark> bookmarks = new ArrayDeque<>(bookmarkStorage.getBookmarks());
+            Collection<AbstractBookmark> bookmarks = new ArrayDeque<>(bookmarkStorage.getBookmarks());
             bookmarks.remove(bookmark);
             bookmarks.add(bookmark);
             return privateDataManager.storeData(new BookmarkStorage(bookmarks));
@@ -97,7 +97,7 @@ public final class BookmarkManager extends Manager {
      */
     public final AsyncResult<Void> removeChatRoomBookmark(Jid chatRoom) {
         return privateDataManager.getData(BookmarkStorage.class).thenCompose(bookmarkStorage -> {
-            Collection<Bookmark> bookmarks = new ArrayDeque<>(bookmarkStorage.getBookmarks());
+            Collection<AbstractBookmark> bookmarks = new ArrayDeque<>(bookmarkStorage.getBookmarks());
             bookmarks.remove(new ChatRoomBookmark("", chatRoom));
             return privateDataManager.storeData(new BookmarkStorage(bookmarks));
         });
@@ -111,14 +111,14 @@ public final class BookmarkManager extends Manager {
      */
     public final AsyncResult<Void> removeWebPageBookmark(URL webPage) {
         return privateDataManager.getData(BookmarkStorage.class).thenCompose(bookmarkStorage -> {
-            Collection<Bookmark> bookmarks = new ArrayDeque<>(bookmarkStorage.getBookmarks());
+            Collection<AbstractBookmark> bookmarks = new ArrayDeque<>(bookmarkStorage.getBookmarks());
             bookmarks.remove(new WebPageBookmark("", webPage));
             return privateDataManager.storeData(new BookmarkStorage(bookmarks));
         });
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Bookmark> AsyncResult<List<T>> getBookmarks(Class<T> clazz) {
+    private <T extends AbstractBookmark> AsyncResult<List<T>> getBookmarks(Class<T> clazz) {
         return privateDataManager.getData(BookmarkStorage.class)
                 .thenApply(bookmarkStorage -> bookmarkStorage.getBookmarks()
                         .stream()

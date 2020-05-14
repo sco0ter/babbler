@@ -57,12 +57,12 @@ public final class BookmarkStorage {
     @XmlElements({
             @XmlElement(name = "conference", type = ChatRoomBookmark.class),
             @XmlElement(name = "url", type = WebPageBookmark.class)})
-    private final List<Bookmark> bookmarks = new ArrayList<>();
+    private final List<AbstractBookmark> bookmarks = new ArrayList<>();
 
     public BookmarkStorage() {
     }
 
-    public BookmarkStorage(Collection<Bookmark> bookmarks) {
+    public BookmarkStorage(Collection<AbstractBookmark> bookmarks) {
         this.bookmarks.addAll(bookmarks);
     }
 
@@ -73,7 +73,7 @@ public final class BookmarkStorage {
      * @see ChatRoomBookmark
      * @see WebPageBookmark
      */
-    public final List<Bookmark> getBookmarks() {
+    public final List<AbstractBookmark> getBookmarks() {
         return Collections.unmodifiableList(bookmarks);
     }
 }

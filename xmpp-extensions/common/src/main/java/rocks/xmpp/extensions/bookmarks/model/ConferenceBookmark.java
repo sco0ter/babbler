@@ -25,14 +25,28 @@
 package rocks.xmpp.extensions.bookmarks.model;
 
 /**
- * A bookmark.
+ * A bookmark to a conference room (aka chat room).
  */
-public interface Bookmark extends Comparable<Bookmark> {
+public interface ConferenceBookmark extends Bookmark {
 
     /**
-     * A friendly name for the bookmark, specified by the user.
+     * Whether the client should automatically join the conference room on login.
      *
-     * @return The name.
+     * @return true, if the client should join.
      */
-    String getName();
+    boolean isAutojoin();
+
+    /**
+     * The user's preferred roomnick for the chatroom.
+     *
+     * @return The roomnick for the chatroom.
+     */
+    String getNick();
+
+    /**
+     * A password used to access the chatroom.
+     *
+     * @return The password for the room.
+     */
+    String getPassword();
 }

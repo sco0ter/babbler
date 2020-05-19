@@ -114,7 +114,7 @@ final class AuthenticationManager extends ClientStreamFeatureNegotiator<Mechanis
                     throw new StreamNegotiationException("Server doesn't support any of the requested SASL mechanisms: " + mechanisms + ".");
                 }
                 successData = null;
-                saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[clientMechanisms.size()]), authorizationId, "xmpp", xmppSession.getDomain().toString(), Collections.emptyMap(), callbackHandler);
+                saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[0]), authorizationId, "xmpp", xmppSession.getDomain().toString(), Collections.emptyMap(), callbackHandler);
 
                 if (saslClient == null) {
                     throw new SaslException("No SASL client found for mechanisms: " + clientMechanisms);

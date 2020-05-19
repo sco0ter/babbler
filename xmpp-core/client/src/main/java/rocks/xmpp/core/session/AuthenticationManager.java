@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.session;
 
+import rocks.xmpp.core.Session;
 import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.sasl.XmppSaslClientFactory;
 import rocks.xmpp.core.sasl.model.Auth;
@@ -32,9 +33,9 @@ import rocks.xmpp.core.sasl.model.Failure;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.sasl.model.Response;
 import rocks.xmpp.core.sasl.model.Success;
+import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
-import rocks.xmpp.core.stream.client.ClientStreamFeatureNegotiator;
 
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.sasl.Sasl;
@@ -57,7 +58,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-final class AuthenticationManager extends ClientStreamFeatureNegotiator<Mechanisms> {
+final class AuthenticationManager implements StreamFeatureNegotiator<Mechanisms> {
 
     private static final Logger logger = Logger.getLogger(AuthenticationManager.class.getName());
 
@@ -68,6 +69,8 @@ final class AuthenticationManager extends ClientStreamFeatureNegotiator<Mechanis
         // Add the "ANONYMOUS" and "SCRAM-SHA-1" SASL mechanism.
         Security.addProvider(new XmppProvider());
     }
+
+    private final Session session;
 
     /**
      * Stores the supported and preferred SASL mechanisms of the server.
@@ -89,10 +92,10 @@ final class AuthenticationManager extends ClientStreamFeatureNegotiator<Mechanis
     /**
      * Creates the authentication manager. Usually only the {@link rocks.xmpp.core.session.XmppSession} should create it implicitly.
      *
-     * @param xmppSession The session.
+     * @param session The session.
      */
-    AuthenticationManager(final XmppSession xmppSession) {
-        super(xmppSession);
+    AuthenticationManager(final Session session) {
+        this.session = session;
         this.supportedMechanisms = new ArrayList<>();
     }
 
@@ -114,7 +117,7 @@ final class AuthenticationManager extends ClientStreamFeatureNegotiator<Mechanis
                     throw new StreamNegotiationException("Server doesn't support any of the requested SASL mechanisms: " + mechanisms + ".");
                 }
                 successData = null;
-                saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[0]), authorizationId, "xmpp", xmppSession.getDomain().toString(), Collections.emptyMap(), callbackHandler);
+                saslClient = Sasl.createSaslClient(clientMechanisms.toArray(new String[0]), authorizationId, "xmpp", session.getRemoteXmppAddress().toString(), Collections.emptyMap(), callbackHandler);
 
                 if (saslClient == null) {
                     throw new SaslException("No SASL client found for mechanisms: " + clientMechanisms);
@@ -125,7 +128,7 @@ final class AuthenticationManager extends ClientStreamFeatureNegotiator<Mechanis
                     initialResponse = saslClient.evaluateChallenge(new byte[0]);
                 }
 
-                xmppSession.send(new Auth(saslClient.getMechanismName(), initialResponse));
+                session.send(new Auth(saslClient.getMechanismName(), initialResponse));
             } catch (SaslException e) {
                 throw new StreamNegotiationException(e);
             }
@@ -140,7 +143,7 @@ final class AuthenticationManager extends ClientStreamFeatureNegotiator<Mechanis
                 supportedMechanisms.addAll(((Mechanisms) element).getMechanisms());
                 return StreamNegotiationResult.INCOMPLETE;
             } else if (element instanceof Challenge) {
-                xmppSession.send(new Response(saslClient.evaluateChallenge(((Challenge) element).getValue())));
+                session.send(new Response(saslClient.evaluateChallenge(((Challenge) element).getValue())));
                 return StreamNegotiationResult.INCOMPLETE;
             } else if (element instanceof Failure) {
                 Failure authenticationFailure = (Failure) element;

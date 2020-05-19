@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.compress;
 
+import rocks.xmpp.core.Session;
 import rocks.xmpp.core.net.TcpBinding;
-import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
-import rocks.xmpp.core.stream.client.ClientStreamFeatureNegotiator;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
 import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
 
@@ -49,7 +49,7 @@ import java.util.logging.Logger;
  *
  * @author Christian Schudt
  */
-public final class CompressionManager extends ClientStreamFeatureNegotiator<CompressionFeature> {
+public final class CompressionManager implements StreamFeatureNegotiator<CompressionFeature> {
 
     private static final Logger logger = Logger.getLogger(CompressionManager.class.getName());
 
@@ -57,10 +57,12 @@ public final class CompressionManager extends ClientStreamFeatureNegotiator<Comp
 
     private final List<CompressionMethod> compressionMethods = new CopyOnWriteArrayList<>();
 
+    private final Session session;
+
     private CompressionMethod negotiatedCompressionMethod;
 
-    public CompressionManager(final XmppSession xmppSession, final TcpBinding tcpBinding) {
-        super(xmppSession);
+    public CompressionManager(final Session Session, final TcpBinding tcpBinding) {
+        this.session = Session;
         this.tcpBinding = tcpBinding;
     }
 
@@ -80,7 +82,7 @@ public final class CompressionManager extends ClientStreamFeatureNegotiator<Comp
             if (!clientMethods.isEmpty()) {
                 // Use the first configured compression method, which is also advertised by the server.
                 CompressionMethod compressionMethod = clientMethods.values().iterator().next();
-                xmppSession.send(new StreamCompression.Compress(compressionMethod.getName()));
+                session.send(new StreamCompression.Compress(compressionMethod.getName()));
                 negotiatedCompressionMethod = compressionMethod;
                 return StreamNegotiationResult.INCOMPLETE;
             } else {

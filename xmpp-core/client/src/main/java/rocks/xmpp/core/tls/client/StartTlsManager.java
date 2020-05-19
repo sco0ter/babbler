@@ -24,12 +24,12 @@
 
 package rocks.xmpp.core.tls.client;
 
+import rocks.xmpp.core.Session;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.TcpBinding;
-import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
-import rocks.xmpp.core.stream.client.ClientStreamFeatureNegotiator;
-import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.tls.model.Failure;
 import rocks.xmpp.core.tls.model.Proceed;
 import rocks.xmpp.core.tls.model.StartTls;
@@ -40,14 +40,16 @@ import rocks.xmpp.core.tls.model.StartTls;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tls">STARTTLS Negotiation</a>
  */
-public final class StartTlsManager extends ClientStreamFeatureNegotiator<StartTls> {
+public final class StartTlsManager implements StreamFeatureNegotiator<StartTls> {
 
     private final TcpBinding tcpBinding;
 
     private final ChannelEncryption channelEncryption;
 
-    public StartTlsManager(XmppSession xmppSession, TcpBinding tcpBinding, ChannelEncryption channelEncryption) {
-        super(xmppSession);
+    private final Session session;
+
+    public StartTlsManager(Session session, TcpBinding tcpBinding, ChannelEncryption channelEncryption) {
+        this.session = session;
         this.tcpBinding = tcpBinding;
         this.channelEncryption = channelEncryption;
     }
@@ -60,7 +62,7 @@ public final class StartTlsManager extends ClientStreamFeatureNegotiator<StartTl
                 throw new StreamNegotiationException("The server requires TLS, but you disabled it.");
             }
             if (channelEncryption == ChannelEncryption.OPTIONAL || channelEncryption == ChannelEncryption.REQUIRED) {
-                xmppSession.send(new StartTls());
+                session.send(new StartTls());
                 return StreamNegotiationResult.INCOMPLETE;
             } else {
                 return StreamNegotiationResult.IGNORE;

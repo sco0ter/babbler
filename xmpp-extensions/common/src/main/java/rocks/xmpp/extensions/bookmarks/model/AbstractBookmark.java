@@ -37,6 +37,7 @@ import java.text.Collator;
  */
 @XmlTransient
 public abstract class AbstractBookmark implements Bookmark {
+    
     @XmlAttribute
     private final String name;
 
@@ -49,6 +50,7 @@ public abstract class AbstractBookmark implements Bookmark {
      *
      * @return The name.
      */
+    @Override
     public final String getName() {
         return name;
     }

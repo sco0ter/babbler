@@ -110,6 +110,6 @@ public interface ResultSetProvider<T extends ResultSetItem> {
      * @since 0.9.0
      */
     static <T extends ResultSetItem> ResultSetProvider<T> combine(Iterable<ResultSetProvider<T>> resultSetProviders) {
-        return new CombinedResultSetProvider<T>(resultSetProviders);
+        return new CombinedResultSetProvider<>(resultSetProviders);
     }
 }

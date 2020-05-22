@@ -56,7 +56,7 @@ import java.util.Set;
 public final class EntityCapabilities2 extends StreamFeature implements EntityCapabilities {
 
     /**
-     * urn:xmpp:caps
+     * {@value}
      */
     public static final String NAMESPACE = "urn:xmpp:caps";
 

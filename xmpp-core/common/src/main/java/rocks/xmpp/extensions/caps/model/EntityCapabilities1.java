@@ -56,7 +56,7 @@ import java.util.Set;
 public final class EntityCapabilities1 extends StreamFeature implements EntityCapabilities, Hashed {
 
     /**
-     * http://jabber.org/protocol/caps
+     * {@value}
      */
     public static final String NAMESPACE = "http://jabber.org/protocol/caps";
 

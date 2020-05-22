@@ -33,8 +33,8 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
+import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.hashes.model.Hashed;
@@ -57,6 +57,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Base class for the Entity Capabilities protocols.
+ * <p>
+ * As of today, there are two versions of Entity Capabilities:
+ * <ul>
+ * <li>XEP-0115: Entity Capabilities</li>
+ * <li>XEP-0390: Entity Capabilities 2.0</li>
+ * </ul>
+ * This class provides the common aspects of both protocols, both from a client and a server point of view.
+ * It handles inbound presence and processes any entity capabilities extension (caching, associating capabilities to the sending entity, discovering capabilities if necessary).
+ * It also provides the Service Discovery node, so that other entities can discover our capabilities.
+ * <p>
+ * Subclasses for the client should deal with outbound presence and attach Entity Capabilities to the presence, while server implementations should include them as stream feature.
+ *
+ * @param <T> The Entity Capabilities implementation.
  * @author Christian Schudt
  */
 public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabilities> implements InboundPresenceHandler, InfoProvider, ExtensionProtocol {
@@ -80,14 +94,35 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
         this.publishedNodes = new LruCache<>(10);
     }
 
+    /**
+     * Gets the Entity Capabilities class, which represent different versions of caps.
+     *
+     * @return The class.
+     * @see rocks.xmpp.extensions.caps.model.EntityCapabilities1
+     * @see rocks.xmpp.extensions.caps2.model.EntityCapabilities2
+     */
     public final Class<T> getEntityCapabilitiesClass() {
         return entityCapabilitiesClass;
     }
 
+    /**
+     * Gets the published nodes.
+     *
+     * @return The published nodes.
+     */
     public final Map<Collection<InfoDiscovery>, EntityCapabilities> getPublishedNodes() {
         return Collections.unmodifiableMap(publishedNodes);
     }
 
+    /**
+     * Publishes this entity's capabilities as Service Discovery node.
+     * On the client side this can used, when sending presence.
+     * On the server side this is used when advertising stream features and include the server's capabilities.
+     * <p>
+     * The published node can be discovered by another entity.
+     *
+     * @return The published information.
+     */
     public final InfoDiscovery publishCapsNode() {
 
         final InfoDiscovery infoDiscovery = new InfoDiscovery(serviceDiscoveryManager.getDefaultInfo().getIdentities(), serviceDiscoveryManager.getDefaultInfo().getFeatures(), serviceDiscoveryManager.getDefaultInfo().getExtensions());
@@ -108,14 +143,35 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
         return infoDiscovery;
     }
 
+    /**
+     * Handles entity capabilities by associating them to the entity or discovering the entity's capabilities if they are not cached.
+     * <p>
+     * Entity Capabilities can either be announced in presence or in stream features.
+     *
+     * @param entityCapabilities The entity capabilities.
+     * @param entity             The entity which generated the capabilities.
+     */
     public void handleEntityCapabilities(final EntityCapabilities entityCapabilities, final Jid entity) {
         processCapabilitiesHashSet(entityCapabilities.getCapabilityHashSet().iterator(), entity, entityCapabilities);
     }
 
-    private void processCapabilitiesHashSet(final Iterator<Hashed> hashedIterator, final Jid entity, final EntityCapabilities caps) {
-        if (hashedIterator.hasNext()) {
+    /**
+     * Processes the capability hash set by using the following rules:
+     * <ul>
+     * <li>Check if the first hash is cached</li>
+     * <li>If true, associate the entity with the hash.</li>
+     * <li>If false, request the capabilities from the entity by using Service Discovery</li>
+     * <li>Reconstruct the hash for the retrieved capabilities, cache them (if hash matches) and associate it to the entity.</li>
+     * </ul>
+     *
+     * @param capabilityHashSet The iterator over the capability hash set.
+     * @param entity            The entity to which the capabilities belong.
+     * @param caps              The capabilities.
+     */
+    private void processCapabilitiesHashSet(final Iterator<Hashed> capabilityHashSet, final Jid entity, final EntityCapabilities caps) {
+        if (capabilityHashSet.hasNext()) {
             // 1. Verify that the <c/> element includes a 'hash' attribute. If it does not, ignore the 'ver'
-            final Hashed hashed = hashedIterator.next();
+            final Hashed hashed = capabilityHashSet.next();
             if (hashed.getHashAlgorithm() == null) {
                 return;
             }
@@ -137,7 +193,7 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
                     logger.log(Level.FINE, "Discovering capabilities for ''{0}'' at node {1}", new Object[]{entity, nodeToDiscover});
                     serviceDiscoveryManager.discoverInformation(entity, nodeToDiscover).whenComplete((infoDiscovery, e1) -> {
                         if (e1 != null) {
-                            processCapabilitiesHashSet(hashedIterator, entity, caps);
+                            processCapabilitiesHashSet(capabilityHashSet, entity, caps);
                             logger.log(Level.WARNING, e1, () -> "Failed to discover information for entity '" + entity + "' for node '" + nodeToDiscover + "'");
                         } else {
                             // 3.3 If the response includes more than one service discovery identity with the same category/type/lang/name, consider the entire response to be ill-formed.
@@ -175,7 +231,7 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
                             if (Arrays.equals(computedHash, hash.getHashValue())) {
                                 entityCapabilitiesCache.writeCapabilities(hash, infoDiscovery);
                             } else {
-                                processCapabilitiesHashSet(hashedIterator, entity, caps);
+                                processCapabilitiesHashSet(capabilityHashSet, entity, caps);
                             }
                             entityCapabilitiesCache.writeEntityCapabilities(entity, infoDiscovery);
                         }
@@ -195,7 +251,7 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
                     });
 
                     // Additionally try next hash.
-                    processCapabilitiesHashSet(hashedIterator, entity, caps);
+                    processCapabilitiesHashSet(capabilityHashSet, entity, caps);
                 }
             }
         }

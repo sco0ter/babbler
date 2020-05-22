@@ -36,6 +36,11 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
+ * Abstract base class for the second Entity Capabilities protocol (XEP-0390: Entity Capabilities 2.0).
+ * <p>
+ * It provides the Service Discovery feature <code>{@value EntityCapabilities2#NAMESPACE}</code> and creates the entity capabilities extension
+ * for either inclusion in presence (applicable for client entities) or inclusion as stream feature (for server entities).
+ *
  * @author Christian Schudt
  */
 public abstract class AbstractEntityCapabilities2Protocol extends AbstractEntityCapabilitiesProtocol<EntityCapabilities2> {

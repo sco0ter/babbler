@@ -52,7 +52,7 @@ public abstract class AbstractEntityCapabilities1Protocol extends AbstractEntity
      */
     private String node;
 
-    public AbstractEntityCapabilities1Protocol(ServiceDiscoveryManager serviceDiscoveryManager, EntityCapabilitiesCache entityCapabilitiesCache) {
+    protected AbstractEntityCapabilities1Protocol(ServiceDiscoveryManager serviceDiscoveryManager, EntityCapabilitiesCache entityCapabilitiesCache) {
         super(EntityCapabilities1.class, serviceDiscoveryManager, entityCapabilitiesCache);
     }
 

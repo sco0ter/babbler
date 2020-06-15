@@ -42,7 +42,7 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
     /**
      * This is for checking the double-checked locking of discoverCapabilities method (through debugging).
      *
-     * @param args
+     * @param args *
      */
     public static void main(String[] args) {
 

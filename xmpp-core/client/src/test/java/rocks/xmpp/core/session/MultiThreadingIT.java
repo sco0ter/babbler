@@ -212,7 +212,7 @@ public class MultiThreadingIT extends IntegrationTest {
      * After connect(), it should always be in the correct status {@link rocks.xmpp.core.session.XmppSession.Status#CONNECTED}.
      * Listeners should only be notified once for status changes.
      *
-     * @throws Exception
+     * @throws Exception *
      */
     @Test
     public void testConnectedStatusAfterConnect() throws Exception {

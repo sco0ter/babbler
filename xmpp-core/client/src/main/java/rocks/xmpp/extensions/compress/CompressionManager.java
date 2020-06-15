@@ -61,8 +61,8 @@ public final class CompressionManager implements StreamFeatureNegotiator<Compres
 
     private CompressionMethod negotiatedCompressionMethod;
 
-    public CompressionManager(final Session Session, final TcpBinding tcpBinding) {
-        this.session = Session;
+    public CompressionManager(final Session session, final TcpBinding tcpBinding) {
+        this.session = session;
         this.tcpBinding = tcpBinding;
     }
 

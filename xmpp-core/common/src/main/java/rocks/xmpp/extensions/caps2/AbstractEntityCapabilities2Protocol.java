@@ -47,7 +47,7 @@ public abstract class AbstractEntityCapabilities2Protocol extends AbstractEntity
 
     private static final Set<String> FEATURES = Collections.singleton(EntityCapabilities2.NAMESPACE);
 
-    public AbstractEntityCapabilities2Protocol(ServiceDiscoveryManager serviceDiscoveryManager, EntityCapabilitiesCache entityCapabilitiesCache) {
+    protected AbstractEntityCapabilities2Protocol(ServiceDiscoveryManager serviceDiscoveryManager, EntityCapabilitiesCache entityCapabilitiesCache) {
         super(EntityCapabilities2.class, serviceDiscoveryManager, entityCapabilitiesCache);
     }
 

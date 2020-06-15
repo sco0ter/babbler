@@ -44,7 +44,7 @@ public abstract class ByteStreamSession implements AutoCloseable {
 
     private final String sessionId;
 
-    public ByteStreamSession(String sessionId) {
+    protected ByteStreamSession(String sessionId) {
         this.sessionId = sessionId;
     }
 

@@ -67,12 +67,12 @@ final class FullJid extends AbstractJid {
     /**
      * Caches the escaped JIDs.
      */
-    private static final Map<CharSequence, Jid> ESCAPED_CACHE = new LruCache<>(5000);
+    private static final Map<String, Jid> ESCAPED_CACHE = new LruCache<>(5000);
 
     /**
      * Caches the unescaped JIDs.
      */
-    private static final Map<CharSequence, Jid> UNESCAPED_CACHE = new LruCache<>(5000);
+    private static final Map<String, Jid> UNESCAPED_CACHE = new LruCache<>(5000);
 
     private static final long serialVersionUID = -3824234106101731424L;
 
@@ -241,7 +241,7 @@ final class FullJid extends AbstractJid {
     private static String escape(final CharSequence localPart) {
         if (localPart != null) {
             final Matcher matcher = ESCAPE_PATTERN.matcher(localPart);
-            final StringBuffer sb = new StringBuffer();
+            final StringBuilder sb = new StringBuilder();
             while (matcher.find()) {
                 matcher.appendReplacement(sb, "\\\\" + Integer.toHexString(matcher.group().charAt(0)));
             }
@@ -254,7 +254,7 @@ final class FullJid extends AbstractJid {
     private static String unescape(final CharSequence localPart) {
         if (localPart != null) {
             final Matcher matcher = UNESCAPE_PATTERN.matcher(localPart);
-            final StringBuffer sb = new StringBuffer();
+            final StringBuilder sb = new StringBuilder();
             while (matcher.find()) {
                 final char c = (char) Integer.parseInt(matcher.group(1), 16);
                 if (c == '\\') {

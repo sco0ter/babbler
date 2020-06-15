@@ -1128,7 +1128,7 @@ public final class VCard implements Addressable {
          * @param parcel        If it is a parcel address.
          * @param international If it is a international address.
          */
-        public AbstractAddress(boolean preferred, boolean home, boolean work, boolean postal, boolean parcel, boolean international) {
+        protected AbstractAddress(boolean preferred, boolean home, boolean work, boolean postal, boolean parcel, boolean international) {
             super(preferred, home, work);
             this.postal = postal;
             this.parcel = parcel;

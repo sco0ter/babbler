@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.privacy.model;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.im.roster.model.Contact;
+import rocks.xmpp.im.roster.model.SubscriptionState;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -176,8 +176,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @param order        The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
      * @return The privacy rule.
      */
-    public static PrivacyRule of(Contact.Subscription subscription, Action action, long order) {
-        if (Contact.Subscription.REMOVE.equals(subscription)) {
+    public static PrivacyRule of(SubscriptionState.Subscription subscription, Action action, long order) {
+        if (SubscriptionState.Subscription.REMOVE.equals(subscription)) {
             throw new IllegalArgumentException("subscription must not be 'remove'");
         }
         return new PrivacyRule(action, order, Type.SUBSCRIPTION, subscription.name().toLowerCase(), false, false, false, false);
@@ -221,7 +221,7 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @return The privacy rule.
      * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-message">2.9 Blocking Messages</a>
      */
-    public static PrivacyRule blockMessagesFromEntitiesWithSubscription(Contact.Subscription subscription, long order) {
+    public static PrivacyRule blockMessagesFromEntitiesWithSubscription(SubscriptionState.Subscription subscription, long order) {
         return new PrivacyRule(Action.DENY, order, Type.SUBSCRIPTION, checkSubscriptionType(subscription), true, false, false, false);
     }
 
@@ -263,7 +263,7 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @return The privacy rule.
      * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presencein">2.10 Blocking Inbound Presence Notifications</a>
      */
-    public static PrivacyRule blockPresenceFromEntitiesWithSubscription(Contact.Subscription subscription, long order) {
+    public static PrivacyRule blockPresenceFromEntitiesWithSubscription(SubscriptionState.Subscription subscription, long order) {
         return new PrivacyRule(Action.DENY, order, Type.SUBSCRIPTION, checkSubscriptionType(subscription), false, true, false, false);
     }
 
@@ -318,7 +318,7 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @return The privacy rule.
      * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presenceout">2.11 Blocking Outbound Presence Notifications</a>
      */
-    public static PrivacyRule blockPresenceToEntitiesWithSubscription(Contact.Subscription subscription, long order) {
+    public static PrivacyRule blockPresenceToEntitiesWithSubscription(SubscriptionState.Subscription subscription, long order) {
         return new PrivacyRule(Action.DENY, order, Type.SUBSCRIPTION, checkSubscriptionType(subscription), false, false, true, false);
     }
 
@@ -373,7 +373,7 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @return The privacy rule.
      * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-iq">2.12 Blocking IQ Stanzas</a>
      */
-    public static PrivacyRule blockIQFromEntitiesWithSubscription(Contact.Subscription subscription, long order) {
+    public static PrivacyRule blockIQFromEntitiesWithSubscription(SubscriptionState.Subscription subscription, long order) {
         return new PrivacyRule(Action.DENY, order, Type.SUBSCRIPTION, checkSubscriptionType(subscription), false, false, false, true);
     }
 
@@ -401,7 +401,7 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @return The privacy rule.
      * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-all">2.13 Blocking All Communication</a>
      */
-    public static PrivacyRule blockAllCommunicationWithEntitiesWithSubscription(Contact.Subscription subscription, long order) {
+    public static PrivacyRule blockAllCommunicationWithEntitiesWithSubscription(SubscriptionState.Subscription subscription, long order) {
         return new PrivacyRule(Action.DENY, order, Type.SUBSCRIPTION, checkSubscriptionType(subscription), false, false, false, false);
     }
 
@@ -419,8 +419,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
         return new PrivacyRule(Action.DENY, order, Type.JID, entity.toEscapedString(), false, false, false, false);
     }
 
-    private static String checkSubscriptionType(Contact.Subscription subscription) {
-        if (Contact.Subscription.REMOVE.equals(subscription)) {
+    private static String checkSubscriptionType(SubscriptionState.Subscription subscription) {
+        if (SubscriptionState.Subscription.REMOVE.equals(subscription)) {
             throw new IllegalArgumentException("subscription must not be 'remove'");
         }
         return subscription.name().toLowerCase();

@@ -28,8 +28,8 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.filetransfer.model.FileTransferOffer;
@@ -46,7 +46,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -143,7 +142,7 @@ public final class FileTransferManager extends Manager {
      *
      * @param file        The file.
      * @param description The description of the file.
-     * @param recipient   The recipient's JID (must be a <em>full</em> JID, i. e. including {@code resource}).
+     * @param recipient   The recipient's JID (must be a <em>full</em> JID, i. e. including resource).
      * @param timeout     The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
      * @return The async result with the file transfer object.
      * @throws IOException If the file can't be read.
@@ -158,7 +157,7 @@ public final class FileTransferManager extends Manager {
      *
      * @param source      The file.
      * @param description The description of the file.
-     * @param recipient   The recipient's JID (must be a <em>full</em> JID, i. e. including {@code resource}).
+     * @param recipient   The recipient's JID (must be a <em>full</em> JID, i. e. including resource).
      * @param timeout     The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
      * @return The async result with the file transfer object.
      * @throws IOException If the file can't be read.
@@ -173,7 +172,7 @@ public final class FileTransferManager extends Manager {
      *
      * @param source        The file.
      * @param description   The description of the file.
-     * @param recipient     The recipient's JID (must be a <em>full</em> JID, i. e. including {@code resource}).
+     * @param recipient     The recipient's JID (must be a <em>full</em> JID, i. e. including resource).
      * @param timeout       The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
      * @param mimeType      The mime type. If null, the mime type is guessed.
      * @param calculateHash If true, the MD5 hash for the file is calculated and included in the offer.
@@ -200,7 +199,7 @@ public final class FileTransferManager extends Manager {
      * @param fileSize     The file size.
      * @param lastModified The last modified date.
      * @param description  The description of the file.
-     * @param recipient    The recipient's JID (must be a <em>full</em> JID, i. e. including {@code resource}).
+     * @param recipient    The recipient's JID (must be a <em>full</em> JID, i. e. including resource).
      * @param timeout      The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
      * @return The async result with the file transfer object.
      */
@@ -217,7 +216,7 @@ public final class FileTransferManager extends Manager {
      * @param fileSize     The file size.
      * @param lastModified The last modified date.
      * @param description  The description of the file.
-     * @param recipient    The recipient's JID (must be a <em>full</em> JID, i. e. including {@code resource}).
+     * @param recipient    The recipient's JID (must be a <em>full</em> JID, i. e. including resource).
      * @param timeout      The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
      * @param sessionId    The session id.
      * @return The async result with the file transfer object.
@@ -235,7 +234,7 @@ public final class FileTransferManager extends Manager {
      * @param fileSize     The file size.
      * @param lastModified The last modified date.
      * @param description  The description of the file.
-     * @param recipient    The recipient's JID (must be a <em>full</em> JID, i. e. including {@code resource}).
+     * @param recipient    The recipient's JID (must be a <em>full</em> JID, i. e. including resource).
      * @param timeout      The timeout (indicates how long to wait until the file offer has either been accepted or rejected).
      * @param sessionId    The session id.
      * @param mimeType     The mime type. If null, the mime type is guessed.

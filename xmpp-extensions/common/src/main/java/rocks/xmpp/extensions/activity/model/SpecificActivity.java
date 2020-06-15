@@ -107,11 +107,11 @@ public abstract class SpecificActivity {
     @XmlElementRef
     private final SpecificActivity specificActivity;
 
-    public SpecificActivity() {
+    protected SpecificActivity() {
         this.specificActivity = null;
     }
 
-    public SpecificActivity(SpecificActivity specificActivity) {
+    protected SpecificActivity(SpecificActivity specificActivity) {
         this.specificActivity = specificActivity;
     }
 

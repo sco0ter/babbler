@@ -41,11 +41,11 @@ import java.net.Socket;
  * In order to create an instance of this class you have to use the builder pattern as shown below.
  * ```java
  * SocketConnectionConfiguration socketConfiguration = SocketConnectionConfiguration.builder()
- *     .hostname("localhost")
- *     .port(5222)
- *     .sslContext(sslContext)
- *     .channelEncryption(ChannelEncryption.DISABLED)
- *     .build();
+ * .hostname("localhost")
+ * .port(5222)
+ * .sslContext(sslContext)
+ * .channelEncryption(ChannelEncryption.DISABLED)
+ * .build();
  * ```
  * This class is immutable.
  *
@@ -59,7 +59,7 @@ public final class SocketConnectionConfiguration extends TcpConnectionConfigurat
 
     private final SocketFactory socketFactory;
 
-    protected SocketConnectionConfiguration(Builder builder) {
+    SocketConnectionConfiguration(Builder builder) {
         super(builder);
         this.socketFactory = builder.socketFactory;
     }

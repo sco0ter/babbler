@@ -34,7 +34,8 @@
     </parent>
     <artifactId>xmpp-extensions-common</artifactId>
     <name>XMPP.rocks - Extensions - Common</name>
-    <description>Code for XMPP extensions shared by clients and servers (primarily XML schema implementations)</description>
+    <description>Code for XMPP extensions shared by clients and servers (primarily XML schema implementations)
+    </description>
     <build>
         <plugins>
             <!-- Define JPMS module name -->
@@ -65,6 +66,19 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>xmpp-core-common</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.soap</groupId>
+            <artifactId>jakarta.xml.soap-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.messaging.saaj</groupId>
+            <artifactId>saaj-impl</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>

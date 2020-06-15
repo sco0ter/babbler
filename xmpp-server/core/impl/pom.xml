@@ -78,6 +78,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>xmpp-nio-netty-common</artifactId>
             <version>${project.version}</version>

@@ -8,10 +8,6 @@
 pipelines:
   default:
     - step:
-        image: maven:3-jdk-8
-        script:
-          - mvn clean install -pl !xmpp-debug,!xmpp-sample,!xmpp-fx,!xmpp-documentation
-    - step:
         image: maven:3-jdk-11
         script:
           - mvn clean install

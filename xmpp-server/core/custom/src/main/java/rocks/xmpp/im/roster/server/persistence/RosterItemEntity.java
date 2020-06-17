@@ -26,8 +26,8 @@ package rocks.xmpp.im.roster.server.persistence;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.addr.server.persistence.JidConverter;
-import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.im.roster.model.RosterItem;
+import rocks.xmpp.im.roster.model.SubscriptionState;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -75,7 +75,7 @@ public class RosterItemEntity implements RosterItem {
 
     @Enumerated(value = EnumType.STRING)
     @Column(name = "subscription")
-    private Contact.Subscription subscription;
+    private SubscriptionState.Subscription subscription;
 
     @Column(name = "pendingOut")
     private boolean pendingOut;
@@ -96,11 +96,11 @@ public class RosterItemEntity implements RosterItem {
     protected RosterItemEntity() {
     }
 
-    public RosterItemEntity(String username, Jid jid, String name, Contact.Subscription subscription) {
+    public RosterItemEntity(String username, Jid jid, String name, SubscriptionState.Subscription subscription) {
         this(username, jid, false, false, false, name, subscription, null, null);
     }
 
-    public RosterItemEntity(String username, Jid jid, boolean approved, boolean pendingOut, boolean pendingIn, String name, Contact.Subscription subscription, Collection<String> groups, String presenceStanza) {
+    public RosterItemEntity(String username, Jid jid, boolean approved, boolean pendingOut, boolean pendingIn, String name, SubscriptionState.Subscription subscription, Collection<String> groups, String presenceStanza) {
         this.username = Objects.requireNonNull(username);
         this.jid = jid;
         this.approved = approved;
@@ -151,11 +151,11 @@ public class RosterItemEntity implements RosterItem {
     }
 
     @Override
-    public Contact.Subscription getSubscription() {
+    public SubscriptionState.Subscription getSubscription() {
         return subscription;
     }
 
-    public void setSubscription(Contact.Subscription subscription) {
+    public void setSubscription(SubscriptionState.Subscription subscription) {
         this.subscription = subscription;
     }
 

@@ -32,7 +32,7 @@ import rocks.xmpp.core.stanza.model.Presence;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-/*
+/**
  * Handles inbound presence information.
  *
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-initial-inbound">4.2.3.  Server Processing of Inbound Initial Presence</a>

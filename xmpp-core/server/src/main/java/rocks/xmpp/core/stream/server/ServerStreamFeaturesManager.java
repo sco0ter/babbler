@@ -31,6 +31,7 @@ import rocks.xmpp.core.stream.model.StreamFeature;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -88,12 +89,14 @@ public final class ServerStreamFeaturesManager {
      * @return The negotiation result. If no negotiator was found returns {@link StreamNegotiationResult#IGNORE}
      */
     public final StreamNegotiationResult handleElement(final StreamElement element) throws StreamNegotiationException {
-        for (StreamFeatureProvider<? extends StreamFeature> streamNegotiator : toBeNegotiated.keySet()) {
+        Iterator<StreamFeatureProvider<? extends StreamFeature>> streamNegotiators = toBeNegotiated.keySet().iterator();
+        while (streamNegotiators.hasNext()) {
+            StreamFeatureProvider<? extends StreamFeature> streamNegotiator = streamNegotiators.next();
             StreamNegotiationResult result = streamNegotiator.processNegotiation(element);
             switch (result) {
                 case RESTART:
                 case SUCCESS:
-                    toBeNegotiated.remove(streamNegotiator);
+                    streamNegotiators.remove();
                     return result;
                 default:
             }

@@ -39,7 +39,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-/*
+/**
  * Handles outbound presence information.
  *
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-initial-outbound">4.2.2.  Server Processing of Outbound Initial Presence</a>

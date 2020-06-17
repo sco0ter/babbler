@@ -103,8 +103,8 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler impl
                             });
                         }
                         // TODO optionally store presence
-                        break;
                     }
+                    break;
                 case UNSUBSCRIBED:
                     if (rosterItem != null && rosterItem.getSubscription().userHasSubscriptionToContact()) {
                         // Deliver the inbound subscription cancellation to all of the user's interested resources

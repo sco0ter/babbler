@@ -167,8 +167,8 @@ public final class SaslNegotiator implements StreamFeatureProvider<Mechanisms> {
     }
 
     private static final class XmppSaslProvider extends Provider {
-        protected XmppSaslProvider() {
-            super("XMPP Sasl Provider", 1.0, "Provides SASL mechanisms, which are required for XMPP.");
+        private XmppSaslProvider() {
+            super("XMPP Sasl Provider", "1.0", "Provides SASL mechanisms, which are required for XMPP.");
             put("SaslServerFactory.PLAIN", PlainSaslServer.PlainSaslServerFactory.class.getName());
             put("SaslServerFactory.SCRAM-SHA-1", ScramSaslServer.ScramSaslServerFactory.class.getName());
         }

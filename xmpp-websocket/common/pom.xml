@@ -34,7 +34,8 @@
     </parent>
     <artifactId>xmpp-websocket-common</artifactId>
     <name>XMPP.rocks - WebSocket (RFC 7395) - Common</name>
-    <description>XMPP Subprotocol for WebSocket - Codecs, Connection and XMPP frames shared by client and server</description>
+    <description>XMPP Subprotocol for WebSocket - Codecs, Connection and XMPP frames shared by client and server
+    </description>
     <build>
         <plugins>
 
@@ -55,7 +56,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
         </plugins>
 
     </build>
@@ -74,6 +75,10 @@
             <groupId>javax.websocket</groupId>
             <artifactId>javax.websocket-api</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

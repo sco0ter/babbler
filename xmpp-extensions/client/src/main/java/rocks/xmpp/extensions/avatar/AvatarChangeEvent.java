@@ -29,8 +29,6 @@ import rocks.xmpp.addr.Jid;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.EventObject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The avatar change event to notify about avatar updates.
@@ -38,7 +36,8 @@ import java.util.logging.Logger;
  * @author Christian Schudt
  */
 public final class AvatarChangeEvent extends EventObject {
-    private static final Logger LOGGER = Logger.getLogger(AvatarChangeEvent.class.getName());
+
+    private static final System.Logger LOGGER = System.getLogger(AvatarChangeEvent.class.getName());
 
     private final Jid contact;
 
@@ -74,7 +73,7 @@ public final class AvatarChangeEvent extends EventObject {
         try {
             return this.avatar == null ? null : AbstractAvatarManager.asBufferedImage(this.avatar);
         } catch (final AbstractAvatarManager.ConversionException e) {
-            LOGGER.log(Level.SEVERE, "Cannot convert avatar image");
+            LOGGER.log(System.Logger.Level.ERROR, "Cannot convert avatar image");
             return null;
         }
     }

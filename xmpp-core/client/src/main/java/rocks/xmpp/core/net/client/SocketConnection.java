@@ -53,14 +53,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
+import java.lang.System.Logger.Level;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The default TCP socket connection as described in <a href="https://xmpp.org/rfcs/rfc6120.html#tcp">TCP Binding</a>.
@@ -74,7 +73,7 @@ import java.util.logging.Logger;
  */
 public final class SocketConnection extends AbstractConnection implements TcpBinding {
 
-    private static final Logger logger = Logger.getLogger(SocketConnection.class.getName());
+    private static final System.Logger logger = System.getLogger(SocketConnection.class.getName());
 
     private final StreamFeaturesManager streamFeaturesManager;
 
@@ -219,7 +218,7 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
             // http://java-performance.info/java-io-bufferedinputstream-and-java-util-zip-gzipinputstream/
             inputStream = new BufferedInputStream(socket.getInputStream(), 65536);
         }
-        logger.log(Level.FINE, "Connection has been secured via TLS.");
+        logger.log(Level.DEBUG, "Connection has been secured via TLS.");
     }
 
     @Override

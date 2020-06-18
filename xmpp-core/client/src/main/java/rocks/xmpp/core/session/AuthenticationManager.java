@@ -48,8 +48,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Manages SASL authentication as described in <a href="https://xmpp.org/rfcs/rfc6120.html#sasl">SASL Negotiation</a>.
@@ -60,7 +58,7 @@ import java.util.logging.Logger;
  */
 final class AuthenticationManager implements StreamFeatureNegotiator<Mechanisms> {
 
-    private static final Logger logger = Logger.getLogger(AuthenticationManager.class.getName());
+    private static final System.Logger logger = System.getLogger(AuthenticationManager.class.getName());
 
     static {
         // The SunSASL Provider only supports: "PLAIN", "CRAM-MD5", "DIGEST-MD5", "GSSAPI", "EXTERNAL".
@@ -161,7 +159,7 @@ final class AuthenticationManager implements StreamFeatureNegotiator<Mechanisms>
                     saslClient.dispose();
                     saslClient = null;
                 } catch (SaslException e) {
-                    logger.log(Level.WARNING, e.getMessage(), e);
+                    logger.log(System.Logger.Level.WARNING, e.getMessage(), e);
                 }
                 return StreamNegotiationResult.RESTART;
             }

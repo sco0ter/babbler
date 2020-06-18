@@ -50,8 +50,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The implementation of <a href="https://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>.
@@ -60,7 +58,7 @@ import java.util.logging.Logger;
  */
 public final class UserAvatarProtocol extends AbstractAvatarManager implements InboundMessageHandler, ExtensionProtocol {
 
-    private static final Logger logger = Logger.getLogger(UserAvatarProtocol.class.getName());
+    private static final System.Logger logger = System.getLogger(UserAvatarProtocol.class.getName());
 
     private Consumer<MessageEvent> inboundMessageListener = this::handleInboundMessage;
 
@@ -158,7 +156,7 @@ public final class UserAvatarProtocol extends AbstractAvatarManager implements I
                                 storeToCache(item.getId(), data);
                                 return CompletableFuture.completedFuture(data);
                             } catch (IOException e1) {
-                                logger.log(Level.WARNING, "Failed to download avatar from advertised URL: {0}.", chosenInfo.getUrl());
+                                logger.log(System.Logger.Level.WARNING, "Failed to download avatar from advertised URL: {0}.", chosenInfo.getUrl());
                             }
                         } else {
                             PubSubService pubSubService = xmppSession.getManager(PubSubManager.class).createPubSubService(contact.asBareJid());
@@ -174,7 +172,7 @@ public final class UserAvatarProtocol extends AbstractAvatarManager implements I
                                 return CompletableFuture.completedFuture(new byte[0]);
                             }).whenComplete((items, ex) -> {
                                 if (ex != null) {
-                                    logger.log(Level.WARNING, () -> String.format("Failed to retrieve avatar '%s' from PEP service for user '%s'", item.getId(), contact.asBareJid()));
+                                    logger.log(System.Logger.Level.WARNING, () -> String.format("Failed to retrieve avatar '%s' from PEP service for user '%s'", item.getId(), contact.asBareJid()));
                                 }
                             });
                         }

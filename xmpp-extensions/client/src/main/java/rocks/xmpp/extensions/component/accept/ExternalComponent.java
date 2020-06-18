@@ -44,7 +44,6 @@ import rocks.xmpp.extensions.component.accept.model.Handshake;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * An external component session which connects to an XMPP server using the "Jabber Component Protocol".
@@ -54,7 +53,7 @@ import java.util.logging.Logger;
  */
 public final class ExternalComponent extends XmppSession {
 
-    private static final Logger logger = Logger.getLogger(ExternalComponent.class.getName());
+    private static final System.Logger logger = System.getLogger(ExternalComponent.class.getName());
 
     private volatile CompletableFuture<SessionOpen> streamOpened;
 
@@ -126,7 +125,7 @@ public final class ExternalComponent extends XmppSession {
                         exception = null;
 
                         tryConnect(from, "jabber:component:accept", "1.0");
-                        logger.fine("Negotiating stream, waiting until handshake is ready to be negotiated.");
+                        logger.log(System.Logger.Level.DEBUG, "Negotiating stream, waiting until handshake is ready to be negotiated.");
                         SessionOpen sessionOpen = streamOpened.get(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
 
                         // Check if the server returned a stream error, e.g. conflict.

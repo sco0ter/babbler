@@ -43,8 +43,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A manager for <a href="https://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>. IBB streams use the same transport as XMPP, i.e. the same TCP or BOSH connection.
@@ -58,7 +56,7 @@ import java.util.logging.Logger;
  */
 public final class InBandByteStreamManager extends ByteStreamManager implements IQHandler, InboundMessageHandler {
 
-    private static final Logger logger = Logger.getLogger(InBandByteStreamManager.class.getName());
+    private static final System.Logger logger = System.getLogger(InBandByteStreamManager.class.getName());
 
     final Map<String, IbbSession> ibbSessionMap = new ConcurrentHashMap<>();
 
@@ -109,7 +107,7 @@ public final class InBandByteStreamManager extends ByteStreamManager implements 
                             ibbSession.closedByPeer();
                             return iq.createResult();
                         } catch (IOException e1) {
-                            logger.log(Level.WARNING, e1.getMessage(), e1);
+                            logger.log(System.Logger.Level.WARNING, e1.getMessage(), e1);
                             return iq.createResult();
                         }
                     } else {

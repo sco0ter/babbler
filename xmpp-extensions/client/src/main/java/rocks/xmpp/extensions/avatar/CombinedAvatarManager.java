@@ -31,7 +31,6 @@ import rocks.xmpp.extensions.vcard.temp.VCardManager;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * This class manages avatar updates as described in <a href="https://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a> and <a href="https://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>.
@@ -47,7 +46,7 @@ import java.util.logging.Logger;
  */
 public final class CombinedAvatarManager extends AbstractAvatarManager {
 
-    private static final Logger logger = Logger.getLogger(VCardManager.class.getName());
+    private static final System.Logger logger = System.getLogger(VCardManager.class.getName());
 
     private final VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol;
 
@@ -98,7 +97,7 @@ public final class CombinedAvatarManager extends AbstractAvatarManager {
         return vCardBasedAvatarsProtocol.publishAvatar(imageData)
                 .whenComplete((result, e) -> {
                     if (e != null) {
-                        logger.warning("Failed to publish avatar to vCard.");
+                        logger.log(System.Logger.Level.WARNING, "Failed to publish avatar to vCard.");
                     }
                 })
                 .thenCompose((aVoid) -> userAvatarProtocol.publishAvatar(imageData))

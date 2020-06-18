@@ -61,8 +61,6 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The base class for establishing an XMPP session with a server, i.e. client-to-server sessions.
@@ -105,7 +103,7 @@ import java.util.logging.Logger;
  */
 public final class XmppClient extends XmppSession {
 
-    private static final Logger logger = Logger.getLogger(XmppClient.class.getName());
+    private static final System.Logger logger = System.getLogger(XmppClient.class.getName());
 
     private final AuthenticationManager authenticationManager;
 
@@ -203,7 +201,7 @@ public final class XmppClient extends XmppSession {
 
                 tryConnect(from, "jabber:client", "1.0");
 
-                logger.fine("Negotiating stream, waiting until SASL is ready to be negotiated.");
+                logger.log(System.Logger.Level.DEBUG, "Negotiating stream, waiting until SASL is ready to be negotiated.");
 
                 // Check if connecting failed with an exception.
                 throwAsXmppExceptionIfNotNull(exception);
@@ -222,7 +220,7 @@ public final class XmppClient extends XmppSession {
                 // Check if stream negotiation threw any exception.
                 throwAsXmppExceptionIfNotNull(exception);
 
-                logger.fine("Stream negotiated until SASL, now ready to login.");
+                logger.log(System.Logger.Level.DEBUG, "Stream negotiated until SASL, now ready to login.");
             }
 
             // If a secure connection has been configured, but hasn't been negotiated for some reason (e.g. MitM attack), throw an exception.
@@ -235,7 +233,7 @@ public final class XmppClient extends XmppSession {
 
             // This is for reconnection.
             if (wasLoggedIn) {
-                logger.fine("Was already logged in. Re-login automatically with known credentials.");
+                logger.log(System.Logger.Level.DEBUG, "Was already logged in. Re-login automatically with known credentials.");
                 login(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
             }
 
@@ -366,7 +364,7 @@ public final class XmppClient extends XmppSession {
             lastCallbackHandler = callbackHandler;
             try {
                 long timeout = configuration.getDefaultResponseTimeout().toMillis();
-                logger.fine("Starting SASL negotiation (authentication).");
+                logger.log(System.Logger.Level.DEBUG, "Starting SASL negotiation (authentication).");
                 if (callbackHandler == null) {
                     authenticationManager.startAuthentication(mechanisms, null, null);
                 } else {
@@ -386,13 +384,13 @@ public final class XmppClient extends XmppSession {
                 try {
                     ClientStreamManager streamManager = getManager(ClientStreamManager.class);
                     if (streamManager.resume().getResult(timeout, TimeUnit.MILLISECONDS)) {
-                        logger.fine("Stream resumed.");
+                        logger.log(System.Logger.Level.DEBUG, "Stream resumed.");
                         updateStatus(Status.AUTHENTICATED);
                         afterLogin();
                         return authenticationManager.getSuccessData();
                     }
                 } catch (TimeoutException e) {
-                    logger.warning("Could not resume stream due to timeout.");
+                    logger.log(System.Logger.Level.WARNING, "Could not resume stream due to timeout.");
                 }
 
                 // Then negotiate resource binding manually.
@@ -408,16 +406,16 @@ public final class XmppClient extends XmppSession {
                 // Check again, if stream feature negotiation failed with an exception.
                 throwAsXmppExceptionIfNotNull(exception);
 
-                logger.fine("Stream negotiation completed successfully.");
+                logger.log(System.Logger.Level.DEBUG, "Stream negotiation completed successfully.");
 
                 // Retrieve roster.
                 RosterManager rosterManager = getManager(RosterManager.class);
                 if (callbackHandler != null && rosterManager.isRetrieveRosterOnLogin()) {
-                    logger.fine("Retrieving roster on login (as per configuration).");
+                    logger.log(System.Logger.Level.DEBUG, "Retrieving roster on login (as per configuration).");
                     try {
                         rosterManager.requestRoster().getResult(timeout, TimeUnit.MILLISECONDS);
                     } catch (TimeoutException e) {
-                        logger.warning("Could not retrieve roster in time.");
+                        logger.log(System.Logger.Level.WARNING, "Could not retrieve roster in time.");
                     }
                 }
                 PresenceManager presenceManager = getManager(PresenceManager.class);
@@ -451,7 +449,7 @@ public final class XmppClient extends XmppSession {
                 updateStatus(previousStatus, e);
                 throwAsXmppExceptionIfNotNull(e);
             }
-            logger.fine("Login successful.");
+            logger.log(System.Logger.Level.DEBUG, "Login successful.");
             afterLogin();
             return authenticationManager.getSuccessData();
         }
@@ -465,7 +463,7 @@ public final class XmppClient extends XmppSession {
     private void bindResource(String resource) throws XmppException {
         this.resource = resource;
 
-        logger.log(Level.FINE, "Negotiating resource binding, resource: {0}.", resource);
+        logger.log(System.Logger.Level.DEBUG, "Negotiating resource binding, resource: {0}.", resource);
 
         // Bind the resource
         IQ result;
@@ -478,7 +476,7 @@ public final class XmppClient extends XmppSession {
         Bind bindResult = result.getExtension(Bind.class);
         this.connectedResource = bindResult.getJid();
 
-        logger.log(Level.FINE, "Resource binding completed, connected resource: {0}.", connectedResource);
+        logger.log(System.Logger.Level.DEBUG, "Resource binding completed, connected resource: {0}.", connectedResource);
 
         // At this point the entity is free to send stanzas:
         // "If, before completing the resource binding step, the client attempts to send an XML stanza to an entity other
@@ -490,7 +488,7 @@ public final class XmppClient extends XmppSession {
         // But some old server implementation still require it.
         Session session = (Session) streamFeaturesManager.getFeatures().get(Session.class);
         if (session != null && session.isMandatory()) {
-            logger.fine("Establishing session.");
+            logger.log(System.Logger.Level.DEBUG, "Establishing session.");
             query(IQ.set(new Session()));
         }
 

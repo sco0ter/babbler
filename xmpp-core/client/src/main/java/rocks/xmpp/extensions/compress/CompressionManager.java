@@ -36,8 +36,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Manages stream compression as described in <a href="https://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>.
@@ -51,7 +49,7 @@ import java.util.logging.Logger;
  */
 public final class CompressionManager implements StreamFeatureNegotiator<CompressionFeature> {
 
-    private static final Logger logger = Logger.getLogger(CompressionManager.class.getName());
+    private static final System.Logger logger = System.getLogger(CompressionManager.class.getName());
 
     private final TcpBinding tcpBinding;
 
@@ -93,20 +91,20 @@ public final class CompressionManager implements StreamFeatureNegotiator<Compres
                 tcpBinding.compressConnection(negotiatedCompressionMethod.getName(), null);
             } catch (Exception e) {
                 // Failure of the negotiation SHOULD NOT be treated as an unrecoverable error
-                logger.log(Level.WARNING, "Failure during stream compression.", e);
+                logger.log(System.Logger.Level.WARNING, "Failure during stream compression.", e);
                 return StreamNegotiationResult.IGNORE;
             }
-            logger.fine("Stream is now compressed.");
+            logger.log(System.Logger.Level.DEBUG, "Stream is now compressed.");
             return StreamNegotiationResult.RESTART;
         } else if (element instanceof StreamCompression.Failure) {
             negotiatedCompressionMethod = null;
             // Failure of the negotiation SHOULD NOT be treated as an unrecoverable error
-            logger.warning("Failure during compression negotiation: " + ((StreamCompression.Failure) element).getCondition());
+            logger.log(System.Logger.Level.WARNING, "Failure during compression negotiation: " + ((StreamCompression.Failure) element).getCondition());
             return StreamNegotiationResult.IGNORE;
         }
         return StreamNegotiationResult.IGNORE;
     }
-    
+
     /**
      * Gets the negotiated compression method.
      *

@@ -68,8 +68,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -77,7 +75,7 @@ import java.util.stream.Collectors;
  */
 public final class StreamInitiationManager extends Manager implements FileTransferNegotiator {
 
-    private static final Logger logger = Logger.getLogger(StreamInitiationManager.class.getName());
+    private static final System.Logger logger = System.getLogger(StreamInitiationManager.class.getName());
 
     private static final String STREAM_METHOD = "stream-method";
 
@@ -195,7 +193,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
                 case Socks5ByteStream.NAMESPACE:
                     byteStreamSessionStage = CompletionStages.withFallback(socks5ByteStreamManager.initiateSession(receiver, sessionId), (future, throwable) -> {
                                 // As fallback, if SOCKS5 negotiation failed, try IBB.
-                                logger.log(Level.FINE, "SOCKS5 file transfer failed, falling back to IBB", throwable);
+                                logger.log(System.Logger.Level.DEBUG, "SOCKS5 file transfer failed, falling back to IBB", throwable);
                                 return inBandByteStreamManager.initiateSession(receiver, sessionId);
                             }
                     );

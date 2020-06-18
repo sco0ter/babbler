@@ -53,8 +53,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The implementation of <a href="https://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a>.
@@ -63,7 +61,7 @@ import java.util.logging.Logger;
  */
 public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager implements InboundPresenceHandler, OutboundPresenceHandler, ExtensionProtocol {
 
-    private static final Logger logger = Logger.getLogger(VCardBasedAvatarsProtocol.class.getName());
+    private static final System.Logger logger = System.getLogger(VCardBasedAvatarsProtocol.class.getName());
 
     private final Consumer<PresenceEvent> inboundPresenceListener = this::handleInboundPresence;
 
@@ -172,7 +170,7 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager imple
                         if (ex == null) {
                             notifyListeners(contact, avatarResult);
                         } else {
-                            logger.log(Level.WARNING, ex, () -> "Failed to retrieve vCard based avatar for user: " + contact);
+                            logger.log(System.Logger.Level.WARNING, () -> "Failed to retrieve vCard based avatar for user: " + contact, ex);
                         }
                     });
                 }
@@ -220,7 +218,7 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager imple
                         // Send out a presence, which will be filled with the extension later, because we now know or own avatar and have the hash for it.
                         xmppSession.send(presence1);
                     } else {
-                        logger.warning("Failed to retrieve own vCard based avatar.");
+                        logger.log(System.Logger.Level.WARNING, "Failed to retrieve own vCard based avatar.");
                     }
                 });
             } else if (!presence.hasExtension(AvatarUpdate.class)) {

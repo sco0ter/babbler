@@ -32,14 +32,12 @@ import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiPredicate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static rocks.xmpp.core.session.ReconnectionStrategy.onSystemShutdownFirstOrElseSecond;
 import static rocks.xmpp.core.session.ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy;
@@ -64,7 +62,7 @@ import static rocks.xmpp.core.session.ReconnectionStrategy.truncatedBinaryExpone
  */
 final class ReconnectionManager extends Manager {
 
-    private static final Logger logger = Logger.getLogger(ReconnectionManager.class.getName());
+    private static final System.Logger logger = System.getLogger(ReconnectionManager.class.getName());
 
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Reconnection Thread"));
 
@@ -142,9 +140,9 @@ final class ReconnectionManager extends Manager {
         if (isEnabled()) {
             Duration duration = reconnectionStrategy.getNextReconnectionAttempt(attempt, throwable);
             if (attempt == 0) {
-                logger.log(Level.FINE, "Disconnect detected. Next reconnection attempt in {0} seconds.", duration.getSeconds());
+                logger.log(System.Logger.Level.DEBUG, "Disconnect detected. Next reconnection attempt in {0} seconds.", duration.getSeconds());
             } else {
-                logger.log(Level.FINE, "Still disconnected after {0} retries. Next reconnection attempt in {1} seconds.", new Object[]{attempt, duration.getSeconds()});
+                logger.log(System.Logger.Level.DEBUG, "Still disconnected after {0} retries. Next reconnection attempt in {1} seconds.", attempt, duration.getSeconds());
             }
 
             nextReconnectionAttempt = Instant.now().plus(duration);
@@ -162,9 +160,9 @@ final class ReconnectionManager extends Manager {
                     }
                     try {
                         xmppSession.connect();
-                        logger.log(Level.FINE, "Reconnection successful.");
+                        logger.log(System.Logger.Level.DEBUG, "Reconnection successful.");
                     } catch (XmppException e) {
-                        logger.log(Level.FINE, "Reconnection failed.", e);
+                        logger.log(System.Logger.Level.DEBUG, "Reconnection failed.", e);
                         XmppUtils.notifyEventListeners(xmppSession.connectionListeners, new ConnectionEvent(xmppSession, ConnectionEvent.Type.RECONNECTION_FAILED, e, Duration.ZERO));
                         scheduleReconnection(attempt + 1, e);
                     }

@@ -64,7 +64,7 @@ import java.util.logging.Logger;
  */
 public class SampleApplication {
 
-    private static final Logger logger = Logger.getLogger(SampleApplication.class.getName());
+    private static final System.Logger logger = System.getLogger(SampleApplication.class.getName());
 
     public static void main(String[] args) {
 
@@ -125,10 +125,10 @@ public class SampleApplication {
 
 
                     // Listen for inbound messages.
-                    xmppClient.addInboundMessageListener(e -> logger.info("Received: " + e.getMessage()));
+                    xmppClient.addInboundMessageListener(e -> logger.log(System.Logger.Level.INFO, "Received: " + e.getMessage()));
 
                     // Listen for inbound presence.
-                    xmppClient.addInboundPresenceListener(e -> logger.info("Received: " + e.getPresence()));
+                    xmppClient.addInboundPresenceListener(e -> logger.log(System.Logger.Level.INFO, "Received: " + e.getPresence()));
                     xmppClient.enableFeature(StreamManagement.NAMESPACE);
                     // Connect
                     xmppClient.connect();

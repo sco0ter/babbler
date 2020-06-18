@@ -35,8 +35,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A local SOCKS5 server which runs as a singleton on the local machine on port 1080 (default SOCKS port).
@@ -45,7 +43,7 @@ import java.util.logging.Logger;
  */
 final class LocalSocks5Server {
 
-    private static final Logger logger = Logger.getLogger(LocalSocks5Server.class.getName());
+    private static final System.Logger logger = System.getLogger(LocalSocks5Server.class.getName());
 
     final Collection<String> allowedAddresses = new CopyOnWriteArrayList<>();
 
@@ -76,7 +74,7 @@ final class LocalSocks5Server {
                                         try {
                                             socket.close();
                                         } catch (IOException e1) {
-                                            logger.log(Level.WARNING, e.getMessage(), e);
+                                            logger.log(System.Logger.Level.WARNING, e.getMessage(), e);
                                         }
                                     }
                                 }
@@ -85,7 +83,7 @@ final class LocalSocks5Server {
                         thread.setDaemon(true);
                         thread.start();
                     } catch (IOException e) {
-                        logger.log(Level.WARNING, e.getMessage(), e);
+                        logger.log(System.Logger.Level.WARNING, e.getMessage(), e);
                     }
                 }
             }
@@ -102,7 +100,7 @@ final class LocalSocks5Server {
                 serverSocket.close();
                 serverSocket = null;
             } catch (IOException e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
+                logger.log(System.Logger.Level.WARNING, e.getMessage(), e);
             }
         }
     }

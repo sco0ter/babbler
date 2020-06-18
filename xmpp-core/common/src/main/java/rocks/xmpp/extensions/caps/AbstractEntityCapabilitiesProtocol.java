@@ -53,8 +53,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Base class for the Entity Capabilities protocols.
@@ -75,7 +73,7 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabilities> implements InboundPresenceHandler, InfoProvider, ExtensionProtocol {
 
-    private static final Logger logger = Logger.getLogger(AbstractEntityCapabilitiesProtocol.class.getName());
+    private static final System.Logger logger = System.getLogger(AbstractEntityCapabilitiesProtocol.class.getName());
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
@@ -190,11 +188,11 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
 
                     // 3.1 Send a service discovery information request to the generating entity.
                     // 3.2 Receive a service discovery information response from the generating entity.
-                    logger.log(Level.FINE, "Discovering capabilities for ''{0}'' at node {1}", new Object[]{entity, nodeToDiscover});
+                    logger.log(System.Logger.Level.DEBUG, "Discovering capabilities for ''{0}'' at node {1}", entity, nodeToDiscover);
                     serviceDiscoveryManager.discoverInformation(entity, nodeToDiscover).whenComplete((infoDiscovery, e1) -> {
                         if (e1 != null) {
                             processCapabilitiesHashSet(capabilityHashSet, entity, caps);
-                            logger.log(Level.WARNING, e1, () -> "Failed to discover information for entity '" + entity + "' for node '" + nodeToDiscover + "'");
+                            logger.log(System.Logger.Level.WARNING, () -> "Failed to discover information for entity '" + entity + "' for node '" + nodeToDiscover + "'", e1);
                         } else {
                             // 3.3 If the response includes more than one service discovery identity with the same category/type/lang/name, consider the entire response to be ill-formed.
                             // 3.4 If the response includes more than one service discovery feature with the same XML character data, consider the entire response to be ill-formed.
@@ -244,7 +242,7 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
                     // 2.3 Do not validate or globally cache the verification string as described below; instead, the processing application SHOULD associate the discovered identity+features only with the JabberID of the generating entity.
                     serviceDiscoveryManager.discoverInformation(entity, nodeToDiscover).whenComplete((result, e2) -> {
                         if (e2 != null) {
-                            logger.log(Level.WARNING, "Failed to discover information for entity '{0}' for node '{1}'", new Object[]{entity, nodeToDiscover});
+                            logger.log(System.Logger.Level.WARNING, "Failed to discover information for entity '{0}' for node '{1}'", entity, nodeToDiscover);
                         } else {
                             entityCapabilitiesCache.writeEntityCapabilities(entity, result);
                         }
@@ -263,7 +261,7 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
         if (!presence.getFrom().equals(((Session) e.getSource()).getLocalXmppAddress())) {
             final EntityCapabilities caps = presence.getExtension(entityCapabilitiesClass);
             if (caps != null) {
-                logger.log(Level.FINE, "Processing {0}", caps);
+                logger.log(System.Logger.Level.DEBUG, "Processing {0}", caps);
                 handleEntityCapabilities(caps, presence.getFrom());
             }
         }

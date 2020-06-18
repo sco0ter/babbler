@@ -42,8 +42,6 @@ import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Utility class with static factory methods.
@@ -52,7 +50,7 @@ import java.util.logging.Logger;
  */
 public final class XmppUtils {
 
-    private static final Logger logger = Logger.getLogger(XmppUtils.class.getName());
+    private static final System.Logger logger = System.getLogger(XmppUtils.class.getName());
 
     private XmppUtils() {
     }
@@ -173,7 +171,7 @@ public final class XmppUtils {
             try {
                 listener.accept(e);
             } catch (Exception ex) {
-                logger.log(Level.WARNING, ex.getMessage(), ex);
+                logger.log(System.Logger.Level.WARNING, ex.getMessage(), ex);
             }
         });
     }

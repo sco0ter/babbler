@@ -42,8 +42,6 @@ import java.util.Set;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
@@ -56,7 +54,7 @@ import static java.util.Optional.ofNullable;
  */
 public abstract class AbstractAvatarManager extends Manager implements AvatarManager {
 
-    private static final Logger logger = Logger.getLogger(AbstractAvatarManager.class.getName());
+    private static final System.Logger logger = System.getLogger(AbstractAvatarManager.class.getName());
 
     private final Set<Consumer<AvatarChangeEvent>> avatarChangeListeners = new CopyOnWriteArraySet<>();
 
@@ -76,7 +74,7 @@ public abstract class AbstractAvatarManager extends Manager implements AvatarMan
             try {
                 return avatarCache.get(hash + ".avatar");
             } catch (Exception e) {
-                logger.log(Level.WARNING, "Could not read avatar from cache.", e);
+                logger.log(System.Logger.Level.WARNING, "Could not read avatar from cache.", e);
             }
         }
         return null;
@@ -87,7 +85,7 @@ public abstract class AbstractAvatarManager extends Manager implements AvatarMan
             try {
                 avatarCache.put(hash + ".avatar", image);
             } catch (Exception e) {
-                logger.log(Level.WARNING, "Could not write avatar to cache.", e);
+                logger.log(System.Logger.Level.WARNING, "Could not write avatar to cache.", e);
             }
         }
     }

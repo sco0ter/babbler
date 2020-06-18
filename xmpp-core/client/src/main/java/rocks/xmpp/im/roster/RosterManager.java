@@ -62,8 +62,6 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -90,7 +88,7 @@ import java.util.stream.Collectors;
  */
 public final class RosterManager extends AbstractIQHandler {
     
-    private static final Logger logger = Logger.getLogger(RosterManager.class.getName());
+    private static final System.Logger logger = System.getLogger(RosterManager.class.getName());
 
     private final Map<Jid, Contact> contactMap = new ConcurrentHashMap<>();
 
@@ -294,7 +292,7 @@ public final class RosterManager extends AbstractIQHandler {
                 }
                 rosterCacheDirectory.put(XmppUtils.hash(xmppSession.getConnectedResource().asBareJid().toString().getBytes(StandardCharsets.UTF_8)) + ".xml", outputStream.toByteArray());
             } catch (Exception e) {
-                logger.log(Level.WARNING, "Could not write roster to cache.", e);
+                logger.log(System.Logger.Level.WARNING, "Could not write roster to cache.", e);
             }
         }
     }
@@ -309,7 +307,7 @@ public final class RosterManager extends AbstractIQHandler {
                     }
                 }
             } catch (Exception e) {
-                logger.log(Level.WARNING, "Could not read roster from cache.", e);
+                logger.log(System.Logger.Level.WARNING, "Could not read roster from cache.", e);
             }
         }
         return null;
@@ -454,7 +452,7 @@ public final class RosterManager extends AbstractIQHandler {
                 // Ignore the exception, so that the stage does not complete exceptionally. Log it instead and return a null delimiter.
                 // An exception here should not prevent loading the roster and eventually the login process.
                 if (e != null) {
-                    logger.log(Level.WARNING, "Roster delimiter could not be retrieved from private storage.", e);
+                    logger.log(System.Logger.Level.WARNING, "Roster delimiter could not be retrieved from private storage.", e);
                 }
                 return null;
             }).thenAccept(rosterDelimiter -> setGroupDelimiter(rosterDelimiter != null ? rosterDelimiter.getRosterDelimiter() : null));

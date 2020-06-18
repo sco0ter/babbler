@@ -36,15 +36,13 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Christian Schudt
  */
 public class MultiThreadingIT extends IntegrationTest {
 
-    private static final Logger logger = Logger.getLogger(MultiThreadingIT.class.getName());
+    private static final System.Logger logger = System.getLogger(MultiThreadingIT.class.getName());
 
     @Test
     public void shouldNotCloseMoreThanOnce() throws XmppException, InterruptedException {
@@ -242,7 +240,7 @@ public class MultiThreadingIT extends IntegrationTest {
                     xmppSession.connect();
                     Assert.assertEquals(xmppSession.getStatus(), XmppSession.Status.CONNECTED);
                 } catch (Throwable e) {
-                    logger.log(Level.WARNING, e.getMessage(), e);
+                    logger.log(System.Logger.Level.WARNING, e.getMessage(), e);
                     exceptions.incrementAndGet();
                 } finally {
                     countDownLatch.countDown();
@@ -294,7 +292,7 @@ public class MultiThreadingIT extends IntegrationTest {
                     xmppSession.login("admin", "admin");
                     Assert.assertEquals(xmppSession.getStatus(), XmppSession.Status.AUTHENTICATED);
                 } catch (Throwable e) {
-                    logger.log(Level.WARNING, e.getMessage(), e);
+                    logger.log(System.Logger.Level.WARNING, e.getMessage(), e);
                     exceptions.incrementAndGet();
                 } finally {
                     countDownLatch.countDown();

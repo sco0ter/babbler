@@ -74,8 +74,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The implementation of <a href="https://xmpp.org/extensions/xep-0124.html">XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)</a> and <a href="https://xmpp.org/extensions/xep-0206.html">XEP-0206: XMPP Over BOSH</a>.
@@ -89,7 +87,7 @@ public final class BoshConnection extends AbstractConnection {
      */
     private static final ExecutorService HTTP_BIND_EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("BOSH Request Thread"));
 
-    private static final Logger logger = Logger.getLogger(BoshConnection.class.getName());
+    private static final System.Logger logger = System.getLogger(BoshConnection.class.getName());
 
     /**
      * Use ConcurrentSkipListMap to maintain insertion order.
@@ -721,7 +719,7 @@ public final class BoshConnection extends AbstractConnection {
                                             }
                                         }
                                     } catch (JAXBException e) {
-                                        logger.log(Level.WARNING, "Server responded with malformed XML.", e);
+                                        logger.log(System.Logger.Level.WARNING, "Server responded with malformed XML.", e);
                                     } finally {
                                         if (xmlEventReader != null) {
                                             xmlEventReader.close();

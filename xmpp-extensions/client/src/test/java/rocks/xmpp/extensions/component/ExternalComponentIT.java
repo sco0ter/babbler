@@ -36,16 +36,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Christian Schudt
  */
 public class ExternalComponentIT extends IntegrationTest {
 
-    private static final Logger logger = Logger.getLogger(ExternalComponentIT.class.getName());
-
+    private static final System.Logger logger = System.getLogger(ExternalComponentIT.class.getName());
 
     @Test
     public void testStatusAfterConnect() throws Exception {
@@ -75,7 +72,7 @@ public class ExternalComponentIT extends IntegrationTest {
                     xmppSession.connect();
                     Assert.assertEquals(xmppSession.getStatus(), XmppSession.Status.AUTHENTICATED);
                 } catch (Throwable e) {
-                    logger.log(Level.WARNING, e.getMessage(), e);
+                    logger.log(System.Logger.Level.WARNING, e.getMessage(), e);
                     exceptions.incrementAndGet();
                 } finally {
                     countDownLatch.countDown();

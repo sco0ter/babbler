@@ -42,8 +42,6 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
@@ -59,7 +57,7 @@ import java.util.stream.Collectors;
  */
 public final class PubSubService implements Addressable {
 
-    private static final Logger logger = Logger.getLogger(PubSubService.class.getName());
+    private static final System.Logger logger = System.getLogger(PubSubService.class.getName());
 
     private final Jid service;
 
@@ -96,7 +94,7 @@ public final class PubSubService implements Addressable {
                     features.add(pubSubFeature);
                 }
             } catch (Exception e) {
-                logger.log(Level.WARNING, "Server advertised unknown pubsub feature: {0}", f);
+                logger.log(System.Logger.Level.WARNING, "Server advertised unknown pubsub feature: {0}", f);
             }
         });
         return features;

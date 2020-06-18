@@ -48,15 +48,13 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Christian Schudt
  */
 public class ClientEntityCapabilitiesManager extends Manager implements EntityCapabilitiesCache, EntityCapabilitiesManager {
 
-    private static final Logger logger = Logger.getLogger(ClientEntityCapabilitiesManager.class.getName());
+    private static final System.Logger logger = System.getLogger(ClientEntityCapabilitiesManager.class.getName());
 
     // Cache up to 100 capability hashes in memory.
     private static final Map<Hash, DiscoverableInfo> CAPS_CACHE = new LruCache<>(100);
@@ -93,7 +91,7 @@ public class ClientEntityCapabilitiesManager extends Manager implements EntityCa
                     }
                 }
             } catch (Exception e) {
-                logger.log(Level.WARNING, e, () -> "Could not read entity capabilities from persistent cache (file: " + fileName + ')');
+                logger.log(System.Logger.Level.WARNING, () -> "Could not read entity capabilities from persistent cache (file: " + fileName + ')', e);
             }
         }
         // The verification string is unknown, Service Discovery needs to be done.
@@ -120,7 +118,7 @@ public class ClientEntityCapabilitiesManager extends Manager implements EntityCa
                 }
                 directoryCache.put(XmppUtils.hash(hash.toString().getBytes(StandardCharsets.UTF_8)) + ".caps", byteArrayOutputStream.toByteArray());
             } catch (Exception e) {
-                logger.log(Level.WARNING, e, () -> "Could not write entity capabilities to persistent cache. Reason: " + e.getMessage());
+                logger.log(System.Logger.Level.WARNING, () -> "Could not write entity capabilities to persistent cache. Reason: " + e.getMessage(), e);
             }
         }
     }

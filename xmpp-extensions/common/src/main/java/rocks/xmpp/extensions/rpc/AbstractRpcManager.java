@@ -35,8 +35,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This manager allows you to call remote procedures and handle inbound calls, if enabled.
@@ -51,10 +49,10 @@ public abstract class AbstractRpcManager extends AbstractIQHandler implements Rp
 
     private static final Set<String> FEATURES = Collections.singleton(Rpc.NAMESPACE);
 
-    private static final Logger logger = Logger.getLogger(AbstractRpcManager.class.getName());
+    private static final System.Logger logger = System.getLogger(AbstractRpcManager.class.getName());
 
     private RpcHandler rpcHandler;
-    
+
     protected AbstractRpcManager() {
         super(Rpc.class, IQ.Type.SET);
     }
@@ -92,7 +90,7 @@ public abstract class AbstractRpcManager extends AbstractIQHandler implements Rp
             } catch (RpcException e1) {
                 return iq.createResult(Rpc.ofFaultResponse(e1.getFaultCode(), e1.getFaultString()));
             } catch (Throwable e1) {
-                logger.log(Level.WARNING, e1.getMessage(), e1);
+                logger.log(System.Logger.Level.WARNING, e1.getMessage(), e1);
                 return iq.createError(Condition.INTERNAL_SERVER_ERROR);
             }
         }

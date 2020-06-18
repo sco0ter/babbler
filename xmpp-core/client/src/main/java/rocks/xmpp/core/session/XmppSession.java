@@ -110,8 +110,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The base class for different kinds of XMPP sessions.
@@ -137,7 +135,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
     private static final Collection<Consumer<XmppSession>> creationListeners = new CopyOnWriteArraySet<>();
 
-    private static final Logger logger = Logger.getLogger(XmppSession.class.getName());
+    private static final System.Logger logger = System.getLogger(XmppSession.class.getName());
 
     private static final EnumSet<Status> IS_CONNECTED = EnumSet.of(Status.CONNECTED, Status.AUTHENTICATED, Status.AUTHENTICATING);
 
@@ -253,7 +251,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                     try {
                         close();
                     } catch (XmppException e) {
-                        logger.log(Level.WARNING, e.getMessage(), e);
+                        logger.log(System.Logger.Level.WARNING, e.getMessage(), e);
                     }
                 });
                 Runtime.getRuntime().addShutdownHook(shutdownHook);
@@ -360,7 +358,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
             try {
                 xmppSessionConsumer.accept(xmppSession);
             } catch (Exception e) {
-                logger.log(Level.WARNING, e.getMessage(), e);
+                logger.log(System.Logger.Level.WARNING, e.getMessage(), e);
             }
         });
     }
@@ -413,7 +411,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
         try {
             closeAndNullifyConnection();
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Failure during closing previous connection.", e);
+            logger.log(System.Logger.Level.WARNING, "Failure during closing previous connection.", e);
         }
 
         synchronized (connectionConfigurations) {
@@ -435,14 +433,14 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                         }
                     }
                     if (connectionIterator.hasNext()) {
-                        logger.log(Level.WARNING, "{0} failed to connect. Trying alternative connection.", connectionConfiguration);
-                        logger.log(Level.FINE, e.getMessage(), e);
+                        logger.log(System.Logger.Level.WARNING, "{0} failed to connect. Trying alternative connection.", connectionConfiguration);
+                        logger.log(System.Logger.Level.DEBUG, e.getMessage(), e);
                     } else {
                         throw new ConnectionException("Failed to connect to " + connectionConfiguration, e);
                     }
                 }
             }
-            logger.log(Level.FINE, "Connected via {0}", activeConnection);
+            logger.log(System.Logger.Level.DEBUG, "Connected via {0}", activeConnection);
         }
     }
 
@@ -454,7 +452,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     protected boolean checkConnected() {
         if (isConnected()) {
             // Silently return, when we are already connected.
-            logger.fine("Already connected. Return silently.");
+            logger.log(System.Logger.Level.DEBUG, "Already connected. Return silently.");
             return true;
         }
         return false;
@@ -515,7 +513,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     protected boolean checkAuthenticated() {
         if (getStatus() == Status.AUTHENTICATED) {
             // Silently return, when we are already logged in.
-            logger.fine("Already logged in. Return silently.");
+            logger.log(System.Logger.Level.DEBUG, "Already logged in. Return silently.");
             return true;
         }
         return false;
@@ -997,7 +995,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                     try {
                         listener.accept(element);
                     } catch (Exception e) {
-                        logger.log(Level.WARNING, e.getMessage(), e);
+                        logger.log(System.Logger.Level.WARNING, e.getMessage(), e);
                     }
                 });
                 // The stanza has been successfully sent. Don't track it any longer, unless the connection supports acknowledgements.
@@ -1014,7 +1012,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                     try {
                         listener.accept(element, throwable);
                     } catch (Exception e) {
-                        logger.log(Level.WARNING, e.getMessage(), e);
+                        logger.log(System.Logger.Level.WARNING, e.getMessage(), e);
                     }
                 });
             }
@@ -1236,7 +1234,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                                     send(response);
                                 }
                             } catch (Exception e) {
-                                logger.log(Level.WARNING, e, () -> "Failed to handle IQ request: " + e.getMessage());
+                                logger.log(System.Logger.Level.WARNING, () -> "Failed to handle IQ request: " + e.getMessage(), e);
                                 // If any exception occurs during processing the IQ, return <service-unavailable/>.
                                 send(iq.createError(Condition.SERVICE_UNAVAILABLE));
                             }
@@ -1245,7 +1243,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                             iqExecutor.execute(runnable);
                         } else {
                             // Should never happen.
-                            logger.warning("No Executor found for IQHandler, handling IQ directly");
+                            logger.log(System.Logger.Level.WARNING, "No Executor found for IQHandler, handling IQ directly");
                             runnable.run();
                         }
                     } else {

@@ -52,15 +52,13 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Locale;
 import java.util.concurrent.CompletionStage;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Christian Schudt
  */
 public final class NettyTcpConnection extends NettyChannelConnection {
 
-    private static final Logger logger = Logger.getLogger(NettyTcpConnection.class.getName());
+    private static final System.Logger logger = System.getLogger(NettyTcpConnection.class.getName());
 
     private final StreamFeaturesManager streamFeaturesManager;
 
@@ -153,7 +151,7 @@ public final class NettyTcpConnection extends NettyChannelConnection {
                 if (verifier != null && !verifier.verify(xmppSession.getDomain().toString(), sslEngine.getSession())) {
                     xmppSession.notifyException(new CertificateException("Server failed to authenticate as " + xmppSession.getDomain()));
                 } else {
-                    logger.log(Level.FINE, "Connection has been secured via TLS.");
+                    logger.log(System.Logger.Level.DEBUG, "Connection has been secured via TLS.");
                 }
             } else {
                 xmppSession.notifyException(future.cause());

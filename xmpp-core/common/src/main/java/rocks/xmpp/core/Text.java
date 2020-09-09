@@ -59,7 +59,7 @@ import java.util.Objects;
  * @see StreamError
  * @see StanzaError
  */
-public final class Text implements CharSequence, Comparable<Text> {
+public final class Text implements LanguageElement, CharSequence, Comparable<Text> {
 
     private static final Comparator<Text> COMPARATOR = Comparator.<Text>nullsLast((o1, o2) -> {
         final Collator collator;
@@ -113,6 +113,7 @@ public final class Text implements CharSequence, Comparable<Text> {
      *
      * @return The language.
      */
+    @Override
     public final Locale getLanguage() {
         return lang;
     }

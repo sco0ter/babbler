@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.langtrans.model;
 
+import rocks.xmpp.core.LanguageElement;
 import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
 
 import javax.xml.XMLConstants;
@@ -108,22 +109,22 @@ public final class LanguageTranslation {
     /**
      * The source element, which represents a source text and source language.
      */
-    private static final class Source {
+    private static final class Source implements LanguageElement {
 
         @XmlAttribute(name = "lang", namespace = XMLConstants.XML_NS_URI)
-        private final Locale language;
+        private final Locale lang;
 
         @XmlValue
         private final String text;
 
         private Source() {
             this.text = null;
-            this.language = null;
+            this.lang = null;
         }
 
         private Source(String text, Locale language) {
             this.text = Objects.requireNonNull(text);
-            this.language = Objects.requireNonNull(language);
+            this.lang = Objects.requireNonNull(language);
         }
 
         /**
@@ -131,8 +132,9 @@ public final class LanguageTranslation {
          *
          * @return The source language.
          */
-        private Locale getLanguage() {
-            return language;
+        @Override
+        public Locale getLanguage() {
+            return lang;
         }
 
         /**

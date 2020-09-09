@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.LanguageElement;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.util.adapters.LocaleAdapter;
@@ -49,7 +50,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Christian Schudt
  */
 @XmlTransient
-public abstract class Stanza implements StreamElement {
+public abstract class Stanza implements LanguageElement, StreamElement {
 
     @XmlAttribute
     private Jid from;
@@ -169,6 +170,7 @@ public abstract class Stanza implements StreamElement {
      *
      * @return The language.
      */
+    @Override
     public final synchronized Locale getLanguage() {
         return lang;
     }

@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.commands.model;
 
+import rocks.xmpp.core.LanguageElement;
+
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -49,7 +51,7 @@ import java.util.Objects;
  */
 @XmlRootElement
 @XmlSeeAlso({Command.MalformedAction.class, Command.BadAction.class, Command.BadLocale.class, Command.BadPayload.class, Command.BadSessionId.class, Command.SessionExpired.class})
-public final class Command {
+public final class Command implements LanguageElement {
 
     /**
      * http://jabber.org/protocol/commands
@@ -293,6 +295,7 @@ public final class Command {
      *
      * @return The language.
      */
+    @Override
     public final Locale getLanguage() {
         return lang;
     }

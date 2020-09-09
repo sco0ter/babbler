@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.reach.model;
 
+import rocks.xmpp.core.LanguageElement;
+
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
@@ -99,7 +101,7 @@ public final class Address {
     /**
      * The description of the address.
      */
-    public static final class Description {
+    public static final class Description implements LanguageElement {
 
         @XmlValue
         private final String value;
@@ -134,6 +136,7 @@ public final class Address {
          *
          * @return The language.
          */
+        @Override
         public final Locale getLanguage() {
             return lang;
         }

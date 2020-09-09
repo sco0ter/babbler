@@ -25,6 +25,7 @@
 package rocks.xmpp.websocket.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.LanguageElement;
 import rocks.xmpp.core.stream.model.StreamElement;
 
 import javax.xml.XMLConstants;
@@ -39,7 +40,7 @@ import java.util.Locale;
  * @since 0.7.0
  */
 @XmlTransient
-abstract class Frame implements StreamElement {
+abstract class Frame implements LanguageElement, StreamElement {
 
     @XmlAttribute
     private final Jid to;
@@ -105,6 +106,7 @@ abstract class Frame implements StreamElement {
      *
      * @return The 'xml:lang' attribute.
      */
+    @Override
     public final Locale getLanguage() {
         return lang;
     }

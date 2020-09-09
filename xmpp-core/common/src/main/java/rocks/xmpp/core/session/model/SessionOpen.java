@@ -1,6 +1,7 @@
 package rocks.xmpp.core.session.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.LanguageElement;
 import rocks.xmpp.core.stream.model.StreamElement;
 
 import java.util.Locale;
@@ -15,7 +16,7 @@ import java.util.Locale;
  *
  * @author Christian Schudt
  */
-public interface SessionOpen extends StreamElement {
+public interface SessionOpen extends LanguageElement, StreamElement {
 
     /**
      * Gets the 'from' attribute.
@@ -37,13 +38,6 @@ public interface SessionOpen extends StreamElement {
      * @return The 'id' attribute.
      */
     String getId();
-
-    /**
-     * Gets the 'xml:lang' attribute.
-     *
-     * @return The 'xml:lang' attribute.
-     */
-    Locale getLanguage();
 
     /**
      * Gets the XMPP version.

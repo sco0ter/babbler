@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.geoloc.model;
 
+import rocks.xmpp.core.LanguageElement;
 import rocks.xmpp.util.adapters.ZoneOffsetAdapter;
 
 import javax.xml.XMLConstants;
@@ -62,7 +63,7 @@ import java.util.Locale;
  * @see <a href="https://xmpp.org/extensions/xep-0080.html#schema">XML Schema</a>
  */
 @XmlRootElement(name = "geoloc")
-public final class GeoLocation {
+public final class GeoLocation implements LanguageElement {
 
     /**
      * http://jabber.org/protocol/geoloc
@@ -390,6 +391,7 @@ public final class GeoLocation {
      *
      * @return The language.
      */
+    @Override
     public final Locale getLanguage() {
         return lang;
     }

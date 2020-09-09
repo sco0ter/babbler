@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.disco.model.info;
 
+import rocks.xmpp.core.LanguageElement;
 import rocks.xmpp.util.Strings;
 
 import javax.xml.XMLConstants;
@@ -43,7 +44,7 @@ import java.util.Objects;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/registrar/disco-categories.html">Service Discovery Identities</a>
  */
-public final class Identity implements Comparable<Identity> {
+public final class Identity implements LanguageElement, Comparable<Identity> {
 
     private static final String ACCOUNT = "account";
 
@@ -851,6 +852,7 @@ public final class Identity implements Comparable<Identity> {
      *
      * @return The language.
      */
+    @Override
     public final Locale getLanguage() {
         return lang;
     }

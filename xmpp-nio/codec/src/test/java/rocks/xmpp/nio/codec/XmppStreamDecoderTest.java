@@ -74,7 +74,7 @@ public class XmppStreamDecoderTest {
     @Test
     public void testValidXml() throws Exception {
 
-        XmppStreamDecoder decoder = new XmppStreamDecoder(UNMARSHALLER::get);
+        XmppStreamDecoder decoder = new XmppStreamDecoder(locale -> UNMARSHALLER.get());
 
         ByteBuffer buf1 = ByteBuffer.wrap("<?xml version='1.0' encoding='UTF-8'?><stream:stream to=\"localhost\" version=\"1.0\" xml:lang=\"de-DE\" xml".getBytes(StandardCharsets.UTF_8));
         ByteBuffer buf2 = ByteBuffer.wrap("ns=\"jabber:client\" xmlns:stream=\"http://etherx.jabber.org/stream".getBytes(StandardCharsets.UTF_8));
@@ -115,7 +115,7 @@ public class XmppStreamDecoderTest {
 
     @Test(enabled = false)
     public void testPerformance() throws StreamErrorException {
-        XmppStreamDecoder decoder = new XmppStreamDecoder(UNMARSHALLER::get);
+        XmppStreamDecoder decoder = new XmppStreamDecoder(locale -> UNMARSHALLER.get());
 
         ByteBuffer buf1 = ByteBuffer.wrap("<?xml version='1.0' encoding='UTF-8'?><stream:stream to=\"localhost\" version=\"1.0\" xml:lang=\"de-DE\" xml".getBytes(StandardCharsets.UTF_8));
         ByteBuffer buf2 = ByteBuffer.wrap("ns=\"jabber:client\" xmlns:stream=\"http://etherx.jabber.org/stream".getBytes(StandardCharsets.UTF_8));
@@ -148,7 +148,7 @@ public class XmppStreamDecoderTest {
 
     @Test(expectedExceptions = StreamErrorException.class)
     public void testNotWellFormed() throws Exception {
-        XmppStreamDecoder decoder = new XmppStreamDecoder(UNMARSHALLER::get);
+        XmppStreamDecoder decoder = new XmppStreamDecoder(locale -> UNMARSHALLER.get());
 
         ByteBuffer buf1 = ByteBuffer.wrap("<?xml version='1.0' encoding='UTF-8'?><stream:stream to=\"localhost version=\"1.0\" xml:lang=\"de-DE\" xml".getBytes(StandardCharsets.UTF_8));
 

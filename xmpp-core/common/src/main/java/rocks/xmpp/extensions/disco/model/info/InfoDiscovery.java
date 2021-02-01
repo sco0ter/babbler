@@ -24,9 +24,11 @@
 
 package rocks.xmpp.extensions.disco.model.info;
 
+import rocks.xmpp.core.LanguageElement;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.ServiceDiscoveryNode;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -34,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -50,7 +53,7 @@ import java.util.stream.Collectors;
  * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
  */
 @XmlRootElement(name = "query")
-public final class InfoDiscovery implements DiscoverableInfo, ServiceDiscoveryNode {
+public final class InfoDiscovery implements DiscoverableInfo, ServiceDiscoveryNode, LanguageElement {
 
     /**
      * http://jabber.org/protocol/disco#info
@@ -67,6 +70,9 @@ public final class InfoDiscovery implements DiscoverableInfo, ServiceDiscoveryNo
     @XmlAttribute
     private final String node;
 
+    @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
+    private final Locale lang;
+
     /**
      * Creates an empty element, used for info discovery requests.
      */
@@ -81,6 +87,7 @@ public final class InfoDiscovery implements DiscoverableInfo, ServiceDiscoveryNo
      */
     public InfoDiscovery(String node) {
         this.node = node;
+        this.lang = null;
     }
 
     /**
@@ -104,6 +111,10 @@ public final class InfoDiscovery implements DiscoverableInfo, ServiceDiscoveryNo
         this(null, identities, features, extensions);
     }
 
+    public InfoDiscovery(String node, Collection<Identity> identities, Collection<String> features, Collection<DataForm> extensions) {
+        this(node, identities, features, extensions, null);
+    }
+
     /**
      * Creates an info discovery element, used in discovery info responses.
      *
@@ -112,7 +123,7 @@ public final class InfoDiscovery implements DiscoverableInfo, ServiceDiscoveryNo
      * @param features   The features.
      * @param extensions The extensions.
      */
-    public InfoDiscovery(String node, Collection<Identity> identities, Collection<String> features, Collection<DataForm> extensions) {
+    public InfoDiscovery(String node, Collection<Identity> identities, Collection<String> features, Collection<DataForm> extensions, Locale lang) {
         this.node = node;
         if (identities != null) {
             this.identity.addAll(identities);
@@ -123,6 +134,7 @@ public final class InfoDiscovery implements DiscoverableInfo, ServiceDiscoveryNo
         if (extensions != null) {
             this.extensions.addAll(extensions);
         }
+        this.lang = lang;
     }
 
     @Override
@@ -144,6 +156,11 @@ public final class InfoDiscovery implements DiscoverableInfo, ServiceDiscoveryNo
     @Override
     public final List<DataForm> getExtensions() {
         return Collections.unmodifiableList(extensions);
+    }
+
+    @Override
+    public final Locale getLanguage() {
+        return lang;
     }
 
     @Override

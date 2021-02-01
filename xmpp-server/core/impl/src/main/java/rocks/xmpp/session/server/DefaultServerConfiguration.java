@@ -26,6 +26,7 @@ package rocks.xmpp.session.server;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.server.ServerConfiguration;
+import rocks.xmpp.util.LanguageUnmarshallerListener;
 import rocks.xmpp.util.XmppUtils;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -35,6 +36,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.util.Collections;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
@@ -42,21 +44,13 @@ import java.util.Collections;
 @ApplicationScoped
 public class DefaultServerConfiguration implements ServerConfiguration {
 
-    public static final JAXBContext JAXB_CONTEXT;
+    private static final JAXBContext JAXB_CONTEXT;
 
-    public static final ThreadLocal<Marshaller> MARSHALLER = ThreadLocal.withInitial(() -> {
+    private static final ThreadLocal<Marshaller> MARSHALLER = ThreadLocal.withInitial(() -> {
         try {
             Marshaller marshaller = DefaultServerConfiguration.JAXB_CONTEXT.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
             return marshaller;
-        } catch (JAXBException e) {
-            throw new DataBindingException(e);
-        }
-    });
-
-    public static final ThreadLocal<Unmarshaller> UNMARSHALLER = ThreadLocal.withInitial(() -> {
-        try {
-            return DefaultServerConfiguration.JAXB_CONTEXT.createUnmarshaller();
         } catch (JAXBException e) {
             throw new DataBindingException(e);
         }
@@ -77,8 +71,14 @@ public class DefaultServerConfiguration implements ServerConfiguration {
     }
 
     @Override
-    public Unmarshaller getUnmarshaller() {
-        return UNMARSHALLER.get();
+    public Unmarshaller getUnmarshaller(Locale locale) {
+        try {
+            Unmarshaller unmarshaller = DefaultServerConfiguration.JAXB_CONTEXT.createUnmarshaller();
+            unmarshaller.setListener(new LanguageUnmarshallerListener(locale));
+            return unmarshaller;
+        } catch (JAXBException e) {
+            throw new DataBindingException(e);
+        }
     }
 
     @Override

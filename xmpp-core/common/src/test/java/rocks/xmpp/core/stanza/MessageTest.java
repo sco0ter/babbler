@@ -29,10 +29,12 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Text;
 import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
+import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 
 import javax.xml.bind.JAXBException;
@@ -42,6 +44,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -259,5 +262,40 @@ public class MessageTest extends XmlTest {
         message.addExtensions((Object) null);
         message.removeExtension(null);
         Assert.assertTrue(message.getExtensions().isEmpty());
+    }
+
+    @Test
+    public void testXmlLangInheritance() throws JAXBException, XMLStreamException {
+        String xml = "<iq type='result'\n" +
+                "    from='plays.shakespeare.lit'\n" +
+                "    to='romeo@montague.net/orchard'\n" +
+                "    id='info1' xml:lang='de'>\n" +
+                "  <query xmlns='http://jabber.org/protocol/disco#info'>\n" +
+                "    <identity\n" +
+                "        category='conference'\n" +
+                "        type='text'\n" +
+                "        name='Play-Specific Chatrooms' xml:lang='fr'/>\n" +
+                "    <identity\n" +
+                "        category='directory'\n" +
+                "        type='chatroom'\n" +
+                "        name='Play-Specific Chatrooms'/>\n" +
+                "    <feature/>\n" +
+                "    <feature xmlns=\"urn:xmpp:archive\"><optional xmlns=\"urn:xmpp:archive\"><default xmlns=\"urn:xmpp:archive\"/></optional></feature>\n" +
+                "    <feature var='http://jabber.org/protocol/disco#info'/>\n" +
+                "    <feature var='http://jabber.org/protocol/disco#items'/>\n" +
+                "    <feature var='http://jabber.org/protocol/muc'/>\n" +
+                "    <feature var='jabber:iq:register'/>\n" +
+                "    <feature var='jabber:iq:search'/>\n" +
+                "    <feature var='jabber:iq:time'/>\n" +
+                "    <feature var='jabber:iq:version'/>\n" +
+                "  </query>\n" +
+                "</iq>";
+
+        IQ iq = unmarshal(xml, IQ.class);
+        InfoDiscovery infoDiscovery = iq.getExtension(InfoDiscovery.class);
+        Iterator<Identity> iterator = infoDiscovery.getIdentities().iterator();
+        Assert.assertEquals(iterator.next().getLanguage(), Locale.FRENCH);
+        Assert.assertEquals(iterator.next().getLanguage(), Locale.GERMAN);
+        Assert.assertEquals(infoDiscovery.getLanguage(), Locale.GERMAN);
     }
 }

@@ -55,7 +55,7 @@ public final class XmppWebSocketApplicationConfig implements ServerApplicationCo
                 .configurator(new XmppWebSocketConfigurator())
                 .build();
         // CDI is not possible in this class, but it is when the Decoder/Encoder instance is initialized.
-        serverEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.UNMARSHALLER, (Supplier<Unmarshaller>) () -> CDI.current().select(ServerConfiguration.class).get().getUnmarshaller());
+        serverEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.UNMARSHALLER, (Supplier<Unmarshaller>) () -> CDI.current().select(ServerConfiguration.class).get().getUnmarshaller(null));
         serverEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.MARSHALLER, (Supplier<Marshaller>) () -> CDI.current().select(ServerConfiguration.class).get().getMarshaller());
         return Collections.singleton(serverEndpointConfig);
     }

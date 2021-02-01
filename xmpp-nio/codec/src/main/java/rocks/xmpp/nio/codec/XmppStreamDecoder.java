@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 /**
  * Decodes a stream of byte buffers to XMPP elements.
@@ -65,13 +65,13 @@ public final class XmppStreamDecoder {
 
     private static final AsyncXMLInputFactory XML_INPUT_FACTORY = new InputFactoryImpl();
 
-    private final Supplier<Unmarshaller> unmarshaller;
+    private final Function<Locale, Unmarshaller> unmarshaller;
 
     private final StringBuilder xmlStream = new StringBuilder();
 
     private AsyncXMLStreamReader<AsyncByteBufferFeeder> xmlStreamReader;
 
-    private String streamHeader;
+    private StreamHeader streamHeader;
 
     private long elementEnd;
 
@@ -82,7 +82,7 @@ public final class XmppStreamDecoder {
      *
      * @param unmarshaller Supplies the unmarshaller which will convert XML to objects.
      */
-    public XmppStreamDecoder(final Supplier<Unmarshaller> unmarshaller) {
+    public XmppStreamDecoder(final Function<Locale, Unmarshaller> unmarshaller) {
         this.unmarshaller = unmarshaller;
         this.restart();
     }
@@ -148,12 +148,12 @@ public final class XmppStreamDecoder {
 
                             elementEnd = xmlStreamReader.getLocationInfo().getEndingByteOffset();
                             // Store the stream header so that it can be reused while unmarshalling further bytes.
-                            streamHeader = xmlStream.substring(0, (int) elementEnd);
+                            String streamHeaderStr = xmlStream.substring(0, (int) elementEnd);
                             // Copy the rest of the stream.
                             // From now on, only store the XML stream without the stream header.
                             xmlStream.delete(0, (int) elementEnd);
 
-                            final StreamHeader header = StreamHeader.create(
+                            streamHeader = StreamHeader.create(
                                     from != null ? Jid.ofEscaped(from) : null,
                                     to != null ? Jid.ofEscaped(to) : null,
                                     id,
@@ -161,8 +161,8 @@ public final class XmppStreamDecoder {
                                     lang != null ? Locale.forLanguageTag(lang) : null,
                                     contentNamespace,
                                     additionalNamespaces.toArray(new QName[0]));
-
-                            out.accept(streamHeader, header);
+                            
+                            out.accept(streamHeaderStr, streamHeader);
                         }
                         break;
                     case XMLStreamConstants.END_ELEMENT:
@@ -206,7 +206,7 @@ public final class XmppStreamDecoder {
                                     while (reader.hasNext() && t != XMLStreamConstants.START_ELEMENT) {
                                         t = reader.next();
                                     }
-                                    out.accept(element, (StreamElement) unmarshaller.get().unmarshal(reader));
+                                    out.accept(element, (StreamElement) unmarshaller.apply(streamHeader.getLanguage()).unmarshal(reader));
                                 } finally {
                                     if (reader != null) {
                                         reader.close();

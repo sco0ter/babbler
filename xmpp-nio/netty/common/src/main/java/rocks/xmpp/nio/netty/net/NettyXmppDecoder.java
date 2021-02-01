@@ -33,9 +33,10 @@ import rocks.xmpp.nio.codec.XmppStreamDecoder;
 import javax.xml.bind.Unmarshaller;
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 /**
  * Decodes byte buffers to stream elements.
@@ -61,7 +62,7 @@ final class NettyXmppDecoder extends ByteToMessageDecoder {
      * @param unmarshallerSupplier Supplies the unmarshaller, e.g. via a {@code ThreadLocal<Unmarshaller>}
      * @param onFailure            Called when an exception in the pipeline has occurred. If null, the exception is propagated to next handler. If non-null this callback is called instead.
      */
-    NettyXmppDecoder(final BiConsumer<String, StreamElement> onRead, final Supplier<Unmarshaller> unmarshallerSupplier, final Consumer<Throwable> onFailure) {
+    NettyXmppDecoder(final BiConsumer<String, StreamElement> onRead, final Function<Locale, Unmarshaller> unmarshallerSupplier, final Consumer<Throwable> onFailure) {
         this.onRead = onRead;
         this.xmppStreamDecoder = new XmppStreamDecoder(unmarshallerSupplier);
         this.onFailure = onFailure;

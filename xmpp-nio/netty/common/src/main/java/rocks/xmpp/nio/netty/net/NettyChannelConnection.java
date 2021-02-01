@@ -48,6 +48,7 @@ import javax.net.ssl.SSLContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.net.InetSocketAddress;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiConsumer;
@@ -77,7 +78,7 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
     public NettyChannelConnection(final Channel channel,
                                   final StreamHandler streamHandler,
                                   final BiConsumer<String, StreamElement> onRead,
-                                  final Supplier<Unmarshaller> unmarshallerSupplier,
+                                  final Function<Locale, Unmarshaller> unmarshallerSupplier,
                                   final BiConsumer<String, StreamElement> onWrite,
                                   final Supplier<Marshaller> marshallerSupplier,
                                   final Consumer<Throwable> onException,

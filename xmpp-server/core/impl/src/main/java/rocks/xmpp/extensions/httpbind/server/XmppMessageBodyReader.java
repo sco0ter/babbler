@@ -55,7 +55,7 @@ public class XmppMessageBodyReader implements MessageBodyReader<Body> {
     @Override
     public Body readFrom(Class<Body> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws WebApplicationException {
         try {
-            Unmarshaller unmarshaller = CDI.current().select(ServerConfiguration.class).get().getUnmarshaller();
+            Unmarshaller unmarshaller = CDI.current().select(ServerConfiguration.class).get().getUnmarshaller(null);
             Object object = unmarshaller.unmarshal(entityStream);
             if (object instanceof Body) {
                 return (Body) object;

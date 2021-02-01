@@ -5,6 +5,7 @@ import rocks.xmpp.addr.Jid;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import java.util.Locale;
 
 /**
  * @author Christian Schudt
@@ -15,7 +16,7 @@ public interface ServerConfiguration {
 
     Marshaller getMarshaller();
 
-    Unmarshaller getUnmarshaller();
+    Unmarshaller getUnmarshaller(Locale locale);
 
     int getPort();
 

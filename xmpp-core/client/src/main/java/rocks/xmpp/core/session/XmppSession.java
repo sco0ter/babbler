@@ -67,6 +67,7 @@ import rocks.xmpp.extensions.disco.client.ClientServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 import rocks.xmpp.extensions.sm.client.ClientStreamManager;
+import rocks.xmpp.util.LanguageUnmarshallerListener;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.util.concurrent.CompletionStages;
@@ -89,6 +90,7 @@ import java.util.EnumSet;
 import java.util.EventObject;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -1144,8 +1146,23 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      * @see #createMarshaller()
      */
     public final Unmarshaller createUnmarshaller() {
+        return createUnmarshaller(null);
+    }
+
+    /**
+     * Creates a new unmarshaller with a default locale. If child objects have not explicitly set a locale, the default locale is assigned to them.
+     * <p>
+     * Note that the returned unmarshaller is not thread-safe.
+     * </p>
+     *
+     * @return The unmarshaller.
+     * @see #createUnmarshaller()
+     */
+    public final Unmarshaller createUnmarshaller(Locale rootLocale) {
         try {
-            return configuration.getJAXBContext().createUnmarshaller();
+            Unmarshaller unmarshaller = configuration.getJAXBContext().createUnmarshaller();
+            unmarshaller.setListener(new LanguageUnmarshallerListener(rootLocale));
+            return unmarshaller;
         } catch (JAXBException e) {
             throw new DataBindingException(e);
         }

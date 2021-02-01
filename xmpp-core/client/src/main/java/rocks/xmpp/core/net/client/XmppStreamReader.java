@@ -87,16 +87,17 @@ final class XmppStreamReader {
 
     private final Marshaller marshaller;
 
-    private final Unmarshaller unmarshaller;
+    private Unmarshaller unmarshaller;
 
     private final String namespace;
+
+    private StreamHeader streamHeader;
 
     XmppStreamReader(String namespace, final SocketConnection connection, XmppSession xmppSession) {
         this.connection = connection;
         this.xmppSession = xmppSession;
         this.debugger = xmppSession.getDebugger();
         this.marshaller = xmppSession.createMarshaller();
-        this.unmarshaller = xmppSession.createUnmarshaller();
         this.executorService = new QueuedExecutorService(EXECUTOR_SERVICE);
         this.namespace = namespace;
     }
@@ -146,7 +147,7 @@ final class XmppStreamReader {
                                         final String id = idAttribute != null ? idAttribute.getValue() : null;
                                         final String version = versionAttribute != null ? versionAttribute.getValue() : null;
                                         final Locale lang = langAttribute != null ? Locale.forLanguageTag(langAttribute.getValue()) : null;
-                                        StreamHeader streamHeader = StreamHeader.create(from, to, id, version, lang, namespace);
+                                        streamHeader = StreamHeader.create(from, to, id, version, lang, namespace);
                                         openedByPeer.accept(streamHeader);
                                         if (debugger != null) {
                                             XMLEventWriter writer = xmppSession.getConfiguration().getXmlOutputFactory().createXMLEventWriter(stringWriter);
@@ -160,6 +161,9 @@ final class XmppStreamReader {
                                         xmppSession.handleElement(streamHeader);
                                         xmlEventReader.nextEvent();
                                     } else {
+                                        if (unmarshaller == null) {
+                                            unmarshaller = xmppSession.createUnmarshaller(streamHeader.getLanguage());
+                                        }
                                         Object object = unmarshaller.unmarshal(xmlEventReader);
                                         if (debugger != null) {
                                             // Marshal the inbound stanza. The byteArrayOutputStream cannot be used for that, even if we reset() it, because it could already contain the next stanza.

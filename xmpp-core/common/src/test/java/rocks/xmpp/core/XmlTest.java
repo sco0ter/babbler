@@ -32,6 +32,7 @@ import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.core.stanza.model.client.ClientPresence;
 import rocks.xmpp.core.stream.model.StreamHeader;
+import rocks.xmpp.util.LanguageUnmarshallerListener;
 import rocks.xmpp.util.XmppUtils;
 
 import javax.xml.bind.DataBindingException;
@@ -89,6 +90,7 @@ public abstract class XmlTest {
                 jaxbContext = JAXB_CONTEXT;
             }
             unmarshaller = jaxbContext.createUnmarshaller();
+            unmarshaller.setListener(new LanguageUnmarshallerListener(null));
             marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
             this.namespace = namespace;

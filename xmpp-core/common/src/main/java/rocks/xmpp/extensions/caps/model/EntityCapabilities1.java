@@ -26,8 +26,8 @@ package rocks.xmpp.extensions.caps.model;
 
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
+import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.hashes.model.Hashed;
 import rocks.xmpp.util.Strings;
 
@@ -101,7 +101,7 @@ public final class EntityCapabilities1 extends StreamFeature implements EntityCa
 
     @Override
     public final byte[] getHashValue() {
-        return ver.clone();
+        return ver != null ? ver.clone() : null;
     }
 
     /**
@@ -123,7 +123,7 @@ public final class EntityCapabilities1 extends StreamFeature implements EntityCa
      * @return The verification string.
      */
     public final String getVerificationString() {
-        return Base64.getEncoder().encodeToString(ver);
+        return ver != null ? Base64.getEncoder().encodeToString(ver) : null;
     }
 
     @Override

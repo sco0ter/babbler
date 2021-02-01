@@ -275,9 +275,9 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
             }
             ScheduledFutureTask other = (ScheduledFutureTask) o;
             return Objects.equals(callable, other.callable)
-                    && Objects.equals(period, other.period)
-                    && Objects.equals(sequence, other.sequence)
-                    && Objects.equals(time, other.time);
+                    && period == other.period
+                    && sequence == other.sequence
+                    && time == other.time;
         }
 
         @Override

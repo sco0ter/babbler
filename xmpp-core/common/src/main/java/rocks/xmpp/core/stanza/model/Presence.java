@@ -418,7 +418,7 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
         }
         Presence other = (Presence) o;
         return Objects.equals(getType(), other.getType())
-                && Objects.equals(getPriority(), other.getPriority())
+                && getPriority() == other.getPriority()
                 && Objects.equals(getShow(), other.getShow())
                 && Objects.equals(getTo(), other.getTo())
                 && Objects.equals(getFrom(), other.getFrom())

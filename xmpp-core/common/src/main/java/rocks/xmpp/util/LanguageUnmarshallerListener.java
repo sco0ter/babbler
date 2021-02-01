@@ -34,7 +34,6 @@ import java.util.Deque;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * Listens to unmarshal events in order to assign a parent object's {@code xml:lang} attribute to its child elements.
@@ -55,7 +54,7 @@ public final class LanguageUnmarshallerListener extends Unmarshaller.Listener {
     /**
      * Maps a parent to its children.
      */
-    private final Map<Object, List<Object>> parentToChildren = new IdentityHashMap<>();
+    private final IdentityHashMap<Object, List<Object>> parentToChildren = new IdentityHashMap<>();
 
     /**
      * Keeps track of the object tree, in order to know everything has been unmarshalled. Push happens before unmarshal, pop happens after unmarshal.
@@ -138,9 +137,10 @@ public final class LanguageUnmarshallerListener extends Unmarshaller.Listener {
                         break;
                     }
                 }
+                current = current.getSuperclass();
             } catch (NoSuchFieldException | IllegalAccessException ignore) {
+                current = current.getSuperclass();
             }
-            current = current.getSuperclass();
         }
         return parentLocale;
     }

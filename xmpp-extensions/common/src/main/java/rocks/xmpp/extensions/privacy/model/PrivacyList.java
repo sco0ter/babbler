@@ -279,8 +279,8 @@ public final class PrivacyList implements Comparable<PrivacyList> {
         PrivacyList other = (PrivacyList) o;
         return Objects.equals(item, other.item)
                 && Objects.equals(name, other.name)
-                && Objects.equals(isDefault, other.isDefault)
-                && Objects.equals(isActive, other.isActive);
+                && isDefault == other.isDefault
+                && isActive == other.isActive;
     }
 
     @Override

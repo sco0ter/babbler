@@ -566,7 +566,7 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
         return Objects.equals(type, other.type)
                 && Objects.equals(value, other.value)
                 && Objects.equals(action, other.action)
-                && Objects.equals(order, other.order)
+                && order == other.order
                 && Objects.equals(message, other.message)
                 && Objects.equals(presenceIn, other.presenceIn)
                 && Objects.equals(presenceOut, other.presenceOut)

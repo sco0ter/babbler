@@ -144,9 +144,9 @@ public final class SrvRecord implements Comparable<SrvRecord> {
         }
         SrvRecord other = (SrvRecord) o;
 
-        return Objects.equals(priority, other.priority)
-                && Objects.equals(weight, other.weight)
-                && Objects.equals(port, other.port)
+        return priority == other.priority
+                && weight == other.weight
+                && port == other.port
                 && Objects.equals(target, other.target);
     }
 

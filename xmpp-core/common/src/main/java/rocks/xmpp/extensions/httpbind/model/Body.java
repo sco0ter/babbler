@@ -46,6 +46,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /**
@@ -635,7 +636,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
                 .thenComparing(Body::getTime, Comparator.nullsFirst(Comparator.naturalOrder()))
                 .thenComparing(Body::getBoshVersion, Comparator.nullsFirst(Comparator.naturalOrder()))
                 .thenComparing(Body::getWait, Comparator.nullsFirst(Comparator.naturalOrder()))
-                .thenComparing(Body::getLanguage, Comparator.nullsFirst((o1, o2) -> o1.toLanguageTag().compareTo(o2.toLanguageTag())))
+                .thenComparing(Body::getLanguage, Comparator.nullsFirst(Comparator.comparing(Locale::toLanguageTag)))
                 .thenComparing(Body::getVersion, Comparator.nullsFirst(Comparator.naturalOrder()))
                 .thenComparing(Body::isRestartLogic, Comparator.nullsFirst(Comparator.naturalOrder()))
                 .thenComparing(Body::isRestart, Comparator.nullsFirst(Comparator.naturalOrder()))
@@ -1258,7 +1259,7 @@ public final class Body implements SessionOpen, Comparable<Body> {
         @Override
         public final List<Charset> unmarshal(final String charsets) {
             if (charsets != null) {
-                return Collections.unmodifiableList(Arrays.stream(charsets.split(" ")).map(Charset::forName).collect(Collectors.toList()));
+                return Arrays.stream(charsets.split(" ")).map(Charset::forName).collect(Collectors.toUnmodifiableList());
             }
             return null;
         }
@@ -1266,7 +1267,9 @@ public final class Body implements SessionOpen, Comparable<Body> {
         @Override
         public final String marshal(final List<Charset> charsets) {
             if (charsets != null && !charsets.isEmpty()) {
-                return String.join(" ", charsets.stream().map(c -> (CharSequence) c.name())::iterator);
+                StringJoiner stringJoiner = new StringJoiner(" ");
+                charsets.stream().map(c -> (CharSequence) c.name()).forEachOrdered(stringJoiner::add);
+                return stringJoiner.toString();
             }
             return null;
         }

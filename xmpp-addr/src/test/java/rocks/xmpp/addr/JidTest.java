@@ -494,6 +494,7 @@ public class JidTest {
     }
 
     @Test
+    @SuppressWarnings("BanSerializableRead")
     public void testSerialization() throws IOException, ClassNotFoundException {
 
         Jid jid = Jid.of("local@domain/resource").asBareJid();

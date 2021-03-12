@@ -30,7 +30,6 @@ import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 
-import javax.net.SocketFactory;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import java.net.Proxy;
@@ -64,7 +63,7 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
 
     private final List<CompressionMethod> compressionMethods;
 
-    protected ClientConnectionConfiguration(Builder<? extends Builder> builder) {
+    protected ClientConnectionConfiguration(Builder<? extends Builder<?>> builder) {
         this.hostname = builder.hostname;
         this.port = builder.port;
         this.proxy = builder.proxy;

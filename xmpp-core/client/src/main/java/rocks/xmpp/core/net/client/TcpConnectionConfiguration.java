@@ -51,7 +51,7 @@ public abstract class TcpConnectionConfiguration<T> extends ClientConnectionConf
 
     private final int keepAliveInterval;
 
-    protected TcpConnectionConfiguration(Builder<? extends Builder> builder) {
+    protected TcpConnectionConfiguration(Builder<? extends TcpConnectionConfiguration.Builder<?>> builder) {
         super(builder);
         this.keepAliveInterval = builder.keepAliveInterval;
     }
@@ -193,7 +193,7 @@ public abstract class TcpConnectionConfiguration<T> extends ClientConnectionConf
          * @param keepAliveInterval The whitespace keep-alive interval.
          * @return The builder.
          */
-        public final Builder keepAliveInterval(int keepAliveInterval) {
+        public final Builder<T> keepAliveInterval(int keepAliveInterval) {
             this.keepAliveInterval = keepAliveInterval;
             return this;
         }

@@ -135,12 +135,12 @@ public final class TestXmppSession extends XmppSession {
     }
 
     @Override
-    protected ExecutorService getIqHandlerExecutor() {
+    public ExecutorService getIqHandlerExecutor() {
         return executorService;
     }
 
     @Override
-    protected ExecutorService getStanzaListenerExecutor() {
+    public ExecutorService getStanzaListenerExecutor() {
         return executorService;
     }
 }

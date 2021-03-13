@@ -1550,11 +1550,11 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
         }
     }
 
-    protected ExecutorService getIqHandlerExecutor() {
+    public ExecutorService getIqHandlerExecutor() {
         return IQ_HANDLER_EXECUTOR;
     }
 
-    protected ExecutorService getStanzaListenerExecutor() {
+    public ExecutorService getStanzaListenerExecutor() {
         return stanzaListenerExecutor;
     }
 

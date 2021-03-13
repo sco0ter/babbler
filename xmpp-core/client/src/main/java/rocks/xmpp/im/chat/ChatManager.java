@@ -53,10 +53,10 @@ import java.util.function.Consumer;
  * <p>You should add a {@link ChatSession#addInboundMessageListener(Consumer)} to the chat session in order to listen for messages.</p>
  * ```java
  * xmppSession.getManager(ChatManager.class).addChatSessionListener(chatSessionEvent -> {
- *     ChatSession chatSession = chatSessionEvent.getChatSession();
- *     chatSession.addInboundMessageListener(e -> {
- *         Message message = e.getMessage();
- *     });
+ * ChatSession chatSession = chatSessionEvent.getChatSession();
+ * chatSession.addInboundMessageListener(e -> {
+ * Message message = e.getMessage();
+ * });
  * });
  * ```
  */
@@ -76,7 +76,7 @@ public final class ChatManager extends Manager {
      *
      * @param xmppSession The connection.
      */
-    private ChatManager(final XmppSession xmppSession) {
+    ChatManager(final XmppSession xmppSession) {
         super(xmppSession, true);
     }
 
@@ -91,8 +91,6 @@ public final class ChatManager extends Manager {
                 String threadId = message.getThread() != null ? message.getThread() : UUID.randomUUID().toString();
                 if (chatPartner != null) {
                     ChatSession chatSession = buildChatSession(chatPartner, threadId, xmppSession, true);
-                    // Until and unless the user's client receives a reply from the contact, it SHOULD send any further messages to the contact's bare JID. The contact's client SHOULD address its replies to the user's full JID <user@domainpart/resourcepart> as provided in the 'from' address of the initial message.
-                    chatSession.setChatPartner(message.getFrom());
                     XmppUtils.notifyEventListeners(chatSession.inboundMessageListeners, new MessageEvent(chatSession, message, true));
                 }
             }
@@ -101,11 +99,11 @@ public final class ChatManager extends Manager {
         xmppSession.addInboundPresenceListener(e -> {
             // A client SHOULD "unlock" after having received a <message/> or <presence/> stanza from any other resource controlled by the peer (or a presence stanza from the locked resource); as a result, it SHOULD address its next message(s) in the chat session to the bare JID of the peer (thus "unlocking" the previous "lock") until it receives a message from one of the peer's full JIDs.
             Presence presence = e.getPresence();
-            Jid contact = presence.getFrom().asBareJid();
+            Jid chatPartner = presence.getFrom();
             Map<String, ChatSession> chatSessionMap;
-            if ((chatSessionMap = chatSessions.get(contact)) != null) {
+            if ((chatSessionMap = chatSessions.get(chatPartner.asBareJid())) != null) {
                 for (ChatSession chatSession : chatSessionMap.values()) {
-                    chatSession.setChatPartner(contact);
+                    chatSession.setChatPartner(chatPartner);
                 }
             }
         });
@@ -154,12 +152,26 @@ public final class ChatManager extends Manager {
 
     private ChatSession buildChatSession(final Jid chatPartner, final String threadId, final XmppSession xmppSession, final boolean inbound) {
         Jid contact = chatPartner.asBareJid();
+
         // If there are no chat sessions with that contact yet, put the contact into the map.
         Map<String, ChatSession> chatSessionMap = chatSessions.computeIfAbsent(contact, k -> new ConcurrentHashMap<>());
-        return chatSessionMap.computeIfAbsent(threadId, k -> {
-            ChatSession chatSession = new ChatSession(chatPartner, threadId, xmppSession, this);
-            XmppUtils.notifyEventListeners(chatSessionListeners, new ChatSessionEvent(this, chatSession, inbound));
-            return chatSession;
+        return chatSessionMap.compute(threadId, (k, session) -> {
+            if (session != null) {
+                session.setChatPartner(chatPartner);
+                return session;
+            } else {
+                Jid replyTo;
+                if (!inbound) {
+                    // Until and unless the user's client receives a reply from the contact, it SHOULD send any further messages to the contact's bare JID.
+                    replyTo = chatPartner.asBareJid();
+                } else {
+                    // The contact's client SHOULD address its replies to the user's full JID <user@domainpart/resourcepart> as provided in the 'from' address of the initial message.
+                    replyTo = chatPartner;
+                }
+                ChatSession chatSession = new ChatSession(replyTo, threadId, xmppSession, this);
+                XmppUtils.notifyEventListeners(chatSessionListeners, new ChatSessionEvent(this, chatSession, inbound));
+                return chatSession;
+            }
         });
     }
 

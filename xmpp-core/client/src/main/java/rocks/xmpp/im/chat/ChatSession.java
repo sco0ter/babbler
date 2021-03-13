@@ -61,8 +61,7 @@ public final class ChatSession extends Chat implements AutoCloseable {
     private final ChatManager chatManager;
 
     ChatSession(Jid chatPartner, String thread, XmppSession xmppSession, ChatManager chatManager) {
-        // The user's client SHOULD address the initial message in a chat session to the bare JID <contact@domainpart> of the contact (rather than attempting to guess an appropriate full JID <contact@domainpart/resourcepart> based on the <show/>, <status/>, or <priority/> value of any presence notifications it might have received from the contact).
-        this.chatPartner = Objects.requireNonNull(chatPartner, "chatPartner must not be null.").asBareJid();
+        this.chatPartner = Objects.requireNonNull(chatPartner, "chatPartner must not be null.");
         this.thread = thread;
         this.xmppSession = xmppSession;
         this.chatManager = chatManager;
@@ -137,12 +136,12 @@ public final class ChatSession extends Chat implements AutoCloseable {
      *
      * @return The thread id.
      */
-    public String getThread() {
+    public final String getThread() {
         return thread;
     }
 
     @Override
-    public void close() {
+    public final void close() {
         chatManager.destroyChatSession(this);
     }
 

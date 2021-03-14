@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.stream.model;
 
+import rocks.xmpp.core.LanguageElement;
 import rocks.xmpp.core.Text;
 import rocks.xmpp.core.stream.model.errors.Condition;
 
@@ -43,7 +44,7 @@ import java.util.Objects;
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>
  */
 @XmlRootElement(name = "error")
-public final class StreamError implements StreamElement {
+public final class StreamError implements StreamElement, LanguageElement {
 
     @XmlElementRef
     private final Condition condition;
@@ -113,6 +114,7 @@ public final class StreamError implements StreamElement {
      *
      * @return The language.
      */
+    @Override
     public final Locale getLanguage() {
         if (text != null) {
             return text.getLanguage();

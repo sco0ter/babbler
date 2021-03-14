@@ -25,6 +25,7 @@
 package rocks.xmpp.core.stanza.model;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.LanguageElement;
 import rocks.xmpp.core.Text;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
@@ -43,7 +44,7 @@ import java.util.Objects;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a>
  */
-public class StanzaError {
+public class StanzaError implements LanguageElement {
 
     @XmlAttribute
     private final Jid by;
@@ -193,6 +194,7 @@ public class StanzaError {
      *
      * @return The language.
      */
+    @Override
     public final Locale getLanguage() {
         if (text != null) {
             return text.getLanguage();

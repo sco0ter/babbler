@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2015 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,24 +22,26 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.bind;
+package rocks.xmpp.core.bind.model;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.stanza.model.IQ;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 /**
+ * Tests for the {@link Bind} class.
+ *
  * @author Christian Schudt
  */
 public class BindTest extends XmlTest {
 
     @Test
-    public void testBind() throws XMLStreamException, JAXBException {
+    public void testUnmarshal() throws XMLStreamException, JAXBException {
         String xml = "<iq id='wy2xa82b4' type='set'>\n" +
                 "     <bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>\n" +
                 "       <resource>balcony</resource>\n" +
@@ -48,5 +50,19 @@ public class BindTest extends XmlTest {
         IQ iq = unmarshal(xml, IQ.class);
         Bind bind = iq.getExtension(Bind.class);
         Assert.assertEquals(bind.getResource(), "balcony");
+    }
+
+    @Test
+    public void testMarshalResource() throws XMLStreamException, JAXBException {
+        Bind bind = new Bind("balcony");
+        String xml = marshal(bind);
+        Assert.assertEquals(xml, "<bind xmlns=\"urn:ietf:params:xml:ns:xmpp-bind\"><resource>balcony</resource></bind>");
+    }
+
+    @Test
+    public void testMarshalJid() throws XMLStreamException, JAXBException {
+        Bind bind = new Bind(Jid.ofDomain("domain"));
+        String xml = marshal(bind);
+        Assert.assertEquals(xml, "<bind xmlns=\"urn:ietf:params:xml:ns:xmpp-bind\"><jid>domain</jid></bind>");
     }
 }

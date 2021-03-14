@@ -26,7 +26,6 @@ package rocks.xmpp.core.session;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.MockServer;
-import rocks.xmpp.core.SameThreadExecutorService;
 import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.model.SessionOpen;
@@ -36,7 +35,6 @@ import rocks.xmpp.core.stream.model.StreamElement;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutorService;
 
 
 /**
@@ -44,14 +42,12 @@ import java.util.concurrent.ExecutorService;
  */
 public final class TestXmppSession extends XmppSession {
 
-    private final ExecutorService executorService;
-
     public TestXmppSession() {
         this(Jid.of("test@domain/resource"), new MockServer());
     }
 
     public TestXmppSession(Jid jid, MockServer mockServer) {
-        this(jid, mockServer, XmppSessionConfiguration.getDefault());
+        this(jid, mockServer, XmppSessionConfiguration.builder().executor(Runnable::run).build());
     }
 
     public TestXmppSession(Jid jid, MockServer mockServer, XmppSessionConfiguration configuration) {
@@ -122,7 +118,6 @@ public final class TestXmppSession extends XmppSession {
                 return false;
             }
         };
-        executorService = new SameThreadExecutorService();
         mockServer.registerConnection(this);
 
         // Auto-connect
@@ -132,15 +127,5 @@ public final class TestXmppSession extends XmppSession {
     @Override
     public void connect(Jid from) {
 
-    }
-
-    @Override
-    public ExecutorService getIqHandlerExecutor() {
-        return executorService;
-    }
-
-    @Override
-    public ExecutorService getStanzaListenerExecutor() {
-        return executorService;
     }
 }

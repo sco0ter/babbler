@@ -29,7 +29,6 @@ import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.SameThreadExecutorService;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
@@ -42,11 +41,20 @@ import java.util.function.Consumer;
 
 public class ChatManagerTest {
 
+    private static XmppSession newMockedSession() {
+        return Mockito.mock(XmppSession.class,
+                Mockito.withSettings()
+                        .useConstructor("domain", XmppSessionConfiguration.builder()
+                                        .executor(Runnable::run)
+                                        .build(),
+                                new ClientConnectionConfiguration[0])
+                        .defaultAnswer(Mockito.CALLS_REAL_METHODS));
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testCreateChatSession() throws XmppException {
-        XmppSession xmppSession = Mockito.mock(XmppSession.class, Mockito.withSettings().useConstructor("domain", XmppSessionConfiguration.builder().build(), new ClientConnectionConfiguration[0]).defaultAnswer(Mockito.CALLS_REAL_METHODS));
-        Mockito.doReturn(new SameThreadExecutorService()).when(xmppSession).getStanzaListenerExecutor();
+        XmppSession xmppSession = newMockedSession();
         ChatManager chatManager = new ChatManager(xmppSession);
         chatManager.initialize();
 
@@ -111,8 +119,7 @@ public class ChatManagerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testInboundChatMessages() throws XmppException {
-        XmppSession xmppSession = Mockito.mock(XmppSession.class, Mockito.withSettings().useConstructor("domain", XmppSessionConfiguration.builder().build(), new ClientConnectionConfiguration[0]).defaultAnswer(Mockito.CALLS_REAL_METHODS));
-        Mockito.doReturn(new SameThreadExecutorService()).when(xmppSession).getStanzaListenerExecutor();
+        XmppSession xmppSession = newMockedSession();
         ChatManager chatManager = new ChatManager(xmppSession);
         chatManager.initialize();
 
@@ -182,8 +189,7 @@ public class ChatManagerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testInboundPresence() throws XmppException {
-        XmppSession xmppSession = Mockito.mock(XmppSession.class, Mockito.withSettings().useConstructor("domain", XmppSessionConfiguration.builder().build(), new ClientConnectionConfiguration[0]).defaultAnswer(Mockito.CALLS_REAL_METHODS));
-        Mockito.doReturn(new SameThreadExecutorService()).when(xmppSession).getStanzaListenerExecutor();
+        XmppSession xmppSession = newMockedSession();
         ChatManager chatManager = new ChatManager(xmppSession);
         chatManager.initialize();
 

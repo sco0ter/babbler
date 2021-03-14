@@ -40,13 +40,13 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Supplier;
 
@@ -131,6 +131,8 @@ public final class XmppSessionConfiguration {
 
     private final boolean closeOnShutdown;
 
+    private final Executor executor;
+
     /**
      * Creates a configuration for an {@link XmppSession}. If you want to add custom classes to the {@link JAXBContext}, you can pass them as parameters.
      *
@@ -149,6 +151,7 @@ public final class XmppSessionConfiguration {
         this.nameServer = builder.nameServer;
         this.threadFactory = builder.threadFactory;
         this.closeOnShutdown = builder.closeOnShutdown;
+        this.executor = builder.executor;
         this.extensions = new LinkedHashSet<>();
 
         // Find all modules, then add all extension from each module.
@@ -316,6 +319,15 @@ public final class XmppSessionConfiguration {
     }
 
     /**
+     * Gets the executor, which processes inbound stanzas.
+     *
+     * @return The executor.
+     */
+    public Executor getExecutor() {
+        return executor;
+    }
+
+    /**
      * Indicates, if the session is gracefully closed on shutdown of the runtime (JVM).
      *
      * @return True, if the session is gracefully closed on shutdown of the runtime (JVM).
@@ -370,6 +382,8 @@ public final class XmppSessionConfiguration {
         private ThreadFactory threadFactory;
 
         private boolean closeOnShutdown;
+
+        private Executor executor;
 
         /**
          * The default preferred SASL mechanisms.
@@ -540,6 +554,17 @@ public final class XmppSessionConfiguration {
          */
         public final Builder closeOnShutdown(final boolean closeOnShutdown) {
             this.closeOnShutdown = closeOnShutdown;
+            return this;
+        }
+
+        /**
+         * Sets the executor, which processes inbound stanzas.
+         *
+         * @param executor The executor.
+         * @return The builder.
+         */
+        public final Builder executor(final Executor executor) {
+            this.executor = executor;
             return this;
         }
 

@@ -141,8 +141,6 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
     private static final EnumSet<Status> IS_CONNECTED = EnumSet.of(Status.CONNECTED, Status.AUTHENTICATED, Status.AUTHENTICATING);
 
-    private static final ExecutorService IQ_HANDLER_EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("IQ Handler Thread"));
-
     private static final ExecutorService STANZA_LISTENER_EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Stanza Listener Thread"));
 
     protected final XmppSessionConfiguration configuration;
@@ -210,7 +208,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      */
     private final AtomicReference<Status> status = new AtomicReference<>(Status.INITIAL);
 
-    private final ExecutorService stanzaListenerExecutor;
+    private final Executor stanzaListenerExecutor;
 
     /**
      * guarded by "connections"
@@ -239,7 +237,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     protected XmppSession(String xmppServiceDomain, XmppSessionConfiguration configuration, ClientConnectionConfiguration... connectionConfigurations) {
         this.xmppServiceDomain = Jid.of(Objects.requireNonNull(xmppServiceDomain, "The XMPP service domain must not be null. It's a required attribute in the stream header"));
         this.configuration = configuration;
-        this.stanzaListenerExecutor = new QueuedExecutorService(STANZA_LISTENER_EXECUTOR);
+        this.stanzaListenerExecutor = new QueuedExecutorService(configuration.getExecutor() != null ? configuration.getExecutor() : STANZA_LISTENER_EXECUTOR);
         this.serviceDiscoveryManager = getManager(ClientServiceDiscoveryManager.class);
         this.streamFeaturesManager = getManager(StreamFeaturesManager.class);
         getManager(ClientEntityCapabilitiesManager.class);
@@ -710,7 +708,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      * @see #removeIQHandler(IQHandler)
      */
     public final void addIQHandler(IQHandler iqHandler) {
-        executorMap.computeIfAbsent(iqHandler, k -> new QueuedExecutorService(IQ_HANDLER_EXECUTOR));
+        executorMap.computeIfAbsent(iqHandler, k -> new QueuedExecutorService(configuration.getExecutor() != null ? configuration.getExecutor() : STANZA_LISTENER_EXECUTOR));
         iqHandlers.add(iqHandler);
     }
 
@@ -1269,17 +1267,17 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                     }
                 }
             }
-            getIqHandlerExecutor().execute(() -> {
+            stanzaListenerExecutor.execute(() -> {
                 XmppUtils.notifyEventListeners(inboundIQListeners, new IQEvent(this, iq, true));
                 streamManager.incrementInboundStanzaCount();
             });
         } else if (element instanceof Message) {
-            getStanzaListenerExecutor().execute(() -> {
+            stanzaListenerExecutor.execute(() -> {
                 XmppUtils.notifyEventListeners(inboundMessageListeners, new MessageEvent(this, (Message) element, true));
                 streamManager.incrementInboundStanzaCount();
             });
         } else if (element instanceof Presence) {
-            getStanzaListenerExecutor().execute(() -> {
+            stanzaListenerExecutor.execute(() -> {
                 XmppUtils.notifyEventListeners(inboundPresenceListeners, new PresenceEvent(this, (Presence) element, true));
                 streamManager.incrementInboundStanzaCount();
             });
@@ -1396,7 +1394,6 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
         messageAcknowledgedListeners.clear();
         sendSucceededListeners.clear();
         sendFailedListeners.clear();
-        stanzaListenerExecutor.shutdown();
         synchronized (this) {
             if (shutdownHook != null) {
                 Runtime.getRuntime().removeShutdownHook(shutdownHook);
@@ -1548,14 +1545,6 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                 sendTask.receivedByServer();
             }
         }
-    }
-
-    public ExecutorService getIqHandlerExecutor() {
-        return IQ_HANDLER_EXECUTOR;
-    }
-
-    public ExecutorService getStanzaListenerExecutor() {
-        return stanzaListenerExecutor;
     }
 
     /**

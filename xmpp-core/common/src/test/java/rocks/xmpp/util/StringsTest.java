@@ -4,6 +4,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
+ * Tests for the {@link Strings} class.
+ *
  * @author Christian Schudt
  */
 public class StringsTest {

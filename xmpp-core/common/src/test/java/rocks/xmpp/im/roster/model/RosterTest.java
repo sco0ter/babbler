@@ -38,6 +38,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Tests for the {@link Roster} class.
+ *
  * @author Christian Schudt
  */
 public class RosterTest extends XmlTest {

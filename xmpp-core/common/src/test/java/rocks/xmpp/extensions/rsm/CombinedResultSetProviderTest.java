@@ -35,6 +35,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Tests for the {@link CombinedResultSetProvider} class.
+ *
+ * @author Christian Schudt
+ */
 public class CombinedResultSetProviderTest {
 
     private ResultSetProvider<DiscoverableItem> combined;

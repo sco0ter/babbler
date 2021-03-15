@@ -101,7 +101,7 @@ public class MessageRouterTest extends XmlTest {
 
     @BeforeClass
     public void before() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         Mockito.when(testSession1.getPresence()).thenReturn(new Presence());
         Mockito.when(testSession2a.getPresence()).thenReturn(new Presence());

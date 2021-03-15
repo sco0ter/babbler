@@ -98,7 +98,7 @@ public class UserAvatarProtocolTest {
 
     @BeforeClass
     public void init() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         Mockito.when(xmppSession.getLocalXmppAddress()).thenReturn(Jid.of("user"));
         Mockito.when(xmppSession.getManager(Mockito.eq(PubSubManager.class))).thenReturn(pubSubManager);
         Mockito.when(xmppSession.getConfiguration()).thenReturn(Mockito.mock(XmppSessionConfiguration.class));

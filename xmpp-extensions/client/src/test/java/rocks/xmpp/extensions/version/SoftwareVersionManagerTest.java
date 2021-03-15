@@ -49,8 +49,8 @@ public class SoftwareVersionManagerTest extends BaseTest {
         SoftwareVersionManager softwareVersionManager = connection1.getManager(SoftwareVersionManager.class);
         SoftwareVersion softwareVersion = softwareVersionManager.getSoftwareVersion(JULIET).get();
         Assert.assertNotNull(softwareVersion);
-        Assert.assertEquals(softwareVersion.getName(), "Name");
-        Assert.assertEquals(softwareVersion.getVersion(), "Version");
+        Assert.assertEquals(softwareVersion.getSoftware(), "Name");
+        Assert.assertEquals(softwareVersion.getSoftwareVersion(), "Version");
     }
 
     @Test

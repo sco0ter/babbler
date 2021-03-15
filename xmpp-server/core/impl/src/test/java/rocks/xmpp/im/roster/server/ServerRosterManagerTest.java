@@ -73,7 +73,7 @@ public class ServerRosterManagerTest {
     @BeforeClass
     public void init() {
         rosterManager = new ServerRosterManager();
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         Mockito.when(serverConfiguration.getDomain()).thenReturn(Jid.of("domain"));
         Mockito.when(resource1.getRemoteXmppAddress()).thenReturn(Jid.of("a@server/resource1"));

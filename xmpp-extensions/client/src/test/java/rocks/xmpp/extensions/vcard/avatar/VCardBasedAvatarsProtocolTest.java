@@ -70,7 +70,7 @@ public class VCardBasedAvatarsProtocolTest {
 
     @BeforeClass
     public void beforeClass() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         Mockito.when(xmppSession.getLocalXmppAddress()).thenReturn(Jid.of("user"));
         Mockito.when(xmppSession.getManager(Mockito.eq(PresenceManager.class))).thenReturn(Mockito.mock(PresenceManager.class));
         Mockito.when(xmppSession.getConfiguration()).thenReturn(Mockito.mock(XmppSessionConfiguration.class));

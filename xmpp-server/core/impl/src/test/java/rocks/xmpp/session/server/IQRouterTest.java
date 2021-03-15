@@ -101,7 +101,7 @@ public class IQRouterTest extends XmlTest {
 
     @BeforeClass
     public void before() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         testSession1.setAddress(JID_1_FULL);
         testSession2.setAddress(JID_2_FULL);
@@ -190,7 +190,7 @@ public class IQRouterTest extends XmlTest {
         iqRouter.process(iq);
         Mockito.verify(nullIQHandler, Mockito.times(1)).handleRequest((IQ) argumentCaptor.capture());
         Assert.assertSame(argumentCaptor.getValue(), iq);
-        Mockito.verifyZeroInteractions(testSession1);
+        Mockito.verifyNoMoreInteractions(testSession1);
     }
 
     /**

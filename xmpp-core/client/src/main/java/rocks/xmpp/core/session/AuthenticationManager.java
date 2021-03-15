@@ -186,7 +186,7 @@ final class AuthenticationManager implements StreamFeatureNegotiator<Mechanisms>
     private static final class XmppProvider extends Provider {
 
         XmppProvider() {
-            super("XMPP Sasl Provider", 1.0, "Provides additional SASL mechanisms, which are required for XMPP.");
+            super("XMPP Sasl Provider", "1.0", "Provides additional SASL mechanisms, which are required for XMPP.");
             put("SaslClientFactory.ANONYMOUS", XmppSaslClientFactory.class.getName());
             put("SaslClientFactory.SCRAM-SHA-1", XmppSaslClientFactory.class.getName());
         }

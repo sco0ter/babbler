@@ -84,7 +84,7 @@ public class InboundSubscriptionHandlerTest {
 
     @BeforeClass
     public void init() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         Mockito.when(serverConfiguration.getDomain()).thenReturn(Jid.of("server"));
         Mockito.when(resource1.getRemoteXmppAddress()).thenReturn(Jid.of("user@server/resource1"));
         Mockito.when(resource2.getRemoteXmppAddress()).thenReturn(Jid.of("user@server/resource2"));

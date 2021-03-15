@@ -68,8 +68,8 @@ public class SoftwareVersionTest extends XmlTest {
         IQ iq = unmarshal(xml, IQ.class);
         SoftwareVersion softwareVersion = iq.getExtension(SoftwareVersion.class);
         Assert.assertNotNull(softwareVersion);
-        Assert.assertEquals(softwareVersion.getName(), "Exodus");
-        Assert.assertEquals(softwareVersion.getVersion(), "0.7.0.4");
+        Assert.assertEquals(softwareVersion.getSoftware(), "Exodus");
+        Assert.assertEquals(softwareVersion.getSoftwareVersion(), "0.7.0.4");
         Assert.assertEquals(softwareVersion.getOs(), "Windows-XP 5.01.2600");
     }
 

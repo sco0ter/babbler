@@ -27,7 +27,9 @@ package rocks.xmpp.extensions.receipts;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.InboundMessageHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.OutboundMessageHandler;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
@@ -56,7 +58,7 @@ import java.util.function.Predicate;
  * messageDeliveryReceiptsManager.addMessageDeliveredListener(e -> System.out.println("Message delivered: " + e.getMessageId()));
  * ```
  */
-public final class MessageDeliveryReceiptsManager extends Manager {
+public final class MessageDeliveryReceiptsManager extends Manager implements InboundMessageHandler, OutboundMessageHandler {
 
     /**
      * A default filter for automatic receipt request on outbound messages.
@@ -87,46 +89,8 @@ public final class MessageDeliveryReceiptsManager extends Manager {
     private MessageDeliveryReceiptsManager(final XmppSession xmppSession) {
         super(xmppSession, true);
 
-        this.inboundMessageListener = e -> {
-            Message message = e.getMessage();
-            // If a client requests a receipt, send an ack message.
-            if (message.hasExtension(MessageDeliveryReceipts.Request.class) && message.getId() != null) {
-                final Jid recipient;
-                if (message.getType() == Message.Type.GROUPCHAT) {
-                    recipient = message.getFrom().asBareJid();
-                } else {
-                    recipient = message.getFrom();
-                }
-
-                Message receiptMessage = new Message(recipient, message.getType());
-                receiptMessage.setFrom(message.getTo());
-                receiptMessage.addExtension(new MessageDeliveryReceipts.Received(message.getId()));
-                xmppSession.send(receiptMessage);
-            }
-            // If the message is a receipt.
-            MessageDeliveryReceipts.Received received = message.getExtension(MessageDeliveryReceipts.Received.class);
-            if (received != null) {
-                // Notify the listeners about the reception.
-                XmppUtils.notifyEventListeners(messageDeliveredListeners, new MessageDeliveredEvent(MessageDeliveryReceiptsManager.this, received.getId(), DelayedDelivery.sendDate(message), message.getFrom()));
-            }
-        };
-
-        this.outboundMessageListener = e -> {
-            Message message = e.getMessage();
-            // If we are sending a message, append a receipt request, if it passes all filters.
-            Predicate<Message> predicate;
-            synchronized (this) {
-                if (messageFilter != null) {
-                    predicate = DEFAULT_FILTER.and(messageFilter);
-                } else {
-                    predicate = DEFAULT_FILTER;
-                }
-            }
-            if (!predicate.test(message)) {
-                return;
-            }
-            message.putExtension(MessageDeliveryReceipts.REQUEST);
-        };
+        this.inboundMessageListener = this::handleInboundMessage;
+        this.outboundMessageListener = this::handleOutboundMessage;
     }
 
     @Override
@@ -175,5 +139,48 @@ public final class MessageDeliveryReceiptsManager extends Manager {
     @Override
     protected void dispose() {
         messageDeliveredListeners.clear();
+    }
+
+    @Override
+    public void handleInboundMessage(MessageEvent e) {
+        Message message = e.getMessage();
+        // If a client requests a receipt, send an ack message.
+        if (message.hasExtension(MessageDeliveryReceipts.Request.class) && message.getId() != null) {
+            final Jid recipient;
+            if (message.getType() == Message.Type.GROUPCHAT) {
+                recipient = message.getFrom().asBareJid();
+            } else {
+                recipient = message.getFrom();
+            }
+
+            Message receiptMessage = new Message(recipient, message.getType());
+            receiptMessage.setFrom(message.getTo());
+            receiptMessage.addExtension(new MessageDeliveryReceipts.Received(message.getId()));
+            xmppSession.send(receiptMessage);
+        }
+        // If the message is a receipt.
+        MessageDeliveryReceipts.Received received = message.getExtension(MessageDeliveryReceipts.Received.class);
+        if (received != null) {
+            // Notify the listeners about the reception.
+            XmppUtils.notifyEventListeners(messageDeliveredListeners, new MessageDeliveredEvent(MessageDeliveryReceiptsManager.this, received.getId(), DelayedDelivery.sendDate(message), message.getFrom()));
+        }
+    }
+
+    @Override
+    public void handleOutboundMessage(MessageEvent e) {
+        Message message = e.getMessage();
+        // If we are sending a message, append a receipt request, if it passes all filters.
+        Predicate<Message> predicate;
+        synchronized (this) {
+            if (messageFilter != null) {
+                predicate = DEFAULT_FILTER.and(messageFilter);
+            } else {
+                predicate = DEFAULT_FILTER;
+            }
+        }
+        if (!predicate.test(message)) {
+            return;
+        }
+        message.putExtension(MessageDeliveryReceipts.REQUEST);
     }
 }

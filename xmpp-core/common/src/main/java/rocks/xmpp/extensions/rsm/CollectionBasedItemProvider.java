@@ -26,7 +26,6 @@ package rocks.xmpp.extensions.rsm;
 
 import rocks.xmpp.extensions.rsm.model.ResultSetItem;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +42,7 @@ final class CollectionBasedItemProvider<T extends ResultSetItem> implements Resu
 
     @Override
     public final List<T> getItems() {
-        return Collections.unmodifiableList(new ArrayList<>(items));
+        return List.copyOf(items);
     }
 
     @Override
@@ -53,12 +52,12 @@ final class CollectionBasedItemProvider<T extends ResultSetItem> implements Resu
 
     @Override
     public final List<T> getItems(final int index, final int maxSize) {
-        final List<T> list = new ArrayList<>(items);
+        final List<T> list = getItems();
         final int toIndex = Math.min(index + maxSize, list.size());
         if (index > toIndex) {
             return Collections.emptyList();
         }
-        return Collections.unmodifiableList(list.subList(Math.max(0, index), toIndex));
+        return list.subList(Math.max(0, index), toIndex);
     }
 
     @Override
@@ -74,7 +73,7 @@ final class CollectionBasedItemProvider<T extends ResultSetItem> implements Resu
     @Override
     public final int indexOf(final String itemId) {
         Objects.requireNonNull(itemId);
-        final ListIterator<T> itemIterator = new ArrayList<>(items).listIterator();
+        final ListIterator<T> itemIterator = getItems().listIterator();
         while (itemIterator.hasNext()) {
             final T item = itemIterator.next();
             if (item != null && itemId.equals(item.getId())) {

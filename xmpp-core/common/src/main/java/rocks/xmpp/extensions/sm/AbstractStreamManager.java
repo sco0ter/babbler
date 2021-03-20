@@ -26,12 +26,6 @@ package rocks.xmpp.extensions.sm;
 
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.Session;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.InboundIQHandler;
-import rocks.xmpp.core.stanza.InboundMessageHandler;
-import rocks.xmpp.core.stanza.InboundPresenceHandler;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
@@ -65,36 +59,30 @@ public abstract class AbstractStreamManager implements StreamFeatureNegotiator<S
      * the value of 'h' SHALL be reset from 232-1 back to zero (rather than being incremented to 232).
      */
     private static final long MAX_H = 0xFFFFFFFFL;
-
-    private final Session session;
-
     /**
      * Keep a private queue of unacknowledged stanzas.
      */
     protected final Queue<Stanza> unacknowledgedStanzas = new ConcurrentLinkedDeque<>();
-
+    /**
+     * Guarded by "this".
+     */
+    protected final AtomicBoolean enabledByClient = new AtomicBoolean();
+    private final Session session;
     /**
      * Tracks the count of inbound stanzas, we have received from the server.
      */
     protected long inboundCount = 0;
+    /**
+     * Guarded by "this".
+     */
+    protected long acknowledgedStanzaCount = 0;
 
     protected long outboundCount = 0;
 
     /**
      * Guarded by "this".
      */
-    protected long acknowledgedStanzaCount = 0;
-
-    /**
-     * Guarded by "this".
-     */
     private boolean enabled = true;
-
-    /**
-     * Guarded by "this".
-     */
-    protected final AtomicBoolean enabledByClient = new AtomicBoolean();
-
     /**
      * Guarded by "this".
      */
@@ -102,6 +90,10 @@ public abstract class AbstractStreamManager implements StreamFeatureNegotiator<S
 
     protected AbstractStreamManager(final Session session) {
         this.session = session;
+    }
+
+    static long diff(long h, long acknowledgedCount) {
+        return h - acknowledgedCount & MAX_H;
     }
 
     @Override
@@ -155,17 +147,12 @@ public abstract class AbstractStreamManager implements StreamFeatureNegotiator<S
                 // all stanzas whose paired value (X at the time of queueing) is less than or equal to the value of 'h'
                 // can be removed from the unacknowledged queue.
                 markAcknowledged(answer.getLastHandledStanza());
-                return StreamNegotiationResult.IGNORE;
             }
         } catch (StreamErrorException e) {
             session.closeAsync(e.getError());
             throw new StreamNegotiationException(e);
         }
         return StreamNegotiationResult.IGNORE;
-    }
-
-    static long diff(long h, long acknowledgedCount) {
-        return h - acknowledgedCount & MAX_H;
     }
 
     protected void markAcknowledged(Long h) throws StreamErrorException {

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -58,7 +58,7 @@ final class ByteBufferOutputStream extends OutputStream {
             throw new IndexOutOfBoundsException();
         }
         ensureCapacity(buffer.position() + len);
-        buffer.put(b, 0, len);
+        buffer.put(b, off, len);
     }
 
     private void ensureCapacity(final int minCapacity) {

@@ -29,7 +29,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -187,13 +186,12 @@ public final class Rpc {
          * @return The parameters.
          */
         public final List<Value> getParameters() {
-            List<Value> values = parameters.stream().map(Parameter::getValue).collect(Collectors.toList());
-            return Collections.unmodifiableList(values);
+            return parameters.stream().map(Parameter::getValue).collect(Collectors.toUnmodifiableList());
         }
 
         @Override
         public final String toString() {
-            return methodName + '(' + String.join(", ", parameters.stream().map(Object::toString).collect(Collectors.toList())) + ')';
+            return methodName + '(' + parameters.stream().map(Object::toString).collect(Collectors.joining(", ")) + ')';
         }
     }
 

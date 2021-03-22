@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.rpc.model;
 
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -32,10 +33,12 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -299,7 +302,30 @@ public final class Value {
     }
 
     @Override
+    public final boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Value)) {
+            return false;
+        }
+        Value other = (Value) o;
+        if (value instanceof byte[] && other.value instanceof byte[]) {
+            return Arrays.equals((byte[]) value, (byte[]) other.value);
+        }
+        return Objects.equals(value, other.value);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(value);
+    }
+
+    @Override
     public final String toString() {
+        if (value instanceof byte[]) {
+            return DatatypeConverter.printBase64Binary((byte[]) value);
+        }
         return String.valueOf(value);
     }
 }

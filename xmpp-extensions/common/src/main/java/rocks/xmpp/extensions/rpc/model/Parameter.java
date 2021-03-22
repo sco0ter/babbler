@@ -45,6 +45,6 @@ final class Parameter {
 
     @Override
     public final String toString() {
-        return value.toString();
+        return value != null ? value.toString() : "";
     }
 }

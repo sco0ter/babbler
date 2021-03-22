@@ -22,14 +22,12 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.rpc;
+package rocks.xmpp.extensions.rpc.model;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.extensions.rpc.model.Rpc;
-import rocks.xmpp.extensions.rpc.model.Value;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -40,6 +38,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * Tests for the {@link Rpc} class.
+ *
  * @author Christian Schudt
  */
 public class RpcMethodCallTest extends XmlTest {
@@ -79,9 +79,9 @@ public class RpcMethodCallTest extends XmlTest {
         Assert.assertEquals(rpc.getMethodCall().getMethodName(), "examples.getStateName");
         Assert.assertEquals(rpc.getMethodCall().getParameters().size(), 5);
         Assert.assertEquals(rpc.getMethodCall().getParameters().get(0).getAsInteger(), (Integer) 6);
-        Assert.assertEquals(rpc.getMethodCall().getParameters().get(1).getAsBoolean(), false);
-        Assert.assertEquals(rpc.getMethodCall().getParameters().get(2).getAsArray().get(0).getAsBoolean(), true);
-        Assert.assertEquals(rpc.getMethodCall().getParameters().get(3).getAsMap().get("key").getAsBoolean(), true);
+        Assert.assertFalse(rpc.getMethodCall().getParameters().get(1).getAsBoolean());
+        Assert.assertTrue(rpc.getMethodCall().getParameters().get(2).getAsArray().get(0).getAsBoolean());
+        Assert.assertTrue(rpc.getMethodCall().getParameters().get(3).getAsMap().get("key").getAsBoolean());
         Assert.assertEquals(rpc.getMethodCall().getParameters().get(4).getAsInstant(), OffsetDateTime.parse("2014-01-23T22:37:34+04:00"));
     }
 

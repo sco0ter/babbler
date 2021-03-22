@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.rpc.model;
 
 import javax.xml.bind.annotation.XmlValue;
+import java.util.Objects;
 
 /**
  * @author Christian Schudt
@@ -47,6 +48,24 @@ final class NumericBoolean {
 
     final boolean getAsBoolean() {
         return value != null && value == 1;
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof NumericBoolean)) {
+            return false;
+        }
+        NumericBoolean other = (NumericBoolean) o;
+
+        return Objects.equals(value, other.value);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(value);
     }
 
     @Override

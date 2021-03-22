@@ -24,16 +24,22 @@
 
 package rocks.xmpp.extensions.rpc;
 
+import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
+import rocks.xmpp.extensions.disco.model.info.Identity;
+import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
+import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rpc.model.Value;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -45,7 +51,7 @@ import java.util.Set;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
  */
-public abstract class AbstractRpcManager extends AbstractIQHandler implements RpcManager, ExtensionProtocol {
+public abstract class AbstractRpcManager extends AbstractIQHandler implements InfoProvider, RpcManager, ExtensionProtocol {
 
     private static final Set<String> FEATURES = Collections.singleton(Rpc.NAMESPACE);
 
@@ -95,5 +101,13 @@ public abstract class AbstractRpcManager extends AbstractIQHandler implements Rp
             }
         }
         return iq.createError(Condition.SERVICE_UNAVAILABLE);
+    }
+
+    @Override
+    public final DiscoverableInfo getInfo(Jid to, Jid from, String node, Locale locale) {
+        if (isEnabled()) {
+            return new InfoDiscovery(Collections.singleton(Identity.automationRpc()), FEATURES, Collections.emptyList());
+        }
+        return null;
     }
 }

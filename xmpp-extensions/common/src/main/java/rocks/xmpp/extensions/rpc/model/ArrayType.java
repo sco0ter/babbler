@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Christian Schudt
@@ -37,6 +38,24 @@ final class ArrayType {
     @XmlElementWrapper(name = "data")
     @XmlElement(name = "value")
     final List<Value> values = new ArrayList<>();
+
+    @Override
+    public final boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ArrayType)) {
+            return false;
+        }
+        ArrayType other = (ArrayType) o;
+
+        return Objects.equals(values, other.values);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(values);
+    }
 
     @Override
     public final String toString() {

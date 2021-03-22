@@ -22,18 +22,19 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.rpc;
+package rocks.xmpp.extensions.rpc.model;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.extensions.rpc.model.Rpc;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 /**
+ * Tests for the {@link Rpc} class.
+ *
  * @author Christian Schudt
  */
 public class RpcMethodResponseTest extends XmlTest {

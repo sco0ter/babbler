@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.rpc.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -49,10 +50,52 @@ final class StructType {
             this.name = name;
             this.value = value;
         }
+
+        @Override
+        public final boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof MemberType)) {
+                return false;
+            }
+            MemberType other = (MemberType) o;
+
+            return Objects.equals(name, other.name)
+                    && Objects.equals(value, other.value);
+        }
+
+        @Override
+        public final int hashCode() {
+            return Objects.hash(name, value);
+        }
+
+        @Override
+        public final String toString() {
+            return '\'' + name + "': " + value;
+        }
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof StructType)) {
+            return false;
+        }
+        StructType other = (StructType) o;
+
+        return Objects.equals(member, other.member);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(member);
     }
 
     @Override
     public final String toString() {
-        return '{' + String.join(", ", member.stream().map(m -> '\'' + m.name + "': " + m.value).collect(Collectors.toList())) + '}';
+        return '{' + member.stream().map(MemberType::toString).collect(Collectors.joining(", ")) + '}';
     }
 }

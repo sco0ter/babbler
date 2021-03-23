@@ -32,9 +32,12 @@ import rocks.xmpp.util.XmppUtils;
 import javax.websocket.EncodeException;
 import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.function.BiConsumer;
@@ -52,7 +55,7 @@ import java.util.function.Supplier;
  * @see XmppWebSocketDecoder
  * @see UserProperties
  */
-public final class XmppWebSocketEncoder implements Encoder.Text<StreamElement> {
+public final class XmppWebSocketEncoder implements Encoder.TextStream<StreamElement> {
 
     private XMLOutputFactory xmlOutputFactory;
 
@@ -61,25 +64,39 @@ public final class XmppWebSocketEncoder implements Encoder.Text<StreamElement> {
     private BiConsumer<String, StreamElement> interceptor;
 
     @Override
-    public final String encode(final StreamElement object) throws EncodeException {
-        try (Writer writer = new StringWriter()) {
+    public final void encode(final StreamElement object, final Writer writer) throws EncodeException, IOException {
+        Writer newWriter = null;
+        StringWriter stringWriter = null;
+        try {
             XMLStreamWriter xmlStreamWriter = null;
             try {
-                xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(writer), object instanceof StreamFeatures || object instanceof StreamError);
+                if (interceptor != null) {
+                    stringWriter = new StringWriter();
+                    newWriter = XmppUtils.newBranchedWriter(writer, stringWriter);
+                } else {
+                    newWriter = writer;
+                }
+                xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(newWriter), object instanceof StreamFeatures || object instanceof StreamError);
                 marshaller.get().marshal(object, xmlStreamWriter);
                 xmlStreamWriter.flush();
-                String xml = writer.toString();
-                if (interceptor != null) {
-                    interceptor.accept(xml, object);
+                if (interceptor != null && stringWriter != null) {
+                    interceptor.accept(stringWriter.toString(), object);
                 }
-                return xml;
             } finally {
                 if (xmlStreamWriter != null) {
                     xmlStreamWriter.close();
                 }
+                if (stringWriter != null) {
+                    stringWriter.close();
+                }
+                if (newWriter != null) {
+                    newWriter.close();
+                }
             }
-        } catch (Exception e) {
+        } catch (JAXBException e) {
             throw new EncodeException(object, e.getMessage(), e);
+        } catch (XMLStreamException e) {
+            throw new IOException(e.getMessage(), e);
         }
     }
 

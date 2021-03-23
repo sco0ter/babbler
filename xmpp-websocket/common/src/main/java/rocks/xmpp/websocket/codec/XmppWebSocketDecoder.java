@@ -25,13 +25,16 @@
 package rocks.xmpp.websocket.codec;
 
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.util.XmppUtils;
 
 import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.StringReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -47,28 +50,40 @@ import java.util.function.Supplier;
  * @see XmppWebSocketEncoder
  * @see UserProperties
  */
-public final class XmppWebSocketDecoder implements Decoder.Text<StreamElement> {
+public final class XmppWebSocketDecoder implements Decoder.TextStream<StreamElement> {
 
     private Supplier<Unmarshaller> unmarshaller;
 
     private BiConsumer<String, StreamElement> onRead;
 
     @Override
-    public final StreamElement decode(final String s) throws DecodeException {
-        try (StringReader reader = new StringReader(s)) {
-            StreamElement streamElement = (StreamElement) unmarshaller.get().unmarshal(reader);
+    public final StreamElement decode(final Reader reader) throws DecodeException, IOException {
+        Reader newReader = null;
+        StringWriter writer = null;
+        try {
             if (onRead != null) {
-                onRead.accept(s, streamElement);
+                writer = new StringWriter();
+                newReader = XmppUtils.newBranchedReader(reader, writer);
+            } else {
+                newReader = reader;
+            }
+
+            StreamElement streamElement = (StreamElement) unmarshaller.get().unmarshal(newReader);
+
+            if (onRead != null && writer != null) {
+                onRead.accept(writer.toString(), streamElement);
             }
             return streamElement;
         } catch (JAXBException e) {
-            throw new DecodeException(s, e.getMessage(), e);
+            throw new DecodeException(reader.toString(), e.getMessage(), e);
+        } finally {
+            if (newReader != null) {
+                newReader.close();
+            }
+            if (writer != null) {
+                writer.close();
+            }
         }
-    }
-
-    @Override
-    public final boolean willDecode(final String s) {
-        return true;
     }
 
     @SuppressWarnings("unchecked")

@@ -29,15 +29,15 @@ import io.netty.buffer.ByteBufOutputStream;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.nio.codec.XmppStreamEncoder;
+import rocks.xmpp.util.XmppStreamEncoder;
 
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLOutputFactory;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -62,14 +62,14 @@ final class NettyXmppEncoder extends MessageToByteEncoder<StreamElement> {
      */
     NettyXmppEncoder(final BiConsumer<String, StreamElement> onWrite, final Supplier<Marshaller> marshallerSupplier, final Consumer<Throwable> onFailure) {
         this.onWrite = onWrite;
-        this.xmppStreamEncoder = new XmppStreamEncoder(XMLOutputFactory.newFactory(), marshallerSupplier, Function.identity());
+        this.xmppStreamEncoder = new XmppStreamEncoder(XMLOutputFactory.newFactory(), marshallerSupplier);
         this.onFailure = onFailure;
     }
 
     @Override
     protected final void encode(final ChannelHandlerContext ctx, final StreamElement streamElement, final ByteBuf byteBuf) throws Exception {
-        try (OutputStream outputStream = new ByteBufOutputStream(byteBuf)) {
-            xmppStreamEncoder.encode(streamElement, outputStream);
+        try (Writer writer = new OutputStreamWriter(new ByteBufOutputStream(byteBuf), StandardCharsets.UTF_8)) {
+            xmppStreamEncoder.encode(streamElement, writer, false);
             if (onWrite != null) {
                 onWrite.accept(byteBuf.toString(StandardCharsets.UTF_8), streamElement);
             }

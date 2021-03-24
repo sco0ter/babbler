@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.nio.codec;
+package rocks.xmpp.util;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;

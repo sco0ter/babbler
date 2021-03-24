@@ -26,17 +26,16 @@ package rocks.xmpp.websocket.codec;
 
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamFeatures;
+import rocks.xmpp.util.XmppStreamEncoder;
 import rocks.xmpp.util.XmppUtils;
 
 import javax.websocket.EncodeException;
 import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -57,9 +56,7 @@ import java.util.function.Supplier;
  */
 public final class XmppWebSocketEncoder implements Encoder.TextStream<StreamElement> {
 
-    private XMLOutputFactory xmlOutputFactory;
-
-    private Supplier<Marshaller> marshaller;
+    private XmppStreamEncoder streamEncoder;
 
     private BiConsumer<String, StreamElement> interceptor;
 
@@ -68,7 +65,6 @@ public final class XmppWebSocketEncoder implements Encoder.TextStream<StreamElem
         Writer newWriter = null;
         StringWriter stringWriter = null;
         try {
-            XMLStreamWriter xmlStreamWriter = null;
             try {
                 if (interceptor != null) {
                     stringWriter = new StringWriter();
@@ -76,16 +72,11 @@ public final class XmppWebSocketEncoder implements Encoder.TextStream<StreamElem
                 } else {
                     newWriter = writer;
                 }
-                xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmlOutputFactory.createXMLStreamWriter(newWriter), object instanceof StreamFeatures || object instanceof StreamError);
-                marshaller.get().marshal(object, xmlStreamWriter);
-                xmlStreamWriter.flush();
+                streamEncoder.encode(object, newWriter, object instanceof StreamFeatures || object instanceof StreamError);
                 if (interceptor != null && stringWriter != null) {
                     interceptor.accept(stringWriter.toString(), object);
                 }
             } finally {
-                if (xmlStreamWriter != null) {
-                    xmlStreamWriter.close();
-                }
                 if (stringWriter != null) {
                     stringWriter.close();
                 }
@@ -93,28 +84,26 @@ public final class XmppWebSocketEncoder implements Encoder.TextStream<StreamElem
                     newWriter.close();
                 }
             }
-        } catch (JAXBException e) {
+        } catch (StreamErrorException e) {
             throw new EncodeException(object, e.getMessage(), e);
-        } catch (XMLStreamException e) {
-            throw new IOException(e.getMessage(), e);
         }
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public final void init(final EndpointConfig config) {
-        this.xmlOutputFactory = (XMLOutputFactory) config.getUserProperties().get(UserProperties.XML_OUTPUT_FACTORY);
+        XMLOutputFactory xmlOutputFactory = (XMLOutputFactory) config.getUserProperties().get(UserProperties.XML_OUTPUT_FACTORY);
         if (xmlOutputFactory == null) {
             xmlOutputFactory = XMLOutputFactory.newFactory();
         }
-        this.marshaller = (Supplier<Marshaller>) config.getUserProperties().get(UserProperties.MARSHALLER);
+        Supplier<Marshaller> marshaller = (Supplier<Marshaller>) config.getUserProperties().get(UserProperties.MARSHALLER);
+        this.streamEncoder = new XmppStreamEncoder(xmlOutputFactory, marshaller);
         this.interceptor = (BiConsumer<String, StreamElement>) config.getUserProperties().get(UserProperties.ON_WRITE);
     }
 
     @Override
     public final void destroy() {
-        this.xmlOutputFactory = null;
-        this.marshaller = null;
+        this.streamEncoder = null;
         this.interceptor = null;
     }
 

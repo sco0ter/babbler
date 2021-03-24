@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2017 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +22,15 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.nio.codec;
+package rocks.xmpp.util;
 
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.core.stream.model.errors.Condition;
-import rocks.xmpp.util.XmppUtils;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLOutputFactory;
@@ -38,9 +38,11 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -57,8 +59,6 @@ public final class XmppStreamEncoder {
 
     private final Supplier<Marshaller> marshaller;
 
-    private final Function<StreamElement, StreamElement> stanzaMapper;
-
     private String contentNamespace;
 
     /**
@@ -68,11 +68,9 @@ public final class XmppStreamEncoder {
      *
      * @param outputFactory The XML output factory.
      * @param marshaller    Supplies the marshaller which will convert objects to XML.
-     * @param stanzaMapper  Maps stanzas to a specific type, which is required for correct marshalling.
      */
-    public XmppStreamEncoder(final XMLOutputFactory outputFactory, final Supplier<Marshaller> marshaller, final Function<StreamElement, StreamElement> stanzaMapper) {
+    public XmppStreamEncoder(final XMLOutputFactory outputFactory, final Supplier<Marshaller> marshaller) {
         this.marshaller = marshaller;
-        this.stanzaMapper = stanzaMapper;
         this.outputFactory = outputFactory;
     }
 
@@ -85,39 +83,51 @@ public final class XmppStreamEncoder {
      * @throws StreamErrorException If the element could not be marshalled.
      */
     public final ByteBuffer encode(StreamElement streamElement) throws StreamErrorException {
-        try (ByteBufferOutputStream outputStream = new ByteBufferOutputStream(512, false)) {
-            encode(streamElement, outputStream);
-            return (ByteBuffer) outputStream.getBuffer().flip();
+        try (ByteBufferOutputStream outputStream = new ByteBufferOutputStream(512, false);
+             Writer writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
+            encode(streamElement, writer, false);
+            return outputStream.getBuffer().flip();
+        } catch (IOException e) {
+            throw new StreamErrorException(new StreamError(Condition.INTERNAL_SERVER_ERROR), e);
         }
     }
 
     /**
-     * Encodes an XMPP element to an {@link OutputStream}.
+     * Encodes an XMPP element to a {@link Writer}.
      *
      * @param streamElement The stream element.
-     * @param outputStream  The output stream to write to.
+     * @param writer        The writer to write to.
      * @throws StreamErrorException If the element could not be marshalled.
      */
-    public final void encode(StreamElement streamElement, final OutputStream outputStream) throws StreamErrorException {
+    public final void encode(StreamElement streamElement, final Writer writer, final boolean writeStreamNamespace) throws StreamErrorException {
         try {
-            if (streamElement instanceof StreamHeader) {
-                contentNamespace = ((StreamHeader) streamElement).getContentNamespace();
-                final XMLStreamWriter writer = outputFactory.createXMLStreamWriter(outputStream, StandardCharsets.UTF_8.name());
-                ((StreamHeader) streamElement).writeTo(writer);
-                return;
-            } else if (streamElement == StreamHeader.CLOSING_STREAM_TAG) {
-                outputStream.write(StreamHeader.CLOSING_STREAM_TAG.toString().getBytes(StandardCharsets.UTF_8));
-                outputStream.flush();
-                return;
-            }
-            streamElement = stanzaMapper.apply(streamElement);
+            XMLStreamWriter streamWriter = null;
+            try {
+                if (streamElement instanceof StreamHeader) {
+                    try (Writer out = new StringWriter()) {
+                        contentNamespace = ((StreamHeader) streamElement).getContentNamespace();
+                        streamWriter = outputFactory.createXMLStreamWriter(out);
+                        ((StreamHeader) streamElement).writeTo(streamWriter);
+                        writer.write(out.toString());
+                    }
+                    return;
+                } else if (streamElement == StreamHeader.CLOSING_STREAM_TAG) {
+                    writer.write(StreamHeader.CLOSING_STREAM_TAG.toString());
+                    writer.flush();
+                    return;
+                }
 
-            final XMLStreamWriter streamWriter = XmppUtils.createXmppStreamWriter(outputFactory.createXMLStreamWriter(outputStream, StandardCharsets.UTF_8.name()));
-            streamWriter.setDefaultNamespace(contentNamespace);
-            final Marshaller m = marshaller.get();
-            m.setProperty(Marshaller.JAXB_FRAGMENT, true);
-            m.marshal(streamElement, streamWriter);
-            streamWriter.flush();
+                streamWriter = XmppUtils.createXmppStreamWriter(outputFactory.createXMLStreamWriter(writer), writeStreamNamespace);
+                streamWriter.setDefaultNamespace(contentNamespace != null ? contentNamespace : XMLConstants.DEFAULT_NS_PREFIX);
+                final Marshaller m = marshaller.get();
+                m.setProperty(Marshaller.JAXB_FRAGMENT, true);
+                m.marshal(streamElement, streamWriter);
+                streamWriter.flush();
+            } finally {
+                if (streamWriter != null) {
+                    streamWriter.close();
+                }
+            }
         } catch (XMLStreamException | JAXBException | IOException e) {
             throw new StreamErrorException(new StreamError(Condition.INTERNAL_SERVER_ERROR), e);
         }

@@ -33,6 +33,7 @@ import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.model.Body;
+import rocks.xmpp.util.XmppStreamEncoder;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.CompletionStages;
 
@@ -41,12 +42,13 @@ import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.XMLEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
@@ -142,6 +144,8 @@ public final class BoshConnection extends AbstractConnection {
 
     private final AtomicBoolean shutdown = new AtomicBoolean(true);
 
+    private final XmppStreamEncoder streamEncoder;
+
     /**
      * The compression method which is used to compress requests.
      * Guarded by "this".
@@ -183,6 +187,7 @@ public final class BoshConnection extends AbstractConnection {
         } else {
             clientAcceptEncoding = null;
         }
+        this.streamEncoder = new XmppStreamEncoder(xmppSession.getConfiguration().getXmlOutputFactory(), xmppSession::createMarshaller);
     }
 
     /**
@@ -613,7 +618,6 @@ public final class BoshConnection extends AbstractConnection {
                         try {
                             try (OutputStream requestStream = compressionMethod != null ? compressionMethod.compress(httpConnection.getOutputStream()) : httpConnection.getOutputStream()) {
                                 ByteArrayOutputStream byteArrayOutputStreamRequest = null;
-                                XMLStreamWriter xmlStreamWriter = null;
                                 OutputStream xmppOutputStream = null;
                                 try {
                                     if (debugger != null) {
@@ -632,12 +636,12 @@ public final class BoshConnection extends AbstractConnection {
                                     }
 
                                     // Create the writer for this connection.
-                                    xmlStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(xmppOutputStream, StandardCharsets.UTF_8.name()));
                                     body = bodyBuilder.requestId(rid.getAndIncrement()).build();
                                     // Then write the XML to the output stream by marshalling the object to the writer.
                                     // Marshaller needs to be recreated here, because it's not thread-safe.
-                                    xmppSession.createMarshaller().marshal(body, xmlStreamWriter);
-                                    xmlStreamWriter.flush();
+                                    try (Writer writer = new OutputStreamWriter(xmppOutputStream, StandardCharsets.UTF_8)) {
+                                        streamEncoder.encode(body, writer, false);
+                                    }
 
                                     if (debugger != null) {
                                         debugger.writeStanza(new String(byteArrayOutputStreamRequest.toByteArray(), StandardCharsets.UTF_8), body);
@@ -655,9 +659,6 @@ public final class BoshConnection extends AbstractConnection {
                                     rid.getAndDecrement();
                                     throw e;
                                 } finally {
-                                    if (xmlStreamWriter != null) {
-                                        xmlStreamWriter.close();
-                                    }
                                     if (xmppOutputStream != null) {
                                         xmppOutputStream.close();
                                     }

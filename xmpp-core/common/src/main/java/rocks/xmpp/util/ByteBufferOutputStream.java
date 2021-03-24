@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.nio.codec;
+package rocks.xmpp.util;
 
 import java.io.OutputStream;
 import java.nio.ByteBuffer;

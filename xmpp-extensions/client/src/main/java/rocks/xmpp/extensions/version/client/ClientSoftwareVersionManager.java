@@ -25,10 +25,10 @@
 package rocks.xmpp.extensions.version.client;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.extensions.version.AbstractSoftwareVersionManager;
+import rocks.xmpp.extensions.version.SoftwareVersionProtocol;
+import rocks.xmpp.extensions.version.SoftwareVersionManager;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
@@ -44,7 +44,7 @@ import java.util.Properties;
  *
  * @author Christian Schudt
  */
-public final class ClientSoftwareVersionManager extends AbstractSoftwareVersionManager {
+public final class ClientSoftwareVersionManager extends SoftwareVersionProtocol implements SoftwareVersionManager {
 
     private static final SoftwareVersion DEFAULT_VERSION;
 
@@ -64,7 +64,7 @@ public final class ClientSoftwareVersionManager extends AbstractSoftwareVersionM
 
     private ClientSoftwareVersionManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
-        setSoftwareVersion(DEFAULT_VERSION);
+        setSoftwareInfo(DEFAULT_VERSION);
     }
 
     /**
@@ -76,5 +76,15 @@ public final class ClientSoftwareVersionManager extends AbstractSoftwareVersionM
     @Override
     public AsyncResult<SoftwareVersion> getSoftwareVersion(Jid jid) {
         return xmppSession.query(IQ.get(jid, new SoftwareVersion()), SoftwareVersion.class);
+    }
+
+    @Override
+    public SoftwareVersion getSoftwareVersion() {
+        return getSoftwareInfo();
+    }
+
+    @Override
+    public void setSoftwareVersion(SoftwareVersion softwareVersion) {
+        setSoftwareInfo(softwareVersion);
     }
 }

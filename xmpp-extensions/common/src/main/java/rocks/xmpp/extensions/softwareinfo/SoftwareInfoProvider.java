@@ -22,45 +22,28 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.extensions.version;
+package rocks.xmpp.extensions.softwareinfo;
 
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
-import rocks.xmpp.extensions.softwareinfo.SoftwareInfoProvider;
-import rocks.xmpp.extensions.version.model.SoftwareVersion;
-import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
- * Represents <a href="https://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>.
- * <p>
- * It handles IQ queries and provides the required service discovery features.
- * </p>
+ * Provides {@link SoftwareInfo} for a requester.
  *
  * @author Christian Schudt
  */
-public interface SoftwareVersionManager extends SoftwareInfoProvider<SoftwareVersion> {
+public interface SoftwareInfoProvider<T extends SoftwareInfo> extends ExtensionProtocol {
 
     /**
-     * Queries another entity for its software version.
+     * Gets the software information.
      *
-     * @param jid The entity's JID.
-     * @return The result containing the software version.
+     * @return The software information.
      */
-    AsyncResult<SoftwareVersion> getSoftwareVersion(Jid jid);
+    T getSoftwareInfo();
 
     /**
-     * Gets my own software version.
+     * Gets the software information.
      *
-     * @return My software version.
-     * @see #setSoftwareVersion(SoftwareVersion)
+     * @param softwareInformation The software information.
      */
-    SoftwareVersion getSoftwareVersion();
-
-    /**
-     * Sets my own software version. The set version is returned when this handler is queried for the software version.
-     *
-     * @param softwareVersion My software version.
-     * @see #getSoftwareVersion()
-     */
-    void setSoftwareVersion(SoftwareVersion softwareVersion);
+    void setSoftwareInfo(final T softwareInformation);
 }

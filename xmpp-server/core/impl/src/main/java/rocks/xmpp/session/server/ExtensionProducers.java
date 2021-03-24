@@ -37,10 +37,8 @@ import rocks.xmpp.extensions.rsm.ResultSetManagementProtocol;
 import rocks.xmpp.extensions.softwareinfo.SoftwareInformation;
 import rocks.xmpp.extensions.softwareinfo.SoftwareInformationProtocol;
 import rocks.xmpp.extensions.time.handler.EntityTimeHandler;
-import rocks.xmpp.extensions.version.AbstractSoftwareVersionManager;
-import rocks.xmpp.extensions.version.SoftwareVersionManager;
+import rocks.xmpp.extensions.version.SoftwareVersionProtocol;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
-import rocks.xmpp.util.concurrent.AsyncResult;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -78,14 +76,9 @@ public class ExtensionProducers {
 
     @Produces
     @ApplicationScoped
-    public SoftwareVersionManager softwareVersionManager() {
-        SoftwareVersionManager softwareVersionManager = new AbstractSoftwareVersionManager() {
-            @Override
-            public AsyncResult<SoftwareVersion> getSoftwareVersion(Jid jid) {
-                return null;
-            }
-        };
-        softwareVersionManager.setSoftwareVersion(new SoftwareVersion("xmpp.rocks", "1.0", System.getProperty("os.name")));
+    public SoftwareVersionProtocol softwareVersionManager() {
+        SoftwareVersionProtocol softwareVersionManager = new SoftwareVersionProtocol();
+        softwareVersionManager.setSoftwareInfo(new SoftwareVersion("xmpp.rocks", "1.0", System.getProperty("os.name")));
         return softwareVersionManager;
     }
 
@@ -93,7 +86,7 @@ public class ExtensionProducers {
     @ApplicationScoped
     public SoftwareInformationProtocol softwareInformationProtocol() {
         SoftwareInformationProtocol softwareInformationProtocol = new SoftwareInformationProtocol();
-        softwareInformationProtocol.setSoftwareInformation(new SoftwareInformation(null, "xmpp.rocks", "1.0"));
+        softwareInformationProtocol.setSoftwareInfo(new SoftwareInformation(null, "xmpp.rocks", "1.0"));
         return softwareInformationProtocol;
     }
 

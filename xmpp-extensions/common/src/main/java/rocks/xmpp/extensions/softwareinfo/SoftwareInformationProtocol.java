@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,9 +25,8 @@
 package rocks.xmpp.extensions.softwareinfo;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.ExtensionProtocol;
-import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
+import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 
 import java.util.Collections;
@@ -37,7 +36,7 @@ import java.util.Set;
 /**
  * Represents the XEP-0232: Software Information.
  * <p>
- * In order to provide software information to other entities, simply {@linkplain #setSoftwareInformation(SoftwareInformation) set} it.
+ * In order to provide software information to other entities, simply {@linkplain #setSoftwareInfo(SoftwareInformation) set} it.
  * <p>
  * This class is thread-safe.
  *
@@ -45,7 +44,7 @@ import java.util.Set;
  * @see <a href="https://xmpp.org/extensions/xep-0232.html">XEP-0232: Software Information</a>
  * @since 0.9.0
  */
-public final class SoftwareInformationProtocol implements InfoProvider, ExtensionProtocol {
+public final class SoftwareInformationProtocol implements InfoProvider, SoftwareInfoProvider<SoftwareInformation> {
 
     private SoftwareInformation softwareInformation;
 
@@ -54,7 +53,8 @@ public final class SoftwareInformationProtocol implements InfoProvider, Extensio
      *
      * @return The software information.
      */
-    public final synchronized SoftwareInformation getSoftwareInformation() {
+    @Override
+    public final synchronized SoftwareInformation getSoftwareInfo() {
         return softwareInformation;
     }
 
@@ -63,7 +63,8 @@ public final class SoftwareInformationProtocol implements InfoProvider, Extensio
      *
      * @param softwareInformation The software information.
      */
-    public final synchronized void setSoftwareInformation(final SoftwareInformation softwareInformation) {
+    @Override
+    public final synchronized void setSoftwareInfo(final SoftwareInformation softwareInformation) {
         this.softwareInformation = softwareInformation;
     }
 

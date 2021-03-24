@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.version;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.extensions.softwareinfo.SoftwareInfoProvider;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 
 import java.util.Collections;
@@ -41,7 +42,7 @@ import java.util.Set;
  *
  * @author Christian Schudt
  */
-public abstract class AbstractSoftwareVersionManager extends AbstractIQHandler implements SoftwareVersionManager {
+public class SoftwareVersionProtocol extends AbstractIQHandler implements SoftwareInfoProvider<SoftwareVersion> {
 
     private static final Set<String> FEATURES = Collections.singleton(SoftwareVersion.NAMESPACE);
 
@@ -50,7 +51,7 @@ public abstract class AbstractSoftwareVersionManager extends AbstractIQHandler i
      */
     private SoftwareVersion softwareVersion;
 
-    protected AbstractSoftwareVersionManager() {
+    public SoftwareVersionProtocol() {
         super(SoftwareVersion.class, IQ.Type.GET);
     }
 
@@ -65,18 +66,18 @@ public abstract class AbstractSoftwareVersionManager extends AbstractIQHandler i
     }
 
     @Override
-    public final synchronized SoftwareVersion getSoftwareVersion() {
+    public final synchronized SoftwareVersion getSoftwareInfo() {
         return softwareVersion;
     }
 
     @Override
-    public final synchronized void setSoftwareVersion(SoftwareVersion softwareVersion) {
+    public final synchronized void setSoftwareInfo(SoftwareVersion softwareVersion) {
         this.softwareVersion = softwareVersion;
     }
 
     @Override
     public final boolean isEnabled() {
-        return getSoftwareVersion() != null;
+        return getSoftwareInfo() != null;
     }
 
     @Override

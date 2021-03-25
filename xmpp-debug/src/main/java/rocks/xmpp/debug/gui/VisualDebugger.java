@@ -39,11 +39,13 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.session.SessionStatusEvent;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.util.XmppUtils;
 
 import javax.swing.SwingUtilities;
@@ -51,7 +53,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.io.UncheckedIOException;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -303,5 +307,13 @@ public final class VisualDebugger implements XmppDebugger {
     public InputStream createInputStream(InputStream inputStream) {
         outputStreamInbound = new ByteArrayOutputStream();
         return XmppUtils.createBranchedInputStream(inputStream, outputStreamInbound);
+    }
+
+    @Override
+    public void process(StreamElement streamElement, Writer writer, WriterInterceptorChain chain) throws Exception {
+        try (Writer logger = new StringWriter()) {
+            chain.proceed(streamElement, XmppUtils.newBranchedWriter(writer, logger));
+            writeStanza(logger.toString(), streamElement);
+        }
     }
 }

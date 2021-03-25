@@ -44,21 +44,9 @@ final class BranchedWriter extends FilterWriter {
     }
 
     @Override
-    public void write(char[] cbuf) throws IOException {
-        super.write(cbuf);
-        branch.write(cbuf);
-    }
-
-    @Override
     public void write(char[] cbuf, int off, int len) throws IOException {
         super.write(cbuf, off, len);
         branch.write(cbuf, off, len);
-    }
-
-    @Override
-    public void write(String str) throws IOException {
-        super.write(str);
-        branch.write(str);
     }
 
     @Override

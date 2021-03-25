@@ -50,6 +50,7 @@ import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLParameters;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.concurrent.CompletionStage;
 
@@ -80,7 +81,7 @@ public final class NettyTcpConnection extends NettyChannelConnection {
      */
     NettyTcpConnection(final Channel channel, final XmppSession xmppSession, final NettyTcpConnectionConfiguration connectionConfiguration) {
         super(channel, xmppSession, xmppSession.getDebugger() != null ? xmppSession.getDebugger()::readStanza : null, xmppSession::createUnmarshaller,
-                xmppSession.getDebugger() != null ? xmppSession.getDebugger()::writeStanza : null,
+                xmppSession.getDebugger() != null ? Collections.singletonList(xmppSession.getDebugger()) : Collections.emptyList(),
                 xmppSession::createMarshaller,
                 xmppSession::notifyException,
                 connectionConfiguration);
@@ -124,6 +125,7 @@ public final class NettyTcpConnection extends NettyChannelConnection {
         this.streamFeaturesManager.addFeatureNegotiator(startTlsManager);
         this.streamFeaturesManager.addFeatureNegotiator(compressionManager);
     }
+
 
     @Override
     protected final void restartStream() {

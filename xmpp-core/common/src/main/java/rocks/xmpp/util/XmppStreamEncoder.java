@@ -24,6 +24,8 @@
 
 package rocks.xmpp.util;
 
+import rocks.xmpp.core.net.WriterInterceptor;
+import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamErrorException;
@@ -43,6 +45,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -53,11 +56,13 @@ import java.util.function.Supplier;
  *
  * @author Christian Schudt
  */
-public final class XmppStreamEncoder {
+public final class XmppStreamEncoder implements WriterInterceptor {
 
     private final XMLOutputFactory outputFactory;
 
     private final Supplier<Marshaller> marshaller;
+
+    private final Function<StreamElement, Boolean> writeStreamNamespace;
 
     private String contentNamespace;
 
@@ -66,12 +71,14 @@ public final class XmppStreamEncoder {
      * <p>
      * Because {@link Marshaller} is not thread-safe, it is recommended to pass a {@code ThreadLocal<Marshaller>} to this constructor, which ensures thread-safety during marshalling.
      *
-     * @param outputFactory The XML output factory.
-     * @param marshaller    Supplies the marshaller which will convert objects to XML.
+     * @param outputFactory        The XML output factory.
+     * @param marshaller           Supplies the marshaller which will convert objects to XML.
+     * @param writeStreamNamespace If the stream namespace should be written in the root element.
      */
-    public XmppStreamEncoder(final XMLOutputFactory outputFactory, final Supplier<Marshaller> marshaller) {
+    public XmppStreamEncoder(final XMLOutputFactory outputFactory, final Supplier<Marshaller> marshaller, final Function<StreamElement, Boolean> writeStreamNamespace) {
         this.marshaller = marshaller;
         this.outputFactory = outputFactory;
+        this.writeStreamNamespace = writeStreamNamespace;
     }
 
     /**
@@ -85,7 +92,7 @@ public final class XmppStreamEncoder {
     public final ByteBuffer encode(StreamElement streamElement) throws StreamErrorException {
         try (ByteBufferOutputStream outputStream = new ByteBufferOutputStream(512, false);
              Writer writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
-            encode(streamElement, writer, false);
+            encode(streamElement, writer);
             return outputStream.getBuffer().flip();
         } catch (IOException e) {
             throw new StreamErrorException(new StreamError(Condition.INTERNAL_SERVER_ERROR), e);
@@ -99,7 +106,7 @@ public final class XmppStreamEncoder {
      * @param writer        The writer to write to.
      * @throws StreamErrorException If the element could not be marshalled.
      */
-    public final void encode(StreamElement streamElement, final Writer writer, final boolean writeStreamNamespace) throws StreamErrorException {
+    public final void encode(StreamElement streamElement, final Writer writer) throws StreamErrorException {
         try {
             XMLStreamWriter streamWriter = null;
             try {
@@ -117,7 +124,7 @@ public final class XmppStreamEncoder {
                     return;
                 }
 
-                streamWriter = XmppUtils.createXmppStreamWriter(outputFactory.createXMLStreamWriter(writer), writeStreamNamespace);
+                streamWriter = XmppUtils.createXmppStreamWriter(outputFactory.createXMLStreamWriter(writer), writeStreamNamespace.apply(streamElement));
                 streamWriter.setDefaultNamespace(contentNamespace != null ? contentNamespace : XMLConstants.DEFAULT_NS_PREFIX);
                 final Marshaller m = marshaller.get();
                 m.setProperty(Marshaller.JAXB_FRAGMENT, true);
@@ -131,5 +138,11 @@ public final class XmppStreamEncoder {
         } catch (XMLStreamException | JAXBException | IOException e) {
             throw new StreamErrorException(new StreamError(Condition.INTERNAL_SERVER_ERROR), e);
         }
+    }
+
+    @Override
+    public void process(StreamElement streamElement, Writer writer, WriterInterceptorChain chain) throws Exception {
+        encode(streamElement, writer);
+        chain.proceed(streamElement, writer);
     }
 }

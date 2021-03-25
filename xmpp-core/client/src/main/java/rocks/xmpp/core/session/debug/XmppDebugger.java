@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.session.debug;
 
+import rocks.xmpp.core.net.WriterInterceptor;
 import rocks.xmpp.core.session.XmppSession;
 
 import java.io.InputStream;
@@ -34,7 +35,7 @@ import java.io.OutputStream;
  *
  * @author Christian Schudt
  */
-public interface XmppDebugger {
+public interface XmppDebugger extends WriterInterceptor {
 
     /**
      * This method is called when a new XMPP session is initialized.

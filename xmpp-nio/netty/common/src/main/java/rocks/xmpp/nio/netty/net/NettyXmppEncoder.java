@@ -28,17 +28,14 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import rocks.xmpp.core.net.WriterInterceptor;
+import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.util.XmppStreamEncoder;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.stream.XMLOutputFactory;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Encodes stream elements to byte buffers.
@@ -49,30 +46,24 @@ import java.util.function.Supplier;
  */
 final class NettyXmppEncoder extends MessageToByteEncoder<StreamElement> {
 
-    private final BiConsumer<String, StreamElement> onWrite;
-
-    private final XmppStreamEncoder xmppStreamEncoder;
+    private final Iterable<WriterInterceptor> writerInterceptors;
 
     private final Consumer<Throwable> onFailure;
 
     /**
-     * @param onWrite            The first parameter of this callback is the encoded XML element, the second one is the marshalled element.
-     * @param marshallerSupplier Supplies the marshaller, e.g. via a {@code ThreadLocal<Marshaller>}
+     * @param writerInterceptors The writer interceptors.
      * @param onFailure          Called when an exception in the pipeline has occurred. If null, the exception is propagated to next handler. If non-null this callback is called instead.
      */
-    NettyXmppEncoder(final BiConsumer<String, StreamElement> onWrite, final Supplier<Marshaller> marshallerSupplier, final Consumer<Throwable> onFailure) {
-        this.onWrite = onWrite;
-        this.xmppStreamEncoder = new XmppStreamEncoder(XMLOutputFactory.newFactory(), marshallerSupplier);
+    NettyXmppEncoder(final Iterable<WriterInterceptor> writerInterceptors, final Consumer<Throwable> onFailure) {
+        this.writerInterceptors = writerInterceptors;
         this.onFailure = onFailure;
     }
 
     @Override
     protected final void encode(final ChannelHandlerContext ctx, final StreamElement streamElement, final ByteBuf byteBuf) throws Exception {
         try (Writer writer = new OutputStreamWriter(new ByteBufOutputStream(byteBuf), StandardCharsets.UTF_8)) {
-            xmppStreamEncoder.encode(streamElement, writer, false);
-            if (onWrite != null) {
-                onWrite.accept(byteBuf.toString(StandardCharsets.UTF_8), streamElement);
-            }
+            WriterInterceptorChain chain = new WriterInterceptorChain(writerInterceptors);
+            chain.proceed(streamElement, writer);
         }
     }
 

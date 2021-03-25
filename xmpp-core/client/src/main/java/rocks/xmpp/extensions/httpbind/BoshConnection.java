@@ -26,11 +26,15 @@ package rocks.xmpp.extensions.httpbind;
 
 import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.net.ChannelEncryption;
+import rocks.xmpp.core.net.WriterInterceptor;
+import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.util.XmppStreamEncoder;
@@ -59,9 +63,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -187,7 +193,21 @@ public final class BoshConnection extends AbstractConnection {
         } else {
             clientAcceptEncoding = null;
         }
-        this.streamEncoder = new XmppStreamEncoder(xmppSession.getConfiguration().getXmlOutputFactory(), xmppSession::createMarshaller);
+        streamEncoder = new XmppStreamEncoder(xmppSession.getConfiguration().getXmlOutputFactory(), xmppSession::createMarshaller, s -> {
+            if (s instanceof Body) {
+                return ((Body) s).getWrappedObjects().stream().map(Object::getClass).anyMatch(clazz -> clazz == StreamFeatures.class || clazz == StreamError.class);
+            }
+            return false;
+        });
+    }
+
+    private WriterInterceptorChain newWriterChain() {
+        List<WriterInterceptor> writerInterceptors = new ArrayList<>();
+        if (debugger != null) {
+            writerInterceptors.add(debugger);
+        }
+        writerInterceptors.add(streamEncoder);
+        return new WriterInterceptorChain(writerInterceptors);
     }
 
     /**
@@ -617,52 +637,25 @@ public final class BoshConnection extends AbstractConnection {
                         requestCount.getAndIncrement();
                         try {
                             try (OutputStream requestStream = compressionMethod != null ? compressionMethod.compress(httpConnection.getOutputStream()) : httpConnection.getOutputStream()) {
-                                ByteArrayOutputStream byteArrayOutputStreamRequest = null;
-                                OutputStream xmppOutputStream = null;
-                                try {
-                                    if (debugger != null) {
-                                        // This is for logging only.
-                                        byteArrayOutputStreamRequest = new ByteArrayOutputStream();
-
-                                        // Branch the stream, so that its output can also be logged.
-                                        xmppOutputStream = XmppUtils.createBranchedOutputStream(requestStream, byteArrayOutputStreamRequest);
-                                        OutputStream debuggerOutputStream = debugger.createOutputStream(xmppOutputStream);
-                                        if (debuggerOutputStream != null) {
-                                            xmppOutputStream = debuggerOutputStream;
-                                        }
-                                    }
-                                    if (xmppOutputStream == null) {
-                                        xmppOutputStream = requestStream;
-                                    }
-
-                                    // Create the writer for this connection.
-                                    body = bodyBuilder.requestId(rid.getAndIncrement()).build();
-                                    // Then write the XML to the output stream by marshalling the object to the writer.
-                                    // Marshaller needs to be recreated here, because it's not thread-safe.
-                                    try (Writer writer = new OutputStreamWriter(xmppOutputStream, StandardCharsets.UTF_8)) {
-                                        streamEncoder.encode(body, writer, false);
-                                    }
-
-                                    if (debugger != null) {
-                                        debugger.writeStanza(new String(byteArrayOutputStreamRequest.toByteArray(), StandardCharsets.UTF_8), body);
-                                    }
-
-                                    body.getWrappedObjects().stream().filter(wrappedObject -> wrappedObject instanceof StreamElement).forEach(wrappedObject -> {
-                                        StreamElement streamElement = (StreamElement) wrappedObject;
-                                        CompletableFuture<Void> future = sendFutures.remove(streamElement);
-                                        if (future != null) {
-                                            future.complete(null);
-                                        }
-                                    });
-
-                                } catch (Exception e) {
-                                    rid.getAndDecrement();
-                                    throw e;
-                                } finally {
-                                    if (xmppOutputStream != null) {
-                                        xmppOutputStream.close();
-                                    }
+                                // Create the writer for this connection.
+                                body = bodyBuilder.requestId(rid.getAndIncrement()).build();
+                                // Then write the XML to the output stream by marshalling the object to the writer.
+                                // Marshaller needs to be recreated here, because it's not thread-safe.
+                                try (Writer writer = new OutputStreamWriter(requestStream, StandardCharsets.UTF_8)) {
+                                    WriterInterceptorChain writerInterceptorChain = newWriterChain();
+                                    writerInterceptorChain.proceed(body, writer);
                                 }
+
+                                body.getWrappedObjects().stream().filter(wrappedObject -> wrappedObject instanceof StreamElement).forEach(wrappedObject -> {
+                                    StreamElement streamElement = (StreamElement) wrappedObject;
+                                    CompletableFuture<Void> future = sendFutures.remove(streamElement);
+                                    if (future != null) {
+                                        future.complete(null);
+                                    }
+                                });
+                            } catch (Exception e) {
+                                rid.getAndDecrement();
+                                throw e;
                             }
 
                             if (isUsingAcknowledgements()) {

@@ -211,7 +211,7 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
         clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.MARSHALLER, (Supplier<Marshaller>) xmppSession::createMarshaller);
         clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.UNMARSHALLER, (Supplier<Unmarshaller>) xmppSession::createUnmarshaller);
         if (xmppSession.getDebugger() != null) {
-            clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.ON_WRITE, (BiConsumer<String, StreamElement>) xmppSession.getDebugger()::writeStanza);
+            clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.ON_WRITE, Collections.singleton(xmppSession.getDebugger()));
             clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.ON_READ, (BiConsumer<String, StreamElement>) xmppSession.getDebugger()::readStanza);
         }
         clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.XML_OUTPUT_FACTORY, xmppSession.getConfiguration().getXmlOutputFactory());

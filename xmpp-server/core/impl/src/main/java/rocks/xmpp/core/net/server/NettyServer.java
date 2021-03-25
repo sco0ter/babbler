@@ -59,6 +59,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.time.Instant;
+import java.util.Collections;
 
 /**
  * @author Christian Schudt
@@ -116,7 +117,7 @@ public class NettyServer {
                         final InboundClientSession session = CDI.current().select(InboundClientSession.class).get();
 
                         // Create a new connection for the client.
-                        final TcpBinding connection = new NettyChannelConnection(ch, session, null, serverConfiguration::getUnmarshaller, null, serverConfiguration::getMarshaller, null, new ConnectionConfiguration() {
+                        final TcpBinding connection = new NettyChannelConnection(ch, session, null, serverConfiguration::getUnmarshaller, Collections.emptyList(), serverConfiguration::getMarshaller, null, new ConnectionConfiguration() {
                             @Override
                             public ChannelEncryption getChannelEncryption() {
                                 return ChannelEncryption.DIRECT;

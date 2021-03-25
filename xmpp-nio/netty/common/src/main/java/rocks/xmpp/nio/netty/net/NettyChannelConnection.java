@@ -39,15 +39,20 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.net.TcpBinding;
+import rocks.xmpp.core.net.WriterInterceptor;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stream.StreamHandler;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamHeader;
+import rocks.xmpp.util.XmppStreamEncoder;
 
 import javax.net.ssl.SSLContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLOutputFactory;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -79,7 +84,7 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
                                   final StreamHandler streamHandler,
                                   final BiConsumer<String, StreamElement> onRead,
                                   final Function<Locale, Unmarshaller> unmarshallerSupplier,
-                                  final BiConsumer<String, StreamElement> onWrite,
+                                  final List<WriterInterceptor> writerInterceptors,
                                   final Supplier<Marshaller> marshallerSupplier,
                                   final Consumer<Throwable> onException,
                                   final ConnectionConfiguration connectionConfiguration) {
@@ -89,7 +94,9 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
         this.streamHandler = streamHandler;
         this.onException = onException;
         this.decoder = new NettyXmppDecoder(this::onRead, unmarshallerSupplier, onException);
-        channel.pipeline().addLast(decoder, new NettyXmppEncoder(onWrite, marshallerSupplier, onException));
+        List<WriterInterceptor> interceptors = new ArrayList<>(writerInterceptors);
+        interceptors.add(new XmppStreamEncoder(XMLOutputFactory.newFactory(), marshallerSupplier, s -> false));
+        channel.pipeline().addLast(decoder, new NettyXmppEncoder(interceptors, onException));
     }
 
     private static <T> CompletableFuture<T> completableFutureFromNettyFuture(final Future<T> future) {

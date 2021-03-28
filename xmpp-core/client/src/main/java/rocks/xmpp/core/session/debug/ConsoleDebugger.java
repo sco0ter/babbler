@@ -24,15 +24,10 @@
 
 package rocks.xmpp.core.session.debug;
 
-import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.util.XmppUtils;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringWriter;
-import java.io.Writer;
 
 /**
  * A simple debugger implementation, which uses {@code System.out} to print XMPP traffic.
@@ -67,13 +62,5 @@ public final class ConsoleDebugger implements XmppDebugger {
     @Override
     public InputStream createInputStream(InputStream inputStream) {
         return inputStream;
-    }
-
-    @Override
-    public void process(StreamElement streamElement, Writer writer, WriterInterceptorChain chain) throws Exception {
-        try (Writer logger = new StringWriter()) {
-            chain.proceed(streamElement, XmppUtils.newBranchedWriter(writer, logger));
-            writeStanza(logger.toString(), streamElement);
-        }
     }
 }

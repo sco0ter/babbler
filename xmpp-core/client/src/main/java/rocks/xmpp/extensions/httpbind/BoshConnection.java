@@ -26,6 +26,8 @@ package rocks.xmpp.extensions.httpbind;
 
 import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.net.ChannelEncryption;
+import rocks.xmpp.core.net.ReaderInterceptor;
+import rocks.xmpp.core.net.ReaderInterceptorChain;
 import rocks.xmpp.core.net.WriterInterceptor;
 import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.session.XmppSession;
@@ -34,24 +36,23 @@ import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.model.Body;
+import rocks.xmpp.util.XmppStreamDecoder;
 import rocks.xmpp.util.XmppStreamEncoder;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.CompletionStages;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.events.XMLEvent;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.Writer;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
@@ -152,6 +153,8 @@ public final class BoshConnection extends AbstractConnection {
 
     private final XmppStreamEncoder streamEncoder;
 
+    private final XmppStreamDecoder streamDecoder;
+
     /**
      * The compression method which is used to compress requests.
      * Guarded by "this".
@@ -199,6 +202,7 @@ public final class BoshConnection extends AbstractConnection {
             }
             return false;
         });
+        streamDecoder = new XmppStreamDecoder(xmppSession.getConfiguration().getXmlInputFactory(), xmppSession::createUnmarshaller, "");
     }
 
     private WriterInterceptorChain newWriterChain() {
@@ -208,6 +212,15 @@ public final class BoshConnection extends AbstractConnection {
         }
         writerInterceptors.add(streamEncoder);
         return new WriterInterceptorChain(writerInterceptors);
+    }
+
+    private ReaderInterceptorChain newReaderChain() {
+        List<ReaderInterceptor> readerInterceptors = new ArrayList<>();
+        if (debugger != null) {
+            readerInterceptors.add(debugger);
+        }
+        readerInterceptors.add(streamDecoder);
+        return new ReaderInterceptorChain(readerInterceptors);
     }
 
     /**
@@ -279,7 +292,6 @@ public final class BoshConnection extends AbstractConnection {
             return;
         }
 
-        this.sessionId = null;
         this.usingAcknowledgments = false;
         this.requestCompressionMethod = null;
         this.requestCount.set(0);
@@ -676,51 +688,18 @@ public final class BoshConnection extends AbstractConnection {
 
                                 String contentEncoding = httpConnection.getHeaderField("Content-Encoding");
                                 try (InputStream responseStream = contentEncoding != null ? compressionMethods.get(contentEncoding).decompress(httpConnection.getInputStream()) : httpConnection.getInputStream()) {
-                                    InputStream xmppInputStream = null;
-                                    ByteArrayOutputStream byteArrayOutputStream = null;
-                                    XMLEventReader xmlEventReader = null;
-                                    try {
-                                        if (debugger != null) {
-                                            // This is for logging only.
-                                            byteArrayOutputStream = new ByteArrayOutputStream();
-                                            // Branch the stream so that its input can be logged.
-                                            xmppInputStream = XmppUtils.createBranchedInputStream(responseStream, byteArrayOutputStream);
-                                            InputStream debuggerInputStream = debugger.createInputStream(xmppInputStream);
-                                            if (debuggerInputStream != null) {
-                                                xmppInputStream = debuggerInputStream;
+
+                                    try (Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8)) {
+                                        ReaderInterceptorChain readerInterceptorChain = newReaderChain();
+                                        List<StreamElement> streamElements = new ArrayList<>();
+                                        readerInterceptorChain.proceed(reader, streamElements::add);
+                                        for (StreamElement element : streamElements) {
+                                            if (element instanceof Body) {
+                                                this.unpackBody((Body) element);
                                             }
                                         }
-
-                                        if (xmppInputStream == null) {
-                                            xmppInputStream = responseStream;
-                                        }
-
-                                        // Read the response.
-                                        xmlEventReader = xmppSession.getConfiguration().getXmlInputFactory().createXMLEventReader(xmppInputStream, "UTF-8");
-                                        while (xmlEventReader.hasNext()) {
-                                            XMLEvent xmlEvent = xmlEventReader.peek();
-
-                                            // Parse the <body/> element.
-                                            if (xmlEvent.isStartElement()) {
-                                                JAXBElement<Body> element = xmppSession.createUnmarshaller().unmarshal(xmlEventReader, Body.class);
-
-                                                if (debugger != null) {
-                                                    debugger.readStanza(new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), element.getValue());
-                                                }
-                                                unpackBody(element.getValue());
-                                            } else {
-                                                xmlEventReader.next();
-                                            }
-                                        }
-                                    } catch (JAXBException e) {
+                                    } catch (StreamErrorException e) {
                                         logger.log(System.Logger.Level.WARNING, "Server responded with malformed XML.", e);
-                                    } finally {
-                                        if (xmlEventReader != null) {
-                                            xmlEventReader.close();
-                                        }
-                                        if (xmppInputStream != null) {
-                                            xmppInputStream.close();
-                                        }
                                     }
                                 }
                                 // Wait shortly before sending the long polling request.

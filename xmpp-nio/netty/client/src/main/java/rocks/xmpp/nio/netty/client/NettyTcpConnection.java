@@ -80,7 +80,7 @@ public final class NettyTcpConnection extends NettyChannelConnection {
      * @param connectionConfiguration The connection configuration.
      */
     NettyTcpConnection(final Channel channel, final XmppSession xmppSession, final NettyTcpConnectionConfiguration connectionConfiguration) {
-        super(channel, xmppSession, xmppSession.getDebugger() != null ? xmppSession.getDebugger()::readStanza : null, xmppSession::createUnmarshaller,
+        super(channel, xmppSession, xmppSession.getDebugger() != null ? Collections.singletonList(xmppSession.getDebugger()) : Collections.emptyList(), xmppSession::createUnmarshaller,
                 xmppSession.getDebugger() != null ? Collections.singletonList(xmppSession.getDebugger()) : Collections.emptyList(),
                 xmppSession::createMarshaller,
                 xmppSession::notifyException,

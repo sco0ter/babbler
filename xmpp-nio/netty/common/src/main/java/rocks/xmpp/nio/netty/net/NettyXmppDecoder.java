@@ -27,14 +27,18 @@ package rocks.xmpp.nio.netty.net;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import rocks.xmpp.core.net.ReaderInterceptor;
+import rocks.xmpp.core.net.ReaderInterceptorChain;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.nio.codec.XmppStreamDecoder;
 
 import javax.xml.bind.Unmarshaller;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -49,34 +53,50 @@ import java.util.function.Function;
  */
 final class NettyXmppDecoder extends ByteToMessageDecoder {
 
-    private final BiConsumer<String, StreamElement> onRead;
+    private final List<ReaderInterceptor> readerInterceptors;
 
     private final XmppStreamDecoder xmppStreamDecoder;
 
     private final Consumer<Throwable> onFailure;
 
+    private final Consumer<StreamElement> streamElementConsumer;
+
     /**
      * Creates the decoder.
      *
-     * @param onRead               The first parameter of this callback is the decoded XML element, the second one is the unmarshalled element.
+     * @param readerInterceptors   The reader interceptors.
      * @param unmarshallerSupplier Supplies the unmarshaller, e.g. via a {@code ThreadLocal<Unmarshaller>}
      * @param onFailure            Called when an exception in the pipeline has occurred. If null, the exception is propagated to next handler. If non-null this callback is called instead.
      */
-    NettyXmppDecoder(final BiConsumer<String, StreamElement> onRead, final Function<Locale, Unmarshaller> unmarshallerSupplier, final Consumer<Throwable> onFailure) {
-        this.onRead = onRead;
+    NettyXmppDecoder(final Consumer<StreamElement> streamElement, final List<ReaderInterceptor> readerInterceptors, final Function<Locale, Unmarshaller> unmarshallerSupplier, final Consumer<Throwable> onFailure) {
+        this.readerInterceptors = readerInterceptors;
         this.xmppStreamDecoder = new XmppStreamDecoder(unmarshallerSupplier);
         this.onFailure = onFailure;
+        this.streamElementConsumer = streamElement;
     }
 
     @Override
     protected final void decode(final ChannelHandlerContext ctx, final ByteBuf byteBuf, final List<Object> list) throws Exception {
         final ByteBuffer byteBuffer = byteBuf.nioBuffer();
-        this.xmppStreamDecoder.decode(byteBuffer, (s, streamElement) -> {
-            list.add(streamElement);
-            if (onRead != null) {
-                onRead.accept(s, streamElement);
+        SettableStringReader stringReader = new SettableStringReader();
+        ReaderInterceptor readerInterceptor = (reader, streamElementListener, chain) -> xmppStreamDecoder.decode(byteBuffer, (s, streamElement) -> {
+            stringReader.setString(s);
+            char[] chars = new char[s.length()];
+            try {
+                int n = reader.read(chars, 0, s.length());
+                if (n > -1) {
+                    streamElementListener.accept(streamElement);
+                }
+                list.add(streamElement);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
             }
         });
+        List<ReaderInterceptor> interceptors = new ArrayList<>(readerInterceptors);
+        interceptors.add(readerInterceptor);
+        ReaderInterceptorChain readerInterceptorChain = new ReaderInterceptorChain(interceptors);
+        readerInterceptorChain.proceed(stringReader, streamElementConsumer);
+
         byteBuf.readerIndex(byteBuffer.position());
     }
 

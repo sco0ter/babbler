@@ -24,18 +24,27 @@
 
 package rocks.xmpp.core.session.debug;
 
+import rocks.xmpp.core.net.ReaderInterceptor;
+import rocks.xmpp.core.net.ReaderInterceptorChain;
 import rocks.xmpp.core.net.WriterInterceptor;
+import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.util.XmppUtils;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.function.Consumer;
 
 /**
  * A debugger interface, which allows to implement custom debugger implementation to log XMPP traffic.
  *
  * @author Christian Schudt
  */
-public interface XmppDebugger extends WriterInterceptor {
+public interface XmppDebugger extends ReaderInterceptor, WriterInterceptor {
 
     /**
      * This method is called when a new XMPP session is initialized.
@@ -77,4 +86,26 @@ public interface XmppDebugger extends WriterInterceptor {
      * @return The (forked) input stream.
      */
     InputStream createInputStream(InputStream inputStream);
+
+    @Override
+    default void process(StreamElement streamElement, Writer writer, WriterInterceptorChain chain) throws Exception {
+        try (Writer logger = new StringWriter()) {
+            chain.proceed(streamElement, XmppUtils.newBranchedWriter(writer, logger));
+            writeStanza(logger.toString(), streamElement);
+        }
+    }
+
+    @Override
+    default void process(Reader reader, Consumer<StreamElement> streamElement, ReaderInterceptorChain chain) throws Exception {
+        try (StringWriter logger = new StringWriter()) {
+            chain.proceed(XmppUtils.newBranchedReader(reader, logger), element -> {
+                String s = logger.toString();
+                if (!s.isEmpty()) {
+                    readStanza(logger.toString(), element);
+                    logger.getBuffer().setLength(0);
+                }
+                streamElement.accept(element);
+            });
+        }
+    }
 }

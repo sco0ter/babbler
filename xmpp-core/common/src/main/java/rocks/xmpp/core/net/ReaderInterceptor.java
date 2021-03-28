@@ -26,34 +26,23 @@ package rocks.xmpp.core.net;
 
 import rocks.xmpp.core.stream.model.StreamElement;
 
-import java.io.Writer;
-import java.util.Iterator;
+import java.io.Reader;
+import java.util.function.Consumer;
 
 /**
- * An interceptor chain, which manages the sequential processing of multiple interceptors.
+ * Intercepts {@link StreamElement}s after reading them from the wire.
  *
  * @author Christian Schudt
- * @see WriterInterceptor
  */
-public final class WriterInterceptorChain {
-
-    private final Iterator<WriterInterceptor> iterator;
-
-    public WriterInterceptorChain(Iterable<WriterInterceptor> writerInterceptors) {
-        iterator = writerInterceptors.iterator();
-    }
+public interface ReaderInterceptor {
 
     /**
-     * Proceeds to the next interceptor if present.
+     * Processes
      *
-     * @param streamElement The stream element.
-     * @param writer        The writer.
+     * @param reader                The reader from which the stream is read.
+     * @param streamElementListener Listens for stream elements being read from the reader.
+     * @param chain                 The reader chain, which allows to proceed to the next interceptor.
      * @throws Exception Any exception happening during interception.
      */
-    public void proceed(StreamElement streamElement, Writer writer) throws Exception {
-        if (iterator.hasNext()) {
-            WriterInterceptor writerInterceptor = iterator.next();
-            writerInterceptor.process(streamElement, writer, this);
-        }
-    }
+    void process(Reader reader, Consumer<StreamElement> streamElementListener, ReaderInterceptorChain chain) throws Exception;
 }

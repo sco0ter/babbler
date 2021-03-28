@@ -33,7 +33,6 @@ import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.TxtRecord;
 import rocks.xmpp.websocket.codec.XmppWebSocketDecoder;
@@ -61,7 +60,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 /**
@@ -212,7 +210,7 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
         clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.UNMARSHALLER, (Supplier<Unmarshaller>) xmppSession::createUnmarshaller);
         if (xmppSession.getDebugger() != null) {
             clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.ON_WRITE, Collections.singleton(xmppSession.getDebugger()));
-            clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.ON_READ, (BiConsumer<String, StreamElement>) xmppSession.getDebugger()::readStanza);
+            clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.ON_READ, Collections.singleton(xmppSession.getDebugger()));
         }
         clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.XML_OUTPUT_FACTORY, xmppSession.getConfiguration().getXmlOutputFactory());
 

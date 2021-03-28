@@ -24,18 +24,21 @@
 
 package rocks.xmpp.websocket.codec;
 
+import rocks.xmpp.core.net.ReaderInterceptor;
+import rocks.xmpp.core.net.ReaderInterceptorChain;
 import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.XmppStreamDecoder;
 
 import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
-import javax.xml.bind.JAXBException;
+import javax.xml.XMLConstants;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLInputFactory;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringWriter;
-import java.util.function.BiConsumer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -52,51 +55,41 @@ import java.util.function.Supplier;
  */
 public final class XmppWebSocketDecoder implements Decoder.TextStream<StreamElement> {
 
-    private Supplier<Unmarshaller> unmarshaller;
-
-    private BiConsumer<String, StreamElement> onRead;
+    private Iterable<ReaderInterceptor> interceptors;
 
     @Override
     public final StreamElement decode(final Reader reader) throws DecodeException, IOException {
-        Reader newReader = null;
-        StringWriter writer = null;
         try {
-            if (onRead != null) {
-                writer = new StringWriter();
-                newReader = XmppUtils.newBranchedReader(reader, writer);
-            } else {
-                newReader = reader;
+            ReaderInterceptorChain readerInterceptorChain = new ReaderInterceptorChain(interceptors);
+            List<StreamElement> out = new ArrayList<>();
+            readerInterceptorChain.proceed(reader, out::add);
+            if (!out.isEmpty()) {
+                return out.get(0);
             }
-
-            StreamElement streamElement = (StreamElement) unmarshaller.get().unmarshal(newReader);
-
-            if (onRead != null && writer != null) {
-                onRead.accept(writer.toString(), streamElement);
-            }
-            return streamElement;
-        } catch (JAXBException e) {
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
             throw new DecodeException(reader.toString(), e.getMessage(), e);
-        } finally {
-            if (newReader != null) {
-                newReader.close();
-            }
-            if (writer != null) {
-                writer.close();
-            }
         }
+        throw new IOException("Could not decode an element from the reader");
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public final void init(final EndpointConfig config) {
-        this.unmarshaller = (Supplier<Unmarshaller>) config.getUserProperties().get(UserProperties.UNMARSHALLER);
-        this.onRead = (BiConsumer<String, StreamElement>) config.getUserProperties().get(UserProperties.ON_READ);
+        Supplier<Unmarshaller> unmarshaller = (Supplier<Unmarshaller>) config.getUserProperties().get(UserProperties.UNMARSHALLER);
+        List<ReaderInterceptor> readerInterceptors = new ArrayList<>();
+        Iterable<ReaderInterceptor> additionalInterceptors = (Iterable<ReaderInterceptor>) config.getUserProperties().get(UserProperties.ON_READ);
+        if (additionalInterceptors != null) {
+            additionalInterceptors.forEach(readerInterceptors::add);
+        }
+        readerInterceptors.add(new XmppStreamDecoder(XMLInputFactory.newFactory(), unmarshaller, XMLConstants.NULL_NS_URI));
+        this.interceptors = readerInterceptors;
     }
 
     @Override
     public final void destroy() {
-        this.unmarshaller = null;
-        this.onRead = null;
+        this.interceptors = null;
     }
 
     /**

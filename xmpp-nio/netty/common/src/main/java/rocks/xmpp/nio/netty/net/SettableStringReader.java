@@ -22,38 +22,39 @@
  * THE SOFTWARE.
  */
 
-package rocks.xmpp.core.net;
+package rocks.xmpp.nio.netty.net;
 
-import rocks.xmpp.core.stream.model.StreamElement;
+import java.io.IOException;
+import java.io.Reader;
 
-import java.io.Writer;
-import java.util.Iterator;
+final class SettableStringReader extends Reader {
 
-/**
- * An interceptor chain, which manages the sequential processing of multiple interceptors.
- *
- * @author Christian Schudt
- * @see WriterInterceptor
- */
-public final class WriterInterceptorChain {
+    String str;
+    private int length;
+    private int next = 0;
 
-    private final Iterator<WriterInterceptor> iterator;
-
-    public WriterInterceptorChain(Iterable<WriterInterceptor> writerInterceptors) {
-        iterator = writerInterceptors.iterator();
+    public void setString(String s) {
+        this.str = s;
+        this.length = s.length();
     }
 
-    /**
-     * Proceeds to the next interceptor if present.
-     *
-     * @param streamElement The stream element.
-     * @param writer        The writer.
-     * @throws Exception Any exception happening during interception.
-     */
-    public void proceed(StreamElement streamElement, Writer writer) throws Exception {
-        if (iterator.hasNext()) {
-            WriterInterceptor writerInterceptor = iterator.next();
-            writerInterceptor.process(streamElement, writer, this);
+    @Override
+    public int read(char[] cbuf, int off, int len) throws IOException {
+        if ((off < 0) || (off > cbuf.length) || (len < 0) ||
+                ((off + len) > cbuf.length) || ((off + len) < 0)) {
+            throw new IndexOutOfBoundsException();
+        } else if (len == 0) {
+            return 0;
         }
+        if (next >= length)
+            return -1;
+        int n = Math.min(length - next, len);
+        str.getChars(next, next + n, cbuf, off);
+        next += n;
+        return n;
+    }
+
+    @Override
+    public void close() {
     }
 }

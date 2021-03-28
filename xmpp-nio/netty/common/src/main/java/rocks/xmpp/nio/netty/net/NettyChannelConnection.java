@@ -38,12 +38,14 @@ import io.netty.util.concurrent.Future;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.net.ConnectionConfiguration;
+import rocks.xmpp.core.net.ReaderInterceptor;
 import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.net.WriterInterceptor;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stream.StreamHandler;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamHeader;
+import rocks.xmpp.util.XmppStreamDecoder;
 import rocks.xmpp.util.XmppStreamEncoder;
 
 import javax.net.ssl.SSLContext;
@@ -72,8 +74,6 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
 
     private final NettyXmppDecoder decoder;
 
-    private final BiConsumer<String, StreamElement> onRead;
-
     protected SessionOpen sessionOpen;
 
     private final StreamHandler streamHandler;
@@ -82,7 +82,7 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
 
     public NettyChannelConnection(final Channel channel,
                                   final StreamHandler streamHandler,
-                                  final BiConsumer<String, StreamElement> onRead,
+                                  final List<ReaderInterceptor> readerInterceptors,
                                   final Function<Locale, Unmarshaller> unmarshallerSupplier,
                                   final List<WriterInterceptor> writerInterceptors,
                                   final Supplier<Marshaller> marshallerSupplier,
@@ -90,10 +90,9 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
                                   final ConnectionConfiguration connectionConfiguration) {
         super(connectionConfiguration);
         this.channel = channel;
-        this.onRead = onRead;
         this.streamHandler = streamHandler;
         this.onException = onException;
-        this.decoder = new NettyXmppDecoder(this::onRead, unmarshallerSupplier, onException);
+        this.decoder = new NettyXmppDecoder(this::onRead, readerInterceptors, unmarshallerSupplier, onException);
         List<WriterInterceptor> interceptors = new ArrayList<>(writerInterceptors);
         interceptors.add(new XmppStreamEncoder(XMLOutputFactory.newFactory(), marshallerSupplier, s -> false));
         channel.pipeline().addLast(decoder, new NettyXmppEncoder(interceptors, onException));
@@ -121,10 +120,7 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
         }
     }
 
-    private void onRead(final String xml, final StreamElement streamElement) {
-        if (onRead != null) {
-            onRead.accept(xml, streamElement);
-        }
+    private void onRead(final StreamElement streamElement) {
         if (streamElement instanceof SessionOpen) {
             openedByPeer((SessionOpen) streamElement);
         } else if (streamElement == StreamHeader.CLOSING_STREAM_TAG) {

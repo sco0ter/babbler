@@ -1,6 +1,32 @@
 # Changelog
 ---
 
+## Version 0.9.0 (not yet released)
+
+* Migrate to Java 11 (doesn't run on Java 8 anymore)
+* Limit the thread usage when multiple clients are running in the same VM
+* Stream Management: Add handled-count-too-high failure
+* Allow the original child element to be included in error responses
+* Implement equals() and hashCode() for XEP-0004 DataForm fields
+* Make BOSH Body's compareTo() consistent with equals()
+* Add support for XEP-0368: SRV records for XMPP over TLS
+* Ensure UTF-8 when reading XML from file caches
+* Update PRECIS library to 1.1.0
+* PubSub: Add "pubsub#rsm" disco feature
+* Rework Comparable implementation in Presence
+* Redesign IQHandler
+* Introduce an ExtensionProtocol interface
+* Add functional interfaces for handling stanzas
+* Ensure that date times are formatted as specified by XEP-0082 (e.g. don't marshal nanoseconds)
+* Add InfoNodeProvider interface
+* Add support for XEP-0232: Software Information
+* Extract vCard-Based-Avatars protocol and User Avatar protocol (PEP) out of AvatarManager
+* Simplify stream negotiation
+* Redesign Entity Capabilities
+* Add a CombinedResultSetProvider which combines multiple ResultSetProviders into one.
+* Presence: getPriority() should return primitive byte instead of Byte
+* Add low-level support for XEP-0402: PEP Native Bookmarks
+
 ## Version 0.8.0 (2018-07-17)
 
 * Works as [JPMS modules](jpms.md) on Java 9 *and* as conventional JAR library on Java 8

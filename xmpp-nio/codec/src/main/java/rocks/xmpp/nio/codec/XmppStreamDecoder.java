@@ -46,6 +46,7 @@ import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -67,14 +68,13 @@ public final class XmppStreamDecoder {
 
     private final Function<Locale, Unmarshaller> unmarshaller;
 
-    private final StringBuilder xmlStream = new StringBuilder();
+    private byte[] byteStream = new byte[0];
 
     private AsyncXMLStreamReader<AsyncByteBufferFeeder> xmlStreamReader;
 
     private StreamHeader streamHeader;
 
     private long elementEnd;
-
     /**
      * Creates the XMPP decoder.
      * <p>
@@ -87,6 +87,13 @@ public final class XmppStreamDecoder {
         this.restart();
     }
 
+    private static byte[] concat(byte[] a, byte[] b) {
+        byte[] c = new byte[a.length + b.length];
+        System.arraycopy(a, 0, c, 0, a.length);
+        System.arraycopy(b, 0, c, a.length, b.length);
+        return c;
+    }
+
     /**
      * Decodes a stream of byte buffers to XMPP elements.
      *
@@ -97,7 +104,9 @@ public final class XmppStreamDecoder {
     public final synchronized void decode(final ByteBuffer in, final BiConsumer<String, StreamElement> out) throws StreamErrorException {
 
         // Append the buffer to stream
-        xmlStream.append(StandardCharsets.UTF_8.decode(in));
+        byte[] b = new byte[in.remaining()];
+        in.get(b);
+        byteStream = concat(byteStream, b);
 
         // Rewind the buffer, so that it can be read again by the XMLStreamReader.
         in.rewind();
@@ -147,11 +156,14 @@ public final class XmppStreamDecoder {
                             }
 
                             elementEnd = xmlStreamReader.getLocationInfo().getEndingByteOffset();
+
                             // Store the stream header so that it can be reused while unmarshalling further bytes.
-                            String streamHeaderStr = xmlStream.substring(0, (int) elementEnd);
+                            final String streamHeaderStr = new String(byteStream, 0, (int) elementEnd, StandardCharsets.UTF_8);
+
                             // Copy the rest of the stream.
                             // From now on, only store the XML stream without the stream header.
-                            xmlStream.delete(0, (int) elementEnd);
+                            //xmlStream.delete(0, streamHeaderStr.length());
+                            byteStream = Arrays.copyOfRange(byteStream, (int) elementEnd, byteStream.length);
 
                             streamHeader = StreamHeader.create(
                                     from != null ? Jid.ofEscaped(from) : null,
@@ -161,33 +173,33 @@ public final class XmppStreamDecoder {
                                     lang != null ? Locale.forLanguageTag(lang) : null,
                                     contentNamespace,
                                     additionalNamespaces.toArray(new QName[0]));
-                            
+
                             out.accept(streamHeaderStr, streamHeader);
                         }
                         break;
                     case XMLStreamConstants.END_ELEMENT:
                         // Only care for the root element (<stream:stream/>) and first level elements (e.g. stanzas).
                         if (xmlStreamReader.getDepth() < 3) {
+                            // A full XML element has been read from the channel.
+                            // Now we can unmarshal it.
+
+                            // Get the current end position
+                            final long end = xmlStreamReader.getLocationInfo().getEndingByteOffset();
+                            // Then determine the element length (offset since the last end element)
+                            final int elementLength = (int) (end - elementEnd);
+                            // Store the new end position for the next iteration.
+                            elementEnd = end;
+
+                            // Get the element from the stream.
+                            final String element = new String(byteStream, 0, elementLength, StandardCharsets.UTF_8);
 
                             if (xmlStreamReader.getDepth() == 1) {
                                 // The client has sent the closing </stream:stream> element.
-                                out.accept(xmlStream.toString().trim(), StreamHeader.CLOSING_STREAM_TAG);
+                                out.accept(element.trim(), StreamHeader.CLOSING_STREAM_TAG);
                             } else {
-                                // A full XML element has been read from the channel.
-                                // Now we can unmarshal it.
 
-                                // Get the current end position
-                                final long end = xmlStreamReader.getLocationInfo().getEndingByteOffset();
-                                // Then determine the element length (offset since the last end element)
-                                final int elementLength = (int) (end - elementEnd);
-                                // Store the new end position for the next iteration.
-                                elementEnd = end;
-
-                                // Get the element from the stream.
-                                byte[] bytes = xmlStream.toString().getBytes(StandardCharsets.UTF_8);
-                                final String element = new String(bytes, 0, elementLength, StandardCharsets.UTF_8);
-
-                                xmlStream.delete(0, element.length());
+                                //xmlStream.delete(0, element.length());
+                                byteStream = Arrays.copyOfRange(byteStream, elementLength, byteStream.length);
 
                                 // Create a partial stream, which always consists of the stream header (to have namespace declarations)
                                 // and the current element.
@@ -233,7 +245,6 @@ public final class XmppStreamDecoder {
         } catch (Exception e) {
             throw new StreamErrorException(new StreamError(Condition.INTERNAL_SERVER_ERROR), e);
         } finally {
-            xmlStream.trimToSize();
             // Set the new position to the limit, the feeder doesn't do that for us.
             in.position(in.limit());
         }
@@ -243,7 +254,7 @@ public final class XmppStreamDecoder {
      * Restarts the stream, i.e. a new reader will be created.
      */
     public final synchronized void restart() {
-        xmlStream.setLength(0);
+        byteStream = new byte[0];
         xmlStreamReader = XML_INPUT_FACTORY.createAsyncForByteBuffer();
         elementEnd = 0;
     }

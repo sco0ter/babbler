@@ -77,13 +77,17 @@ public final class XmppWebSocketDecoder implements Decoder.TextStream<StreamElem
     @SuppressWarnings("unchecked")
     @Override
     public final void init(final EndpointConfig config) {
+        XMLInputFactory xmlInputFactory = (XMLInputFactory) config.getUserProperties().get(XmppWebSocketDecoder.UserProperties.XML_INPUT_FACTORY);
+        if (xmlInputFactory == null) {
+            xmlInputFactory = XMLInputFactory.newFactory();
+        }
         Supplier<Unmarshaller> unmarshaller = (Supplier<Unmarshaller>) config.getUserProperties().get(UserProperties.UNMARSHALLER);
         List<ReaderInterceptor> readerInterceptors = new ArrayList<>();
         Iterable<ReaderInterceptor> additionalInterceptors = (Iterable<ReaderInterceptor>) config.getUserProperties().get(UserProperties.ON_READ);
         if (additionalInterceptors != null) {
             additionalInterceptors.forEach(readerInterceptors::add);
         }
-        readerInterceptors.add(new XmppStreamDecoder(XMLInputFactory.newFactory(), unmarshaller, XMLConstants.NULL_NS_URI));
+        readerInterceptors.add(new XmppStreamDecoder(xmlInputFactory, unmarshaller, XMLConstants.NULL_NS_URI));
         this.interceptors = readerInterceptors;
     }
 
@@ -100,6 +104,11 @@ public final class XmppWebSocketDecoder implements Decoder.TextStream<StreamElem
          * The property key to set the unmarshaller. The value must be a {@code java.util.function.Supplier<Unmarshaller>}.
          */
         public static final String UNMARSHALLER = "unmarshaller";
+
+        /**
+         * The property key to provide an optional {@link XMLInputFactory}.
+         */
+        public static final String XML_INPUT_FACTORY = "xmlInputFactory";
 
         /**
          * The property to set the read callback. The value must be a {@code java.util.function.BiConsumer<String, StreamElement>}.

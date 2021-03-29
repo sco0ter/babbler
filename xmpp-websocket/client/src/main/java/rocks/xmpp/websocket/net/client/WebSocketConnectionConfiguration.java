@@ -213,6 +213,7 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
             clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.ON_READ, Collections.singleton(xmppSession.getDebugger()));
         }
         clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.XML_OUTPUT_FACTORY, xmppSession.getConfiguration().getXmlOutputFactory());
+        clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.XML_INPUT_FACTORY, xmppSession.getConfiguration().getXmlInputFactory());
 
         final ClientManager client = ClientManager.createClient(JdkClientContainer.class.getName());
         if (getSSLContext() != null) {

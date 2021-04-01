@@ -29,6 +29,7 @@ import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.Session;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.Connection;
+import rocks.xmpp.core.net.WriterInterceptor;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.sasl.AuthenticationException;
@@ -101,6 +102,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -169,6 +171,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     private final Set<Consumer<IQEvent>> inboundIQListeners = new CopyOnWriteArraySet<>();
 
     private final Set<Consumer<IQEvent>> outboundIQListeners = new CopyOnWriteArraySet<>();
+
+    private final List<WriterInterceptor> writerInterceptors = new CopyOnWriteArrayList<>();
 
     private final Set<IQHandler> iqHandlers = new CopyOnWriteArraySet<>();
 
@@ -262,6 +266,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
             try {
                 this.debugger = configuration.getDebugger().getConstructor().newInstance();
                 this.debugger.initialize(this);
+                this.writerInterceptors.add(this.debugger);
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
@@ -309,6 +314,9 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                 }
                 if (manager instanceof InfoProvider) {
                     serviceDiscoveryManager.addInfoProvider((InfoProvider) manager);
+                }
+                if (manager instanceof WriterInterceptor) {
+                    writerInterceptors.add((WriterInterceptor) manager);
                 }
             } else {
                 serviceDiscoveryManager.registerFeature(extension);
@@ -777,6 +785,10 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      */
     public final void removeConnectionListener(Consumer<ConnectionEvent> connectionListener) {
         connectionListeners.remove(connectionListener);
+    }
+
+    public List<WriterInterceptor> getWriterInterceptors() {
+        return writerInterceptors;
     }
 
     /**

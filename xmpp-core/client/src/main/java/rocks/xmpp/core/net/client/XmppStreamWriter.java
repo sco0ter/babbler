@@ -27,11 +27,8 @@ package rocks.xmpp.core.net.client;
 import rocks.xmpp.core.net.WriterInterceptor;
 import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.session.debug.XmppDebugger;
-import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamHeader;
-import rocks.xmpp.extensions.sm.client.ClientStreamManager;
 import rocks.xmpp.util.XmppStreamEncoder;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
@@ -67,11 +64,7 @@ final class XmppStreamWriter {
 
     private final ScheduledExecutorService executor;
 
-    private final XmppDebugger debugger;
-
-    private final ClientStreamManager streamManager;
-
-    private final XmppStreamEncoder streamEncoder;
+    private final List<WriterInterceptor> writerInterceptors = new ArrayList<>();
 
     /**
      * Will be accessed only by the writer thread.
@@ -83,21 +76,11 @@ final class XmppStreamWriter {
      */
     private boolean streamOpened;
 
-    XmppStreamWriter(ClientStreamManager streamManager, final XmppSession xmppSession) {
+    XmppStreamWriter(Iterable<WriterInterceptor> writerInterceptors, final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
-        this.debugger = xmppSession.getDebugger();
+        writerInterceptors.forEach(this.writerInterceptors::add);
+        this.writerInterceptors.add(new XmppStreamEncoder(xmppSession.getConfiguration().getXmlOutputFactory(), xmppSession::createMarshaller, s -> false));
         this.executor = new QueuedScheduledExecutorService(EXECUTOR);
-        this.streamManager = streamManager;
-        this.streamEncoder = new XmppStreamEncoder(xmppSession.getConfiguration().getXmlOutputFactory(), xmppSession::createMarshaller, s -> false);
-    }
-
-    private WriterInterceptorChain newWriterChain() {
-        List<WriterInterceptor> writerInterceptors = new ArrayList<>();
-        if (debugger != null) {
-            writerInterceptors.add(debugger);
-        }
-        writerInterceptors.add(streamEncoder);
-        return new WriterInterceptorChain(writerInterceptors);
     }
 
     void initialize(int keepAliveInterval) {
@@ -119,11 +102,7 @@ final class XmppStreamWriter {
         Objects.requireNonNull(clientStreamElement);
         return CompletableFuture.runAsync(() -> {
             try {
-                WriterInterceptorChain writerInterceptorChain = newWriterChain();
-                // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowledged" queue.
-                if (clientStreamElement instanceof Stanza) {
-                    streamManager.markUnacknowledged((Stanza) clientStreamElement);
-                }
+                WriterInterceptorChain writerInterceptorChain = new WriterInterceptorChain(writerInterceptors);
                 writerInterceptorChain.proceed(clientStreamElement, outputStreamWriter);
                 if (flush) {
                     outputStreamWriter.flush();
@@ -139,7 +118,7 @@ final class XmppStreamWriter {
         return CompletableFuture.runAsync(() -> {
             this.outputStreamWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
             try {
-                WriterInterceptorChain writerInterceptorChain = newWriterChain();
+                WriterInterceptorChain writerInterceptorChain = new WriterInterceptorChain(writerInterceptors);
                 writerInterceptorChain.proceed(streamHeader, outputStreamWriter);
                 outputStreamWriter.flush();
                 streamOpened = true;
@@ -154,7 +133,7 @@ final class XmppStreamWriter {
             if (streamOpened) {
                 // Close the stream.
                 try {
-                    WriterInterceptorChain writerInterceptorChain = newWriterChain();
+                    WriterInterceptorChain writerInterceptorChain = new WriterInterceptorChain(writerInterceptors);
                     writerInterceptorChain.proceed(StreamHeader.CLOSING_STREAM_TAG, outputStreamWriter);
                     outputStreamWriter.flush();
                     outputStreamWriter.close();

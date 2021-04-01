@@ -29,7 +29,6 @@ import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.model.SessionOpen;
-import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
@@ -41,7 +40,6 @@ import rocks.xmpp.extensions.compress.CompressionManager;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
 import rocks.xmpp.extensions.sm.client.ClientStreamManager;
-import rocks.xmpp.extensions.sm.model.StreamManagement;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -155,7 +153,7 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
         xmppStreamReader.startReading(this::openedByPeer, this::closedByPeer);
 
         // Start writing to the output stream.
-        xmppStreamWriter = new XmppStreamWriter(streamManager, this.xmppSession);
+        xmppStreamWriter = new XmppStreamWriter(xmppSession.getWriterInterceptors(), this.xmppSession);
         xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
         final OutputStream os;
         synchronized (this) {
@@ -253,17 +251,7 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
 
     @Override
     public final synchronized CompletableFuture<Void> send(StreamElement element) {
-        final boolean requestStanzaCount = element instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) element);
-        // If the stanza count will be request immediately after, don't flush now, but later.
-        CompletableFuture<Void> future = xmppStreamWriter.write(element, !requestStanzaCount);
-        if (requestStanzaCount) {
-            return future.thenRun(() -> {
-                if (!isClosed()) {
-                    xmppStreamWriter.write(StreamManagement.REQUEST, true);
-                }
-            });
-        }
-        return future;
+        return xmppStreamWriter.write(element, true);
     }
 
     @Override

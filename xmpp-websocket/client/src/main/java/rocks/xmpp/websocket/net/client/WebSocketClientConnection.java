@@ -26,11 +26,9 @@ package rocks.xmpp.websocket.net.client;
 
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.extensions.sm.client.ClientStreamManager;
-import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 import rocks.xmpp.websocket.net.WebSocketConnection;
@@ -122,17 +120,7 @@ public final class WebSocketClientConnection extends WebSocketConnection {
 
     @Override
     public final CompletableFuture<Void> send(final StreamElement streamElement) {
-        if (streamElement instanceof Stanza) {
-            // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowledged" queue.
-            this.streamManager.markUnacknowledged((Stanza) streamElement);
-        }
-        return write(streamElement)
-                .thenRun(() -> {
-                    if (!isClosed() && streamElement instanceof Stanza && streamManager.isActive() && streamManager.getRequestStrategy().test((Stanza) streamElement)) {
-                        write(StreamManagement.REQUEST);
-                    }
-                })
-                .thenRun(this::flush);
+        return write(streamElement).thenRun(this::flush);
     }
 
     @Override

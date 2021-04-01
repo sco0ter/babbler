@@ -25,15 +25,19 @@
 package rocks.xmpp.extensions.sm.client;
 
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.net.WriterInterceptor;
+import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
+import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.extensions.sm.AbstractStreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
+import java.io.Writer;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -47,7 +51,7 @@ import java.util.concurrent.CompletableFuture;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>
  */
-public final class ClientStreamManager extends AbstractStreamManager {
+public final class ClientStreamManager extends AbstractStreamManager implements WriterInterceptor {
 
 
     private final XmppSession xmppSession;
@@ -214,5 +218,23 @@ public final class ClientStreamManager extends AbstractStreamManager {
         }
         xmppSession.send(resume);
         return new AsyncResult<>(future);
+    }
+
+    @Override
+    public void process(StreamElement streamElement, Writer writer, WriterInterceptorChain chain) throws Exception {
+        // When about to send a stanza, first put the stanza (paired with the current value of X) in an "unacknowledged" queue.
+        // Note that this doesn't work for BOSH connections, since streamElement is always of type Body.
+        if (streamElement instanceof Stanza) {
+            markUnacknowledged((Stanza) streamElement);
+            // TODO: Consider optimization here: Allow streamElement not to be flushed, but flush later after sending the request
+            final boolean requestStanzaCount = getRequestStrategy().test((Stanza) streamElement);
+            if (isActive()){
+                // If the stanza count will be request immediately after, don't flush now, but later.
+                if (requestStanzaCount && xmppSession.getStatus() != XmppSession.Status.CLOSED) {
+                    xmppSession.send(StreamManagement.REQUEST);
+                }
+            }
+        }
+        chain.proceed(streamElement, writer);
     }
 }

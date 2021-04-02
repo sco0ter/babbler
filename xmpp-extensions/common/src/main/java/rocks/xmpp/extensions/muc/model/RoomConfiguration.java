@@ -42,11 +42,11 @@ import java.util.stream.Collectors;
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#roomconfig}, which can be used to configure a MUC room.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
- * ```java
+ * <pre>{@code
  * RoomConfiguration roomConfiguration = new RoomConfiguration(dataForm);
- * ```
+ * }</pre>
  * To build a form:
- * ```java
+ * <pre>{@code
  * RoomConfiguration roomConfiguration = RoomConfiguration.builder()
  *     .maxHistoryMessages(4)
  *     .rolesThatMaySendPrivateMessages(Arrays.asList(Role.MODERATOR, Role.PARTICIPANT))
@@ -70,7 +70,7 @@ import java.util.stream.Collectors;
  *     .password("pass")
  *     .rolesThatMayDiscoverRealJids(EnumSet.of(Role.MODERATOR))
  *     .build();
- * ```
+ * }</pre>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#createroom-reserved">10.1.3 Creating a Reserved Room</a>

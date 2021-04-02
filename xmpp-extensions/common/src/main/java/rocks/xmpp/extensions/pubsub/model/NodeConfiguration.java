@@ -40,11 +40,11 @@ import java.util.Locale;
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/pubsub#node_config}, which can be used to configure a pubsub node.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
- * ```java
+ * <pre>{@code
  * NodeConfiguration nodeConfiguration = new NodeConfiguration(dataForm);
- * ```
+ * }</pre>
  * To build a form:
- * ```java
+ * <pre>{@code
  * NodeConfiguration nodeConfiguration = NodeConfiguration.builder()
  *     .accessModel(AccessModel.AUTHORIZE)
  *     .bodyXslt(new URL("https://xmpp.org"))
@@ -80,7 +80,7 @@ import java.util.Locale;
  *     .title("Title")
  *     .type("Type")
  *     .build();
- * ```
+ * }</pre>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0060.html#registrar-formtypes-config">16.4.4 pubsub#node_config FORM_TYPE</a>

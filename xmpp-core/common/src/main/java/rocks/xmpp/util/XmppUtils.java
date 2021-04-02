@@ -60,7 +60,7 @@ public final class XmppUtils {
     /**
      * Creates a {@link XMLStreamWriter} instance, which writes XML without namespace prefixes.
      * <h2>Usage</h2>
-     * ```java
+     * <pre>{@code
      * Writer writer = new StringWriter();
      * <p>
      * XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
@@ -78,9 +78,9 @@ public final class XmppUtils {
      * marshaller.marshal(message, xmppStreamWriter);
      * xmppStreamWriter.flush();
      * System.out.println(writer.toString());
-     * ```
+     * }</pre>
      * The output of this is:
-     * ```xml
+     * <pre>{@code
      * <message to="juliet@example.net">
      * <sent xmlns="urn:xmpp:carbons:2">
      * <forwarded xmlns="urn:xmpp:forward:0">
@@ -90,7 +90,7 @@ public final class XmppUtils {
      * </forwarded>
      * </sent>
      * </message>
-     * ```
+     * }</pre>
      *
      * @param xmlStreamWriter     The underlying XML stream writer.
      * @param writeStreamNamepace If the stream namespace ('http://etherx.jabber.org/streams') should be written to the root element. This is usually only the case when writing the initial BOSH response with stream features.

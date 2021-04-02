@@ -57,6 +57,7 @@ public final class SaslPrep {
     /**
      * Prepares a string for username and passwords.
      *
+     * @param input The input string to prepare.
      * @return The mapped string.
      */
     public static String prepare(String input) {

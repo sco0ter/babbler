@@ -34,13 +34,13 @@ import java.util.Objects;
 /**
  * A container class for Message Delivery Receipts.
  * <h3>Requesting a Message Delivery Receipt</h3>
- * ```java
+ * <pre>{@code
  * message.addExtension(MessageDeliveryReceipts.REQUEST);
- * ```
+ * }</pre>
  * <h3>Sending an Receipt to a Message Delivery Request</h3>
- * ```java
+ * <pre>{@code
  * message.addExtension(new MessageDeliveryReceipts.Received(id));
- * ```
+ * }</pre>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0184.html">XEP-0184: Message Delivery Receipts</a>

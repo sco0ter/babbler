@@ -53,10 +53,10 @@ import java.util.function.Predicate;
  * Note that messages must contain an id, in order to track receipts. If a message does not contain an id, requests won't be added.
  * </p>
  * <h3>Code sample</h3>
- * ```java
+ * <pre>{@code
  * MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = xmppSession.getManager(MessageDeliveryReceiptsManager.class);
  * messageDeliveryReceiptsManager.addMessageDeliveredListener(e -> System.out.println("Message delivered: " + e.getMessageId()));
- * ```
+ * }</pre>
  */
 public final class MessageDeliveryReceiptsManager extends Manager implements InboundMessageHandler, OutboundMessageHandler {
 

@@ -70,10 +70,10 @@ import java.util.function.Supplier;
  * Automatic inclusion of last activity information in presence stanzas and support for this protocol can be {@linkplain #setEnabled(boolean)} enabled or disabled}.
  * </p>
  * <h3>Code sample</h3>
- * ```java
+ * <pre>{@code
  * LastActivityManager lastActivityManager = xmppSession.getManager(LastActivityManager.class);
  * LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.of("juliet@example.com/balcony")).getResult();
- * ```
+ * }</pre>
  *
  * @author Christian Schudt
  */

@@ -41,18 +41,18 @@ import java.util.stream.Collectors;
  * Use this class to add extended address information to a stanza.
  * </p>
  * <h3>Usage</h3>
- * ```java
+ * <pre>{@code
  * Address address = new Address(Address.Type.CC, Jid.of("juliet@example.net"));
  * Addresses addresses = new Addresses(Arrays.asList(address));
  * Message message = new Message(Jid.of("romeo@example.net"));
  * message.addExtension(addresses);
- * ```
+ * }</pre>
  * <h3>Creating a Reply for a Message</h3>
  * To create a reply use {@link #createReply(Message, Message)}:
- * ```java
+ * <pre>{@code
  * Message replyMessage = new Message();
  * boolean replyGenerated = Addresses.createReply(originalMessage, replyMessage);
- * ```
+ * }</pre>
  * This will append an address extension to the reply message according to the business rules.
  * <p>
  * This class is immutable.

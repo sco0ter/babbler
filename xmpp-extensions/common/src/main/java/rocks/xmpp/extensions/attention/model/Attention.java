@@ -36,24 +36,25 @@ import javax.xml.bind.annotation.XmlType;
  * <h3>Listening for Attention Requests</h3>
  * <p>If you want to listen for inbound attention requests, listen for inbound messages and check if they have the {@link rocks.xmpp.extensions.attention.model.Attention} extension.
  * </p>
- * ```java
+ * <pre>{@code
  * xmppClient.addInboundMessageListener(e -> {
  *     if (e.getMessage().hasExtension(Attention.class)) {
  *         // Handle attention request.
  *     }
  * });
- * ```java
+ * }</pre>
  * <p>You should also enable this feature (preferably before login), in order to register this extension in service discovery:</p>
- * ```java
+ * <pre>{@code
  * xmppClient.enableFeature(Attention.NAMESPACE);
- * ```
+ * }</pre>
+ *
  * <h3>Requesting Attention</h3>
  * Attention requests are sent via a 'headline' message:
- * ```java
+ * <pre>{@code
  * Message message = new Message(jid, Message.Type.HEADLINE);
  * message.addExtension(Attention.INSTANCE);
  * xmppClient.send(message);
- * ```
+ * }</pre>
  * This class is immutable.
  *
  * @author Christian Schudt
@@ -70,7 +71,7 @@ public final class Attention {
     public static final Attention INSTANCE = new Attention();
 
     /**
-     * urn:xmpp:attention:0
+     * {@value}
      */
     public static final String NAMESPACE = "urn:xmpp:attention:0";
 

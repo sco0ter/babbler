@@ -43,10 +43,10 @@ import java.util.Set;
 /**
  * Represents the XMPP stream header.
  * <h2>Usage</h2>
- * ```java
+ * <pre>{@code
  * StreamHeader streamHeader = StreamHeader.initialClientToServer(from, to, Locale.GERMAN);
  * streamHeader.writeTo(xmlStreamWriter);
- * ```
+ * }</pre>
  * The {@code toString()} method of this class returns the XML string of the stream header,
  * which is emphasized by the implementation of the {@link CharSequence} interface.
  * <p>
@@ -136,6 +136,7 @@ public final class StreamHeader implements SessionOpen, CharSequence {
      * @param from                 The XMPP identity of the principal controlling the client, i.e., a JID of the form {@code localpart@domainpart>}.
      * @param to                   A domainpart that the initiating entity knows or expects the receiving entity to service.
      * @param id                   The stream id.
+     * @param version              The XMPP version.
      * @param lang                 An entity's preferred or default language for any human-readable XML character data to be sent over the stream.
      * @param contentNamespace     The content namespace.
      * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a namespace URI and a prefix set.

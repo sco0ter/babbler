@@ -35,18 +35,18 @@ import java.util.Collection;
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#request}, which can be used to request voice in a MUC room.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
- * ```java
+ * <pre>{@code
  * RequestVoice requestVoice = new RequestVoice(dataForm);
- * ```
+ * }</pre>
  * To build a form:
- * ```java
+ * <pre>{@code
  * RequestVoice requestVoice = RequestVoice.builder()
- * .jid(Jid.of("hag66@shakespeare.lit/pda"))
- * .role(Role.PARTICIPANT)
- * .roomNick("thirdwitch")
- * .allowRequest(true)
- * .build();
- * ```
+ *     .jid(Jid.of("hag66@shakespeare.lit/pda"))
+ *     .role(Role.PARTICIPANT)
+ *     .roomNick("thirdwitch")
+ *     .allowRequest(true)
+ *     .build();
+ * }</pre>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#requestvoice">7.13 Requesting Voice</a>

@@ -35,30 +35,30 @@ import java.util.Objects;
  * <h2>Generating a Color</h2>
  * To generate a color pass either a nickname or the bare JID of the conversation as <code>input</code> to the {@link #generate(CharSequence)} method.
  * Generally, nick names should be preferred over bare JIDs.
- * ```java
+ * <pre>{@code
  * ConsistentColor color = ConsistentColor.generate(input);
  * float red = color.getRed();
  * float green = color.getGreen();
  * float blue = color.getBlue();
- * ```
+ * }</pre>
  * <h2>Corrections for Color Vision Deficiencies</h2>
  * In order to ensure accessibility to users with color vision deficiencies, you can generate corrected colors.
- * ```java
+ * <pre>{@code
  * ConsistentColor color = ConsistentColor.generate(input, ConsistentColor.ColorVisionDeficiency.RED_GREEN_BLINDNESS);}
- * ```
+ * }</pre>
  * <h2>Adapting the Color for specific Background Colors</h2>
  * To increase readability on colored background, you may want to adapt the color for background colors.
- * ```java
+ * <pre>{@code
  * ConsistentColor color = ConsistentColor.generate(input);
  * // Adaption for black background
  * ConsistentColor adapted = color.adaptForBackground(0, 0, 0);
- * ```
+ * }</pre>
  * <h2>Integration with JavaFX and AWT</h2>
- * ```java
+ * <pre>{@code
  * ConsistentColor c = ConsistentColor.generate(input);
  * javafx.scene.paint.Color color = javafx.scene.paint.Color.color(c.getRed(), c.getGreen(), c.getBlue());
  * java.awt.Color color = new java.awt.Color(c.getRed(), c.getGreen(), c.getBlue());
- * ```
+ * }</pre>
  * The default Y value in the YCbCr color space is 0.732.
  * <p>
  * Note that this class overrides {@link #equals(Object)} and {@link #hashCode()}:

@@ -37,11 +37,11 @@ import java.net.URL;
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:register} namespace.
  * <h3>Usage</h3>
  * To request the registration form:
- * ```java
+ * <pre>{@code
  * Registration registration = Registration.empty();
- * ```
+ * }</pre>
  * To create a registration for submission:
- * ```java
+ * <pre>{@code
  * Registration registration = Registration.builder()
  *     .username("user")
  *     .password("pass")
@@ -50,11 +50,11 @@ import java.net.URL;
  *     .nickname("Nick Name")
  *     .email("E-Mail")
  *     .build();
- * ```
+ * }</pre>
  * To create a registration for removing the current account:
- * ```java
+ * <pre>{@code
  * Registration registration = Registration.remove();
- * ```
+ * }</pre>
  * This class is immutable.
  *
  * @author Christian Schudt

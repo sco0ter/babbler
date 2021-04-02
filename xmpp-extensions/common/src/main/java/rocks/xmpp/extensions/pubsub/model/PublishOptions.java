@@ -35,26 +35,26 @@ import java.util.List;
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/pubsub#publish-options}, which can be used to retrieve node meta data.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
- * ```java
+ * <pre>{@code
  * PublishOptions publishOptions = new PublishOptions(dataForm);
- * ```
+ * }</pre>
  * To build a form:
- * ```java
+ * <pre>{@code
  * PublishOptions publishOptions = PublishOptions.builder()
  *     .accessModel(AccessModel.AUTHORIZE)
  *     .persistItems(true)
  *     .rosterGroupsAllowed(Collections.singleton("Friends"))
  *     .sendLastPublishedItem(SendLastPublishedItem.ON_SUB)
  *     .build();
- * ```
+ * }</pre>
  * <h4>Persistent Storage of Public Data via PubSub</h4>
- * ```java
+ * <pre>{@code
  * PublishOptions publishOptions = PublishOptions.forStorageOfPublicData();
- * ```
+ * }</pre>
  * <h4>Persistent Storage of Public Private via PubSub</h4>
- * ```java
+ * <pre>{@code
  * PublishOptions publishOptions = PublishOptions.forStorageOfPrivateData();
- * ```
+ * }</pre>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0060.html#registrar-formtypes-publish">16.4.5 pubsub#publish-options FORM_TYPE</a>

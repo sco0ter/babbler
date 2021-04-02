@@ -41,13 +41,13 @@ import java.util.Objects;
  * The implementation of the {@code <address/>} element in the {@code http://jabber.org/protocol/address} namespace.
  * <h3>Usage</h3>
  * To create a new address, use one of the public constructors, like:
- * ```java
+ * <pre>{@code
  * Address address = new Address(Address.Type.TO, Jid.of("hildjj@jabber.org/Work"), "description");
- * ```
+ * }</pre>
  * To mark an address as delivered, create a new immutable address object from an undelivered address:
- * ```java
+ * <pre>{@code
  * Address delivered = address.delivered();
- * ```
+ * }</pre>
  * This class is immutable.
  *
  * @author Christian Schudt

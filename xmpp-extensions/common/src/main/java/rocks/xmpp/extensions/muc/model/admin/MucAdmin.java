@@ -39,10 +39,10 @@ import java.util.List;
 /**
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/muc#admin} namespace.
  * <h3>Usage</h3>
- * ```java
+ * <pre>{@code
  * // To create an element with an item of a role
  * MucAdmin mucAdmin = MucAdmin.withItem(Role.MODERATOR);
- * ```
+ * }</pre>
  * This class is immutable.
  *
  * @author Christian Schudt
@@ -71,11 +71,11 @@ public final class MucAdmin {
     /**
      * Creates a {@code <query/>} element with an {@code <item/>} child element.
      * <p><b>Sample:</b></p>
-     * ```xml
+     * <pre>{@code
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
      *     <item role='participant'/>
      * </query>
-     * ```
+     * }</pre>
      *
      * @param role The role.
      * @return The {@link MucAdmin} instance.
@@ -87,11 +87,11 @@ public final class MucAdmin {
     /**
      * Creates a {@code <query/>} element with an {@code <item/>} child element.
      * <p><b>Sample:</b></p>
-     * ```xml
+     * <pre>{@code
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
      *     <item affiliation='outcast'/>
      * </query>
-     * ```
+     * }</pre>
      *
      * @param affiliation The affiliation.
      * @return The {@link MucAdmin} instance.
@@ -103,14 +103,14 @@ public final class MucAdmin {
     /**
      * Creates a {@code <query/>} element with an {@code <item/>} child element.
      * <p><b>Sample:</b></p>
-     * ```xml
+     * <pre>{@code
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
      *     <item nick='thirdwitch'
      *           role='participant'>
      *         <reason>A worthy witch indeed!</reason>
      *     </item>
      * </query>
-     * ```
+     * }</pre>
      *
      * @param role   The role.
      * @param nick   The nick.
@@ -124,12 +124,12 @@ public final class MucAdmin {
     /**
      * Creates a {@code <query/>} element with an {@code <item/>} child element.
      * <p><b>Sample:</b></p>
-     * ```xml
+     * <pre>{@code
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
      *     <item affiliation='outcast'
      *           jid='earlofcambridge@shakespeare.lit'/>
      * </query>
-     * ```
+     * }</pre>
      *
      * @param affiliation The affiliation.
      * @param jid         The JID.
@@ -143,14 +143,14 @@ public final class MucAdmin {
     /**
      * Creates a {@code <query/>} element with an {@code <item/>} child element.
      * <p><b>Sample:</b></p>
-     * ```xml
+     * <pre>{@code
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
      *     <item affiliation='member'
      *      jid='hag66@shakespeare.lit'
      *      nick='thirdwitch'>
      *     <reason>A worthy witch indeed!</reason>
      * </query>
-     * ```
+     * }</pre>
      *
      * @param affiliation The affiliation.
      * @param jid         The JID.
@@ -165,7 +165,7 @@ public final class MucAdmin {
     /**
      * Creates a {@code <query/>} element with {@code <item/>} child elements.
      * <p><b>Sample:</b></p>
-     * ```xml
+     * <pre>{@code
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
      *     <item affiliation='none'
      *           jid='polonius@hamlet/castle'
@@ -180,7 +180,7 @@ public final class MucAdmin {
      *           nick='Hecate'
      *           role='participant'/>
      * </query>
-     * ```
+     * }</pre>
      *
      * @param items The items.
      * @return The {@link MucAdmin} instance.

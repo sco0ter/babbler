@@ -33,13 +33,13 @@ import rocks.xmpp.core.stream.StreamNegotiationException;
  * Typical error cases are invalid username and/or password in which case the {@linkplain #getCondition() failure condition} is {@link rocks.xmpp.core.sasl.model.Failure.Condition#NOT_AUTHORIZED}.
  * <p>
  * If you want to know the exact failure case, ask for the condition as shown below:
- * ```java
+ * <pre>{@code
  * catch (AuthenticationException e) {
  *     if (e.getCondition() == Failure.Condition.NOT_AUTHORIZED) {
  *         //...
  *     }
  * }
- * ```
+ * }</pre>
  *
  * @author Christian Schudt
  */

@@ -67,15 +67,15 @@ import java.util.function.Supplier;
  * It allows you to configure basic connection settings like hostname and port, as well as the path in the WebSocket URI.
  * <h3>Usage</h3>
  * In order to create an instance of this class you have to use the builder pattern as shown below.
- * ```java
+ * <pre>{@code
  * WebSocketConnectionConfiguration connectionConfiguration = WebSocketConnectionConfiguration.builder()
- * .hostname("localhost")
- * .port(7443)
- * .path("/ws/")
- * .sslContext(sslContext)
- * .channelEncryption(ChannelEncryption.DIRECT)
- * .build();
- * ```
+ *    .hostname("localhost")
+ *    .port(7443)
+ *    .path("/ws/")
+ *    .sslContext(sslContext)
+ *    .channelEncryption(ChannelEncryption.DIRECT)
+ *    .build();
+ * }</pre>
  * The above sample configuration will connect to <code>wss://localhost:7443/ws/</code> using SSL with a custom {@link SSLContext}.
  * <p>
  * This class is immutable.

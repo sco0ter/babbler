@@ -214,6 +214,7 @@ public abstract class ScramBase {
      *
      * @param saltedPassword The salted password.
      * @return The stored key.
+     * @throws InvalidKeyException      If the provided password is invalid.
      * @throws NoSuchAlgorithmException If the hash algorithm does not exist.
      */
     public final byte[] computeServerKey(byte[] saltedPassword) throws InvalidKeyException, NoSuchAlgorithmException {

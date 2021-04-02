@@ -49,14 +49,14 @@ import java.util.Locale;
  * </blockquote>
  * <h3>Usage</h3>
  * This class is immutable, you have to use a builder to create a geo location instance. Here's an example:
- * ```java
+ * <pre>{@code
  * GeoLocation geoLocation = GeoLocation.builder()
  *     .countryCode("de")
  *     .latitude(50.2)
  *     .longitude(7.5)
  *     .timeZoneOffset(ZoneOffset.of("+01:00"))
  *     .build();
- * ```
+ * }</pre>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0080.html">XEP-0080: User Location</a>

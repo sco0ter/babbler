@@ -34,13 +34,13 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 /**
  * The implementation of the {@code <x/>} element in the {@code http://jabber.org/protocol/muc} namespace, which allows to enter a room.
  * <h3>Usage</h3>
- * ```java
+ * <pre>{@code
  * // To create an empty element, e.g to indicate support in a presence
  * Muc muc = Muc.empty();
  *
  * // To create an element with a password.
  * Muc muc  = Muc.withPassword("secret");
- * ```
+ * }</pre>
  * This class is immutable.
  *
  * @author Christian Schudt

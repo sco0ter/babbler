@@ -43,6 +43,7 @@ public interface TcpBinding extends Connection {
      *
      * @param method    The compression method.
      * @param onSuccess Invoked after the compression method has been chosen, but before compression is applied.
+     * @throws Exception Any exception which may occur during compression.
      */
     void compressConnection(final String method, final Runnable onSuccess) throws Exception;
 }

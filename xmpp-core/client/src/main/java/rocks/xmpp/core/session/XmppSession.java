@@ -1165,6 +1165,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      * Note that the returned unmarshaller is not thread-safe.
      * </p>
      *
+     * @param rootLocale The root locale, usually set in the stream header.
      * @return The unmarshaller.
      * @see #createUnmarshaller()
      */

@@ -44,13 +44,13 @@ import java.util.Map;
  * It allows you to configure basic connection settings like hostname and port, but also BOSH specific settings like the wait interval, a route or the use of a key sequencing mechanism.
  * <h3>Usage</h3>
  * In order to create an instance of this class you have to use the builder pattern as shown below.
- * ```java
+ * <pre>{@code
  * BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
  *     .hostname("localhost")
  *     .port(5280)
  *     .path("/http-bind/")
  *     .build();
- * ```
+ * }</pre>
  * The above sample configuration will connect to <code>http://localhost:5280/http-bind/</code>.
  * <p>
  * This class is immutable.

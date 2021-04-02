@@ -31,23 +31,23 @@ import java.util.Objects;
 /**
  * The implementation of the {@code <replace/>} element in the {@code urn:xmpp:message-correct:0} namespace.
  * <h3>Advertising Support for Message Correction</h3>
- * ```java
+ * <pre>{@code
  * xmppClient.enableFeature(Replace.NAMESPACE);
- * ```
+ * }</pre>
  * <h3>Checking if a Message Should be Corrected</h3>
- * ```
+ * <pre>{@code
  * Replace replace = message.getExtension(Replace.class);
  * if (replace != null) {
  *     String oldMessageId = replace.getId();
  *     // Replace old message with message...
  * }
- * ```
+ * }</pre>
  * <h3>Correcting a Message</h3>
- * ```
+ * <pre>{@code
  * Message correctedMessage = new Message(jid, Message.Type.CHAT, "This is the corrected text");
  * correctedMessage.addExtension(new Replace(id));
  * xmppClient.send(correctedMessage);
- * ```
+ * }</pre>
  * <p>
  * This class is immutable.
  *

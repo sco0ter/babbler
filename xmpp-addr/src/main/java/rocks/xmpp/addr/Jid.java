@@ -35,23 +35,23 @@ import java.io.Serializable;
  * [ localpart "@" ] domainpart [ "/" resourcepart ]
  * </p>
  * The easiest way to create a JID is to use the {@link #of(CharSequence)} method:
- * ```java
+ * <pre>{@code
  * Jid jid = Jid.of("juliet@capulet.lit/balcony");
- * ```
+ * }</pre>
  * You can then get the parts from it via the respective methods:
- * ```java
+ * <pre>{@code
  * String local = jid.getLocal(); // juliet
  * String domain = jid.getDomain(); // capulet.lit
  * String resource = jid.getResource(); // balcony
- * ```
+ * }</pre>
  * Implementations of this interface should override <code>equals()</code> and <code>hashCode()</code>, so that different instances with the same value are equal:
- * ```java
+ * <pre>{@code
  * Jid.of("romeo@capulet.lit/balcony").equals(Jid.of("romeo@capulet.lit/balcony")); // true
- * ```
+ * }</pre>
  * The default implementation of this class also supports <a href="https://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>, i.e.
- * ```java
+ * <pre>{@code
  * Jid.of("d'artagnan@musketeers.lit")
- * ```
+ * }</pre>
  * is escaped as <code>d\\27artagnan@musketeers.lit</code>.
  * <p>
  * Implementations of this interface should be thread-safe and immutable.

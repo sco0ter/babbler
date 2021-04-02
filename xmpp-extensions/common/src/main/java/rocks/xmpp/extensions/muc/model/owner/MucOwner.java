@@ -35,10 +35,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/muc#owner} namespace.
  * <h3>Usage</h3>
- * ```java
+ * <pre>{@code
  * // To create an empty element (to query the configuration form).
  * MucOwner mucOwner = MucOwner.empty();
- * ```
+ * }</pre>
  * This class is immutable.
  *
  * @author Christian Schudt
@@ -83,13 +83,13 @@ public final class MucOwner {
     /**
      * Creates a {@code <query/>} element with a {@code <destroy/>} child element.
      * <p><b>Sample:</b></p>
-     * ```xml
+     * <pre>{@code
      * <query xmlns='http://jabber.org/protocol/muc#owner'>
      *     <destroy jid='coven@chat.shakespeare.lit'>
      *         <reason>Macbeth doth come.</reason>
      *     </destroy>
      * </query>
-     * ```
+     * }</pre>
      *
      * @param jid    The JID.
      * @param reason The reason.

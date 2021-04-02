@@ -36,21 +36,21 @@ import java.util.Collection;
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#register}, which can be used to register with a MUC room.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
- * ```java
+ * <pre>{@code
  * RoomRegistration roomRegistration = new RoomRegistration(dataForm);
- * ```
+ * }</pre>
  * To build a form:
- * ```java
+ * <pre>{@code
  * RoomRegistration roomRegistration = RoomRegistration.builder()
- * .allowRegister(true)
- * .email("hag66@witchesonline")
- * .familyName("Entwhistle-Throckmorton")
- * .givenName("Brunhilde")
- * .faqEntry("Just another witch.")
- * .nickname("thirdwitch")
- * .webPage(new URL("http://witchesonline/~hag66/"))
- * .build();
- * ```
+ *     .allowRegister(true)
+ *     .email("hag66@witchesonline")
+ *     .familyName("Entwhistle-Throckmorton")
+ *     .givenName("Brunhilde")
+ *     .faqEntry("Just another witch.")
+ *     .nickname("thirdwitch")
+ *     .webPage(new URL("http://witchesonline/~hag66/"))
+ *     .build();
+ * }</pre>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>

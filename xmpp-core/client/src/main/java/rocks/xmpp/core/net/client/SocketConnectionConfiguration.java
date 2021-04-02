@@ -39,14 +39,14 @@ import java.net.Socket;
  * but also a whitespace keep-alive interval, a custom socket factory, a custom SSL context and compression methods.
  * <h3>Usage</h3>
  * In order to create an instance of this class you have to use the builder pattern as shown below.
- * ```java
+ * <pre>{@code
  * SocketConnectionConfiguration socketConfiguration = SocketConnectionConfiguration.builder()
- * .hostname("localhost")
- * .port(5222)
- * .sslContext(sslContext)
- * .channelEncryption(ChannelEncryption.DISABLED)
- * .build();
- * ```
+ *     .hostname("localhost")
+ *     .port(5222)
+ *     .sslContext(sslContext)
+ *     .channelEncryption(ChannelEncryption.DISABLED)
+ *     .build();
+ * }</pre>
  * This class is immutable.
  *
  * @author Christian Schudt

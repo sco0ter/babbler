@@ -122,6 +122,7 @@ public final class InfoDiscovery implements DiscoverableInfo, ServiceDiscoveryNo
      * @param identities The identities
      * @param features   The features.
      * @param extensions The extensions.
+     * @param lang       The language.
      */
     public InfoDiscovery(String node, Collection<Identity> identities, Collection<String> features, Collection<DataForm> extensions, Locale lang) {
         this.node = node;

@@ -83,6 +83,7 @@ public interface Session extends AutoCloseable {
     /**
      * Asynchronously closes the session with a stream error.
      *
+     * @param streamError The stream error, which is sent before closing the stream.
      * @return The completion stage, which is complete, when the session is closed.
      * @see #closeAsync()
      * @see Connection#closeAsync(StreamError)

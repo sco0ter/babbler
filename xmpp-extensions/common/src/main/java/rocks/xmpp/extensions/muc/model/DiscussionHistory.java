@@ -33,7 +33,7 @@ import java.time.Instant;
 /**
  * The discussion history for a multi-user chat room, which can be requested when entering a room.
  * <h3>Usage</h3>
- * ```java
+ * <pre>{@code
  * // To request discussion history for max. 65000 characters
  * DiscussionHistory history = DiscussionHistory.forMaxChars(65000);
  *
@@ -45,7 +45,7 @@ import java.time.Instant;
  *
  * // To request no discussion history at all
  * DiscussionHistory history = DiscussionHistory.none();
- * ```
+ * }</pre>
  * This class is immutable.
  *
  * @author Christian Schudt

@@ -63,6 +63,7 @@ public interface Connection extends AutoCloseable {
      * Opens the XML stream to the peer entity.
      *
      * @param sessionOpen The session open information.
+     * @return The completion stage, which is complete, if the session has been opened, i.e. the element has been sent.
      */
     CompletionStage<Void> open(SessionOpen sessionOpen);
 
@@ -117,6 +118,7 @@ public interface Connection extends AutoCloseable {
     /**
      * Asynchronously closes the connection with a stream error.
      *
+     * @param streamError The stream error, which is sent before closing the stream.
      * @return The completion stage, which is complete, when the connection is closed.
      * @see #closeAsync()
      */

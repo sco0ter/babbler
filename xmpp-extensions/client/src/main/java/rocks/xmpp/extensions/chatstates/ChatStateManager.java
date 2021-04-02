@@ -53,20 +53,20 @@ import java.util.function.Consumer;
  * </p>
  * <h3>Sending Chat States</h3>
  * Setting your own chat state can either be done in a one-to-one chat session or a group chat.
- * ```java
+ * <pre>{@code
  * ChatStateManager chatStateManager = xmppSession.getManager(ChatStateManager.class);
  * chatStateManager.setChatState(ChatState.COMPOSING, chat);
- * ```
+ * }</pre>
  * <h3>Receiving Chat States</h3>
  * If you want to react to chat states of your chat partner(s), just check for chat state extension and deal with it accordingly.
- * ```java
+ * <pre>{@code
  * ChatState chatState = message.getExtension(ChatState.class);
  * if (chatState == ChatState.COMPOSING) {
  * // Contact is typing.
  * } else if (chatState == ChatState.PAUSED) {
  * // Contact has paused typing.
  * }
- * ```
+ * }</pre>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a>
@@ -102,13 +102,13 @@ public final class ChatStateManager extends Manager implements InboundMessageHan
     /**
      * Sets the chat state for a chat. If this manager is disabled this method has no effect.
      * Before sending chat states in a one-to-one chat, you should check, if the peer supports it, e.g. like that:
-     * ```java
+     * <pre>{@code
      * chatStateManager.isSupported(chat.getChatPartner()).thenAccept(result -> {
      * if (result) {
      * chatStateManager.setChatState(chatState, chat);
      * }
      * });
-     * ```
+     * }</pre>
      *
      * @param chatState The chat state.
      * @param chat      The chat.

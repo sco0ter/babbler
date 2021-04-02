@@ -38,24 +38,24 @@ import java.util.Locale;
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/pubsub#meta-data}, which can be used to retrieve node meta data.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
- * ```java
+ * <pre>{@code
  * NodeMetaData nodeMetaData = new NodeMetaData(dataForm);
- * ```
+ * }</pre>
  * To build a form:
- * ```java
+ * <pre>{@code
  * NodeMetaData nodeMetaData = NodeMetaData.builder()
- * .contacts(Collections.singleton(Jid.of("contact")))
- * .creationDate(date)
- * .creator(Jid.of("creator"))
- * .description("desc")
- * .language("de")
- * .numberOfSubscribers(2)
- * .owners(Collections.singleton(Jid.of("owner")))
- * .publishers(Collections.singleton(Jid.of("publisher")))
- * .title("title")
- * .payloadType("namespace")
- * .build();
- * ```
+ *     .contacts(Collections.singleton(Jid.of("contact")))
+ *     .creationDate(date)
+ *     .creator(Jid.of("creator"))
+ *     .description("desc")
+ *     .language("de")
+ *     .numberOfSubscribers(2)
+ *     .owners(Collections.singleton(Jid.of("owner")))
+ *     .publishers(Collections.singleton(Jid.of("publisher")))
+ *     .title("title")
+ *     .payloadType("namespace")
+ *     .build();
+ * }</pre>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0060.html#entity-metadata">5.4 Discover Node Metadata</a>

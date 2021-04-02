@@ -43,15 +43,15 @@ import java.util.Objects;
  * It also provides a {@linkplain #timeFromPresence(Presence) convenient method}, which gets the idle time from a presence with respect to <a href="https://xmpp.org/extensions/xep-0319.html">XEP-0319: Last User Interaction in Presence</a> and the superseded <a href="https://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
  * </p>
  * <h3>Adding Last User Interaction to Presence</h3>
- * ```java
+ * <pre>{@code
  * presence.addExtension(Idle.since(OffsetDateTime.now()));
- * ```
+ * }</pre>
  * <h3>Getting Last User Interaction from Presence</h3>
  * The following method takes the very similar <a href="https://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a> extension into account as well.
  * Delayed Delivery information on the presence is respected, too.
- * ```java
+ * <pre>{@code
  * Instant idleSince = Idle.timeFromPresence(presence);
- * ```
+ * }</pre>
  *
  * This class is immutable.
  *

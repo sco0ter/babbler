@@ -146,6 +146,16 @@ public class IQ extends Stanza {
     /**
      * Creates an IQ of type 'get' with a random id.
      *
+     * @param extension The extension.
+     * @return The IQ.
+     */
+    public static IQ get(Object extension) {
+        return get(null, extension);
+    }
+
+    /**
+     * Creates an IQ of type 'get' with a random id.
+     *
      * @param to        The 'to' attribute.
      * @param extension The extension.
      * @return The IQ.
@@ -157,32 +167,22 @@ public class IQ extends Stanza {
     /**
      * Creates an IQ of type 'set' with a random id.
      *
+     * @param extension The extension.
+     * @return The IQ.
+     */
+    public static IQ set(Object extension) {
+        return set(null, extension);
+    }
+
+    /**
+     * Creates an IQ of type 'set' with a random id.
+     *
      * @param to        The 'to' attribute.
      * @param extension The extension.
      * @return The IQ.
      */
     public static IQ set(Jid to, Object extension) {
         return new IQ(to, Type.SET, Objects.requireNonNull(extension));
-    }
-
-    /**
-     * Creates an IQ of type 'get' with a random id.
-     *
-     * @param extension The extension.
-     * @return The IQ.
-     */
-    public static IQ get(Object extension) {
-        return get(null, extension);
-    }
-
-    /**
-     * Creates an IQ of type 'set' with a random id.
-     *
-     * @param extension The extension.
-     * @return The IQ.
-     */
-    public static IQ set(Object extension) {
-        return set(null, extension);
     }
 
     /**

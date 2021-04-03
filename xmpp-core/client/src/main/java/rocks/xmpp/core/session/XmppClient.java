@@ -328,23 +328,6 @@ public final class XmppClient extends XmppSession {
         return login(configuration.getAuthenticationMechanisms(), authorizationId, callbackHandler, resource);
     }
 
-    /**
-     * Logs in anonymously and binds a resource.
-     *
-     * @return The additional data with success, i.e. the data returned upon successful authentication.
-     * @throws AuthenticationException    If the login failed, due to a SASL error reported by the server.
-     * @throws StreamErrorException       If the server returned a stream error.
-     * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
-     * @throws NoResponseException        If the server didn't return a response during stream establishment.
-     * @throws StanzaErrorException       If the server returned a stanza error during resource binding.
-     * @throws XmppException              If the login failed, due to another error.
-     */
-    public final byte[] loginAnonymously() throws XmppException {
-        byte[] successData = login(Collections.singleton("ANONYMOUS"), null, null, null);
-        anonymous = true;
-        return successData;
-    }
-
     private byte[] login(Collection<String> mechanisms, String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
 
         if (checkAuthenticated()) {
@@ -453,6 +436,23 @@ public final class XmppClient extends XmppSession {
             afterLogin();
             return authenticationManager.getSuccessData();
         }
+    }
+
+    /**
+     * Logs in anonymously and binds a resource.
+     *
+     * @return The additional data with success, i.e. the data returned upon successful authentication.
+     * @throws AuthenticationException    If the login failed, due to a SASL error reported by the server.
+     * @throws StreamErrorException       If the server returned a stream error.
+     * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
+     * @throws NoResponseException        If the server didn't return a response during stream establishment.
+     * @throws StanzaErrorException       If the server returned a stanza error during resource binding.
+     * @throws XmppException              If the login failed, due to another error.
+     */
+    public final byte[] loginAnonymously() throws XmppException {
+        byte[] successData = login(Collections.singleton("ANONYMOUS"), null, null, null);
+        anonymous = true;
+        return successData;
     }
 
     /**

@@ -46,17 +46,17 @@ final class CombinedResultSetProvider<T extends ResultSetItem> implements Result
     }
 
     @Override
-    public final List<T> getItems() {
-        return StreamSupport.stream(resultSetProviders.spliterator(), false)
-                .flatMap(resultSetProvider -> resultSetProvider.getItems().stream())
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public final int getItemCount() {
         return StreamSupport.stream(resultSetProviders.spliterator(), false)
                 .flatMapToInt(resultSetProvider -> IntStream.of(resultSetProvider.getItemCount()))
                 .sum();
+    }
+
+    @Override
+    public final List<T> getItems() {
+        return StreamSupport.stream(resultSetProviders.spliterator(), false)
+                .flatMap(resultSetProvider -> resultSetProvider.getItems().stream())
+                .collect(Collectors.toList());
     }
 
     @Override

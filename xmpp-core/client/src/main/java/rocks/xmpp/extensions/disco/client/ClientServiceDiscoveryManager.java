@@ -186,6 +186,18 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
     }
 
     /**
+     * Adds a feature by its manager class.
+     *
+     * @param managerClass The manager class.
+     * @see #addFeature(String)
+     * @see #getFeatures()
+     */
+    public final void addFeature(Class<?> managerClass) {
+        // This will eventually call addFeature(String)
+        setEnabled(managersToExtensions.get(managerClass), null, true);
+    }
+
+    /**
      * Removes a feature.
      *
      * @param feature The feature.
@@ -203,23 +215,6 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
         }
     }
 
-    @Override
-    public final DiscoverableInfo getDefaultInfo() {
-        return clientInfo;
-    }
-
-    /**
-     * Adds a feature by its manager class.
-     *
-     * @param managerClass The manager class.
-     * @see #addFeature(String)
-     * @see #getFeatures()
-     */
-    public final void addFeature(Class<?> managerClass) {
-        // This will eventually call addFeature(String)
-        setEnabled(managersToExtensions.get(managerClass), null, true);
-    }
-
     /**
      * Removes a feature by its manager class.
      *
@@ -230,6 +225,11 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
     public final void removeFeature(Class<?> managerClass) {
         // This will eventually call addFeature(String)
         setEnabled(managersToExtensions.get(managerClass), null, false);
+    }
+
+    @Override
+    public final DiscoverableInfo getDefaultInfo() {
+        return clientInfo;
     }
 
     /**

@@ -34,6 +34,18 @@ import java.util.Objects;
  */
 abstract class AbstractJid implements Jid {
 
+    static String createString(String local, String domain, String resource) {
+        StringBuilder sb = new StringBuilder();
+        if (local != null) {
+            sb.append(local).append('@');
+        }
+        sb.append(domain);
+        if (resource != null) {
+            sb.append('/').append(resource);
+        }
+        return sb.toString();
+    }
+
     /**
      * Checks if the JID is a full JID.
      * <blockquote>
@@ -157,23 +169,11 @@ abstract class AbstractJid implements Jid {
      */
     @Override
     public final String toString() {
-        return toString(getLocal(), getDomain(), getResource());
+        return createString(getLocal(), getDomain(), getResource());
     }
 
     @Override
     public final String toEscapedString() {
-        return toString(getEscapedLocal(), getDomain(), getResource());
-    }
-
-    static String toString(String local, String domain, String resource) {
-        StringBuilder sb = new StringBuilder();
-        if (local != null) {
-            sb.append(local).append('@');
-        }
-        sb.append(domain);
-        if (resource != null) {
-            sb.append('/').append(resource);
-        }
-        return sb.toString();
+        return createString(getEscapedLocal(), getDomain(), getResource());
     }
 }

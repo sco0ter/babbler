@@ -38,18 +38,18 @@ import rocks.xmpp.extensions.rsm.model.ResultSetItem;
 public interface ResultSetProvider<T extends ResultSetItem> {
 
     /**
-     * Gets all items. This method is called, if no result set management was included in the query.
-     *
-     * @return The items.
-     */
-    List<T> getItems();
-
-    /**
      * Gets the total item count.
      *
      * @return The item count.
      */
     int getItemCount();
+
+    /**
+     * Gets all items. This method is called, if no result set management was included in the query.
+     *
+     * @return The items.
+     */
+    List<T> getItems();
 
     /**
      * Gets the items in a specific range (by index).

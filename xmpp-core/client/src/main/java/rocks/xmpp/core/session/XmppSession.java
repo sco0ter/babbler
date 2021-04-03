@@ -1491,21 +1491,21 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Disables a feature by its name, usually a protocol namespace.
-     *
-     * @param name The associated manager class.
-     */
-    public final void disableFeature(String name) {
-        serviceDiscoveryManager.removeFeature(name);
-    }
-
-    /**
      * Enables a feature by its manager class.
      *
      * @param managerClass The associated manager class.
      */
     public final void enableFeature(Class<?> managerClass) {
         serviceDiscoveryManager.addFeature(managerClass);
+    }
+
+    /**
+     * Disables a feature by its name, usually a protocol namespace.
+     *
+     * @param name The associated manager class.
+     */
+    public final void disableFeature(String name) {
+        serviceDiscoveryManager.removeFeature(name);
     }
 
     /**

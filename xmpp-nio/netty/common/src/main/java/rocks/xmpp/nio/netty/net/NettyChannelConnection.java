@@ -108,16 +108,6 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
         return completableFuture;
     }
 
-    private CompletionStage<Void> write(final StreamElement streamElement, final Function<StreamElement, ChannelFuture> writeFunction) {
-        if (!isClosed() || streamElement == StreamHeader.CLOSING_STREAM_TAG) {
-            return completableFutureFromNettyFuture(writeFunction.apply(streamElement));
-        } else {
-            final CompletableFuture<Void> completableFuture = new CompletableFuture<>();
-            completableFuture.completeExceptionally(new IllegalStateException("Connection closed"));
-            return completableFuture;
-        }
-    }
-
     private void onRead(final StreamElement streamElement) {
         if (streamElement instanceof SessionOpen) {
             openedByPeer((SessionOpen) streamElement);
@@ -152,6 +142,16 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
     @Override
     public final CompletionStage<Void> write(final StreamElement streamElement) {
         return write(streamElement, channel::write);
+    }
+
+    private CompletionStage<Void> write(final StreamElement streamElement, final Function<StreamElement, ChannelFuture> writeFunction) {
+        if (!isClosed() || streamElement == StreamHeader.CLOSING_STREAM_TAG) {
+            return completableFutureFromNettyFuture(writeFunction.apply(streamElement));
+        } else {
+            final CompletableFuture<Void> completableFuture = new CompletableFuture<>();
+            completableFuture.completeExceptionally(new IllegalStateException("Connection closed"));
+            return completableFuture;
+        }
     }
 
     @Override

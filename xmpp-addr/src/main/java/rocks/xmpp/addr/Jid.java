@@ -91,6 +91,24 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
     String ESCAPING_FEATURE = "jid\\20escaping";
 
     /**
+     * Creates a JID from an unescaped string. The format must be
+     * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>
+     * The input string will be escaped.
+     *
+     * @param jid The JID.
+     * @return The JID.
+     * @throws NullPointerException     If the jid is null.
+     * @throws IllegalArgumentException If the jid could not be parsed or is not valid.
+     * @see <a href="https://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
+     */
+    static Jid of(CharSequence jid) {
+        if (jid instanceof Jid) {
+            return (Jid) jid;
+        }
+        return FullJid.of(jid.toString(), false);
+    }
+
+    /**
      * Returns a full JID with a domain and resource part, e.g. <code>capulet.com/balcony</code>
      *
      * @param local    The local part.
@@ -140,24 +158,6 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
      */
     static Jid ofDomainAndResource(CharSequence domain, CharSequence resource) {
         return new FullJid(null, domain, resource);
-    }
-
-    /**
-     * Creates a JID from an unescaped string. The format must be
-     * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>
-     * The input string will be escaped.
-     *
-     * @param jid The JID.
-     * @return The JID.
-     * @throws NullPointerException     If the jid is null.
-     * @throws IllegalArgumentException If the jid could not be parsed or is not valid.
-     * @see <a href="https://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>
-     */
-    static Jid of(CharSequence jid) {
-        if (jid instanceof Jid) {
-            return (Jid) jid;
-        }
-        return FullJid.of(jid.toString(), false);
     }
 
     /**

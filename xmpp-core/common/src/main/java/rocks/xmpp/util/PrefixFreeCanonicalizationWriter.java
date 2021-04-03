@@ -88,6 +88,11 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter, Namespa
         writeElement(prefix, localName, namespaceURI, xsw::writeEmptyElement);
     }
 
+    @Override
+    public final void writeEmptyElement(final String localName) throws XMLStreamException {
+        xsw.writeEmptyElement(localName);
+    }
+
     private void writeElement(final String prefix, final String localName, final String namespaceURI, ElementWriter writeElement) throws XMLStreamException {
         if (shouldWriteNamespacePrefix(namespaceURI)) {
             writeElement.writeElement(prefix, localName, namespaceURI);
@@ -99,11 +104,6 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter, Namespa
                 xsw.writeDefaultNamespace(namespaceURI);
             }
         }
-    }
-
-    @Override
-    public final void writeEmptyElement(final String localName) throws XMLStreamException {
-        xsw.writeEmptyElement(localName);
     }
 
     @Override

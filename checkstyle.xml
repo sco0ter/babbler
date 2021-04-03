@@ -51,5 +51,8 @@
         <module name="OneTopLevelClass"/>
         <module name="ThrowsCount"/>
 
+        <!-- Coding -->
+        <module name="OverloadMethodsDeclarationOrder"/>
+
     </module>
 </module>

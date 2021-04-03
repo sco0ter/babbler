@@ -45,11 +45,9 @@ import java.util.function.Function;
  * @see <a href="http://stackoverflow.com/a/22891780">http://stackoverflow.com/a/22891780</a>
  */
 public final class LruCache<K, V> implements Map<K, V> {
-    private final int maxEntries;
-
-    private final Map<K, V> map;
-
     final Queue<K> queue;
+    private final int maxEntries;
+    private final Map<K, V> map;
 
     public LruCache(final int maxEntries) {
         this.maxEntries = maxEntries;
@@ -91,6 +89,33 @@ public final class LruCache<K, V> implements Map<K, V> {
         return v;
     }
 
+    private void keyUsed(final K key) {
+        // remove it from the queue and re-add it, to make it the most recently used key.
+        queue.remove(key);
+        queue.offer(key);
+    }
+
+    @Override
+    public final V remove(final Object key) {
+        queue.remove(key);
+        return map.remove(key);
+    }
+
+    @Override
+    public final boolean remove(final Object key, final Object value) {
+        final boolean removed = map.remove(key, value);
+        if (removed) {
+            queue.remove(key);
+        }
+        return removed;
+    }
+
+    @Override
+    public final void putAll(final Map<? extends K, ? extends V> m) {
+        for (Map.Entry<? extends K, ? extends V> entry : m.entrySet()) {
+            put(entry.getKey(), entry.getValue());
+        }
+    }
 
     @Override
     public final V put(final K key, final V value) {
@@ -100,17 +125,12 @@ public final class LruCache<K, V> implements Map<K, V> {
         return v;
     }
 
-    @Override
-    public final V remove(final Object key) {
-        queue.remove(key);
-        return map.remove(key);
-    }
-
-
-    @Override
-    public final void putAll(final Map<? extends K, ? extends V> m) {
-        for (Map.Entry<? extends K, ? extends V> entry : m.entrySet()) {
-            put(entry.getKey(), entry.getValue());
+    private void limit() {
+        while (queue.size() > maxEntries) {
+            final K oldestKey = queue.poll();
+            if (oldestKey != null) {
+                map.remove(oldestKey);
+            }
         }
     }
 
@@ -125,6 +145,9 @@ public final class LruCache<K, V> implements Map<K, V> {
         return map.keySet();
     }
 
+
+    // Default methods
+
     @Override
     public final Collection<V> values() {
         return map.values();
@@ -135,9 +158,6 @@ public final class LruCache<K, V> implements Map<K, V> {
         return map.entrySet();
     }
 
-
-    // Default methods
-
     @Override
     public final V putIfAbsent(final K key, final V value) {
         final V v = map.putIfAbsent(key, value);
@@ -146,15 +166,6 @@ public final class LruCache<K, V> implements Map<K, V> {
         }
         limit();
         return v;
-    }
-
-    @Override
-    public final boolean remove(final Object key, final Object value) {
-        final boolean removed = map.remove(key, value);
-        if (removed) {
-            queue.remove(key);
-        }
-        return removed;
     }
 
     @Override
@@ -209,20 +220,5 @@ public final class LruCache<K, V> implements Map<K, V> {
             limit();
             return v;
         }));
-    }
-
-    private void limit() {
-        while (queue.size() > maxEntries) {
-            final K oldestKey = queue.poll();
-            if (oldestKey != null) {
-                map.remove(oldestKey);
-            }
-        }
-    }
-
-    private void keyUsed(final K key) {
-        // remove it from the queue and re-add it, to make it the most recently used key.
-        queue.remove(key);
-        queue.offer(key);
     }
 }

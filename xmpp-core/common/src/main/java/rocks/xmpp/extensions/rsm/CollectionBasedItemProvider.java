@@ -41,13 +41,13 @@ final class CollectionBasedItemProvider<T extends ResultSetItem> implements Resu
     }
 
     @Override
-    public final List<T> getItems() {
-        return List.copyOf(items);
+    public final int getItemCount() {
+        return items.size();
     }
 
     @Override
-    public final int getItemCount() {
-        return items.size();
+    public final List<T> getItems() {
+        return List.copyOf(items);
     }
 
     @Override

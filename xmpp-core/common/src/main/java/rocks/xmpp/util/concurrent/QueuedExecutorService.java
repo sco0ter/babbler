@@ -88,6 +88,18 @@ public class QueuedExecutorService extends AbstractExecutorService {
         execute(command, false);
     }
 
+    void execute(Runnable command, boolean ignoreShutdown) {
+
+        if (ignoreShutdown || !isShutdown()) {
+            // Adds a task to the queue and call ThreadQueue#poll in order to process it (if the queue
+            // allows it, otherwise, wait for a Thread to be available).
+            tasks.add(command);
+            poll();
+        } else {
+            throw new RejectedExecutionException("Executor Service is shutdown");
+        }
+    }
+
     @Override
     public void shutdown() {
         shutdown.set(true);
@@ -128,18 +140,6 @@ public class QueuedExecutorService extends AbstractExecutorService {
                     nanos -= System.nanoTime() - now;
                 }
             }
-        }
-    }
-
-    void execute(Runnable command, boolean ignoreShutdown) {
-
-        if (ignoreShutdown || !isShutdown()) {
-            // Adds a task to the queue and call ThreadQueue#poll in order to process it (if the queue
-            // allows it, otherwise, wait for a Thread to be available).
-            tasks.add(command);
-            poll();
-        } else {
-            throw new RejectedExecutionException("Executor Service is shutdown");
         }
     }
 

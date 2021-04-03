@@ -227,11 +227,13 @@ public final class DebugController implements Initializable {
         for (int i = src.length() - length; i >= 0; i--) {
             // Quick check before calling the more expensive regionMatches() method:
             final char ch = src.charAt(i);
-            if (ch != firstLo && ch != firstUp)
+            if (ch != firstLo && ch != firstUp) {
                 continue;
+            }
 
-            if (src.regionMatches(true, i, input, 0, length))
+            if (src.regionMatches(true, i, input, 0, length)) {
                 return true;
+            }
         }
 
         return false;

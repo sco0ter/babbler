@@ -46,8 +46,9 @@ final class SettableStringReader extends Reader {
         } else if (len == 0) {
             return 0;
         }
-        if (next >= length)
+        if (next >= length) {
             return -1;
+        }
         int n = Math.min(length - next, len);
         str.getChars(next, next + n, cbuf, off);
         next += n;

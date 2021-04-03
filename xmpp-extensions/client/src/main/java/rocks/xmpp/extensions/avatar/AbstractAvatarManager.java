@@ -155,8 +155,9 @@ public abstract class AbstractAvatarManager extends Manager implements AvatarMan
      */
     private static byte[] asPNG(final BufferedImage bufferedImage) throws ConversionException {
         try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            if (!ImageIO.write(requireNonNull(bufferedImage), "png", outputStream))
+            if (!ImageIO.write(requireNonNull(bufferedImage), "png", outputStream)) {
                 throw new ConversionException();
+            }
             return outputStream.toByteArray();
         } catch (final IOException e) {
             throw new ConversionException(e);

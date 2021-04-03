@@ -94,7 +94,7 @@ public final class DirectoryCache implements Map<String, byte[]> {
     public final byte[] put(String key, byte[] value) {
         // Make sure the directory exists.
         byte[] data = get(key);
-        if (!Arrays.equals(data, value))
+        if (!Arrays.equals(data, value)) {
             try {
                 if (Files.notExists(cacheDirectory)) {
                     Files.createDirectories(cacheDirectory);
@@ -104,6 +104,7 @@ public final class DirectoryCache implements Map<String, byte[]> {
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
+        }
         return data;
     }
 
@@ -168,7 +169,7 @@ public final class DirectoryCache implements Map<String, byte[]> {
 
     @Override
     public final void forEach(final BiConsumer<? super String, ? super byte[]> action) {
-        if (Files.exists(cacheDirectory))
+        if (Files.exists(cacheDirectory)) {
             try (final Stream<Path> files = cacheContent().filter(Files::isReadable)) {
                 files.forEach(file -> {
                     try {
@@ -178,6 +179,7 @@ public final class DirectoryCache implements Map<String, byte[]> {
                     }
                 });
             }
+        }
     }
 
     @SuppressWarnings("StreamResourceLeak")

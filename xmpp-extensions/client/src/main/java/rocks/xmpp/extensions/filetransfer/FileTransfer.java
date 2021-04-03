@@ -139,8 +139,9 @@ public final class FileTransfer {
     }
 
     private void setBytesTransferred(final long bytesTransferred) {
-        if (this.bytesTransferred == bytesTransferred)
+        if (this.bytesTransferred == bytesTransferred) {
             return;
+        }
 
         this.bytesTransferred = bytesTransferred;
 

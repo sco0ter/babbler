@@ -24,6 +24,12 @@
 
 package rocks.xmpp.session.server;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
+
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -40,12 +46,6 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.im.roster.model.SubscriptionState;
 import rocks.xmpp.im.roster.server.ServerRosterManager;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
 
 public class OutboundPresenceInformationHandlerTest {
 

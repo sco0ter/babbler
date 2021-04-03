@@ -37,7 +37,7 @@
     <description>XMPP Subprotocol for WebSocket (Client Endpoint)</description>
     <build>
         <plugins>
-            
+
             <!-- Define JPMS module name -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

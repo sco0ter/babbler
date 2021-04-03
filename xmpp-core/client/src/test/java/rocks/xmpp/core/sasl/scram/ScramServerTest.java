@@ -24,10 +24,10 @@
 
 package rocks.xmpp.core.sasl.scram;
 
+import javax.security.sasl.SaslException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import javax.security.sasl.SaslException;
 
 /**
  * @author Christian Schudt

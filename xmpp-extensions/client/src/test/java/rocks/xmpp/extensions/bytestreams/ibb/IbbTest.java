@@ -24,6 +24,13 @@
 
 package rocks.xmpp.extensions.bytestreams.ibb;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.Duration;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
@@ -35,13 +42,6 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.time.Duration;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 
 /**
  * @author Christian Schudt

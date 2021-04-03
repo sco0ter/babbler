@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.filetransfer.model;
 
-import rocks.xmpp.extensions.hashes.model.Hash;
-
 import java.time.Instant;
 import java.util.List;
+
+import rocks.xmpp.extensions.hashes.model.Hash;
 
 /**
  * An interface for file transfer requests, which covers XEP-0066, XEP-0096 and XEP-0234.

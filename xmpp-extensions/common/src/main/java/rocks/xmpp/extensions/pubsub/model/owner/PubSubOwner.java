@@ -24,14 +24,11 @@
 
 package rocks.xmpp.extensions.pubsub.model.owner;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.pubsub.model.Affiliation;
-import rocks.xmpp.extensions.pubsub.model.AffiliationState;
-import rocks.xmpp.extensions.pubsub.model.Subscription;
-import rocks.xmpp.extensions.pubsub.model.SubscriptionState;
-import rocks.xmpp.util.adapters.InstantAdapter;
-
+import java.net.URI;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
@@ -39,11 +36,14 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.net.URI;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.pubsub.model.Affiliation;
+import rocks.xmpp.extensions.pubsub.model.AffiliationState;
+import rocks.xmpp.extensions.pubsub.model.Subscription;
+import rocks.xmpp.extensions.pubsub.model.SubscriptionState;
+import rocks.xmpp.util.adapters.InstantAdapter;
 
 /**
  * The implementation of the {@code <pubsub/>} element in the {@code http://jabber.org/protocol/pubsub#owner} namespace.

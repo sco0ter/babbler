@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.csi.model;
 
-import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.core.stream.model.StreamFeature;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+
+import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
  * Represents a client state, i.e. active or inactive.

@@ -24,11 +24,11 @@
 
 package rocks.xmpp.websocket;
 
+import java.util.Arrays;
+
 import rocks.xmpp.core.XmppContext;
 import rocks.xmpp.websocket.model.Close;
 import rocks.xmpp.websocket.model.Open;
-
-import java.util.Arrays;
 
 /**
  * Defines the WebSocket context, i.e. it adds the {@link Open} and {@link Close} classes to the context.

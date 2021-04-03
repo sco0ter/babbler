@@ -24,16 +24,16 @@
 
 package rocks.xmpp.extensions.caps2;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
+import java.util.Set;
+
 import rocks.xmpp.extensions.caps.AbstractEntityCapabilitiesProtocol;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
 import rocks.xmpp.extensions.caps2.model.EntityCapabilities2;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * Abstract base class for the second Entity Capabilities protocol (XEP-0390: Entity Capabilities 2.0).

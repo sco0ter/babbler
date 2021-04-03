@@ -24,6 +24,10 @@
 
 package rocks.xmpp.extensions.muc;
 
+import java.time.Instant;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
@@ -33,10 +37,6 @@ import rocks.xmpp.extensions.muc.model.DiscussionHistory;
 import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.extensions.muc.model.Role;
 import rocks.xmpp.util.adapters.InstantAdapter;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.time.Instant;
 
 /**
  * @author Christian Schudt

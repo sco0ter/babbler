@@ -25,17 +25,17 @@
 package rocks.xmpp.extensions.commands;
 
 
+import java.util.Arrays;
+import java.util.Collections;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.commands.model.Command;
 import rocks.xmpp.extensions.data.model.DataForm;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * @author Christian Schudt

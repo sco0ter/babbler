@@ -24,6 +24,11 @@
 
 package rocks.xmpp.extensions.disco;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
@@ -33,11 +38,6 @@ import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemProvider;
 import rocks.xmpp.extensions.rsm.ResultSet;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Handles 'disco#items' request by responding with the items at the specified address and/or node.

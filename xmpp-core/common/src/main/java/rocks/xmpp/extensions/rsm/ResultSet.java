@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.rsm;
 
-import rocks.xmpp.extensions.rsm.model.ResultSetItem;
-import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import rocks.xmpp.extensions.rsm.model.ResultSetItem;
+import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 /**
  * A result set usually consists of a list of items and additional result set information (e.g. to mark first and last items).

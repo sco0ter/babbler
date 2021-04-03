@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions;
 
+import java.util.Arrays;
+
 import rocks.xmpp.core.XmppContext;
 import rocks.xmpp.extensions.activity.model.Activity;
 import rocks.xmpp.extensions.address.model.Addresses;
@@ -98,8 +100,6 @@ import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 import rocks.xmpp.extensions.xhtmlim.model.Html;
-
-import java.util.Arrays;
 
 /**
  * Defines extension protocol classes to be bound to the JAXBContext.

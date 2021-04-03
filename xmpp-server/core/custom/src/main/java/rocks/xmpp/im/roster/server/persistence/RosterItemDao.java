@@ -24,10 +24,7 @@
 
 package rocks.xmpp.im.roster.server.persistence;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.im.roster.model.RosterItem;
-import rocks.xmpp.im.roster.server.spi.RosterItemProvider;
-
+import java.util.List;
 import javax.annotation.Priority;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Alternative;
@@ -36,7 +33,10 @@ import javax.interceptor.Interceptor;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
-import java.util.List;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.im.roster.model.RosterItem;
+import rocks.xmpp.im.roster.server.spi.RosterItemProvider;
 
 /**
  * @author Christian Schudt

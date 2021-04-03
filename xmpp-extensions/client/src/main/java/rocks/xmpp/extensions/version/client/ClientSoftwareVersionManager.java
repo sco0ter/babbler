@@ -24,16 +24,16 @@
 
 package rocks.xmpp.extensions.version.client;
 
+import java.io.InputStream;
+import java.util.Properties;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.extensions.version.SoftwareVersionProtocol;
 import rocks.xmpp.extensions.version.SoftwareVersionManager;
+import rocks.xmpp.extensions.version.SoftwareVersionProtocol;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.io.InputStream;
-import java.util.Properties;
 
 /**
  * This manager implements <a href="https://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>.

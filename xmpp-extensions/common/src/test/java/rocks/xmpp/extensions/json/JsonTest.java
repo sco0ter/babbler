@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.json;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.json.model.Json;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

@@ -24,8 +24,6 @@
 
 package rocks.xmpp.util.concurrent;
 
-import rocks.xmpp.core.XmppException;
-
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -38,6 +36,8 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import rocks.xmpp.core.XmppException;
 
 /**
  * Represents the result of an asynchronous operation.

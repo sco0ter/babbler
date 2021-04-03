@@ -24,6 +24,21 @@
 
 package rocks.xmpp.sample;
 
+import java.security.GeneralSecurityException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.util.concurrent.Executors;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import io.netty.channel.nio.NioEventLoopGroup;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
@@ -43,21 +58,6 @@ import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.nio.netty.client.NettyTcpConnectionConfiguration;
 import rocks.xmpp.websocket.net.client.WebSocketConnectionConfiguration;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import java.security.GeneralSecurityException;
-import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
-import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.util.concurrent.Executors;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 /**
  * A simple example for connecting and sending a message.

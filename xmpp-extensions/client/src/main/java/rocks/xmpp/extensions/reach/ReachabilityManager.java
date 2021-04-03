@@ -24,6 +24,16 @@
 
 package rocks.xmpp.extensions.reach;
 
+import java.util.ArrayDeque;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
@@ -38,16 +48,6 @@ import rocks.xmpp.extensions.reach.model.Address;
 import rocks.xmpp.extensions.reach.model.Reachability;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.ArrayDeque;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.function.Consumer;
 
 /**
  * Allows to query for reachability addresses of another contact, automatically responds to reachability queries and notifies {@linkplain Consumer}s,

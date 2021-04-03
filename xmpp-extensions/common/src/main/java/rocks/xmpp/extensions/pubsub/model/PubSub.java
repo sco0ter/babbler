@@ -24,6 +24,21 @@
 
 package rocks.xmpp.extensions.pubsub.model;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.pubsub.model.errors.ClosedNode;
@@ -50,21 +65,6 @@ import rocks.xmpp.extensions.pubsub.model.errors.Unsupported;
 import rocks.xmpp.extensions.pubsub.model.event.Event;
 import rocks.xmpp.extensions.pubsub.model.owner.PubSubOwner;
 import rocks.xmpp.util.adapters.InstantAdapter;
-
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * The implementation of the {@code <pubsub/>} element in the {@code http://jabber.org/protocol/pubsub} namespace.

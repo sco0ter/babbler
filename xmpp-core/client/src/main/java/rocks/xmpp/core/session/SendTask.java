@@ -24,9 +24,6 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.Stanza;
-
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -35,6 +32,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Stanza;
 
 /**
  * A send task is the result of a send action and allows to keep track of the sent stanza.

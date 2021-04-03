@@ -24,16 +24,6 @@
 
 package rocks.xmpp.core.sasl.server;
 
-import rocks.xmpp.core.sasl.scram.ScramClient;
-import rocks.xmpp.im.roster.server.spi.ScramCredential;
-import rocks.xmpp.im.roster.server.spi.ScramIdentityStore;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.PasswordCallback;
-import javax.security.enterprise.credential.Credential;
-import javax.security.enterprise.credential.UsernamePasswordCredential;
-import javax.security.enterprise.identitystore.CredentialValidationResult;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -43,6 +33,16 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.enterprise.context.ApplicationScoped;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.PasswordCallback;
+import javax.security.enterprise.credential.Credential;
+import javax.security.enterprise.credential.UsernamePasswordCredential;
+import javax.security.enterprise.identitystore.CredentialValidationResult;
+
+import rocks.xmpp.core.sasl.scram.ScramClient;
+import rocks.xmpp.im.roster.server.spi.ScramCredential;
+import rocks.xmpp.im.roster.server.spi.ScramIdentityStore;
 
 /**
  * An in-memory identity store for testing and illustration purposes.

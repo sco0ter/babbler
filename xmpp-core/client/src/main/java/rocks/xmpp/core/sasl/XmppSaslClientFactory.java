@@ -24,13 +24,13 @@
 
 package rocks.xmpp.core.sasl;
 
-import rocks.xmpp.core.sasl.anonymous.AnonymousSaslClient;
-import rocks.xmpp.core.sasl.scram.ScramClient;
-
+import java.util.Map;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.sasl.SaslClient;
 import javax.security.sasl.SaslClientFactory;
-import java.util.Map;
+
+import rocks.xmpp.core.sasl.anonymous.AnonymousSaslClient;
+import rocks.xmpp.core.sasl.scram.ScramClient;
 
 /**
  * A factory which creates {@linkplain SaslClient}s, which are used in XMPP context and are not natively provided by the default security provider.

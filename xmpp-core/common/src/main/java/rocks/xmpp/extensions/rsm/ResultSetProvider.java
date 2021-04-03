@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.rsm;
 
-import rocks.xmpp.extensions.rsm.model.ResultSetItem;
-
 import java.util.Collection;
 import java.util.List;
+
+import rocks.xmpp.extensions.rsm.model.ResultSetItem;
 
 /**
  * Provides methods which are needed for result set management.

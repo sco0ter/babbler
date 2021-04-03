@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.rtt;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author Christian Schudt

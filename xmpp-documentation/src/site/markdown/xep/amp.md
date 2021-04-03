@@ -1,7 +1,8 @@
 # XEP-0079: Advanced Message Processing
 ---
 
-[XEP-0079: Advanced Message Processing][Advanced Message Processing] allows to request advanced processing of XMPP message stanzas, including reliable data transport, time-sensitive delivery, and expiration of transient messages.
+[XEP-0079: Advanced Message Processing][Advanced Message Processing] allows to request advanced processing of XMPP
+message stanzas, including reliable data transport, time-sensitive delivery, and expiration of transient messages.
 
 ## How to Add an AMP Extension
 
@@ -21,6 +22,5 @@ message.addExtension(amp);
 AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.deliver(Rule.Action.ALERT, Rule.DeliveryMode.STORED));
 message.addExtension(amp);
 ```
-
 
 [Advanced Message Processing]: https://xmpp.org/extensions/xep-0079.html "XEP-0079: Advanced Message Processing"

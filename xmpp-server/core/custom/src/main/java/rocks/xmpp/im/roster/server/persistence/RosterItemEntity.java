@@ -24,11 +24,10 @@
 
 package rocks.xmpp.im.roster.server.persistence;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.addr.server.persistence.JidConverter;
-import rocks.xmpp.im.roster.model.RosterItem;
-import rocks.xmpp.im.roster.model.SubscriptionState;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
@@ -42,10 +41,11 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.addr.server.persistence.JidConverter;
+import rocks.xmpp.im.roster.model.RosterItem;
+import rocks.xmpp.im.roster.model.SubscriptionState;
 
 /**
  * @author Christian Schudt

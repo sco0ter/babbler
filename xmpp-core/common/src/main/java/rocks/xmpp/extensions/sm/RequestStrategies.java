@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.sm;
 
+import java.util.function.Predicate;
+
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Stanza;
-
-import java.util.function.Predicate;
 
 /**
  * A set of request strategies which are used for requesting acknowledgements from the server.

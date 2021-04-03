@@ -13,8 +13,8 @@ DocumentBuilder builder = dbf.newDocumentBuilder();
 Document doc = builder.newDocument();
 ```
 
-Then create the HTML extension with that document, get the body element and assemble your HTML with DOM operations.
-Make sure to use valid HTML tags, especially those defined in [XEP-0071: XHTML-IM][XHTML-IM]!
+Then create the HTML extension with that document, get the body element and assemble your HTML with DOM operations. Make
+sure to use valid HTML tags, especially those defined in [XEP-0071: XHTML-IM][XHTML-IM]!
 
 ```java
 Html html = new Html(doc);
@@ -32,7 +32,8 @@ Message message = new Message(Jid.of("romeo@example.im", "Hi!"));
 message.addExtension(html);
 ```
 
-Alternatively you can pass valid XHTML (which will be appended to the `<body>` element), directly as String to the constructor:
+Alternatively you can pass valid XHTML (which will be appended to the `<body>` element), directly as String to the
+constructor:
 
 ```java
 Html html = new Html("<p style=\"font-weight:bold\">Hi!</p>");
@@ -61,7 +62,8 @@ if (html != null) {
 }
 ```
 
-Use either `getBody()` which gets the body element as DOM Element or `getContent()`, which gets the XHTML content (between the `<body>` element) as String.
+Use either `getBody()` which gets the body element as DOM Element or `getContent()`, which gets the XHTML content (
+between the `<body>` element) as String.
 
 
 [XHTML-IM]: https://xmpp.org/extensions/xep-0071.html "XEP-0071: XHTML-IM"

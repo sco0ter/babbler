@@ -24,6 +24,19 @@
 
 package rocks.xmpp.extensions.oob;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.function.Consumer;
+
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -38,19 +51,6 @@ import rocks.xmpp.extensions.filetransfer.model.Range;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.oob.model.iq.OobIQ;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
-import java.time.Instant;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.function.Consumer;
 
 /**
  * @author Christian Schudt

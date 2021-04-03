@@ -24,29 +24,6 @@
 
 package rocks.xmpp.extensions.httpbind;
 
-import rocks.xmpp.core.net.AbstractConnection;
-import rocks.xmpp.core.net.ChannelEncryption;
-import rocks.xmpp.core.net.ReaderInterceptor;
-import rocks.xmpp.core.net.ReaderInterceptorChain;
-import rocks.xmpp.core.net.WriterInterceptor;
-import rocks.xmpp.core.net.WriterInterceptorChain;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.session.debug.XmppDebugger;
-import rocks.xmpp.core.session.model.SessionOpen;
-import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.core.stream.model.StreamError;
-import rocks.xmpp.core.stream.model.StreamErrorException;
-import rocks.xmpp.core.stream.model.StreamFeatures;
-import rocks.xmpp.extensions.compress.CompressionMethod;
-import rocks.xmpp.extensions.httpbind.model.Body;
-import rocks.xmpp.util.XmppStreamDecoder;
-import rocks.xmpp.util.XmppStreamEncoder;
-import rocks.xmpp.util.XmppUtils;
-import rocks.xmpp.util.concurrent.CompletionStages;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -83,6 +60,29 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
+import javax.net.ssl.HttpsURLConnection;
+import javax.xml.bind.DatatypeConverter;
+
+import rocks.xmpp.core.net.AbstractConnection;
+import rocks.xmpp.core.net.ChannelEncryption;
+import rocks.xmpp.core.net.ReaderInterceptor;
+import rocks.xmpp.core.net.ReaderInterceptorChain;
+import rocks.xmpp.core.net.WriterInterceptor;
+import rocks.xmpp.core.net.WriterInterceptorChain;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.debug.XmppDebugger;
+import rocks.xmpp.core.session.model.SessionOpen;
+import rocks.xmpp.core.stanza.model.Stanza;
+import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.StreamErrorException;
+import rocks.xmpp.core.stream.model.StreamFeatures;
+import rocks.xmpp.extensions.compress.CompressionMethod;
+import rocks.xmpp.extensions.httpbind.model.Body;
+import rocks.xmpp.util.XmppStreamDecoder;
+import rocks.xmpp.util.XmppStreamEncoder;
+import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.CompletionStages;
 
 /**
  * The implementation of <a href="https://xmpp.org/extensions/xep-0124.html">XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)</a> and <a href="https://xmpp.org/extensions/xep-0206.html">XEP-0206: XMPP Over BOSH</a>.

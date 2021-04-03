@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.disco.model.info;
 
+import java.util.Locale;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.extensions.disco.model.items.ItemProvider;
-
-import java.util.Locale;
 
 /**
  * Provides discoverable info, so that it can be discovered via Service Discovery (disco#info).

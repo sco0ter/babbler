@@ -24,6 +24,18 @@
 
 package rocks.xmpp.extensions.vcard.avatar;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.XmppSession;
@@ -41,18 +53,6 @@ import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.cache.DirectoryCache;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 /**
  * The implementation of <a href="https://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a>.

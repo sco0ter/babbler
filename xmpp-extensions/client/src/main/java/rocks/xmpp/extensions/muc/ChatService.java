@@ -24,16 +24,16 @@
 
 package rocks.xmpp.extensions.muc;
 
+import java.text.Collator;
+import java.util.ArrayList;
+import java.util.List;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Addressable;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.text.Collator;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A chat service hosts chat rooms. It allows you to discover public chat rooms or create new (instant) rooms, if allowed by the service.

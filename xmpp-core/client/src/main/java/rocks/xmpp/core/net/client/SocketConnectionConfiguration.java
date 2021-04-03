@@ -24,14 +24,14 @@
 
 package rocks.xmpp.core.net.client;
 
-import rocks.xmpp.core.net.ChannelEncryption;
-import rocks.xmpp.core.net.Connection;
-import rocks.xmpp.core.session.XmppSession;
-
-import javax.net.SocketFactory;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import javax.net.SocketFactory;
+
+import rocks.xmpp.core.net.ChannelEncryption;
+import rocks.xmpp.core.net.Connection;
+import rocks.xmpp.core.session.XmppSession;
 
 /**
  * A configuration for a TCP connection using {@link Socket}.

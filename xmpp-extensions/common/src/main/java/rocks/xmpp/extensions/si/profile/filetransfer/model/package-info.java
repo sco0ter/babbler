@@ -29,7 +29,8 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = SIFileTransferOffer.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.si.profile.filetransfer.model;
+@XmlSchema(namespace = SIFileTransferOffer.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.si.profile.filetransfer.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

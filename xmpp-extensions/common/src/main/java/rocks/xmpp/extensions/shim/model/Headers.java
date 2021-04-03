@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.shim.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.time.OffsetDateTime;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -34,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <headers/>} element in the {@code http://jabber.org/protocol/shim} namespace.

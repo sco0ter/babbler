@@ -28,7 +28,8 @@
  * It defines an XMPP-compatible protocol for user invisibility.
  * </p>
  */
-@XmlSchema(namespace = InvisibleCommand.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.invisible.model;
+@XmlSchema(namespace = InvisibleCommand.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.invisible.model;
 
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.jingle.transports.ibb.model;
 
-import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
-import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
-
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Objects;
+
+import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
+import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
 
 /**
  * The implementation of the {@code <transport/>} element in the {@code urn:xmpp:jingle:transports:ibb:1} namespace.

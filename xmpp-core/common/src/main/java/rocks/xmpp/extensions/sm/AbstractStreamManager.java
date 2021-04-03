@@ -24,6 +24,14 @@
 
 package rocks.xmpp.extensions.sm;
 
+import java.util.Collections;
+import java.util.Locale;
+import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Predicate;
+
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.Session;
 import rocks.xmpp.core.stanza.model.Stanza;
@@ -34,14 +42,6 @@ import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
-
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Predicate;
 
 /**
  * Contains stream management logic which is shared between clients and servers.

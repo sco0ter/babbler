@@ -24,9 +24,9 @@
 
 package rocks.xmpp.extensions.httpbind.server;
 
-import rocks.xmpp.core.server.ServerConfiguration;
-import rocks.xmpp.extensions.httpbind.model.Body;
-
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import javax.enterprise.inject.spi.CDI;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -35,9 +35,9 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+
+import rocks.xmpp.core.server.ServerConfiguration;
+import rocks.xmpp.extensions.httpbind.model.Body;
 
 /**
  * Reads the input stream to BOSH {@link Body} elements. If the was an error reading them, create a BOSH error, which will later be returned to the client.

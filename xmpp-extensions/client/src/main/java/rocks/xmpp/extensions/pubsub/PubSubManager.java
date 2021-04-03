@@ -24,15 +24,15 @@
 
 package rocks.xmpp.extensions.pubsub;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * This class is the entry point to work with pubsub.

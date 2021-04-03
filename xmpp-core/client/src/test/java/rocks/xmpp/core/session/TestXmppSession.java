@@ -24,6 +24,10 @@
 
 package rocks.xmpp.core.session;
 
+import java.net.InetSocketAddress;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.net.AbstractConnection;
@@ -31,10 +35,6 @@ import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
-
-import java.net.InetSocketAddress;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 
 /**

@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.blocking;
 
-import rocks.xmpp.addr.Jid;
-
 import java.util.EventObject;
 import java.util.List;
 import java.util.function.Consumer;
+
+import rocks.xmpp.addr.Jid;
 
 /**
  * This event notifies listeners, when a block or unblock "push" occurs.

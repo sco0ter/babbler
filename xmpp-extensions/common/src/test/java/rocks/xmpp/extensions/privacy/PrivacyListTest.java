@@ -24,6 +24,12 @@
 
 package rocks.xmpp.extensions.privacy;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -34,12 +40,6 @@ import rocks.xmpp.extensions.privacy.model.PrivacyList;
 import rocks.xmpp.extensions.privacy.model.PrivacyRule;
 import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.util.ComparableTestHelper;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Christian Schudt

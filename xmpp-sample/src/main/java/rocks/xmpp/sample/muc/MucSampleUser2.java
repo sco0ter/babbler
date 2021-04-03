@@ -24,6 +24,8 @@
 
 package rocks.xmpp.sample.muc;
 
+import java.util.concurrent.Executors;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
@@ -34,8 +36,6 @@ import rocks.xmpp.extensions.muc.ChatRoom;
 import rocks.xmpp.extensions.muc.ChatService;
 import rocks.xmpp.extensions.muc.MultiUserChatManager;
 import rocks.xmpp.extensions.muc.OccupantEvent;
-
-import java.util.concurrent.Executors;
 
 /**
  * @author Christian Schudt

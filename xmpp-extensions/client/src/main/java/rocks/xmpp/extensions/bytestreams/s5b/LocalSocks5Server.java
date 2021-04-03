@@ -24,8 +24,6 @@
 
 package rocks.xmpp.extensions.bytestreams.s5b;
 
-import rocks.xmpp.core.XmppException;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -35,6 +33,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import rocks.xmpp.core.XmppException;
 
 /**
  * A local SOCKS5 server which runs as a singleton on the local machine on port 1080 (default SOCKS port).

@@ -24,18 +24,18 @@
 
 package rocks.xmpp.extensions.si.profile.filetransfer.model;
 
-import rocks.xmpp.extensions.filetransfer.model.FileTransferOffer;
-import rocks.xmpp.extensions.filetransfer.model.Range;
-import rocks.xmpp.extensions.hashes.model.Hash;
-import rocks.xmpp.util.adapters.InstantAdapter;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import rocks.xmpp.extensions.filetransfer.model.FileTransferOffer;
+import rocks.xmpp.extensions.filetransfer.model.Range;
+import rocks.xmpp.extensions.hashes.model.Hash;
+import rocks.xmpp.util.adapters.InstantAdapter;
 
 /**
  * The implementation of the file transfer profile, i.e. the {@code <file/>} element.

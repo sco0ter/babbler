@@ -29,7 +29,8 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = SecurityLabel.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.seclabel.model;
+@XmlSchema(namespace = SecurityLabel.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.seclabel.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

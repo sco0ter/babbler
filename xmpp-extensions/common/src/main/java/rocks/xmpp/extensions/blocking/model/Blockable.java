@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.blocking.model;
 
-import rocks.xmpp.addr.Jid;
-
-import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.xml.bind.annotation.XmlTransient;
+
+import rocks.xmpp.addr.Jid;
 
 /**
  * Blockable JIDs in the blocking command.

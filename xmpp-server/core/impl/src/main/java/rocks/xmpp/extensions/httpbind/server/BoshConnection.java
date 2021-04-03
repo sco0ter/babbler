@@ -24,21 +24,6 @@
 
 package rocks.xmpp.extensions.httpbind.server;
 
-import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.net.AbstractConnection;
-import rocks.xmpp.core.session.model.SessionOpen;
-import rocks.xmpp.core.stream.StreamHandler;
-import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.core.stream.model.StreamError;
-import rocks.xmpp.core.stream.model.StreamErrorException;
-import rocks.xmpp.core.stream.model.errors.Condition;
-import rocks.xmpp.extensions.httpbind.model.Body;
-import rocks.xmpp.session.server.DefaultServerConfiguration;
-import rocks.xmpp.util.XmppUtils;
-
-import javax.enterprise.inject.spi.CDI;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.core.SecurityContext;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -59,6 +44,21 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
+import javax.enterprise.inject.spi.CDI;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.core.SecurityContext;
+
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.net.AbstractConnection;
+import rocks.xmpp.core.session.model.SessionOpen;
+import rocks.xmpp.core.stream.StreamHandler;
+import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.StreamErrorException;
+import rocks.xmpp.core.stream.model.errors.Condition;
+import rocks.xmpp.extensions.httpbind.model.Body;
+import rocks.xmpp.session.server.DefaultServerConfiguration;
+import rocks.xmpp.util.XmppUtils;
 
 /**
  * @author Christian Schudt
@@ -293,8 +293,8 @@ public final class BoshConnection extends AbstractConnection {
                             // In this case it SHOULD include a 'report' attribute set to one greater
                             // than the 'ack' attribute it received from the client,
                             .report(body.getAck() + 1)
-                                    // and a 'time' attribute set to the number of milliseconds
-                                    // since it sent the response associated with the 'report' attribute.
+                            // and a 'time' attribute set to the number of milliseconds
+                            // since it sent the response associated with the 'report' attribute.
                             .time(Duration.between(lastResponseDate, Instant.now())), true);
                 }
             }

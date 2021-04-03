@@ -29,7 +29,8 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = Replace.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.messagecorrect.model;
+@XmlSchema(namespace = Replace.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.messagecorrect.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

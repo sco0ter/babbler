@@ -24,6 +24,12 @@
 
 package rocks.xmpp.extensions.chatstates;
 
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
@@ -35,12 +41,6 @@ import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.xhtmlim.model.Html;
 import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 /**
  * This class manages Chat State Notifications, which are used to communicate the status of a user in a chat session, thus indicating whether a chat partner is actively engaged in the chat, composing a message, temporarily paused, inactive, or gone.

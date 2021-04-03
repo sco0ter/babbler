@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.bytestreams.ibb;
 
+import java.util.concurrent.CompletableFuture;
+
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
@@ -32,8 +34,6 @@ import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Christian Schudt

@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.muc.model.user;
 
-import rocks.xmpp.addr.Jid;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+
+import rocks.xmpp.addr.Jid;
 
 /**
  * The implementation of the {@code <invite/>} element.

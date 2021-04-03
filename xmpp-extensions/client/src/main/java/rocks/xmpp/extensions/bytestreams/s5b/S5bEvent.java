@@ -24,6 +24,11 @@
 
 package rocks.xmpp.extensions.bytestreams.s5b;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -32,11 +37,6 @@ import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.bytestreams.s5b.model.StreamHost;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 /**
  * @author Christian Schudt

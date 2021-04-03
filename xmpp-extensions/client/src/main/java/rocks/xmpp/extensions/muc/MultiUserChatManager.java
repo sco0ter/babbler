@@ -24,6 +24,15 @@
 
 package rocks.xmpp.extensions.muc;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
@@ -42,15 +51,6 @@ import rocks.xmpp.extensions.muc.model.user.MucUser;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * Manages Multi-User Chat.

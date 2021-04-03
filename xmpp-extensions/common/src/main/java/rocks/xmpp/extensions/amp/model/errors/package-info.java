@@ -29,11 +29,12 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = AdvancedMessageProcessing.NAMESPACE + "#errors", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.amp.model.errors;
-
-import rocks.xmpp.extensions.amp.model.AdvancedMessageProcessing;
+@XmlSchema(namespace = AdvancedMessageProcessing.NAMESPACE + "#errors", elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.amp.model.errors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+
+import rocks.xmpp.extensions.amp.model.AdvancedMessageProcessing;

@@ -24,6 +24,11 @@
 
 package rocks.xmpp.extensions.blocking;
 
+import java.util.ArrayDeque;
+import java.util.Collection;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -32,11 +37,6 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.blocking.model.Block;
 import rocks.xmpp.extensions.blocking.model.BlockList;
 import rocks.xmpp.extensions.blocking.model.Unblock;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.util.ArrayDeque;
-import java.util.Collection;
 
 /**
  * @author Christian Schudt

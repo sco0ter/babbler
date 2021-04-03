@@ -24,6 +24,17 @@
 
 package rocks.xmpp.extensions.filetransfer;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
+
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -36,17 +47,6 @@ import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Random;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.function.Consumer;
 
 /**
  * @author Christian Schudt

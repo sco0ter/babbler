@@ -29,7 +29,8 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "urn:xmpp:sec-label:catalog:2", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.seclabel.model.catalog;
+@XmlSchema(namespace = "urn:xmpp:sec-label:catalog:2", elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.seclabel.model.catalog;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

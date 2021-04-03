@@ -24,11 +24,8 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.stream.model.StreamErrorException;
-import rocks.xmpp.core.stream.model.errors.Condition;
-import rocks.xmpp.util.XmppUtils;
-import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
+import static rocks.xmpp.core.session.ReconnectionStrategy.onSystemShutdownFirstOrElseSecond;
+import static rocks.xmpp.core.session.ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -39,8 +36,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiPredicate;
 
-import static rocks.xmpp.core.session.ReconnectionStrategy.onSystemShutdownFirstOrElseSecond;
-import static rocks.xmpp.core.session.ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy;
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.stream.model.StreamErrorException;
+import rocks.xmpp.core.stream.model.errors.Condition;
+import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 
 /**
  * If the connection goes down, this class automatically reconnects, if the user was authenticated.

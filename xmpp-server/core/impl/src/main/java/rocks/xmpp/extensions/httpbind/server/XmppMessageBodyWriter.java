@@ -24,12 +24,9 @@
 
 package rocks.xmpp.extensions.httpbind.server;
 
-import rocks.xmpp.core.server.ServerConfiguration;
-import rocks.xmpp.core.stream.model.StreamError;
-import rocks.xmpp.core.stream.model.StreamFeatures;
-import rocks.xmpp.extensions.httpbind.model.Body;
-import rocks.xmpp.util.XmppUtils;
-
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import javax.enterprise.inject.spi.CDI;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -42,9 +39,12 @@ import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
+
+import rocks.xmpp.core.server.ServerConfiguration;
+import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.StreamFeatures;
+import rocks.xmpp.extensions.httpbind.model.Body;
+import rocks.xmpp.util.XmppUtils;
 
 /**
  * Writes BOSH {@link Body} elements in XMPP-style XML.

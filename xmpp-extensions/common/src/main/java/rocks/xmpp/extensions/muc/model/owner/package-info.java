@@ -26,11 +26,12 @@
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a> (#owner).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = Muc.NAMESPACE + "#owner", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.muc.model.owner;
-
-import rocks.xmpp.extensions.muc.model.Muc;
+@XmlSchema(namespace = Muc.NAMESPACE + "#owner", elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.muc.model.owner;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+
+import rocks.xmpp.extensions.muc.model.Muc;

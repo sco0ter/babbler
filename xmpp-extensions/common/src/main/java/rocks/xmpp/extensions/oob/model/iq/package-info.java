@@ -29,7 +29,8 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = OobIQ.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.oob.model.iq;
+@XmlSchema(namespace = OobIQ.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.oob.model.iq;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

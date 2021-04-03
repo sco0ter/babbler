@@ -24,19 +24,19 @@
 
 package rocks.xmpp.websocket.server;
 
-import rocks.xmpp.core.server.ServerConfiguration;
-import rocks.xmpp.websocket.codec.XmppWebSocketDecoder;
-import rocks.xmpp.websocket.codec.XmppWebSocketEncoder;
-
+import java.util.Collections;
+import java.util.Set;
+import java.util.function.Supplier;
 import javax.enterprise.inject.spi.CDI;
 import javax.websocket.Endpoint;
 import javax.websocket.server.ServerApplicationConfig;
 import javax.websocket.server.ServerEndpointConfig;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.util.Collections;
-import java.util.Set;
-import java.util.function.Supplier;
+
+import rocks.xmpp.core.server.ServerConfiguration;
+import rocks.xmpp.websocket.codec.XmppWebSocketDecoder;
+import rocks.xmpp.websocket.codec.XmppWebSocketEncoder;
 
 /**
  * The configuration for the a WebSocket server application.

@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.privatedata.rosternotes;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -31,9 +34,6 @@ import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.privatedata.model.PrivateData;
 import rocks.xmpp.extensions.privatedata.rosternotes.model.Annotation;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

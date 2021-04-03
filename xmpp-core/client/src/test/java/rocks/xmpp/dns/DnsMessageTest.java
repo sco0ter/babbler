@@ -24,15 +24,15 @@
 
 package rocks.xmpp.dns;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import rocks.xmpp.util.ComparableTestHelper;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import rocks.xmpp.util.ComparableTestHelper;
 
 /**
  * @author Christian Schudt

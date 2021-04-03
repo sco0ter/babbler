@@ -24,6 +24,10 @@
 
 package rocks.xmpp.core.sasl;
 
+import java.util.Locale;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
@@ -33,10 +37,6 @@ import rocks.xmpp.core.sasl.model.Challenge;
 import rocks.xmpp.core.sasl.model.Failure;
 import rocks.xmpp.core.sasl.model.Response;
 import rocks.xmpp.core.sasl.model.Success;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.util.Locale;
 
 /**
  * @author Christian Schudt

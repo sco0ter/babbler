@@ -24,21 +24,21 @@
 
 package rocks.xmpp.extensions.seclabel.model;
 
-import rocks.xmpp.extensions.seclabel.model.catalog.Catalog;
-import rocks.xmpp.extensions.seclabel.model.ess.EssSecurityLabel;
-
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlValue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlValue;
+
+import rocks.xmpp.extensions.seclabel.model.catalog.Catalog;
+import rocks.xmpp.extensions.seclabel.model.ess.EssSecurityLabel;
 
 /**
  * The implementation of the {@code <securitylabel/>} element in the {@code urn:xmpp:sec-label:0} namespace.

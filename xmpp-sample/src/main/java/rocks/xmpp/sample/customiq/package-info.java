@@ -3,7 +3,8 @@
  */
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "rocks:xmpp:sample", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.sample.customiq;
+@XmlSchema(namespace = "rocks:xmpp:sample", elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.sample.customiq;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

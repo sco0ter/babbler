@@ -24,6 +24,13 @@
 
 package rocks.xmpp.core.net.client;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
@@ -31,13 +38,6 @@ import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.SrvRecord;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * A configuration for a TCP connection.

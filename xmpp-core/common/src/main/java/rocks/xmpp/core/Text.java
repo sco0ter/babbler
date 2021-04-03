@@ -24,21 +24,21 @@
 
 package rocks.xmpp.core;
 
+import java.text.Collator;
+import java.util.Comparator;
+import java.util.Locale;
+import java.util.Objects;
+import javax.xml.XMLConstants;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import rocks.xmpp.core.sasl.model.Failure;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.util.adapters.LocaleAdapter;
-
-import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.text.Collator;
-import java.util.Comparator;
-import java.util.Locale;
-import java.util.Objects;
 
 /**
  * A common text element which is used by multiple elements and namespaces in XMPP. This list of elements it is used by includes:

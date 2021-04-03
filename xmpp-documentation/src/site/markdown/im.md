@@ -29,7 +29,8 @@ rosterManager.addRosterListener(e -> {
 
 ## Dealing with Presence Updates and Subscription Requests
 
-Whenever one of your contacts updates his presence (e.g. comes online, goes away, goes offline, ...), you can react to it with:
+Whenever one of your contacts updates his presence (e.g. comes online, goes away, goes offline, ...), you can react to
+it with:
 
 ```java
 xmppClient.addInboundPresenceListener(e -> {
@@ -73,11 +74,13 @@ xmppClient.addInboundMessageListener(e -> {
 });
 ```
 
-*Note:* All listeners should be added *before* you login to the session. Otherwise you might miss messages and presences sent directly after login.
+*Note:* All listeners should be added *before* you login to the session. Otherwise you might miss messages and presences
+sent directly after login.
 
 ## Intercepting Outbound Messages (or Stanzas in General)
 
-The same approach as for inbound messages is also used for outbound messages. The only difference is the 'inbound’ property of the event.
+The same approach as for inbound messages is also used for outbound messages. The only difference is the 'inbound’
+property of the event.
 
 You can use this, if you want to add extensions to a stanza or otherwise modify the stanza.
 

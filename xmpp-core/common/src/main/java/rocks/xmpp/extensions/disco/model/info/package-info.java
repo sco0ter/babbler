@@ -27,13 +27,14 @@
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = InfoDiscovery.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
-@XmlJavaTypeAdapter(value = LocaleAdapter.class, type = Locale.class)  package rocks.xmpp.extensions.disco.model.info;
+@XmlJavaTypeAdapter(value = LocaleAdapter.class, type = Locale.class)
+package rocks.xmpp.extensions.disco.model.info;
 
-import rocks.xmpp.util.adapters.LocaleAdapter;
-
+import java.util.Locale;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.util.Locale;
+
+import rocks.xmpp.util.adapters.LocaleAdapter;

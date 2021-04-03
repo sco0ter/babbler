@@ -24,8 +24,6 @@
 
 package rocks.xmpp.extensions.bytestreams.ibb;
 
-import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
@@ -33,6 +31,8 @@ import java.net.SocketTimeoutException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+
+import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 
 /**
  * An input stream implementation for in-band bytestreams.

@@ -24,15 +24,15 @@
 
 package rocks.xmpp.core.stanza.model;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * Tests for the {@link IQ} class.

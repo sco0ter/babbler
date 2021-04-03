@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.jingle.apps.filetransfer;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
@@ -32,9 +35,6 @@ import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.errors.FileTransferError;
 import rocks.xmpp.extensions.jingle.model.Jingle;
 import rocks.xmpp.extensions.jingle.thumbs.model.Thumbnail;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

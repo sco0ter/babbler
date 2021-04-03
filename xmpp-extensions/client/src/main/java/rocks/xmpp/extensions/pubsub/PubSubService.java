@@ -24,6 +24,11 @@
 
 package rocks.xmpp.extensions.pubsub;
 
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Addressable;
 import rocks.xmpp.core.session.XmppSession;
@@ -38,11 +43,6 @@ import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
 import rocks.xmpp.extensions.pubsub.model.Subscription;
 import rocks.xmpp.extensions.pubsub.model.owner.PubSubOwner;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 /**

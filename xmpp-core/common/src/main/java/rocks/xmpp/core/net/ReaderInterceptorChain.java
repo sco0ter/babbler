@@ -24,11 +24,11 @@
 
 package rocks.xmpp.core.net;
 
-import rocks.xmpp.core.stream.model.StreamElement;
-
 import java.io.Reader;
 import java.util.Iterator;
 import java.util.function.Consumer;
+
+import rocks.xmpp.core.stream.model.StreamElement;
 
 /**
  * An interceptor chain, which manages the sequential processing of multiple interceptors.

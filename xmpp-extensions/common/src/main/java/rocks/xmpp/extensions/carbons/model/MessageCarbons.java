@@ -24,15 +24,15 @@
 
 package rocks.xmpp.extensions.carbons.model;
 
-import rocks.xmpp.extensions.forward.model.Forwarded;
-import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
-
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
+
+import rocks.xmpp.extensions.forward.model.Forwarded;
+import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 
 /**
  * A non-instantiable container class for holding the five different Message Carbons elements.

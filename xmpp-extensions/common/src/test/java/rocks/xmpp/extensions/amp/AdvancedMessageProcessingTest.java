@@ -24,6 +24,11 @@
 
 package rocks.xmpp.extensions.amp;
 
+import java.time.Instant;
+import java.util.Collections;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -35,11 +40,6 @@ import rocks.xmpp.extensions.amp.model.Rule;
 import rocks.xmpp.extensions.amp.model.UnsupportedActions;
 import rocks.xmpp.extensions.amp.model.UnsupportedConditions;
 import rocks.xmpp.extensions.amp.model.errors.FailedRules;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.time.Instant;
-import java.util.Collections;
 
 /**
  * @author Christian Schudt

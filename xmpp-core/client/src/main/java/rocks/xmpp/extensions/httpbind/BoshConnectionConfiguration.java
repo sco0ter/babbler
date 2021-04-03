@@ -24,6 +24,13 @@
 
 package rocks.xmpp.extensions.httpbind;
 
+import java.io.IOException;
+import java.net.Proxy;
+import java.net.URL;
+import java.time.Duration;
+import java.util.List;
+import java.util.Map;
+
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
@@ -31,13 +38,6 @@ import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.TxtRecord;
-
-import java.io.IOException;
-import java.net.Proxy;
-import java.net.URL;
-import java.time.Duration;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A configuration for a BOSH connection.

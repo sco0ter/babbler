@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.pubsub;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -32,9 +35,6 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.pubsub.model.AffiliationState;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 import rocks.xmpp.extensions.pubsub.model.SubscriptionState;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

@@ -24,18 +24,18 @@
 
 package rocks.xmpp.extensions.privatedata.rosternotes.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.Addressable;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 
 /**
  * The implementation of the {@code <storage/>} element in the {@code storage:rosternotes} namespace.

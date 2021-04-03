@@ -24,11 +24,10 @@
 
 package rocks.xmpp.core.sasl.scram;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import rocks.xmpp.core.session.XmppClient;
-import rocks.xmpp.core.session.XmppSessionConfiguration;
-
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
@@ -37,10 +36,11 @@ import javax.security.sasl.Sasl;
 import javax.security.sasl.SaslClient;
 import javax.security.sasl.SaslException;
 import javax.xml.bind.DatatypeConverter;
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import rocks.xmpp.core.session.XmppClient;
+import rocks.xmpp.core.session.XmppSessionConfiguration;
 
 /**
  * @author Christian Schudt

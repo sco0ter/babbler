@@ -24,24 +24,6 @@
 
 package rocks.xmpp.im.roster;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.core.stream.client.StreamFeaturesManager;
-import rocks.xmpp.extensions.privatedata.PrivateDataManager;
-import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
-import rocks.xmpp.im.roster.model.Contact;
-import rocks.xmpp.im.roster.model.ContactGroup;
-import rocks.xmpp.im.roster.model.Roster;
-import rocks.xmpp.im.roster.versioning.model.RosterVersioning;
-import rocks.xmpp.im.subscription.PresenceManager;
-import rocks.xmpp.util.XmppUtils;
-import rocks.xmpp.util.cache.DirectoryCache;
-import rocks.xmpp.util.concurrent.AsyncResult;
-
-import javax.xml.stream.XMLStreamWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
@@ -63,6 +45,24 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import javax.xml.stream.XMLStreamWriter;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.core.stream.client.StreamFeaturesManager;
+import rocks.xmpp.extensions.privatedata.PrivateDataManager;
+import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
+import rocks.xmpp.im.roster.model.Contact;
+import rocks.xmpp.im.roster.model.ContactGroup;
+import rocks.xmpp.im.roster.model.Roster;
+import rocks.xmpp.im.roster.versioning.model.RosterVersioning;
+import rocks.xmpp.im.subscription.PresenceManager;
+import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.cache.DirectoryCache;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * This class manages the roster (aka contact or buddy list).
@@ -87,7 +87,7 @@ import java.util.stream.Collectors;
  * @see <a href="https://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
  */
 public final class RosterManager extends AbstractIQHandler {
-    
+
     private static final System.Logger logger = System.getLogger(RosterManager.class.getName());
 
     private final Map<Jid, Contact> contactMap = new ConcurrentHashMap<>();

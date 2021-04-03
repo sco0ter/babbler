@@ -24,6 +24,14 @@
 
 package rocks.xmpp.extensions.data.model;
 
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -31,14 +39,6 @@ import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.validate.model.Validation;
 import rocks.xmpp.util.ComparableTestHelper;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Tests for the {@link DataForm} class.

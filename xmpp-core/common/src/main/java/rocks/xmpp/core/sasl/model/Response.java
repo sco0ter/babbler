@@ -24,10 +24,10 @@
 
 package rocks.xmpp.core.sasl.model;
 
-import rocks.xmpp.core.stream.model.StreamElement;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
+
+import rocks.xmpp.core.stream.model.StreamElement;
 
 /**
  * The implementation of the {@code <response/>} element, which is sent during the SASL negotiation.

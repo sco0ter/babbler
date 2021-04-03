@@ -24,6 +24,19 @@
 
 package rocks.xmpp.core.session;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.PasswordCallback;
+import javax.security.sasl.RealmCallback;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.bind.model.Bind;
@@ -48,19 +61,6 @@ import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.extensions.sm.client.ClientStreamManager;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.subscription.PresenceManager;
-
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.PasswordCallback;
-import javax.security.sasl.RealmCallback;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.function.Consumer;
 
 /**
  * The base class for establishing an XMPP session with a server, i.e. client-to-server sessions.

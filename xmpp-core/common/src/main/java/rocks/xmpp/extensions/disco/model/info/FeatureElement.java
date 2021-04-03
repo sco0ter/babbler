@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.disco.model.info;
 
-import rocks.xmpp.util.Strings;
-
-import javax.xml.bind.annotation.XmlAttribute;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAttribute;
+
+import rocks.xmpp.util.Strings;
 
 /**
  * Represents a feature offered or protocol supported by an XMPP entity.

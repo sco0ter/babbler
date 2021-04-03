@@ -24,12 +24,12 @@
 
 package rocks.xmpp.core.net;
 
+import java.net.InetSocketAddress;
+import java.util.concurrent.CompletionStage;
+
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
-
-import java.net.InetSocketAddress;
-import java.util.concurrent.CompletionStage;
 
 /**
  * Represents a bi-directional XMPP connection.

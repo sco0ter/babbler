@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.compress.model.feature;
 
-import rocks.xmpp.core.stream.model.StreamFeature;
-
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
  * The implementation of the {@code <compression/>} element in the {@code http://jabber.org/features/compress} namespace.

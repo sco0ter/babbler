@@ -24,6 +24,15 @@
 
 package rocks.xmpp.extensions.disco;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletionStage;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -39,15 +48,6 @@ import rocks.xmpp.extensions.disco.model.items.ItemProvider;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.util.concurrent.CompletionStages;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CompletionStage;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * @author Christian Schudt

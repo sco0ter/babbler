@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.sm.model;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.StreamError;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * Tests for the {@link StreamManagement} class.

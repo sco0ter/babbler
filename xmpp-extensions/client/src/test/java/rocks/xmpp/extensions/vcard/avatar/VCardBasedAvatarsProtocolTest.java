@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.vcard.avatar;
 
+import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
+
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -49,9 +52,6 @@ import rocks.xmpp.extensions.vcard.temp.model.VCard;
 import rocks.xmpp.im.subscription.PresenceManager;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.HashMap;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Christian Schudt

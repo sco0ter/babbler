@@ -24,19 +24,19 @@
 
 package rocks.xmpp.session.server;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.server.ServerConfiguration;
-import rocks.xmpp.util.LanguageUnmarshallerListener;
-import rocks.xmpp.util.XmppUtils;
-
+import java.util.Collections;
+import java.util.Locale;
 import javax.enterprise.context.ApplicationScoped;
 import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.util.Collections;
-import java.util.Locale;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.server.ServerConfiguration;
+import rocks.xmpp.util.LanguageUnmarshallerListener;
+import rocks.xmpp.util.XmppUtils;
 
 /**
  * @author Christian Schudt

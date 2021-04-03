@@ -24,13 +24,13 @@
 
 package rocks.xmpp.session.server;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import rocks.xmpp.core.Session;
 import rocks.xmpp.core.stanza.InboundPresenceHandler;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.Presence;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 /**
  * Handles inbound presence information.

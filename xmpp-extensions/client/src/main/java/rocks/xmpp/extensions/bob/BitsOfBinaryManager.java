@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.bob;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
@@ -32,9 +35,6 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bob.model.Data;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Christian Schudt

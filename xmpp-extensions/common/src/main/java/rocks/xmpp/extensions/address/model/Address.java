@@ -24,18 +24,18 @@
 
 package rocks.xmpp.extensions.address.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.Addressable;
-
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlEnumValue;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlEnumValue;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 
 /**
  * The implementation of the {@code <address/>} element in the {@code http://jabber.org/protocol/address} namespace.

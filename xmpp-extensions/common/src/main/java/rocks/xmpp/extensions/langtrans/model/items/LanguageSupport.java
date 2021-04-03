@@ -24,18 +24,18 @@
 
 package rocks.xmpp.extensions.langtrans.model.items;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.Addressable;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Addressable;
 
 /**
  * The implementation of the the {@code <query/>} element in the {@code urn:xmpp:langtrans:items} namespace.

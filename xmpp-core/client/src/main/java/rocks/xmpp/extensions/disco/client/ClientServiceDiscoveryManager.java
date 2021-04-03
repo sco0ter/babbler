@@ -24,6 +24,20 @@
 
 package rocks.xmpp.extensions.disco.client;
 
+import java.util.Collections;
+import java.util.EventObject;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.Extension;
@@ -40,20 +54,6 @@ import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.Collections;
-import java.util.EventObject;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Manages <a href="https://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>.

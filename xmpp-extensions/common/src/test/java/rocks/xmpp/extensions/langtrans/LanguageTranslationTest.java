@@ -24,6 +24,10 @@
 
 package rocks.xmpp.extensions.langtrans;
 
+import java.util.Locale;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -32,10 +36,6 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.langtrans.model.LanguageTranslation;
 import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.util.Locale;
 
 /**
  * @author Christian Schudt

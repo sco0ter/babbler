@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.rpc.client;
 
+import java.util.concurrent.CompletionException;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -33,8 +35,6 @@ import rocks.xmpp.extensions.rpc.RpcHandler;
 import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rpc.model.Value;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.concurrent.CompletionException;
 
 /**
  * This manager allows you to call remote procedures and handle inbound calls, if enabled.
@@ -46,7 +46,7 @@ import java.util.concurrent.CompletionException;
  * @see <a href="https://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
  */
 public final class ClientRpcManager extends AbstractRpcManager {
-    
+
     private XmppSession xmppSession;
 
     private ClientRpcManager(final XmppSession xmppSession) {

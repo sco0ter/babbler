@@ -24,6 +24,8 @@
 
 package rocks.xmpp.im.chat;
 
+import java.util.function.Consumer;
+
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.testng.Assert;
@@ -36,8 +38,6 @@ import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
-
-import java.util.function.Consumer;
 
 public class ChatManagerTest {
 

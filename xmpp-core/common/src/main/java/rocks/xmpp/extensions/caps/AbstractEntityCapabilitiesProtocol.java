@@ -24,6 +24,20 @@
 
 package rocks.xmpp.extensions.caps;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.Session;
@@ -39,20 +53,6 @@ import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 import rocks.xmpp.extensions.hashes.model.Hash;
 import rocks.xmpp.extensions.hashes.model.Hashed;
 import rocks.xmpp.util.cache.LruCache;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 /**
  * Base class for the Entity Capabilities protocols.

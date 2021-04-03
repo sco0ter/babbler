@@ -24,6 +24,9 @@
 
 package rocks.xmpp.sample.filetransfer.javafx;
 
+import java.io.File;
+import java.time.Duration;
+
 import javafx.application.Application;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ObjectProperty;
@@ -45,9 +48,6 @@ import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
-
-import java.io.File;
-import java.time.Duration;
 
 /**
  * @author Christian Schudt

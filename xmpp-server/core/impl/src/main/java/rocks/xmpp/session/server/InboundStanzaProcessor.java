@@ -24,6 +24,10 @@
 
 package rocks.xmpp.session.server;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.InboundIQHandler;
 import rocks.xmpp.core.stanza.InboundMessageHandler;
@@ -34,10 +38,6 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
 
 @ApplicationScoped
 public class InboundStanzaProcessor {

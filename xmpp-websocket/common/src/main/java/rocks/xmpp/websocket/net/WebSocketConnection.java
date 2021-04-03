@@ -24,24 +24,23 @@
 
 package rocks.xmpp.websocket.net;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.net.InetSocketAddress;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.function.Consumer;
+import javax.websocket.Session;
+
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.AbstractConnection;
+import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stream.StreamHandler;
 import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.websocket.model.Close;
 import rocks.xmpp.websocket.model.Open;
-
-import javax.websocket.Session;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.function.Consumer;
 
 /**
  * An XMPP WebSocket connection.

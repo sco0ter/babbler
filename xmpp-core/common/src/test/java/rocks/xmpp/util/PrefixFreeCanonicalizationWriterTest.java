@@ -24,6 +24,19 @@
 
 package rocks.xmpp.util;
 
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Collections;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -46,19 +59,6 @@ import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.im.roster.model.Roster;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Tests for the {@link PrefixFreeCanonicalizationWriter} class.

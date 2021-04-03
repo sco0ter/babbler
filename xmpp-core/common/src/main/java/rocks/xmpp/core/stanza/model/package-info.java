@@ -26,11 +26,12 @@
  * Provides <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas">XML Stanzas</a> and <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error">Stanza Errors</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlJavaTypeAdapter(value = LocaleAdapter.class, type = Locale.class) package rocks.xmpp.core.stanza.model;
+@XmlJavaTypeAdapter(value = LocaleAdapter.class, type = Locale.class)
+package rocks.xmpp.core.stanza.model;
 
-import rocks.xmpp.util.adapters.LocaleAdapter;
-
+import java.util.Locale;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.util.Locale;
+
+import rocks.xmpp.util.adapters.LocaleAdapter;

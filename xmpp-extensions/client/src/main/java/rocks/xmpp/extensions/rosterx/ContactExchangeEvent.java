@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.rosterx;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.rosterx.model.ContactExchange;
-
 import java.time.Instant;
 import java.util.EventObject;
 import java.util.List;
 import java.util.function.Consumer;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 
 /**
  * This event notifies listeners, when an entity suggests to add, delete or modify a contact.

@@ -24,14 +24,14 @@
 
 package rocks.xmpp.websocket.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.LanguageElement;
-import rocks.xmpp.core.stream.model.StreamElement;
-
+import java.util.Locale;
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
-import java.util.Locale;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.LanguageElement;
+import rocks.xmpp.core.stream.model.StreamElement;
 
 /**
  * Abstract base class for {@link Open} and {@link Close}.

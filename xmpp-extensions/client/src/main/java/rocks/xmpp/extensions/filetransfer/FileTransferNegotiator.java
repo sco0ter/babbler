@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.filetransfer;
 
+import java.io.OutputStream;
+
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.filetransfer.model.FileTransferOffer;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.io.OutputStream;
 
 /**
  * @author Christian Schudt

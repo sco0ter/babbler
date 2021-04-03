@@ -24,19 +24,18 @@
 
 package rocks.xmpp.session.server;
 
+import java.util.Iterator;
+import java.util.stream.Stream;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Session;
-import rocks.xmpp.core.stanza.InboundIQHandler;
 import rocks.xmpp.core.stanza.InboundMessageHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import java.util.Iterator;
-import java.util.stream.Stream;
 
 /**
  * @author Christian Schudt

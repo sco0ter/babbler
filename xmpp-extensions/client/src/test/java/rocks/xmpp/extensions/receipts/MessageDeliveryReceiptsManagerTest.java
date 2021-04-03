@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.receipts;
 
+import java.util.Collections;
+import java.util.function.Consumer;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
@@ -33,9 +36,6 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
-
-import java.util.Collections;
-import java.util.function.Consumer;
 
 /**
  * @author Christian Schudt

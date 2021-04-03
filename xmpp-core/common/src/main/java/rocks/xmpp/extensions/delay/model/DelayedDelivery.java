@@ -24,16 +24,16 @@
 
 package rocks.xmpp.extensions.delay.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.stanza.model.Stanza;
-import rocks.xmpp.util.adapters.InstantAdapter;
-
+import java.time.Instant;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.Instant;
-import java.util.Objects;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stanza.model.Stanza;
+import rocks.xmpp.util.adapters.InstantAdapter;
 
 /**
  * The implementation of the {@code <delay/>} element in the {@code urn:xmpp:delay} namespace.

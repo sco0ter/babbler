@@ -24,12 +24,12 @@
 
 package rocks.xmpp.core.sasl.model;
 
-import rocks.xmpp.core.stream.model.StreamElement;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import rocks.xmpp.core.stream.model.StreamElement;
 
 /**
  * The implementation of the {@code <auth/> } element to initialize the SASL authentication process.

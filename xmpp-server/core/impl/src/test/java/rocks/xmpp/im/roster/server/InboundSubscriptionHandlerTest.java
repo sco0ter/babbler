@@ -24,6 +24,10 @@
 
 package rocks.xmpp.im.roster.server;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
+
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
@@ -43,12 +47,8 @@ import rocks.xmpp.im.roster.model.RosterItem;
 import rocks.xmpp.im.roster.model.SubscriptionState;
 import rocks.xmpp.session.server.InboundStanzaProcessor;
 import rocks.xmpp.session.server.InboundSubscriptionHandler;
-import rocks.xmpp.session.server.SessionManager;
 import rocks.xmpp.session.server.OutboundStanzaProcessor;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Stream;
+import rocks.xmpp.session.server.SessionManager;
 
 public class InboundSubscriptionHandlerTest {
 

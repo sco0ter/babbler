@@ -24,21 +24,21 @@
 
 package rocks.xmpp.extensions.shim;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.extensions.shim.model.Header;
-import rocks.xmpp.extensions.shim.model.Headers;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.extensions.shim.model.Header;
+import rocks.xmpp.extensions.shim.model.Headers;
 
 /**
  * @author Christian Schudt

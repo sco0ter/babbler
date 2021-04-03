@@ -24,23 +24,8 @@
 
 package rocks.xmpp.extensions.filetransfer;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.Manager;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.StanzaErrorException;
-import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
-import rocks.xmpp.extensions.filetransfer.model.FileTransferOffer;
-import rocks.xmpp.extensions.oob.model.iq.OobIQ;
-import rocks.xmpp.extensions.si.StreamInitiationManager;
-import rocks.xmpp.extensions.si.model.StreamInitiation;
-import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
-import rocks.xmpp.util.XmppUtils;
-import rocks.xmpp.util.concurrent.AsyncResult;
+import static java.util.Objects.requireNonNull;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,8 +46,23 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import javax.xml.bind.DatatypeConverter;
 
-import static java.util.Objects.requireNonNull;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.Manager;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
+import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
+import rocks.xmpp.extensions.filetransfer.model.FileTransferOffer;
+import rocks.xmpp.extensions.oob.model.iq.OobIQ;
+import rocks.xmpp.extensions.si.StreamInitiationManager;
+import rocks.xmpp.extensions.si.model.StreamInitiation;
+import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
+import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 
 /**

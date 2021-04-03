@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.vcard.avatar.model;
 
-import rocks.xmpp.extensions.hashes.model.Hashed;
-
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.extensions.hashes.model.Hashed;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code vcard-temp:x:update} namespace.

@@ -24,19 +24,19 @@
 
 package rocks.xmpp.extensions.last.server;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.Set;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.net.server.NettyServer;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.last.model.LastActivity;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * @author Christian Schudt

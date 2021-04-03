@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.data.validate.model;
 
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
-import java.util.Objects;
 
 /**
  * The implementation of the {@code <validate/>} element in the {@code http://jabber.org/protocol/xdata-validate} namespace, which is used to validate form fields.

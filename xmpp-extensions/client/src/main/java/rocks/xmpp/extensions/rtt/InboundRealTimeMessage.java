@@ -24,11 +24,6 @@
 
 package rocks.xmpp.extensions.rtt;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.extensions.rtt.model.RealTimeText;
-import rocks.xmpp.util.XmppUtils;
-
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -36,6 +31,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.extensions.rtt.model.RealTimeText;
+import rocks.xmpp.util.XmppUtils;
 
 /**
  * An inbound real-time message.

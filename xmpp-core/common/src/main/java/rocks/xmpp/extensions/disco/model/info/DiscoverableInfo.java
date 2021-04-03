@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.disco.model.info;
 
-import rocks.xmpp.extensions.data.model.DataForm;
-
 import java.util.List;
 import java.util.Set;
+
+import rocks.xmpp.extensions.data.model.DataForm;
 
 /**
  * Information which can be discovered via Service Discovery.

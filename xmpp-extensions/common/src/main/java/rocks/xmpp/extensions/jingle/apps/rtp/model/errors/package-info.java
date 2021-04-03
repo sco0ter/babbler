@@ -26,7 +26,8 @@
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0167.html">XEP-0167: Jingle RTP Sessions</a> (errors).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "urn:xmpp:jingle:apps:rtp:errors:1", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.jingle.apps.rtp.model.errors;
+@XmlSchema(namespace = "urn:xmpp:jingle:apps:rtp:errors:1", elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.jingle.apps.rtp.model.errors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

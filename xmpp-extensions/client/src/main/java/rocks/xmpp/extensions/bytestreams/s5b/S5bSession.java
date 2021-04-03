@@ -24,15 +24,15 @@
 
 package rocks.xmpp.extensions.bytestreams.s5b;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.time.Duration;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 
 /**
  * @author Christian Schudt

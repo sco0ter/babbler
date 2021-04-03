@@ -24,11 +24,11 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.stanza.model.Message;
-
 import java.util.Objects;
 import java.util.function.Predicate;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stanza.model.Message;
 
 /**
  * A predicate which checks for valid message responses.

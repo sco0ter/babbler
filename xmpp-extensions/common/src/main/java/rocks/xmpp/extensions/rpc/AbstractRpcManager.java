@@ -24,6 +24,12 @@
 
 package rocks.xmpp.extensions.rpc;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -35,12 +41,6 @@ import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rpc.model.Value;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 /**
  * This manager allows you to call remote procedures and handle inbound calls, if enabled.

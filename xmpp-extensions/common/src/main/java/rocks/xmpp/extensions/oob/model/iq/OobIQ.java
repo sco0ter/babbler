@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.oob.model.iq;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:oob} namespace.

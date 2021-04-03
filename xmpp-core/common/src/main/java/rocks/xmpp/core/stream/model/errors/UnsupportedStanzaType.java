@@ -43,7 +43,7 @@ final class UnsupportedStanzaType extends Condition {
 
     UnsupportedStanzaType() {
     }
-    
+
     @SuppressWarnings("unused")
     private static UnsupportedStanzaType create() {
         return (UnsupportedStanzaType) UNSUPPORTED_STANZA_TYPE;

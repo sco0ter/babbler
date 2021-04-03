@@ -28,7 +28,8 @@
  * It defines an XMPP protocol extension for communicating the status of a user in a chat session, thus indicating whether a chat partner is actively engaged in the chat, composing a message, temporarily paused, inactive, or gone. The protocol can be used in the context of a one-to-one chat session or a multi-user chat room.
  * </p>
  */
-@XmlSchema(namespace = ChatState.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.chatstates.model;
+@XmlSchema(namespace = ChatState.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.chatstates.model;
 
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

@@ -24,6 +24,10 @@
 
 package rocks.xmpp.extensions.dialback;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -32,10 +36,6 @@ import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.dialback.model.Dialback;
 import rocks.xmpp.extensions.dialback.model.feature.DialbackFeature;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

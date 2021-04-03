@@ -24,6 +24,15 @@
 
 package rocks.xmpp.extensions.pubsub;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Locale;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -41,15 +50,6 @@ import rocks.xmpp.extensions.pubsub.model.PublishOptions;
 import rocks.xmpp.extensions.pubsub.model.PublisherModel;
 import rocks.xmpp.extensions.pubsub.model.SendLastPublishedItem;
 import rocks.xmpp.extensions.pubsub.model.SubscribeOptions;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Locale;
 
 /**
  * @author Christian Schudt

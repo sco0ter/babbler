@@ -24,15 +24,15 @@
 
 package rocks.xmpp.extensions.data.layout.model;
 
+import java.util.Arrays;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.util.ComparableTestHelper;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.util.Arrays;
 
 /**
  * Tests for the {@link Page}, {@link Section} and {@link FieldReference} class.

@@ -24,17 +24,17 @@
 
 package rocks.xmpp.extensions.reach;
 
+import java.net.URI;
+import java.util.Collections;
+import java.util.Locale;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.reach.model.Address;
 import rocks.xmpp.extensions.reach.model.Reachability;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.net.URI;
-import java.util.Collections;
-import java.util.Locale;
 
 /**
  * @author Christian Schudt

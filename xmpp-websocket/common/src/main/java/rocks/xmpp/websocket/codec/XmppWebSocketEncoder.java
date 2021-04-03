@@ -24,23 +24,23 @@
 
 package rocks.xmpp.websocket.codec;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+import javax.websocket.EncodeException;
+import javax.websocket.Encoder;
+import javax.websocket.EndpointConfig;
+import javax.xml.bind.Marshaller;
+import javax.xml.stream.XMLOutputFactory;
+
 import rocks.xmpp.core.net.WriterInterceptor;
 import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.util.XmppStreamEncoder;
-
-import javax.websocket.EncodeException;
-import javax.websocket.Encoder;
-import javax.websocket.EndpointConfig;
-import javax.xml.bind.Marshaller;
-import javax.xml.stream.XMLOutputFactory;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Encodes XMPP {@link StreamElement}s to WebSocket text messages.

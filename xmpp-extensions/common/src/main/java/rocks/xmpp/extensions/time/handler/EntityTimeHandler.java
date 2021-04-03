@@ -24,15 +24,15 @@
 
 package rocks.xmpp.extensions.time.handler;
 
-import rocks.xmpp.core.ExtensionProtocol;
-import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.extensions.time.model.EntityTime;
-
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Set;
+
+import rocks.xmpp.core.ExtensionProtocol;
+import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.extensions.time.model.EntityTime;
 
 /**
  * Handles an time request by returning the current time.

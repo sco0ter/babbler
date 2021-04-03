@@ -24,16 +24,16 @@
 
 package rocks.xmpp.extensions.muc;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Christian Schudt
@@ -45,11 +45,11 @@ public class ChatServiceTest {
         XmppSession xmppSession = new TestXmppSession();
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         ChatService chatService1 = new ChatService(Jid.of("aaa"), "aaa", xmppSession, serviceDiscoveryManager, null);
-        ChatService chatService2 = new ChatService(Jid.of("bbb"), "bbb", xmppSession, serviceDiscoveryManager,null);
-        ChatService chatService3 = new ChatService(Jid.of("ccc"), "aaa", xmppSession, serviceDiscoveryManager,null);
-        ChatService chatService4 = new ChatService(Jid.of("ddd"), "bbb", xmppSession, serviceDiscoveryManager,null);
-        ChatService chatService5 = new ChatService(Jid.of("ddd"), null, xmppSession, serviceDiscoveryManager,null);
-        ChatService chatService6 = new ChatService(null, "aaa", xmppSession, serviceDiscoveryManager,null);
+        ChatService chatService2 = new ChatService(Jid.of("bbb"), "bbb", xmppSession, serviceDiscoveryManager, null);
+        ChatService chatService3 = new ChatService(Jid.of("ccc"), "aaa", xmppSession, serviceDiscoveryManager, null);
+        ChatService chatService4 = new ChatService(Jid.of("ddd"), "bbb", xmppSession, serviceDiscoveryManager, null);
+        ChatService chatService5 = new ChatService(Jid.of("ddd"), null, xmppSession, serviceDiscoveryManager, null);
+        ChatService chatService6 = new ChatService(null, "aaa", xmppSession, serviceDiscoveryManager, null);
 
         List<ChatService> chatServices = new ArrayList<>();
         chatServices.add(chatService1);
@@ -74,12 +74,12 @@ public class ChatServiceTest {
     public void testChatRoomsComparable() {
         XmppSession xmppSession = new TestXmppSession();
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-        ChatRoom chatRoom1 = new ChatRoom(Jid.of("aaa@domain"), "aaa", xmppSession, serviceDiscoveryManager,null);
-        ChatRoom chatRoom2 = new ChatRoom(Jid.of("bbb@domain"), "bbb", xmppSession, serviceDiscoveryManager,null);
-        ChatRoom chatRoom3 = new ChatRoom(Jid.of("ccc@domain"), "aaa", xmppSession, serviceDiscoveryManager,null);
-        ChatRoom chatRoom4 = new ChatRoom(Jid.of("ddd@domain"), "bbb", xmppSession, serviceDiscoveryManager,null);
-        ChatRoom chatRoom5 = new ChatRoom(Jid.of("ddd@domain"), null, xmppSession, serviceDiscoveryManager,null);
-        ChatRoom chatRoom6 = new ChatRoom(Jid.of("aaa@domain"), "aaa@domain", xmppSession, serviceDiscoveryManager,null);
+        ChatRoom chatRoom1 = new ChatRoom(Jid.of("aaa@domain"), "aaa", xmppSession, serviceDiscoveryManager, null);
+        ChatRoom chatRoom2 = new ChatRoom(Jid.of("bbb@domain"), "bbb", xmppSession, serviceDiscoveryManager, null);
+        ChatRoom chatRoom3 = new ChatRoom(Jid.of("ccc@domain"), "aaa", xmppSession, serviceDiscoveryManager, null);
+        ChatRoom chatRoom4 = new ChatRoom(Jid.of("ddd@domain"), "bbb", xmppSession, serviceDiscoveryManager, null);
+        ChatRoom chatRoom5 = new ChatRoom(Jid.of("ddd@domain"), null, xmppSession, serviceDiscoveryManager, null);
+        ChatRoom chatRoom6 = new ChatRoom(Jid.of("aaa@domain"), "aaa@domain", xmppSession, serviceDiscoveryManager, null);
 
         List<ChatRoom> chatRooms = new ArrayList<>();
         chatRooms.add(chatRoom1);

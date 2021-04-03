@@ -24,6 +24,13 @@
 
 package rocks.xmpp.extensions.jingle.apps.rtp.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+
 import rocks.xmpp.extensions.jingle.apps.model.ApplicationFormat;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.errors.CryptoRequired;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.errors.InvalidCrypto;
@@ -33,13 +40,6 @@ import rocks.xmpp.extensions.jingle.apps.rtp.model.info.Mute;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.info.Ringing;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.info.Unhold;
 import rocks.xmpp.extensions.jingle.apps.rtp.model.info.Unmute;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The implementation of the {@code <description/>} element in the {@code urn:xmpp:jingle:apps:rtp:1} namespace.

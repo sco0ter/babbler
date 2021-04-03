@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.hashes;
 
-import rocks.xmpp.core.ExtensionProtocol;
-import rocks.xmpp.extensions.hashes.model.Hash;
-
 import java.security.Security;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import rocks.xmpp.core.ExtensionProtocol;
+import rocks.xmpp.extensions.hashes.model.Hash;
 
 /**
  * Represents the XEP-0300: Use of Cryptographic Hash Functions in XMPP.

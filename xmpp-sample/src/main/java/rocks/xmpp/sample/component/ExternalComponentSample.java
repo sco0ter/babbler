@@ -24,6 +24,12 @@
 
 package rocks.xmpp.sample.component;
 
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -36,12 +42,6 @@ import rocks.xmpp.extensions.langtrans.model.LanguageTranslation;
 import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
 import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.nio.netty.client.NettyTcpConnectionConfiguration;
-
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Locale;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 /**
  * @author Christian Schudt

@@ -24,12 +24,12 @@
 
 package rocks.xmpp.sample.httpprebind;
 
+import java.util.concurrent.Executors;
+
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.extensions.httpbind.BoshConnection;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
-
-import java.util.concurrent.Executors;
 
 /**
  * @author Christian Schudt

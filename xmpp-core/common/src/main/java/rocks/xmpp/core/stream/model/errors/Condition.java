@@ -24,10 +24,10 @@
 
 package rocks.xmpp.core.stream.model.errors;
 
-import rocks.xmpp.util.Strings;
-
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlValue;
+
+import rocks.xmpp.util.Strings;
 
 /**
  * An abstract implementation of a defined stream error condition.

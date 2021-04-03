@@ -1,7 +1,8 @@
 # XEP-0203: Delayed Delivery
 ---
 
-[XEP-0203: Delayed Delivery][Delayed Delivery] is usually attached to messages, when they are sent from the server's offline storage.
+[XEP-0203: Delayed Delivery][Delayed Delivery] is usually attached to messages, when they are sent from the server's
+offline storage.
 
 Checking if a message has delayed delivery info attached is pretty simple:
 
@@ -12,7 +13,8 @@ if (delayedDelivery != null) {
 }
 ```
 
-There's also a convenient method to retrieve the send date of a stanza, which is either "now" (real-time) or some time ago in case the server stored the stanza for delayed delivery, e.g. in an offline storage:
+There's also a convenient method to retrieve the send date of a stanza, which is either "now" (real-time) or some time
+ago in case the server stored the stanza for delayed delivery, e.g. in an offline storage:
 
 ```java
 Instant sendDate = DelayedDelivery.sendDate(message);

@@ -24,10 +24,8 @@
 
 package rocks.xmpp.extensions.jingle.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.jingle.apps.model.ApplicationFormat;
-import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -36,8 +34,10 @@ import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import java.util.ArrayList;
-import java.util.List;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.jingle.apps.model.ApplicationFormat;
+import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
 
 /**
  * @author Christian Schudt

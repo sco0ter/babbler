@@ -24,10 +24,10 @@
 
 package rocks.xmpp.websocket.server;
 
+import java.util.List;
 import javax.websocket.HandshakeResponse;
 import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpointConfig;
-import java.util.List;
 
 /**
  * The server endpoint configurator for the XMPP WebSocket sub-protocol.

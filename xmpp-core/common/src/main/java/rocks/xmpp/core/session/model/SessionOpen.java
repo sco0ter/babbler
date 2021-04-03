@@ -4,8 +4,6 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.LanguageElement;
 import rocks.xmpp.core.stream.model.StreamElement;
 
-import java.util.Locale;
-
 /**
  * This interface describes the common attributes for opening a XMPP session.
  * <p>

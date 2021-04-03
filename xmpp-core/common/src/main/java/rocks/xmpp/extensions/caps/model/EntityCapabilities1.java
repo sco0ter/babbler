@@ -24,15 +24,6 @@
 
 package rocks.xmpp.extensions.caps.model;
 
-import rocks.xmpp.core.stream.model.StreamFeature;
-import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
-import rocks.xmpp.extensions.disco.model.info.Identity;
-import rocks.xmpp.extensions.hashes.model.Hashed;
-import rocks.xmpp.util.Strings;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -42,6 +33,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.core.stream.model.StreamFeature;
+import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
+import rocks.xmpp.extensions.disco.model.info.Identity;
+import rocks.xmpp.extensions.hashes.model.Hashed;
+import rocks.xmpp.util.Strings;
 
 /**
  * The implementation of the {@code <c/>} element in the {@code http://jabber.org/protocol/caps}.

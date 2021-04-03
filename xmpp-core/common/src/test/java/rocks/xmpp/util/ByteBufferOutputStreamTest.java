@@ -24,12 +24,12 @@
 
 package rocks.xmpp.util;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  * Tests for the {@link ByteBufferOutputStream} class.

@@ -24,6 +24,11 @@
 
 package rocks.xmpp.extensions.receipts;
 
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
@@ -34,11 +39,6 @@ import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 import rocks.xmpp.util.XmppUtils;
-
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * The implementation of <a href="https://xmpp.org/extensions/xep-0184.html">XEP-0184: Message Delivery Receipts</a>.

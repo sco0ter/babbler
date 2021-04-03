@@ -24,23 +24,6 @@
 
 package rocks.xmpp.nio.codec;
 
-import com.fasterxml.aalto.AsyncByteBufferFeeder;
-import com.fasterxml.aalto.AsyncXMLInputFactory;
-import com.fasterxml.aalto.AsyncXMLStreamReader;
-import com.fasterxml.aalto.stax.InputFactoryImpl;
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.core.stream.model.StreamError;
-import rocks.xmpp.core.stream.model.StreamErrorException;
-import rocks.xmpp.core.stream.model.StreamHeader;
-import rocks.xmpp.core.stream.model.errors.Condition;
-
-import javax.xml.XMLConstants;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.ByteBuffer;
@@ -52,6 +35,23 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import javax.xml.XMLConstants;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
+import com.fasterxml.aalto.AsyncByteBufferFeeder;
+import com.fasterxml.aalto.AsyncXMLInputFactory;
+import com.fasterxml.aalto.AsyncXMLStreamReader;
+import com.fasterxml.aalto.stax.InputFactoryImpl;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.StreamErrorException;
+import rocks.xmpp.core.stream.model.StreamHeader;
+import rocks.xmpp.core.stream.model.errors.Condition;
 
 /**
  * Decodes a stream of byte buffers to XMPP elements.
@@ -75,6 +75,7 @@ public final class XmppStreamDecoder {
     private StreamHeader streamHeader;
 
     private long elementEnd;
+
     /**
      * Creates the XMPP decoder.
      * <p>

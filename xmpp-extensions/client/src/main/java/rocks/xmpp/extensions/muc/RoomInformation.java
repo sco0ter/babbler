@@ -24,16 +24,16 @@
 
 package rocks.xmpp.extensions.muc;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.disco.model.info.Identity;
-import rocks.xmpp.extensions.muc.model.MucFeature;
-import rocks.xmpp.extensions.muc.model.RoomInfo;
-
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.disco.model.info.Identity;
+import rocks.xmpp.extensions.muc.model.MucFeature;
+import rocks.xmpp.extensions.muc.model.RoomInfo;
 
 /**
  * Represents information about a chat room.

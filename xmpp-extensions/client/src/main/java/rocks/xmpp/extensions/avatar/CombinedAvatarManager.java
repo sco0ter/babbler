@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.avatar;
 
+import java.util.function.Consumer;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.vcard.avatar.VCardBasedAvatarsProtocol;
 import rocks.xmpp.extensions.vcard.temp.VCardManager;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.function.Consumer;
 
 /**
  * This class manages avatar updates as described in <a href="https://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a> and <a href="https://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>.

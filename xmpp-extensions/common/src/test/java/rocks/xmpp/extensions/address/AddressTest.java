@@ -24,6 +24,11 @@
 
 package rocks.xmpp.extensions.address;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -32,11 +37,6 @@ import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.address.model.Address;
 import rocks.xmpp.extensions.address.model.Addresses;
 import rocks.xmpp.im.roster.model.Roster;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**

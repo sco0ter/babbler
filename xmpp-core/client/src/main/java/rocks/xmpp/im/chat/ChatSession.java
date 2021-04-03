@@ -24,11 +24,7 @@
 
 package rocks.xmpp.im.chat;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.SendTask;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.util.XmppUtils;
+import static java.util.Objects.requireNonNull;
 
 import java.util.EventObject;
 import java.util.Objects;
@@ -36,7 +32,11 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 
-import static java.util.Objects.requireNonNull;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.session.SendTask;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.util.XmppUtils;
 
 /**
  * Implements a one-to-one chat session. They are described in <a href="https://xmpp.org/rfcs/rfc6121.html#message-chat">5.1.  One-to-One Chat Sessions</a> and <a href="https://xmpp.org/extensions/xep-0201.html">XEP-0201: Best Practices for Message Threads</a>.

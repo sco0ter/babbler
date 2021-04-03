@@ -24,6 +24,18 @@
 
 package rocks.xmpp.extensions.jingle.apps.filetransfer.model;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import rocks.xmpp.extensions.filetransfer.model.FileTransferOffer;
 import rocks.xmpp.extensions.filetransfer.model.Range;
 import rocks.xmpp.extensions.hashes.model.Hash;
@@ -32,18 +44,6 @@ import rocks.xmpp.extensions.jingle.apps.model.ApplicationFormat;
 import rocks.xmpp.extensions.jingle.model.Jingle;
 import rocks.xmpp.extensions.jingle.thumbs.model.Thumbnail;
 import rocks.xmpp.util.adapters.InstantAdapter;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Christian Schudt

@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.disco.model.items;
 
+import java.util.Locale;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
-
-import java.util.Locale;
 
 /**
  * Provides items, which can be discovered via Service Discovery.

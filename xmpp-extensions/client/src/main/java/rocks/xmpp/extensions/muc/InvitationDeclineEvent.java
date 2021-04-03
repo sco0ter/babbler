@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.muc;
 
-import rocks.xmpp.addr.Jid;
-
 import java.util.EventObject;
 import java.util.function.Consumer;
+
+import rocks.xmpp.addr.Jid;
 
 /**
  * The multi-user chat invitation decline event, which is triggered when an invitee declines a multi-user chat invitation.

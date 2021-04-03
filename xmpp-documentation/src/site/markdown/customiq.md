@@ -1,11 +1,11 @@
 # Custom IQs
 ---
 
-The IQ semantic is a simple request-response mechanism.
-One entity requests another entity (with a specific payload) and the responder returns a result.
-Writing custom IQs (and the handling of those) is easy.
+The IQ semantic is a simple request-response mechanism. One entity requests another entity (with a specific payload) and
+the responder returns a result. Writing custom IQs (and the handling of those) is easy.
 
-Here's a simple example, which allows one entity to request the sum of two integers. The responding entity calculates the result and returns it to the requester.
+Here's a simple example, which allows one entity to request the sum of two integers. The responding entity calculates
+the result and returns it to the requester.
 
 ## Writing the Custom Payload Class
 
@@ -90,7 +90,6 @@ Then create the session with that configuration:
 XmppClient xmppClient = XmppClient.create("domain", configuration);
 ```
 
-
 ## The Requester Side
 
 After having established an XMPP session the requester can then query the responder like that:
@@ -106,8 +105,8 @@ System.out.println(resultIQ.getExtension(Addition.class));
 
 ## The Responder Side
 
-In addition to registering your custom class to the session (see above), the responder needs to register an `IQHandler` implementation,
-which will handle inbound requests (of type `Addition`) and return either an error or the result:
+In addition to registering your custom class to the session (see above), the responder needs to register an `IQHandler`
+implementation, which will handle inbound requests (of type `Addition`) and return either an error or the result:
 
 ```java
 // Reqister an IQ Handler, which will return the sum of two values.
@@ -131,7 +130,8 @@ xmppClient.addIQHandler(new IQHandler() {
 
 Preferably this should be done before connecting.
 
-Each `IQHandler` is invoked in its own thread, so the result calculation could take some time without blocking any other communication.
+Each `IQHandler` is invoked in its own thread, so the result calculation could take some time without blocking any other
+communication.
 
 The result IQ will look like this on the XMPP stream and will eventually arrive at the requester:
 

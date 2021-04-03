@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.receipts.model;
 
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
 
 /**
  * A container class for Message Delivery Receipts.

@@ -24,6 +24,14 @@
 
 package rocks.xmpp.extensions.ping;
 
+import java.time.Duration;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
@@ -40,14 +48,6 @@ import rocks.xmpp.extensions.ping.model.Ping;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
-
-import java.time.Duration;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 /**
  * This class implements the application-level ping mechanism as specified in <a href="https://xmpp.org/extensions/xep-0199.html">XEP-0199: XMPP Ping</a>.

@@ -24,9 +24,9 @@
 
 package rocks.xmpp.extensions.httpauth.model;
 
+import java.net.URL;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.net.URL;
 
 /**
  * The implementation of the {@code <confirm/>} element in the {@code http://jabber.org/protocol/http-auth} namespace.

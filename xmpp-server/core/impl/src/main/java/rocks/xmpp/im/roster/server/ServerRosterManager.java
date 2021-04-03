@@ -24,6 +24,10 @@
 
 package rocks.xmpp.im.roster.server;
 
+import java.util.Collection;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.server.ServerConfiguration;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -34,10 +38,6 @@ import rocks.xmpp.im.roster.model.RosterItem;
 import rocks.xmpp.im.roster.model.SubscriptionState;
 import rocks.xmpp.im.roster.server.spi.RosterItemProvider;
 import rocks.xmpp.session.server.SessionManager;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import java.util.Collection;
 
 /**
  * Manages the roster by reading and persisting roster items from/to the underlying provider and emits roster pushes.

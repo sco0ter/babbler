@@ -24,8 +24,6 @@
 
 package rocks.xmpp.util.concurrent;
 
-import rocks.xmpp.util.XmppUtils;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
@@ -44,6 +42,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
+
+import rocks.xmpp.util.XmppUtils;
 
 /**
  * A {@link ScheduledExecutorService} implementation of a queued executor service.

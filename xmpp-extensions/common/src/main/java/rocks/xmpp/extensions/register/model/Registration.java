@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.register.model;
 
-import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.oob.model.x.OobX;
-
+import java.net.URI;
+import java.net.URL;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.net.URI;
-import java.net.URL;
+
+import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.oob.model.x.OobX;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:register} namespace.

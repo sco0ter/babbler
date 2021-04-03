@@ -24,24 +24,19 @@
 
 package rocks.xmpp.core.session;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.caps.client.ClientEntityCapabilities1Protocol;
 import rocks.xmpp.extensions.caps.client.ClientEntityCapabilitiesManager;
-import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
 import rocks.xmpp.extensions.caps2.client.ClientEntityCapabilities2Protocol;
-import rocks.xmpp.extensions.caps2.model.EntityCapabilities2;
 import rocks.xmpp.extensions.disco.client.ClientServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
-import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.hashes.CryptographicHashFunctionsProtocol;
 import rocks.xmpp.extensions.rsm.ResultSetManagementProtocol;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.roster.model.Roster;
 import rocks.xmpp.im.subscription.PresenceManager;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * The core module provides XMPP classes as well as manager classes which are associated with an XMPP session.

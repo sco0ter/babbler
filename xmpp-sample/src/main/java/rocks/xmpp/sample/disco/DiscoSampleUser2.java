@@ -24,6 +24,8 @@
 
 package rocks.xmpp.sample.disco;
 
+import java.util.concurrent.Executors;
+
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
@@ -32,8 +34,6 @@ import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
-
-import java.util.concurrent.Executors;
 
 /**
  * @author Christian Schudt

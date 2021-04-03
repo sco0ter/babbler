@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.muc.model.user;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * The implementation of the {@code <status/>} element.

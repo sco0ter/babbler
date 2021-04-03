@@ -24,23 +24,23 @@
 
 package rocks.xmpp.core.sasl.plain.server;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import rocks.xmpp.core.sasl.server.CredentialValidationCallback;
-
+import java.nio.charset.StandardCharsets;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.enterprise.credential.UsernamePasswordCredential;
 import javax.security.enterprise.identitystore.CredentialValidationResult;
 import javax.security.sasl.SaslException;
 import javax.security.sasl.SaslServer;
-import java.nio.charset.StandardCharsets;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import rocks.xmpp.core.sasl.server.CredentialValidationCallback;
 
 /**
  * @author Christian Schudt
  */
 public class PlainSaslServerTest {
-    
+
     private static final CallbackHandler CALLBACK_HANDLER = callbacks -> {
         for (Callback callback : callbacks) {
             if (callback instanceof CredentialValidationCallback) {

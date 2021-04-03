@@ -24,6 +24,15 @@
 
 package rocks.xmpp.extensions.jingle.apps.filetransfer;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
@@ -36,15 +45,6 @@ import rocks.xmpp.extensions.jingle.JingleSession;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.model.Jingle;
 import rocks.xmpp.extensions.jingle.transports.ibb.model.InBandByteStreamsTransportMethod;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author Christian Schudt

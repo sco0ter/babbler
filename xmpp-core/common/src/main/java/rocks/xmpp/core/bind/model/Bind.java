@@ -24,11 +24,10 @@
 
 package rocks.xmpp.core.bind.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.Addressable;
-import rocks.xmpp.core.stream.model.StreamFeature;
-
 import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
  * The implementation of the {@code <bind/>} element, which is used during resource binding.

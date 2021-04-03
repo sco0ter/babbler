@@ -24,10 +24,11 @@
 
 package rocks.xmpp.core.sasl.plain.server;
 
-import rocks.xmpp.core.sasl.server.SaslFailureException;
-import rocks.xmpp.core.sasl.model.Failure;
-import rocks.xmpp.core.sasl.server.CredentialValidationCallback;
-
+import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Locale;
+import java.util.Map;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
@@ -36,11 +37,10 @@ import javax.security.enterprise.identitystore.CredentialValidationResult;
 import javax.security.sasl.SaslException;
 import javax.security.sasl.SaslServer;
 import javax.security.sasl.SaslServerFactory;
-import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Locale;
-import java.util.Map;
+
+import rocks.xmpp.core.sasl.model.Failure;
+import rocks.xmpp.core.sasl.server.CredentialValidationCallback;
+import rocks.xmpp.core.sasl.server.SaslFailureException;
 
 /**
  * @author Christian Schudt

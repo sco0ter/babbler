@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.bookmarks.pep.model;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 public class PepNativeBookmarkTest extends XmlTest {
 

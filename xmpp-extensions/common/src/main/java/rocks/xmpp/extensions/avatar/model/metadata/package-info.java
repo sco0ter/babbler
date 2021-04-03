@@ -26,7 +26,8 @@
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a> (metadata).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = AvatarMetadata.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.avatar.model.metadata;
+@XmlSchema(namespace = AvatarMetadata.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.avatar.model.metadata;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

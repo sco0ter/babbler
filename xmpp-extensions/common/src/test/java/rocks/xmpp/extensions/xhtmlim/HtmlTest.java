@@ -24,6 +24,12 @@
 
 package rocks.xmpp.extensions.xhtmlim;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.w3c.dom.Document;
@@ -31,12 +37,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.xhtmlim.model.Html;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

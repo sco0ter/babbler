@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.bookmarks.model;
 
-import rocks.xmpp.addr.Jid;
-
-import javax.xml.bind.annotation.XmlAttribute;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAttribute;
+
+import rocks.xmpp.addr.Jid;
 
 /**
  * A conference bookmark to bookmark multi-user chat rooms.

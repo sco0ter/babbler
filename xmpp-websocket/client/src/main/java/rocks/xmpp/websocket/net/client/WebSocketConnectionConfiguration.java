@@ -24,6 +24,29 @@
 
 package rocks.xmpp.websocket.net.client;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URI;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
+import javax.net.ssl.SSLContext;
+import javax.websocket.ClientEndpointConfig;
+import javax.websocket.CloseReason;
+import javax.websocket.Endpoint;
+import javax.websocket.EndpointConfig;
+import javax.websocket.HandshakeResponse;
+import javax.websocket.Session;
+import javax.websocket.SessionException;
+import javax.websocket.server.HandshakeRequest;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.client.ClientProperties;
 import org.glassfish.tyrus.client.SslEngineConfigurator;
@@ -38,29 +61,6 @@ import rocks.xmpp.dns.TxtRecord;
 import rocks.xmpp.websocket.codec.XmppWebSocketDecoder;
 import rocks.xmpp.websocket.codec.XmppWebSocketEncoder;
 import rocks.xmpp.websocket.net.WebSocketConnection;
-
-import javax.net.ssl.SSLContext;
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.CloseReason;
-import javax.websocket.Endpoint;
-import javax.websocket.EndpointConfig;
-import javax.websocket.HandshakeResponse;
-import javax.websocket.Session;
-import javax.websocket.SessionException;
-import javax.websocket.server.HandshakeRequest;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URI;
-import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
 
 /**
  * A configuration for a WebSocket connection.

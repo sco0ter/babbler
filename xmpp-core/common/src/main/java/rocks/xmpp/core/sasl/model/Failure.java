@@ -24,17 +24,17 @@
 
 package rocks.xmpp.core.sasl.model;
 
-import rocks.xmpp.core.Text;
-import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.util.Strings;
-
+import java.util.Locale;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Locale;
-import java.util.Objects;
+
+import rocks.xmpp.core.Text;
+import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.util.Strings;
 
 /**
  * The implementation of the {@code <failure/>} element, which indicates a SASL failure.

@@ -24,10 +24,6 @@
 
 package rocks.xmpp.extensions.filetransfer;
 
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.util.XmppUtils;
-import rocks.xmpp.util.concurrent.QueuedExecutorService;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,6 +35,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+
+import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.QueuedExecutorService;
 
 /**
  * A class for managing a single file transfer.

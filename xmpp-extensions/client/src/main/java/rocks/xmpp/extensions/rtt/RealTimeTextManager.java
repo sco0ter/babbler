@@ -25,6 +25,14 @@
 package rocks.xmpp.extensions.rtt;
 
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.XmppSession;
@@ -35,14 +43,6 @@ import rocks.xmpp.extensions.messagecorrect.model.Replace;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
 import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.util.XmppUtils;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.function.Consumer;
 
 /**
  * Manages In-Band Real Time Text.

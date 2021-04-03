@@ -24,10 +24,10 @@
 
 package rocks.xmpp.util.adapters;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 
 /**

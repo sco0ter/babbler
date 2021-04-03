@@ -24,15 +24,15 @@
 
 package rocks.xmpp.extensions.time.model;
 
-import rocks.xmpp.util.adapters.InstantAdapter;
-import rocks.xmpp.util.adapters.ZoneOffsetAdapter;
-
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import rocks.xmpp.util.adapters.InstantAdapter;
+import rocks.xmpp.util.adapters.ZoneOffsetAdapter;
 
 /**
  * The implementation of the {@code <time/>} element in the {@code urn:xmpp:time} namespace.

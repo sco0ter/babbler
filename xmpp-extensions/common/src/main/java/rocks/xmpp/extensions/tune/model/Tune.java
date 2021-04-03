@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.tune.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <tune/>} element in the {@code http://jabber.org/protocol/tune} namespace.

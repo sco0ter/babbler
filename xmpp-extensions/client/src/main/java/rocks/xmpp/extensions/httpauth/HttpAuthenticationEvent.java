@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.httpauth;
 
+import java.util.Collections;
+import java.util.EventObject;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -32,9 +35,6 @@ import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
-
-import java.util.Collections;
-import java.util.EventObject;
 
 /**
  * This event notifies listeners, when a HTTP authentication confirmation request has been received.

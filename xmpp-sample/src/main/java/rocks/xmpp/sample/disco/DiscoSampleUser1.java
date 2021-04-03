@@ -24,6 +24,11 @@
 
 package rocks.xmpp.sample.disco;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Executors;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
@@ -33,11 +38,6 @@ import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.items.DiscoverableItem;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Executors;
 
 /**
  * @author Christian Schudt

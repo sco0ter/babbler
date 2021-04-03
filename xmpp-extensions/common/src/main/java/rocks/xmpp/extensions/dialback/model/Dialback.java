@@ -24,11 +24,15 @@
 
 package rocks.xmpp.extensions.dialback.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.core.stanza.model.server.ServerStanzaError;
-import rocks.xmpp.extensions.dialback.model.feature.DialbackFeature;
-
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -39,15 +43,11 @@ import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.core.stanza.model.server.ServerStanzaError;
+import rocks.xmpp.extensions.dialback.model.feature.DialbackFeature;
 
 /**
  * The implementation of the dialback elements {@code <result/>} and {@code <verify/>} in the {@code jabber:server:dialback} namespace.

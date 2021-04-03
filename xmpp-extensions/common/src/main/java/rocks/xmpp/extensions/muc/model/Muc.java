@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.muc.model;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+
 import rocks.xmpp.extensions.muc.model.admin.MucAdmin;
 import rocks.xmpp.extensions.muc.model.owner.MucOwner;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
-
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code http://jabber.org/protocol/muc} namespace, which allows to enter a room.

@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.httpbind;
 
+import java.net.URI;
+
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.extensions.httpbind.model.Body;
-
-import java.net.URI;
 
 /**
  * A BOSH exception is thrown when the BOSH connection manager returned an error condition or the HTTP request responded with an HTTP error code.

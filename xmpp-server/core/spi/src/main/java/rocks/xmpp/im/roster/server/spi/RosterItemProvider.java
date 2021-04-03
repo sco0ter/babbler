@@ -24,10 +24,10 @@
 
 package rocks.xmpp.im.roster.server.spi;
 
+import java.util.List;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.im.roster.model.RosterItem;
-
-import java.util.List;
 
 /**
  * @author Christian Schudt

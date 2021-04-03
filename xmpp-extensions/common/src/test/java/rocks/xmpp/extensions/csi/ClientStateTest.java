@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.csi;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.extensions.csi.model.ClientState;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

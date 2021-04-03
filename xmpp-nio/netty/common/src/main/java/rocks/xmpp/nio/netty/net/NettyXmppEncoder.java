@@ -24,6 +24,11 @@
 
 package rocks.xmpp.nio.netty.net;
 
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.util.function.Consumer;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.channel.ChannelHandlerContext;
@@ -31,11 +36,6 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import rocks.xmpp.core.net.WriterInterceptor;
 import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.stream.model.StreamElement;
-
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.util.function.Consumer;
 
 /**
  * Encodes stream elements to byte buffers.

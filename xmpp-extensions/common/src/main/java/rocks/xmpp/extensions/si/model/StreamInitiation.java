@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.si.model;
 
-import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
-
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+
+import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
 
 /**
  * The implementation of the {@code <si/>} element in the {@code http://jabber.org/protocol/si} namespace.

@@ -24,15 +24,15 @@
 
 package rocks.xmpp.extensions.pubsub;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * @author Christian Schudt

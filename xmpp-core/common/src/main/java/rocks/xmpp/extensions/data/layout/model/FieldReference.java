@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.data.layout.model;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * A field reference is used to reference to a field in a data form.

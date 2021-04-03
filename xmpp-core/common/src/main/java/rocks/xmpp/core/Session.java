@@ -24,12 +24,12 @@
 
 package rocks.xmpp.core;
 
+import java.util.concurrent.CompletionStage;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
-
-import java.util.concurrent.CompletionStage;
 
 /**
  * A generic interface for different kinds of XMPP sessions.

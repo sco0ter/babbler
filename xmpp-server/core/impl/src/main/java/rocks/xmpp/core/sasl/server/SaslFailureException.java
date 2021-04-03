@@ -24,10 +24,10 @@
 
 package rocks.xmpp.core.sasl.server;
 
-import rocks.xmpp.core.sasl.model.Failure;
-
-import javax.security.sasl.SaslException;
 import java.util.Objects;
+import javax.security.sasl.SaslException;
+
+import rocks.xmpp.core.sasl.model.Failure;
 
 /**
  * A {@link SaslException} for usage in {@link javax.security.sasl.SaslServer} implementations to report XMPP specific SASL failures.

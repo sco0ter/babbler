@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.jingle.apps.filetransfer;
 
+import java.nio.file.Paths;
+import java.util.concurrent.Executors;
+
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
-
-import java.nio.file.Paths;
-import java.util.concurrent.Executors;
 
 /**
  * @author Christian Schudt

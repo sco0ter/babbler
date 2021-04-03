@@ -24,12 +24,6 @@
 
 package rocks.xmpp.extensions.rtt;
 
-import rocks.xmpp.core.session.SendTask;
-import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.extensions.rtt.model.RealTimeText;
-import rocks.xmpp.im.chat.Chat;
-import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
-
 import java.text.Normalizer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -40,6 +34,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+
+import rocks.xmpp.core.session.SendTask;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.extensions.rtt.model.RealTimeText;
+import rocks.xmpp.im.chat.Chat;
+import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 
 /**
  * An outbound real-time message.

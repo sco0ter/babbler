@@ -24,6 +24,8 @@
 
 package rocks.xmpp.nio.netty.client;
 
+import java.net.Proxy;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -38,8 +40,6 @@ import io.netty.handler.proxy.Socks5ProxyHandler;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
-
-import java.net.Proxy;
 
 /**
  * @author Christian Schudt

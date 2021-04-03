@@ -24,6 +24,12 @@
 
 package rocks.xmpp.core.stream.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
@@ -33,12 +39,6 @@ import rocks.xmpp.core.session.model.Session;
 import rocks.xmpp.core.tls.model.StartTls;
 import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
 import rocks.xmpp.util.ComparableTestHelper;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Tests for the {@link StreamFeatures} class.

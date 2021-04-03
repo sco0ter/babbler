@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.privatedata.model;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.privatedata.rosterdelimiter.model.RosterDelimiter;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * Tests for the {@link PrivateData} class.

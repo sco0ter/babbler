@@ -24,17 +24,13 @@
 
 package rocks.xmpp.core;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.Presence;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
-import rocks.xmpp.core.stanza.model.client.ClientMessage;
-import rocks.xmpp.core.stanza.model.client.ClientPresence;
-import rocks.xmpp.core.stream.model.StreamHeader;
-import rocks.xmpp.util.LanguageUnmarshallerListener;
-import rocks.xmpp.util.XmppUtils;
-
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Locale;
 import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -46,13 +42,17 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Locale;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.core.stanza.model.client.ClientIQ;
+import rocks.xmpp.core.stanza.model.client.ClientMessage;
+import rocks.xmpp.core.stanza.model.client.ClientPresence;
+import rocks.xmpp.core.stream.model.StreamHeader;
+import rocks.xmpp.util.LanguageUnmarshallerListener;
+import rocks.xmpp.util.XmppUtils;
 
 /**
  * @author Christian Schudt

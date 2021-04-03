@@ -24,6 +24,16 @@
 
 package rocks.xmpp.nio.netty.client;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.concurrent.CompletionStage;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLParameters;
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -43,16 +53,6 @@ import rocks.xmpp.core.tls.client.StartTlsManager;
 import rocks.xmpp.extensions.compress.CompressionManager;
 import rocks.xmpp.extensions.sm.client.ClientStreamManager;
 import rocks.xmpp.nio.netty.net.NettyChannelConnection;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLParameters;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.util.Collections;
-import java.util.Locale;
-import java.util.concurrent.CompletionStage;
 
 /**
  * @author Christian Schudt

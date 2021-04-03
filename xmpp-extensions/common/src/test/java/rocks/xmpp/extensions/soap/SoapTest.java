@@ -24,14 +24,6 @@
 
 package rocks.xmpp.extensions.soap;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import org.w3c.dom.Element;
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.Message;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPBody;
@@ -43,6 +35,14 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.dom.DOMSource;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import org.w3c.dom.Element;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.Message;
 
 /**
  * @author Christian Schudt

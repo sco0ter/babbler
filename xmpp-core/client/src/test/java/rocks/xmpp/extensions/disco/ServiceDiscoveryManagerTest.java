@@ -24,22 +24,6 @@
 
 package rocks.xmpp.extensions.disco;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.BaseTest;
-import rocks.xmpp.core.MockServer;
-import rocks.xmpp.core.session.TestXmppSession;
-import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.disco.client.ClientServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.Identity;
-import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
-import rocks.xmpp.extensions.disco.model.items.DiscoverableItem;
-import rocks.xmpp.extensions.disco.model.items.ItemElement;
-import rocks.xmpp.extensions.disco.model.items.ItemNode;
-import rocks.xmpp.extensions.rsm.ResultSetProvider;
-import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,6 +35,22 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.BaseTest;
+import rocks.xmpp.core.MockServer;
+import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.disco.client.ClientServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
+import rocks.xmpp.extensions.disco.model.info.Identity;
+import rocks.xmpp.extensions.disco.model.items.DiscoverableItem;
+import rocks.xmpp.extensions.disco.model.items.ItemElement;
+import rocks.xmpp.extensions.disco.model.items.ItemNode;
+import rocks.xmpp.extensions.rsm.ResultSetProvider;
+import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 
 /**

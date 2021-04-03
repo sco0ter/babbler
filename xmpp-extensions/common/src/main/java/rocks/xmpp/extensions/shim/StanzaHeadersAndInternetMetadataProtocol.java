@@ -24,6 +24,13 @@
 
 package rocks.xmpp.extensions.shim;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Collectors;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -31,13 +38,6 @@ import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.shim.model.Headers;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of <a href="https://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>.

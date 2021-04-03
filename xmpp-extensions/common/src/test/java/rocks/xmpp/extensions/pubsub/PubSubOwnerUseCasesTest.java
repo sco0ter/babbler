@@ -24,6 +24,10 @@
 
 package rocks.xmpp.extensions.pubsub;
 
+import java.net.URI;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -33,10 +37,6 @@ import rocks.xmpp.extensions.pubsub.model.Affiliation;
 import rocks.xmpp.extensions.pubsub.model.AffiliationState;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
 import rocks.xmpp.extensions.pubsub.model.owner.PubSubOwner;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.net.URI;
 
 /**
  * @author Christian Schudt

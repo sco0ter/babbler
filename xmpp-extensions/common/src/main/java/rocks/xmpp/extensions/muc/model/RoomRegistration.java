@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.muc.model;
 
-import rocks.xmpp.extensions.data.StandardizedDataForm;
-import rocks.xmpp.extensions.data.model.DataForm;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.Collection;
+
+import rocks.xmpp.extensions.data.StandardizedDataForm;
+import rocks.xmpp.extensions.data.model.DataForm;
 
 /**
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#register}, which can be used to register with a MUC room.

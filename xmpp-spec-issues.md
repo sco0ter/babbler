@@ -1,4 +1,5 @@
-This is a list of various issues which have occurred while reading through and implementing XEPs. Some of them were also mentioned in the XMPP standards mailing list.
+This is a list of various issues which have occurred while reading through and implementing XEPs. Some of them were also
+mentioned in the XMPP standards mailing list.
 
 ## XEP-0045: Multi-User Chat
 

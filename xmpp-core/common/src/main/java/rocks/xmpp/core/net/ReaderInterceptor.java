@@ -24,10 +24,10 @@
 
 package rocks.xmpp.core.net;
 
-import rocks.xmpp.core.stream.model.StreamElement;
-
 import java.io.Reader;
 import java.util.function.Consumer;
+
+import rocks.xmpp.core.stream.model.StreamElement;
 
 /**
  * Intercepts {@link StreamElement}s after reading them from the wire.

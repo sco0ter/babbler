@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.disco.model.items;
 
+import java.util.Objects;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.disco.AbstractServiceDiscoveryManager;
 import rocks.xmpp.extensions.rsm.model.ResultSetItem;
-
-import java.util.Objects;
 
 /**
  * A Service Discovery item which has an id, in order to provide a limited result set.

@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.rsm;
 
-import rocks.xmpp.core.ExtensionProtocol;
-import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
-
 import java.util.Collections;
 import java.util.Set;
+
+import rocks.xmpp.core.ExtensionProtocol;
+import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 /**
  * Represents the XEP-0059: Result Set Management.

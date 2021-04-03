@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.disco.model.info;
 
-import rocks.xmpp.core.LanguageElement;
-import rocks.xmpp.util.Strings;
-
-import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.XmlAttribute;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Objects;
+import javax.xml.XMLConstants;
+import javax.xml.bind.annotation.XmlAttribute;
+
+import rocks.xmpp.core.LanguageElement;
+import rocks.xmpp.util.Strings;
 
 /**
  * Represents an identity of an XMPP entity.

@@ -24,6 +24,10 @@
 
 package rocks.xmpp.extensions.httpauth;
 
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
+
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -34,10 +38,6 @@ import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
 import rocks.xmpp.util.XmppUtils;
-
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.function.Consumer;
 
 /**
  * This manager allows to listen for inbound requests (by an XMPP server) to confirm that the current XMPP user made an HTTP request, i.e. to verify that the HTTP request was in fact made by the XMPP user.

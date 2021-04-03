@@ -24,6 +24,12 @@
 
 package rocks.xmpp.core.sasl.scram;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Map;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
@@ -32,12 +38,6 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.sasl.SaslClient;
 import javax.security.sasl.SaslException;
 import javax.xml.bind.DatatypeConverter;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Map;
 
 /**
  * The client implementation of the SCRAM-SHA-1 SASL mechanism.

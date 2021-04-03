@@ -1,7 +1,8 @@
 # XEP-0072: SOAP Over XMPP
 ---
 
-There's some very basic support for [XEP-0072: SOAP Over XMPP][SOAP Over XMPP]. For more details you should read the specification. Here are some examples.
+There's some very basic support for [XEP-0072: SOAP Over XMPP][SOAP Over XMPP]. For more details you should read the
+specification. Here are some examples.
 
 ## Discovering Support
 
@@ -50,7 +51,9 @@ This will generate the following XML on the XMPP stream.
 
 ## Receiving a SOAP Message
 
-Since `SOAPEnvelope` is an interface and not known to the JAXB Context, it will be converted to `org.w3c.Element`. You should ask the extension for `Element` and check its namespace. If it matches a SOAP namespace, you can convert it to `SOAPEnvelope`.
+Since `SOAPEnvelope` is an interface and not known to the JAXB Context, it will be converted to `org.w3c.Element`. You
+should ask the extension for `Element` and check its namespace. If it matches a SOAP namespace, you can convert it
+to `SOAPEnvelope`.
 
 ```java
 Element element = message.getExtension(Element.class);

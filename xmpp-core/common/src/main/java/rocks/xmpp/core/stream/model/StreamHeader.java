@@ -24,13 +24,6 @@
 
 package rocks.xmpp.core.stream.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.model.SessionOpen;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +32,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.session.model.SessionOpen;
 
 /**
  * Represents the XMPP stream header.

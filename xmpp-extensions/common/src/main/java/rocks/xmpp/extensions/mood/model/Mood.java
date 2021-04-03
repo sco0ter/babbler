@@ -24,15 +24,15 @@
 
 package rocks.xmpp.extensions.mood.model;
 
-import rocks.xmpp.util.Strings;
-
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
-import java.util.Objects;
+
+import rocks.xmpp.util.Strings;
 
 /**
  * The implementation of the {@code <mood/>} element in the {@code http://jabber.org/protocol/mood} namespace.

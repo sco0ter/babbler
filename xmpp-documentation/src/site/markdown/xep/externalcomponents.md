@@ -1,12 +1,17 @@
 # External Components
 ---
 
-[External Components][External Components] are like server plugins, which are not hosted within the server environment, but instead connect externally to the server via the "Jabber Component Protocol".
-Usually, components "live" in their own subdomain, e.g. `mycomponent.xmpp.rocks`. Like internal plugins they allow you to enhance a server's functionality, e.g. provide additional services.
- 
-Such external components connect to the server and authenticate via a shared secret. Component and server then communicate with each other using XMPP.
+[External Components][External Components] are like server plugins, which are not hosted within the server environment,
+but instead connect externally to the server via the "Jabber Component Protocol". Usually, components "live" in their
+own subdomain, e.g. `mycomponent.xmpp.rocks`. Like internal plugins they allow you to enhance a server's functionality,
+e.g. provide additional services.
 
-Clients could send messages (or other stanzas) to the component (e.g. to `mycomponent.xmpp.rocks`) and the component could do whatever it wants, like doing statistics, sending or forwarding messages, returning IQ results, or providing translation services.
+Such external components connect to the server and authenticate via a shared secret. Component and server then
+communicate with each other using XMPP.
+
+Clients could send messages (or other stanzas) to the component (e.g. to `mycomponent.xmpp.rocks`) and the component
+could do whatever it wants, like doing statistics, sending or forwarding messages, returning IQ results, or providing
+translation services.
 
 Here's a sample of a component:
 
@@ -16,7 +21,8 @@ ExternalComponent myComponent = ExternalComponent.create("translation", "sharedS
 
 It connects to a server hosted at `localhost` which allows external components to connect on port 5275.
 
-The component name is `translation`, i.e. it will usually also be addressable via the correspondent subdomain, i.e. `translation.xmpp.rocks`. 
+The component name is `translation`, i.e. it will usually also be addressable via the correspondent subdomain,
+i.e. `translation.xmpp.rocks`.
 
 The shared secret (password), is configured in the server and is `sharedSecret` here.
 
@@ -76,10 +82,13 @@ myComponent.addIQHandler(LanguageTranslation.class, new AbstractIQHandler(IQ.Typ
 myComponent.connect();
 ```
 
-Now, when a client discovers services of your server, the server will advertise your component as "Translation Provider Service" and clients could ask your component to translate a text.
+Now, when a client discovers services of your server, the server will advertise your component as "Translation Provider
+Service" and clients could ask your component to translate a text.
 
-`ExternalComponent` is in many things similar to `XmppClient` because they derive from the same base class `XmppSession`.
+`ExternalComponent` is in many things similar to `XmppClient` because they derive from the same base class `XmppSession`
+.
 
-That also means, that there's a lot of shared functionality and `ExternalComponent` supports many protocols out of the box, like Service Discovery, Message Delivery Receipts, Entity Time, ...
+That also means, that there's a lot of shared functionality and `ExternalComponent` supports many protocols out of the
+box, like Service Discovery, Message Delivery Receipts, Entity Time, ...
 
 [External Components]: https://xmpp.org/extensions/xep-0114.html "XEP-0114: Jabber Component Protocol"

@@ -24,16 +24,16 @@
 
 package rocks.xmpp.extensions.geoloc;
 
+import java.net.URI;
+import java.time.ZoneOffset;
+import java.util.Locale;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.geoloc.model.GeoLocation;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.net.URI;
-import java.time.ZoneOffset;
-import java.util.Locale;
 
 /**
  * @author Christian Schudt

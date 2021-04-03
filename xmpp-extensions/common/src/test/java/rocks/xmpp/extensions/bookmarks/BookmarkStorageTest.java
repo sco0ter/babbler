@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.bookmarks;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -31,9 +34,6 @@ import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.bookmarks.model.BookmarkStorage;
 import rocks.xmpp.extensions.bookmarks.model.ChatRoomBookmark;
 import rocks.xmpp.extensions.bookmarks.model.WebPageBookmark;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

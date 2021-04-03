@@ -24,8 +24,6 @@
 
 package rocks.xmpp.im.roster;
 
-import rocks.xmpp.im.roster.model.Contact;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
@@ -33,6 +31,8 @@ import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
 import java.util.function.Consumer;
+
+import rocks.xmpp.im.roster.model.Contact;
 
 /**
  * A roster event which holds information about added, updated and removed contacts of the roster.

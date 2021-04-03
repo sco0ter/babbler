@@ -24,9 +24,10 @@
 
 package rocks.xmpp.extensions.httpbind.server;
 
-import rocks.xmpp.extensions.httpbind.model.Body;
-import rocks.xmpp.session.server.InboundClientSession;
-
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import javax.enterprise.inject.spi.CDI;
 import javax.inject.Singleton;
 import javax.ws.rs.POST;
@@ -37,10 +38,9 @@ import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+
+import rocks.xmpp.extensions.httpbind.model.Body;
+import rocks.xmpp.session.server.InboundClientSession;
 
 /**
  * @author Christian Schudt

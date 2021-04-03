@@ -24,9 +24,9 @@
 
 package rocks.xmpp.extensions.pubsub.model;
 
-import rocks.xmpp.extensions.disco.model.info.Feature;
-
 import javax.xml.bind.annotation.XmlEnumValue;
+
+import rocks.xmpp.extensions.disco.model.info.Feature;
 
 /**
  * Represents the pubsub features.

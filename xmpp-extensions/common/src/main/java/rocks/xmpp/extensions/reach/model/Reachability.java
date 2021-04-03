@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.reach.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <reach/>} element in the {@code urn:xmpp:reach:0} namespace.

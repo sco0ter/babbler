@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.caps;
 
-import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
-import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
-import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.Set;
+
+import rocks.xmpp.extensions.caps.model.EntityCapabilities1;
+import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 
 /**
  * Abstract base class for the original Entity Capabilities protocol (XEP-0115: Entity Capabilities).

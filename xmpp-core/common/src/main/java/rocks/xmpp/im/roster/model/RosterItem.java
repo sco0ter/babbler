@@ -24,10 +24,9 @@
 
 package rocks.xmpp.im.roster.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.Addressable;
-
 import java.util.List;
+
+import rocks.xmpp.core.Addressable;
 
 /**
  * Represents a roster item. This interface is implemented already by {@link Contact} and could be implemented by

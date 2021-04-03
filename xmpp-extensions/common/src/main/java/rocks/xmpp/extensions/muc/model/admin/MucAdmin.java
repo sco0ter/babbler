@@ -24,17 +24,17 @@
 
 package rocks.xmpp.extensions.muc.model.admin;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.muc.model.Actor;
 import rocks.xmpp.extensions.muc.model.Affiliation;
 import rocks.xmpp.extensions.muc.model.Item;
 import rocks.xmpp.extensions.muc.model.Role;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/muc#admin} namespace.

@@ -24,6 +24,13 @@
 
 package rocks.xmpp.extensions.pubsub;
 
+import java.net.URI;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Extension;
 import rocks.xmpp.core.session.XmppSession;
@@ -43,13 +50,6 @@ import rocks.xmpp.extensions.pubsub.model.SubscribeOptions;
 import rocks.xmpp.extensions.pubsub.model.Subscription;
 import rocks.xmpp.extensions.pubsub.model.owner.PubSubOwner;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.net.URI;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * This class represents a single pubsub node.

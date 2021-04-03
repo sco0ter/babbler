@@ -24,17 +24,6 @@
 
 package rocks.xmpp.extensions.httpbind.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.model.SessionOpen;
-
-import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.time.Duration;
@@ -48,6 +37,17 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import javax.xml.XMLConstants;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.session.model.SessionOpen;
 
 /**
  * The implementation of the {@code <body/>} element in the {@code http://jabber.org/protocol/httpbind} namespace.

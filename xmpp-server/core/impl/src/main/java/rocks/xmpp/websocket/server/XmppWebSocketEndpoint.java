@@ -24,18 +24,18 @@
 
 package rocks.xmpp.websocket.server;
 
-import rocks.xmpp.core.stream.model.StreamError;
-import rocks.xmpp.core.stream.model.errors.Condition;
-import rocks.xmpp.session.server.InboundClientSession;
-import rocks.xmpp.websocket.net.WebSocketConnection;
-
+import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 import javax.enterprise.inject.spi.CDI;
 import javax.websocket.CloseReason;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
-import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
+
+import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.errors.Condition;
+import rocks.xmpp.session.server.InboundClientSession;
+import rocks.xmpp.websocket.net.WebSocketConnection;
 
 /**
  * The WebSocket endpoint for XMPP.

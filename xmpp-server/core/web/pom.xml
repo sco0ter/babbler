@@ -81,7 +81,7 @@
             </build>
         </profile>
     </profiles>
-    
+
     <build>
         <finalName>xmpp</finalName>
         <plugins>

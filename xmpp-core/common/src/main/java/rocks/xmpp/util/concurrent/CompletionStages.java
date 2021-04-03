@@ -24,8 +24,6 @@
 
 package rocks.xmpp.util.concurrent;
 
-import rocks.xmpp.util.XmppUtils;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -37,6 +35,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import rocks.xmpp.util.XmppUtils;
 
 /**
  * Utility class for creating different kinds of {@link java.util.concurrent.CompletionStage}.
@@ -80,9 +80,9 @@ public final class CompletionStages {
                         stages.stream()
                                 // Get the result of each future (List<T>)
                                 .map(stage -> stage.toCompletableFuture().join())
-                                        // Map the List<List<T>> to one stream
+                                // Map the List<List<T>> to one stream
                                 .flatMap(Collection::stream)
-                                        // Collect all items into one list.
+                                // Collect all items into one list.
                                 .collect(Collectors.toList()));
     }
 
@@ -110,7 +110,7 @@ public final class CompletionStages {
     public static <T> CompletionStage<T> timeoutAfter(final long delay, final TimeUnit unit, final Supplier<Throwable> throwableSupplier) {
         CompletableFuture<T> completableFuture = new CompletableFuture<>();
         TIMEOUT_EXECUTOR.schedule(() ->
-                completableFuture.completeExceptionally(throwableSupplier.get())
+                        completableFuture.completeExceptionally(throwableSupplier.get())
                 , delay, unit);
         return completableFuture;
     }

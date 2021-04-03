@@ -24,12 +24,13 @@
 
 package rocks.xmpp.extensions.pubsub;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.client.ClientIQ;
-import rocks.xmpp.extensions.pubsub.model.PubSub;
 import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
 import rocks.xmpp.extensions.pubsub.model.errors.ClosedNode;
 import rocks.xmpp.extensions.pubsub.model.errors.ConfigurationRequired;
@@ -52,9 +53,6 @@ import rocks.xmpp.extensions.pubsub.model.errors.PubSubError;
 import rocks.xmpp.extensions.pubsub.model.errors.SubIdRequired;
 import rocks.xmpp.extensions.pubsub.model.errors.TooManySubscriptions;
 import rocks.xmpp.extensions.pubsub.model.errors.Unsupported;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

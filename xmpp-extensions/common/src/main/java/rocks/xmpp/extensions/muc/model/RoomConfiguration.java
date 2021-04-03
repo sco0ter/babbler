@@ -24,10 +24,6 @@
 
 package rocks.xmpp.extensions.muc.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.data.StandardizedDataForm;
-import rocks.xmpp.extensions.data.model.DataForm;
-
 import java.net.URI;
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -37,6 +33,10 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.data.StandardizedDataForm;
+import rocks.xmpp.extensions.data.model.DataForm;
 
 /**
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#roomconfig}, which can be used to configure a MUC room.

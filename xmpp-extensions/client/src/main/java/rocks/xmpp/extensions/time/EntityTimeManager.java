@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.time;
 
+import java.time.OffsetDateTime;
+import java.util.Set;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.Manager;
@@ -33,9 +36,6 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.time.handler.EntityTimeHandler;
 import rocks.xmpp.extensions.time.model.EntityTime;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.time.OffsetDateTime;
-import java.util.Set;
 
 /**
  * This manager implements <a href="https://xmpp.org/extensions/xep-0202.html">XEP-0202: Entity Time</a>.

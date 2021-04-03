@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.privatedata;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.privatedata.model.PrivateData;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * This class implements <a href="https://xmpp.org/extensions/xep-0049.html">XEP-0049: Private XML Storage</a>.

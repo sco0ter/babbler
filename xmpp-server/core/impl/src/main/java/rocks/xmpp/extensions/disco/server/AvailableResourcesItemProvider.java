@@ -24,6 +24,12 @@
 
 package rocks.xmpp.extensions.disco.server;
 
+import java.util.Collections;
+import java.util.Locale;
+import java.util.stream.Collectors;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.disco.model.items.DiscoverableItem;
 import rocks.xmpp.extensions.disco.model.items.ItemProvider;
@@ -31,12 +37,6 @@ import rocks.xmpp.extensions.rsm.ResultSetProvider;
 import rocks.xmpp.im.roster.model.RosterItem;
 import rocks.xmpp.im.roster.server.ServerRosterManager;
 import rocks.xmpp.session.server.SessionManager;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import java.util.Collections;
-import java.util.Locale;
-import java.util.stream.Collectors;
 
 /**
  * Returns a user's available resources as disco#items response if allowed.

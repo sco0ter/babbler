@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.muc.model.owner;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.muc.model.Destroy;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.muc.model.Destroy;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/muc#owner} namespace.

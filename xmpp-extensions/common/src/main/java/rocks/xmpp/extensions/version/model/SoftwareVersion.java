@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.version.model;
 
-import rocks.xmpp.extensions.softwareinfo.SoftwareInfo;
-
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.extensions.softwareinfo.SoftwareInfo;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:version} namespace.

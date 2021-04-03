@@ -24,11 +24,11 @@
 
 package rocks.xmpp.session.server;
 
-import rocks.xmpp.im.roster.server.spi.IdGenerator;
-
-import javax.enterprise.context.ApplicationScoped;
 import java.security.SecureRandom;
 import java.util.Base64;
+import javax.enterprise.context.ApplicationScoped;
+
+import rocks.xmpp.im.roster.server.spi.IdGenerator;
 
 /**
  * Generates an identifier using 160-bit secure random value, which is encoded as URL and file safe Base64 (without padding).

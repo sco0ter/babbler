@@ -24,15 +24,6 @@
 
 package rocks.xmpp.nio.netty.net;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageDecoder;
-import rocks.xmpp.core.net.ReaderInterceptor;
-import rocks.xmpp.core.net.ReaderInterceptorChain;
-import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.nio.codec.XmppStreamDecoder;
-
-import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
@@ -41,6 +32,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import javax.xml.bind.Unmarshaller;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.ByteToMessageDecoder;
+import rocks.xmpp.core.net.ReaderInterceptor;
+import rocks.xmpp.core.net.ReaderInterceptorChain;
+import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.nio.codec.XmppStreamDecoder;
 
 /**
  * Decodes byte buffers to stream elements.

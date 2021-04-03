@@ -44,7 +44,7 @@ public class RemoteCandidate {
     }
 
     public RemoteCandidate(Integer pComponent, String pIp, Integer pPort) {
-    	super();
+        super();
         component = pComponent;
         ip = pIp;
         port = pPort;

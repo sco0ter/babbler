@@ -24,15 +24,6 @@
 
 package rocks.xmpp.extensions.langtrans.model;
 
-import rocks.xmpp.core.LanguageElement;
-import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
-
-import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,6 +31,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import javax.xml.XMLConstants;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlValue;
+
+import rocks.xmpp.core.LanguageElement;
+import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
 
 /**
  * The implementation of the the {@code <x/>} element in the {@code urn:xmpp:langtrans} namespace.

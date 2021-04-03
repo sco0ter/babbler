@@ -24,6 +24,13 @@
 
 package rocks.xmpp.im.roster.server;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
@@ -32,13 +39,6 @@ import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.im.roster.model.Roster;
 import rocks.xmpp.im.roster.model.RosterItem;
 import rocks.xmpp.im.roster.model.SubscriptionState;
-
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Christian Schudt

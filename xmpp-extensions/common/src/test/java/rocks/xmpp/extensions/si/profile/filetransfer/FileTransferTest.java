@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.si.profile.filetransfer;
 
+import java.math.BigInteger;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.math.BigInteger;
 
 /**
  * @author Christian Schudt

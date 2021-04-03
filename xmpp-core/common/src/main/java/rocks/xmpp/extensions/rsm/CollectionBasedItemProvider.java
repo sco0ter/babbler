@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.rsm;
 
-import rocks.xmpp.extensions.rsm.model.ResultSetItem;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
+
+import rocks.xmpp.extensions.rsm.model.ResultSetItem;
 
 final class CollectionBasedItemProvider<T extends ResultSetItem> implements ResultSetProvider<T> {
 

@@ -24,15 +24,15 @@
 
 package rocks.xmpp.sample.filetransfer.javafx;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.concurrent.Executors;
+
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.concurrent.Executors;
 
 /**
  * @author Christian Schudt

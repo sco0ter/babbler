@@ -24,18 +24,18 @@
 
 package rocks.xmpp.extensions.idle.model;
 
-import rocks.xmpp.core.stanza.model.Presence;
-import rocks.xmpp.extensions.delay.model.DelayedDelivery;
-import rocks.xmpp.extensions.last.model.LastActivity;
-import rocks.xmpp.util.adapters.OffsetDateTimeAdapter;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.EnumSet;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.extensions.delay.model.DelayedDelivery;
+import rocks.xmpp.extensions.last.model.LastActivity;
+import rocks.xmpp.util.adapters.OffsetDateTimeAdapter;
 
 /**
  * The implementation of the {@code <idle/>} element in the {@code urn:xmpp:idle:1} namespace.
@@ -52,7 +52,7 @@ import java.util.Objects;
  * <pre>{@code
  * Instant idleSince = Idle.timeFromPresence(presence);
  * }</pre>
- *
+ * <p>
  * This class is immutable.
  *
  * @author Christian Schudt

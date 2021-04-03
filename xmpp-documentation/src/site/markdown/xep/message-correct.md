@@ -1,7 +1,8 @@
 # XEP-0308: Last Message Correction
 ---
 
-[XEP-0308: Last Message Correction][Last Message Correction] allows you to correct the last sent message, e.g. if there was a typo in your message.
+[XEP-0308: Last Message Correction][Last Message Correction] allows you to correct the last sent message, e.g. if there
+was a typo in your message.
 
 ## Advertising Support
 
@@ -21,7 +22,8 @@ message.setId("123");
 xmppClient.send(message);
 ```
 
-You then recognize the typo in it and want to correct it. You would send a replacement message, replacing the old message:
+You then recognize the typo in it and want to correct it. You would send a replacement message, replacing the old
+message:
 
 ```java
 Message correctedMessage = new Message(jid, Message.Type.CHAT, "Hello, my friend");
@@ -29,10 +31,10 @@ correctedMessage.addExtension(new Replace("123"));
 xmppClient.send(correctedMessage);
 ```
 
-
 ## Listening for Message Corrections
 
-If a message should be replaced by another message, you should check inbound messages for the `Replace` extension and then replace the old message:
+If a message should be replaced by another message, you should check inbound messages for the `Replace` extension and
+then replace the old message:
 
 ```java
 Replace replace = message.getExtension(Replace.class);

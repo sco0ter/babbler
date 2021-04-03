@@ -24,10 +24,10 @@
 
 package rocks.xmpp.addr.server.persistence;
 
-import rocks.xmpp.addr.Jid;
-
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
+
+import rocks.xmpp.addr.Jid;
 
 /**
  * @author Christian Schudt

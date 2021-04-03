@@ -24,20 +24,11 @@
 
 package rocks.xmpp.core.sasl.server;
 
-import rocks.xmpp.core.sasl.model.Auth;
-import rocks.xmpp.core.sasl.model.Challenge;
-import rocks.xmpp.core.sasl.model.Failure;
-import rocks.xmpp.core.sasl.model.Mechanisms;
-import rocks.xmpp.core.sasl.model.Response;
-import rocks.xmpp.core.sasl.model.Success;
-import rocks.xmpp.core.stream.StreamNegotiationResult;
-import rocks.xmpp.core.stream.server.StreamFeatureProvider;
-import rocks.xmpp.im.roster.server.spi.ScramIdentityStore;
-import rocks.xmpp.session.server.InboundClientSession;
-import rocks.xmpp.core.sasl.plain.server.PlainSaslServer;
-import rocks.xmpp.core.sasl.scram.server.ScramCredentialCallback;
-import rocks.xmpp.core.sasl.scram.server.ScramSaslServer;
-
+import java.security.Principal;
+import java.security.Provider;
+import java.security.Security;
+import java.util.Arrays;
+import java.util.Collections;
 import javax.enterprise.inject.spi.CDI;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.NameCallback;
@@ -47,11 +38,20 @@ import javax.security.enterprise.identitystore.IdentityStoreHandler;
 import javax.security.sasl.Sasl;
 import javax.security.sasl.SaslException;
 import javax.security.sasl.SaslServer;
-import java.security.Principal;
-import java.security.Provider;
-import java.security.Security;
-import java.util.Arrays;
-import java.util.Collections;
+
+import rocks.xmpp.core.sasl.model.Auth;
+import rocks.xmpp.core.sasl.model.Challenge;
+import rocks.xmpp.core.sasl.model.Failure;
+import rocks.xmpp.core.sasl.model.Mechanisms;
+import rocks.xmpp.core.sasl.model.Response;
+import rocks.xmpp.core.sasl.model.Success;
+import rocks.xmpp.core.sasl.plain.server.PlainSaslServer;
+import rocks.xmpp.core.sasl.scram.server.ScramCredentialCallback;
+import rocks.xmpp.core.sasl.scram.server.ScramSaslServer;
+import rocks.xmpp.core.stream.StreamNegotiationResult;
+import rocks.xmpp.core.stream.server.StreamFeatureProvider;
+import rocks.xmpp.im.roster.server.spi.ScramIdentityStore;
+import rocks.xmpp.session.server.InboundClientSession;
 
 /**
  * Negotiates SASL with the client.

@@ -24,6 +24,11 @@
 
 package rocks.xmpp.im.roster;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.testng.Assert;
@@ -35,11 +40,6 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.im.roster.model.ContactGroup;
 import rocks.xmpp.im.roster.model.Roster;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * @author Christian Schudt

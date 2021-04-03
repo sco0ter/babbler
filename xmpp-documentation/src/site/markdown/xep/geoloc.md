@@ -4,7 +4,8 @@
 [XEP-0080: User Location][XEP-0080: User Location] allows to communicate the current location of an entity.
 
 How it usually works:
-One of your contacts publishes its location to its [Personal Eventing Service][XEP-0163: Personal Eventing Protocol] and if you are interested in receiving geo location notifications the service notifies you about the update.
+One of your contacts publishes its location to its [Personal Eventing Service][XEP-0163: Personal Eventing Protocol] and
+if you are interested in receiving geo location notifications the service notifies you about the update.
 
 ## Publishing your Location
 
@@ -20,7 +21,8 @@ geoLocationManager.publish(GeoLocation.builder()
 
 ## Listening for User Location Updates
 
-Enabling the manager indicates, that you are interested in receiving geo location notifications. (This should probably happen implicitly when adding the listener in a future version).
+Enabling the manager indicates, that you are interested in receiving geo location notifications. (This should probably
+happen implicitly when adding the listener in a future version).
 
 Here's a sample, how to listen for location updates:
 
@@ -32,6 +34,6 @@ geoLocationManager.addGeoLocationListener(e -> {
 });
 ```
 
-
 [XEP-0080: User Location]: https://xmpp.org/extensions/xep-0080.html "XEP-0080: User Location"
+
 [XEP-0163: Personal Eventing Protocol]: https://xmpp.org/extensions/xep-0163.html "XEP-0163: Personal Eventing Protocol"

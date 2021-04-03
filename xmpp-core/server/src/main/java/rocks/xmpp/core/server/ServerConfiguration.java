@@ -1,11 +1,11 @@
 package rocks.xmpp.core.server;
 
-import rocks.xmpp.addr.Jid;
-
+import java.util.Locale;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.util.Locale;
+
+import rocks.xmpp.addr.Jid;
 
 /**
  * @author Christian Schudt

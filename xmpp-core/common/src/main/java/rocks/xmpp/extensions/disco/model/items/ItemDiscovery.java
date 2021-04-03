@@ -24,15 +24,15 @@
 
 package rocks.xmpp.extensions.disco.model.items;
 
-import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/disco#item} namespace.

@@ -24,6 +24,25 @@
 
 package rocks.xmpp.core.net.server;
 
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.time.Instant;
+import java.util.Collections;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Destroyed;
+import javax.enterprise.context.Initialized;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.spi.CDI;
+import javax.inject.Inject;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -41,25 +60,6 @@ import rocks.xmpp.core.server.ServerConfiguration;
 import rocks.xmpp.core.tls.server.StartTlsNegotiator;
 import rocks.xmpp.nio.netty.net.NettyChannelConnection;
 import rocks.xmpp.session.server.InboundClientSession;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.Destroyed;
-import javax.enterprise.context.Initialized;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.CDI;
-import javax.inject.Inject;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.time.Instant;
-import java.util.Collections;
 
 /**
  * @author Christian Schudt

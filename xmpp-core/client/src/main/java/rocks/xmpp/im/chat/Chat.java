@@ -24,13 +24,13 @@
 
 package rocks.xmpp.im.chat;
 
-import rocks.xmpp.core.session.SendTask;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.model.Message;
-
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
+
+import rocks.xmpp.core.session.SendTask;
+import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.model.Message;
 
 /**
  * An abstract chat class, which represents either a one-to-one chat session or a group chat session.

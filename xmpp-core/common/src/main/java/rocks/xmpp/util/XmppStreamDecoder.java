@@ -24,15 +24,11 @@
 
 package rocks.xmpp.util;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.net.ReaderInterceptor;
-import rocks.xmpp.core.net.ReaderInterceptorChain;
-import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.core.stream.model.StreamError;
-import rocks.xmpp.core.stream.model.StreamErrorException;
-import rocks.xmpp.core.stream.model.StreamHeader;
-import rocks.xmpp.core.stream.model.errors.Condition;
-
+import java.io.Reader;
+import java.io.Writer;
+import java.util.Locale;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import javax.xml.XMLConstants;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -44,11 +40,15 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.Locale;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.net.ReaderInterceptor;
+import rocks.xmpp.core.net.ReaderInterceptorChain;
+import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.StreamErrorException;
+import rocks.xmpp.core.stream.model.StreamHeader;
+import rocks.xmpp.core.stream.model.errors.Condition;
 
 /**
  *
@@ -79,8 +79,8 @@ public class XmppStreamDecoder implements ReaderInterceptor {
      * Because {@link Marshaller} is not thread-safe, it is recommended to pass a {@code ThreadLocal<Marshaller>} to this constructor, which ensures thread-safety during marshalling.
      *
      * @param inputFactory The XML input factory.
-     * @param unmarshaller  Supplies the marshaller which will convert objects to XML.
-     * @param namespace     If the stream namespace should be written in the root element.
+     * @param unmarshaller Supplies the marshaller which will convert objects to XML.
+     * @param namespace    If the stream namespace should be written in the root element.
      */
     public XmppStreamDecoder(final XMLInputFactory inputFactory, final Supplier<Unmarshaller> unmarshaller, final String namespace) {
         this.unmarshaller = unmarshaller;

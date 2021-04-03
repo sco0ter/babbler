@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.jingle.apps.filetransfer;
 
+import java.io.File;
+
 import rocks.xmpp.extensions.jingle.JingleSession;
 import rocks.xmpp.extensions.jingle.apps.filetransfer.model.JingleFileTransfer;
 import rocks.xmpp.extensions.jingle.model.Jingle;
-
-import java.io.File;
 
 /**
  * @author Christian Schudt

@@ -26,7 +26,8 @@
  * Provides XML schema implementations of the <a href="https://xmpp.org/rfcs/rfc6121.html#schema">Roster Namespace</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "jabber:iq:roster", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.im.roster.model;
+@XmlSchema(namespace = "jabber:iq:roster", elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.im.roster.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

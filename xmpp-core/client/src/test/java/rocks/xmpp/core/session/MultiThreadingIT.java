@@ -24,18 +24,18 @@
 
 package rocks.xmpp.core.session;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.IntegrationTest;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Christian Schudt

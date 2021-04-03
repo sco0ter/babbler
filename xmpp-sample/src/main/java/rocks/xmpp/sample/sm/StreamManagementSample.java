@@ -24,10 +24,14 @@
 
 package rocks.xmpp.sample.sm;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.ChannelEncryption;
-import rocks.xmpp.core.session.SendTask;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
+import rocks.xmpp.core.session.SendTask;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
@@ -36,10 +40,6 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.websocket.net.client.WebSocketConnectionConfiguration;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class StreamManagementSample {
 
@@ -57,7 +57,7 @@ public class StreamManagementSample {
                 BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()
                         .hostname("localhost")
                         .port(7070)
-                                //.sslContext(getTrustAllSslContext())
+                        //.sslContext(getTrustAllSslContext())
                         .channelEncryption(ChannelEncryption.DISABLED)
                         .build();
 

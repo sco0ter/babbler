@@ -24,14 +24,14 @@
 
 package rocks.xmpp.sample.register;
 
+import java.util.concurrent.Executors;
+
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.extensions.register.RegistrationManager;
 import rocks.xmpp.extensions.register.model.Registration;
-
-import java.util.concurrent.Executors;
 
 public class RegistrationSample {
 
@@ -73,7 +73,6 @@ public class RegistrationSample {
                         throw new RuntimeException(e);
                     }
                 });
-
 
 
             } catch (XmppException e) {

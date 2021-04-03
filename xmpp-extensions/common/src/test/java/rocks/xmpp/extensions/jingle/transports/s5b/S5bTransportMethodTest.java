@@ -24,6 +24,12 @@
 
 package rocks.xmpp.extensions.jingle.transports.s5b;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -31,12 +37,6 @@ import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.jingle.model.Jingle;
 import rocks.xmpp.extensions.jingle.transports.s5b.model.S5bTransportMethod;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Christian Schudt

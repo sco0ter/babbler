@@ -24,19 +24,19 @@
 
 package rocks.xmpp.extensions.bytestreams.s5b.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.util.XmppUtils;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.util.XmppUtils;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/bytestreams} namespace.
@@ -174,7 +174,7 @@ public final class Socks5ByteStream {
     public final Mode getMode() {
         return mode;
     }
-    
+
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();

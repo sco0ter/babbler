@@ -24,8 +24,6 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.core.ExtensionProtocol;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,6 +31,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
+
+import rocks.xmpp.core.ExtensionProtocol;
 
 /**
  * Represents an XMPP protocol extension (XEP).

@@ -24,17 +24,17 @@
 
 package rocks.xmpp.extensions.vcard.temp;
 
+import java.time.LocalDate;
+import java.time.Month;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.time.LocalDate;
-import java.time.Month;
 
 /**
  * @author Christian Schudt

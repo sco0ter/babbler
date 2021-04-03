@@ -24,9 +24,9 @@
 
 package rocks.xmpp.sample.customiq;
 
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Objects;
 
 /**
  * This is a custom payload, which can be used to request the sum of two values and returns the sum.

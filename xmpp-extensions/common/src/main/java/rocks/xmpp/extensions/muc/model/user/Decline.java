@@ -24,9 +24,9 @@
 
 package rocks.xmpp.extensions.muc.model.user;
 
-import rocks.xmpp.addr.Jid;
-
 import javax.xml.bind.annotation.XmlAttribute;
+
+import rocks.xmpp.addr.Jid;
 
 /**
  * The implementation of the {@code <decline/>} element.

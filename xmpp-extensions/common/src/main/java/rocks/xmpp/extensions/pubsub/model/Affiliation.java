@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.pubsub.model;
 
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Addressable;
 
 /**

@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.activity.model;
 
-import rocks.xmpp.util.Strings;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import rocks.xmpp.util.Strings;
 
 /**
  * The implementation of the {@code <activity/>} element in the {@code http://jabber.org/protocol/activity} namespace.

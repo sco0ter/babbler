@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.muc;
 
+import java.util.EventObject;
+import java.util.function.Consumer;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
-
-import java.util.EventObject;
-import java.util.function.Consumer;
 
 /**
  * The multi-user chat invitation event, which is triggered upon receiving an invitation to a multi-user chat.

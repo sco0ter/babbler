@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.seclabel;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -33,9 +36,6 @@ import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.seclabel.model.SecurityLabel;
 import rocks.xmpp.extensions.seclabel.model.catalog.Catalog;
 import rocks.xmpp.extensions.seclabel.model.ess.EssSecurityLabel;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

@@ -41,7 +41,6 @@ This can also be used, if you want to create instant chat rooms (e.g. with an UU
 
 Note, that no room is created on the server! All you have now is a local `ChatRoom` instance, you can work with.
 
-
 ## Chat Rooms
 
 Once you have a `ChatRoom` instance, you can now do multiple things with it:
@@ -60,7 +59,8 @@ You can discover the occupants, which are currently in the room (nicknames only)
 List<String> occupants = chatRoom.discoverOccupants().getResult();
 ```
 
-And you get additional room info (e.g. the current subject, the max history messages, the description and room features) with:
+And you get additional room info (e.g. the current subject, the max history messages, the description and room features)
+with:
 
 ```java
 RoomInformation roomInfo = chatRoom.getRoomInformation().getResult();
@@ -72,7 +72,8 @@ These are the use cases, when you are *in* the room (or want to enter the room).
 
 #### Entering a Room
 
-Before entering a room, you should add listeners to it, if you want to listen for occupants "joins" and "leaves", subject changes or messages being sent by the room, then enter the room with your desired nickname:
+Before entering a room, you should add listeners to it, if you want to listen for occupants "joins" and "leaves",
+subject changes or messages being sent by the room, then enter the room with your desired nickname:
 
 ```java
 chatRoom.addOccupantListener(e -> {
@@ -151,7 +152,8 @@ chatRoom.exit("Bye!");
 
 ## Admin, Owner and Moderator Use Cases
 
-As admin, owner or moderator you have elevated privileges in the room, including banning users, kicking occupants, change room subject, change room configuration, etc.
+As admin, owner or moderator you have elevated privileges in the room, including banning users, kicking occupants,
+change room subject, change room configuration, etc.
 
 ### Modifying the Room Subject
 
@@ -161,7 +163,8 @@ chatRoom.changeSubject("New subject");
 
 ### Changing Roles and Affiliations
 
-If you have enough privileges in the room, you can ban users, kick occupants, grant moderator status, revoke voice, etc...
+If you have enough privileges in the room, you can ban users, kick occupants, grant moderator status, revoke voice,
+etc...
 
 These use cases are all covered by two methods: `changeRole` and `changeAffiliation`. Here are some examples:
 
@@ -199,8 +202,8 @@ chatRoom.destroy("Macbeth doth come.")
 
 ### Listening to Room Invitations
 
-`MultiUserChatManager` listens for both kinds of invitations: [mediated][Mediated] and [direct][Direct].
-You can listen for them in the following way:
+`MultiUserChatManager` listens for both kinds of invitations: [mediated][Mediated] and [direct][Direct]. You can listen
+for them in the following way:
 
 ```java
 multiUserChatManager.addInvitationListener(e -> {
@@ -210,7 +213,8 @@ multiUserChatManager.addInvitationListener(e -> {
 
 ### Accepting an Invitation
 
-You get the MUC with ```e.getRoomAddress()``` of the event object. A room is in the form ```room@chatservice```, so we have to create the service and then the room at that service:
+You get the MUC with ```e.getRoomAddress()``` of the event object. A room is in the form ```room@chatservice```, so we
+have to create the service and then the room at that service:
 
 ```java
 ChatService chatService = multiUserChatManager.createChatService(new Jid(e.getRoomAddress().getDomain()));
@@ -234,5 +238,7 @@ chatRoom.addInvitationDeclineListener(e -> {
 ```
 
 [MUC]: https://xmpp.org/extensions/xep-0045.html "XEP-0045: Multi-User Chat"
+
 [Mediated]: https://xmpp.org/extensions/xep-0045.html#invite-mediated
+
 [Direct]: https://xmpp.org/extensions/xep-0249.html

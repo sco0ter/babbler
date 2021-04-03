@@ -1,7 +1,8 @@
 # XEP-0009: Jabber-RPC
 ---
 
-[XEP-0009: Jabber-RPC][Jabber-RPC] allows you to transport XML-RPC encoded requests and responses between two XMPP entities.
+[XEP-0009: Jabber-RPC][Jabber-RPC] allows you to transport XML-RPC encoded requests and responses between two XMPP
+entities.
 
 ## Responding to XML-RPC Requests
 
@@ -23,13 +24,16 @@ rpcManager.setRpcHandler((requester, methodName, parameters) -> {
 
 Basically you examine the method name and the parameters and return an appropriate result.
 
-Note that setting a handler like this automatically enables support for the `jabber:iq:rpc` protocol for service discovery.
+Note that setting a handler like this automatically enables support for the `jabber:iq:rpc` protocol for service
+discovery.
 
-Also note, that each method call is processed in a separate thread, so that you can process multiple requests simultaneously.
+Also note, that each method call is processed in a separate thread, so that you can process multiple requests
+simultaneously.
 
 ### Error Handling
 
-If you throw an `RpcException` like in the example above, it means you want to return an application-level XML-RPC fault, e.g.:
+If you throw an `RpcException` like in the example above, it means you want to return an application-level XML-RPC
+fault, e.g.:
 
 ```
 <methodResponse>

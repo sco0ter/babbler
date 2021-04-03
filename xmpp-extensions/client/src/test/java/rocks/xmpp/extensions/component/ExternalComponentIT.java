@@ -24,6 +24,11 @@
 
 package rocks.xmpp.extensions.component;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.IntegrationTest;
@@ -31,11 +36,6 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.extensions.component.accept.ExternalComponent;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Christian Schudt
@@ -47,7 +47,7 @@ public class ExternalComponentIT extends IntegrationTest {
     @Test
     public void testStatusAfterConnect() throws Exception {
 
-        final XmppSession xmppSession = ExternalComponent.create("test."+DOMAIN, "test", XmppSessionConfiguration.builder().debugger(ConsoleDebugger.class).build(), "localhost", 5275);
+        final XmppSession xmppSession = ExternalComponent.create("test." + DOMAIN, "test", XmppSessionConfiguration.builder().debugger(ConsoleDebugger.class).build(), "localhost", 5275);
         final AtomicInteger exceptions = new AtomicInteger();
         final AtomicInteger connecting = new AtomicInteger();
         final AtomicInteger connected = new AtomicInteger();

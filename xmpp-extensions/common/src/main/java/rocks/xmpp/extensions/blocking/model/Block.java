@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.blocking.model;
 
-import rocks.xmpp.addr.Jid;
-
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.addr.Jid;
 
 /**
  * The implementation of the {@code <block/>} element in the {@code urn:xmpp:blocking} namespace.

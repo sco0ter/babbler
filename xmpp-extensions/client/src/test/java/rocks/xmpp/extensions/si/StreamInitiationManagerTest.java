@@ -24,6 +24,12 @@
 
 package rocks.xmpp.extensions.si;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.time.Duration;
+import java.util.concurrent.ExecutionException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
@@ -36,12 +42,6 @@ import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.time.Duration;
-import java.util.concurrent.ExecutionException;
 
 /**
  * @author Christian Schudt

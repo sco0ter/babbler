@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.component.accept;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.component.accept.model.ComponentMessage;
 import rocks.xmpp.extensions.component.accept.model.Handshake;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

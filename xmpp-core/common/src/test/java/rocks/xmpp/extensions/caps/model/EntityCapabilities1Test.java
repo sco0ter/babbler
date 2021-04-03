@@ -24,16 +24,6 @@
 
 package rocks.xmpp.extensions.caps.model;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
-import rocks.xmpp.extensions.disco.model.info.Identity;
-import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -41,6 +31,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
+import rocks.xmpp.extensions.disco.model.info.Identity;
+import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 
 /**
  * Tests for the {@link EntityCapabilities1} class.

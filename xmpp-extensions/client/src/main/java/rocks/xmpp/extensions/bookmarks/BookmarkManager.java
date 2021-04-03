@@ -24,6 +24,12 @@
 
 package rocks.xmpp.extensions.bookmarks;
 
+import java.net.URL;
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
@@ -33,12 +39,6 @@ import rocks.xmpp.extensions.bookmarks.model.ChatRoomBookmark;
 import rocks.xmpp.extensions.bookmarks.model.WebPageBookmark;
 import rocks.xmpp.extensions.privatedata.PrivateDataManager;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.net.URL;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * This manager facilitates the access to the private storage by providing convenient method for adding, retrieving or removing bookmarks.

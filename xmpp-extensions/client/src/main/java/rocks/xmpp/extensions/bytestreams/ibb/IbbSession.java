@@ -24,6 +24,12 @@
 
 package rocks.xmpp.extensions.bytestreams.ibb;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.time.Duration;
+import java.util.concurrent.Future;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -31,12 +37,6 @@ import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.time.Duration;
-import java.util.concurrent.Future;
 
 /**
  * @author Christian Schudt

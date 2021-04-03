@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.avatar;
 
-import rocks.xmpp.addr.Jid;
-
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.EventObject;
+
+import rocks.xmpp.addr.Jid;
 
 /**
  * The avatar change event to notify about avatar updates.

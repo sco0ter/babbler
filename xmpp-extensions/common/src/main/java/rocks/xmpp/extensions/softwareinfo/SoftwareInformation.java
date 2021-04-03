@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.softwareinfo;
 
+import java.util.Arrays;
+
 import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.model.DataForm;
-
-import java.util.Arrays;
 
 /**
  * Represents a view of the standardized fields of the 'urn:xmpp:dataforms:softwareinfo' data form

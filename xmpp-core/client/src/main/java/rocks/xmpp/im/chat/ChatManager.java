@@ -24,14 +24,6 @@
 
 package rocks.xmpp.im.chat;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.Manager;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.Presence;
-import rocks.xmpp.util.XmppUtils;
-
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -39,6 +31,14 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.session.Manager;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.util.XmppUtils;
 
 /**
  * This class manages one-to-one chat sessions, which are described in <a href="https://xmpp.org/rfcs/rfc6121.html#message-chat">5.1.  One-to-One Chat Sessions</a> and <a href="https://xmpp.org/extensions/xep-0201.html">XEP-0201: Best Practices for Message Threads</a>.

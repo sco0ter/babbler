@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.caps.model;
 
+import java.util.Set;
+
 import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.hashes.model.Hashed;
-
-import java.util.Set;
 
 /**
  * An interface for different Entity Capabilities implementations as described in the following two specifications.

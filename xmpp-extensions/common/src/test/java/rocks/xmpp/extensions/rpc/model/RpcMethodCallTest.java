@@ -24,18 +24,18 @@
 
 package rocks.xmpp.extensions.rpc.model;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import rocks.xmpp.core.XmlTest;
-import rocks.xmpp.core.stanza.model.IQ;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 import java.time.OffsetDateTime;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import rocks.xmpp.core.XmlTest;
+import rocks.xmpp.core.stanza.model.IQ;
 
 /**
  * Tests for the {@link Rpc} class.

@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.jingle.thumbs.model;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <thumbnail/>} element in the {@code urn:xmpp:thumbs:1"} namespace.

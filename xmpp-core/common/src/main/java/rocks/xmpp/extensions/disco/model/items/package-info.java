@@ -26,7 +26,8 @@
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a> (#items).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = ItemDiscovery.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.disco.model.items;
+@XmlSchema(namespace = ItemDiscovery.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.disco.model.items;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

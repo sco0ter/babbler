@@ -24,20 +24,6 @@
 
 package rocks.xmpp.util;
 
-import rocks.xmpp.core.net.WriterInterceptor;
-import rocks.xmpp.core.net.WriterInterceptorChain;
-import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.core.stream.model.StreamError;
-import rocks.xmpp.core.stream.model.StreamErrorException;
-import rocks.xmpp.core.stream.model.StreamHeader;
-import rocks.xmpp.core.stream.model.errors.Condition;
-
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -47,6 +33,20 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
+import rocks.xmpp.core.net.WriterInterceptor;
+import rocks.xmpp.core.net.WriterInterceptorChain;
+import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.StreamErrorException;
+import rocks.xmpp.core.stream.model.StreamHeader;
+import rocks.xmpp.core.stream.model.errors.Condition;
 
 /**
  * Encodes XMPP elements to binary data.

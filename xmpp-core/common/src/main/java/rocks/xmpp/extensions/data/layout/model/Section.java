@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.data.layout.model;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * The implementation of the {@code <section/>} element in the {@code http://jabber.org/protocol/xdata-layout} namespace.

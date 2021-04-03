@@ -24,9 +24,9 @@
 
 package rocks.xmpp.extensions.rtt;
 
-import rocks.xmpp.addr.Jid;
-
 import java.util.EventObject;
+
+import rocks.xmpp.addr.Jid;
 
 /**
  * This event notifies listeners, when a real-time message has been created.

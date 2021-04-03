@@ -24,6 +24,13 @@
 
 package rocks.xmpp.extensions.privacy;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Consumer;
+
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -34,13 +41,6 @@ import rocks.xmpp.extensions.privacy.model.Privacy;
 import rocks.xmpp.extensions.privacy.model.PrivacyList;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.function.Consumer;
 
 /**
  * This class manages privacy lists, which allow users to block communications from other users as described in <a href="https://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>.

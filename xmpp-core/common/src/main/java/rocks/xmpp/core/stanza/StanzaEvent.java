@@ -24,9 +24,9 @@
 
 package rocks.xmpp.core.stanza;
 
-import rocks.xmpp.core.stanza.model.Stanza;
-
 import java.util.EventObject;
+
+import rocks.xmpp.core.stanza.model.Stanza;
 
 /**
  * An event which is triggered for inbound and outbound stanzas.

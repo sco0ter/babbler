@@ -5,7 +5,8 @@
 
 ## Initiating Real-Time Text
 
-Real Time Text is transmitted in the context of a chat session, which is usually a one-to-one chat session, but can also be a multi-user chat.
+Real Time Text is transmitted in the context of a chat session, which is usually a one-to-one chat session, but can also
+be a multi-user chat.
 
 So first you need to retrieve a `Chat` instance, e.g. as follows:
 
@@ -33,7 +34,8 @@ textArea.textProperty().addListener((observable, oldValue, newValue) -> {
 });
 ```
 
-When done, it is important to commit the message (i.e. sending a backwards-compatible message with a `<body/>` element), which also shuts down executors, which were responsible for the transmission:
+When done, it is important to commit the message (i.e. sending a backwards-compatible message with a `<body/>` element),
+which also shuts down executors, which were responsible for the transmission:
 
 ```
 realTimeMessage.commit();
@@ -45,7 +47,7 @@ Most likely you now want to start a new real time message and clear the TextArea
 realTimeMessage = realTimeTextManager.createRealTimeMessage(chat);
 textArea.clear();
 ```        
-  
+
 ## Receiving Real-Time Messages
 
 ```

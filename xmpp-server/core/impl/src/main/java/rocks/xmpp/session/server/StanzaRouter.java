@@ -24,13 +24,13 @@
 
 package rocks.xmpp.session.server;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import rocks.xmpp.core.Session;
 import rocks.xmpp.core.server.ServerConfiguration;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 @ApplicationScoped
 public class StanzaRouter {

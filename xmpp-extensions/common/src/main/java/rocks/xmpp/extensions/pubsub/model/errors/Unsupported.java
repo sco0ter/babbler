@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.pubsub.model.errors;
 
-import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
 
 /**
  * The implementation of the {@code <unsupported/>} pubsub error.

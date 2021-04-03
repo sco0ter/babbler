@@ -24,16 +24,16 @@
 
 package rocks.xmpp.extensions.compress.model;
 
-import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
-
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-import java.util.Objects;
+
+import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
 
 /**
  * An abstract base class for all stream compression classes in the {@code http://jabber.org/protocol/compress} namespace.

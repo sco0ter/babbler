@@ -24,17 +24,17 @@
 
 package rocks.xmpp.core.stream.server;
 
-import rocks.xmpp.core.stream.StreamNegotiationException;
-import rocks.xmpp.core.stream.StreamNegotiationResult;
-import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.core.stream.model.StreamFeature;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import rocks.xmpp.core.stream.StreamNegotiationException;
+import rocks.xmpp.core.stream.StreamNegotiationResult;
+import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
  * Negotiates stream features from a server perspective.

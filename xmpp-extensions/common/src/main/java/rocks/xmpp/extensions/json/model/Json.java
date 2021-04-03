@@ -24,9 +24,9 @@
 
 package rocks.xmpp.extensions.json.model;
 
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
-import java.util.Objects;
 
 /**
  * The implementation of the {@code <json/>} element in the {@code urn:xmpp:json:0} namespace.

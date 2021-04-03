@@ -24,9 +24,6 @@
 
 package rocks.xmpp.util;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAttribute;
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -34,6 +31,9 @@ import java.util.Deque;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
+import javax.xml.XMLConstants;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Listens to unmarshal events in order to assign a parent object's {@code xml:lang} attribute to its child elements.

@@ -25,6 +25,10 @@
 package rocks.xmpp.extensions.offline;
 
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
@@ -35,10 +39,6 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.offline.model.OfflineMessage;
 import rocks.xmpp.extensions.offline.model.OfflineMessageHeader;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * This manager covers the use cases of <a href="https://xmpp.org/extensions/xep-0013.html">XEP-0013: Flexible Offline Message Retrieval</a>.

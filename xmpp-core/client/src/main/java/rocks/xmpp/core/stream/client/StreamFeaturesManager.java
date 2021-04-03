@@ -24,16 +24,6 @@
 
 package rocks.xmpp.core.stream.client;
 
-import rocks.xmpp.core.session.Manager;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stream.StreamFeatureNegotiator;
-import rocks.xmpp.core.stream.StreamHandler;
-import rocks.xmpp.core.stream.StreamNegotiationException;
-import rocks.xmpp.core.stream.StreamNegotiationResult;
-import rocks.xmpp.core.stream.model.StreamFeature;
-import rocks.xmpp.core.stream.model.StreamFeatures;
-import rocks.xmpp.core.tls.model.StartTls;
-
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,6 +36,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+
+import rocks.xmpp.core.session.Manager;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stream.StreamFeatureNegotiator;
+import rocks.xmpp.core.stream.StreamHandler;
+import rocks.xmpp.core.stream.StreamNegotiationException;
+import rocks.xmpp.core.stream.StreamNegotiationResult;
+import rocks.xmpp.core.stream.model.StreamFeature;
+import rocks.xmpp.core.stream.model.StreamFeatures;
+import rocks.xmpp.core.tls.model.StartTls;
 
 /**
  * Manages the various features, which are advertised during stream negotiation.

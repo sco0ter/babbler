@@ -24,14 +24,14 @@
 
 package rocks.xmpp.core.sasl.model;
 
-import rocks.xmpp.core.stream.model.StreamFeature;
-
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+
+import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
  * Represents the {@code <mechanisms/>} element as described in <a href="https://xmpp.org/rfcs/rfc6120.html#sasl-process-stream">Exchange of Stream Headers and Stream Features</a>

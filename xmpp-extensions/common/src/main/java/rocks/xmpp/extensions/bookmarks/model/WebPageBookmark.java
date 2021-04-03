@@ -24,9 +24,9 @@
 
 package rocks.xmpp.extensions.bookmarks.model;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import java.net.URL;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * A web page bookmark.

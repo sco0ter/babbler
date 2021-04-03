@@ -7,7 +7,8 @@ JPMS (coll. "Java 9" or "Jigsaw") is supported since Babbler 0.8.0. **Older vers
 
 ## Usage
 
-Applications compiled for Java 9 and later need to explicitly request access to Babbler modules in their `module-info.java` descriptor file. Babbler's module names are:
+Applications compiled for Java 9 and later need to explicitly request access to Babbler modules in
+their `module-info.java` descriptor file. Babbler's module names are:
 
 ### Basics (Mandatory)
 
@@ -32,7 +33,7 @@ requires rocks.xmpp.fx;
 ```
 
 ### WebSocket (Optional)
- 
+
 ```
 requires rocks.xmpp.websocket;
 ```
@@ -42,7 +43,7 @@ requires rocks.xmpp.websocket;
 ```
 requires rocks.xmpp.nio;
 ```
- 
+
 ### Samples (Optional)
 
 ```

@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.jingle.transports.iceudp.model;
 
-import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
-
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
+
+import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
 
 /**
  * @author Christian Schudt
@@ -49,10 +49,10 @@ public final class IceUdpTransportMethod extends TransportMethod {
     }
 
     public IceUdpTransportMethod(String pPwd, String pUfrag, List<Candidate> pCandidates) {
-    	super();
-    	pwd = pPwd;
-    	ufrag = pUfrag;
-    	candidate.addAll(pCandidates);
+        super();
+        pwd = pPwd;
+        ufrag = pUfrag;
+        candidate.addAll(pCandidates);
     }
 
     @XmlAttribute

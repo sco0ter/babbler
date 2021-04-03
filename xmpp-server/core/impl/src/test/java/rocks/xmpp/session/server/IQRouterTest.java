@@ -24,6 +24,12 @@
 
 package rocks.xmpp.session.server;
 
+import java.util.stream.Stream;
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -43,12 +49,6 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.StreamElement;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.util.stream.Stream;
 
 /**
  * @author Christian Schudt

@@ -24,19 +24,19 @@
 
 package rocks.xmpp.util;
 
-import rocks.xmpp.core.stream.model.StreamHeader;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.soap.SOAPConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.soap.SOAPConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
+import rocks.xmpp.core.stream.model.StreamHeader;
 
 /**
  * Writes XML in a prefix-free canonicalization form.

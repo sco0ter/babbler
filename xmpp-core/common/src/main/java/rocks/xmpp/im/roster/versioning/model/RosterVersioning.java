@@ -24,10 +24,10 @@
 
 package rocks.xmpp.im.roster.versioning.model;
 
-import rocks.xmpp.core.stream.model.StreamFeature;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
+import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
  * The implementation of the roster versioning feature.

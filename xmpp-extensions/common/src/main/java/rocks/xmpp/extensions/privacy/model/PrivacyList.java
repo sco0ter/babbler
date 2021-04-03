@@ -24,10 +24,8 @@
 
 package rocks.xmpp.extensions.privacy.model;
 
-import rocks.xmpp.addr.Jid;
+import static java.util.Comparator.nullsFirst;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlTransient;
 import java.text.Collator;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -36,8 +34,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
 
-import static java.util.Comparator.nullsFirst;
+import rocks.xmpp.addr.Jid;
 
 /**
  * The implementation of a privacy list.

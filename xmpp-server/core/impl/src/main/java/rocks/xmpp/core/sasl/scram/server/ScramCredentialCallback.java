@@ -24,9 +24,9 @@
 
 package rocks.xmpp.core.sasl.scram.server;
 
-import rocks.xmpp.im.roster.server.spi.ScramCredential;
-
 import javax.security.auth.callback.Callback;
+
+import rocks.xmpp.im.roster.server.spi.ScramCredential;
 
 /**
  * @author Christian Schudt

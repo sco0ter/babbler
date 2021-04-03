@@ -24,6 +24,11 @@
 
 package rocks.xmpp.extensions.compress;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import rocks.xmpp.core.Session;
 import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
@@ -31,11 +36,6 @@ import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
 import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
-
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Manages stream compression as described in <a href="https://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>.

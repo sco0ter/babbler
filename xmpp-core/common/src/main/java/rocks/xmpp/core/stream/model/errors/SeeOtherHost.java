@@ -24,8 +24,8 @@
 
 package rocks.xmpp.core.stream.model.errors;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <see-other-host/>} stream error.

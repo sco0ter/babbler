@@ -25,7 +25,6 @@
 package rocks.xmpp.extensions.version;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.extensions.softwareinfo.SoftwareInfoProvider;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 import rocks.xmpp.util.concurrent.AsyncResult;

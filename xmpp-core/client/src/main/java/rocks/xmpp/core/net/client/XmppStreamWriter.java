@@ -24,15 +24,6 @@
 
 package rocks.xmpp.core.net.client;
 
-import rocks.xmpp.core.net.WriterInterceptor;
-import rocks.xmpp.core.net.WriterInterceptorChain;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.core.stream.model.StreamHeader;
-import rocks.xmpp.util.XmppStreamEncoder;
-import rocks.xmpp.util.XmppUtils;
-import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -48,6 +39,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import rocks.xmpp.core.net.WriterInterceptor;
+import rocks.xmpp.core.net.WriterInterceptorChain;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamHeader;
+import rocks.xmpp.util.XmppStreamEncoder;
+import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 
 /**
  * This class is responsible for opening and closing the XMPP stream as well as writing any XML elements to the stream.

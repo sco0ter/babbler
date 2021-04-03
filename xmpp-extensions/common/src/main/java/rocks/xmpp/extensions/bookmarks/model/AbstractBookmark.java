@@ -24,9 +24,9 @@
 
 package rocks.xmpp.extensions.bookmarks.model;
 
+import java.text.Collator;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
-import java.text.Collator;
 
 /**
  * An abstract base class for bookmarks.
@@ -37,7 +37,7 @@ import java.text.Collator;
  */
 @XmlTransient
 public abstract class AbstractBookmark implements Bookmark {
-    
+
     @XmlAttribute
     private final String name;
 

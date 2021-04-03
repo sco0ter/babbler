@@ -24,18 +24,18 @@
 
 package rocks.xmpp.extensions.geoloc.model;
 
-import rocks.xmpp.core.LanguageElement;
-import rocks.xmpp.util.adapters.ZoneOffsetAdapter;
-
+import java.net.URI;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.util.Locale;
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.net.URI;
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.util.Locale;
+
+import rocks.xmpp.core.LanguageElement;
+import rocks.xmpp.util.adapters.ZoneOffsetAdapter;
 
 /**
  * The implementation of the {@code <geoloc/>} element in the {@code http://jabber.org/protocol/geoloc} namespace.

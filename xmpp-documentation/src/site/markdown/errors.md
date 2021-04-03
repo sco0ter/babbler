@@ -9,7 +9,6 @@ Mainly, there are three subclasses of it:
 * `StanzaException` for [Stanza Errors][Stanza Errors].
 * `NoResponseException` for IQ queries, which didn't receive a response.
 
-
 ## Dealing with Stream Errors
 
 XMPP Stream Errors are unrecoverable, which means the session will get disconnected after they have occurred.
@@ -31,7 +30,8 @@ xmppClient.addSessionStatusListener(e -> {
 
 Most stanza errors are returned in response to an IQ-get or IQ-set query.
 
-For querying another XMPP entity, there's a `query` method on the `XmppClient` class, which queries another entity for information and which is used by most methods.
+For querying another XMPP entity, there's a `query` method on the `XmppClient` class, which queries another entity for
+information and which is used by most methods.
 
 Now two things can happen:
 
@@ -60,8 +60,10 @@ try {
 
 As you can see asking for the type and then for the specific condition gets you where you want.
 
-Btw: If you wonder, why the error conditions aren't represented as enum, it is because some error conditions like `<gone/>` have additional data.
+Btw: If you wonder, why the error conditions aren't represented as enum, it is because some error conditions
+like `<gone/>` have additional data.
 
 
 [Stream Errors]: https://xmpp.org/rfcs/rfc6120.html#streams-error "Stream Errors"
+
 [Stanza Errors]: https://xmpp.org/rfcs/rfc6120.html#stanzas-error "Stanza Errors"

@@ -24,6 +24,12 @@
 
 package rocks.xmpp.extensions.langtrans;
 
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
@@ -34,12 +40,6 @@ import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.langtrans.model.LanguageTranslation;
 import rocks.xmpp.extensions.langtrans.model.items.LanguageSupport;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Manages XMPP language translation protocol.

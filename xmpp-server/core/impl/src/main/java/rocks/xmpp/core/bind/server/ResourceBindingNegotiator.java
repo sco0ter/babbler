@@ -24,6 +24,10 @@
 
 package rocks.xmpp.core.bind.server;
 
+import java.security.Principal;
+import java.util.Optional;
+import javax.enterprise.inject.spi.CDI;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -33,10 +37,6 @@ import rocks.xmpp.core.stream.server.StreamFeatureProvider;
 import rocks.xmpp.im.roster.server.spi.IdGenerator;
 import rocks.xmpp.session.server.InboundClientSession;
 import rocks.xmpp.session.server.SessionManager;
-
-import javax.enterprise.inject.spi.CDI;
-import java.security.Principal;
-import java.util.Optional;
 
 /**
  * Negotiates resource binding with the client.

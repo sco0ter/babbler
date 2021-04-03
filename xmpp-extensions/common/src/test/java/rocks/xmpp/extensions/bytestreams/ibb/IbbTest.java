@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.bytestreams.ibb;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

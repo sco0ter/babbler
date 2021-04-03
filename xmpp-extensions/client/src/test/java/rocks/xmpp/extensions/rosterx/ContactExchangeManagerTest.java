@@ -24,6 +24,12 @@
 
 package rocks.xmpp.extensions.rosterx;
 
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -34,12 +40,6 @@ import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.im.roster.model.Roster;
-
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Christian Schudt

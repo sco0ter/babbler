@@ -24,6 +24,13 @@
 
 package rocks.xmpp.session.server;
 
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Session;
 import rocks.xmpp.core.stanza.OutboundPresenceHandler;
@@ -31,13 +38,6 @@ import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.im.roster.model.RosterItem;
 import rocks.xmpp.im.roster.server.ServerRosterManager;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * Handles outbound presence information.

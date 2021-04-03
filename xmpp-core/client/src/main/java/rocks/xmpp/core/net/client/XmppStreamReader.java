@@ -24,6 +24,16 @@
 
 package rocks.xmpp.core.net.client;
 
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.ReaderInterceptor;
 import rocks.xmpp.core.net.ReaderInterceptorChain;
@@ -38,16 +48,6 @@ import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.util.XmppStreamDecoder;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.QueuedExecutorService;
-
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 /**
  * This class is responsible for reading the inbound XMPP stream. It starts one "reader thread", which keeps reading the XMPP document from the stream until the stream is closed or disconnected.

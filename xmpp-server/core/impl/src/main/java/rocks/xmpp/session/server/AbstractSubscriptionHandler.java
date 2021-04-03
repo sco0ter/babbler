@@ -24,16 +24,16 @@
 
 package rocks.xmpp.session.server;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.function.BiFunction;
+import javax.inject.Inject;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.im.roster.model.DefinedState;
 import rocks.xmpp.im.roster.model.RosterItem;
 import rocks.xmpp.im.roster.server.ServerRosterManager;
-
-import javax.inject.Inject;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.BiFunction;
 
 public abstract class AbstractSubscriptionHandler {
 

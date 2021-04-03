@@ -24,6 +24,18 @@
 
 package rocks.xmpp.core.session;
 
+import java.security.Provider;
+import java.security.Security;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.sasl.Sasl;
+import javax.security.sasl.SaslClient;
+import javax.security.sasl.SaslException;
+
 import rocks.xmpp.core.Session;
 import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.sasl.XmppSaslClientFactory;
@@ -36,18 +48,6 @@ import rocks.xmpp.core.sasl.model.Success;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
-
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.sasl.Sasl;
-import javax.security.sasl.SaslClient;
-import javax.security.sasl.SaslException;
-import java.security.Provider;
-import java.security.Security;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Manages SASL authentication as described in <a href="https://xmpp.org/rfcs/rfc6120.html#sasl">SASL Negotiation</a>.

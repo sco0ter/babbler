@@ -24,12 +24,12 @@
 
 package rocks.xmpp.dns;
 
+import static rocks.xmpp.dns.Message.concatArrays;
+
 import java.net.IDN;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-
-import static rocks.xmpp.dns.Message.concatArrays;
 
 /**
  * A DNS question.
@@ -53,7 +53,7 @@ final class Question {
 
     Question(ByteBuffer data) {
         this.domain = ResourceRecord.parse(data);
-        this.type = ResourceRecord.Type.valueOf(data.getShort()& 0xFFFF);
+        this.type = ResourceRecord.Type.valueOf(data.getShort() & 0xFFFF);
         this.clazz = ResourceRecord.Classification.valueOf(data.getShort() & 0xFFFF);
     }
 

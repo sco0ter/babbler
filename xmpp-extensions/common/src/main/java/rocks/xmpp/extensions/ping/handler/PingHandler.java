@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.ping.handler;
 
+import java.util.Collections;
+import java.util.Set;
+
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.ping.model.Ping;
-
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * Handles an XMPP-level ping request, by returning a pong.

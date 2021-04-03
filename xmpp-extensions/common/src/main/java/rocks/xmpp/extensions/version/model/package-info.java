@@ -27,10 +27,10 @@
  * <p>
  * It defines an XMPP protocol extension for retrieving information about the software application associated with an XMPP entity. The protocol enables one entity to explicitly query another entity, where the response can include the name of the software application, the version of the software application, and the operating system on which the application is running.
  * </p>
- *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = SoftwareVersion.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.version.model;
+@XmlSchema(namespace = SoftwareVersion.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.version.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

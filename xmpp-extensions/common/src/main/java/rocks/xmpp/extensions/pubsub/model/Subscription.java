@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.pubsub.model;
 
+import java.time.Instant;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Addressable;
-
-import java.time.Instant;
 
 /**
  * Represents the {@code <subscription/>} element, which is used in 'pubsub', 'pubsub#event' and 'pubsub#owner' namespace.

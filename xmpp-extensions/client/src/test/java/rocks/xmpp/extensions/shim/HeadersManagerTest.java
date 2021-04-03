@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.shim;
 
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
@@ -32,9 +35,6 @@ import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
-
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * @author Christian Schudt

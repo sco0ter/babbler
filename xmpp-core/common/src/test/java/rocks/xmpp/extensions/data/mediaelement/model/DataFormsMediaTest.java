@@ -24,16 +24,16 @@
 
 package rocks.xmpp.extensions.data.mediaelement.model;
 
+import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.data.model.DataForm;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.net.URI;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Tests for the {@link Media} class.

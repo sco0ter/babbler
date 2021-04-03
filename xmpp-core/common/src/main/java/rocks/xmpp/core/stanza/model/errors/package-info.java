@@ -26,7 +26,8 @@
  * Provides XML schema implementations of the <a href="https://xmpp.org/rfcs/rfc6120.html#schemas-stanzaerror">Stanza Error Namespace</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-stanzas", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.core.stanza.model.errors;
+@XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-stanzas", elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.core.stanza.model.errors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

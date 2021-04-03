@@ -24,17 +24,17 @@
 
 package rocks.xmpp.extensions.caps2.model;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 
 /**
  * Tests for the {@link EntityCapabilities2} class.

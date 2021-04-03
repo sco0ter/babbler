@@ -24,18 +24,18 @@
 
 package rocks.xmpp.extensions.idle;
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.idle.model.Idle;
 import rocks.xmpp.util.adapters.OffsetDateTimeAdapter;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
 
 /**
  * @author Christian Schudt

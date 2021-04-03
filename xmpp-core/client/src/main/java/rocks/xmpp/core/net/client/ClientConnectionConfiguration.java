@@ -24,18 +24,18 @@
 
 package rocks.xmpp.core.net.client;
 
+import java.net.Proxy;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.compress.CompressionMethod;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import java.net.Proxy;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * A base class for connection configurations.

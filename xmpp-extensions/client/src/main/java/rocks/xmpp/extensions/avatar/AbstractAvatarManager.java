@@ -24,15 +24,9 @@
 
 package rocks.xmpp.extensions.avatar;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.Manager;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.util.XmppUtils;
-import rocks.xmpp.util.cache.DirectoryCache;
-import rocks.xmpp.util.concurrent.AsyncResult;
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -42,9 +36,15 @@ import java.util.Set;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
+import javax.imageio.ImageIO;
 
-import static java.util.Objects.requireNonNull;
-import static java.util.Optional.ofNullable;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.Manager;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.util.XmppUtils;
+import rocks.xmpp.util.cache.DirectoryCache;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * An abstract avatar manager, which provides a common implementation for both avatar protocols.

@@ -24,9 +24,9 @@
 
 package rocks.xmpp.extensions.amp.model.errors;
 
-import rocks.xmpp.extensions.amp.model.AdvancedMessageProcessingError;
-
 import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.extensions.amp.model.AdvancedMessageProcessingError;
 
 /**
  * The implementation of the {@code <failed-rules/>} element in the {@code http://jabber.org/protocol/amp#errors} namespace.

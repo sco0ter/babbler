@@ -10,5 +10,4 @@ EntityTimeManager entityTimeManager = xmppClient.getManager(EntityTimeManager.cl
 OffsetDateTime dateTime = entityTimeManager.getEntityTime(Jid.of("juliet@example.net/balcony")).getResult();
 ```
 
-
 [Entity Time]: https://xmpp.org/extensions/xep-0202.html "XEP-0202: Entity Time"

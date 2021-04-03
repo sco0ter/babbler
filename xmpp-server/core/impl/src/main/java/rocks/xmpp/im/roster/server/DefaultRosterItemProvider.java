@@ -24,15 +24,14 @@
 
 package rocks.xmpp.im.roster.server;
 
+import java.util.List;
+import javax.annotation.Priority;
+import javax.enterprise.context.Dependent;
+import javax.interceptor.Interceptor;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.im.roster.model.RosterItem;
 import rocks.xmpp.im.roster.server.spi.RosterItemProvider;
-
-import javax.annotation.Priority;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Alternative;
-import javax.interceptor.Interceptor;
-import java.util.List;
 
 /**
  * @author Christian Schudt

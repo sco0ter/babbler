@@ -24,17 +24,6 @@
 
 package rocks.xmpp.session.server;
 
-import rocks.xmpp.core.Session;
-import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQHandler;
-import rocks.xmpp.core.stanza.InboundIQHandler;
-import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.util.concurrent.CompletionStages;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
@@ -42,6 +31,17 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+
+import rocks.xmpp.core.Session;
+import rocks.xmpp.core.stanza.IQEvent;
+import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.InboundIQHandler;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.util.concurrent.CompletionStages;
 
 /**
  * @author Christian Schudt

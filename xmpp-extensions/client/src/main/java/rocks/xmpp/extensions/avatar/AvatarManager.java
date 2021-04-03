@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.avatar;
 
+import java.awt.image.BufferedImage;
+import java.util.function.Consumer;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.awt.image.BufferedImage;
-import java.util.function.Consumer;
 
 /**
  * In XMPP two extension protocols are defined which both deal with avatars.

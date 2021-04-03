@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.geoloc;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.geoloc.model.GeoLocation;
-
 import java.util.EventObject;
 import java.util.function.Consumer;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.geoloc.model.GeoLocation;
 
 /**
  * This event notifies listeners, when a geo location has been updated.

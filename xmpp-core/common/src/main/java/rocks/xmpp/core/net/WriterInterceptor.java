@@ -24,9 +24,9 @@
 
 package rocks.xmpp.core.net;
 
-import rocks.xmpp.core.stream.model.StreamElement;
-
 import java.io.Writer;
+
+import rocks.xmpp.core.stream.model.StreamElement;
 
 /**
  * Intercepts {@link StreamElement}s before writing them to the wire.

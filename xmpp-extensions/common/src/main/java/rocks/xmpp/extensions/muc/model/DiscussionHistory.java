@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.muc.model;
 
-import rocks.xmpp.util.adapters.InstantAdapter;
-
+import java.time.Instant;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.Instant;
+
+import rocks.xmpp.util.adapters.InstantAdapter;
 
 /**
  * The discussion history for a multi-user chat room, which can be requested when entering a room.

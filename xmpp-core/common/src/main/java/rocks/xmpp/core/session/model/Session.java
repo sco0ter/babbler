@@ -24,9 +24,9 @@
 
 package rocks.xmpp.core.session.model;
 
-import rocks.xmpp.core.stream.model.StreamFeature;
-
 import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
  * The implementation of the {@code <session/>} element to establish a session.

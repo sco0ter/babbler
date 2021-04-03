@@ -24,6 +24,9 @@
 
 package rocks.xmpp.core.session.context.extensions;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import rocks.xmpp.core.session.Extension;
 import rocks.xmpp.core.session.Module;
 import rocks.xmpp.extensions.activity.model.Activity;
@@ -97,9 +100,6 @@ import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
 import rocks.xmpp.extensions.vcard.temp.VCardManager;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
 import rocks.xmpp.extensions.version.client.ClientSoftwareVersionManager;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * Registers extensions and manager classes, (which should be initialized during the start of a session) to the {@link rocks.xmpp.core.session.XmppSession}.

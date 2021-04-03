@@ -24,6 +24,20 @@
 
 package rocks.xmpp.session.server;
 
+import java.security.Principal;
+import java.time.Duration;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.CDI;
+import javax.inject.Inject;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.addr.MalformedJid;
 import rocks.xmpp.core.Addressable;
@@ -49,24 +63,10 @@ import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.core.stream.model.errors.Condition;
-import rocks.xmpp.core.stream.server.StreamFeatureProvider;
 import rocks.xmpp.core.stream.server.ServerStreamFeaturesManager;
+import rocks.xmpp.core.stream.server.StreamFeatureProvider;
 import rocks.xmpp.extensions.sm.server.ServerStreamManager;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.CDI;
-import javax.inject.Inject;
-import java.security.Principal;
-import java.time.Duration;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Christian Schudt

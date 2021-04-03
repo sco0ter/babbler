@@ -24,17 +24,17 @@
 
 package rocks.xmpp.session.server;
 
+import java.util.EnumSet;
+import java.util.Set;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import rocks.xmpp.core.server.ServerConfiguration;
 import rocks.xmpp.core.stanza.OutboundPresenceHandler;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.im.roster.model.DefinedState;
 import rocks.xmpp.im.roster.model.RosterItem;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import java.util.EnumSet;
-import java.util.Set;
 
 /**
  * Handles outbound presence subscription requests, approvals, cancellations and unsubscriptions.

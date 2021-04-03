@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.bytestreams.s5b;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.httpbind.server;
 
-import rocks.xmpp.core.server.ServerConfiguration;
-
 import javax.enterprise.inject.spi.CDI;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
+
+import rocks.xmpp.core.server.ServerConfiguration;
 
 /**
  * Provides a custom XMPP JAXB context to the JAX-RS runtime.

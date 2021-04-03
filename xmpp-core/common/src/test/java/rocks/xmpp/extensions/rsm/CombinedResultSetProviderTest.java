@@ -24,16 +24,16 @@
 
 package rocks.xmpp.extensions.rsm;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.disco.model.items.DiscoverableItem;
 import rocks.xmpp.extensions.disco.model.items.ItemElement;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Tests for the {@link CombinedResultSetProvider} class.

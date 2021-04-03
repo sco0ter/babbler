@@ -24,6 +24,10 @@
 
 package rocks.xmpp.session.server;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
 import rocks.xmpp.extensions.caps.server.ServerEntityCapabilities1Protocol;
@@ -39,10 +43,6 @@ import rocks.xmpp.extensions.softwareinfo.SoftwareInformationProtocol;
 import rocks.xmpp.extensions.time.handler.EntityTimeHandler;
 import rocks.xmpp.extensions.version.SoftwareVersionProtocol;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
 
 @ApplicationScoped
 public class ExtensionProducers {

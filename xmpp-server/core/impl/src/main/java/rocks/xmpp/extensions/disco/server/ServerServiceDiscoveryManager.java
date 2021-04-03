@@ -24,6 +24,11 @@
 
 package rocks.xmpp.extensions.disco.server;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.disco.AbstractServiceDiscoveryManager;
@@ -37,11 +42,6 @@ import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.session.server.InboundClientSession;
 import rocks.xmpp.session.server.SessionManager;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
 
 /**
  * @author Christian Schudt

@@ -24,6 +24,14 @@
 
 package rocks.xmpp.extensions.last;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.EnumSet;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
@@ -38,14 +46,6 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.idle.model.Idle;
 import rocks.xmpp.extensions.last.model.LastActivity;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.time.Duration;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.EnumSet;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * The implementation of <a href="https://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a> and <a href="https://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.

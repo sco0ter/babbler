@@ -24,14 +24,6 @@
 
 package rocks.xmpp.core.session;
 
-import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
-import rocks.xmpp.core.session.debug.XmppDebugger;
-import rocks.xmpp.core.stanza.model.Presence;
-import rocks.xmpp.util.XmppUtils;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -49,6 +41,14 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Supplier;
+import javax.xml.bind.JAXBContext;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+
+import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
+import rocks.xmpp.core.session.debug.XmppDebugger;
+import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.util.XmppUtils;
 
 /**
  * A configuration for an {@link XmppSession}.

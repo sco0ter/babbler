@@ -24,6 +24,10 @@
 
 package rocks.xmpp.extensions.jingle.transports.s5b;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.bytestreams.s5b.Socks5ByteStreamManager;
@@ -33,10 +37,6 @@ import rocks.xmpp.extensions.jingle.JingleSession;
 import rocks.xmpp.extensions.jingle.transports.TransportNegotiator;
 import rocks.xmpp.extensions.jingle.transports.s5b.model.S5bTransportMethod;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 /**
  * @author Christian Schudt

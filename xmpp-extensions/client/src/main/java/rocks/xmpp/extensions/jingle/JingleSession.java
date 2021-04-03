@@ -24,13 +24,6 @@
 
 package rocks.xmpp.extensions.jingle;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.IQ;
-import rocks.xmpp.extensions.jingle.model.Jingle;
-import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
-import rocks.xmpp.util.concurrent.AsyncResult;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,6 +31,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.extensions.jingle.model.Jingle;
+import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * @author Christian Schudt

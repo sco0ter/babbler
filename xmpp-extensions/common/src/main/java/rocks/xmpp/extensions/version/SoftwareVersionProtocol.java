@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.version;
 
+import java.util.Collections;
+import java.util.Set;
+
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.softwareinfo.SoftwareInfoProvider;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
-
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * An abstract implementation of <a href="https://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>.

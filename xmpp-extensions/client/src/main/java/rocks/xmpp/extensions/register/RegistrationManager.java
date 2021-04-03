@@ -25,6 +25,8 @@
 package rocks.xmpp.extensions.register;
 
 
+import java.util.concurrent.CompletableFuture;
+
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -33,8 +35,6 @@ import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.register.model.Registration;
 import rocks.xmpp.extensions.register.model.feature.RegisterFeature;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.concurrent.CompletableFuture;
 
 /**
  * This manager allows to register, cancel an existing registration (i.e. remove an account) or change the password with a host.

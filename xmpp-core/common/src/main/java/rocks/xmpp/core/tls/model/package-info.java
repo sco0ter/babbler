@@ -26,7 +26,8 @@
  * Provides XML schema implementations of the  <a href="https://xmpp.org/rfcs/rfc6120.html#schemas-starttls">STARTTLS Namespace</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-tls", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.core.tls.model;
+@XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-tls", elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.core.tls.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

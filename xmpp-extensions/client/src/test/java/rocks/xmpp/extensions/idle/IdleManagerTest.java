@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.idle;
 
+import java.util.function.Consumer;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
@@ -33,8 +35,6 @@ import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.idle.model.Idle;
-
-import java.util.function.Consumer;
 
 /**
  * @author Christian Schudt

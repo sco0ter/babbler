@@ -24,11 +24,6 @@
 
 package rocks.xmpp.addr;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import rocks.xmpp.precis.PrecisProfiles;
-import rocks.xmpp.util.ComparableTestHelper;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -43,6 +38,11 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedDeque;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import rocks.xmpp.precis.PrecisProfiles;
+import rocks.xmpp.util.ComparableTestHelper;
 
 /**
  * @author Christian Schudt

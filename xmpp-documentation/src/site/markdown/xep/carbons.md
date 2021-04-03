@@ -1,7 +1,8 @@
 # XEP-0280: Message Carbons
 ---
 
-[XEP-0280: Message Carbons][Message Carbons] allows you to tell the server to fork a message to all connected resources of a user.
+[XEP-0280: Message Carbons][Message Carbons] allows you to tell the server to fork a message to all connected resources
+of a user.
 
 This if useful if you want all your connected resources to stay in sync with each other.
 
@@ -18,7 +19,8 @@ Your server now copies all inbound and outbound chat messages to all connected r
 
 ## Get Outbound Copies of a Message
 
-Let's say, you enabled Message Carbons for your resource `A` and your other resource `B` sends a message to one of your contacts, resource `A` should then receive a copy of `B`'s message.
+Let's say, you enabled Message Carbons for your resource `A` and your other resource `B` sends a message to one of your
+contacts, resource `A` should then receive a copy of `B`'s message.
 
 You can get the original sent message by checking for the `Sent` extension:
 
@@ -36,7 +38,8 @@ if (sent != null) {
 
 ## Get Inbound Copies of a Message
 
-Similarly, if your resource `B` receives a message (to its full JID), resource `A` will receive a carbon copy of this message.
+Similarly, if your resource `B` receives a message (to its full JID), resource `A` will receive a carbon copy of this
+message.
 
 You can get the original message (sent to `B`) by checking for the `Received` extension:
 

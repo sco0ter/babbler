@@ -24,12 +24,12 @@
 
 package rocks.xmpp.core.stanza.model.server;
 
+import java.util.Locale;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Locale;
 
 /**
  * A stanza error explicitly bound to the {@code jabber:server} namespace.

@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.chatstates;
 
+import java.util.ArrayDeque;
+import java.util.Collection;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
@@ -36,9 +39,6 @@ import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.im.chat.ChatManager;
-
-import java.util.ArrayDeque;
-import java.util.Collection;
 
 /**
  * @author Christian Schudt

@@ -26,11 +26,12 @@
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a> (#owner).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = PubSub.NAMESPACE + "#owner", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.pubsub.model.owner;
-
-import rocks.xmpp.extensions.pubsub.model.PubSub;
+@XmlSchema(namespace = PubSub.NAMESPACE + "#owner", elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.pubsub.model.owner;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+
+import rocks.xmpp.extensions.pubsub.model.PubSub;

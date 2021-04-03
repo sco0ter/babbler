@@ -24,13 +24,6 @@
 
 package rocks.xmpp.extensions.bytestreams.s5b;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import rocks.xmpp.core.IntegrationTest;
-import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.XmppClient;
-import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +33,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import rocks.xmpp.core.IntegrationTest;
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.XmppClient;
+import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 
 /**
  * @author Christian Schudt

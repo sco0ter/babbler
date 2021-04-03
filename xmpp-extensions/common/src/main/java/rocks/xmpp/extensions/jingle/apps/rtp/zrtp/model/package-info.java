@@ -29,7 +29,8 @@
  * </p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = "urn:xmpp:jingle:apps:rtp:zrtp:1", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.jingle.apps.rtp.zrtp.model;
+@XmlSchema(namespace = "urn:xmpp:jingle:apps:rtp:zrtp:1", elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.jingle.apps.rtp.zrtp.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

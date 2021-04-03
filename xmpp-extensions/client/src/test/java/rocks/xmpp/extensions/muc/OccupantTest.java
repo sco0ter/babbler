@@ -24,6 +24,11 @@
 
 package rocks.xmpp.extensions.muc;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -31,11 +36,6 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.muc.model.Affiliation;
 import rocks.xmpp.extensions.muc.model.Role;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * @author Christian Schudt

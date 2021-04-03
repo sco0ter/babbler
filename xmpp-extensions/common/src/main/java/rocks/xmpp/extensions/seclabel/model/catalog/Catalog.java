@@ -24,17 +24,17 @@
 
 package rocks.xmpp.extensions.seclabel.model.catalog;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.seclabel.model.SecurityLabel;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.seclabel.model.SecurityLabel;
 
 /**
  * The implementation of the {@code <catalog/>} element in the {@code urn:xmpp:sec-label:catalog:2} namespace.

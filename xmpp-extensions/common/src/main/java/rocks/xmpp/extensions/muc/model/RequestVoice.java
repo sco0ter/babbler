@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.muc.model;
 
+import java.util.ArrayDeque;
+import java.util.Collection;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.model.DataForm;
-
-import java.util.ArrayDeque;
-import java.util.Collection;
 
 /**
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#request}, which can be used to request voice in a MUC room.

@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.featureneg.model;
 
-import rocks.xmpp.extensions.data.model.DataForm;
-
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Objects;
+
+import rocks.xmpp.extensions.data.model.DataForm;
 
 /**
  * The implementation of the {@code <feature/>} element in the {@code http://jabber.org/protocol/feature-neg} namespace.

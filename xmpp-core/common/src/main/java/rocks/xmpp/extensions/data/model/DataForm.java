@@ -24,20 +24,6 @@
 
 package rocks.xmpp.extensions.data.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.data.layout.model.Page;
-import rocks.xmpp.extensions.data.mediaelement.model.Media;
-import rocks.xmpp.extensions.data.validate.model.Validation;
-import rocks.xmpp.util.Strings;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -46,6 +32,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.data.layout.model.Page;
+import rocks.xmpp.extensions.data.mediaelement.model.Media;
+import rocks.xmpp.extensions.data.validate.model.Validation;
+import rocks.xmpp.util.Strings;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code jabber:x:data} namespace, which represents data forms.

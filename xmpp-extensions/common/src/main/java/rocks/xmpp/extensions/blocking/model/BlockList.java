@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.blocking.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.blocking.model.errors.Blocked;
-
+import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
-import java.util.List;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.blocking.model.errors.Blocked;
 
 /**
  * The implementation of the {@code <blocklist/>} element in the {@code urn:xmpp:blocking} namespace.

@@ -25,9 +25,10 @@
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a> (errors).
  */
-@XmlSchema(namespace = BlockList.NAMESPACE + ":errors", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.blocking.model.errors;
-
-import rocks.xmpp.extensions.blocking.model.BlockList;
+@XmlSchema(namespace = BlockList.NAMESPACE + ":errors", elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.blocking.model.errors;
 
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
+
+import rocks.xmpp.extensions.blocking.model.BlockList;

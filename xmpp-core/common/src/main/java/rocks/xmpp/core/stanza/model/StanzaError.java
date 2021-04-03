@@ -24,19 +24,19 @@
 
 package rocks.xmpp.core.stanza.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.LanguageElement;
-import rocks.xmpp.core.Text;
-import rocks.xmpp.core.stanza.model.errors.Condition;
-
+import java.util.Locale;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
-import java.util.Locale;
-import java.util.Objects;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.LanguageElement;
+import rocks.xmpp.core.Text;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 
 /**
  * The implementation of a stanza's {@code <error/>} element.

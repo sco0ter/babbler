@@ -24,6 +24,16 @@
 
 package rocks.xmpp.extensions.muc;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Locale;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -34,16 +44,6 @@ import rocks.xmpp.extensions.muc.model.Role;
 import rocks.xmpp.extensions.muc.model.RoomConfiguration;
 import rocks.xmpp.extensions.muc.model.RoomInfo;
 import rocks.xmpp.extensions.muc.model.RoomRegistration;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Locale;
 
 /**
  * @author Christian Schudt

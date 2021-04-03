@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.shim;
 
+import java.util.List;
+import java.util.Set;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * Manages <a href="https://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>.

@@ -28,7 +28,8 @@
  * It defines an XMPP protocol extension for getting the attention of another user.
  * </p>
  */
-@XmlSchema(namespace = Attention.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.attention.model;
+@XmlSchema(namespace = Attention.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.attention.model;
 
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

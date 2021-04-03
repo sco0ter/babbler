@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.muc.conference.model;
 
-import rocks.xmpp.addr.Jid;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.addr.Jid;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code jabber:x:conference} namespace, which represents a direct multi-user chat invitation.

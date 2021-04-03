@@ -24,6 +24,14 @@
 
 package rocks.xmpp.extensions.jingle;
 
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ForkJoinPool;
+import java.util.function.Consumer;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
@@ -35,14 +43,6 @@ import rocks.xmpp.extensions.jingle.apps.model.ApplicationFormat;
 import rocks.xmpp.extensions.jingle.model.Jingle;
 import rocks.xmpp.extensions.jingle.model.errors.UnknownSession;
 import rocks.xmpp.util.XmppUtils;
-
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ForkJoinPool;
-import java.util.function.Consumer;
 
 /**
  * @author Christian Schudt

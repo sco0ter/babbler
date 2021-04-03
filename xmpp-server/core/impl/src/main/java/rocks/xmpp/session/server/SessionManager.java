@@ -24,15 +24,13 @@
 
 package rocks.xmpp.session.server;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.Session;
-
-import javax.enterprise.context.ApplicationScoped;
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.enterprise.context.ApplicationScoped;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Session;
 
 /**
  * @author Christian Schudt

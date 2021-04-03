@@ -24,15 +24,15 @@
 
 package rocks.xmpp.extensions.delay.model;
 
+import java.time.Instant;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.Message;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.time.Instant;
 
 /**
  * Tests for the {@link DelayedDelivery} class.

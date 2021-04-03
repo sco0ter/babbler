@@ -24,10 +24,10 @@
 
 package rocks.xmpp.core.tls.model;
 
-import rocks.xmpp.core.stream.model.StreamElement;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+
+import rocks.xmpp.core.stream.model.StreamElement;
 
 /**
  * Represents the TLS proceed case.

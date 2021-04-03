@@ -24,8 +24,8 @@
 
 package rocks.xmpp.core.stanza.model.errors;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <redirect/>} stanza error.

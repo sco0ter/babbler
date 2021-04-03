@@ -24,11 +24,6 @@
 
 package rocks.xmpp.im.subscription;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.Manager;
-import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.Presence;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,6 +31,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.session.Manager;
+import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.model.Presence;
 
 /**
  * Manages subscription requests and presences.

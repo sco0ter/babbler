@@ -3,7 +3,8 @@
 
 ## Default Debugger
 
-There's a built-in default debugger, which prints XMPP communication to the console. You can enable it by configuring the session accordingly:
+There's a built-in default debugger, which prints XMPP communication to the console. You can enable it by configuring
+the session accordingly:
 
 ```java
 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()

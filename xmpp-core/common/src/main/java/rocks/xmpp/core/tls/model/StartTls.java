@@ -24,11 +24,11 @@
 
 package rocks.xmpp.core.tls.model;
 
-import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.core.stream.model.StreamFeature;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+
+import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
  * Represents the STARTTLS feature and initiates the TLS negotiation process.

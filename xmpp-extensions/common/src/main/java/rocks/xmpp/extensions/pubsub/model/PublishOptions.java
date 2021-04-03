@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.pubsub.model;
 
-import rocks.xmpp.extensions.data.StandardizedDataForm;
-import rocks.xmpp.extensions.data.model.DataForm;
-
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.List;
+
+import rocks.xmpp.extensions.data.StandardizedDataForm;
+import rocks.xmpp.extensions.data.model.DataForm;
 
 /**
  * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/pubsub#publish-options}, which can be used to retrieve node meta data.

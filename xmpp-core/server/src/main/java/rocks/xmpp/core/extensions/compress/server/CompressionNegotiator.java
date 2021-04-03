@@ -24,6 +24,8 @@
 
 package rocks.xmpp.core.extensions.compress.server;
 
+import java.util.Arrays;
+
 import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.model.StreamError;
@@ -31,8 +33,6 @@ import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.core.stream.server.StreamFeatureProvider;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
 import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
-
-import java.util.Arrays;
 
 /**
  * Negotiates stream compression by advertising support for it and later compressing the stream.

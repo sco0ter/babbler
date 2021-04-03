@@ -24,15 +24,15 @@
 
 package rocks.xmpp.core.stanza.model;
 
-import rocks.xmpp.addr.Jid;
-
-import javax.xml.bind.annotation.XmlTransient;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import javax.xml.bind.annotation.XmlTransient;
+
+import rocks.xmpp.addr.Jid;
 
 /**
  * A stanza which is extensible (can have more than one extension), i.e. {@link Message} and {@link Presence}.

@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.disco;
 
+import java.util.Collection;
+import java.util.concurrent.ExecutionException;
+
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -33,9 +36,6 @@ import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.extensions.disco.model.items.Item;
-
-import java.util.Collection;
-import java.util.concurrent.ExecutionException;
 
 /**
  * @author Christian Schudt

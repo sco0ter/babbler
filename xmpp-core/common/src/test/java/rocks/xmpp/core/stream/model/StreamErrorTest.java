@@ -24,15 +24,15 @@
 
 package rocks.xmpp.core.stream.model;
 
+import java.util.Locale;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.core.stream.model.errors.SeeOtherHost;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.util.Locale;
 
 /**
  * Tests for the {@link StreamError} class.

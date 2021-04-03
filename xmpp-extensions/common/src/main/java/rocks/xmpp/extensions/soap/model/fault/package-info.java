@@ -28,7 +28,8 @@
  * It defines methods for transporting SOAP messages over XMPP. Although the protocol supports only the request-response message exchange pattern, the protocol is formally defined as a SOAP Protocol Binding in accordance with version 1.2 of the W3C SOAP specification. In addition, a WSDL definition is defined for the purpose of advertising the availability of this protocol binding.
  * </p>
  */
-@XmlSchema(namespace = "http://jabber.org/protocol/soap#fault", elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.soap.model.fault;
+@XmlSchema(namespace = "http://jabber.org/protocol/soap#fault", elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.soap.model.fault;
 
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

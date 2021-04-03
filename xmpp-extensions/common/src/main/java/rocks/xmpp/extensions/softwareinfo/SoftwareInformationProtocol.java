@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.softwareinfo;
 
+import java.util.Collections;
+import java.util.Locale;
+import java.util.Set;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.info.InfoProvider;
-
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Set;
 
 /**
  * Represents the XEP-0232: Software Information.

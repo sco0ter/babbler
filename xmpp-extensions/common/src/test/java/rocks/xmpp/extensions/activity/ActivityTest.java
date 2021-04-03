@@ -24,15 +24,15 @@
 
 package rocks.xmpp.extensions.activity;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.activity.model.Activity;
 import rocks.xmpp.extensions.activity.model.Category;
 import rocks.xmpp.extensions.activity.model.SpecificActivity;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

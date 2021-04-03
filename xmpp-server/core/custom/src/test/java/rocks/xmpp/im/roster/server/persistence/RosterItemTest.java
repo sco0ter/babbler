@@ -24,6 +24,16 @@
 
 package rocks.xmpp.im.roster.server.persistence;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+import javax.enterprise.inject.se.SeContainer;
+import javax.enterprise.inject.se.SeContainerInitializer;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -31,16 +41,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.im.roster.model.RosterItem;
-
-import javax.enterprise.inject.se.SeContainer;
-import javax.enterprise.inject.se.SeContainerInitializer;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Christian Schudt

@@ -24,9 +24,9 @@
 
 package rocks.xmpp.im.roster.model;
 
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
-import java.util.Objects;
 
 /**
  * Represents a presence subscription state.

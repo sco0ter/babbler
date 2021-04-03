@@ -24,21 +24,21 @@
 
 package rocks.xmpp.core.stanza.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.LanguageElement;
-import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.util.adapters.LocaleAdapter;
-
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.CopyOnWriteArrayList;
 import javax.xml.XMLConstants;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.CopyOnWriteArrayList;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.LanguageElement;
+import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.util.adapters.LocaleAdapter;
 
 /**
  * The abstract base class for a XML stanza.

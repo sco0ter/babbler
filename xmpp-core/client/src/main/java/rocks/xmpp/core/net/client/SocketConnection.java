@@ -24,6 +24,24 @@
 
 package rocks.xmpp.core.net.client;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UncheckedIOException;
+import java.lang.System.Logger.Level;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.SSLSocket;
+
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.net.TcpBinding;
@@ -40,24 +58,6 @@ import rocks.xmpp.extensions.compress.CompressionManager;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.compress.model.StreamCompression;
 import rocks.xmpp.extensions.sm.client.ClientStreamManager;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLParameters;
-import javax.net.ssl.SSLSocket;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UncheckedIOException;
-import java.lang.System.Logger.Level;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 /**
  * The default TCP socket connection as described in <a href="https://xmpp.org/rfcs/rfc6120.html#tcp">TCP Binding</a>.

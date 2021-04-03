@@ -24,13 +24,13 @@
 
 package rocks.xmpp.sample.geolocation;
 
+import java.util.concurrent.Executors;
+
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.extensions.geoloc.GeoLocationManager;
-
-import java.util.concurrent.Executors;
 
 /**
  * @author Christian Schudt

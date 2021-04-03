@@ -24,6 +24,8 @@
 
 package rocks.xmpp.session.server;
 
+import java.util.stream.Stream;
+
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -42,8 +44,6 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.model.StreamElement;
-
-import java.util.stream.Stream;
 
 /**
  * Tests the RFC 6121 Message Delivery Rules.

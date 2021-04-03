@@ -24,13 +24,13 @@
 
 package rocks.xmpp.extensions.rsm;
 
-import rocks.xmpp.extensions.rsm.model.ResultSetItem;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.StreamSupport;
+
+import rocks.xmpp.extensions.rsm.model.ResultSetItem;
 
 /**
  * Combines multiple result set providers into one.

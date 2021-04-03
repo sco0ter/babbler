@@ -24,6 +24,10 @@
 
 package rocks.xmpp.extensions.component.accept;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
@@ -40,10 +44,6 @@ import rocks.xmpp.extensions.component.accept.model.ComponentIQ;
 import rocks.xmpp.extensions.component.accept.model.ComponentMessage;
 import rocks.xmpp.extensions.component.accept.model.ComponentPresence;
 import rocks.xmpp.extensions.component.accept.model.Handshake;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 /**
  * An external component session which connects to an XMPP server using the "Jabber Component Protocol".

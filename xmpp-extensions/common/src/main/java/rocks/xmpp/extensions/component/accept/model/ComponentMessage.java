@@ -24,15 +24,15 @@
 
 package rocks.xmpp.extensions.component.accept.model;
 
+import java.util.Collection;
+import java.util.Locale;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Text;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.StanzaError;
-
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import java.util.Collection;
-import java.util.Locale;
 
 /**
  * The implementation of the {@code <message/>} element in the {@code jabber:component:accept} namespace.

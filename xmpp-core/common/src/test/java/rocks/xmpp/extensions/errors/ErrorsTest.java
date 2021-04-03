@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.errors;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
@@ -33,9 +36,6 @@ import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.extensions.errors.model.ResourceLimitExceeded;
 import rocks.xmpp.extensions.errors.model.StanzaTooBig;
 import rocks.xmpp.extensions.errors.model.TooManyStanzas;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

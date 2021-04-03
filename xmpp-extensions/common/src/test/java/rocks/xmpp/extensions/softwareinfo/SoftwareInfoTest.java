@@ -24,15 +24,15 @@
 
 package rocks.xmpp.extensions.softwareinfo;
 
+import java.util.Arrays;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.model.DataForm;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.util.Arrays;
 
 /**
  * @author Christian Schudt

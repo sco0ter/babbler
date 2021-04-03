@@ -24,13 +24,13 @@
 
 package rocks.xmpp.core;
 
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+
 import org.testng.annotations.BeforeClass;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
-
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 /**
  * @author Christian Schudt

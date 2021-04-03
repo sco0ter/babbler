@@ -24,18 +24,18 @@
 
 package rocks.xmpp.extensions.amp.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.stream.model.StreamFeature;
-import rocks.xmpp.extensions.amp.model.errors.FailedRules;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stream.model.StreamFeature;
+import rocks.xmpp.extensions.amp.model.errors.FailedRules;
 
 /**
  * The implementation of the {@code <amp/>} element in the {@code http://jabber.org/protocol/amp} namespace.

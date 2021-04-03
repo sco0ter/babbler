@@ -24,6 +24,10 @@
 
 package rocks.xmpp.extensions.last;
 
+import java.time.Instant;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
@@ -34,10 +38,6 @@ import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.last.model.LastActivity;
-
-import java.time.Instant;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
 
 
 /**

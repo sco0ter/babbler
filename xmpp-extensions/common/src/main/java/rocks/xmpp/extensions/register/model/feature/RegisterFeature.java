@@ -24,9 +24,9 @@
 
 package rocks.xmpp.extensions.register.model.feature;
 
-import rocks.xmpp.core.stream.model.StreamFeature;
-
 import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
  * The implementation of the {@code <register/>} element in the {@code http://jabber.org/features/iq-register} namespace.

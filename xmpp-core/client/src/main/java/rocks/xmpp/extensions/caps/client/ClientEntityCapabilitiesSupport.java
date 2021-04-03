@@ -1,5 +1,9 @@
 package rocks.xmpp.extensions.caps.client;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.List;
+
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.OutboundPresenceHandler;
 import rocks.xmpp.core.stanza.PresenceEvent;
@@ -9,10 +13,6 @@ import rocks.xmpp.extensions.caps.AbstractEntityCapabilitiesProtocol;
 import rocks.xmpp.extensions.caps.model.EntityCapabilities;
 import rocks.xmpp.extensions.disco.client.ClientServiceDiscoveryManager;
 import rocks.xmpp.im.subscription.PresenceManager;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
 
 /**
  * @author Christian Schudt

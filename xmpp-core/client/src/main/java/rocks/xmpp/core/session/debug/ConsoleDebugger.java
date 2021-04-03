@@ -24,10 +24,10 @@
 
 package rocks.xmpp.core.session.debug;
 
-import rocks.xmpp.core.session.XmppSession;
-
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import rocks.xmpp.core.session.XmppSession;
 
 /**
  * A simple debugger implementation, which uses {@code System.out} to print XMPP traffic.

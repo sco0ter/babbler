@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.version;
 
+import java.util.concurrent.ExecutionException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
@@ -31,8 +33,6 @@ import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
-
-import java.util.concurrent.ExecutionException;
 
 /**
  * @author Christian Schudt

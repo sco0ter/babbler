@@ -24,10 +24,10 @@
 
 package rocks.xmpp.util.cache;
 
+import java.util.Map;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.Map;
 
 /**
  * @author Christian Schudt

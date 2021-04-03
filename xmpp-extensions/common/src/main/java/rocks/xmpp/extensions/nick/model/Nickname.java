@@ -24,9 +24,9 @@
 
 package rocks.xmpp.extensions.nick.model;
 
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
-import java.util.Objects;
 
 /**
  * The implementation of the {@code <nick/>} element in the {@code http://jabber.org/protocol/nick} namespace.

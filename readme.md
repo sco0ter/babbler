@@ -1,20 +1,27 @@
-**Babbler** is a young [XMPP](https://xmpp.org) client library for Java SE 8 based on [JAXB](http://docs.oracle.com/javase/tutorial/jaxb/intro/index.html) as XML processing technology.
+**Babbler** is a young [XMPP](https://xmpp.org) client library for Java SE 8 based
+on [JAXB](http://docs.oracle.com/javase/tutorial/jaxb/intro/index.html) as XML processing technology.
 
-It aims to provide good JavaDoc documentation, clean code, an easy to use API and a high level of software quality (which is currently ensured by 700+ unit tests).
+It aims to provide good JavaDoc documentation, clean code, an easy to use API and a high level of software quality (
+which is currently ensured by 700+ unit tests).
 
-It supports the core specifications [RFC 6120](https://xmpp.org/rfcs/rfc6120.html), [RFC 6121](https://xmpp.org/rfcs/rfc6121.html), [RFC 7622](https://tools.ietf.org/html/rfc7622), as well as many [extensions](https://xmpp.org/xmpp-protocols/xmpp-extensions/).
+It supports the core specifications [RFC 6120](https://xmpp.org/rfcs/rfc6120.html)
+, [RFC 6121](https://xmpp.org/rfcs/rfc6121.html), [RFC 7622](https://tools.ietf.org/html/rfc7622), as well as
+many [extensions](https://xmpp.org/xmpp-protocols/xmpp-extensions/).
 
 Since this project is quite young, the API might change. Comments on the API are appreciated.
 
 # Project Links
+
 |
 |---------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Blog                            | [blog.xmpp.rocks](http://blog.xmpp.rocks)                                                                                                                                           |
-| Documentation                   | [docs.xmpp.rocks](http://docs.xmpp.rocks)                                                                                                                                           |
-| Mailing List                    | [groups.xmpp.rocks](http://groups.xmpp.rocks)                                                                                                                                       |
-| Latest Version in Maven Central | [![Maven Central](http://img.shields.io/maven-central/v/rocks.xmpp/xmpp-core-client.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/rocks.xmpp/xmpp-core-client)  |
-| License                         | [![License](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://bitbucket.org/sco0ter/babbler/src/master/LICENSE.txt)                                              |
-
+| Blog | [blog.xmpp.rocks](http://blog.xmpp.rocks)
+| | Documentation | [docs.xmpp.rocks](http://docs.xmpp.rocks)
+| | Mailing List | [groups.xmpp.rocks](http://groups.xmpp.rocks)
+| | Latest Version in Maven Central
+| [![Maven Central](http://img.shields.io/maven-central/v/rocks.xmpp/xmpp-core-client.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/rocks.xmpp/xmpp-core-client)
+| | License
+| [![License](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://bitbucket.org/sco0ter/babbler/src/master/LICENSE.txt)
+|
 
 # Maven Dependency
 
@@ -65,7 +72,9 @@ Development snapshots are available on OSS Sonatype nexus:
 ```
 
 # Supported Extensions
-*(Only listing historical and standard tracks extensions with status 'Draft' or 'Final' that are applicable to XMPP clients)*
+
+*(Only listing historical and standard tracks extensions with status 'Draft' or 'Final' that are applicable to XMPP
+clients)*
 
 * ![supported][supported]           [XEP-0004: Data Forms](https://xmpp.org/extensions/xep-0004.html)
 * ![supported][supported]           [XEP-0009: Jabber-RPC](https://xmpp.org/extensions/xep-0009.html)
@@ -151,13 +160,11 @@ Development snapshots are available on OSS Sonatype nexus:
 * ![supported][supported]           [XEP-0368: SRV records for XMPP over TLS](https://xmpp.org/extensions/xep-0368.html)
 * ![not supported][not supported]   [XEP-0410: MUC Self-Ping (Schr&ouml;dinger's Chat)](https://xmpp.org/extensions/xep-0410.html)
 
-
 Supported experimental XEPs:
 
 * ![supported][supported]           [XEP-0186: Invisible Command](https://xmpp.org/extensions/xep-0186.html)
 * ![supported][supported]           [XEP-0280: Message Carbons](https://xmpp.org/extensions/xep-0280.html)
 * ![supported][supported]           [XEP-0335: JSON Containers](https://xmpp.org/extensions/xep-0335.html)
-
 
 Additionally following informational XEP documents are respected:
 
@@ -189,7 +196,8 @@ The first thing you want to do in order to connect to an XMPP server is creating
 XmppClient xmppClient = XmppClient.create("domain");
 ```
 
-The `XmppClient` instance is the central object. Every other action you will do revolves around this instance (e.g. sending and receiving messages).
+The `XmppClient` instance is the central object. Every other action you will do revolves around this instance (e.g.
+sending and receiving messages).
 
 A session to an XMPP server can be established in three ways (connection methods):
 
@@ -197,15 +205,17 @@ A session to an XMPP server can be established in three ways (connection methods
 2. By a [BOSH connection (XEP-0124)](https://xmpp.org/extensions/xep-0124.html)
 3. By a [WebSocket connection (RFC 7395)](https://tools.ietf.org/html/rfc7395)
 
-By default, the `XmppClient` will try to establish a connection via TCP first during the connection process.
-If the connection fails, it will try to discover alternative connection methods and try to connect with one of them (usually BOSH).
-The hostname and port is determined by doing a DNS lookup.
+By default, the `XmppClient` will try to establish a connection via TCP first during the connection process. If the
+connection fails, it will try to discover alternative connection methods and try to connect with one of them (usually
+BOSH). The hostname and port is determined by doing a DNS lookup.
 
 ### Configuring the Connections
 
-You can also configure different connection methods manually (e.g. if you want to use another port or want to use a proxy).
+You can also configure different connection methods manually (e.g. if you want to use another port or want to use a
+proxy).
 
-In order to create immutable and reusable configuration objects (which could be reused by multiple sessions) and to avoid huge constructors, the Builder Pattern is used to create custom configurations:
+In order to create immutable and reusable configuration objects (which could be reused by multiple sessions) and to
+avoid huge constructors, the Builder Pattern is used to create custom configurations:
 
 ```java
 SocketConnectionConfiguration tcpConfiguration = SocketConnectionConfiguration.builder()
@@ -213,7 +223,9 @@ SocketConnectionConfiguration tcpConfiguration = SocketConnectionConfiguration.b
     .port(5222)
     .build();
 ```
-Here's another example how to configure a BOSH connection (which would connect to the URL `http://domain:5280/http-bind/` over a HTTP proxy server):
+
+Here's another example how to configure a BOSH connection (which would connect to the
+URL `http://domain:5280/http-bind/` over a HTTP proxy server):
 
 ```java
 BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()
@@ -224,7 +236,8 @@ BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.buil
     .build();
 ```
 
-And this is how you would configure a WebSocket connection to `wss://host:7443/ws` (requires `xmpp-websocket` dependency):
+And this is how you would configure a WebSocket connection to `wss://host:7443/ws` (requires `xmpp-websocket`
+dependency):
 
 ```java
 WebSocketConnectionConfiguration webSocketConfiguration = WebSocketConnectionConfiguration.builder()
@@ -244,7 +257,6 @@ XmppClient xmppClient = XmppClient.create("domain", tcpConfiguration, boshConfig
 
 During connecting, the session will try all configured connections in order, until a connection is established.
 
-
 #### Securing the Connection
 
 You can set a custom `SSLContext` by configuring it like this:
@@ -257,7 +269,8 @@ SocketConnectionConfiguration tcpConfiguration = SocketConnectionConfiguration.b
     .build();
 ```
 
-Note that the use of a custom `HostnameVerifier` is possible but not recommended in most cases, since the built-in logic to verify the host name does a good job.
+Note that the use of a custom `HostnameVerifier` is possible but not recommended in most cases, since the built-in logic
+to verify the host name does a good job.
 
 ## Preparing the Session
 
@@ -265,13 +278,13 @@ Before connecting to a server, you should configure your XMPP session.
 
 You might want to do one of the following:
 
-* Adding event listeners in order to listen for inbound messages, roster and presence changes or to modify outbound messages.
+* Adding event listeners in order to listen for inbound messages, roster and presence changes or to modify outbound
+  messages.
 * Setting up a custom SSL context
 * Configuring extensions, e.g.
     * Enable or disable certain extensions
     * Setting an identity for the connection (Service Discovery)
     * etc.
-
 
 Here are some examples:
 
@@ -304,12 +317,13 @@ try {
 
 The session will try to connect to the XMPP server by using the configured connections in order.
 
-Connecting involves opening the initial XMPP stream header and negotiate any features offered by the server (most likely only TLS).
-
+Connecting involves opening the initial XMPP stream header and negotiate any features offered by the server (most likely
+only TLS).
 
 ## Authenticating and Binding a Resource
 
-After connecting, you have to authenticate and bind a resource, in order to become a \"connected resource\". Both steps are understood as \"login\":
+After connecting, you have to authenticate and bind a resource, in order to become a \"connected resource\". Both steps
+are understood as \"login\":
 
 ```java
 try {
@@ -319,7 +333,8 @@ try {
 }
 ```
 
-Initial presence is sent automatically, so that you are now an \"available resource\" (you will appear online to your contacts) and can now start sending messages.
+Initial presence is sent automatically, so that you are now an \"available resource\" (you will appear online to your
+contacts) and can now start sending messages.
 
 ## Sending a Message
 
@@ -345,7 +360,8 @@ Closing a session is simply done with:
 xmppClient.close();
 ```
 
-Note, that `XmppClient` implements `java.lang.AutoCloseable`, which means you can also use the try-with-resources statement, which automatically closes the session:
+Note, that `XmppClient` implements `java.lang.AutoCloseable`, which means you can also use the try-with-resources
+statement, which automatically closes the session:
 
 ```java
 try (XmppClient xmppClient = XmppClient.create("domain")) {
@@ -356,5 +372,7 @@ try (XmppClient xmppClient = XmppClient.create("domain")) {
 ```
 
 [supported]: https://bitbucket.org/sco0ter/babbler/raw/master/xmpp-documentation/src/site/resources/supported.png "Is supported"
+
 [not supported]: https://bitbucket.org/sco0ter/babbler/raw/master/xmpp-documentation/src/site/resources/notsupported.png "Is not supported"
+
 [in development]: https://bitbucket.org/sco0ter/babbler/raw/master/xmpp-documentation/src/site/resources/development.png "Is in development or planned"

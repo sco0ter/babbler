@@ -24,6 +24,11 @@
 
 package rocks.xmpp.im.roster.server;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
+
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -44,11 +49,6 @@ import rocks.xmpp.im.roster.model.RosterItem;
 import rocks.xmpp.im.roster.model.SubscriptionState;
 import rocks.xmpp.im.roster.server.spi.RosterItemProvider;
 import rocks.xmpp.session.server.SessionManager;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Stream;
 
 public class ServerRosterManagerTest {
 

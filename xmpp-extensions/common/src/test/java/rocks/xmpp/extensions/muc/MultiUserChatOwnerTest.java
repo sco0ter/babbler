@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.muc;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -34,9 +37,6 @@ import rocks.xmpp.extensions.muc.model.Affiliation;
 import rocks.xmpp.extensions.muc.model.Role;
 import rocks.xmpp.extensions.muc.model.admin.MucAdmin;
 import rocks.xmpp.extensions.muc.model.owner.MucOwner;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

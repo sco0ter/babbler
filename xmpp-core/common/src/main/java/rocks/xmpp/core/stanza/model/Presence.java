@@ -24,14 +24,11 @@
 
 package rocks.xmpp.core.stanza.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.Text;
-import rocks.xmpp.core.stanza.model.errors.Condition;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsFirst;
+import static java.util.Comparator.nullsLast;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -41,11 +38,14 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
-import static java.util.Comparator.comparing;
-import static java.util.Comparator.naturalOrder;
-import static java.util.Comparator.nullsFirst;
-import static java.util.Comparator.nullsLast;
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.Text;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 
 /**
  * The implementation of the {@code <presence/>} element.

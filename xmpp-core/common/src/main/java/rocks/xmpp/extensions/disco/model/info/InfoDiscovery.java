@@ -24,14 +24,6 @@
 
 package rocks.xmpp.extensions.disco.model.info;
 
-import rocks.xmpp.core.LanguageElement;
-import rocks.xmpp.extensions.data.model.DataForm;
-import rocks.xmpp.extensions.disco.model.ServiceDiscoveryNode;
-
-import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,6 +33,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import javax.xml.XMLConstants;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.core.LanguageElement;
+import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.disco.model.ServiceDiscoveryNode;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code http://jabber.org/protocol/disco#info} namespace.

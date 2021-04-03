@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.disco;
 
+import java.util.List;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.stanza.IQHandler;
@@ -35,8 +37,6 @@ import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.disco.model.items.ItemProvider;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 import rocks.xmpp.util.concurrent.AsyncResult;
-
-import java.util.List;
 
 /**
  * @author Christian Schudt

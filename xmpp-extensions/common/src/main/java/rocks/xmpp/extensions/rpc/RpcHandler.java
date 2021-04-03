@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.rpc;
 
+import java.util.List;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.rpc.model.Value;
-
-import java.util.List;
 
 /**
  * Handles an inbound remote procedure call.

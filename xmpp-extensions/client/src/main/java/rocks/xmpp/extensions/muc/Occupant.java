@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.muc;
 
+import java.text.Collator;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Addressable;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.muc.model.Affiliation;
 import rocks.xmpp.extensions.muc.model.Role;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
-
-import java.text.Collator;
 
 /**
  * The main actor in a multi-user chat environment is the occupant, who can be said to be located "in" a multi-user chat room and to participate in the discussions held in that room.

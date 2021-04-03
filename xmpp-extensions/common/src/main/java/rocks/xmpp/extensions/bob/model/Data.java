@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.bob.model;
 
-import rocks.xmpp.util.XmppUtils;
-
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
-import java.util.Objects;
+
+import rocks.xmpp.util.XmppUtils;
 
 /**
  * The implementation of the {@code <data/>} element in the {@code urn:xmpp:bob} namespace.

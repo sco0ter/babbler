@@ -1,7 +1,8 @@
 # XEP-0016: Privacy Lists
 ---
 
-[XEP-0016: Privacy Lists][Privacy Lists] allow you to block communication with other entities, either based on their JID, subscription state or roster group.
+[XEP-0016: Privacy Lists][Privacy Lists] allow you to block communication with other entities, either based on their
+JID, subscription state or roster group.
 
 ## Managing Privacy Lists
 
@@ -60,7 +61,8 @@ privacyListManager.declineDefaultList();
 
 ## Listening for Privacy List Changes
 
-Whenever a privacy list is updated, the server will notify all connected resources about the updated list. You can listen for these "pushes" in the following way:
+Whenever a privacy list is updated, the server will notify all connected resources about the updated list. You can
+listen for these "pushes" in the following way:
 
 ```java
 privacyListManager.addPrivacyListListener(e -> {
@@ -78,12 +80,12 @@ For this use case you should add a privacy rule for the user, which denies all c
 new PrivacyList("name", Collections.singleton(PrivacyRule.blockAllCommunicationWith(Jid.of("tybalt@example.com"), 1)));
 ```
 
-Privacy rules can also be defined more granular. E.g. if you only want to block IQ stanzas, but allow presences and messages, you would define the rule like:
+Privacy rules can also be defined more granular. E.g. if you only want to block IQ stanzas, but allow presences and
+messages, you would define the rule like:
 
 ```java
 PrivacyRule privacyRule = PrivacyRule.blockIQFrom(Jid.of("tybalt@example.com"), 1);
 ```
-
 
 ## XEP-0126: Invisibility
 
@@ -96,4 +98,5 @@ PrivacyList invisibilityList = PrivacyList.createInvisibilityList();
 ```
 
 [Privacy Lists]: https://xmpp.org/extensions/xep-0016.html "XEP-0016: Privacy Lists"
+
 [Invisibility]: https://xmpp.org/extensions/xep-0126.html "XEP-0126: Invisibility"

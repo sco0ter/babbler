@@ -24,9 +24,9 @@
 
 package rocks.xmpp.extensions.jingle.model.errors;
 
-import rocks.xmpp.util.Strings;
-
 import javax.xml.bind.annotation.XmlTransient;
+
+import rocks.xmpp.util.Strings;
 
 /**
  * @author Christian Schudt

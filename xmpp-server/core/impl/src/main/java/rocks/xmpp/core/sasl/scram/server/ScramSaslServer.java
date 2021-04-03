@@ -24,18 +24,6 @@
 
 package rocks.xmpp.core.sasl.scram.server;
 
-import rocks.xmpp.core.sasl.scram.SaslPrep;
-import rocks.xmpp.core.sasl.scram.ScramBase;
-import rocks.xmpp.im.roster.server.spi.ScramCredential;
-
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.security.sasl.SaslException;
-import javax.security.sasl.SaslServer;
-import javax.security.sasl.SaslServerFactory;
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -44,6 +32,18 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.NameCallback;
+import javax.security.auth.callback.UnsupportedCallbackException;
+import javax.security.sasl.SaslException;
+import javax.security.sasl.SaslServer;
+import javax.security.sasl.SaslServerFactory;
+import javax.xml.bind.DatatypeConverter;
+
+import rocks.xmpp.core.sasl.scram.SaslPrep;
+import rocks.xmpp.core.sasl.scram.ScramBase;
+import rocks.xmpp.im.roster.server.spi.ScramCredential;
 
 /**
  * The server implementation of the SCRAM-SHA-1 SASL mechanism.
@@ -135,7 +135,7 @@ public class ScramSaslServer extends ScramBase implements SaslServer {
             }
 
             scramCredential = scramCredentialCallback.getScramCredential();
-            
+
             try {
                 nonce = cnonce + generateNonce();
             } catch (NoSuchAlgorithmException e) {

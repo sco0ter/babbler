@@ -24,13 +24,13 @@
 
 package rocks.xmpp.core.stanza.model.errors;
 
-import rocks.xmpp.core.stanza.model.StanzaError;
-import rocks.xmpp.util.Strings;
-
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlValue;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlValue;
+
+import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.util.Strings;
 
 /**
  * An abstract implementation of a defined stanza error condition.

@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.pubsub.model.errors;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 import rocks.xmpp.extensions.pubsub.model.PubSubFeature;
 import rocks.xmpp.util.Strings;
-
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * An enclosing class for pubsub errors.

@@ -24,6 +24,8 @@
 
 package rocks.xmpp.extensions.rpc;
 
+import java.util.concurrent.ExecutionException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
@@ -33,8 +35,6 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.rpc.client.ClientRpcManager;
 import rocks.xmpp.extensions.rpc.model.Value;
-
-import java.util.concurrent.ExecutionException;
 
 /**
  * @author Christian Schudt

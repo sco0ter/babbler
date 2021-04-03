@@ -24,16 +24,16 @@
 
 package rocks.xmpp.extensions.address.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.stanza.model.Message;
-
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stanza.model.Message;
 
 /**
  * The implementation of the {@code <addresses/>} element in the {@code http://jabber.org/protocol/address} namespace..

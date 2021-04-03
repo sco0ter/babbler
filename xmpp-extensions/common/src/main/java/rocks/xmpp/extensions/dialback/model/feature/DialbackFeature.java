@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.dialback.model.feature;
 
-import rocks.xmpp.core.stream.model.StreamFeature;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
  * The stream feature to advertise support for server dialback with dialback errors.

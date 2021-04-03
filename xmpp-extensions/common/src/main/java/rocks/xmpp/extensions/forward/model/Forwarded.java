@@ -24,6 +24,10 @@
 
 package rocks.xmpp.extensions.forward.model;
 
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementRefs;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stanza.model.client.ClientIQ;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
@@ -32,10 +36,6 @@ import rocks.xmpp.core.stanza.model.server.ServerIQ;
 import rocks.xmpp.core.stanza.model.server.ServerMessage;
 import rocks.xmpp.core.stanza.model.server.ServerPresence;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
-
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlElementRefs;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <forwarded/>} element in the {@code urn:xmpp:forward:0} namespace.

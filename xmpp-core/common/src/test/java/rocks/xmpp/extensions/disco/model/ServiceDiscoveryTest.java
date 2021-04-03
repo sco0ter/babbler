@@ -24,6 +24,12 @@
 
 package rocks.xmpp.extensions.disco.model;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Locale;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
@@ -36,12 +42,6 @@ import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemDiscovery;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.util.ComparableTestHelper;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Locale;
 
 /**
  * Tests for the {@link InfoDiscovery} and {@link ItemDiscovery} class.

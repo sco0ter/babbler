@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.register;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
@@ -31,9 +34,6 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stream.model.StreamFeature;
 import rocks.xmpp.extensions.register.model.Registration;
 import rocks.xmpp.extensions.register.model.feature.RegisterFeature;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

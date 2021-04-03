@@ -24,17 +24,17 @@
 
 package rocks.xmpp.websocket;
 
+import java.net.URI;
+import java.util.Locale;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.websocket.model.Close;
 import rocks.xmpp.websocket.model.Open;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.net.URI;
-import java.util.Locale;
 
 /**
  * @author Christian Schudt

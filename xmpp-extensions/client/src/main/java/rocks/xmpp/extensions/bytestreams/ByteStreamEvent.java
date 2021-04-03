@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.bytestreams;
 
-import rocks.xmpp.util.concurrent.AsyncResult;
-
 import java.util.EventObject;
 import java.util.function.Consumer;
+
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * A byte stream event, which notifies a listener about inbound byte stream requests.

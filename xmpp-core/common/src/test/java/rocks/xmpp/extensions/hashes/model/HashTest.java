@@ -24,15 +24,15 @@
 
 package rocks.xmpp.extensions.hashes.model;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-import rocks.xmpp.core.XmlTest;
-
+import java.util.HashSet;
+import java.util.Set;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.util.HashSet;
-import java.util.Set;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import rocks.xmpp.core.XmlTest;
 
 /**
  * Tests for the {@link Hash} class.

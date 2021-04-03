@@ -24,6 +24,10 @@
 
 package rocks.xmpp.sample.filetransfer;
 
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.util.concurrent.Executors;
+
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
@@ -31,10 +35,6 @@ import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.debug.gui.VisualDebugger;
 import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
-
-import java.nio.file.Paths;
-import java.time.Duration;
-import java.util.concurrent.Executors;
 
 /**
  * @author Christian Schudt

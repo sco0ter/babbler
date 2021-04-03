@@ -24,20 +24,20 @@
 
 package rocks.xmpp.extensions.jingle.transports.s5b.model;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
-import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5StreamHost;
-import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
+import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5StreamHost;
+import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
 
 /**
  * The implementation of the {@code <transport/>} element in the {@code urn:xmpp:jingle:transports:s5b:1} namespace.

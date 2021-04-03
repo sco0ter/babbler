@@ -24,6 +24,8 @@
 
 package rocks.xmpp.core;
 
+import java.util.Arrays;
+
 import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.model.Session;
@@ -58,8 +60,6 @@ import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.im.roster.model.Roster;
 import rocks.xmpp.im.roster.versioning.model.RosterVersioning;
 import rocks.xmpp.im.subscription.preapproval.model.SubscriptionPreApproval;
-
-import java.util.Arrays;
 
 /**
  * Defines core classes to be bound to the JAXBContext.

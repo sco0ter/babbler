@@ -1,12 +1,15 @@
 # Avatars
 ---
 
-User Avatars are specified in both the historical [XEP-0153: vCard-Based Avatars][vCard-Based Avatars] and the newer [XEP-0084: User Avatar][User Avatar],
-which makes life more complicated, if you just want to set your avatar or listen for avatar updates of your contacts.
+User Avatars are specified in both the historical [XEP-0153: vCard-Based Avatars][vCard-Based Avatars] and the
+newer [XEP-0084: User Avatar][User Avatar], which makes life more complicated, if you just want to set your avatar or
+listen for avatar updates of your contacts.
 
-The `AvatarManager` encapsulates the logic of both specifications and shields you from the complexity of dealing with two extensions.
+The `AvatarManager` encapsulates the logic of both specifications and shields you from the complexity of dealing with
+two extensions.
 
-By default avatars are disabled, which means you have to enable it, if you want to use them, i.e. receive notifications about updates and also send updates yourself.
+By default avatars are disabled, which means you have to enable it, if you want to use them, i.e. receive notifications
+about updates and also send updates yourself.
 
 ## Publishing your Avatar
 
@@ -57,8 +60,9 @@ avatarManager.addAvatarChangeListener(e -> {
 
 ## Avatar Cache
 
-There's also a file based cache for downloaded avatars, so that they don't need to be downloaded again.
-Avatars are cached in the folder "avatars" in your cache directory (configurable in `XmppSessionConfiguration`)
+There's also a file based cache for downloaded avatars, so that they don't need to be downloaded again. Avatars are
+cached in the folder "avatars" in your cache directory (configurable in `XmppSessionConfiguration`)
 
 [User Avatar]: https://xmpp.org/extensions/xep-0084.html "XEP-0084: User Avatar"
+
 [vCard-Based Avatars]: https://xmpp.org/extensions/xep-0153.html "XEP-0153: vCard-Based Avatars"

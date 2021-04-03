@@ -24,9 +24,11 @@
 
 package rocks.xmpp.sample.customiq;
 
+import java.util.concurrent.Executors;
+
 import rocks.xmpp.core.net.ChannelEncryption;
-import rocks.xmpp.core.session.Extension;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
+import rocks.xmpp.core.session.Extension;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
@@ -34,8 +36,6 @@ import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-
-import java.util.concurrent.Executors;
 
 /**
  * @author Christian Schudt
@@ -55,7 +55,7 @@ public class CustomIQHandlerResponder {
 
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                         .debugger(ConsoleDebugger.class)
-                                // This registers the custom IQ payload to the JAXB context.
+                        // This registers the custom IQ payload to the JAXB context.
                         .extensions(Extension.of(Addition.class))
                         .build();
 

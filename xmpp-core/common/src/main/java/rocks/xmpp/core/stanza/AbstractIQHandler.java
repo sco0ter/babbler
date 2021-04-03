@@ -24,12 +24,12 @@
 
 package rocks.xmpp.core.stanza;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-
-import java.util.EnumSet;
-import java.util.Set;
 
 /**
  * This class is an IQ handler for extension managers.

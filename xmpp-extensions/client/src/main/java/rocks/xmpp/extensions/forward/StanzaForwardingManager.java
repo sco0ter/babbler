@@ -24,14 +24,14 @@
 
 package rocks.xmpp.extensions.forward;
 
+import java.time.Instant;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 import rocks.xmpp.extensions.forward.model.Forwarded;
-
-import java.time.Instant;
 
 /**
  * This manager allows to forward stanzas to other XMPP entities.

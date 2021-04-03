@@ -24,21 +24,21 @@
 
 package rocks.xmpp.extensions.muc.model.user;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.muc.model.Actor;
-import rocks.xmpp.extensions.muc.model.Affiliation;
-import rocks.xmpp.extensions.muc.model.Destroy;
-import rocks.xmpp.extensions.muc.model.Item;
-import rocks.xmpp.extensions.muc.model.Role;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.muc.model.Actor;
+import rocks.xmpp.extensions.muc.model.Affiliation;
+import rocks.xmpp.extensions.muc.model.Destroy;
+import rocks.xmpp.extensions.muc.model.Item;
+import rocks.xmpp.extensions.muc.model.Role;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code http://jabber.org/protocol/muc#user} namespace.

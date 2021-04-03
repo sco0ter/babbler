@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.bookmarks.pep.model;
 
-import rocks.xmpp.extensions.bookmarks.model.AbstractBookmark;
-import rocks.xmpp.extensions.bookmarks.model.ConferenceBookmark;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import rocks.xmpp.extensions.bookmarks.model.AbstractBookmark;
+import rocks.xmpp.extensions.bookmarks.model.ConferenceBookmark;
 
 /**
  * A PEP native conference bookmark element.

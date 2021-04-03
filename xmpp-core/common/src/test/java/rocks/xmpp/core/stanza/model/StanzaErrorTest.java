@@ -24,6 +24,10 @@
 
 package rocks.xmpp.core.stanza.model;
 
+import java.util.Locale;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.w3c.dom.Element;
@@ -31,10 +35,6 @@ import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stanza.model.errors.Gone;
 import rocks.xmpp.core.stanza.model.errors.Redirect;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.util.Locale;
 
 /**
  * Tests for the {@link StanzaError} class.

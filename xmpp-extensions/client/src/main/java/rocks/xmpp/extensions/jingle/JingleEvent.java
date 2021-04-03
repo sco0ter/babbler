@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.jingle;
 
+import java.util.EventObject;
+
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.jingle.model.Jingle;
-
-import java.util.EventObject;
 
 /**
  * This event notifies listeners, when a Jingle session is initiated.
@@ -73,7 +73,7 @@ public final class JingleEvent extends EventObject {
     }
 
     public IQ getIQ() {
-    	return iq;
+        return iq;
     }
 
     public Jingle getJingle() {

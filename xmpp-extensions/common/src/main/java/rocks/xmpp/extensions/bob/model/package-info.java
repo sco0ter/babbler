@@ -26,7 +26,8 @@
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits of Binary</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = Data.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED) package rocks.xmpp.extensions.bob.model;
+@XmlSchema(namespace = Data.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
+package rocks.xmpp.extensions.bob.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

@@ -24,6 +24,13 @@
 
 package rocks.xmpp.core.session.debug;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.function.Consumer;
+
 import rocks.xmpp.core.net.ReaderInterceptor;
 import rocks.xmpp.core.net.ReaderInterceptorChain;
 import rocks.xmpp.core.net.WriterInterceptor;
@@ -31,13 +38,6 @@ import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.util.XmppUtils;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.function.Consumer;
 
 /**
  * A debugger interface, which allows to implement custom debugger implementation to log XMPP traffic.

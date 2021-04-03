@@ -24,11 +24,11 @@
 
 package rocks.xmpp.websocket.model;
 
+import java.util.Locale;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.session.model.SessionOpen;
-
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Locale;
 
 /**
  * The implementation of the {@code <open/>} element in the {@code urn:ietf:params:xml:ns:xmpp-framing} namespace.

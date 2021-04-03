@@ -24,6 +24,9 @@
 
 package rocks.xmpp.extensions.avatar;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
@@ -32,9 +35,6 @@ import rocks.xmpp.extensions.avatar.model.data.AvatarData;
 import rocks.xmpp.extensions.avatar.model.metadata.AvatarMetadata;
 import rocks.xmpp.extensions.pubsub.model.Item;
 import rocks.xmpp.extensions.pubsub.model.PubSub;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * @author Christian Schudt

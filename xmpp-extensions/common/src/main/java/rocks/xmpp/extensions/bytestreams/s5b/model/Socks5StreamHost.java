@@ -39,7 +39,7 @@ public interface Socks5StreamHost extends Addressable {
      * @return The hostname.
      */
     String getHostname();
-    
+
     /**
      * Get the port on which to connect for SOCKS5 communication over TCP.
      *

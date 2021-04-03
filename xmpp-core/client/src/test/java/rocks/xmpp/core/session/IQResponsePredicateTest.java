@@ -24,12 +24,12 @@
 
 package rocks.xmpp.core.session;
 
+import java.util.function.Predicate;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.IQ;
-
-import java.util.function.Predicate;
 
 /**
  * @author Christian Schudt

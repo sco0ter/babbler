@@ -24,11 +24,11 @@
 
 package rocks.xmpp.extensions.rtt;
 
-import rocks.xmpp.util.XmppUtils;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import rocks.xmpp.util.XmppUtils;
 
 /**
  * The base class for real-time messages. Derived classes are {@link InboundRealTimeMessage} and {@link OutboundRealTimeMessage}.

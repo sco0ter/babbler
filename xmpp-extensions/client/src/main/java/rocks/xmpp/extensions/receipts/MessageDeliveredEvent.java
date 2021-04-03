@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.receipts;
 
-import rocks.xmpp.addr.Jid;
-
 import java.time.Instant;
 import java.util.EventObject;
+
+import rocks.xmpp.addr.Jid;
 
 /**
  * This event notifies listeners, when a message has been successfully delivered.

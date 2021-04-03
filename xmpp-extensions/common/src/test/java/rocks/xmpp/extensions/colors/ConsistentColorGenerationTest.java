@@ -25,12 +25,12 @@
 package rocks.xmpp.extensions.colors;
 
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 /**
  * @author Christian Schudt

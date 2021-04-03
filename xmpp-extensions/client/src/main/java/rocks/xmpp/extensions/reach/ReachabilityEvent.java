@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.reach;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.reach.model.Address;
-
 import java.util.EventObject;
 import java.util.List;
 import java.util.function.Consumer;
+
+import rocks.xmpp.addr.Jid;
+import rocks.xmpp.extensions.reach.model.Address;
 
 /**
  * This event notifies listeners, when a contact's reachability has changed.

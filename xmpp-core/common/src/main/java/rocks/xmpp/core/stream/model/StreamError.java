@@ -24,16 +24,16 @@
 
 package rocks.xmpp.core.stream.model;
 
-import rocks.xmpp.core.LanguageElement;
-import rocks.xmpp.core.Text;
-import rocks.xmpp.core.stream.model.errors.Condition;
-
+import java.util.Locale;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Locale;
-import java.util.Objects;
+
+import rocks.xmpp.core.LanguageElement;
+import rocks.xmpp.core.Text;
+import rocks.xmpp.core.stream.model.errors.Condition;
 
 /**
  * The implementation of the {@code <stream:error/>} element.

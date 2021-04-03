@@ -24,10 +24,10 @@
 
 package rocks.xmpp.extensions.disco.model.items;
 
+import java.util.List;
+
 import rocks.xmpp.extensions.disco.model.ServiceDiscoveryNode;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
-
-import java.util.List;
 
 /**
  * A generic service discovery item node.

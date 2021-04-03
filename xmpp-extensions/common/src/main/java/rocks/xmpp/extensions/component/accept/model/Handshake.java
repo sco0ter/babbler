@@ -24,12 +24,12 @@
 
 package rocks.xmpp.extensions.component.accept.model;
 
-import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.util.XmppUtils;
-
+import java.nio.charset.StandardCharsets;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
-import java.nio.charset.StandardCharsets;
+
+import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.util.XmppUtils;
 
 /**
  * @author Christian Schudt

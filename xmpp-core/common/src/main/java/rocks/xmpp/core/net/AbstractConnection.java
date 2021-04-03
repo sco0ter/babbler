@@ -24,16 +24,16 @@
 
 package rocks.xmpp.core.net;
 
-import rocks.xmpp.core.session.model.SessionOpen;
-import rocks.xmpp.core.stream.model.StreamError;
-import rocks.xmpp.util.concurrent.CompletionStages;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+
+import rocks.xmpp.core.session.model.SessionOpen;
+import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.util.concurrent.CompletionStages;
 
 /**
  * An abstract connection implementation.

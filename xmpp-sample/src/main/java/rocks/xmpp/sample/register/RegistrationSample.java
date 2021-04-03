@@ -33,7 +33,10 @@ import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.extensions.register.RegistrationManager;
 import rocks.xmpp.extensions.register.model.Registration;
 
-public class RegistrationSample {
+public final class RegistrationSample {
+
+    private RegistrationSample(){
+    }
 
     public static void main(String[] args) {
 

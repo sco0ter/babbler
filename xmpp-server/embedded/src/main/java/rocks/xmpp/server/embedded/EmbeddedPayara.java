@@ -30,7 +30,10 @@ import fish.payara.micro.PayaraMicro;
 /**
  * @author Christian Schudt
  */
-public class EmbeddedPayara {
+public final class EmbeddedPayara {
+
+    private EmbeddedPayara() {
+    }
 
     public static void main(String[] args) throws BootstrapException {
 

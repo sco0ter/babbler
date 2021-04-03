@@ -62,9 +62,12 @@ import rocks.xmpp.websocket.net.client.WebSocketConnectionConfiguration;
 /**
  * A simple example for connecting and sending a message.
  */
-public class SampleApplication {
+public final class SampleApplication {
 
     private static final System.Logger logger = System.getLogger(SampleApplication.class.getName());
+
+    private SampleApplication() {
+    }
 
     public static void main(String[] args) {
 

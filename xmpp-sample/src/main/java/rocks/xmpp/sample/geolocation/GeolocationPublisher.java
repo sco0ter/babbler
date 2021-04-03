@@ -36,7 +36,10 @@ import rocks.xmpp.debug.gui.VisualDebugger;
 /**
  * @author Christian Schudt
  */
-public class GeolocationPublisher {
+public final class GeolocationPublisher {
+
+    private GeolocationPublisher() {
+    }
 
     public static void main(String[] args) {
 

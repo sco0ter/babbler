@@ -35,7 +35,10 @@ import rocks.xmpp.extensions.geoloc.GeoLocationManager;
 /**
  * @author Christian Schudt
  */
-public class GeolocationReceiver {
+public final class GeolocationReceiver {
+
+    private GeolocationReceiver() {
+    }
 
     public static void main(String[] args) {
 

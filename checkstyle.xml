@@ -32,6 +32,7 @@
     <property name="fileExtensions" value="java, properties, xml"/>
 
     <module name="TreeWalker">
+        <!-- Imports -->
         <module name="AvoidStarImport"/>
         <module name="CustomImportOrder">
             <property name="customImportOrderRules" value="STATIC###STANDARD_JAVA_PACKAGE###THIRD_PARTY_PACKAGE"/>
@@ -41,6 +42,14 @@
         <module name="IllegalImport"/>
         <module name="RedundantImport"/>
         <module name="UnusedImports"/>
-    </module>
 
+        <!-- Class Design -->
+        <module name="FinalClass"/>
+        <module name="HideUtilityClassConstructor"/>
+        <module name="InnerTypeLast"/>
+        <module name="MutableException"/>
+        <module name="OneTopLevelClass"/>
+        <module name="ThrowsCount"/>
+
+    </module>
 </module>

@@ -40,7 +40,10 @@ import rocks.xmpp.extensions.muc.OccupantEvent;
 /**
  * @author Christian Schudt
  */
-public class MucSampleUser1 {
+public final class MucSampleUser1 {
+
+    private MucSampleUser1() {
+    }
 
     public static void main(String[] args) {
 

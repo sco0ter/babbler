@@ -52,26 +52,6 @@ public final class RequestStrategies {
         return new ForEveryXStanzas(x);
     }
 
-    private static final class ForEveryXStanzas implements Predicate<Stanza> {
-
-        private final int x;
-
-        private int sentStanzas;
-
-        private ForEveryXStanzas(final int x) {
-            this.x = x;
-        }
-
-        @Override
-        public final boolean test(final Stanza stanza) {
-            if (++sentStanzas == x) {
-                sentStanzas = 0;
-                return true;
-            }
-            return false;
-        }
-    }
-
     /**
      * Requests an ack for each message.
      *
@@ -103,5 +83,25 @@ public final class RequestStrategies {
                 return forEveryStanza.test(stanza);
             }
         };
+    }
+
+    private static final class ForEveryXStanzas implements Predicate<Stanza> {
+
+        private final int x;
+
+        private int sentStanzas;
+
+        private ForEveryXStanzas(final int x) {
+            this.x = x;
+        }
+
+        @Override
+        public final boolean test(final Stanza stanza) {
+            if (++sentStanzas == x) {
+                sentStanzas = 0;
+                return true;
+            }
+            return false;
+        }
     }
 }

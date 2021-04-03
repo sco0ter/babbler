@@ -95,42 +95,6 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
         });
     }
 
-    private final class ClientInfo implements DiscoverableInfo {
-
-        private final Set<Identity> identities = Collections.newSetFromMap(new ConcurrentHashMap<>());
-
-        private final Set<String> features = Collections.newSetFromMap(new ConcurrentHashMap<>());
-
-        private final CopyOnWriteArrayList<DataForm> extensions = new CopyOnWriteArrayList<>();
-
-        private ClientInfo() {
-            identities.add(DEFAULT_IDENTITY);
-        }
-
-        @Override
-        public Set<Identity> getIdentities() {
-            return identities;
-        }
-
-        @Override
-        public Set<String> getFeatures() {
-            // Concat manually added features, with enabled known extensions
-            return Stream.concat(features.stream(),
-                    ClientServiceDiscoveryManager.this.extensions
-                            .stream()
-                            // Extensions with manager currently get excluded, because they are manually added to the feature set.
-                            // This shall change in the future
-                            .filter(ExtensionProtocol::isEnabled)
-                            .flatMap(extension -> extension.getFeatures().stream()))
-                    .collect(Collectors.toSet());
-        }
-
-        @Override
-        public List<DataForm> getExtensions() {
-            return extensions;
-        }
-    }
-
     /**
      * Adds a property change listener, which listens for changes in the {@linkplain #getIdentities() identities}, {@linkplain #getFeatures() features} and {@linkplain #getExtensions() extensions} collections.
      *
@@ -393,5 +357,41 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
 
     public final void registerFeature(ExtensionProtocol extension) {
         extensions.add(extension);
+    }
+
+    private final class ClientInfo implements DiscoverableInfo {
+
+        private final Set<Identity> identities = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+        private final Set<String> features = Collections.newSetFromMap(new ConcurrentHashMap<>());
+
+        private final CopyOnWriteArrayList<DataForm> extensions = new CopyOnWriteArrayList<>();
+
+        private ClientInfo() {
+            identities.add(DEFAULT_IDENTITY);
+        }
+
+        @Override
+        public Set<Identity> getIdentities() {
+            return identities;
+        }
+
+        @Override
+        public Set<String> getFeatures() {
+            // Concat manually added features, with enabled known extensions
+            return Stream.concat(features.stream(),
+                    ClientServiceDiscoveryManager.this.extensions
+                            .stream()
+                            // Extensions with manager currently get excluded, because they are manually added to the feature set.
+                            // This shall change in the future
+                            .filter(ExtensionProtocol::isEnabled)
+                            .flatMap(extension -> extension.getFeatures().stream()))
+                    .collect(Collectors.toSet());
+        }
+
+        @Override
+        public List<DataForm> getExtensions() {
+            return extensions;
+        }
     }
 }

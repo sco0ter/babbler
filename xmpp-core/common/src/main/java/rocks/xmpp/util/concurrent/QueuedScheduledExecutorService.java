@@ -169,7 +169,7 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
         }
     }
 
-    private class ScheduledFutureTask<V> extends FutureTask<V> implements RunnableScheduledFuture<V> {
+    private final class ScheduledFutureTask<V> extends FutureTask<V> implements RunnableScheduledFuture<V> {
 
         private final Callable<V> callable;
 

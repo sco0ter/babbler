@@ -46,7 +46,11 @@ import rocks.xmpp.nio.netty.client.NettyTcpConnectionConfiguration;
 /**
  * @author Christian Schudt
  */
-public class ExternalComponentSample {
+public final class ExternalComponentSample {
+
+    private ExternalComponentSample() {
+    }
+
     public static void main(String[] args) {
 
         Executors.newFixedThreadPool(1).execute(() -> {

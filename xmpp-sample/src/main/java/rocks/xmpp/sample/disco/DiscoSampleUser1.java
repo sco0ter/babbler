@@ -42,7 +42,10 @@ import rocks.xmpp.extensions.rsm.ResultSetProvider;
 /**
  * @author Christian Schudt
  */
-public class DiscoSampleUser1 {
+public final class DiscoSampleUser1 {
+
+    private DiscoSampleUser1() {
+    }
 
     public static void main(String[] args) {
 

@@ -40,7 +40,10 @@ import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 /**
  * @author Christian Schudt
  */
-public class FileTransferReceiver {
+public final class FileTransferReceiver {
+
+    private FileTransferReceiver() {
+    }
 
     public static void main(String[] args) {
 

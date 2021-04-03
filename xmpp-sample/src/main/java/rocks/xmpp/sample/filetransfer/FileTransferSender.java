@@ -39,7 +39,10 @@ import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 /**
  * @author Christian Schudt
  */
-public class FileTransferSender {
+public final class FileTransferSender {
+
+    private FileTransferSender() {
+    }
 
     public static void main(String[] args) {
 

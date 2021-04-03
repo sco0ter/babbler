@@ -34,7 +34,10 @@ import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 /**
  * @author Christian Schudt
  */
-public class HttpPreBindSample {
+public final class HttpPreBindSample {
+
+    private HttpPreBindSample() {
+    }
 
     public static void main(String[] args) {
 

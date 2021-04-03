@@ -37,7 +37,10 @@ import rocks.xmpp.core.stanza.model.IQ;
 /**
  * @author Christian Schudt
  */
-public class CustomIQHandlerRequester {
+public final class CustomIQHandlerRequester {
+
+    private CustomIQHandlerRequester() {
+    }
 
     public static void main(String[] args) {
 

@@ -38,9 +38,9 @@ import rocks.xmpp.extensions.httpbind.model.Body;
 public final class BoshException extends XmppException {
     private final Body.Condition condition;
 
-    private URI uri;
+    private final URI uri;
 
-    private int httpErrorCode;
+    private final int httpErrorCode;
 
     BoshException(Body.Condition condition) {
         this(condition, null);
@@ -50,12 +50,14 @@ public final class BoshException extends XmppException {
         super("The connection was terminated due to HTTP error " + httpErrorCode);
         this.condition = condition;
         this.httpErrorCode = httpErrorCode;
+        this.uri = null;
     }
 
     BoshException(Body.Condition condition, URI uri) {
         super("The connection was terminated with condition: " + (condition != null ? condition.toString() : Body.Condition.UNDEFINED_CONDITION.toString()));
         this.uri = uri;
         this.condition = condition;
+        this.httpErrorCode = -1;
     }
 
     /**

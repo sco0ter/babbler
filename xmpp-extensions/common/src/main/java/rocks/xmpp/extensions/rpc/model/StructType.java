@@ -36,6 +36,29 @@ final class StructType {
 
     final List<MemberType> member = new ArrayList<>();
 
+    @Override
+    public final boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof StructType)) {
+            return false;
+        }
+        StructType other = (StructType) o;
+
+        return Objects.equals(member, other.member);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(member);
+    }
+
+    @Override
+    public final String toString() {
+        return '{' + member.stream().map(MemberType::toString).collect(Collectors.joining(", ")) + '}';
+    }
+
     static final class MemberType {
 
         final String name;
@@ -74,28 +97,5 @@ final class StructType {
         public final String toString() {
             return '\'' + name + "': " + value;
         }
-    }
-
-    @Override
-    public final boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof StructType)) {
-            return false;
-        }
-        StructType other = (StructType) o;
-
-        return Objects.equals(member, other.member);
-    }
-
-    @Override
-    public final int hashCode() {
-        return Objects.hash(member);
-    }
-
-    @Override
-    public final String toString() {
-        return '{' + member.stream().map(MemberType::toString).collect(Collectors.joining(", ")) + '}';
     }
 }

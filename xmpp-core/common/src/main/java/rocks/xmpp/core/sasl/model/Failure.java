@@ -269,7 +269,7 @@ public final class Failure implements StreamElement {
      * </blockquote>
      */
     @XmlType(factoryMethod = "create")
-    static class MalformedRequest extends Condition {
+    static final class MalformedRequest extends Condition {
 
         private MalformedRequest() {
         }

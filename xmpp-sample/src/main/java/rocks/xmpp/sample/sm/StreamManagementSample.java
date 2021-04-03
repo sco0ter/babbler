@@ -41,7 +41,10 @@ import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.websocket.net.client.WebSocketConnectionConfiguration;
 
-public class StreamManagementSample {
+public final class StreamManagementSample {
+
+    private StreamManagementSample() {
+    }
 
     public static void main(String[] args) {
 

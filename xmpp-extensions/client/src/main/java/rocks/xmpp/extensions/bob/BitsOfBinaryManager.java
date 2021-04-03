@@ -39,7 +39,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 /**
  * @author Christian Schudt
  */
-class BitsOfBinaryManager extends Manager {
+final class BitsOfBinaryManager extends Manager {
 
     private final Map<String, Data> dataCache = new ConcurrentHashMap<>();
 

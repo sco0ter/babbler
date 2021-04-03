@@ -40,7 +40,10 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
 /**
  * @author Christian Schudt
  */
-public class CustomIQHandlerResponder {
+public final class CustomIQHandlerResponder {
+
+    private CustomIQHandlerResponder() {
+    }
 
     public static void main(String[] args) {
 

@@ -398,7 +398,7 @@ public final class Identity implements LanguageElement, Comparable<Identity> {
     }
 
     /**
-     * A server component that handles server connections	.
+     * A server component that handles server connections.
      *
      * @return The identity.
      */

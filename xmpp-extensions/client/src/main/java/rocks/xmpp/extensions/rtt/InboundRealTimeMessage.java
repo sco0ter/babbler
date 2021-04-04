@@ -124,7 +124,8 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
             if (action instanceof RealTimeText.InsertText) {
                 RealTimeText.InsertText insertText = (RealTimeText.InsertText) action;
                 if (insertText.getText() != null) {
-                    int i = 0, charCount = 0;
+                    int i = 0;
+                    int charCount = 0;
                     int pos = normalizePosition(insertText.getPosition());
                     // Iterate over the code points and sum up the char count, which is used by StringBuilder.insert()
                     // RTT counts with code points, while Java APIs counts with character indexes.
@@ -144,7 +145,9 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
                 if (n < 0) {
                     n = 0;
                 }
-                int i = 0, endIndex = 0, startIndex = 0;
+                int i = 0;
+                int endIndex = 0;
+                int startIndex = 0;
                 int pos = normalizePosition(eraseText.getPosition());
                 // Iterate over the code points and sum up the char count, which is used by StringBuilder.delete()
                 // RTT counts with code points, while Java APIs counts with character indexes.

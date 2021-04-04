@@ -126,10 +126,11 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager imple
                 // because polling for vCard updates is not allowed, the client MUST stop advertising the avatar image hash.
                 if (presence.isAvailable()) {
                     nonConformingResources.add(presence.getFrom().getResource());
-                }
-                // However, the client MAY reset its hash if all instances of non-conforming resources have gone offline.
-                else if (presence.getType() == Presence.Type.UNAVAILABLE && nonConformingResources.remove(presence.getFrom().getResource()) && nonConformingResources.isEmpty()) {
-                    resetHash();
+                } else {
+                    // However, the client MAY reset its hash if all instances of non-conforming resources have gone offline.
+                    if (presence.getType() == Presence.Type.UNAVAILABLE && nonConformingResources.remove(presence.getFrom().getResource()) && nonConformingResources.isEmpty()) {
+                        resetHash();
+                    }
                 }
             } else {
                 // If the presence stanza received from the other resource contains the update child element, then the other resource conforms to the protocol for vCard-based avatars. There are three possible scenarios.

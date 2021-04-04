@@ -63,7 +63,8 @@ public final class Strings {
      * @return The comparison result.
      */
     public static int compareUnsignedBytes(final String s1, final String s2, final Charset charset) {
-        final byte[] o1 = s1.getBytes(charset), o2 = s2.getBytes(charset);
+        final byte[] o1 = s1.getBytes(charset);
+        final byte[] o2 = s2.getBytes(charset);
         final int length = Math.min(o1.length, o2.length);
         for (int i = 0; i < length; i++) {
             int a = o1[i] & 0xff;

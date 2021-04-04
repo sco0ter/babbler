@@ -2094,6 +2094,8 @@ public final class VCard implements Addressable {
                     case CONFIDENTIAL:
                         cl.confidential = "";
                         break;
+                    default:
+                        break;
                 }
                 return cl;
             }

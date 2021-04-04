@@ -77,7 +77,11 @@ public final class ConsistentColor {
 
     private static final float KB = 0.114f;
 
-    private final float red, green, blue;
+    private final float red;
+
+    private final float green;
+
+    private final float blue;
 
     private ConsistentColor(final float red, final float green, final float blue) {
         this.red = red;

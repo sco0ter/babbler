@@ -233,7 +233,7 @@ public final class JingleFileTransfer extends ApplicationFormat {
     }
 
     @XmlTransient
-    private static abstract class InformationalMessage {
+    private abstract static class InformationalMessage {
 
         @XmlAttribute
         private final Jingle.Content.Creator creator;

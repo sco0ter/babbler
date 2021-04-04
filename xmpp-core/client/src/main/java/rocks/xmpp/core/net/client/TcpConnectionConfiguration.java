@@ -176,7 +176,7 @@ public abstract class TcpConnectionConfiguration<T> extends ClientConnectionConf
     /**
      * A builder to create a {@link TcpConnectionConfiguration} instance.
      */
-    public static abstract class Builder<T extends Builder<T>> extends ClientConnectionConfiguration.Builder<T> {
+    public abstract static class Builder<T extends Builder<T>> extends ClientConnectionConfiguration.Builder<T> {
 
         private int keepAliveInterval;
 

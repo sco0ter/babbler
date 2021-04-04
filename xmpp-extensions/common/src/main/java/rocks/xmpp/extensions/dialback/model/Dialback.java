@@ -153,18 +153,18 @@ public abstract class Dialback {
 
     public final String getKey() {
         return mixedContent.stream()
-                .filter(o -> o instanceof String)
-                .map(o -> (String) o)
-                .findAny()
-                .orElse(null);
+                       .filter(o -> o instanceof String)
+                       .map(o -> (String) o)
+                       .findAny()
+                       .orElse(null);
     }
 
     public final StanzaError getError() {
         return mixedContent.stream()
-                .filter(o -> o instanceof StanzaError)
-                .map(o -> (StanzaError) o)
-                .findAny()
-                .orElse(null);
+                       .filter(o -> o instanceof StanzaError)
+                       .map(o -> (StanzaError) o)
+                       .findAny()
+                       .orElse(null);
     }
 
     private enum Type {
@@ -180,7 +180,7 @@ public abstract class Dialback {
      * An outbound request for authorization by receiving server or a verification result from the receiving server.
      */
     @XmlRootElement(name = "result")
-    public final static class Result extends Dialback {
+    public static final class Result extends Dialback {
 
         private Result() {
         }
@@ -224,7 +224,7 @@ public abstract class Dialback {
      * A verification request sent from the receiving server to the authoritative server or a verification result sent in the opposite direction.
      */
     @XmlRootElement(name = "verify")
-    public final static class Verify extends Dialback {
+    public static final class Verify extends Dialback {
 
         @XmlAttribute
         private final String id;

@@ -122,7 +122,7 @@ final class ResourceRecord {
                 count = data.get(offset) & 0xFF;
             } else {
                 if (offset == data.position()) {
-                    byte b[] = new byte[count];
+                    byte[] b = new byte[count];
                     data.get(b);
                     sb.append(new String(b, StandardCharsets.US_ASCII));
                     offset += count + 1;

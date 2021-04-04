@@ -35,7 +35,7 @@ public final class ChatSessionEvent extends EventObject {
 
     private static final long serialVersionUID = 3750264764985860410L;
 
-    private transient final ChatSession chatSession;
+    private final transient ChatSession chatSession;
 
     private final boolean inbound;
 

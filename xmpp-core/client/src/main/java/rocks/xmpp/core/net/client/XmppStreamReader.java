@@ -25,6 +25,7 @@
 package rocks.xmpp.core.net.client;
 
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -96,9 +97,8 @@ final class XmppStreamReader {
                     @Override
                     public void run() {
                         try {
-                            newReaderChain().proceed(new InputStreamReader(connection.getInputStream()), streamElement -> {
-                                handle(streamElement, openedByPeer, closedByPeer, this);
-                            });
+                            newReaderChain().proceed(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8),
+                                    streamElement -> handle(streamElement, openedByPeer, closedByPeer, this));
                             if (streamError != null) {
                                 throw streamError;
                             }

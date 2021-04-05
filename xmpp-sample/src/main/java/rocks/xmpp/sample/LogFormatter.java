@@ -37,17 +37,17 @@ import java.util.logging.SimpleFormatter;
  */
 public class LogFormatter extends SimpleFormatter {
     @Override
-    public synchronized String format(LogRecord record) {
+    public synchronized String format(LogRecord logRecord) {
         StringBuilder sb = new StringBuilder();
         DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
-        LocalDateTime resultDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(record.getMillis()), ZoneId.systemDefault());
+        LocalDateTime resultDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(logRecord.getMillis()), ZoneId.systemDefault());
         sb.append(dateFormat.format(resultDate))
                 .append(' ')
-                .append(record.getLevel())
+                .append(logRecord.getLevel())
                 .append("  ")
-                .append(formatMessage(record));
-        if (record.getThrown() != null) {
-            record.getThrown().printStackTrace();
+                .append(formatMessage(logRecord));
+        if (logRecord.getThrown() != null) {
+            logRecord.getThrown().printStackTrace();
         }
         sb.append('\n');
         return sb.toString();

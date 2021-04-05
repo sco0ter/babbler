@@ -197,13 +197,13 @@ public final class ConsistentColor {
         final float gi = getGreen();
         final float bi = getBlue();
 
-        final float rb_inv = 1 - red;
-        final float gb_inv = 1 - green;
-        final float bb_inv = 1 - blue;
+        final float rbInv = 1 - red;
+        final float gbInv = 1 - green;
+        final float bbInv = 1 - blue;
 
-        final float rc = (float) (0.2 * rb_inv + 0.8 * ri);
-        final float gc = (float) (0.2 * gb_inv + 0.8 * gi);
-        final float bc = (float) (0.2 * bb_inv + 0.8 * bi);
+        final float rc = (float) (0.2 * rbInv + 0.8 * ri);
+        final float gc = (float) (0.2 * gbInv + 0.8 * gi);
+        final float bc = (float) (0.2 * bbInv + 0.8 * bi);
         return new ConsistentColor(rc, gc, bc);
     }
 

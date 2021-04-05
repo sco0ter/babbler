@@ -39,21 +39,21 @@ import java.util.logging.SimpleFormatter;
  */
 final class LogFormatter extends SimpleFormatter {
     @Override
-    public synchronized String format(LogRecord record) {
+    public synchronized String format(LogRecord logRecord) {
         StringBuilder sb = new StringBuilder();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
 
-        LocalDateTime resultDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(record.getMillis()), ZoneId.systemDefault());
+        LocalDateTime resultDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(logRecord.getMillis()), ZoneId.systemDefault());
         sb.append(dateTimeFormatter.format(resultDate))
                 .append(' ')
-                .append(record.getLevel())
+                .append(logRecord.getLevel())
                 .append("  ")
-                .append(formatMessage(record));
-        if (record.getThrown() != null) {
+                .append(formatMessage(logRecord));
+        if (logRecord.getThrown() != null) {
             sb.append('\n');
             StringWriter stringWriter = new StringWriter();
             PrintWriter printWriter = new PrintWriter(stringWriter);
-            record.getThrown().printStackTrace(printWriter);
+            logRecord.getThrown().printStackTrace(printWriter);
             sb.append(stringWriter.toString());
         }
         sb.append('\n');

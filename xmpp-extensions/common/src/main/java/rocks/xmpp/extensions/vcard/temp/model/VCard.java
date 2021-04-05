@@ -2069,9 +2069,9 @@ public final class VCard implements Addressable {
         @Override
         public Classification unmarshal(ClassElement v) {
             if (v != null) {
-                if (v._public != null) {
+                if (v.publicClass != null) {
                     return Classification.PUBLIC;
-                } else if (v._private != null) {
+                } else if (v.privateClass != null) {
                     return Classification.PRIVATE;
                 } else if (v.confidential != null) {
                     return Classification.CONFIDENTIAL;
@@ -2086,10 +2086,10 @@ public final class VCard implements Addressable {
                 ClassElement cl = new ClassElement();
                 switch (v) {
                     case PUBLIC:
-                        cl._public = "";
+                        cl.publicClass = "";
                         break;
                     case PRIVATE:
-                        cl._private = "";
+                        cl.privateClass = "";
                         break;
                     case CONFIDENTIAL:
                         cl.confidential = "";
@@ -2105,10 +2105,10 @@ public final class VCard implements Addressable {
 
     private static final class ClassElement {
         @XmlElement(name = "PUBLIC")
-        private String _public;
+        private String publicClass;
 
         @XmlElement(name = "PRIVATE")
-        private String _private;
+        private String privateClass;
 
         @XmlElement(name = "CONFIDENTIAL")
         private String confidential;

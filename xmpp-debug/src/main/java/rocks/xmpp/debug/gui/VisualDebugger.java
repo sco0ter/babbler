@@ -102,13 +102,13 @@ public final class VisualDebugger implements XmppDebugger {
 
         Handler logHandler = new Handler() {
             @Override
-            public void publish(LogRecord record) {
+            public void publish(LogRecord logRecord) {
                 synchronized (LOG_RECORDS) {
                     int maxLogEntries = 500;
                     if (LOG_RECORDS.size() >= maxLogEntries) {
                         LOG_RECORDS.poll();
                     }
-                    LOG_RECORDS.offer(record);
+                    LOG_RECORDS.offer(logRecord);
                 }
                 if (platformInitialized) {
                     Platform.runLater(VisualDebugger::updateTextArea);

@@ -94,13 +94,13 @@ public class EntityCapabilities1Test extends XmlTest {
     @Test
     public void testSortDataForms() {
 
-        DataForm dataForm1 = new DataForm(DataForm.Type.FORM, Arrays.asList(DataForm.Field.builder().var("ccc").type(DataForm.Field.Type.BOOLEAN).build(),
-                DataForm.Field.builder().var("FORM_TYPE").value("aaa").type(DataForm.Field.Type.HIDDEN).build()));
+        DataForm dataForm1 = new DataForm(DataForm.Type.FORM, Arrays.asList(DataForm.Field.builder().name("ccc").type(DataForm.Field.Type.BOOLEAN).build(),
+                DataForm.Field.builder().name("FORM_TYPE").value("aaa").type(DataForm.Field.Type.HIDDEN).build()));
 
-        DataForm dataForm2 = new DataForm(DataForm.Type.FORM, Collections.singleton(DataForm.Field.builder().var("bbb").type(DataForm.Field.Type.BOOLEAN).build()));
+        DataForm dataForm2 = new DataForm(DataForm.Type.FORM, Collections.singleton(DataForm.Field.builder().name("bbb").type(DataForm.Field.Type.BOOLEAN).build()));
 
-        DataForm dataForm3 = new DataForm(DataForm.Type.FORM, Arrays.asList(DataForm.Field.builder().var("FORM_TYPE").value("bbb").type(DataForm.Field.Type.HIDDEN).build(),
-                DataForm.Field.builder().var("aaa").type(DataForm.Field.Type.BOOLEAN).build()));
+        DataForm dataForm3 = new DataForm(DataForm.Type.FORM, Arrays.asList(DataForm.Field.builder().name("FORM_TYPE").value("bbb").type(DataForm.Field.Type.HIDDEN).build(),
+                DataForm.Field.builder().name("aaa").type(DataForm.Field.Type.BOOLEAN).build()));
 
         List<DataForm> dataForms = new ArrayList<>();
         dataForms.add(dataForm1);
@@ -119,11 +119,11 @@ public class EntityCapabilities1Test extends XmlTest {
     public void testSortDataFormFields() {
 
         List<DataForm.Field> dataFields = new ArrayList<>();
-        DataForm.Field field1 = DataForm.Field.builder().var("ccc").type(DataForm.Field.Type.BOOLEAN).value("ccc").build();
-        DataForm.Field field2 = DataForm.Field.builder().var("FORM_TYPE").value("aaa").type(DataForm.Field.Type.HIDDEN).build();
-        DataForm.Field field3 = DataForm.Field.builder().var("aaa").type(DataForm.Field.Type.BOOLEAN).build();
-        DataForm.Field field4 = DataForm.Field.builder().var("ggg").type(DataForm.Field.Type.BOOLEAN).build();
-        DataForm.Field field5 = DataForm.Field.builder().var("eee").type(DataForm.Field.Type.BOOLEAN).build();
+        DataForm.Field field1 = DataForm.Field.builder().name("ccc").type(DataForm.Field.Type.BOOLEAN).value("ccc").build();
+        DataForm.Field field2 = DataForm.Field.builder().name("FORM_TYPE").value("aaa").type(DataForm.Field.Type.HIDDEN).build();
+        DataForm.Field field3 = DataForm.Field.builder().name("aaa").type(DataForm.Field.Type.BOOLEAN).build();
+        DataForm.Field field4 = DataForm.Field.builder().name("ggg").type(DataForm.Field.Type.BOOLEAN).build();
+        DataForm.Field field5 = DataForm.Field.builder().name("eee").type(DataForm.Field.Type.BOOLEAN).build();
 
         dataFields.add(field1);
         dataFields.add(field2);
@@ -180,12 +180,12 @@ public class EntityCapabilities1Test extends XmlTest {
         features.add("http://jabber.org/protocol/muc");
 
         DataForm dataForm = new DataForm(DataForm.Type.RESULT, Arrays.asList(
-                DataForm.Field.builder().var("FORM_TYPE").value("urn:xmpp:dataforms:softwareinfo").type(DataForm.Field.Type.HIDDEN).build(),
-                DataForm.Field.builder().var("ip_version").values(Arrays.asList("ipv4", "ipv6")).type(DataForm.Field.Type.TEXT_SINGLE).build(),
-                DataForm.Field.builder().var("os").value("Mac").type(DataForm.Field.Type.TEXT_SINGLE).build(),
-                DataForm.Field.builder().var("os_version").value("10.5.1").type(DataForm.Field.Type.TEXT_SINGLE).build(),
-                DataForm.Field.builder().var("software").value("Psi").type(DataForm.Field.Type.TEXT_SINGLE).build(),
-                DataForm.Field.builder().var("software_version").value("0.11").type(DataForm.Field.Type.TEXT_SINGLE).build()
+                DataForm.Field.builder().name("FORM_TYPE").value("urn:xmpp:dataforms:softwareinfo").type(DataForm.Field.Type.HIDDEN).build(),
+                DataForm.Field.builder().name("ip_version").values(Arrays.asList("ipv4", "ipv6")).type(DataForm.Field.Type.TEXT_SINGLE).build(),
+                DataForm.Field.builder().name("os").value("Mac").type(DataForm.Field.Type.TEXT_SINGLE).build(),
+                DataForm.Field.builder().name("os_version").value("10.5.1").type(DataForm.Field.Type.TEXT_SINGLE).build(),
+                DataForm.Field.builder().name("software").value("Psi").type(DataForm.Field.Type.TEXT_SINGLE).build(),
+                DataForm.Field.builder().name("software_version").value("0.11").type(DataForm.Field.Type.TEXT_SINGLE).build()
 
         ));
         InfoDiscovery infoNode = new InfoDiscovery(identities, features, Collections.singleton(dataForm));
@@ -242,16 +242,16 @@ public class EntityCapabilities1Test extends XmlTest {
         features.add("http://jabber.org/protocol/muc");
         features.add("http://jabber.org/protocol/caps");
 
-        DataForm dataForm1 = new DataForm(DataForm.Type.FORM, Arrays.asList(DataForm.Field.builder().var("ccc").build(),
-                DataForm.Field.builder().var("FORM_TYPE").type(DataForm.Field.Type.HIDDEN).build()));
+        DataForm dataForm1 = new DataForm(DataForm.Type.FORM, Arrays.asList(DataForm.Field.builder().name("ccc").build(),
+                DataForm.Field.builder().name("FORM_TYPE").type(DataForm.Field.Type.HIDDEN).build()));
 
         DataForm dataForm2 = new DataForm(DataForm.Type.FORM, Collections.singleton(
-                DataForm.Field.builder().var("bbb").type(DataForm.Field.Type.BOOLEAN).build()
+                DataForm.Field.builder().name("bbb").type(DataForm.Field.Type.BOOLEAN).build()
         ));
 
         DataForm dataForm3 = new DataForm(DataForm.Type.FORM, Arrays.asList(
-                DataForm.Field.builder().var("FORM_TYPE").type(DataForm.Field.Type.HIDDEN).build(),
-                DataForm.Field.builder().var("aaa").type(DataForm.Field.Type.BOOLEAN).build()
+                DataForm.Field.builder().name("FORM_TYPE").type(DataForm.Field.Type.HIDDEN).build(),
+                DataForm.Field.builder().name("aaa").type(DataForm.Field.Type.BOOLEAN).build()
         ));
 
         InfoDiscovery infoNode = new InfoDiscovery(identities, features, Arrays.asList(dataForm1, dataForm2, dataForm3));

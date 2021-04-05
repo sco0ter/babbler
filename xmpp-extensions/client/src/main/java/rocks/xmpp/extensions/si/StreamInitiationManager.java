@@ -175,7 +175,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
 
         // Offer stream methods.
         List<DataForm.Option> options = getSupportedStreamMethods().stream().map(DataForm.Option::new).collect(Collectors.toList());
-        DataForm.Field field = DataForm.Field.builder().var(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).options(options).build();
+        DataForm.Field field = DataForm.Field.builder().name(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).options(options).build();
         DataForm dataForm = new DataForm(DataForm.Type.FORM, Collections.singleton(field));
         // Offer the file to the recipient and wait until it's accepted.
         return xmppSession.query(IQ.set(receiver, new StreamInitiation(Objects.requireNonNull(sessionId), SIFileTransferOffer.NAMESPACE, mimeType, profile, new FeatureNegotiation(dataForm))), timeout).thenCompose(result -> {
@@ -218,7 +218,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
         // In the SI response, only include stream methods, which we actually support.
         offeredStreamMethods.retainAll(getSupportedStreamMethods());
 
-        DataForm.Field fieldReply = DataForm.Field.builder().var(STREAM_METHOD).value(offeredStreamMethods.get(0)).type(DataForm.Field.Type.LIST_SINGLE).build();
+        DataForm.Field fieldReply = DataForm.Field.builder().name(STREAM_METHOD).value(offeredStreamMethods.get(0)).type(DataForm.Field.Type.LIST_SINGLE).build();
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(fieldReply));
         StreamInitiation siResponse = new StreamInitiation(new FeatureNegotiation(dataForm));
 

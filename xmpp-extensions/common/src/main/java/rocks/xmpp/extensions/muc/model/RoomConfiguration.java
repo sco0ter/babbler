@@ -684,67 +684,67 @@ public final class RoomConfiguration implements StandardizedDataForm {
         public RoomConfiguration build() {
             Collection<DataForm.Field> fields = new ArrayDeque<>();
             if (maxHistoryFetch != null) {
-                fields.add(DataForm.Field.builder().var(MAX_HISTORY_FETCH).value(maxHistoryFetch).build());
+                fields.add(DataForm.Field.builder().name(MAX_HISTORY_FETCH).value(maxHistoryFetch).build());
             }
             if (rolesThatMaySendPrivateMessages != null && !rolesThatMaySendPrivateMessages.isEmpty()) {
-                fields.add(DataForm.Field.builder().var(ALLOW_PM).value(rolesToValue(rolesThatMaySendPrivateMessages, false)).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(ALLOW_PM).value(rolesToValue(rolesThatMaySendPrivateMessages, false)).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (invitesAllowed != null) {
-                fields.add(DataForm.Field.builder().var(ALLOW_INVITES).value(invitesAllowed).build());
+                fields.add(DataForm.Field.builder().name(ALLOW_INVITES).value(invitesAllowed).build());
             }
             if (changeSubjectAllowed != null) {
-                fields.add(DataForm.Field.builder().var(CHANGE_SUBJECT).value(changeSubjectAllowed).build());
+                fields.add(DataForm.Field.builder().name(CHANGE_SUBJECT).value(changeSubjectAllowed).build());
             }
             if (loggingEnabled != null) {
-                fields.add(DataForm.Field.builder().var(ENABLE_LOGGING).value(loggingEnabled).build());
+                fields.add(DataForm.Field.builder().name(ENABLE_LOGGING).value(loggingEnabled).build());
             }
             if (rolesThatMayRetrieveMemberList != null && !rolesThatMayRetrieveMemberList.isEmpty()) {
-                fields.add(DataForm.Field.builder().var(GET_MEMBER_LIST).valuesEnum(rolesThatMayRetrieveMemberList).type(DataForm.Field.Type.LIST_MULTI).build());
+                fields.add(DataForm.Field.builder().name(GET_MEMBER_LIST).valuesEnum(rolesThatMayRetrieveMemberList).type(DataForm.Field.Type.LIST_MULTI).build());
             }
             if (language != null) {
-                fields.add(DataForm.Field.builder().var(LANGUAGE).value(language.toLanguageTag()).build());
+                fields.add(DataForm.Field.builder().name(LANGUAGE).value(language.toLanguageTag()).build());
             }
             if (pubsubNode != null) {
-                fields.add(DataForm.Field.builder().var(PUBSUB).value(pubsubNode.toString()).build());
+                fields.add(DataForm.Field.builder().name(PUBSUB).value(pubsubNode.toString()).build());
             }
             if (maxUsers != null) {
-                fields.add(DataForm.Field.builder().var(MAX_USERS).value(maxUsers).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(MAX_USERS).value(maxUsers).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (membersOnly != null) {
-                fields.add(DataForm.Field.builder().var(MEMBERS_ONLY).value(membersOnly).build());
+                fields.add(DataForm.Field.builder().name(MEMBERS_ONLY).value(membersOnly).build());
             }
             if (moderated != null) {
-                fields.add(DataForm.Field.builder().var(MODERATED_ROOM).value(moderated).build());
+                fields.add(DataForm.Field.builder().name(MODERATED_ROOM).value(moderated).build());
             }
             if (passwordProtected != null) {
-                fields.add(DataForm.Field.builder().var(PASSWORD_PROTECTED).value(passwordProtected).build());
+                fields.add(DataForm.Field.builder().name(PASSWORD_PROTECTED).value(passwordProtected).build());
             }
             if (persistent != null) {
-                fields.add(DataForm.Field.builder().var(PERSISTENT_ROOM).value(persistent).build());
+                fields.add(DataForm.Field.builder().name(PERSISTENT_ROOM).value(persistent).build());
             }
             if (presenceBroadcast != null) {
-                fields.add(DataForm.Field.builder().var(PRESENCE_BROADCAST).valuesEnum(presenceBroadcast).type(DataForm.Field.Type.LIST_MULTI).build());
+                fields.add(DataForm.Field.builder().name(PRESENCE_BROADCAST).valuesEnum(presenceBroadcast).type(DataForm.Field.Type.LIST_MULTI).build());
             }
             if (publicRoom != null) {
-                fields.add(DataForm.Field.builder().var(PUBLIC_ROOM).value(publicRoom).build());
+                fields.add(DataForm.Field.builder().name(PUBLIC_ROOM).value(publicRoom).build());
             }
             if (admins != null && !admins.isEmpty()) {
-                fields.add(DataForm.Field.builder().var(ROOM_ADMINS).valuesJid(admins).build());
+                fields.add(DataForm.Field.builder().name(ROOM_ADMINS).valuesJid(admins).build());
             }
             if (description != null) {
-                fields.add(DataForm.Field.builder().var(ROOM_DESC).value(description).build());
+                fields.add(DataForm.Field.builder().name(ROOM_DESC).value(description).build());
             }
             if (name != null) {
-                fields.add(DataForm.Field.builder().var(ROOM_NAME).value(name).build());
+                fields.add(DataForm.Field.builder().name(ROOM_NAME).value(name).build());
             }
             if (owners != null && !owners.isEmpty()) {
-                fields.add(DataForm.Field.builder().var(ROOM_OWNERS).valuesJid(owners).build());
+                fields.add(DataForm.Field.builder().name(ROOM_OWNERS).valuesJid(owners).build());
             }
             if (password != null) {
-                fields.add(DataForm.Field.builder().var(ROOM_SECRET).value(password).build());
+                fields.add(DataForm.Field.builder().name(ROOM_SECRET).value(password).build());
             }
             if (whois != null && !whois.isEmpty()) {
-                fields.add(DataForm.Field.builder().var(WHOIS).value(rolesToValue(whois, true)).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(WHOIS).value(rolesToValue(whois, true)).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);
             return new RoomConfiguration(new DataForm(this));

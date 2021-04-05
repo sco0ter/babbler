@@ -393,34 +393,34 @@ public final class NodeMetaData implements StandardizedDataForm {
             Collection<DataForm.Field> fields = new ArrayDeque<>();
 
             if (contacts != null && !contacts.isEmpty()) {
-                fields.add(DataForm.Field.builder().var(CONTACT).valuesJid(contacts).build());
+                fields.add(DataForm.Field.builder().name(CONTACT).valuesJid(contacts).build());
             }
             if (creationDate != null) {
-                fields.add(DataForm.Field.builder().var(CREATION_DATE).value(creationDate).build());
+                fields.add(DataForm.Field.builder().name(CREATION_DATE).value(creationDate).build());
             }
             if (creator != null) {
-                fields.add(DataForm.Field.builder().var(CREATOR).value(creator).build());
+                fields.add(DataForm.Field.builder().name(CREATOR).value(creator).build());
             }
             if (description != null) {
-                fields.add(DataForm.Field.builder().var(DESCRIPTION).value(description).build());
+                fields.add(DataForm.Field.builder().name(DESCRIPTION).value(description).build());
             }
             if (language != null) {
-                fields.add(DataForm.Field.builder().var(LANGUAGE).value(language.toLanguageTag()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(LANGUAGE).value(language.toLanguageTag()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (numberOfSubscribers != null) {
-                fields.add(DataForm.Field.builder().var(NUM_SUBSCRIBERS).value(numberOfSubscribers).build());
+                fields.add(DataForm.Field.builder().name(NUM_SUBSCRIBERS).value(numberOfSubscribers).build());
             }
             if (owners != null && !owners.isEmpty()) {
-                fields.add(DataForm.Field.builder().var(OWNER).valuesJid(owners).build());
+                fields.add(DataForm.Field.builder().name(OWNER).valuesJid(owners).build());
             }
             if (publishers != null && !publishers.isEmpty()) {
-                fields.add(DataForm.Field.builder().var(PUBLISHER).valuesJid(publishers).build());
+                fields.add(DataForm.Field.builder().name(PUBLISHER).valuesJid(publishers).build());
             }
             if (nodeTitle != null) {
-                fields.add(DataForm.Field.builder().var(TITLE).value(nodeTitle).build());
+                fields.add(DataForm.Field.builder().name(TITLE).value(nodeTitle).build());
             }
             if (payloadType != null) {
-                fields.add(DataForm.Field.builder().var(TYPE).value(payloadType).build());
+                fields.add(DataForm.Field.builder().name(TYPE).value(payloadType).build());
             }
             fields(fields).formType(FORM_TYPE).type(DataForm.Type.RESULT);
             return new NodeMetaData(new DataForm(this));

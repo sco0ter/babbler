@@ -216,16 +216,16 @@ public final class PublishOptions implements StandardizedDataForm {
             Collection<DataForm.Field> fields = new ArrayDeque<>();
 
             if (accessModel != null) {
-                fields.add(DataForm.Field.builder().var(ACCESS_MODEL).value(accessModel.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(ACCESS_MODEL).value(accessModel.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (persistItems != null) {
-                fields.add(DataForm.Field.builder().var(PERSIST_ITEMS).value(persistItems).build());
+                fields.add(DataForm.Field.builder().name(PERSIST_ITEMS).value(persistItems).build());
             }
             if (sendLastPublishedItem != null) {
-                fields.add(DataForm.Field.builder().var(SEND_LAST_PUBLISHED_ITEM).value(sendLastPublishedItem.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(SEND_LAST_PUBLISHED_ITEM).value(sendLastPublishedItem.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (rosterGroupsAllowed != null && !rosterGroupsAllowed.isEmpty()) {
-                fields.add(DataForm.Field.builder().var(ROSTER_GROUPS_ALLOWED).values(rosterGroupsAllowed).type(DataForm.Field.Type.LIST_MULTI).build());
+                fields.add(DataForm.Field.builder().name(ROSTER_GROUPS_ALLOWED).values(rosterGroupsAllowed).type(DataForm.Field.Type.LIST_MULTI).build());
             }
 
             fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);

@@ -45,20 +45,20 @@ final class FeatureElement implements Comparable<FeatureElement>, Feature {
     /**
      * Each {@code <feature/>} element MUST possess a 'var' attribute whose value is a protocol namespace or other feature offered by the entity.
      */
-    @XmlAttribute
-    private final String var;
+    @XmlAttribute(name = "var")
+    private final String name;
 
     private FeatureElement() {
-        this.var = null;
+        this.name = null;
     }
 
     /**
      * Creates a feature.
      *
-     * @param var A protocol namespace or other feature offered by the entity.
+     * @param name A protocol namespace or other feature offered by the entity.
      */
-    FeatureElement(String var) {
-        this.var = Objects.requireNonNull(var);
+    FeatureElement(String name) {
+        this.name = Objects.requireNonNull(name);
     }
 
     /**
@@ -68,7 +68,7 @@ final class FeatureElement implements Comparable<FeatureElement>, Feature {
      */
     @Override
     public final String getFeatureName() {
-        return var;
+        return name;
     }
 
     /**
@@ -86,12 +86,12 @@ final class FeatureElement implements Comparable<FeatureElement>, Feature {
             return false;
         }
         FeatureElement other = (FeatureElement) o;
-        return Objects.equals(var, other.var);
+        return Objects.equals(name, other.name);
     }
 
     @Override
     public final int hashCode() {
-        return Objects.hash(var);
+        return Objects.hash(name);
     }
 
     /**
@@ -106,20 +106,20 @@ final class FeatureElement implements Comparable<FeatureElement>, Feature {
         if (o == null) {
             return 1;
         } else {
-            if (var == null && o.var == null) {
+            if (name == null && o.name == null) {
                 return 0;
-            } else if (var == null) {
+            } else if (name == null) {
                 return -1;
-            } else if (o.var == null) {
+            } else if (o.name == null) {
                 return 1;
             } else {
-                return Strings.compareUnsignedBytes(var, o.var, StandardCharsets.UTF_8);
+                return Strings.compareUnsignedBytes(name, o.name, StandardCharsets.UTF_8);
             }
         }
     }
 
     @Override
     public final String toString() {
-        return var;
+        return name;
     }
 }

@@ -133,8 +133,8 @@ public final class EntityCapabilities2 extends StreamFeature implements EntityCa
             for (DataForm.Field field : fields) {
 
                 // 6.1.1.3. Encode the character data of the 'var' attribute
-                if (field.getVar() != null) {
-                    sb.append(field.getVar());
+                if (field.getName() != null) {
+                    sb.append(field.getName());
                 }
                 // and append an octet of value 0x1f (ASCII Unit Separator) and the result from the previous step.
                 sb.appendCodePoint('\u001F');

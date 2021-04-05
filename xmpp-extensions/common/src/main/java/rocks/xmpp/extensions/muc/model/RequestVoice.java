@@ -224,16 +224,16 @@ public final class RequestVoice implements StandardizedDataForm {
         public RequestVoice build() {
             Collection<DataForm.Field> fields = new ArrayDeque<>();
             if (role != null) {
-                fields.add(DataForm.Field.builder().var(ROLE).value(role.name().toLowerCase()).build());
+                fields.add(DataForm.Field.builder().name(ROLE).value(role.name().toLowerCase()).build());
             }
             if (jid != null) {
-                fields.add(DataForm.Field.builder().var(JID).value(jid).build());
+                fields.add(DataForm.Field.builder().name(JID).value(jid).build());
             }
             if (roomNick != null) {
-                fields.add(DataForm.Field.builder().var(ROOM_NICK).value(roomNick).build());
+                fields.add(DataForm.Field.builder().name(ROOM_NICK).value(roomNick).build());
             }
             if (allowRequest != null) {
-                fields.add(DataForm.Field.builder().var(REQUEST_ALLOW).value(allowRequest).build());
+                fields.add(DataForm.Field.builder().name(REQUEST_ALLOW).value(allowRequest).build());
             }
             fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);
             return new RequestVoice(new DataForm(this));

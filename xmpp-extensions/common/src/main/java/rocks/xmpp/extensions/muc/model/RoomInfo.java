@@ -378,31 +378,31 @@ public final class RoomInfo implements StandardizedDataForm {
         public RoomInfo build() {
             Collection<DataForm.Field> fields = new ArrayDeque<>();
             if (maxHistoryMessages != null) {
-                fields.add(DataForm.Field.builder().var(MAX_HISTORY_FETCH).value(maxHistoryMessages).build());
+                fields.add(DataForm.Field.builder().name(MAX_HISTORY_FETCH).value(maxHistoryMessages).build());
             }
             if (contacts != null && !contacts.isEmpty()) {
-                fields.add(DataForm.Field.builder().var(CONTACT_JID).valuesJid(contacts).build());
+                fields.add(DataForm.Field.builder().name(CONTACT_JID).valuesJid(contacts).build());
             }
             if (description != null) {
-                fields.add(DataForm.Field.builder().var(DESCRIPTION).value(description).build());
+                fields.add(DataForm.Field.builder().name(DESCRIPTION).value(description).build());
             }
             if (language != null) {
-                fields.add(DataForm.Field.builder().var(LANGUAGE).value(language.toLanguageTag()).build());
+                fields.add(DataForm.Field.builder().name(LANGUAGE).value(language.toLanguageTag()).build());
             }
             if (ldapGroup != null) {
-                fields.add(DataForm.Field.builder().var(LDAP_GROUP).value(ldapGroup).build());
+                fields.add(DataForm.Field.builder().name(LDAP_GROUP).value(ldapGroup).build());
             }
             if (logs != null) {
-                fields.add(DataForm.Field.builder().var(LOGS).value(logs.toString()).build());
+                fields.add(DataForm.Field.builder().name(LOGS).value(logs.toString()).build());
             }
             if (occupants != null) {
-                fields.add(DataForm.Field.builder().var(OCCUPANTS).value(occupants).build());
+                fields.add(DataForm.Field.builder().name(OCCUPANTS).value(occupants).build());
             }
             if (subject != null) {
-                fields.add(DataForm.Field.builder().var(SUBJECT).value(subject).build());
+                fields.add(DataForm.Field.builder().name(SUBJECT).value(subject).build());
             }
             if (changeSubjectAllowed != null) {
-                fields.add(DataForm.Field.builder().var(SUBJECT_MOD).value(changeSubjectAllowed).build());
+                fields.add(DataForm.Field.builder().name(SUBJECT_MOD).value(changeSubjectAllowed).build());
             }
             fields(fields).formType(FORM_TYPE).type(DataForm.Type.RESULT);
             return new RoomInfo(new DataForm(this));

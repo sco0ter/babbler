@@ -406,25 +406,25 @@ public final class SubscribeOptions implements StandardizedDataForm {
         public final SubscribeOptions build() {
             Collection<DataForm.Field> fields = new ArrayDeque<>();
             if (deliver != null) {
-                fields.add(DataForm.Field.builder().var(DELIVER).value(deliver).build());
+                fields.add(DataForm.Field.builder().name(DELIVER).value(deliver).build());
             }
             if (digest != null) {
-                fields.add(DataForm.Field.builder().var(DIGEST).value(digest).build());
+                fields.add(DataForm.Field.builder().name(DIGEST).value(digest).build());
             }
             if (digestFrequency != null) {
-                fields.add(DataForm.Field.builder().var(DIGEST_FREQUENCY).value(digestFrequency).build());
+                fields.add(DataForm.Field.builder().name(DIGEST_FREQUENCY).value(digestFrequency).build());
             }
             if (temporary != null && temporary) {
                 // To subscribe temporarily, the subscriber MUST set the "pubsub#expire" subscription configuration option to a literal value of "presence".
-                fields.add(DataForm.Field.builder().var(EXPIRE).value("presence").build());
+                fields.add(DataForm.Field.builder().name(EXPIRE).value("presence").build());
             } else if (expireAt != null) {
-                fields.add(DataForm.Field.builder().var(EXPIRE).value(expireAt).build());
+                fields.add(DataForm.Field.builder().name(EXPIRE).value(expireAt).build());
             }
             if (includeBody != null) {
-                fields.add(DataForm.Field.builder().var(INCLUDE_BODY).value(includeBody).build());
+                fields.add(DataForm.Field.builder().name(INCLUDE_BODY).value(includeBody).build());
             }
             if (showValues != null && !showValues.isEmpty()) {
-                DataForm.Field.Builder fieldBuilder = DataForm.Field.builder().var(SHOW_VALUES);
+                DataForm.Field.Builder fieldBuilder = DataForm.Field.builder().name(SHOW_VALUES);
                 Collection<String> values = new ArrayDeque<>();
                 for (Presence.Show show : showValues) {
                     if (show != null) {
@@ -437,10 +437,10 @@ public final class SubscribeOptions implements StandardizedDataForm {
                 fields.add(fieldBuilder.build());
             }
             if (subscriptionType != null) {
-                fields.add(DataForm.Field.builder().var(SUBSCRIPTION_TYPE).value(subscriptionType.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(SUBSCRIPTION_TYPE).value(subscriptionType.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (subscriptionDepth != null) {
-                DataForm.Field.Builder fieldBuilder = DataForm.Field.builder().var(SUBSCRIPTION_DEPTH);
+                DataForm.Field.Builder fieldBuilder = DataForm.Field.builder().name(SUBSCRIPTION_DEPTH);
                 if (subscriptionDepth < 1) {
                     fieldBuilder.value("all");
                 } else {

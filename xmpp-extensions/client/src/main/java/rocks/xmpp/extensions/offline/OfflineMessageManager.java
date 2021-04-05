@@ -80,7 +80,7 @@ public final class OfflineMessageManager extends Manager {
                 DataForm dataForm = infoDiscovery.getExtensions().get(0);
                 if (dataForm != null) {
                     for (DataForm.Field field : dataForm.getFields()) {
-                        if ("number_of_messages".equals(field.getVar())) {
+                        if ("number_of_messages".equals(field.getName())) {
                             String numberOfMessages = field.getValues().get(0);
                             return Integer.valueOf(numberOfMessages);
                         }

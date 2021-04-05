@@ -302,25 +302,25 @@ public final class RoomRegistration implements StandardizedDataForm {
         public RoomRegistration build() {
             Collection<DataForm.Field> fields = new ArrayDeque<>();
             if (allowRegister != null) {
-                fields.add(DataForm.Field.builder().var(REGISTER_ALLOW).value(allowRegister).build());
+                fields.add(DataForm.Field.builder().name(REGISTER_ALLOW).value(allowRegister).build());
             }
             if (email != null) {
-                fields.add(DataForm.Field.builder().var(EMAIL).value(email).build());
+                fields.add(DataForm.Field.builder().name(EMAIL).value(email).build());
             }
             if (faqEntry != null) {
-                fields.add(DataForm.Field.builder().var(FAQ_ENTRY).value(faqEntry).type(DataForm.Field.Type.TEXT_MULTI).build());
+                fields.add(DataForm.Field.builder().name(FAQ_ENTRY).value(faqEntry).type(DataForm.Field.Type.TEXT_MULTI).build());
             }
             if (givenName != null) {
-                fields.add(DataForm.Field.builder().var(GIVEN_NAME).value(givenName).build());
+                fields.add(DataForm.Field.builder().name(GIVEN_NAME).value(givenName).build());
             }
             if (familyName != null) {
-                fields.add(DataForm.Field.builder().var(FAMILY_NAME).value(familyName).build());
+                fields.add(DataForm.Field.builder().name(FAMILY_NAME).value(familyName).build());
             }
             if (nickname != null) {
-                fields.add(DataForm.Field.builder().var(ROOM_NICK).value(nickname).build());
+                fields.add(DataForm.Field.builder().name(ROOM_NICK).value(nickname).build());
             }
             if (webPage != null) {
-                fields.add(DataForm.Field.builder().var(URL).value(webPage.toString()).build());
+                fields.add(DataForm.Field.builder().name(URL).value(webPage.toString()).build());
             }
             fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);
             return new RoomRegistration(new DataForm(this));

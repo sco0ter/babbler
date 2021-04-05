@@ -78,12 +78,12 @@ public final class SoftwareInformation implements StandardizedDataForm, Software
     public SoftwareInformation(final Media icon, final String software, final String softwareVersion, final String os, final String osVersion) {
         this.dataForm = new DataForm(DataForm.Type.RESULT,
                 Arrays.asList(
-                        DataForm.Field.builder().var(DataForm.FORM_TYPE).value(FORM_TYPE).type(DataForm.Field.Type.HIDDEN).build(),
-                        DataForm.Field.builder().var(ICON).media(icon).build(),
-                        DataForm.Field.builder().var(OS).value(os).build(),
-                        DataForm.Field.builder().var(OS_VERSION).value(osVersion).build(),
-                        DataForm.Field.builder().var(SOFTWARE).value(software).build(),
-                        DataForm.Field.builder().var(SOFTWARE_VERSION).value(softwareVersion).build()
+                        DataForm.Field.builder().name(DataForm.FORM_TYPE).value(FORM_TYPE).type(DataForm.Field.Type.HIDDEN).build(),
+                        DataForm.Field.builder().name(ICON).media(icon).build(),
+                        DataForm.Field.builder().name(OS).value(os).build(),
+                        DataForm.Field.builder().name(OS_VERSION).value(osVersion).build(),
+                        DataForm.Field.builder().name(SOFTWARE).value(software).build(),
+                        DataForm.Field.builder().name(SOFTWARE_VERSION).value(softwareVersion).build()
                 )
         );
     }

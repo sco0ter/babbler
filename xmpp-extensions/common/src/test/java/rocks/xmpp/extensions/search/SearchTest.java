@@ -218,29 +218,29 @@ public class SearchTest extends XmlTest {
         Assert.assertNotNull(dataForm);
         Assert.assertNotNull(dataForm.getReportedFields());
         Assert.assertEquals(dataForm.getReportedFields().size(), 4);
-        Assert.assertEquals(dataForm.getReportedFields().get(0).getVar(), "first");
+        Assert.assertEquals(dataForm.getReportedFields().get(0).getName(), "first");
         Assert.assertEquals(dataForm.getReportedFields().get(0).getLabel(), "Given Name");
         Assert.assertEquals(dataForm.getReportedFields().get(0).getType(), DataForm.Field.Type.TEXT_SINGLE);
 
         Assert.assertEquals(dataForm.getItems().size(), 2);
         Assert.assertEquals(dataForm.getItems().get(0).getFields().size(), 4);
         Assert.assertEquals(dataForm.getItems().get(0).getFields().get(0).getValues().get(0), "Benvolio");
-        Assert.assertEquals(dataForm.getItems().get(0).getFields().get(0).getVar(), "first");
+        Assert.assertEquals(dataForm.getItems().get(0).getFields().get(0).getName(), "first");
         Assert.assertEquals(dataForm.getItems().get(0).getFields().get(1).getValues().get(0), "Montague");
-        Assert.assertEquals(dataForm.getItems().get(0).getFields().get(1).getVar(), "last");
+        Assert.assertEquals(dataForm.getItems().get(0).getFields().get(1).getName(), "last");
         Assert.assertEquals(dataForm.getItems().get(0).getFields().get(2).getValues().get(0), "benvolio@montague.net");
-        Assert.assertEquals(dataForm.getItems().get(0).getFields().get(2).getVar(), "jid");
+        Assert.assertEquals(dataForm.getItems().get(0).getFields().get(2).getName(), "jid");
         Assert.assertEquals(dataForm.getItems().get(0).getFields().get(3).getValues().get(0), "male");
-        Assert.assertEquals(dataForm.getItems().get(0).getFields().get(3).getVar(), "x-gender");
+        Assert.assertEquals(dataForm.getItems().get(0).getFields().get(3).getName(), "x-gender");
 
         Assert.assertEquals(dataForm.getItems().get(1).getFields().size(), 4);
         Assert.assertEquals(dataForm.getItems().get(1).getFields().get(0).getValues().get(0), "Romeo");
-        Assert.assertEquals(dataForm.getItems().get(1).getFields().get(0).getVar(), "first");
+        Assert.assertEquals(dataForm.getItems().get(1).getFields().get(0).getName(), "first");
         Assert.assertEquals(dataForm.getItems().get(1).getFields().get(1).getValues().get(0), "Montague");
-        Assert.assertEquals(dataForm.getItems().get(1).getFields().get(1).getVar(), "last");
+        Assert.assertEquals(dataForm.getItems().get(1).getFields().get(1).getName(), "last");
         Assert.assertEquals(dataForm.getItems().get(1).getFields().get(2).getValues().get(0), "romeo@montague.net");
-        Assert.assertEquals(dataForm.getItems().get(1).getFields().get(2).getVar(), "jid");
+        Assert.assertEquals(dataForm.getItems().get(1).getFields().get(2).getName(), "jid");
         Assert.assertEquals(dataForm.getItems().get(1).getFields().get(3).getValues().get(0), "male");
-        Assert.assertEquals(dataForm.getItems().get(1).getFields().get(3).getVar(), "x-gender");
+        Assert.assertEquals(dataForm.getItems().get(1).getFields().get(3).getName(), "x-gender");
     }
 }

@@ -988,103 +988,103 @@ public final class NodeConfiguration implements StandardizedDataForm {
 
             Collection<DataForm.Field> fields = new ArrayDeque<>();
             if (accessModel != null) {
-                fields.add(DataForm.Field.builder().var(ACCESS_MODEL).value(accessModel.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(ACCESS_MODEL).value(accessModel.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (bodyXslt != null) {
-                fields.add(DataForm.Field.builder().var(BODY_XSLT).value(bodyXslt.toString()).build());
+                fields.add(DataForm.Field.builder().name(BODY_XSLT).value(bodyXslt.toString()).build());
             }
             if (childrenAssociationPolicy != null) {
-                fields.add(DataForm.Field.builder().var(CHILDREN_ASSOCIATION_POLICY).value(childrenAssociationPolicy.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(CHILDREN_ASSOCIATION_POLICY).value(childrenAssociationPolicy.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (childrenAssociationWhitelist != null && !childrenAssociationWhitelist.isEmpty()) {
-                fields.add(DataForm.Field.builder().var(CHILDREN_ASSOCIATION_WHITELIST).valuesJid(childrenAssociationWhitelist).build());
+                fields.add(DataForm.Field.builder().name(CHILDREN_ASSOCIATION_WHITELIST).valuesJid(childrenAssociationWhitelist).build());
             }
             if (children != null && !children.isEmpty()) {
-                fields.add(DataForm.Field.builder().var(CHILDREN).values(children).build());
+                fields.add(DataForm.Field.builder().name(CHILDREN).values(children).build());
             }
             if (childrenMax != null) {
-                fields.add(DataForm.Field.builder().var(CHILDREN_MAX).value(childrenMax.toString()).build());
+                fields.add(DataForm.Field.builder().name(CHILDREN_MAX).value(childrenMax.toString()).build());
             }
             if (collection != null && !collection.isEmpty()) {
-                fields.add(DataForm.Field.builder().var(COLLECTION).values(collection).build());
+                fields.add(DataForm.Field.builder().name(COLLECTION).values(collection).build());
             }
             if (contacts != null && !contacts.isEmpty()) {
-                fields.add(DataForm.Field.builder().var(CONTACT).valuesJid(contacts).build());
+                fields.add(DataForm.Field.builder().name(CONTACT).valuesJid(contacts).build());
             }
             if (dataformXslt != null) {
-                fields.add(DataForm.Field.builder().var(DATAFORM_XSLT).value(dataformXslt.toString()).build());
+                fields.add(DataForm.Field.builder().name(DATAFORM_XSLT).value(dataformXslt.toString()).build());
             }
             if (deliverNotifications != null) {
-                fields.add(DataForm.Field.builder().var(DELIVER_NOTIFICATIONS).value(deliverNotifications).build());
+                fields.add(DataForm.Field.builder().name(DELIVER_NOTIFICATIONS).value(deliverNotifications).build());
             }
             if (deliverPayloads != null) {
-                fields.add(DataForm.Field.builder().var(DELIVER_PAYLOADS).value(deliverPayloads).build());
+                fields.add(DataForm.Field.builder().name(DELIVER_PAYLOADS).value(deliverPayloads).build());
             }
             if (description != null) {
-                fields.add(DataForm.Field.builder().var(DESCRIPTION).value(description).build());
+                fields.add(DataForm.Field.builder().name(DESCRIPTION).value(description).build());
             }
             if (itemExpire != null) {
-                fields.add(DataForm.Field.builder().var(ITEM_EXPIRE).value(itemExpire.toString()).build());
+                fields.add(DataForm.Field.builder().name(ITEM_EXPIRE).value(itemExpire.toString()).build());
             }
             if (itemReply != null) {
-                fields.add(DataForm.Field.builder().var(ITEM_REPLY).value(itemReply.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(ITEM_REPLY).value(itemReply.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (language != null) {
-                fields.add(DataForm.Field.builder().var(LANGUAGE).value(language.toLanguageTag()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(LANGUAGE).value(language.toLanguageTag()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (maxItems != null) {
-                fields.add(DataForm.Field.builder().var(MAX_ITEMS).value(maxItems.toString()).build());
+                fields.add(DataForm.Field.builder().name(MAX_ITEMS).value(maxItems.toString()).build());
             }
             if (maxPayloadSize != null) {
-                fields.add(DataForm.Field.builder().var(MAX_PAYLOAD_SIZE).value(maxPayloadSize.toString()).build());
+                fields.add(DataForm.Field.builder().name(MAX_PAYLOAD_SIZE).value(maxPayloadSize.toString()).build());
             }
             if (nodeType != null) {
-                fields.add(DataForm.Field.builder().var(NODE_TYPE).value(nodeType.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(NODE_TYPE).value(nodeType.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (notificationType != null) {
-                fields.add(DataForm.Field.builder().var(NOTIFICATION_TYPE).value(notificationType.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(NOTIFICATION_TYPE).value(notificationType.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (notifyConfig != null) {
-                fields.add(DataForm.Field.builder().var(NOTIFY_CONFIG).value(notifyConfig).build());
+                fields.add(DataForm.Field.builder().name(NOTIFY_CONFIG).value(notifyConfig).build());
             }
             if (notifyDelete != null) {
-                fields.add(DataForm.Field.builder().var(NOTIFY_DELETE).value(notifyDelete).build());
+                fields.add(DataForm.Field.builder().name(NOTIFY_DELETE).value(notifyDelete).build());
             }
             if (notifyRetract != null) {
-                fields.add(DataForm.Field.builder().var(NOTIFY_RETRACT).value(notifyRetract).build());
+                fields.add(DataForm.Field.builder().name(NOTIFY_RETRACT).value(notifyRetract).build());
             }
             if (notifySub != null) {
-                fields.add(DataForm.Field.builder().var(NOTIFY_SUB).value(notifySub).build());
+                fields.add(DataForm.Field.builder().name(NOTIFY_SUB).value(notifySub).build());
             }
             if (persistItems != null) {
-                fields.add(DataForm.Field.builder().var(PERSIST_ITEMS).value(persistItems).build());
+                fields.add(DataForm.Field.builder().name(PERSIST_ITEMS).value(persistItems).build());
             }
             if (presenceBasedDelivery != null) {
-                fields.add(DataForm.Field.builder().var(PRESENCE_BASED_DELIVERY).value(presenceBasedDelivery).build());
+                fields.add(DataForm.Field.builder().name(PRESENCE_BASED_DELIVERY).value(presenceBasedDelivery).build());
             }
             if (publisherModel != null) {
-                fields.add(DataForm.Field.builder().var(PUBLISH_MODEL).value(publisherModel.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(PUBLISH_MODEL).value(publisherModel.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (purgeOffline != null) {
-                fields.add(DataForm.Field.builder().var(PURGE_OFFLINE).value(purgeOffline).build());
+                fields.add(DataForm.Field.builder().name(PURGE_OFFLINE).value(purgeOffline).build());
             }
             if (rosterGroupsAllowed != null && !rosterGroupsAllowed.isEmpty()) {
-                fields.add(DataForm.Field.builder().var(ROSTER_GROUPS_ALLOWED).values(rosterGroupsAllowed).type(DataForm.Field.Type.LIST_MULTI).build());
+                fields.add(DataForm.Field.builder().name(ROSTER_GROUPS_ALLOWED).values(rosterGroupsAllowed).type(DataForm.Field.Type.LIST_MULTI).build());
             }
             if (sendLastPublishedItem != null) {
-                fields.add(DataForm.Field.builder().var(SEND_LAST_PUBLISHED_ITEM).value(sendLastPublishedItem.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(SEND_LAST_PUBLISHED_ITEM).value(sendLastPublishedItem.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (temporarySubscriptions != null) {
-                fields.add(DataForm.Field.builder().var(TEMPSUB).value(temporarySubscriptions).build());
+                fields.add(DataForm.Field.builder().name(TEMPSUB).value(temporarySubscriptions).build());
             }
             if (allowSubscriptions != null) {
-                fields.add(DataForm.Field.builder().var(SUBSCRIBE).value(allowSubscriptions).build());
+                fields.add(DataForm.Field.builder().name(SUBSCRIBE).value(allowSubscriptions).build());
             }
             if (nodeTitle != null) {
-                fields.add(DataForm.Field.builder().var(TITLE).value(nodeTitle).build());
+                fields.add(DataForm.Field.builder().name(TITLE).value(nodeTitle).build());
             }
             if (type != null) {
-                fields.add(DataForm.Field.builder().var(TYPE).value(type).build());
+                fields.add(DataForm.Field.builder().name(TYPE).value(type).build());
             }
             fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);
             return new NodeConfiguration(new DataForm(this));

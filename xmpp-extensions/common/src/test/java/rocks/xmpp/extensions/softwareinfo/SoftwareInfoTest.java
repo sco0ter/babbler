@@ -76,12 +76,12 @@ public class SoftwareInfoTest extends XmlTest {
     public void testSoftwareInfoFromDataForm() throws JAXBException, XMLStreamException {
 
         DataForm dataForm = new DataForm(DataForm.Type.RESULT, Arrays.asList(
-                DataForm.Field.builder().var(DataForm.FORM_TYPE).value(SoftwareInformation.FORM_TYPE).type(DataForm.Field.Type.HIDDEN).build(),
-                DataForm.Field.builder().var(SoftwareInformation.ICON).media(null).build(),
-                DataForm.Field.builder().var(SoftwareInformation.OS).value("Linux").build(),
-                DataForm.Field.builder().var(SoftwareInformation.OS_VERSION).value("123").build(),
-                DataForm.Field.builder().var(SoftwareInformation.SOFTWARE).value("sw").build(),
-                DataForm.Field.builder().var(SoftwareInformation.SOFTWARE_VERSION).value("123").build()
+                DataForm.Field.builder().name(DataForm.FORM_TYPE).value(SoftwareInformation.FORM_TYPE).type(DataForm.Field.Type.HIDDEN).build(),
+                DataForm.Field.builder().name(SoftwareInformation.ICON).media(null).build(),
+                DataForm.Field.builder().name(SoftwareInformation.OS).value("Linux").build(),
+                DataForm.Field.builder().name(SoftwareInformation.OS_VERSION).value("123").build(),
+                DataForm.Field.builder().name(SoftwareInformation.SOFTWARE).value("sw").build(),
+                DataForm.Field.builder().name(SoftwareInformation.SOFTWARE_VERSION).value("123").build()
         ));
 
         SoftwareInformation softwareInfo = new SoftwareInformation(dataForm);

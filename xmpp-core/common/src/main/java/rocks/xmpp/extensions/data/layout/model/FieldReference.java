@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * A field reference is used to reference to a field in a data form.
- * The {@link #getVar() var attribute} must be equal to the field's {@link rocks.xmpp.extensions.data.model.DataForm.Field#getVar() var attribute}.
+ * The {@link #getName() var attribute} must be equal to the field's {@link rocks.xmpp.extensions.data.model.DataForm.Field#getName() var attribute}.
  * <p>
  * This class is immutable.
  *
@@ -40,20 +40,20 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 public final class FieldReference {
 
-    @XmlAttribute
-    private final String var;
+    @XmlAttribute(name = "var")
+    private final String name;
 
     private FieldReference() {
-        this.var = null;
+        this.name = null;
     }
 
     /**
      * Creates a field reference.
      *
-     * @param var The var attribute, which must match to a field in the data form.
+     * @param name The var attribute, which must match to a field in the data form.
      */
-    public FieldReference(String var) {
-        this.var = Objects.requireNonNull(var);
+    public FieldReference(String name) {
+        this.name = Objects.requireNonNull(name);
     }
 
     /**
@@ -61,8 +61,8 @@ public final class FieldReference {
      *
      * @return The var attribute.
      */
-    public final String getVar() {
-        return var;
+    public final String getName() {
+        return name;
     }
 
     @Override
@@ -74,11 +74,11 @@ public final class FieldReference {
             return false;
         }
         FieldReference other = (FieldReference) o;
-        return Objects.equals(var, other.var);
+        return Objects.equals(name, other.name);
     }
 
     @Override
     public final int hashCode() {
-        return Objects.hash(var);
+        return Objects.hash(name);
     }
 }

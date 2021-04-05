@@ -122,7 +122,7 @@ public final class DataForm implements Comparable<DataForm> {
 
     public DataForm(Builder<? extends Builder> builder) {
         if (builder.formType != null) {
-            this.field.add(Field.builder().var(FORM_TYPE).value(builder.formType).type(Field.Type.HIDDEN).build());
+            this.field.add(Field.builder().name(FORM_TYPE).value(builder.formType).type(Field.Type.HIDDEN).build());
         }
         this.field.addAll(builder.fields);
         this.type = builder.type;
@@ -180,76 +180,76 @@ public final class DataForm implements Comparable<DataForm> {
     /**
      * Gets the value for a specific field.
      *
-     * @param var The field name.
+     * @param name The field name.
      * @return The value or null, if the field does not exist.
      */
-    public final String findValue(String var) {
-        List<String> values = findValues(var);
+    public final String findValue(String name) {
+        List<String> values = findValues(name);
         return values.isEmpty() ? null : values.get(0);
     }
 
     /**
      * Gets the values for a specific field.
      *
-     * @param var The field name.
+     * @param name The field name.
      * @return The values.
      */
-    public final List<String> findValues(String var) {
-        Field field = findField(var);
+    public final List<String> findValues(String name) {
+        Field field = findField(name);
         return field == null ? Collections.emptyList() : field.getValues();
     }
 
     /**
      * Finds the field and gets the value as boolean.
      *
-     * @param var The field name.
+     * @param name The field name.
      * @return The value as boolean.
      */
-    public final boolean findValueAsBoolean(String var) {
-        return parseBoolean(findValue(var));
+    public final boolean findValueAsBoolean(String name) {
+        return parseBoolean(findValue(name));
     }
 
     /**
      * Finds the field and gets its value as integer.
      *
-     * @param var The field name.
+     * @param name The field name.
      * @return The value as integer or null, if the field could not be found.
      */
-    public final Integer findValueAsInteger(String var) {
-        Field field = findField(var);
+    public final Integer findValueAsInteger(String name) {
+        Field field = findField(name);
         return field == null ? null : field.getValueAsInteger();
     }
 
     /**
      * Finds the field and gets its value as instant.
      *
-     * @param var The field name.
+     * @param name The field name.
      * @return The value as date or null, if the field could not be found.
      */
-    public final Instant findValueAsInstant(String var) {
-        Field field = findField(var);
+    public final Instant findValueAsInstant(String name) {
+        Field field = findField(name);
         return field == null ? null : field.getValueAsInstant();
     }
 
     /**
      * Finds the field and gets the value as JID.
      *
-     * @param var The field name.
+     * @param name The field name.
      * @return The value as JID or null, if the field could not be found.
      */
-    public final Jid findValueAsJid(String var) {
-        Field field = findField(var);
+    public final Jid findValueAsJid(String name) {
+        Field field = findField(name);
         return field == null ? null : field.getValueAsJid();
     }
 
     /**
      * Finds the field and gets its values as JID list. If the field could not be found, an empty list is returned.
      *
-     * @param var The field name.
+     * @param name The field name.
      * @return The values as JID list.
      */
-    public final List<Jid> findValuesAsJid(String var) {
-        Field field = findField(var);
+    public final List<Jid> findValuesAsJid(String name) {
+        Field field = findField(name);
         return field == null ? Collections.emptyList() : field.getValuesAsJid();
     }
 
@@ -260,7 +260,7 @@ public final class DataForm implements Comparable<DataForm> {
      */
     public final String getFormType() {
         for (Field field : getFields()) {
-            if (FORM_TYPE.equals(field.getVar()) && !field.getValues().isEmpty()) {
+            if (FORM_TYPE.equals(field.getName()) && !field.getValues().isEmpty()) {
                 return field.getValues().get(0);
             }
         }
@@ -345,7 +345,7 @@ public final class DataForm implements Comparable<DataForm> {
     public final Field findField(String name) {
         if (name != null) {
             for (Field field : this.field) {
-                if (name.equals(field.getVar())) {
+                if (name.equals(field.getName())) {
                     return field;
                 }
             }
@@ -451,13 +451,13 @@ public final class DataForm implements Comparable<DataForm> {
      * <pre>{@code
      * // <field type="boolean" var="test"><value>1</value></field>
      * DataForm.Field field = DataForm.Field.builder()
-     *     .var("test")
+     *     .name("test")
      *     .value(true)
      *     .build();
      *
      * // <field type="jid-single" var="test"><value>domain</value></field>
      * DataForm.Field.builder()
-     *     .var("test")
+     *     .name("test")
      *     .value(Jid.of("domain"))
      *     .build();
      * }</pre>
@@ -465,7 +465,7 @@ public final class DataForm implements Comparable<DataForm> {
      * <pre>{@code
      * // <field type="list-single" var="test"><option><value>option</value></option></field>
      * DataForm.Field field = DataForm.Field.builder()
-     *     .var("test")
+     *     .name("test")
      *     .type(DataForm.Field.Type.LIST_SINGLE)
      *     .options(Collections.singleton(new DataForm.Option("option")))
      *     .build();
@@ -506,8 +506,8 @@ public final class DataForm implements Comparable<DataForm> {
         @XmlAttribute
         private final Type type;
 
-        @XmlAttribute
-        private final String var;
+        @XmlAttribute(name = "var")
+        private final String name;
 
         private Field() {
             this.type = null;
@@ -516,7 +516,7 @@ public final class DataForm implements Comparable<DataForm> {
             this.validation = null;
             this.media = null;
             this.label = null;
-            this.var = null;
+            this.name = null;
         }
 
         private Field(Builder builder) {
@@ -528,7 +528,7 @@ public final class DataForm implements Comparable<DataForm> {
             this.option.addAll(builder.options);
             this.media = builder.media;
             this.label = builder.label;
-            this.var = builder.var;
+            this.name = builder.name;
         }
 
         /**
@@ -554,8 +554,8 @@ public final class DataForm implements Comparable<DataForm> {
          *
          * @return The var attribute.
          */
-        public final String getVar() {
-            return var;
+        public final String getName() {
+            return name;
         }
 
         /**
@@ -683,18 +683,18 @@ public final class DataForm implements Comparable<DataForm> {
         @Override
         public final int compareTo(Field o) {
 
-            if (FORM_TYPE.equals(var) && !FORM_TYPE.equals(o.var)) {
+            if (FORM_TYPE.equals(name) && !FORM_TYPE.equals(o.name)) {
                 return -1;
             }
 
-            if (var == null && o.var == null) {
+            if (name == null && o.name == null) {
                 return 0;
-            } else if (var == null) {
+            } else if (name == null) {
                 return -1;
-            } else if (o.var == null) {
+            } else if (o.name == null) {
                 return 1;
             } else {
-                return Strings.compareUnsignedBytes(var, o.var, StandardCharsets.UTF_8);
+                return Strings.compareUnsignedBytes(name, o.name, StandardCharsets.UTF_8);
             }
         }
 
@@ -714,22 +714,22 @@ public final class DataForm implements Comparable<DataForm> {
                     && Objects.equals(validation, other.validation)
                     && Objects.equals(media, other.media)
                     && Objects.equals(label, other.label)
-                    && Objects.equals(var, other.var);
+                    && Objects.equals(name, other.name);
         }
 
         @Override
         public final int hashCode() {
-            return Objects.hash(type, desc, required, validation, media, label, var);
+            return Objects.hash(type, desc, required, validation, media, label, name);
         }
 
         @Override
         public final String toString() {
             final StringBuilder sb = new StringBuilder();
-            if (var != null) {
-                sb.append(var);
+            if (name != null) {
+                sb.append(name);
             }
             if (!value.isEmpty()) {
-                if (var != null) {
+                if (name != null) {
                     sb.append(": ");
                 }
                 if (value.size() == 1) {
@@ -826,7 +826,7 @@ public final class DataForm implements Comparable<DataForm> {
 
             private Validation validation;
 
-            private String var;
+            private String name;
 
             private String label;
 
@@ -902,11 +902,23 @@ public final class DataForm implements Comparable<DataForm> {
             /**
              * Sets the var attribute.
              *
-             * @param var The var attribute.
+             * @param name The var attribute.
+             * @return The builder.
+             * @deprecated Use {@link #name(String)}
+             */
+            @Deprecated
+            public final Builder var(String name) {
+                return name(name);
+            }
+
+            /**
+             * Sets the var attribute.
+             *
+             * @param name The var attribute.
              * @return The builder.
              */
-            public final Builder var(String var) {
-                this.var = var;
+            public final Builder name(String name) {
+                this.name = name;
                 return this;
             }
 

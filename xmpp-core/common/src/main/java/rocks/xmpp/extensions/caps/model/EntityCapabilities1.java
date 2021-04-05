@@ -189,7 +189,7 @@ public final class EntityCapabilities1 extends StreamFeature implements EntityCa
 
                 // Also make sure, that we don't send an ill-formed verification string.
                 // 3.6 If the response includes an extended service discovery information form where the FORM_TYPE field is not of type "hidden" or the form does not include a FORM_TYPE field, ignore the form but continue processing.
-                if (!DataForm.FORM_TYPE.equals(fields.get(0).getVar()) || fields.get(0).getType() != DataForm.Field.Type.HIDDEN) {
+                if (!DataForm.FORM_TYPE.equals(fields.get(0).getName()) || fields.get(0).getType() != DataForm.Field.Type.HIDDEN) {
                     // => Don't include this form in the verification string.
                     continue;
                 }
@@ -197,9 +197,9 @@ public final class EntityCapabilities1 extends StreamFeature implements EntityCa
                 for (DataForm.Field field : fields) {
                     List<String> values = new ArrayList<>(field.getValues());
                     // 7.3. For each field other than FORM_TYPE:
-                    if (!DataForm.FORM_TYPE.equals(field.getVar())) {
+                    if (!DataForm.FORM_TYPE.equals(field.getName())) {
                         // 7.3.1. Append the value of the "var" attribute, followed by the '<' character.
-                        sb.append(field.getVar()).append('<');
+                        sb.append(field.getName()).append('<');
 
                         // 7.3.2. Sort values by the XML character data of the <value/> element.
                         values.sort((s, t1) -> Strings.compareUnsignedBytes(s, t1, StandardCharsets.UTF_8));

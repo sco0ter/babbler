@@ -42,7 +42,7 @@ public final class ClientEntityCapabilitiesSupport implements OutboundPresenceHa
             }
         });
         xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.AUTHENTICATED) {// As soon as we are authenticated, check if the server has advertised Entity Capabilities in its stream features.
+            if (e.getStatus() == XmppSession.Status.AUTHENTICATED) { // As soon as we are authenticated, check if the server has advertised Entity Capabilities in its stream features.
                 List<? extends EntityCapabilities> serverCapabilities = xmppSession.getManager(StreamFeaturesManager.class).getFeatures(entityCapabilitiesProtocol.getEntityCapabilitiesClass());
                 // If yes, treat it as other caps.
                 if (!serverCapabilities.isEmpty()) {

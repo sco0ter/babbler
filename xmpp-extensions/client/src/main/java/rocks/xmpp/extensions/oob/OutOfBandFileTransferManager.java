@@ -134,7 +134,8 @@ public final class OutOfBandFileTransferManager extends Manager implements FileT
                         }
                     }
                 } catch (IOException e1) {
-                    // If the recipient attempts to retrieve the file but is unable to do so, the receiving application MUST return an <iq/> of type 'error' to the sender specifying a Not Found condition:
+                    // If the recipient attempts to retrieve the file but is unable to do so, the receiving
+                    // application MUST return an <iq/> of type 'error' to the sender specifying a Not Found condition:
                     return iq.createError(Condition.ITEM_NOT_FOUND);
                 }
             }
@@ -142,20 +143,22 @@ public final class OutOfBandFileTransferManager extends Manager implements FileT
     }
 
     @Override
-    public AsyncResult<FileTransfer> accept(final IQ iq, String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream) {
+    public AsyncResult<FileTransfer> accept(final IQ iq, String sessionId, FileTransferOffer fileTransferOffer,
+                                            Object protocol, OutputStream outputStream) {
         return new AsyncResult<>(CompletableFuture.supplyAsync(() -> {
             try {
                 URL url = new URL(fileTransferOffer.getName());
                 URLConnection urlConnection = url.openConnection();
-                final FileTransfer fileTransfer = new FileTransfer(iq.getId(), urlConnection.getInputStream(), outputStream, fileTransferOffer.getSize());
+                final FileTransfer fileTransfer = new FileTransfer(iq.getId(), urlConnection.getInputStream(),
+                        outputStream, fileTransferOffer.getSize());
                 fileTransfer.addFileTransferStatusListener(new Consumer<FileTransferStatusEvent>() {
                     @Override
                     public void accept(FileTransferStatusEvent e) {
                         if (e.getStatus() == FileTransfer.Status.COMPLETED) {
                             xmppSession.send(iq.createResult());
                             fileTransfer.removeFileTransferStatusListener(this);
-                        } else if (e.getStatus() == FileTransfer.Status.CANCELED ||
-                                e.getStatus() == FileTransfer.Status.FAILED) {
+                        } else if (e.getStatus() == FileTransfer.Status.CANCELED
+                                           || e.getStatus() == FileTransfer.Status.FAILED) {
                             xmppSession.send(iq.createError(Condition.ITEM_NOT_FOUND));
                             fileTransfer.removeFileTransferStatusListener(this);
                         }
@@ -170,7 +173,8 @@ public final class OutOfBandFileTransferManager extends Manager implements FileT
 
     @Override
     public void reject(IQ iq) {
-        // If the recipient rejects the request outright, the receiving application MUST return an <iq/> of type 'error' to the sender specifying a Not Acceptable condition:
+        // If the recipient rejects the request outright, the receiving application MUST return an <iq/> of type
+        // 'error' to the sender specifying a Not Acceptable condition:
         xmppSession.send(iq.createError(Condition.NOT_ACCEPTABLE));
     }
 }

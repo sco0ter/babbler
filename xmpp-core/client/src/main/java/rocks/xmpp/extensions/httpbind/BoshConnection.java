@@ -325,14 +325,14 @@ public final class BoshConnection extends AbstractConnection {
         }
         // Create initial request.
         Body.Builder body = Body.builder()
-                .language(xmppSession.getConfiguration().getLanguage())
-                .version("1.11")
-                .wait(boshConnectionConfiguration.getWait())
-                .hold((byte) 1)
-                .route(boshConnectionConfiguration.getRoute())
-                .ack(1L)
-                .from(sessionOpen.getFrom())
-                .xmppVersion("1.0");
+                                    .language(xmppSession.getConfiguration().getLanguage())
+                                    .version("1.11")
+                                    .wait(boshConnectionConfiguration.getWait())
+                                    .hold((byte) 1)
+                                    .route(boshConnectionConfiguration.getRoute())
+                                    .ack(1L)
+                                    .from(sessionOpen.getFrom())
+                                    .xmppVersion("1.0");
 
         if (xmppSession.getDomain() != null) {
             body.to(xmppSession.getDomain());
@@ -424,11 +424,11 @@ public final class BoshConnection extends AbstractConnection {
         Body.Builder bodyBuilder;
         synchronized (this) {
             bodyBuilder = Body.builder()
-                    .sessionId(sessionId)
-                    .restart(true)
-                    .to(xmppSession.getDomain())
-                    .language(xmppSession.getConfiguration().getLanguage())
-                    .from(sessionOpen.getFrom());
+                                  .sessionId(sessionId)
+                                  .restart(true)
+                                  .to(xmppSession.getDomain())
+                                  .language(xmppSession.getConfiguration().getLanguage())
+                                  .from(sessionOpen.getFrom());
         }
         sendNewRequest(bodyBuilder, false);
     }
@@ -441,12 +441,12 @@ public final class BoshConnection extends AbstractConnection {
             if (sid != null) {
                 // Terminate the BOSH session.
                 Body.Builder bodyBuilder = Body.builder()
-                        .sessionId(sid)
-                        .type(Body.Type.TERMINATE);
+                                                   .sessionId(sid)
+                                                   .type(Body.Type.TERMINATE);
 
                 future = sendNewRequest(bodyBuilder, false)
-                        .applyToEither(CompletionStages.timeoutAfter(500, TimeUnit.MILLISECONDS), Function.identity())
-                        .exceptionally(exc -> null);
+                                 .applyToEither(CompletionStages.timeoutAfter(500, TimeUnit.MILLISECONDS), Function.identity())
+                                 .exceptionally(exc -> null);
             } else {
                 future = CompletableFuture.completedFuture(null);
             }
@@ -612,11 +612,12 @@ public final class BoshConnection extends AbstractConnection {
                                 // In short: If we would send a second empty request, don't do that!
                                 // Also don't send a new request, if the connection is shutdown.
                                 body = bodyBuilder.build();
-                                if (body.getType() != Body.Type.TERMINATE &&
-                                        (shutdown.get()
-                                                || (requestCount.get() > 0
-                                                && body.getPause() == null
-                                                && !body.isRestart() && getSessionId() != null && elementsToSend.isEmpty()))) {
+                                if (body.getType() != Body.Type.TERMINATE
+                                            && (shutdown.get() || (requestCount.get() > 0
+                                                                           && body.getPause() == null
+                                                                           && !body.isRestart()
+                                                                           && getSessionId() != null
+                                                                           && elementsToSend.isEmpty()))) {
                                     return;
                                 }
                                 // Clear everything after the elements have been sent.

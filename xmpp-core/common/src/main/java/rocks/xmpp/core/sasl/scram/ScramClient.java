@@ -98,9 +98,9 @@ public final class ScramClient extends ScramBase implements SaslClient {
 
         // Initial response
         if (challenge.length == 0) {
-            NameCallback ncb = authorizationId == null ?
-                    new NameCallback("SCRAM username: ") :
-                    new NameCallback("SCRAM username: ", authorizationId);
+            NameCallback ncb = authorizationId == null
+                                       ? new NameCallback("SCRAM username: ")
+                                       : new NameCallback("SCRAM username: ", authorizationId);
             PasswordCallback pcb = new PasswordCallback("SCRAM-SHA-1 password: ", false);
             try {
                 callbackHandler.handle(new Callback[]{ncb, pcb});

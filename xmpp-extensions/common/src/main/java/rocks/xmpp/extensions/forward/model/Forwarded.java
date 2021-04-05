@@ -58,7 +58,8 @@ public final class Forwarded {
     private final DelayedDelivery delayedDelivery;
 
     @XmlElementRefs({@XmlElementRef(type = ClientMessage.class), @XmlElementRef(type = ClientPresence.class), @XmlElementRef(type = ClientIQ.class),
-            @XmlElementRef(type = ServerMessage.class), @XmlElementRef(type = ServerPresence.class), @XmlElementRef(type = ServerIQ.class),})
+            @XmlElementRef(type = ServerMessage.class), @XmlElementRef(type = ServerPresence.class), @XmlElementRef(type = ServerIQ.class)
+    })
     private final Stanza stanza;
 
     private Forwarded() {

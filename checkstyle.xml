@@ -99,7 +99,7 @@
                      value="Catch parameter name ''{0}'' must match pattern ''{1}''."/>
         </module>
         <module name="ClassTypeParameterName"/>
-<!--        <module name="IllegalIdentifierName"/>-->
+        <!--        <module name="IllegalIdentifierName"/>-->
         <module name="InterfaceTypeParameterName"/>
         <module name="LambdaParameterName"/>
         <module name="LocalFinalVariableName"/>
@@ -116,8 +116,61 @@
         <module name="TypeName"/>
 
         <!-- Whitespace -->
+        <module name="EmptyLineSeparator">
+            <property name="tokens"
+                      value="PACKAGE_DEF, IMPORT, STATIC_IMPORT, CLASS_DEF, INTERFACE_DEF, ENUM_DEF,
+                    STATIC_INIT, INSTANCE_INIT, METHOD_DEF, CTOR_DEF, VARIABLE_DEF, RECORD_DEF,
+                    COMPACT_CTOR_DEF"/>
+            <property name="allowNoEmptyLineBetweenFields" value="true"/>
+        </module>
+        <module name="GenericWhitespace"/>
+        <module name="MethodParamPad"/>
         <module name="NoLineWrap"/>
-
+        <module name="NoWhitespaceBefore">
+            <property name="tokens"
+                      value="COMMA, SEMI, POST_INC, POST_DEC, DOT,
+                    LABELED_STAT, METHOD_REF"/>
+            <property name="allowLineBreaks" value="true"/>
+        </module>
+        <module name="OperatorWrap">
+            <property name="option" value="nl"/>
+            <property name="tokens"
+                      value="BAND, BOR, BSR, BXOR, COLON, DIV, EQUAL, GE, GT, LAND, LE, LITERAL_INSTANCEOF, LOR,
+                    LT, MINUS, MOD, NOT_EQUAL, PLUS, QUESTION, SL, SR, STAR, METHOD_REF, TYPE_EXTENSION_AND "/>
+        </module>
+        <module name="ParenPad"/>
+        <module name="SeparatorWrap">
+            <property name="id" value="SeparatorWrapNewLine"/>
+            <property name="tokens" value="DOT, METHOD_REF"/>
+            <property name="option" value="nl"/>
+        </module>
+        <module name="SeparatorWrap">
+            <property name="id" value="SeparatorWrapEndOfLine"/>
+            <property name="tokens" value="COMMA, SEMI, ELLIPSIS, ARRAY_DECLARATOR"/>
+            <property name="option" value="eol"/>
+        </module>
+        <module name="SingleSpaceSeparator"/>
+        <module name="WhitespaceAfter"/>
+        <module name="WhitespaceAround">
+            <property name="allowEmptyConstructors" value="false"/>
+            <property name="allowEmptyLambdas" value="true"/>
+            <property name="allowEmptyMethods" value="true"/>
+            <property name="allowEmptyTypes" value="true"/>
+            <property name="allowEmptyLoops" value="true"/>
+            <property name="ignoreEnhancedForColon" value="false"/>
+            <property name="tokens"
+                      value="ASSIGN, BAND, BAND_ASSIGN, BOR, BOR_ASSIGN, BSR, BSR_ASSIGN, BXOR,
+                    BXOR_ASSIGN, COLON, DIV, DIV_ASSIGN, DO_WHILE, EQUAL, GE, GT, LAMBDA, LAND,
+                    LCURLY, LE, LITERAL_CATCH, LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY,
+                    LITERAL_FOR, LITERAL_IF, LITERAL_RETURN, LITERAL_SWITCH, LITERAL_SYNCHRONIZED,
+                    LITERAL_TRY, LITERAL_WHILE, LOR, LT, MINUS, MINUS_ASSIGN, MOD, MOD_ASSIGN,
+                    NOT_EQUAL, PLUS, PLUS_ASSIGN, QUESTION, RCURLY, SL, SLIST, SL_ASSIGN, SR,
+                    SR_ASSIGN, STAR, STAR_ASSIGN, LITERAL_ASSERT, TYPE_EXTENSION_AND"/>
+            <message key="ws.notFollowed"
+                     value="WhitespaceAround: ''{0}'' is not followed by whitespace."/>
+            <message key="ws.notPreceded"
+                     value="WhitespaceAround: ''{0}'' is not preceded with whitespace."/>
+        </module>
     </module>
 
     <!-- Whitespace -->

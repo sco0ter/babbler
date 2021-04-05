@@ -35,7 +35,7 @@ import rocks.xmpp.extensions.register.model.Registration;
 
 public final class RegistrationSample {
 
-    private RegistrationSample(){
+    private RegistrationSample() {
     }
 
     public static void main(String[] args) {

@@ -61,7 +61,7 @@ public final class CompletionStages {
     public static <T> CompletionStage<T> withFallback(final CompletionStage<T> stage,
                                                       final BiFunction<CompletionStage<T>, Throwable, ? extends CompletionStage<T>> fallback) {
         return stage.handle((response, error) -> error)
-                .thenCompose(error -> error != null ? fallback.apply(stage, error) : stage);
+                       .thenCompose(error -> error != null ? fallback.apply(stage, error) : stage);
     }
 
     /**
@@ -76,14 +76,14 @@ public final class CompletionStages {
         // First convert the list of stages to an array of CompletableFuture.
         // Then use CompletableFuture.allOf to combine them all.
         return CompletableFuture.allOf(stages.stream().map(CompletionStage::toCompletableFuture).toArray(CompletableFuture[]::new))
-                .thenApply(result ->
-                        stages.stream()
-                                // Get the result of each future (List<T>)
-                                .map(stage -> stage.toCompletableFuture().join())
-                                // Map the List<List<T>> to one stream
-                                .flatMap(Collection::stream)
-                                // Collect all items into one list.
-                                .collect(Collectors.toList()));
+                       .thenApply(result ->
+                                          stages.stream()
+                                                  // Get the result of each future (List<T>)
+                                                  .map(stage -> stage.toCompletableFuture().join())
+                                                  // Map the List<List<T>> to one stream
+                                                  .flatMap(Collection::stream)
+                                                  // Collect all items into one list.
+                                                  .collect(Collectors.toList()));
     }
 
     /**
@@ -109,9 +109,7 @@ public final class CompletionStages {
      */
     public static <T> CompletionStage<T> timeoutAfter(final long delay, final TimeUnit unit, final Supplier<Throwable> throwableSupplier) {
         CompletableFuture<T> completableFuture = new CompletableFuture<>();
-        TIMEOUT_EXECUTOR.schedule(() ->
-                        completableFuture.completeExceptionally(throwableSupplier.get())
-                , delay, unit);
+        TIMEOUT_EXECUTOR.schedule(() -> completableFuture.completeExceptionally(throwableSupplier.get()), delay, unit);
         return completableFuture;
     }
 }

@@ -65,13 +65,11 @@ final class MessageResponsePredicate implements Predicate<Message> {
     @Override
     public final boolean test(final Message responseMessage) {
         return (id == null || Objects.equals(id, responseMessage.getId()))
-                && (
+                       && (
                 (to != null
-                        && ((responseMessage.getFrom() != null && Objects.equals(to.asBareJid(), responseMessage.getFrom().asBareJid()))
-                        || (responseMessage.getFrom() == null && connectedResource != null && to.equals(connectedResource.asBareJid()))
-                )
-                ) ||
-                        (to == null && (responseMessage.getFrom() == null || (connectedResource != null && responseMessage.getFrom().asBareJid().equals(connectedResource.asBareJid()))))
+                         && ((responseMessage.getFrom() != null && Objects.equals(to.asBareJid(), responseMessage.getFrom().asBareJid()))
+                                     || (responseMessage.getFrom() == null && connectedResource != null && to.equals(connectedResource.asBareJid()))))
+                        || (to == null && (responseMessage.getFrom() == null || (connectedResource != null && responseMessage.getFrom().asBareJid().equals(connectedResource.asBareJid()))))
         );
     }
 }

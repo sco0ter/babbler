@@ -51,12 +51,12 @@ import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 
 /**
  * This class implements the application-level ping mechanism as specified in <a href="https://xmpp.org/extensions/xep-0199.html">XEP-0199: XMPP Ping</a>.
- * <p>
- * If enabled, it periodically pings the server to ensure a stable connection. These pings are not sent as long as other stanzas are sent, because they serve the same purpose (telling the server, that we are still available).
- * <p>
- * For <a href="https://xmpp.org/extensions/xep-0199.html#s2c">Server-To-Client Pings</a> it automatically responds with a result (pong), if enabled.
- * <p>
- * It also allows to ping the server manually (<a href="https://xmpp.org/extensions/xep-0199.html#c2s">Client-To-Server Pings</a>) or to ping other XMPP entities (<a href="https://xmpp.org/extensions/xep-0199.html#e2e">Client-to-Client Pings</a>).
+ *
+ * <p>If enabled, it periodically pings the server to ensure a stable connection. These pings are not sent as long as other stanzas are sent, because they serve the same purpose (telling the server, that we are still available).</p>
+ *
+ * <p>For <a href="https://xmpp.org/extensions/xep-0199.html#s2c">Server-To-Client Pings</a> it automatically responds with a result (pong), if enabled.</p>
+ *
+ * <p>It also allows to ping the server manually (<a href="https://xmpp.org/extensions/xep-0199.html#c2s">Client-To-Server Pings</a>) or to ping other XMPP entities (<a href="https://xmpp.org/extensions/xep-0199.html#e2e">Client-to-Client Pings</a>).</p>
  *
  * @author Christian Schudt
  */

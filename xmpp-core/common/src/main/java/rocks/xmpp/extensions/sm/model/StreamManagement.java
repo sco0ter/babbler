@@ -123,8 +123,8 @@ public final class StreamManagement extends StreamFeature {
 
     /**
      * The implementation of the {@code <r/>} element in the {@code urn:xmpp:sm:3} namespace.
-     * <p>
-     * This class is a singleton.
+     *
+     * <p>This class is a singleton.</p>
      *
      * @see #REQUEST
      */
@@ -321,11 +321,11 @@ public final class StreamManagement extends StreamFeature {
 
     /**
      * Indicates that an entity has acknowledged more stanzas than it was sent.
-     * <p>
-     * When a remote entity acknowledges that it has handled a number of stanzas that is higher
+     *
+     * <p>When a remote entity acknowledges that it has handled a number of stanzas that is higher
      * than the amount of stanzas that it was sent (by sending an 'h' value that is too high),
      * the local entity SHOULD generate an undefined-condition stream error that includes
-     * a {@code <handled-count-too-high/>} element.
+     * a {@code <handled-count-too-high/>} element.</p>
      */
     @XmlRootElement(name = "handled-count-too-high")
     public static final class HandledCountTooHigh extends LastHandledStanza {

@@ -76,8 +76,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * Represents a multi-user chat room.
- * <p>
- * Use this class to enter a chat room, to send and receive messages, invite others and to manage members (e.g. kick or ban a user, grant admin status, etc.).
+ *
+ * <p>Use this class to enter a chat room, to send and receive messages, invite others and to manage members (e.g. kick or ban a user, grant admin status, etc.).</p>
  *
  * @author Christian Schudt
  */

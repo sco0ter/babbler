@@ -39,6 +39,7 @@ import rocks.xmpp.im.roster.model.SubscriptionState;
 
 /**
  * A privacy rule for privacy lists, which is applied by the server.
+ *
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/extensions/xep-0016.html#protocol-rules">2.2 Business Rules</a></cite></p>
  * <ul>
@@ -47,8 +48,11 @@ import rocks.xmpp.im.roster.model.SubscriptionState;
  * <li>If no fall-through item is provided in a list, the fall-through action is assumed to be "allow".</li>
  * </ul>
  * </blockquote>
+ *
  * <h3>Usage</h3>
- * In order to create a privacy rule, use one of the many static factory methods, e.g.:
+ *
+ * <p>In order to create a privacy rule, use one of the many static factory methods, e.g.:</p>
+ * 
  * <pre>{@code
  * // Blocks all messages from juliet@example.net
  * PrivacyRule rule1 = PrivacyRule.blockMessagesFrom(Jid.of("juliet@example.net"), 1);
@@ -56,8 +60,8 @@ import rocks.xmpp.im.roster.model.SubscriptionState;
  * // Blocks outbound presence notifications to the roster group "Bad Friends".
  * PrivacyRule rule2 = PrivacyRule.blockPresenceToRosterGroup("Bad Friends", 2);
  * }</pre>
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  */
@@ -185,8 +189,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     /**
      * Creates a rule, which blocks all inbound messages from another entity.
-     * <p>
-     * The user will not receive messages from the entity with the specified JID.
+     *
+     * <p>The user will not receive messages from the entity with the specified JID.</p>
      *
      * @param entity The entity.
      * @param order  The order, this rule will be applied within the privacy list.
@@ -199,8 +203,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     /**
      * Creates a rule, which blocks all inbound messages from contacts, which are in the specified roster group.
-     * <p>
-     * The user will not receive messages from any entities in the specified roster group.
+     *
+     * <p>The user will not receive messages from any entities in the specified roster group.</p>
      *
      * @param rosterGroup The roster group.
      * @param order       The order, this rule will be applied within the privacy list.
@@ -213,8 +217,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     /**
      * Creates a rule, which blocks all inbound messages from entities with the given subscription type.
-     * <p>
-     * The user will not receive messages from any entities with the specified subscription type.
+     *
+     * <p>The user will not receive messages from any entities with the specified subscription type.</p>
      *
      * @param subscription The subscription type.
      * @param order        The order, this rule will be applied within the privacy list.
@@ -227,8 +231,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     /**
      * Creates a rule, which blocks all inbound presence notifications from another entity.
-     * <p>
-     * The user will not receive presence notifications from the entity with the specified JID.
+     *
+     * <p>The user will not receive presence notifications from the entity with the specified JID.</p>
      *
      * @param entity The entity.
      * @param order  The order, this rule will be applied within the privacy list.
@@ -241,8 +245,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     /**
      * Creates a rule, which blocks all inbound presence notifications from contacts, which are in the specified roster group.
-     * <p>
-     * The user will not receive presence notifications from any entities in the specified roster group.
+     *
+     * <p>The user will not receive presence notifications from any entities in the specified roster group.</p>
      *
      * @param rosterGroup The roster group.
      * @param order       The order, this rule will be applied within the privacy list.
@@ -255,8 +259,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     /**
      * Creates a rule, which blocks all inbound presence notifications from entities with the given subscription type.
-     * <p>
-     * The user will not receive presence notifications from any entities with the specified subscription type.
+     *
+     * <p>The user will not receive presence notifications from any entities with the specified subscription type.</p>
      *
      * @param subscription The subscription type.
      * @param order        The order, this rule will be applied within the privacy list.
@@ -269,8 +273,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     /**
      * Creates a rule, which blocks all inbound presence notifications.
-     * <p>
-     * The user will not receive presence notifications from any other users.
+     *
+     * <p>The user will not receive presence notifications from any other users.</p>
      *
      * @param order The order, this rule will be applied within the privacy list.
      * @return The privacy rule.
@@ -282,8 +286,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     /**
      * Creates a rule, which blocks all outbound presence notifications to another entity.
-     * <p>
-     * The user will not send presence notifications to the entity with the specified JID.
+     *
+     * <p>The user will not send presence notifications to the entity with the specified JID.</p>
      *
      * @param entity The entity.
      * @param order  The order, this rule will be applied within the privacy list.
@@ -296,8 +300,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     /**
      * Creates a rule, which blocks all outbound presence notifications to contacts, which are in the specified roster group.
-     * <p>
-     * The user will not send presence notifications to any entities in the specified roster group.
+     *
+     * <p>The user will not send presence notifications to any entities in the specified roster group.</p>
      *
      * @param rosterGroup The roster group.
      * @param order       The order, this rule will be applied within the privacy list.
@@ -310,8 +314,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     /**
      * Creates a rule, which blocks all outbound presence notifications to entities with the given subscription type.
-     * <p>
-     * The user will not send presence notifications to any entities with the specified subscription type.
+     *
+     * <p>The user will not send presence notifications to any entities with the specified subscription type.</p>
      *
      * @param subscription The subscription type.
      * @param order        The order, this rule will be applied within the privacy list.
@@ -324,8 +328,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     /**
      * Creates a rule, which blocks all outbound presence notifications.
-     * <p>
-     * The user will not send presence notifications to any other users.
+     *
+     * <p>The user will not send presence notifications to any other users.</p>
      *
      * @param order The order, this rule will be applied within the privacy list.
      * @return The privacy rule.
@@ -337,8 +341,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     /**
      * Creates a rule, which blocks all inbound IQ stanzas from another entity.
-     * <p>
-     * The user will not receive IQ stanzas from the entity with the specified JID.
+     *
+     * <p>The user will not receive IQ stanzas from the entity with the specified JID.</p>
      *
      * @param entity The entity.
      * @param order  The order, this rule will be applied within the privacy list.
@@ -351,8 +355,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     /**
      * Creates a rule, which blocks all inbound IQ stanzas from contacts, which are in the specified roster group.
-     * <p>
-     * The user will not receive IQ stanzas from any entities in the specified roster group.
+     *
+     * <p>The user will not receive IQ stanzas from any entities in the specified roster group.</p>
      *
      * @param rosterGroup The roster group.
      * @param order       The order, this rule will be applied within the privacy list.
@@ -365,8 +369,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     /**
      * Creates a rule, which blocks all inbound IQ stanzas from entities with the given subscription type.
-     * <p>
-     * The user will not receive IQ stanzas from any entities with the specified subscription type.
+     *
+     * <p>The user will not receive IQ stanzas from any entities with the specified subscription type.</p>
      *
      * @param subscription The subscription type.
      * @param order        The order, this rule will be applied within the privacy list.
@@ -379,8 +383,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     /**
      * Creates a rule, which blocks all communication from and to any entities in the specified roster group.
-     * <p>
-     * The user will not receive any communications from, nor send any stanzas to, any entities in the specified roster group.
+     *
+     * <p>The user will not receive any communications from, nor send any stanzas to, any entities in the specified roster group.</p>
      *
      * @param rosterGroup The roster group.
      * @param order       The order, this rule will be applied within the privacy list.
@@ -393,8 +397,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     /**
      * Creates a rule, which blocks all communication from and to any entities in the specified roster group.
-     * <p>
-     * The user will not receive any communications from, nor send any stanzas to, any entities in the specified roster group.
+     *
+     * <p>The user will not receive any communications from, nor send any stanzas to, any entities in the specified roster group.</p>
      *
      * @param subscription The subscription type.
      * @param order        The order, this rule will be applied within the privacy list.
@@ -407,8 +411,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
 
     /**
      * Creates a rule, which blocks all communication from and to another entity.
-     * <p>
-     * The user will not receive any communications from, nor send any stanzas to, the entity with the specified JID.
+     *
+     * <p>The user will not receive any communications from, nor send any stanzas to, the entity with the specified JID.</p>
      *
      * @param entity The entity.
      * @param order  The order, this rule will be applied within the privacy list.
@@ -597,16 +601,19 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * Defines the type of communication which should be allowed of denied.
      */
     public enum Type {
+
         /**
          * Allows or blocks communication based on a user's roster group name.
          */
         @XmlEnumValue("group")
         GROUP,
+        
         /**
          * Allows or blocks communication based on a JID.
          */
         @XmlEnumValue("jid")
         JID,
+
         /**
          * Allows or blocks communication based on subscription.
          */
@@ -618,11 +625,13 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * Defines the action to perform with the privacy item: either allow or deny communication.
      */
     public enum Action {
+        
         /**
          * Allows communication.
          */
         @XmlEnumValue("allow")
         ALLOW,
+
         /**
          * Denies (blocks) communication.
          */

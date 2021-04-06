@@ -51,8 +51,8 @@ import rocks.xmpp.extensions.dialback.model.feature.DialbackFeature;
 
 /**
  * The implementation of the dialback elements {@code <result/>} and {@code <verify/>} in the {@code jabber:server:dialback} namespace.
- * <p>
- * To generate a dialback key use {@link #generateKey(String, String, String, String)}.
+ *
+ * <p>To generate a dialback key use {@link #generateKey(String, String, String, String)}.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0220.html">XEP-0220: Server Dialback</a>
@@ -103,6 +103,7 @@ public abstract class Dialback {
 
     /**
      * Generates a key using the following recommended algorithm.
+     * 
      * <pre>
      *     HMAC-SHA256
      *       (

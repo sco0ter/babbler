@@ -56,17 +56,19 @@ import rocks.xmpp.util.cache.LruCache;
 
 /**
  * Base class for the Entity Capabilities protocols.
- * <p>
- * As of today, there are two versions of Entity Capabilities:
+ *
+ * <p>As of today, there are two versions of Entity Capabilities:</p>
+ *
  * <ul>
  * <li>XEP-0115: Entity Capabilities</li>
  * <li>XEP-0390: Entity Capabilities 2.0</li>
  * </ul>
- * This class provides the common aspects of both protocols, both from a client and a server point of view.
+ *
+ * <p>This class provides the common aspects of both protocols, both from a client and a server point of view.
  * It handles inbound presence and processes any entity capabilities extension (caching, associating capabilities to the sending entity, discovering capabilities if necessary).
- * It also provides the Service Discovery node, so that other entities can discover our capabilities.
- * <p>
- * Subclasses for the client should deal with outbound presence and attach Entity Capabilities to the presence, while server implementations should include them as stream feature.
+ * It also provides the Service Discovery node, so that other entities can discover our capabilities.</p>
+ *
+ * <p>Subclasses for the client should deal with outbound presence and attach Entity Capabilities to the presence, while server implementations should include them as stream feature.</p>
  *
  * @param <T> The Entity Capabilities implementation.
  * @author Christian Schudt
@@ -116,8 +118,8 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
      * Publishes this entity's capabilities as Service Discovery node.
      * On the client side this can used, when sending presence.
      * On the server side this is used when advertising stream features and include the server's capabilities.
-     * <p>
-     * The published node can be discovered by another entity.
+     *
+     * <p>The published node can be discovered by another entity.</p>
      *
      * @return The published information.
      */
@@ -143,8 +145,8 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
 
     /**
      * Handles entity capabilities by associating them to the entity or discovering the entity's capabilities if they are not cached.
-     * <p>
-     * Entity Capabilities can either be announced in presence or in stream features.
+     *
+     * <p>Entity Capabilities can either be announced in presence or in stream features.</p>
      *
      * @param entityCapabilities The entity capabilities.
      * @param entity             The entity which generated the capabilities.
@@ -155,6 +157,7 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
 
     /**
      * Processes the capability hash set by using the following rules:
+     *
      * <ul>
      * <li>Check if the first hash is cached</li>
      * <li>If true, associate the entity with the hash.</li>

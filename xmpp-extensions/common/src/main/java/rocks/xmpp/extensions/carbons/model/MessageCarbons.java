@@ -44,6 +44,7 @@ import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 @XmlTransient
 @XmlSeeAlso({MessageCarbons.Enable.class, MessageCarbons.Disable.class, MessageCarbons.Private.class, MessageDeliveryReceipts.Received.class, MessageCarbons.Sent.class})
 public final class MessageCarbons {
+
     /**
      * urn:xmpp:carbons:2
      */
@@ -69,8 +70,8 @@ public final class MessageCarbons {
 
     /**
      * The implementation of the {@code <disable/>} element in the {@code urn:xmpp:carbons:2} namespace, used to disable message carbons.
-     * <p>
-     * This class is a singleton.
+     *
+     * <p>This class is a singleton.</p>
      *
      * @see #DISABLE
      */
@@ -88,8 +89,8 @@ public final class MessageCarbons {
 
     /**
      * The implementation of the {@code <enable/>} element in the {@code urn:xmpp:carbons:2} namespace, used to enable message carbons.
-     * <p>
-     * This class is a singleton.
+     *
+     * <p>This class is a singleton.</p>
      *
      * @see #ENABLE
      */
@@ -107,8 +108,8 @@ public final class MessageCarbons {
 
     /**
      * The implementation of the {@code <private/>} element in the {@code urn:xmpp:carbons:2} namespace, used to send private messages, which are not copied.
-     * <p>
-     * This class is a singleton.
+     *
+     * <p>This class is a singleton.</p>
      *
      * @see #PRIVATE
      */
@@ -126,8 +127,8 @@ public final class MessageCarbons {
 
     /**
      * The implementation of the {@code <received/>} element in the {@code urn:xmpp:carbons:2} namespace, used to mark a carbon copied message as received.
-     * <p>
-     * This class is immutable.
+     *
+     * <p>This class is immutable.</p>
      */
     @XmlRootElement
     public static final class Received {
@@ -158,8 +159,8 @@ public final class MessageCarbons {
 
     /**
      * The implementation of the {@code <sent/>} element in the {@code urn:xmpp:carbons:2} namespace, used to mark a carbon copied message as sent.
-     * <p>
-     * This class is immutable.
+     *
+     * <p>This class is immutable.</p>
      */
     @XmlRootElement
     public static final class Sent {

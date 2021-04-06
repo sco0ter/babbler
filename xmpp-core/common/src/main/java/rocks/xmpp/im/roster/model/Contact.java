@@ -41,12 +41,13 @@ import rocks.xmpp.addr.Jid;
 
 /**
  * A contact in the user's roster.
+ *
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#roster-syntax-items">2.1.2.  Roster Items</a></cite></p>
  * <p>The {@code <query/>} element inside a roster set contains one {@code <item/>} child, and a roster result typically contains multiple {@code <item/>} children. Each {@code <item/>} element describes a unique "roster item" (sometimes also called a "contact").</p>
  * </blockquote>
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  */
 public final class Contact implements RosterItem, Comparable<Contact> {
 

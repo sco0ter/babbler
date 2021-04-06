@@ -104,11 +104,11 @@ public interface Connection extends AutoCloseable {
 
     /**
      * Asynchronously closes the connection.
-     * <p>
-     * Closing usually involves a round-trip with the peer on the XMPP layer first by sending a closing stream element,
-     * then waiting on the response and then closing the underlying transport layer.
-     * <p>
-     * Implementations wait a maximum of 500ms for the XMPP level close.
+     *
+     * <p>Closing usually involves a round-trip with the peer on the XMPP layer first by sending a closing stream element,
+     * then waiting on the response and then closing the underlying transport layer.</p>
+     *
+     * <p>Implementations wait a maximum of 500ms for the XMPP level close.</p>
      *
      * @return The future, which is complete, when the connection is closed.
      * @see #close()

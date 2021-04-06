@@ -28,8 +28,8 @@ import rocks.xmpp.core.stanza.model.Presence;
 
 /**
  * Represents the nine possible defined subscription states.
- * <p>
- * Each state can transition to a new state depending on an in- or outbound presence subscription change.
+ *
+ * <p>Each state can transition to a new state depending on an in- or outbound presence subscription change.</p>
  *
  * @author Christian Schudt
  * @see rocks.xmpp.core.stanza.model.Presence.Type

@@ -51,10 +51,10 @@ import rocks.xmpp.core.session.model.SessionOpen;
 
 /**
  * The implementation of the {@code <body/>} element in the {@code http://jabber.org/protocol/httpbind} namespace.
- * <p>
- * The natural ordering of this class is ordering by request ids (RID).
- * <p>
- * This class is immutable.
+ *
+ * <p>The natural ordering of this class is ordering by request ids (RID).</p>
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0124.html">XEP-0124: Bidirectional-streams Over Synchronous HTTP (BOSH)</a>
@@ -451,8 +451,8 @@ public final class Body implements SessionOpen, Comparable<Body> {
 
     /**
      * After receiving a request with an 'ack' value less than the 'rid' of the last request that it has already responded to, the connection manager MAY inform the client of the situation by sending its next response immediately instead of waiting until it has payloads to send to the client (e.g., if some time has passed since it responded). In this case it SHOULD include a 'report' attribute set to one greater than the 'ack' attribute it received from the client, and a 'time' attribute set to the number of milliseconds since it sent the response associated with the 'report' attribute.
-     * <p>
-     * Upon reception of a response with 'report' and 'time' attributes, if the client has still not received the response associated with the request identifier specified by the 'report' attribute, then it MAY choose to resend the request associated with the missing response.
+     *
+     * <p>Upon reception of a response with 'report' and 'time' attributes, if the client has still not received the response associated with the request identifier specified by the 'report' attribute, then it MAY choose to resend the request associated with the missing response.</p>
      *
      * @return The 'report' attribute value.
      * @see #getTime()

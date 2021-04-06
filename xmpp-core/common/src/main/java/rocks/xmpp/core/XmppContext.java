@@ -29,8 +29,8 @@ import java.util.ServiceLoader;
 /**
  * Defines classes to be bound to the JAXBContext.
  * Implementations of this interface can be found by using {@link ServiceLoader} and by placing a file called {@code rocks.xmpp.core.XmppContext} containing the full qualified class names of the implementations to {@code META-INF/services}.
- * <p>
- * Implementations must have a public no-arg default constructor.
+ *
+ * <p>Implementations must have a public no-arg default constructor.</p>
  *
  * @author Christian Schudt
  * @see rocks.xmpp.util.XmppUtils#createContext(Iterable)

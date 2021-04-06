@@ -56,13 +56,13 @@ import rocks.xmpp.util.concurrent.CompletionStages;
 
 /**
  * A manager for <a href="https://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>.
- * <p>
- * If {@linkplain #setLocalHostEnabled(boolean) enabled}, this class starts a local SOCKS5 server to support direct connections between two entities.
- * You can {@linkplain #setPort(int) set a port} of this local server, if you don't set a port, the default port 1080 is used.
- * <p>
- * It also allows you to {@linkplain #initiateSession(Jid, String) initiate a byte stream session} with another entity.
- * <p>
- * If you don't want to discover stream hosts, but want to configure your own, {@linkplain #setStreamHost(StreamHost) set a custom stream host}.
+ *
+ * <p>If {@linkplain #setLocalHostEnabled(boolean) enabled}, this class starts a local SOCKS5 server to support direct connections between two entities.
+ * You can {@linkplain #setPort(int) set a port} of this local server, if you don't set a port, the default port 1080 is used.</p>
+ *
+ * <p>It also allows you to {@linkplain #initiateSession(Jid, String) initiate a byte stream session} with another entity.</p>
+ *
+ * <p>If you don't want to discover stream hosts, but want to configure your own, {@linkplain #setStreamHost(StreamHost) set a custom stream host}.</p>
  *
  * @author Christian Schudt
  */

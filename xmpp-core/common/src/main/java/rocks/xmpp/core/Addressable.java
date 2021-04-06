@@ -28,8 +28,8 @@ import rocks.xmpp.addr.Jid;
 
 /**
  * Represents any instance which is addressable by a {@linkplain Jid JID}.
- * <p>
- * Examples include client-to-server sessions, service discovery items, services or user accounts.
+ *
+ * <p>Examples include client-to-server sessions, service discovery items, services or user accounts.</p>
  */
 public interface Addressable {
 

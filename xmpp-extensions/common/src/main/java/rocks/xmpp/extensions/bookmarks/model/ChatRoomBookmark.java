@@ -31,8 +31,8 @@ import rocks.xmpp.addr.Jid;
 
 /**
  * A conference bookmark to bookmark multi-user chat rooms.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  */

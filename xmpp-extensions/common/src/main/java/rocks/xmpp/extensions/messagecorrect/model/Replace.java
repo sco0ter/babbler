@@ -30,11 +30,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <replace/>} element in the {@code urn:xmpp:message-correct:0} namespace.
+ *
  * <h3>Advertising Support for Message Correction</h3>
+ *
  * <pre>{@code
  * xmppClient.enableFeature(Replace.NAMESPACE);
  * }</pre>
+ *
  * <h3>Checking if a Message Should be Corrected</h3>
+ *
  * <pre>{@code
  * Replace replace = message.getExtension(Replace.class);
  * if (replace != null) {
@@ -42,14 +46,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  *     // Replace old message with message...
  * }
  * }</pre>
+ *
  * <h3>Correcting a Message</h3>
+ * 
  * <pre>{@code
  * Message correctedMessage = new Message(jid, Message.Type.CHAT, "This is the corrected text");
  * correctedMessage.addExtension(new Replace(id));
  * xmppClient.send(correctedMessage);
  * }</pre>
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0308.html">XEP-0308: Last Message Correction</a>

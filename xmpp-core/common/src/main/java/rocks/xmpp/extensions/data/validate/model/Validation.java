@@ -34,8 +34,8 @@ import javax.xml.bind.annotation.XmlValue;
 
 /**
  * The implementation of the {@code <validate/>} element in the {@code http://jabber.org/protocol/xdata-validate} namespace, which is used to validate form fields.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>
@@ -192,9 +192,8 @@ public final class Validation {
 
         /**
          * For {@linkplain rocks.xmpp.extensions.data.model.DataForm.Field.Type#LIST_SINGLE "list-single"} or {@linkplain rocks.xmpp.extensions.data.model.DataForm.Field.Type#LIST_MULTI "list-multi"}, to indicate that the user may enter a custom value (matching the datatype constraints) or choose from the predefined values.
-         * <p>
-         * This validation method applies to {@linkplain rocks.xmpp.extensions.data.model.DataForm.Field.Type#TEXT_MULTI "text-multi"} differently; it hints that each value for a "text-multi" field shall be validated separately. This effectively turns "text-multi" fields into an open-ended "list-multi", with no options and all values automatically selected.
-         * </p>
+         *
+         * <p>This validation method applies to {@linkplain rocks.xmpp.extensions.data.model.DataForm.Field.Type#TEXT_MULTI "text-multi"} differently; it hints that each value for a "text-multi" field shall be validated separately. This effectively turns "text-multi" fields into an open-ended "list-multi", with no options and all values automatically selected.</p>
          */
         public static final class Open extends ValidationMethod {
 

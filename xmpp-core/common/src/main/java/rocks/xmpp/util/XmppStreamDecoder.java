@@ -75,8 +75,8 @@ public class XmppStreamDecoder implements ReaderInterceptor {
 
     /**
      * Creates the XMPP encoder.
-     * <p>
-     * Because {@link Marshaller} is not thread-safe, it is recommended to pass a {@code ThreadLocal<Marshaller>} to this constructor, which ensures thread-safety during marshalling.
+     *
+     * <p>Because {@link Marshaller} is not thread-safe, it is recommended to pass a {@code ThreadLocal<Marshaller>} to this constructor, which ensures thread-safety during marshalling.</p>
      *
      * @param inputFactory The XML input factory.
      * @param unmarshaller Supplies the marshaller which will convert objects to XML.

@@ -30,8 +30,9 @@ import javax.xml.bind.annotation.XmlEnumValue;
 
 /**
  * Represents a presence subscription state.
- * <p>
- * There are four primary subscription states (these states are described from the perspective of the user, not the contact):
+ *
+ * <p>There are four primary subscription states (these states are described from the perspective of the user, not the contact):</p>
+ *
  * <ul>
  * <li>None:
  * The user does not have a subscription to the contact's presence, and the contact does not have a subscription to the user's presence.
@@ -46,8 +47,8 @@ import javax.xml.bind.annotation.XmlEnumValue;
  * Both the user and the contact have subscriptions to each other's presence (i.e., the union of 'from' and 'to').
  * </li>
  * </ul>
- * <p>
- * The foregoing states are supplemented by various sub-states related to pending inbound and outbound subscriptions.
+ *
+ * <p>The foregoing states are supplemented by various sub-states related to pending inbound and outbound subscriptions.</p>
  *
  * @author Christian Schudt
  * @see DefinedState

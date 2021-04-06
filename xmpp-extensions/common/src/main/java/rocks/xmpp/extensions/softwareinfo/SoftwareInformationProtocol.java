@@ -35,10 +35,10 @@ import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 
 /**
  * Represents the XEP-0232: Software Information.
- * <p>
- * In order to provide software information to other entities, simply {@linkplain #setSoftwareInfo(SoftwareInformation) set} it.
- * <p>
- * This class is thread-safe.
+ *
+ * <p>In order to provide software information to other entities, simply {@linkplain #setSoftwareInfo(SoftwareInformation) set} it.</p>
+ *
+ * <p>This class is thread-safe.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0232.html">XEP-0232: Software Information</a>

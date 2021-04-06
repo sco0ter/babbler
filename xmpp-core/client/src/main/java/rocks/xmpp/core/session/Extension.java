@@ -36,26 +36,28 @@ import rocks.xmpp.core.ExtensionProtocol;
 
 /**
  * Represents an XMPP protocol extension (XEP).
- * <p>
- * An extension usually consists of:
+ *
+ * <p>An extension usually consists of:</p>
+ *
  * <ul>
  * <li>A namespace, which uniquely identifies the extension, e.g. {@code "urn:xmpp:receipts"}</li>
  * <li>A {@link Manager} class, which is associated with the extension and manages its business logic.</li>
  * <li>A collection of classes which are implementations of the XML schema.</li>
  * <li>A set of features, which are advertised together with the namespace in service discovery, e.g. "urn:xmpp:hash-function-text-names:sha-1"</li>
  * </ul>
- * All of these characteristics are optional:
- * <p>
- * An extension could have an XML schema implementation, but no business logic and therefore no manager class, like XEP-0203: Delayed Delivery.
- * <p>
- * The namespace is optional as well: If an extension has no namespace, it won't be advertised in Service Discovery.
- * <p>
- * Extensions which have business logic (and hence a manager class), can be enabled or disabled.
- * <p>
- * In order to create an extension, use one of its static factory methods.
- * <p>
- * This class overrides {@link #equals(Object)} and {@link #hashCode()}, so that two extensions are considered equal if either their namespace are equal or their manager classes.
- * This allows to disable certain extensions or managers by default.
+ *
+ * <p>All of these characteristics are optional:</p>
+ *
+ * <p>An extension could have an XML schema implementation, but no business logic and therefore no manager class, like XEP-0203: Delayed Delivery.</p>
+ *
+ * <p>The namespace is optional as well: If an extension has no namespace, it won't be advertised in Service Discovery.</p>
+ *
+ * <p>Extensions which have business logic (and hence a manager class), can be enabled or disabled.</p>
+ *
+ * <p>In order to create an extension, use one of its static factory methods.</p>
+ *
+ * <p>This class overrides {@link #equals(Object)} and {@link #hashCode()}, so that two extensions are considered equal if either their namespace are equal or their manager classes.
+ * This allows to disable certain extensions or managers by default.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>
@@ -82,8 +84,8 @@ public final class Extension implements ExtensionProtocol {
 
     /**
      * Creates an extension with a set of classes (XML schema implementations) used by this extension.
-     * <p>
-     * Use it for extensions without business logic and no namespace which needs to be advertised, e.g. for Delayed Delivery.
+     *
+     * <p>Use it for extensions without business logic and no namespace which needs to be advertised, e.g. for Delayed Delivery.</p>
      *
      * @param classes The classes.
      * @return The extension.
@@ -126,8 +128,8 @@ public final class Extension implements ExtensionProtocol {
 
     /**
      * Creates an extension with a namespace, business logic and XML schema classes.
-     * <p>
-     * This is the most common extension characteristic.
+     *
+     * <p>This is the most common extension characteristic.</p>
      *
      * @param namespace The protocol namespace.
      * @param manager   The manager class, which covers the business logic.

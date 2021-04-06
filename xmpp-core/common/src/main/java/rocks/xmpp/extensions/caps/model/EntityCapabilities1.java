@@ -45,8 +45,8 @@ import rocks.xmpp.util.Strings;
 
 /**
  * The implementation of the {@code <c/>} element in the {@code http://jabber.org/protocol/caps}.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>
@@ -106,6 +106,7 @@ public final class EntityCapabilities1 extends StreamFeature implements EntityCa
 
     /**
      * Gets the node.
+     * 
      * <blockquote>
      * <p>A URI that uniquely identifies a software application, typically a URL at the website of the project or company that produces the software.</p>
      * <p>It is RECOMMENDED for the value of the 'node' attribute to be an HTTP URL at which a user could find further information about the software product, such as "http://psi-im.org" for the Psi client; this enables a processing application to also determine a unique string for the generating application, which it could maintain in a list of known software implementations (e.g., associating the name received via the disco#info reply with the URL found in the caps data).</p>

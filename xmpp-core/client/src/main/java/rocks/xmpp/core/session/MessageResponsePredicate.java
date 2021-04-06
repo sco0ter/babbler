@@ -32,8 +32,9 @@ import rocks.xmpp.core.stanza.model.Message;
 
 /**
  * A predicate which checks for valid message responses.
- * <p>
- * An message response must meet the following criteria:
+ *
+ * <p>An message response must meet the following criteria:</p>
+ * 
  * <ol>
  * <li>both stanza IDs of request and response are equal</li>
  * <li>the request's 'to' bare JID matches the response's 'from' bare JID, unless</li>

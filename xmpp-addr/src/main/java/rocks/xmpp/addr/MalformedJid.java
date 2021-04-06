@@ -28,8 +28,8 @@ import java.util.Objects;
 
 /**
  * Represents a malformed JID in order to handle the <code>jid-malformed</code> error.
- * <p>
- * This class is not intended to be publicly instantiable, but is used for malformed JIDs during parsing automatically.
+ *
+ * <p>This class is not intended to be publicly instantiable, but is used for malformed JIDs during parsing automatically.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-jid-malformed">RFC 6120, 8.3.3.8.  jid-malformed</a>

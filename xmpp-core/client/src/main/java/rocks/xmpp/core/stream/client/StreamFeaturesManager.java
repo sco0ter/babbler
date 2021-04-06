@@ -49,6 +49,7 @@ import rocks.xmpp.core.tls.model.StartTls;
 
 /**
  * Manages the various features, which are advertised during stream negotiation.
+ *
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-negotiation">4.3.  Stream Negotiation</a></cite></p>
  * <p>Because the receiving entity for a stream acts as a gatekeeper to the domains it services, it imposes
@@ -63,13 +64,16 @@ import rocks.xmpp.core.tls.model.StartTls;
  * improve the handling of an XML stream (e.g., establishment of application-layer compression as described
  * in [XEP-0138]).</p>
  * </blockquote>
+ *
  * <p>Each feature is associated with a {@linkplain StreamFeatureNegotiator feature negotiator}, which
  * negotiates the particular feature.</p>
+ *
  * <p>This class manages these negotiators, receives XML elements and delegates them to the responsible
  * feature negotiator for further processing.</p>
+ *
  * <p>It negotiates the stream by sequentially negotiating each stream feature.</p>
- * <p>
- * This class is thread-safe.
+ *
+ * <p>This class is thread-safe.</p>
  *
  * @author Christian Schudt
  */

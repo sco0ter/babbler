@@ -33,8 +33,8 @@ import rocks.xmpp.extensions.bookmarks.model.ConferenceBookmark;
 
 /**
  * A PEP native conference bookmark element.
- * <p>
- * PEP native conference bookmarks are stored in private, personal pubsub nodes using the Personal Eventing Protocol (PEP).
+ *
+ * <p>PEP native conference bookmarks are stored in private, personal pubsub nodes using the Personal Eventing Protocol (PEP).</p>
  *
  * @see <a href="https://xmpp.org/extensions/xep-0402.html">XEP-0402: PEP Native Bookmarks</a>
  */

@@ -32,8 +32,9 @@ import rocks.xmpp.core.stanza.model.IQ;
 
 /**
  * A predicate which checks for valid IQ responses to a IQ request.
- * <p>
- * An IQ response matches to an IQ request if:
+ *
+ * <p>An IQ response matches to an IQ request if:</p>
+ * 
  * <ol>
  * <li>the response IQ is of type 'result' or 'error'</li>
  * <li>both stanza IDs of request and response are equal</li>
@@ -43,7 +44,8 @@ import rocks.xmpp.core.stanza.model.IQ;
  * <li>or the response is from the user's account (bare JID) or from the server itself.</li>
  * </ul>
  * </ol>
- * Checking the 'from' attribute in addition to the to stanza id is recommended, because an attacker could spoof an IQ response when guessing the correct stanza id.
+ *
+ * <p>Checking the 'from' attribute in addition to the to stanza id is recommended, because an attacker could spoof an IQ response when guessing the correct stanza id.</p>
  *
  * @author Christian Schudt
  */

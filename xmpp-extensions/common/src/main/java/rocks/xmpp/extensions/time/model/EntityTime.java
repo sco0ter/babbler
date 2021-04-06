@@ -36,8 +36,8 @@ import rocks.xmpp.util.adapters.ZoneOffsetAdapter;
 
 /**
  * The implementation of the {@code <time/>} element in the {@code urn:xmpp:time} namespace.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0202.html">XEP-0202: Entity Time</a>

@@ -35,8 +35,8 @@ import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
  * Represents the {@code <mechanisms/>} element as described in <a href="https://xmpp.org/rfcs/rfc6120.html#sasl-process-stream">Exchange of Stream Headers and Stream Features</a>
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  */
@@ -64,6 +64,7 @@ public final class Mechanisms extends StreamFeature {
 
     /**
      * Returns always true, because SASL is mandatory to negotiate.
+     *
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#sasl-rules-mtn">6.3.1.  Mandatory-to-Negotiate</a></cite></p>
      * <p>The parties to a stream MUST consider SASL as mandatory-to-negotiate.</p>

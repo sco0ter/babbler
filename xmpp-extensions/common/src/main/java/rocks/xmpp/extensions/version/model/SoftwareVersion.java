@@ -31,8 +31,8 @@ import rocks.xmpp.extensions.softwareinfo.SoftwareInfo;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:version} namespace.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>
@@ -61,11 +61,13 @@ public final class SoftwareVersion implements SoftwareInfo {
     /**
      * Creates a software version instance.
      * The operating system will be determined automatically.
+     *
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/extensions/xep-0092.html#security">5. Security Considerations</a></cite></p>
      * <p>Revealing the application's underlying operating system may open the user or system to attacks directed against that operating system; therefore, an application MUST provide a way for a human user or administrator to disable sharing of information about the operating system.</p>
      * </blockquote>
-     * If you want to hide OS information, use {@link #SoftwareVersion(String, String, String)} and pass null for the os parameter.
+     *
+     * <p>If you want to hide OS information, use {@link #SoftwareVersion(String, String, String)} and pass null for the os parameter.</p>
      *
      * @param name    The software's name.
      * @param version The software's version.

@@ -42,8 +42,9 @@ import rocks.xmpp.util.adapters.LocaleAdapter;
 
 /**
  * The abstract base class for a XML stanza.
+ *
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas">8.  XML Stanzas</a></cite>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas">8.  XML Stanzas</a></cite></p>
  * <p>After a client and a server (or two servers) have completed stream negotiation, either party can send XML stanzas. Three kinds of XML stanza are defined for the 'jabber:client' and 'jabber:server' namespaces: {@code <message/>}, {@code <presence/>}, and {@code <iq/>}.</p>
  * </blockquote>
  *
@@ -91,6 +92,7 @@ public abstract class Stanza implements LanguageElement, StreamElement {
 
     /**
      * Gets the stanza's 'from' attribute.
+     *
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-attributes-from">8.1.2.  from</a></cite></p>
      * <p>The 'from' attribute specifies the JID of the sender.</p>
@@ -114,6 +116,7 @@ public abstract class Stanza implements LanguageElement, StreamElement {
 
     /**
      * Gets the stanza's 'id' attribute.
+     *
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-attributes-id">8.1.3.  id</a></cite></p>
      * <p>The 'id' attribute is used by the originating entity to track any response or error stanza that it might receive in relation to the generated stanza from another entity (such as an intermediate server or the intended recipient).</p>
@@ -140,6 +143,7 @@ public abstract class Stanza implements LanguageElement, StreamElement {
 
     /**
      * Gets the stanza's 'to' attribute, i.e. the recipient.
+     *
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-attributes-to">8.1.1.  to</a></cite></p>
      * <p>The 'to' attribute specifies the JID of the intended recipient for the stanza.</p>
@@ -163,6 +167,7 @@ public abstract class Stanza implements LanguageElement, StreamElement {
 
     /**
      * Gets the stanza's 'xml:lang' attribute, i.e. its language.
+     *
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-attributes-lang">8.1.5.  xml:lang</a></cite></p>
      * <p>A stanza SHOULD possess an 'xml:lang' attribute (as defined in Section 2.12 of [XML]) if the stanza contains XML character data that is intended to be presented to a human user (as explained in [CHARSETS], "internationalization is for humans"). The value of the 'xml:lang' attribute specifies the default language of any such human-readable XML character data.</p>
@@ -214,6 +219,7 @@ public abstract class Stanza implements LanguageElement, StreamElement {
 
     /**
      * Gets the stanza's 'error' element.
+     *
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a></cite></p>
      * <div>
@@ -264,6 +270,7 @@ public abstract class Stanza implements LanguageElement, StreamElement {
 
     /**
      * Checks if a stanza is addressed either to itself or to the server. This is useful to check, if it's allowed to send a stanza before stream negotiation has completed.
+     * 
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-negotiation-complete">4.3.5.  Completion of Stream Negotiation</a></cite></p>
      * <div>

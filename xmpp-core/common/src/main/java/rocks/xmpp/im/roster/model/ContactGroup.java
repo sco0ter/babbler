@@ -33,8 +33,8 @@ import java.util.TreeSet;
 /**
  * Represents a contact group in the user's roster.
  * A group consists of contacts and may contain nested sub-groups.
- * <p>
- * This class is conditionally thread-safe.
+ *
+ * <p>This class is conditionally thread-safe.</p>
  *
  * @author Christian Schudt
  */

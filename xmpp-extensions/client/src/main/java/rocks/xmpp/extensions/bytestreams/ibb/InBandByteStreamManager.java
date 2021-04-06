@@ -46,10 +46,10 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * A manager for <a href="https://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>. IBB streams use the same transport as XMPP, i.e. the same TCP or BOSH connection.
- * <p>
- * To initiate an IBB session with another entity, use {@link #initiateSession(Jid, String, int)}.
- * <p>
- * This class is thread-safe.
+ *
+ * <p>To initiate an IBB session with another entity, use {@link #initiateSession(Jid, String, int)}.</p>
+ *
+ * <p>This class is thread-safe.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>

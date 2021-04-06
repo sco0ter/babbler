@@ -28,13 +28,14 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * The implementation of the {@code <continue/>} element.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#continue">7.9 Converting a One-to-One Chat Into a Multi-User Conference</a>
  */
 final class Continue {
+    
     @XmlAttribute
     final String thread;
 

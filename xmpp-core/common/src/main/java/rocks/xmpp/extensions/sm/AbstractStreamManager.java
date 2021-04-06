@@ -53,10 +53,10 @@ public abstract class AbstractStreamManager implements StreamFeatureNegotiator<S
 
     /**
      * 2^32 - 1
-     * <p>
-     * In the unlikely case that the number of stanzas handled during a stream management session exceeds the number of
+     *
+     * <p>In the unlikely case that the number of stanzas handled during a stream management session exceeds the number of
      * digits that can be represented by the unsignedInt datatype as specified in XML Schema Part 2 [10] (i.e., 232),
-     * the value of 'h' SHALL be reset from 232-1 back to zero (rather than being incremented to 232).
+     * the value of 'h' SHALL be reset from 232-1 back to zero (rather than being incremented to 232).</p>
      */
     private static final long MAX_H = 0xFFFFFFFFL;
     /**
@@ -67,6 +67,7 @@ public abstract class AbstractStreamManager implements StreamFeatureNegotiator<S
      * Guarded by "this".
      */
     protected final AtomicBoolean enabledByClient = new AtomicBoolean();
+    
     private final Session session;
     /**
      * Tracks the count of inbound stanzas, we have received from the server.

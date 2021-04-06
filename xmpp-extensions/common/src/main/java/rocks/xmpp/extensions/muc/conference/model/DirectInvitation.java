@@ -31,8 +31,8 @@ import rocks.xmpp.addr.Jid;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code jabber:x:conference} namespace, which represents a direct multi-user chat invitation.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  */

@@ -32,8 +32,8 @@ import rocks.xmpp.extensions.disco.model.items.ItemProvider;
 
 /**
  * Provides discoverable info, so that it can be discovered via Service Discovery (disco#info).
- * <p>
- * This is the pendant to {@link ItemProvider}.
+ *
+ * <p>This is the pendant to {@link ItemProvider}.</p>
  *
  * @author Christian Schudt
  * @see ItemProvider

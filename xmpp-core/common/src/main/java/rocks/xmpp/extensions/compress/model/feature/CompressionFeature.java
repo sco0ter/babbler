@@ -34,8 +34,8 @@ import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
  * The implementation of the {@code <compression/>} element in the {@code http://jabber.org/features/compress} namespace.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>

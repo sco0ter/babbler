@@ -103,8 +103,8 @@ import rocks.xmpp.extensions.xhtmlim.model.Html;
 
 /**
  * Defines extension protocol classes to be bound to the JAXBContext.
- * <p>
- * This class is not intended to be used by end users.
+ *
+ * <p>This class is not intended to be used by end users.</p>
  *
  * @author Christian Schudt
  */

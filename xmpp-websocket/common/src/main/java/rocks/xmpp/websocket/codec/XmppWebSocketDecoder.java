@@ -43,11 +43,11 @@ import rocks.xmpp.util.XmppStreamDecoder;
 
 /**
  * Decodes WebSocket text messages to XMPP {@link StreamElement}s.
- * <p>
- * The required {@link Unmarshaller} for decoding must be supplied via {@link EndpointConfig#getUserProperties()}, see {@link UserProperties#UNMARSHALLER}.
- * <p>
- * Optionally you can also provide a callback, which is called after unmarshalling with the XML string (the text message) and the unmarshalled element.
- * This is useful for debugging purposes, see {@link UserProperties#ON_READ}.
+ *
+ * <p>The required {@link Unmarshaller} for decoding must be supplied via {@link EndpointConfig#getUserProperties()}, see {@link UserProperties#UNMARSHALLER}.</p>
+ *
+ * <p>Optionally you can also provide a callback, which is called after unmarshalling with the XML string (the text message) and the unmarshalled element.
+ * This is useful for debugging purposes, see {@link UserProperties#ON_READ}.</p>
  *
  * @author Christian Schudt
  * @see XmppWebSocketEncoder

@@ -39,16 +39,22 @@ import rocks.xmpp.core.Addressable;
 
 /**
  * The implementation of the {@code <address/>} element in the {@code http://jabber.org/protocol/address} namespace.
+ *
  * <h3>Usage</h3>
- * To create a new address, use one of the public constructors, like:
+ *
+ * <p>To create a new address, use one of the public constructors, like:</p>
+ *
  * <pre>{@code
  * Address address = new Address(Address.Type.TO, Jid.of("hildjj@jabber.org/Work"), "description");
  * }</pre>
- * To mark an address as delivered, create a new immutable address object from an undelivered address:
+ *
+ * <p>To mark an address as delivered, create a new immutable address object from an undelivered address:</p>
+ *
  * <pre>{@code
  * Address delivered = address.delivered();
  * }</pre>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0033.html">XEP-0033: Extended Stanza Addressing</a>
@@ -257,6 +263,7 @@ public final class Address implements Addressable {
      * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-type">4.6 'type' attribute</a>
      */
     public enum Type {
+
         /**
          * These addressees should receive 'blind carbon copies' of the stanza. This means that the server MUST remove these addresses before the stanza is delivered to anyone other than the given bcc addressee or the multicast service of the bcc addressee.
          *
@@ -264,6 +271,7 @@ public final class Address implements Addressable {
          */
         @XmlEnumValue(value = "bcc")
         BCC,
+
         /**
          * These addressees are the secondary recipients of the stanza.
          *
@@ -271,6 +279,7 @@ public final class Address implements Addressable {
          */
         @XmlEnumValue(value = "cc")
         CC,
+
         /**
          * This address type contains no actual address information. Instead, it means that the receiver SHOULD NOT reply to the message. This is useful when broadcasting messages to many receivers.
          *
@@ -278,6 +287,7 @@ public final class Address implements Addressable {
          */
         @XmlEnumValue(value = "noreply")
         NOREPLY,
+
         /**
          * This is the JID of a Multi-User Chat (XEP-0045) [5] room to which responses should be sent. When a user wants to reply to this stanza, the client SHOULD join this room first. Clients SHOULD respect this request unless an explicit override occurs. There MAY be more than one replyto or replyroom on a stanza, in which case the reply stanza MUST be routed to all of the addresses.
          *
@@ -285,6 +295,7 @@ public final class Address implements Addressable {
          */
         @XmlEnumValue(value = "replyroom")
         REPLYROOM,
+
         /**
          * This is the address to which all replies are requested to be sent. Clients SHOULD respect this request unless an explicit override occurs. There MAY be more than one replyto or replyroom on a stanza, in which case the reply stanza MUST be routed to all of the addresses.
          *
@@ -292,6 +303,7 @@ public final class Address implements Addressable {
          */
         @XmlEnumValue(value = "replyto")
         REPLYTO,
+
         /**
          * These addressees are the primary recipients of the stanza.
          *
@@ -299,6 +311,7 @@ public final class Address implements Addressable {
          */
         @XmlEnumValue(value = "to")
         TO,
+        
         /**
          * In Multi-User Chat, if the room is non-anonymous, notes the original full JID of the sender.
          *

@@ -33,8 +33,8 @@ import rocks.xmpp.extensions.data.model.DataForm;
 /**
  * Represents a view of the standardized fields of the 'urn:xmpp:dataforms:softwareinfo' data form
  * to be included in service discovery responses to provide detailed information about the software.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0232.html#registrar-formtype">5.1 Field Standardization</a>

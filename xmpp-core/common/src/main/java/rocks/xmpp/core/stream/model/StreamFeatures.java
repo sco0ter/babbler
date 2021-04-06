@@ -33,8 +33,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <stream:features/>} element.
- * <p>
- * This class is immutable (if all features are immutable, too).
+ *
+ * <p>This class is immutable (if all features are immutable, too).</p>
  *
  * @author Christian Schudt
  */

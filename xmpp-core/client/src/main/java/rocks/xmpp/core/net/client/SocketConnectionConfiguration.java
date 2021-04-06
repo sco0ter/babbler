@@ -35,10 +35,14 @@ import rocks.xmpp.core.session.XmppSession;
 
 /**
  * A configuration for a TCP connection using {@link Socket}.
- * It allows you to configure various connection settings for a TCP socket connection, most importantly the host address and port,
- * but also a whitespace keep-alive interval, a custom socket factory, a custom SSL context and compression methods.
+ *
+ * <p>It allows you to configure various connection settings for a TCP socket connection, most importantly the host address and port,
+ * but also a whitespace keep-alive interval, a custom socket factory, a custom SSL context and compression methods.</p>
+ *
  * <h3>Usage</h3>
- * In order to create an instance of this class you have to use the builder pattern as shown below.
+ *
+ * <p>In order to create an instance of this class you have to use the builder pattern as shown below.</p>
+ *
  * <pre>{@code
  * SocketConnectionConfiguration socketConfiguration = SocketConnectionConfiguration.builder()
  *     .hostname("localhost")
@@ -47,7 +51,8 @@ import rocks.xmpp.core.session.XmppSession;
  *     .channelEncryption(ChannelEncryption.DISABLED)
  *     .build();
  * }</pre>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration
@@ -145,8 +150,8 @@ public final class SocketConnectionConfiguration extends TcpConnectionConfigurat
         /**
          * Sets a socket factory which creates the socket.
          * This can be useful if you want connect to the legacy SSL port (usually 5223) and the connection is encrypted right from the beginning.
-         * <p>
-         * However, usually, there's no need to set a custom socket factory.
+         *
+         * <p>However, usually, there's no need to set a custom socket factory.</p>
          *
          * @param socketFactory The socket factory.
          * @return The builder.

@@ -46,8 +46,8 @@ import rocks.xmpp.im.roster.server.spi.ScramIdentityStore;
 
 /**
  * An in-memory identity store for testing and illustration purposes.
- * <p>
- * It validates the user "admin/admin".
+ *
+ * <p>It validates the user "admin/admin".</p>
  *
  * @author Christian Schudt
  */

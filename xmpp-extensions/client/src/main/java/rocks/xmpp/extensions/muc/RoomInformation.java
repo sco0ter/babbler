@@ -37,9 +37,9 @@ import rocks.xmpp.extensions.muc.model.RoomInfo;
 
 /**
  * Represents information about a chat room.
- * <p>
- * This class wraps the service discovery information result, which usually consists of identities, features and extended forms
- * into one class, so that a developer doesn't have to deal with the complex structure of the service discovery result.
+ *
+ * <p>This class wraps the service discovery information result, which usually consists of identities, features and extended forms
+ * into one class, so that a developer doesn't have to deal with the complex structure of the service discovery result.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#disco-roominfo">6.4 Querying for Room Information</a>

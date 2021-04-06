@@ -31,14 +31,15 @@ import javax.xml.bind.annotation.XmlEnumValue;
 
 /**
  * The implementation of the {@code <rule/>} element, used both in the {@code http://jabber.org/protocol/amp} namespace as well as in the {@code http://jabber.org/protocol/amp#errors} namespace.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>
  * @see <a href="https://xmpp.org/extensions/xep-0079.html#schemas-amp">XML Schema</a>
  */
 public final class Rule {
+    
     @XmlAttribute
     private final Action action;
 
@@ -210,6 +211,7 @@ public final class Rule {
      * @see <a href="https://xmpp.org/extensions/xep-0079.html#conditions-def-deliver">3.3.1 deliver</a>
      */
     public enum DeliveryMode {
+        
         /**
          * The message would be immediately delivered to the intended recipient or routed to the next hop.
          */

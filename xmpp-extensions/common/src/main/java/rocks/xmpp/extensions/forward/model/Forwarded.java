@@ -39,8 +39,8 @@ import rocks.xmpp.extensions.delay.model.DelayedDelivery;
 
 /**
  * The implementation of the {@code <forwarded/>} element in the {@code urn:xmpp:forward:0} namespace.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0297.html">XEP-0297: Stanza Forwarding</a>

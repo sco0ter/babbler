@@ -39,21 +39,25 @@ import rocks.xmpp.util.adapters.OffsetDateTimeAdapter;
 
 /**
  * The implementation of the {@code <idle/>} element in the {@code urn:xmpp:idle:1} namespace.
- * <p>
- * It also provides a {@linkplain #timeFromPresence(Presence) convenient method}, which gets the idle time from a presence with respect to <a href="https://xmpp.org/extensions/xep-0319.html">XEP-0319: Last User Interaction in Presence</a> and the superseded <a href="https://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
- * </p>
+ *
+ * <p>It also provides a {@linkplain #timeFromPresence(Presence) convenient method}, which gets the idle time from a presence with respect to <a href="https://xmpp.org/extensions/xep-0319.html">XEP-0319: Last User Interaction in Presence</a> and the superseded <a href="https://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.</p>
+ *
  * <h3>Adding Last User Interaction to Presence</h3>
+ *
  * <pre>{@code
  * presence.addExtension(Idle.since(OffsetDateTime.now()));
  * }</pre>
+ *
  * <h3>Getting Last User Interaction from Presence</h3>
- * The following method takes the very similar <a href="https://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a> extension into account as well.
- * Delayed Delivery information on the presence is respected, too.
+ *
+ * <p>The following method takes the very similar <a href="https://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a> extension into account as well.
+ * Delayed Delivery information on the presence is respected, too.</p>
+ *
  * <pre>{@code
  * Instant idleSince = Idle.timeFromPresence(presence);
  * }</pre>
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0319.html">XEP-0319: Last User Interaction in Presence</a>
@@ -93,10 +97,10 @@ public final class Idle {
 
     /**
      * Extracts the idle time from a presence.
-     * <p>
-     * This methods first checks for a <a href="https://xmpp.org/extensions/xep-0319.html">XEP-0319: Last User Interaction in Presence</a> extension and uses <a href="https://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a> semantics as fallback to determine the idle time.
-     * <p>
-     * Delayed delivery information is respected.
+     *
+     * <p>This methods first checks for a <a href="https://xmpp.org/extensions/xep-0319.html">XEP-0319: Last User Interaction in Presence</a> extension and uses <a href="https://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a> semantics as fallback to determine the idle time.</p>
+     *
+     * <p>Delayed delivery information is respected.</p>
      *
      * @param presence The presence.
      * @return The idle time or null if the presence contains no idle information.

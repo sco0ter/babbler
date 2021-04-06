@@ -36,11 +36,11 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * This class is the entry point to work with pubsub.
- * <p>
- * You should first {@linkplain #createPubSubService(Jid) create a pubsub service}, which allows you to work with that service.
- * If you don't know the service address, you can {@linkplain #discoverPubSubServices()} discover} the pubsub services hosted at your server.
- * <p>
- * It also allows you to {@linkplain #createPersonalEventingService() create a Personal Eventing Service}, which is a virtual pubsub service, bound to your account.
+ *
+ * <p>You should first {@linkplain #createPubSubService(Jid) create a pubsub service}, which allows you to work with that service.
+ * If you don't know the service address, you can {@linkplain #discoverPubSubServices()} discover} the pubsub services hosted at your server.</p>
+ *
+ * <p>It also allows you to {@linkplain #createPersonalEventingService() create a Personal Eventing Service}, which is a virtual pubsub service, bound to your account.</p>
  *
  * @author Christian Schudt
  * @see rocks.xmpp.extensions.pubsub.PubSubService

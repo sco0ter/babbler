@@ -29,10 +29,11 @@ import rocks.xmpp.core.stream.StreamNegotiationException;
 
 /**
  * An exception thrown during the login process, if SASL negotiation with the XMPP server fails.
- * <p>
- * Typical error cases are invalid username and/or password in which case the {@linkplain #getCondition() failure condition} is {@link rocks.xmpp.core.sasl.model.Failure.Condition#NOT_AUTHORIZED}.
- * <p>
- * If you want to know the exact failure case, ask for the condition as shown below:
+ *
+ * <p>Typical error cases are invalid username and/or password in which case the {@linkplain #getCondition() failure condition} is {@link rocks.xmpp.core.sasl.model.Failure.Condition#NOT_AUTHORIZED}.</p>
+ *
+ * <p>If you want to know the exact failure case, ask for the condition as shown below:</p>
+ *
  * <pre>{@code
  * catch (AuthenticationException e) {
  *     if (e.getCondition() == Failure.Condition.NOT_AUTHORIZED) {

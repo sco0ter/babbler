@@ -39,8 +39,8 @@ import rocks.xmpp.util.adapters.InstantAdapter;
 
 /**
  * The implementation of the file transfer profile, i.e. the {@code <file/>} element.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a>

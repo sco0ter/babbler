@@ -102,8 +102,8 @@ public final class SecurityLabel {
 
     /**
      * Gets the equivalent security labels.
-     * <p>
-     * Each equivalent label represents an equivalent security label under other policies. This element might be used when a recipient is known to hold a clearance under a different policy than the sender.
+     *
+     * <p>Each equivalent label represents an equivalent security label under other policies. This element might be used when a recipient is known to hold a clearance under a different policy than the sender.</p>
      *
      * @return The equivalent security labels.
      */
@@ -114,6 +114,7 @@ public final class SecurityLabel {
 
     /**
      * The implementation of the {@code <displaymarking/>} element.
+     * 
      * <blockquote>
      * <p>
      * The {@code <displaymarking/>} element contains a display string for use by implementations which are unable to utilize the applicable security policy to generate display markings.

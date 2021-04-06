@@ -34,8 +34,8 @@ import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 /**
  * A result set usually consists of a list of items and additional result set information (e.g. to mark first and last items).
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  */
@@ -72,12 +72,12 @@ public final class ResultSet<T extends ResultSetItem> {
 
     /**
      * Creates a result set from a result set provider and a result set management.
-     * <p>
-     * If the result set management asks for a limited result set (e.g. starting at a specific index and a maximum size),
-     * this method takes care, that the result set provider returns the appropriate results.
-     * <p>
-     * The returned result set contains the limited result set as well as a result set management,
-     * which contains the total item count and which can be used by the requester to navigate through the results, e.g. by asking for the previous or next page.
+     *
+     * <p>If the result set management asks for a limited result set (e.g. starting at a specific index and a maximum size),
+     * this method takes care, that the result set provider returns the appropriate results.</p>
+     *
+     * <p>The returned result set contains the limited result set as well as a result set management,
+     * which contains the total item count and which can be used by the requester to navigate through the results, e.g. by asking for the previous or next page.</p>
      *
      * @param resultSetProvider   The result set provider.
      * @param resultSetManagement The result set management.

@@ -33,11 +33,15 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * A container class for Message Delivery Receipts.
+ *
  * <h3>Requesting a Message Delivery Receipt</h3>
+ *
  * <pre>{@code
  * message.addExtension(MessageDeliveryReceipts.REQUEST);
  * }</pre>
+ *
  * <h3>Sending an Receipt to a Message Delivery Request</h3>
+ * 
  * <pre>{@code
  * message.addExtension(new MessageDeliveryReceipts.Received(id));
  * }</pre>
@@ -65,8 +69,8 @@ public abstract class MessageDeliveryReceipts {
 
     /**
      * The implementation of the {@code <received/>} element in the {@code urn:xmpp:receipts} namespace.
-     * <p>
-     * This class is immutable.
+     *
+     * <p>This class is immutable.</p>
      */
     @XmlRootElement
     public static final class Received extends MessageDeliveryReceipts {

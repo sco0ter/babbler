@@ -32,39 +32,51 @@ import java.util.Objects;
 /**
  * A consistent color which is generated from an input string such as a nickname or a bare JID.
  * Consistent means, the resulting color is always the same for same input strings.
+ *
  * <h2>Generating a Color</h2>
- * To generate a color pass either a nickname or the bare JID of the conversation as <code>input</code> to the {@link #generate(CharSequence)} method.
- * Generally, nick names should be preferred over bare JIDs.
+ *
+ * <p>To generate a color pass either a nickname or the bare JID of the conversation as <code>input</code> to the {@link #generate(CharSequence)} method.
+ * Generally, nick names should be preferred over bare JIDs.</p>
+ *
  * <pre>{@code
  * ConsistentColor color = ConsistentColor.generate(input);
  * float red = color.getRed();
  * float green = color.getGreen();
  * float blue = color.getBlue();
  * }</pre>
+ *
  * <h2>Corrections for Color Vision Deficiencies</h2>
- * In order to ensure accessibility to users with color vision deficiencies, you can generate corrected colors.
+ *
+ * <p>In order to ensure accessibility to users with color vision deficiencies, you can generate corrected colors.</p>
+ * 
  * <pre>{@code
  * ConsistentColor color = ConsistentColor.generate(input, ConsistentColor.ColorVisionDeficiency.RED_GREEN_BLINDNESS);}
  * }</pre>
+ *
  * <h2>Adapting the Color for specific Background Colors</h2>
- * To increase readability on colored background, you may want to adapt the color for background colors.
+ *
+ * <p>To increase readability on colored background, you may want to adapt the color for background colors.</p>
+ *
  * <pre>{@code
  * ConsistentColor color = ConsistentColor.generate(input);
  * // Adaption for black background
  * ConsistentColor adapted = color.adaptForBackground(0, 0, 0);
  * }</pre>
+ *
  * <h2>Integration with JavaFX and AWT</h2>
+ *
  * <pre>{@code
  * ConsistentColor c = ConsistentColor.generate(input);
  * javafx.scene.paint.Color color = javafx.scene.paint.Color.color(c.getRed(), c.getGreen(), c.getBlue());
  * java.awt.Color color = new java.awt.Color(c.getRed(), c.getGreen(), c.getBlue());
  * }</pre>
- * The default Y value in the YCbCr color space is 0.732.
- * <p>
- * Note that this class overrides {@link #equals(Object)} and {@link #hashCode()}:
- * Two instances of this classes are equal, if their RGB values are equal.
- * <p>
- * This class is immutable.
+ *
+ * <p>The default Y value in the YCbCr color space is 0.732.</p>
+ *
+ * <p>Note that this class overrides {@link #equals(Object)} and {@link #hashCode()}:
+ * Two instances of this classes are equal, if their RGB values are equal.</p>
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0392.html">XEP-0392: Consistent Color Generation</a>

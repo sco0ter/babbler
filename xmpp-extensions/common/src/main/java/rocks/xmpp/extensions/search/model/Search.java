@@ -39,8 +39,8 @@ import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:search} namespace.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0055.html">XEP-0055: Jabber Search</a>
@@ -169,6 +169,7 @@ public final class Search {
 
     /**
      * Gets additional information for the search, e.g. for gender.
+     *
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/extensions/xep-0055.html#extensibility">3. Extensibility</a></cite></p>
      * <p>The fields defined in the 'jabber:iq:search' namespace are strictly limited to those specified in the schema. If a host needs to gather additional information, Data Forms SHOULD be used; a host MUST NOT add new fields to the 'jabber:iq:search' namespace. Support for extensibility via Data Forms is RECOMMENDED, but is not required for compliance with this document.</p>
@@ -192,8 +193,8 @@ public final class Search {
 
     /**
      * The implementation of a search result item.
-     * <p>
-     * This class is immutable.
+     *
+     * <p>This class is immutable.</p>
      */
     public static final class Item implements Addressable {
 

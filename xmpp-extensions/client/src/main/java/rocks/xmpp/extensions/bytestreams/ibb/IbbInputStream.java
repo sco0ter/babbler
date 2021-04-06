@@ -36,8 +36,8 @@ import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 
 /**
  * An input stream implementation for in-band bytestreams.
- * <p>
- * This class is thread-safe.
+ *
+ * <p>This class is thread-safe.</p>
  *
  * @author Christian Schudt
  */

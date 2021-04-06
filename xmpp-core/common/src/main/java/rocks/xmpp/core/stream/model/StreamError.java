@@ -37,8 +37,8 @@ import rocks.xmpp.core.stream.model.errors.Condition;
 
 /**
  * The implementation of the {@code <stream:error/>} element.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-error">4.9.  Stream Errors</a>

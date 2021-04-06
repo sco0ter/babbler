@@ -52,22 +52,23 @@ import rocks.xmpp.util.XmppUtils;
 
 /**
  * A configuration for an {@link XmppSession}.
- * <p>
- * Most importantly it allows you to introduce custom extensions to your {@link XmppSession}, simply by passing your JAXB annotated classes to the builder of this class
- * and then {@linkplain XmppSession#XmppSession(String, XmppSessionConfiguration, ClientConnectionConfiguration...) use this configuration for the session}.
- * </p>
- * Since creating the JAXB context is quite expensive, this class allows you to create the context once and reuse it by multiple sessions.
- * You can also {@linkplain #setDefault(XmppSessionConfiguration) set} an application-wide default configuration (used by all XMPP sessions).
- * <p>
- * Use the {@link #builder()} to create instances of this class:
- * </p>
+ *
+ * <p>Most importantly it allows you to introduce custom extensions to your {@link XmppSession}, simply by passing your JAXB annotated classes to the builder of this class
+ * and then {@linkplain XmppSession#XmppSession(String, XmppSessionConfiguration, ClientConnectionConfiguration...) use this configuration for the session}.</p>
+ *
+ * <p>Since creating the JAXB context is quite expensive, this class allows you to create the context once and reuse it by multiple sessions.
+ * You can also {@linkplain #setDefault(XmppSessionConfiguration) set} an application-wide default configuration (used by all XMPP sessions).</p>
+ *
+ * <p>Use the {@link #builder()} to create instances of this class:</p>
+ *
  * <pre>{@code
  * XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
  *     .extensions(Extension.of(MyClass1.class), Extension.of(MyClass2.class))
  *     .debugger(ConsoleDebugger.class)
  *     .build();
  * }</pre>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see XmppSession#XmppSession(String, XmppSessionConfiguration, ClientConnectionConfiguration...)
@@ -517,10 +518,10 @@ public final class XmppSessionConfiguration {
 
         /**
          * Sets the name server used for resolving DNS SRV and TXT records during connecting.
-         * <p>
-         * For Oracle JDK, you could use one of {@code sun.net.dns.ResolverConfiguration.open().nameservers()}.
-         * <p>
-         * If no name server is set, Google DNS Server (8.8.8.8) is used.
+         *
+         * <p>For Oracle JDK, you could use one of {@code sun.net.dns.ResolverConfiguration.open().nameservers()}.</p>
+         *
+         * <p>If no name server is set, Google DNS Server (8.8.8.8) is used.</p>
          *
          * @param nameServer The name server.
          * @return The builder.
@@ -532,9 +533,9 @@ public final class XmppSessionConfiguration {
 
         /**
          * Sets a custom thread factory.
-         * <p>
-         * This is useful in managed environments where the thread creation should be managed by a container,
-         * e.g. <code>javax.enterprise.concurrent.ManagedThreadFactory</code>
+         *
+         * <p>This is useful in managed environments where the thread creation should be managed by a container,
+         * e.g. <code>javax.enterprise.concurrent.ManagedThreadFactory</code></p>
          *
          * @param threadFactory The thread factory.
          * @return The builder.
@@ -546,8 +547,9 @@ public final class XmppSessionConfiguration {
 
         /**
          * Indicates whether the XMPP session is closed, when the JVM is shut down.
-         * If <code>true</code> (default), a shutdown hook is added to the runtime, which will gracefully close the session on shutdown.
-         * If <code>false</code>, no shutdown hook will be added to the runtime.
+         *
+         * <p>If <code>true</code> (default), a shutdown hook is added to the runtime, which will gracefully close the session on shutdown.</p>
+         * <p>If <code>false</code>, no shutdown hook will be added to the runtime.</p>
          *
          * @param closeOnShutdown true, if a shutdown hook shall be added to the runtime.
          * @return The builder.

@@ -31,8 +31,8 @@ import rocks.xmpp.addr.Jid;
 
 /**
  * The implementation of the {@code <invite/>} element.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#invite-mediated">7.8.2 Mediated Invitation</a>

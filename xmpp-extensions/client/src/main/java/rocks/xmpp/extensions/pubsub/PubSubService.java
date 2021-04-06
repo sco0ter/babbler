@@ -47,11 +47,11 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * This class acts a facade to deal with a remote pubsub service.
- * <p>
- * E.g. it lets you get all your subscriptions on the service, let's you work with nodes (e.g. subscribe to nodes)
- * or let's you discover the features provided by the remote service.
- * <p>
- * To work with pubsub nodes, {@linkplain #node(String) create a local node instance}, which can be used to work the remote node (e.g. subscribe to the node).
+ *
+ * <p>E.g. it lets you get all your subscriptions on the service, let's you work with nodes (e.g. subscribe to nodes)
+ * or let's you discover the features provided by the remote service.</p>
+ *
+ * <p>To work with pubsub nodes, {@linkplain #node(String) create a local node instance}, which can be used to work the remote node (e.g. subscribe to the node).</p>
  *
  * @author Christian Schudt
  */

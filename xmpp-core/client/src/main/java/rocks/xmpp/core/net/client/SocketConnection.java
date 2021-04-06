@@ -61,10 +61,10 @@ import rocks.xmpp.extensions.sm.client.ClientStreamManager;
 
 /**
  * The default TCP socket connection as described in <a href="https://xmpp.org/rfcs/rfc6120.html#tcp">TCP Binding</a>.
- * <p>
- * If no hostname is set (null or empty) the connection tries to resolve the hostname via an <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">SRV DNS lookup</a>.
- * <p>
- * This class is unconditionally thread-safe.
+ *
+ * <p>If no hostname is set (null or empty) the connection tries to resolve the hostname via an <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">SRV DNS lookup</a>.</p>
+ *
+ * <p>This class is unconditionally thread-safe.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp">3.  TCP Binding</a>

@@ -50,9 +50,10 @@ import rocks.xmpp.core.stream.model.errors.Condition;
 
 /**
  * Encodes XMPP elements to binary data.
- * This class is capable to encode elements to either an {@link OutputStream} or to a {@link ByteBuffer}.
- * <p>
- * Encoding is thread-safe, as long as the supplied {@link Marshaller} is not shared by another thread, e.g. if a {@linkplain ThreadLocal thread-local} {@link Marshaller} is supplied.
+ *
+ * <p>This class is capable to encode elements to either an {@link OutputStream} or to a {@link ByteBuffer}.</p>
+ *
+ * <p>Encoding is thread-safe, as long as the supplied {@link Marshaller} is not shared by another thread, e.g. if a {@linkplain ThreadLocal thread-local} {@link Marshaller} is supplied.</p>
  *
  * @author Christian Schudt
  */
@@ -68,8 +69,8 @@ public final class XmppStreamEncoder implements WriterInterceptor {
 
     /**
      * Creates the XMPP encoder.
-     * <p>
-     * Because {@link Marshaller} is not thread-safe, it is recommended to pass a {@code ThreadLocal<Marshaller>} to this constructor, which ensures thread-safety during marshalling.
+     *
+     * <p>Because {@link Marshaller} is not thread-safe, it is recommended to pass a {@code ThreadLocal<Marshaller>} to this constructor, which ensures thread-safety during marshalling.</p>
      *
      * @param outputFactory        The XML output factory.
      * @param marshaller           Supplies the marshaller which will convert objects to XML.
@@ -83,7 +84,8 @@ public final class XmppStreamEncoder implements WriterInterceptor {
 
     /**
      * Encodes an XMPP element to a byte buffer.
-     * The returned {@link ByteBuffer} is ready to be read, i.e. its {@linkplain ByteBuffer#position() position} is 0.
+     *
+     * <p>The returned {@link ByteBuffer} is ready to be read, i.e. its {@linkplain ByteBuffer#position() position} is 0.</p>
      *
      * @param streamElement The stream element.
      * @return The byte buffer.

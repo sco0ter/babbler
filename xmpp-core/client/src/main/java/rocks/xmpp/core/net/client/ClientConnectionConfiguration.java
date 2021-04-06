@@ -39,9 +39,9 @@ import rocks.xmpp.extensions.compress.CompressionMethod;
 
 /**
  * A base class for connection configurations.
- * <p>
- * All connection methods have a few properties in common, which are abstracted in this class.
- * Among these common properties are hostname, port, proxy, security settings and a timeout.
+ *
+ * <p>All connection methods have a few properties in common, which are abstracted in this class.
+ * Among these common properties are hostname, port, proxy, security settings and a timeout.</p>
  *
  * @author Christian Schudt
  */
@@ -225,22 +225,22 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
 
         /**
          * Sets how the connection is secured via SSL.
-         * <p>
-         * A standard TCP connection starts with a plain socket and negotiates a secure SSL connection during stream negotiation via 'StartTLS'.
-         * Hence, setting {@link ChannelEncryption#OPTIONAL} means, you start with a plain socket and upgrade it to a secure socket during XMPP negotiation, if possible.
-         * <p>
-         * Setting {@link ChannelEncryption#DISABLED} means, you start with plain socket and won't upgrade to a secure socket.
-         * However, some servers require that the client secures the connection, in which case an exception is thrown during connecting.
-         * <p>
-         * If your server expects the connection to be secured immediately (often on port 5223), you should use {@link ChannelEncryption#DIRECT}.
-         * <p>
-         * See <a href="https://xmpp.org/rfcs/rfc6120.html#tls">RFC 6120 § 5.  STARTTLS Negotiation</a> for further information.
-         * <p>
-         * HTTP (BOSH) and WebSocket connections provide TLS outside of the XMPP layer, i.e. it's not negotiated in XMPP.
+         *
+         * <p>A standard TCP connection starts with a plain socket and negotiates a secure SSL connection during stream negotiation via 'StartTLS'.
+         * Hence, setting {@link ChannelEncryption#OPTIONAL} means, you start with a plain socket and upgrade it to a secure socket during XMPP negotiation, if possible.</p>
+         *
+         * <p>Setting {@link ChannelEncryption#DISABLED} means, you start with plain socket and won't upgrade to a secure socket.
+         * However, some servers require that the client secures the connection, in which case an exception is thrown during connecting.</p>
+         *
+         * <p>If your server expects the connection to be secured immediately (often on port 5223), you should use {@link ChannelEncryption#DIRECT}.</p>
+         *
+         * <p>See <a href="https://xmpp.org/rfcs/rfc6120.html#tls">RFC 6120 § 5.  STARTTLS Negotiation</a> for further information.</p>
+         *
+         * <p>HTTP (BOSH) and WebSocket connections provide TLS outside of the XMPP layer, i.e. it's not negotiated in XMPP.
          * Setting {@link ChannelEncryption#DIRECT} for these connection methods means the connection connects via {@code https} or {@code wss} respectively.
-         * {@link ChannelEncryption#OPTIONAL} and {@link ChannelEncryption#REQUIRED} are not applicable for these connecion methods.
-         * <p>
-         * If you set this to {@code true}, you should also {@linkplain #sslContext(SSLContext) set} an {@link SSLContext}. Otherwise {@code SSLContext.getDefault()} is used.
+         * {@link ChannelEncryption#OPTIONAL} and {@link ChannelEncryption#REQUIRED} are not applicable for these connecion methods.</p>
+         *
+         * <p>If you set this to {@code true}, you should also {@linkplain #sslContext(SSLContext) set} an {@link SSLContext}. Otherwise {@code SSLContext.getDefault()} is used.</p>
          *
          * @param channelEncryption The channel encryption mode.
          * @return The builder.
@@ -278,17 +278,18 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
 
         /**
          * Sets a timeout for the connection establishment.
-         * <p>
-         * Connecting to a XMPP server involves multiple steps:
+         *
+         * <p>Connecting to a XMPP server involves multiple steps:</p>
          * <ul>
          * <li>DNS lookup</li>
          * <li>Connection establishment of the underlying transport (e.g. TCP or HTTP)</li>
          * <li>XMPP stream negotiation</li>
          * </ul>
-         * This timeout is only used for DNS lookup (which is not used in all cases) and for connection establishment of the underlying transport (e.g. for a socket connection), but not for stream negotiation.
-         * Therefore it does not reflect how long the whole connection process may take, but should be understood as hint for establishing the underlying XMPP transport.
-         * <p>
-         * XMPP stream negotiation is configured via {@link rocks.xmpp.core.session.XmppSessionConfiguration.Builder#defaultResponseTimeout(java.time.Duration)}
+         *
+         * <p>This timeout is only used for DNS lookup (which is not used in all cases) and for connection establishment of the underlying transport (e.g. for a socket connection), but not for stream negotiation.
+         * Therefore it does not reflect how long the whole connection process may take, but should be understood as hint for establishing the underlying XMPP transport.</p>
+         *
+         * <p>XMPP stream negotiation is configured via {@link rocks.xmpp.core.session.XmppSessionConfiguration.Builder#defaultResponseTimeout(java.time.Duration)}</p>
          *
          * @param connectTimeout The timeout in milliseconds.
          * @return The builder.

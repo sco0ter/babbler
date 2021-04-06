@@ -39,8 +39,8 @@ import javax.xml.bind.annotation.XmlAttribute;
  * Listens to unmarshal events in order to assign a parent object's {@code xml:lang} attribute to its child elements.
  * This is important because the language of a parent is implicitly inherited to its children.
  * If a child element were detached from it's parent the language information would be lost.
- * <p>
- * This even may lead to misbehavior, e.g. when calculating the Entity Capabilities hash, which takes the language into account.
+ *
+ * <p>This even may lead to misbehavior, e.g. when calculating the Entity Capabilities hash, which takes the language into account.</p>
  *
  * @author Christian Schudt
  */
@@ -107,8 +107,8 @@ public final class LanguageUnmarshallerListener extends Unmarshaller.Listener {
 
     /**
      * Sets the <code>xml:lang</code> attribute of an object (if the attribute is present but not set) with the given locale.
-     * <p>
-     * This is done via reflection by searching for a field which is JAXB mapped to a <code>xml:lang</code> attribute.
+     *
+     * <p>This is done via reflection by searching for a field which is JAXB mapped to a <code>xml:lang</code> attribute.</p>
      *
      * @param target       The object where the xml:lang attribute is searched in.
      * @param parentLocale The parent locale, which is set in case that the object has no locale.

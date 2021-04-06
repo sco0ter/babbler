@@ -161,8 +161,8 @@ public final class Catalog {
 
     /**
      * A catalog item.
-     * <p>
-     * An item may have no security label. Such an item explicitly offers a choice of sending a stanza without a label. A non-restrictive catalog implicitly offers this choice when it does not contain an empty item.
+     *
+     * <p>An item may have no security label. Such an item explicitly offers a choice of sending a stanza without a label. A non-restrictive catalog implicitly offers this choice when it does not contain an empty item.</p>
      */
     public static final class Item {
 

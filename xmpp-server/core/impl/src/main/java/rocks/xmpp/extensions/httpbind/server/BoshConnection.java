@@ -116,29 +116,29 @@ public final class BoshConnection extends AbstractConnection {
     /**
      * The scheduled future, which will timeout after the inactivity period, which starts with the last response and
      * if there are no other requests. It is cancelled on each new request.
-     * <p>
-     * Guarded by "inboundQueue".
+     *
+     * <p>Guarded by "inboundQueue".</p>
      */
     private Future<?> inactivityFuture;
 
     /**
      * The last received request, whose RID is +1 from the previous RID.
-     * <p>
-     * Guarded by "inboundQueue".
+     *
+     * <p>Guarded by "inboundQueue".</p>
      */
     private Body lastRequest;
 
     /**
      * The date of the last sent response.
-     * <p>
-     * Guarded by "inboundQueue".
+     *
+     * <p>Guarded by "inboundQueue".</p>
      */
     private Instant lastResponseDate;
 
     /**
      * The RID of the last responded request.
-     * <p>
-     * Guarded by "inboundQueue".
+     *
+     * <p>Guarded by "inboundQueue".</p>
      */
     private long lastResponseRid;
 

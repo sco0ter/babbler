@@ -35,8 +35,8 @@ import rocks.xmpp.util.cache.LruCache;
 
 /**
  * The implementation of the JID as described in <a href="https://tools.ietf.org/html/rfc7622">Extensible Messaging and Presence Protocol (XMPP): Address Format</a>.
- * <p>
- * This class is thread-safe and immutable.
+ *
+ * <p>This class is thread-safe and immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://tools.ietf.org/html/rfc7622">RFC 7622 - Extensible Messaging and Presence Protocol (XMPP): Address Format</a>

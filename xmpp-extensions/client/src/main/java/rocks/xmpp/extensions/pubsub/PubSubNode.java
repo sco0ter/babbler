@@ -53,8 +53,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * This class represents a single pubsub node.
- * <p>
- * It allows you to create the node on the pubsub service, subscribe or unsubscribe from the node, retrieve items from it, publish items to it, etc.
+ *
+ * <p>It allows you to create the node on the pubsub service, subscribe or unsubscribe from the node, retrieve items from it, publish items to it, etc.</p>
  *
  * @author Christian Schudt
  */

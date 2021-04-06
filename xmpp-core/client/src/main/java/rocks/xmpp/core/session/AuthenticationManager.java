@@ -51,8 +51,8 @@ import rocks.xmpp.core.stream.StreamNegotiationResult;
 
 /**
  * Manages SASL authentication as described in <a href="https://xmpp.org/rfcs/rfc6120.html#sasl">SASL Negotiation</a>.
- * <p>
- * This class is thread-safe.
+ *
+ * <p>This class is thread-safe.</p>
  *
  * @author Christian Schudt
  */

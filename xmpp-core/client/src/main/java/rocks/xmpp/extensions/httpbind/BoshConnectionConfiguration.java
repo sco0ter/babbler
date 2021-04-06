@@ -41,9 +41,13 @@ import rocks.xmpp.dns.TxtRecord;
 
 /**
  * A configuration for a BOSH connection.
- * It allows you to configure basic connection settings like hostname and port, but also BOSH specific settings like the wait interval, a route or the use of a key sequencing mechanism.
+ *
+ * <p>It allows you to configure basic connection settings like hostname and port, but also BOSH specific settings like the wait interval, a route or the use of a key sequencing mechanism.</p>
+ *
  * <h3>Usage</h3>
- * In order to create an instance of this class you have to use the builder pattern as shown below.
+ *
+ * <p>In order to create an instance of this class you have to use the builder pattern as shown below.</p>
+ *
  * <pre>{@code
  * BoshConnectionConfiguration boshConnectionConfiguration = BoshConnectionConfiguration.builder()
  *     .hostname("localhost")
@@ -51,9 +55,10 @@ import rocks.xmpp.dns.TxtRecord;
  *     .path("/http-bind/")
  *     .build();
  * }</pre>
- * The above sample configuration will connect to <code>http://localhost:5280/http-bind/</code>.
- * <p>
- * This class is immutable.
+ *
+ * <p>The above sample configuration will connect to <code>http://localhost:5280/http-bind/</code>.
+ * 
+ * <p>This class is immutable.</p>
  *
  * @see SocketConnectionConfiguration
  * @see BoshConnection

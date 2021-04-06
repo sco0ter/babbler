@@ -33,8 +33,8 @@ import javax.xml.bind.annotation.XmlValue;
 
 /**
  * A header element which hold stanza header information or internet metadata.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>
@@ -72,8 +72,8 @@ public final class Header {
 
     /**
      * Creates a 'Classification' header.
-     * <p>
-     * The Classification header enables a sender or other entity to classify a stanza according to some classification scheme.
+     *
+     * <p>The Classification header enables a sender or other entity to classify a stanza according to some classification scheme.</p>
      *
      * @param value The value.
      * @return The 'Classification' header.

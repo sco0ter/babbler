@@ -30,8 +30,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * A web page bookmark.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  */

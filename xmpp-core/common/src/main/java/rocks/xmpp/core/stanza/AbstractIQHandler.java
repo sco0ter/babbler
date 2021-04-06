@@ -33,10 +33,10 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
 
 /**
  * This class is an IQ handler for extension managers.
- * <p>
- * If an extension is disabled, IQs with this extension are automatically responded to with {@code <service-unavailable}.
- * <p>
- * If the extension is known, but the request contains a wrong type (e.g. 'set' instead of 'get') this manager automatically responds with a {@code <bad-request/>} error.
+ *
+ * <p>If an extension is disabled, IQs with this extension are automatically responded to with {@code <service-unavailable}.</p>
+ *
+ * <p>If the extension is known, but the request contains a wrong type (e.g. 'set' instead of 'get') this manager automatically responds with a {@code <bad-request/>} error.</p>
  *
  * @author Christian Schudt
  */

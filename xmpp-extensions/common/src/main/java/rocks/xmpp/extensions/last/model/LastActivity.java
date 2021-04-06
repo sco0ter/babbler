@@ -30,8 +30,8 @@ import javax.xml.bind.annotation.XmlValue;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:last} namespace.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a>

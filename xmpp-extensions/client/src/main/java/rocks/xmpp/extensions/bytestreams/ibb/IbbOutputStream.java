@@ -34,8 +34,8 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * An output stream implementation for in-band bytestreams.
- * <p>
- * This class is thread-safe.
+ *
+ * <p>This class is thread-safe.</p>
  *
  * @author Christian Schudt
  */

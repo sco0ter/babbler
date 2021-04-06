@@ -31,8 +31,8 @@ import rocks.xmpp.core.stanza.model.Stanza;
 
 /**
  * A set of request strategies which are used for requesting acknowledgements from the server.
- * <p>
- * Requests could be sent after every message or after X stanzas.
+ *
+ * <p>Requests could be sent after every message or after X stanzas.</p>
  *
  * @author Christian Schudt
  * @see AbstractStreamManager#setRequestStrategy(Predicate)

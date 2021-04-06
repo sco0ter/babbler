@@ -38,8 +38,8 @@ import rocks.xmpp.core.Addressable;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code http://jabber.org/protocol/rosterx} namespace.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0144.html">XEP-0144: Roster Item Exchange</a>

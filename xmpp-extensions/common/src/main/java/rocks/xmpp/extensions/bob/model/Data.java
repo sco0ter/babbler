@@ -33,8 +33,8 @@ import rocks.xmpp.util.XmppUtils;
 
 /**
  * The implementation of the {@code <data/>} element in the {@code urn:xmpp:bob} namespace.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0231.html">XEP-0231: Bits of Binary</a>
@@ -107,9 +107,8 @@ public final class Data {
 
     /**
      * Creates the content id.
-     * <p>
-     * The 'cid' value SHOULD be of the form algo+hash@bob.xmpp.org, where the "algo" is the hashing algorithm used (e.g., "sha1" for the SHA-1 algorithm as specified in RFC 3174 [11]) and the "hash" is the hex output of the algorithm applied to the binary data itself.
-     * </p>
+     *
+     * <p>The 'cid' value SHOULD be of the form algo+hash@bob.xmpp.org, where the "algo" is the hashing algorithm used (e.g., "sha1" for the SHA-1 algorithm as specified in RFC 3174 [11]) and the "hash" is the hex output of the algorithm applied to the binary data itself.</p>
      *
      * @param data The data.
      * @return The content id.

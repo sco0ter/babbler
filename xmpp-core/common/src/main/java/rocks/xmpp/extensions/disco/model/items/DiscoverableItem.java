@@ -32,10 +32,10 @@ import rocks.xmpp.extensions.rsm.model.ResultSetItem;
 
 /**
  * A Service Discovery item which has an id, in order to provide a limited result set.
- * <p>
- * Implementations of this class are provided by the {@link ItemProvider}, which in turn is used by the
+ *
+ * <p>Implementations of this class are provided by the {@link ItemProvider}, which in turn is used by the
  * {@link AbstractServiceDiscoveryManager} to returned a limited result set to the requesting entity
- * (only if a limited result set has been requested).
+ * (only if a limited result set has been requested).</p>
  */
 public interface DiscoverableItem extends Item, ResultSetItem {
 

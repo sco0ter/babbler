@@ -42,15 +42,18 @@ import rocks.xmpp.core.session.model.SessionOpen;
 
 /**
  * Represents the XMPP stream header.
+ *
  * <h2>Usage</h2>
+ *
  * <pre>{@code
  * StreamHeader streamHeader = StreamHeader.initialClientToServer(from, to, Locale.GERMAN);
  * streamHeader.writeTo(xmlStreamWriter);
  * }</pre>
- * The {@code toString()} method of this class returns the XML string of the stream header,
- * which is emphasized by the implementation of the {@link CharSequence} interface.
- * <p>
- * This class is immutable.
+ *
+ * <p>The {@code toString()} method of this class returns the XML string of the stream header,
+ * which is emphasized by the implementation of the {@link CharSequence} interface.</p>
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  */

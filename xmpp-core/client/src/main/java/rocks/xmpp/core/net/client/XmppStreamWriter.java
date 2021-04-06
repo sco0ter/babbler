@@ -51,8 +51,8 @@ import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 
 /**
  * This class is responsible for opening and closing the XMPP stream as well as writing any XML elements to the stream.
- * <p>
- * This class is thread-safe.
+ *
+ * <p>This class is thread-safe.</p>
  *
  * @author Christian Schudt
  */

@@ -39,8 +39,8 @@ import rocks.xmpp.core.stream.model.StreamElement;
 
 /**
  * Encodes stream elements to byte buffers.
- * <p>
- * This class should be added to Netty's channel pipeline.
+ *
+ * <p>This class should be added to Netty's channel pipeline.</p>
  *
  * @author Christian Schudt
  */

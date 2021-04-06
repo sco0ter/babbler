@@ -49,27 +49,33 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * The implementation of <a href="https://xmpp.org/extensions/xep-0012.html">XEP-0012: Last Activity</a> and <a href="https://xmpp.org/extensions/xep-0256.html">XEP-0256: Last Activity in Presence</a>.
+ *
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/extensions/xep-0012.html#intro">1. Introduction</a></cite></p>
  * <p>It is often helpful to know the time of the last activity associated with a entity. The canonical usage is to discover when a disconnected user last accessed its server. The 'jabber:iq:last' namespace provides a method for retrieving that information. The 'jabber:iq:last' namespace can also be used to discover or publicize when a connected user was last active on the server (i.e., the user's idle time) or to query servers and components about their current uptime.</p>
  * </blockquote>
- * This class also takes care about the following use case, by automatically appending last activity information to 'away' and 'xa' presences:
+ *
+ * <p>This class also takes care about the following use case, by automatically appending last activity information to 'away' and 'xa' presences:</p>
+ *
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/extensions/xep-0256.html#away">1.2 Away and Extended Away</a></cite></p>
  * <p>When a client automatically sets the user's {@code <show/>} value to "away" or "xa" (extended away), it can indicate when that particular was last active during the current presence session.</p>
  * </blockquote>
- * This manager also automatically adds an {@code <idle/>} extension to outbound presences, if the presence is of type {@linkplain Show#AWAY away} or {@linkplain Show#XA xa}.
- * However, sending such presences is still the responsibility of the application developer, i.e. no presences are sent automatically.
- * <p>
- * By default, idle time is determined by outbound messages and non-away, non-xa presences. E.g. whenever a message is sent, the idle time is reset to the current time.
- * Then, when a 'away' or 'xa' presence is sent, the {@code <idle/>} extension is added with the date of the last sent message.
- * <p>
- * The strategy for determining last user interaction can be changed by {@linkplain #setIdleStrategy(Supplier) setting a supplier} which returns the timestamp of last user interaction.
- * Possible alternative strategies is to track mouse movement or keyboard interaction for which cases you would set a supplier which gets the date of the last mouse movement.
- * <p>
- * Automatic inclusion of last activity information in presence stanzas and support for this protocol can be {@linkplain #setEnabled(boolean)} enabled or disabled}.
- * </p>
+ *
+ * <p>This manager also automatically adds an {@code <idle/>} extension to outbound presences, if the presence is of type {@linkplain Show#AWAY away} or {@linkplain Show#XA xa}.
+ * However, sending such presences is still the responsibility of the application developer, i.e. no presences are sent automatically.</p>
+ *
+ *
+ * <p>By default, idle time is determined by outbound messages and non-away, non-xa presences. E.g. whenever a message is sent, the idle time is reset to the current time.
+ * Then, when a 'away' or 'xa' presence is sent, the {@code <idle/>} extension is added with the date of the last sent message.</p>
+ *
+ * <p>The strategy for determining last user interaction can be changed by {@linkplain #setIdleStrategy(Supplier) setting a supplier} which returns the timestamp of last user interaction.
+ * Possible alternative strategies is to track mouse movement or keyboard interaction for which cases you would set a supplier which gets the date of the last mouse movement.</p>
+ *
+ * <p>Automatic inclusion of last activity information in presence stanzas and support for this protocol can be {@linkplain #setEnabled(boolean)} enabled or disabled}.</p>
+ *
  * <h3>Code sample</h3>
+ * 
  * <pre>{@code
  * LastActivityManager lastActivityManager = xmppSession.getManager(LastActivityManager.class);
  * LastActivity lastActivity = lastActivityManager.getLastActivity(Jid.of("juliet@example.com/balcony")).getResult();
@@ -144,8 +150,8 @@ public final class LastActivityManager extends Manager {
 
     /**
      * Gets the time of the last sent message or non-away, non-xa presence.
-     * <p>
-     * This is the default strategy for determining last user interaction.
+     *
+     * <p>This is the default strategy for determining last user interaction.</p>
      *
      * @return The time of the last sent stanza.
      */
@@ -190,6 +196,7 @@ public final class LastActivityManager extends Manager {
 
     /**
      * Gets the last activity of the specified user.
+     * 
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/extensions/xep-0012.html#impl">7. Implementation Notes</a></cite></p>
      * <p>The information contained in an IQ reply for this namespace is inherently ambiguous. Specifically, for a bare JID {@code <localpart@domain.tld>} the information is the time since the JID was last connected to its server; for a full JID {@code <localpart@domain.tld/resource>} the information is the time since the resource was last active in the context of an existing session; and for a bare domain the information is the uptime for the server or component. An application MUST take these differences into account when presenting the information to a human user (if any).</p>

@@ -90,8 +90,8 @@ public abstract class ExtensibleStanza extends Stanza {
 
     /**
      * Replaces an existing extension of the same type or adds the extension, if it doesn't exist yet.
-     * <p>
-     * This is useful, if you want to make sure, that a stanza only has one extension of a specific type.
+     *
+     * <p>This is useful, if you want to make sure, that a stanza only has one extension of a specific type.</p>
      *
      * @param extension The extension.
      * @since 0.8.0

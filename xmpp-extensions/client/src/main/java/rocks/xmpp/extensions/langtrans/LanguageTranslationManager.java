@@ -43,8 +43,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * Manages XMPP language translation protocol.
- * <p>
- * It lets you discover language translation providers and ask them to translate a text.
+ *
+ * <p>It lets you discover language translation providers and ask them to translate a text.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0171.html">XEP-0171: Language Translation</a>

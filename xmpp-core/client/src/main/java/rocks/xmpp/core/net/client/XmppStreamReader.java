@@ -52,8 +52,8 @@ import rocks.xmpp.util.concurrent.QueuedExecutorService;
 
 /**
  * This class is responsible for reading the inbound XMPP stream. It starts one "reader thread", which keeps reading the XMPP document from the stream until the stream is closed or disconnected.
- * <p>
- * This class is thread-safe.
+ *
+ * <p>This class is thread-safe.</p>
  *
  * @author Christian Schudt
  */

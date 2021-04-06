@@ -44,18 +44,20 @@ import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 
 /**
  * If the connection goes down, this class automatically reconnects, if the user was authenticated.
- * <p>
- * Reconnection is not performed, if the user got disconnected due to an {@code <conflict/>} stream error.
- * </p>
- * The default reconnection strategy is a so called truncated binary exponential back off (as proposed by the XMPP specification),
+ *
+ * <p>Reconnection is not performed, if the user got disconnected due to an {@code <conflict/>} stream error.</p>
+ *
+ * <p>The default reconnection strategy is a so called truncated binary exponential back off (as proposed by the XMPP specification),
  * which means that the first reconnection attempt is performed X seconds after the disconnect, where X is between 0 and 60.<br>
  * The second attempt chooses a random number between 0 and 180.<br>
  * The third attempt chooses a random number between 0 and 420.<br>
  * The forth attempt chooses a random number between 0 and 900.<br>
  * The fifth attempt chooses a random number between 0 and 1860.<br>
- * <p>
- * Generally speaking it is <code>2^attempt * 60</code> seconds.
- * This class is unconditionally thread-safe.
+ * </p>
+ *
+ * <p>Generally speaking it is <code>2^attempt * 60</code> seconds.</p>
+ *
+ * <p>This class is unconditionally thread-safe.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-reconnect">3.3.  Reconnection</a>

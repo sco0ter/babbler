@@ -99,6 +99,9 @@
         <module name="RedundantImport"/>
         <module name="UnusedImports"/>
 
+        <!-- JavaDoc Comments -->
+        <module name="JavadocParagraph"/>
+
         <!-- Miscellaneous -->
         <module name="ArrayTypeStyle"/>
         <module name="UpperEll"/>

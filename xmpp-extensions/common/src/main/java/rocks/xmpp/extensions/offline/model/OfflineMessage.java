@@ -37,8 +37,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <offline/>} element in the {@code http://jabber.org/protocol/offline} namespace.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0013.html">XEP-0013: Flexible Offline Message Retrieval</a>
@@ -159,8 +159,10 @@ public final class OfflineMessage {
 
         @XmlEnum
         public enum Action {
+
             @XmlEnumValue("remove")
             REMOVE,
+            
             @XmlEnumValue("view")
             VIEW
         }

@@ -42,8 +42,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * This manager facilitates the access to the private storage by providing convenient method for adding, retrieving or removing bookmarks.
- * <p>
- * This class is thread-safe.
+ *
+ * <p>This class is thread-safe.</p>
  *
  * @author Christian Schudt
  */

@@ -224,11 +224,11 @@ public final class S5bTransportMethod extends TransportMethod {
 
     /**
      * The implementation of the {@code <candidate/>} element in the {@code urn:xmpp:jingle:transports:s5b:1} namespace.
-     * <p>
-     * Candidates are possible stream hosts for the transport.
-     * <p>
-     * The best (preferred) candidate is the one, with the highest priority.
-     * Multiple candidates are naturally sorted by their priority (highest first).
+     *
+     * <p>Candidates are possible stream hosts for the transport.</p>
+     *
+     * <p>The best (preferred) candidate is the one, with the highest priority.
+     * Multiple candidates are naturally sorted by their priority (highest first).</p>
      */
     public static final class Candidate implements Socks5StreamHost, Comparable<Candidate> {
 
@@ -337,21 +337,25 @@ public final class S5bTransportMethod extends TransportMethod {
          * The transport type.
          */
         public enum Type {
+            
             /**
              * Direct connection using the given interface.
              */
             @XmlEnumValue("direct")
             DIRECT(126),
+
             /**
              * Direct connection using NAT assisting technologies like NAT-PMP or UPnP-IGD.
              */
             @XmlEnumValue("assisted")
             ASSISTED(120),
+
             /**
              * Tunnel protocols such as Teredo.
              */
             @XmlEnumValue("tunnel")
             TUNNEL(110),
+            
             /**
              * SOCKS5 Relay.
              */

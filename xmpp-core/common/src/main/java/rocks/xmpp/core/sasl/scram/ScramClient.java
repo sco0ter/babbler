@@ -41,8 +41,8 @@ import javax.xml.bind.DatatypeConverter;
 
 /**
  * The client implementation of the SCRAM-SHA-1 SASL mechanism.
- * <p>
- * This class is not thread-safe.
+ *
+ * <p>This class is not thread-safe.</p>
  *
  * @author Christian Schudt
  * @see <a href="http://tools.ietf.org/html/rfc5802">Salted Challenge Response Authentication Mechanism (SCRAM)</a>

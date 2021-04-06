@@ -37,8 +37,8 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:rpc} namespace.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>

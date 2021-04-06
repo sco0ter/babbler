@@ -44,9 +44,9 @@ import rocks.xmpp.nio.codec.XmppStreamDecoder;
 
 /**
  * Decodes byte buffers to stream elements.
- * <p>
- * This class should be added to Netty's channel pipeline.
- * The output of this decoder are implementations of {@link StreamElement}.
+ *
+ * <p>This class should be added to Netty's channel pipeline.
+ * The output of this decoder are implementations of {@link StreamElement}.</p>
  *
  * @author Christian Schudt
  * @see NettyXmppEncoder

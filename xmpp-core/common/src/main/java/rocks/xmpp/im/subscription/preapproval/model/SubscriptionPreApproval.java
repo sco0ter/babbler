@@ -31,8 +31,8 @@ import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
  * The implementation of the subscription pre-approval feature.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  */

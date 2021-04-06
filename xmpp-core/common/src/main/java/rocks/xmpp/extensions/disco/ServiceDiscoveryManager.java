@@ -45,6 +45,7 @@ public interface ServiceDiscoveryManager extends IQHandler, ExtensionProtocol {
 
     /**
      * Discovers information about another XMPP entity.
+     *
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber Entity</a></cite></p>
      * <p>A requesting entity may want to discover information about another entity on the network. The information desired generally is of two kinds:</p>
@@ -61,6 +62,7 @@ public interface ServiceDiscoveryManager extends IQHandler, ExtensionProtocol {
 
     /**
      * Discovers information about another XMPP entity targeted at a specific node.
+     *
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/extensions/xep-0030.html#info-nodes">3.2 Info Nodes</a></cite></p>
      * <p>A disco#info query MAY also be directed to a specific node identifier associated with a JID.</p>
@@ -111,10 +113,10 @@ public interface ServiceDiscoveryManager extends IQHandler, ExtensionProtocol {
 
     /**
      * Discovers a service on the given entity by its identity.
-     * <p>
-     * E.g. to discover MUC services you could call this method with {@link Identity#conferenceText()};
-     * <p>
-     * This method is generally preferred over {@link #discoverServices(Jid, String)}.
+     *
+     * <p>E.g. to discover MUC services you could call this method with {@link Identity#conferenceText()};</p>
+     *
+     * <p>This method is generally preferred over {@link #discoverServices(Jid, String)}.</p>
      *
      * @param identity The identity.
      * @param jid      The XMPP entity, usually a server.

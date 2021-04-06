@@ -28,8 +28,8 @@ import rocks.xmpp.core.stanza.model.IQ;
 
 /**
  * An IQ event is fired whenever an IQ stanza is received or sent.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  */

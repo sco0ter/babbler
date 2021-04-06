@@ -37,25 +37,30 @@ import rocks.xmpp.core.stanza.model.Message;
 
 /**
  * The implementation of the {@code <addresses/>} element in the {@code http://jabber.org/protocol/address} namespace..
- * <p>
- * Use this class to add extended address information to a stanza.
- * </p>
+ *
+ * <p>Use this class to add extended address information to a stanza.</p>
+ *
  * <h3>Usage</h3>
+ *
  * <pre>{@code
  * Address address = new Address(Address.Type.CC, Jid.of("juliet@example.net"));
  * Addresses addresses = new Addresses(Arrays.asList(address));
  * Message message = new Message(Jid.of("romeo@example.net"));
  * message.addExtension(addresses);
  * }</pre>
+ *
  * <h3>Creating a Reply for a Message</h3>
- * To create a reply use {@link #createReply(Message, Message)}:
+ *
+ * <p>To create a reply use {@link #createReply(Message, Message)}:</p>
+ *
  * <pre>{@code
  * Message replyMessage = new Message();
  * boolean replyGenerated = Addresses.createReply(originalMessage, replyMessage);
  * }</pre>
- * This will append an address extension to the reply message according to the business rules.
- * <p>
- * This class is immutable.
+ *
+ * <p>This will append an address extension to the reply message according to the business rules.</p>
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0033.html">XEP-0033: Extended Stanza Addressing</a>
@@ -123,8 +128,8 @@ public final class Addresses {
     /**
      * Creates a reply for a message.
      * If the original message contains address information, a new address extension is created based on the original one and added to the reply.
-     * <p>
-     * This method return false, if either no address information is found on the original message or it contains either {@link Address.Type#NOREPLY} or {@link Address.Type#REPLYROOM} addresses.
+     *
+     * <p>This method return false, if either no address information is found on the original message or it contains either {@link Address.Type#NOREPLY} or {@link Address.Type#REPLYROOM} addresses.</p>
      *
      * @param original The original message.
      * @param reply    The reply message.

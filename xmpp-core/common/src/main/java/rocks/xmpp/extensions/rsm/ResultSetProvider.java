@@ -88,9 +88,9 @@ public interface ResultSetProvider<T extends ResultSetItem> {
 
     /**
      * Creates a {@link Collection}-based result set provider.
-     * <p>
-     * It is highly recommended that the provided list is thread-safe, e.g. by using {@link java.util.Collections#synchronizedList(List)}} or a concurrent collection.
-     * Otherwise modifications on the list, while reading a sub list ({@link #getItems(int, int)}) may produce {@link java.util.ConcurrentModificationException}.
+     *
+     * <p>It is highly recommended that the provided list is thread-safe, e.g. by using {@link java.util.Collections#synchronizedList(List)}} or a concurrent collection.
+     * Otherwise modifications on the list, while reading a sub list ({@link #getItems(int, int)}) may produce {@link java.util.ConcurrentModificationException}.</p>
      *
      * @param items The items.
      * @param <T>   The result set item.

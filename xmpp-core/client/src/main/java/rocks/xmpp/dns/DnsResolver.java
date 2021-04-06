@@ -54,8 +54,8 @@ public final class DnsResolver {
 
     /**
      * Resolves DNS SRV records for the given domain.
-     * <p>
-     * The service is "xmpp-client", the protocol is "tcp", resulting in a query of {@code _xmpp-client._tcp.domain}.
+     *
+     * <p>The service is "xmpp-client", the protocol is "tcp", resulting in a query of {@code _xmpp-client._tcp.domain}.</p>
      *
      * @param service    The service, usually "xmpp-client" or "xmpps-client".
      * @param domain     The domain.

@@ -39,8 +39,8 @@ import rocks.xmpp.extensions.amp.model.errors.FailedRules;
 
 /**
  * The implementation of the {@code <amp/>} element in the {@code http://jabber.org/protocol/amp} namespace.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>

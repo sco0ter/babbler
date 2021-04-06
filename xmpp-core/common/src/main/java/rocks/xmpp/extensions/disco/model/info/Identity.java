@@ -35,11 +35,13 @@ import rocks.xmpp.util.Strings;
 
 /**
  * Represents an identity of an XMPP entity.
+ *
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber Entity</a></cite></p>
  * <p>In disco, an entity's identity is broken down into its category (server, client, gateway, directory, etc.) and its particular type within that category (IM server, phone vs. handheld client, MSN gateway vs. AIM gateway, user directory vs. chatroom directory, etc.). This information helps requesting entities to determine the group or "bucket" of services into which the entity is most appropriately placed (e.g., perhaps the entity is shown in a GUI with an appropriate icon). An entity MAY have multiple identities. When multiple identity elements are provided, the name attributes for each identity element SHOULD have the same value.</p>
  * </blockquote>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/registrar/disco-categories.html">Service Discovery Identities</a>
@@ -125,8 +127,8 @@ public final class Identity implements LanguageElement, Comparable<Identity> {
 
     /**
      * Creates an identity with a category and type.
-     * <p>
-     * Only use this method in exceptional cases, in most case you should use one of the many static factory methods, which creates a registered identity, e.g. {@link #clientBot()}
+     *
+     * <p>Only use this method in exceptional cases, in most case you should use one of the many static factory methods, which creates a registered identity, e.g. {@link #clientBot()}.</p>
      *
      * @param category The category.
      * @param type     The type.

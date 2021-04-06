@@ -38,8 +38,8 @@ import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
  * Negotiates stream features from a server perspective.
- * <p>
- * Each feature which shall be advertised during stream negotiation, must be {@linkplain #registerStreamFeatureProvider(StreamFeatureProvider) registered} first.
+ *
+ * <p>Each feature which shall be advertised during stream negotiation, must be {@linkplain #registerStreamFeatureProvider(StreamFeatureProvider) registered} first.</p>
  *
  * @author Christian Schudt
  * @see StreamFeatureProvider

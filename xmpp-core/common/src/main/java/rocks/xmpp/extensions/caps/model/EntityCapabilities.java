@@ -31,6 +31,7 @@ import rocks.xmpp.extensions.hashes.model.Hashed;
 
 /**
  * An interface for different Entity Capabilities implementations as described in the following two specifications.
+ *
  * <ul>
  * <li><a href="https://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a></li>
  * <li><a href="https://xmpp.org/extensions/xep-0390.html">XEP-0390: Entity Capabilities 2.0</a></li>
@@ -49,9 +50,9 @@ public interface EntityCapabilities {
 
     /**
      * Creates an UTF-8 encoded verification string from a disco#info query.
-     * <p>
-     * The returned byte array is neither hashed nor base64 encoded.
-     * It should be used as input for generating the capability hash set.
+     *
+     * <p>The returned byte array is neither hashed nor base64 encoded.
+     * It should be used as input for generating the capability hash set.</p>
      *
      * @param discoverableInfo The query.
      * @return The caps string, aka. verification string.
@@ -60,8 +61,8 @@ public interface EntityCapabilities {
 
     /**
      * Creates the Capability Hash Node.
-     * <p>
-     * This node is used to query the generating entity via a Service Discovery Info query (disco#info).
+     *
+     * <p>This node is used to query the generating entity via a Service Discovery Info query (disco#info).</p>
      *
      * @param hashed The pair of hash algorithm and value.
      * @return The node.

@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#roles">5.1 Roles</a>
  */
 public enum Role {
+
     /**
      * The moderator role.
      */
@@ -60,8 +61,8 @@ public enum Role {
     /**
      * Compares two roles and returns true, if this role is higher than the other
      * with regards to their privileges in a multi-user chat.
-     * <p>
-     * The highest role is moderator, followed by participant, followed by visitor, followed by none.
+     *
+     * <p>The highest role is moderator, followed by participant, followed by visitor, followed by none.</p>
      *
      * @param role The other role.
      * @return True, if this role is higher than the other.

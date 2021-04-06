@@ -33,8 +33,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <reach/>} element in the {@code urn:xmpp:reach:0} namespace.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0152.html">XEP-0152: Reachability Addresses</a>

@@ -31,9 +31,9 @@ import javax.websocket.server.ServerEndpointConfig;
 
 /**
  * The server endpoint configurator for the XMPP WebSocket sub-protocol.
- * <p>
- * This configurator only allows WebSocket connections if the client included "xmpp" in the "Sec-WebSocket-Protocol" header field.
- * Otherwises it won't accept the connection.
+ *
+ * <p>This configurator only allows WebSocket connections if the client included "xmpp" in the "Sec-WebSocket-Protocol" header field.
+ * Otherwises it won't accept the connection.</p>
  *
  * @author Christian Schudt
  */

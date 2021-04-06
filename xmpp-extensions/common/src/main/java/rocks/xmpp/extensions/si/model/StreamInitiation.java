@@ -34,8 +34,8 @@ import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
 
 /**
  * The implementation of the {@code <si/>} element in the {@code http://jabber.org/protocol/si} namespace.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0095.html">XEP-0095: Stream Initiation</a>

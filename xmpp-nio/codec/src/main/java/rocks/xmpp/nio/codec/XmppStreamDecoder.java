@@ -55,10 +55,10 @@ import rocks.xmpp.core.stream.model.errors.Condition;
 
 /**
  * Decodes a stream of byte buffers to XMPP elements.
- * <p>
- * Decoding is thread-safe, as long as the supplied {@link Unmarshaller} is not shared by another thread, e.g. if a {@linkplain ThreadLocal thread-local} {@link Unmarshaller} is supplied.
- * <p>
- * Stream restarts can be achieved by using the {@link #restart()} methods. Decoding and restarts are thread-safe, i.e. can be called by different threads.
+ *
+ * <p>Decoding is thread-safe, as long as the supplied {@link Unmarshaller} is not shared by another thread, e.g. if a {@linkplain ThreadLocal thread-local} {@link Unmarshaller} is supplied.</p>
+ *
+ * <p>Stream restarts can be achieved by using the {@link #restart()} methods. Decoding and restarts are thread-safe, i.e. can be called by different threads.</p>
  *
  * @author Christian Schudt
  */
@@ -78,8 +78,8 @@ public final class XmppStreamDecoder {
 
     /**
      * Creates the XMPP decoder.
-     * <p>
-     * Because {@link Unmarshaller} is not thread-safe, it is recommended to pass a {@code ThreadLocal<Unmarshaller>} to this constructor, which ensures thread-safety during unmarshalling.
+     *
+     * <p>Because {@link Unmarshaller} is not thread-safe, it is recommended to pass a {@code ThreadLocal<Unmarshaller>} to this constructor, which ensures thread-safety during unmarshalling.</p>
      *
      * @param unmarshaller Supplies the unmarshaller which will convert XML to objects.
      */

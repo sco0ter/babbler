@@ -29,8 +29,8 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <ping/>} element in the {@code urn:xmpp:ping} namespace.
- * <p>
- * This class is a singleton.
+ *
+ * <p>This class is a singleton.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0199.html">XEP-0199: XMPP Ping</a>

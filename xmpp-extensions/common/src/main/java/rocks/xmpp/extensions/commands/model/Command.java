@@ -42,8 +42,8 @@ import rocks.xmpp.core.LanguageElement;
 
 /**
  * The implementation of the {@code <command/>} element in the {@code http://jabber.org/protocol/commands} namespace.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0050.html">XEP-0050: Ad-Hoc Commands</a>
@@ -288,6 +288,7 @@ public final class Command implements LanguageElement {
 
     /**
      * Gets the language.
+     *
      * <blockquote>
      * The "xml:lang" attribute specifies the language/locale this {@code <command/>} is intended for.
      * This element MAY be specified by the requester to request a specific language/locale, and SHOULD be included by the responder to indicate the language/locale in use.
@@ -304,26 +305,31 @@ public final class Command implements LanguageElement {
      * Represents a command action.
      */
     public enum Action {
+
         /**
          * The command should be canceled.
          */
         @XmlEnumValue("cancel")
         CANCEL,
+
         /**
          * The command should be completed (if possible).
          */
         @XmlEnumValue("complete")
         COMPLETE,
+
         /**
          * The command should be executed or continue to be executed. This is the default value.
          */
         @XmlEnumValue("execute")
         EXECUTE,
+
         /**
          * The command should progress to the next stage of execution.
          */
         @XmlEnumValue("next")
         NEXT,
+
         /**
          * The command should be digress to the previous stage of execution.
          */
@@ -341,11 +347,13 @@ public final class Command implements LanguageElement {
          */
         @XmlEnumValue("canceled")
         CANCELED,
+
         /**
          * The command has completed. The command session has ended.
          */
         @XmlEnumValue("completed")
         COMPLETED,
+        
         /**
          * The command is being executed.
          */
@@ -472,16 +480,19 @@ public final class Command implements LanguageElement {
          * Represents the note type.
          */
         public enum Type {
+            
             /**
              * The note indicates an error. The text should indicate the reason for the error.
              */
             @XmlEnumValue(value = "error")
             ERROR,
+
             /**
              * The note is informational only. This is not really an exceptional condition.
              */
             @XmlEnumValue(value = "info")
             INFO,
+
             /**
              * The note indicates a warning. Possibly due to illogical (yet valid) data.
              */

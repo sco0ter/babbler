@@ -28,8 +28,8 @@ import rocks.xmpp.addr.Jid;
 
 /**
  * The offline message header.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0013.html#request-headers">2.3 Requesting Message Headers</a>

@@ -33,9 +33,9 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * In XMPP two extension protocols are defined which both deal with avatars.
- * <p>
- * This interface provides a common abstraction for both of these protocols, which involves these use cases:
- * Publishing avatars, retrieving avatars and listening for avatar updates.
+ *
+ * <p>This interface provides a common abstraction for both of these protocols, which involves these use cases:
+ * Publishing avatars, retrieving avatars and listening for avatar updates.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a>

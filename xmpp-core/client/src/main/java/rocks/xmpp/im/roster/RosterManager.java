@@ -66,20 +66,26 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * This class manages the roster (aka contact or buddy list).
+ *
  * <h3>Roster Versioning</h3>
- * Because rosters can become quite large, but usually change infrequently, rosters can be cached on client side.
+ *
+ * <p>Because rosters can become quite large, but usually change infrequently, rosters can be cached on client side.
  * Hence before {@linkplain #requestRoster() requesting the roster}, it is checked if there's a cached version of your roster in the {@linkplain rocks.xmpp.core.session.XmppSessionConfiguration#getCacheDirectory() cache directory}.
- * If so, the server is informed about your version and will not send the full roster, but only "diffs" to your version, thus being more efficient.
+ * If so, the server is informed about your version and will not send the full roster, but only "diffs" to your version, thus being more efficient.</p>
+ *
  * <h3>Retrieving the Roster on Login</h3>
- * As per <a href="https://xmpp.org/rfcs/rfc6121.html#roster-login">RFC 6121</a> the roster should be retrieved on login.
- * This behavior can also be {@linkplain #setRetrieveRosterOnLogin(boolean) changed}.
+ *
+ * <p>As per <a href="https://xmpp.org/rfcs/rfc6121.html#roster-login">RFC 6121</a> the roster should be retrieved on login.
+ * This behavior can also be {@linkplain #setRetrieveRosterOnLogin(boolean) changed}.</p>
+ *
  * <h3>Nested Roster Groups</h3>
- * <a href="https://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a> are supported, but are disabled by default, which means the group delimiter is not retrieved before {@linkplain #requestRoster() requesting the roster}.
- * You can {@linkplain #setAskForGroupDelimiter(boolean) change} this behavior or {@linkplain #setGroupDelimiter(String) set a group delimiter} without retrieving it from the server in case you want to use a fix roster group delimiter.
- * <p>
- * You can listen for roster updates (aka roster pushes) and for initial roster retrieval, by {@linkplain #addRosterListener(Consumer) adding} a {@link Consumer}.
- * </p>
- * This class is unconditionally thread-safe.
+ *
+ * <p><a href="https://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a> are supported, but are disabled by default, which means the group delimiter is not retrieved before {@linkplain #requestRoster() requesting the roster}.
+ * You can {@linkplain #setAskForGroupDelimiter(boolean) change} this behavior or {@linkplain #setGroupDelimiter(String) set a group delimiter} without retrieving it from the server in case you want to use a fix roster group delimiter.</p>
+ *
+ * <p>You can listen for roster updates (aka roster pushes) and for initial roster retrieval, by {@linkplain #addRosterListener(Consumer) adding} a {@link Consumer}.</p>
+ *
+ * <p>This class is unconditionally thread-safe.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#roster-login">2.2.  Retrieving the Roster on Login</a>
@@ -420,6 +426,7 @@ public final class RosterManager extends AbstractIQHandler {
 
     /**
      * Controls, whether the roster is automatically retrieved as soon as the user has logged in.
+     *
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#roster-login">2.2.  Retrieving the Roster on Login</a></cite></p>
      * <p>Upon authenticating with a server and binding a resource (thus becoming a connected resource as defined in [XMPP-CORE]), a client SHOULD request the roster before sending initial presence (however, because receiving the roster is not necessarily desirable for all resources, e.g., a connection with limited bandwidth, the client's request for the roster is not mandatory).</p>
@@ -434,10 +441,10 @@ public final class RosterManager extends AbstractIQHandler {
     /**
      * Requests the roster from the server. When the server returns the result, the {@link Consumer} are notified.
      * That means, you should first {@linkplain #addRosterListener(Consumer) register} a {@link Consumer} prior to calling this method.
-     * <p>
-     * <a href="https://xmpp.org/rfcs/rfc6121.html#roster-versioning">Roster Versioning</a> is supported, which means that this method checks
+     *
+     * <p><a href="https://xmpp.org/rfcs/rfc6121.html#roster-versioning">Roster Versioning</a> is supported, which means that this method checks
      * if there's a cached version of your roster in the {@linkplain rocks.xmpp.core.session.XmppSessionConfiguration#getCacheDirectory() cache directory}.
-     * If so and if Roster Versioning is supported by the server, the cached version is returned and any missing roster items are sent later by the server via roster pushes.
+     * If so and if Roster Versioning is supported by the server, the cached version is returned and any missing roster items are sent later by the server via roster pushes.</p>
      *
      * @return The async roster result.
      */

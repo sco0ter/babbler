@@ -34,8 +34,9 @@ import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
  * Represents a client state, i.e. active or inactive.
- * <p>
- * Because elements of Client State Indication are stateless, instances of this class are static singletons.
+ *
+ * <p>Because elements of Client State Indication are stateless, instances of this class are static singletons.</p>
+ * 
  * <pre>{@code
  * ClientState.ACTIVE;
  * ClientState.INACTIVE;

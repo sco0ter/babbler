@@ -42,8 +42,9 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * Manages the stream as described in <a href="https://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>.
- * <p>
- * This class enables stream management during stream negotiation, if the stream management feature has been enabled before login:
+ *
+ * <p>This class enables stream management during stream negotiation, if the stream management feature has been enabled before login:</p>
+ * 
  * <pre>{@code
  * xmppSession.enableFeature(StreamManagement.NAMESPACE);
  * }</pre>

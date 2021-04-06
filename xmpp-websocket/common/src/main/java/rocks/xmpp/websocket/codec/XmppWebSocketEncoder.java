@@ -44,11 +44,11 @@ import rocks.xmpp.util.XmppStreamEncoder;
 
 /**
  * Encodes XMPP {@link StreamElement}s to WebSocket text messages.
- * <p>
- * The required {@link Marshaller} for encoding must be supplied via {@link EndpointConfig#getUserProperties()}, see {@link XmppWebSocketEncoder.UserProperties#MARSHALLER}.
- * <p>
- * Optionally you can also provide a callback, which is called after marshalling with the encoded text message (the XML string) and the stream element.
- * This is useful for debugging purposes, see {@link UserProperties#ON_WRITE}.
+ *
+ * <p>The required {@link Marshaller} for encoding must be supplied via {@link EndpointConfig#getUserProperties()}, see {@link XmppWebSocketEncoder.UserProperties#MARSHALLER}.</p>
+ *
+ * <p>Optionally you can also provide a callback, which is called after marshalling with the encoded text message (the XML string) and the stream element.
+ * This is useful for debugging purposes, see {@link UserProperties#ON_WRITE}.</p>
  *
  * @author Christian Schudt
  * @see XmppWebSocketDecoder

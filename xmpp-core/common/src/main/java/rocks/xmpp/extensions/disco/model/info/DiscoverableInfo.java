@@ -31,8 +31,8 @@ import rocks.xmpp.extensions.data.model.DataForm;
 
 /**
  * Information which can be discovered via Service Discovery.
- * <p>
- * It includes, an entity's identities, features and extensions.
+ *
+ * <p>It includes, an entity's identities, features and extensions.</p>
  *
  * @author Christian Schudt
  */

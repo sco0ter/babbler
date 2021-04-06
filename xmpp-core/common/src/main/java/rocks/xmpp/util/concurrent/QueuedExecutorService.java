@@ -36,14 +36,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Queues tasks and delegates them to a {@link Executor} in order.
- * <p>
- * The resulting behavior is similar to a single threaded pool:
+ *
+ * <p>The resulting behavior is similar to a single threaded pool:
  * Tasks submitted to this class are guaranteed to be executed in the same order as they were submitted,
- * but potentially are executed by different threads of the delegate executor.
- * <p>
- * The typical use case is, that you share a single {@link java.util.concurrent.ThreadPoolExecutor} among
+ * but potentially are executed by different threads of the delegate executor.</p>
+ *
+ * <p>The typical use case is, that you share a single {@link java.util.concurrent.ThreadPoolExecutor} among
  * multiple instances of this class, which results in a low overall thread count (only the ones spawned by the delegate executor),
- * but still have the in-order execution behavior of a single threaded pool.
+ * but still have the in-order execution behavior of a single threaded pool.</p>
  */
 public class QueuedExecutorService extends AbstractExecutorService {
 

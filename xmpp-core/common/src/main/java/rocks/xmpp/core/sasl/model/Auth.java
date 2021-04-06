@@ -33,13 +33,14 @@ import rocks.xmpp.core.stream.model.StreamElement;
 
 /**
  * The implementation of the {@code <auth/> } element to initialize the SASL authentication process.
+ * 
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#sasl-process-neg-initiate">6.4.2.  Initiation</a></cite></p>
  * <p>In order to begin the SASL negotiation, the initiating entity sends an {@code <auth/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-sasl' namespace and includes an appropriate value for the 'mechanism' attribute, thus starting the handshake for that particular authentication mechanism. This element MAY contain XML character data (in SASL terminology, the "initial response") if the mechanism supports or requires it. If the initiating entity needs to send a zero-length initial response, it MUST transmit the response as a single equals sign character ("="), which indicates that the response is present but contains no data.</p>
  * <p>If the initiating entity subsequently sends another {@code <auth/>} element and the ongoing authentication handshake has not yet completed, the receiving entity MUST discard the ongoing handshake and MUST process a new handshake for the subsequently requested SASL mechanism.</p>
  * </blockquote>
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  */

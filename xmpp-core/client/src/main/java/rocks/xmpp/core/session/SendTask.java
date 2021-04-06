@@ -38,8 +38,8 @@ import rocks.xmpp.core.stanza.model.Stanza;
 
 /**
  * A send task is the result of a send action and allows to keep track of the sent stanza.
- * <p>
- * This class implements {@link Future}, which {@linkplain Future#isDone()} is done}, when the stanza has been sent to the server.
+ *
+ * <p>This class implements {@link Future}, which {@linkplain Future#isDone()} is done}, when the stanza has been sent to the server.</p>
  *
  * @author Christian Schudt
  * @see XmppSession#sendMessage(Message)

@@ -31,8 +31,8 @@ import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
  * The stream feature to advertise support for server dialback with dialback errors.
- * <p>
- * Use {@link DialbackFeature#INSTANCE}.
+ *
+ * <p>Use {@link DialbackFeature#INSTANCE}.</p>
  *
  * @author Christian Schudt
  */

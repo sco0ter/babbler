@@ -66,8 +66,8 @@ public enum Affiliation {
     /**
      * Compares two affiliations and returns true, if this affiliation is higher than the other
      * with regards to their privileges in a multi-user chat.
-     * <p>
-     * The highest affiliation is owner, followed by admin, followed by member, followed by none and then outcast.
+     *
+     * <p>The highest affiliation is owner, followed by admin, followed by member, followed by none and then outcast.</p>
      *
      * @param affiliation The other affiliation.
      * @return True, if this affiliation is higher than the other.

@@ -793,7 +793,6 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
     /**
      * Sends an {@code <iq/>} stanza and returns an async result, which can be used to wait for the response. The result is completed if the response IQ has arrived or the default timeout has exceeded, in which case the result completes with a {@link NoResponseException}.
-     * <p>
      *
      * @param iq The {@code <iq/>} stanza, which must be of type {@linkplain Type#GET get} or {@linkplain Type#SET set}.
      * @return The async IQ result.

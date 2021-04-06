@@ -28,8 +28,8 @@ import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
  * An interface for various stream negotiators, either from client perspective or server perspective.
- * <p>
- * A stream negotiator receives an element from the stream and tries to negotiate the stream feature.
+ *
+ * <p>A stream negotiator receives an element from the stream and tries to negotiate the stream feature.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#streams-negotiation">4.3.  Stream Negotiation</a>

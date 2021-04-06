@@ -64,9 +64,13 @@ import rocks.xmpp.websocket.net.WebSocketConnection;
 
 /**
  * A configuration for a WebSocket connection.
- * It allows you to configure basic connection settings like hostname and port, as well as the path in the WebSocket URI.
+ *
+ * <p>It allows you to configure basic connection settings like hostname and port, as well as the path in the WebSocket URI.</p>
+ *
  * <h3>Usage</h3>
- * In order to create an instance of this class you have to use the builder pattern as shown below.
+ *
+ * <p>In order to create an instance of this class you have to use the builder pattern as shown below.</p>
+ *
  * <pre>{@code
  * WebSocketConnectionConfiguration connectionConfiguration = WebSocketConnectionConfiguration.builder()
  *    .hostname("localhost")
@@ -76,9 +80,10 @@ import rocks.xmpp.websocket.net.WebSocketConnection;
  *    .channelEncryption(ChannelEncryption.DIRECT)
  *    .build();
  * }</pre>
- * The above sample configuration will connect to <code>wss://localhost:7443/ws/</code> using SSL with a custom {@link SSLContext}.
- * <p>
- * This class is immutable.
+ *
+ * <p>The above sample configuration will connect to <code>wss://localhost:7443/ws/</code> using SSL with a custom {@link SSLContext}.</p>
+ *
+ * <p>This class is immutable.</p>
  *
  * @see WebSocketConnection
  * @see <a href="https://tools.ietf.org/html/rfc7395">XMPP Subprotocol for WebSocket</a>

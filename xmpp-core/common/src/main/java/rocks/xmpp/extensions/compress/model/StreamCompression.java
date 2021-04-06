@@ -59,8 +59,8 @@ public abstract class StreamCompression implements StreamElement {
 
     /**
      * The implementation of the {@code <failure/>} element in the {@code http://jabber.org/protocol/compress} namespace, which indicates failure during compression negotiation.
-     * <p>
-     * This class is immutable.
+     *
+     * <p>This class is immutable.</p>
      *
      * @author Christian Schudt
      * @see <a href="https://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>
@@ -168,8 +168,8 @@ public abstract class StreamCompression implements StreamElement {
 
     /**
      * The implementation of the {@code <compress/>} element in the {@code http://jabber.org/protocol/compress} namespace.
-     * <p>
-     * This class is immutable.
+     *
+     * <p>This class is immutable.</p>
      *
      * @author Christian Schudt
      * @see <a href="https://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>

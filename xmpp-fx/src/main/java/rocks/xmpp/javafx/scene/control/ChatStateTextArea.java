@@ -34,16 +34,18 @@ import rocks.xmpp.extensions.chatstates.model.ChatState;
 
 /**
  * A text area which is automatically sets a chat state and therefore is useful for a chat applications.
+ *
  * <h3>How it works</h3>
- * Initially the text area is in {@linkplain ChatState#INACTIVE inactive} state. When receiving focus, the chat state transitions to {@linkplain ChatState#ACTIVE active}.
+ *
+ * <p>Initially the text area is in {@linkplain ChatState#INACTIVE inactive} state. When receiving focus, the chat state transitions to {@linkplain ChatState#ACTIVE active}.
  * As soon as you start typing, it transitions to {@linkplain ChatState#COMPOSING composing}
- * and will automatically transition to {@linkplain ChatState#PAUSED paused} after a specified {@linkplain #delayProperty() delay} (which is 3 seconds by default), if you pause typing.
- * <p>
- * If you clear the text area, the state becomes {@linkplain ChatState#ACTIVE active} again, after the specified delay.
- * <p>
- * When losing focus, the state will become {@linkplain ChatState#INACTIVE inactive} after the delay (which means, if you refocus before the delay time is up, it will stay active).
- * <p>
- * Clearing the text area immediately sets the state to {@linkplain ChatState#INACTIVE active} (if focused) or {@linkplain ChatState#INACTIVE inactive} (if not focused).
+ * and will automatically transition to {@linkplain ChatState#PAUSED paused} after a specified {@linkplain #delayProperty() delay} (which is 3 seconds by default), if you pause typing.</p>
+ *
+ * <p>If you clear the text area, the state becomes {@linkplain ChatState#ACTIVE active} again, after the specified delay.</p>
+ *
+ * <p>When losing focus, the state will become {@linkplain ChatState#INACTIVE inactive} after the delay (which means, if you refocus before the delay time is up, it will stay active).</p>
+ *
+ * <p>Clearing the text area immediately sets the state to {@linkplain ChatState#INACTIVE active} (if focused) or {@linkplain ChatState#INACTIVE inactive} (if not focused).</p>
  *
  * @author Christian Schudt
  * @see ChatState

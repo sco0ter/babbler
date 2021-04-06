@@ -21,10 +21,9 @@ public final class Strings {
 
     /**
      * Converts a string from camel case to a string with dashes.
-     * <p>
-     * Each upper case character (except the first one) followed by a lower case character is converted to a lower case character preceded by a dash.
-     * <p>
-     * E.g. "CamelCase" is converted to "camel-case".
+     *
+     * <p>Each upper case character (except the first one) followed by a lower case character is converted to a lower case character preceded by a dash,
+     * e.g. "CamelCase" is converted to "camel-case".</p>
      *
      * @param str The string.
      * @return The string with dashes.
@@ -38,10 +37,9 @@ public final class Strings {
 
     /**
      * Converts a string from camel case to a string with underscores.
-     * <p>
-     * Each upper case character (except the first one) followed by a lower case character is converted to a lower case character preceded by an underscore.
-     * <p>
-     * E.g. "CamelCase" is converted to "camel_case".
+     *
+     * <p>Each upper case character (except the first one) followed by a lower case character is converted to a lower case character preceded by an underscore,
+     * e.g. "CamelCase" is converted to "camel_case".</p>
      *
      * @param str The string.
      * @return The string with dashes.

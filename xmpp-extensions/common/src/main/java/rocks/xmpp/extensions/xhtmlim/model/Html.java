@@ -47,8 +47,8 @@ import org.xml.sax.SAXException;
 
 /**
  * The implementation of the {@code <html/>} element in the {@code http://jabber.org/protocol/xhtml-im} namespace.
- * <p>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0071.html">XEP-0071: XHTML-IM</a>

@@ -26,9 +26,10 @@ package rocks.xmpp.extensions.rsm.model;
 
 /**
  * A result item, which can be used in the context of result set management.
- * Possible implementations of this interface could be Service Discovery Items, Jabber Search Items, PubSub Items, etc.
- * <p>
- * All of these items have a UID in common to allow paging through the result set.
+ *
+ * <p>Possible implementations of this interface could be Service Discovery Items, Jabber Search Items, PubSub Items, etc.</p>
+ *
+ * <p>All of these items have a UID in common to allow paging through the result set.</p>
  *
  * @author Christian Schudt
  */

@@ -29,32 +29,40 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * Represents the JID as described in <a href="https://tools.ietf.org/html/rfc7622">Extensible Messaging and Presence Protocol (XMPP): Address Format</a>.
- * <p>
- * A JID consists of three parts:
- * <p>
- * [ localpart "@" ] domainpart [ "/" resourcepart ]
- * </p>
- * The easiest way to create a JID is to use the {@link #of(CharSequence)} method:
+ *
+ * <p>A JID consists of three parts:</p>
+ *
+ * <p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p>
+ *
+ * <p>The easiest way to create a JID is to use the {@link #of(CharSequence)} method:</p>
+ *
  * <pre>{@code
  * Jid jid = Jid.of("juliet@capulet.lit/balcony");
  * }</pre>
- * You can then get the parts from it via the respective methods:
+ *
+ * <p>You can then get the parts from it via the respective methods:</p>
+ *
  * <pre>{@code
  * String local = jid.getLocal(); // juliet
  * String domain = jid.getDomain(); // capulet.lit
  * String resource = jid.getResource(); // balcony
  * }</pre>
- * Implementations of this interface should override <code>equals()</code> and <code>hashCode()</code>, so that different instances with the same value are equal:
+ *
+ * <p>Implementations of this interface should override <code>equals()</code> and <code>hashCode()</code>, so that different instances with the same value are equal:</p>
+ *
  * <pre>{@code
  * Jid.of("romeo@capulet.lit/balcony").equals(Jid.of("romeo@capulet.lit/balcony")); // true
  * }</pre>
- * The default implementation of this class also supports <a href="https://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>, i.e.
+ *
+ * <p>The default implementation of this class also supports <a href="https://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>, i.e.</p>
+ *
  * <pre>{@code
  * Jid.of("d'artagnan@musketeers.lit")
  * }</pre>
- * is escaped as <code>d\\27artagnan@musketeers.lit</code>.
- * <p>
- * Implementations of this interface should be thread-safe and immutable.
+ *
+ * <p>is escaped as <code>d\\27artagnan@musketeers.lit</code>.</p>
+ *
+ * <p>Implementations of this interface should be thread-safe and immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://tools.ietf.org/html/rfc7622">RFC 7622 - Extensible Messaging and Presence Protocol (XMPP): Address Format</a>

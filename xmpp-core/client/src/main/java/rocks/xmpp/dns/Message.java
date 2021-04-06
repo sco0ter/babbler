@@ -74,7 +74,7 @@ final class Message {
         this.id = data.getShort();
         short header = data.getShort();
         this.query = (header >> 15 & 1) == 0;
-        this.opCode = OpCode.values()[(header >> 11 & 0xf)];
+        this.opCode = OpCode.values()[header >> 11 & 0xf];
         this.authoritativeAnswer = (header >> 10 & 1) == 1;
         this.truncation = (header >> 9 & 1) == 1;
         this.recursionDesired = (header >> 8 & 1) == 1;

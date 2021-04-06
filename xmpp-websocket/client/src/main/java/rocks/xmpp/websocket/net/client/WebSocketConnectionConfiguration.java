@@ -237,7 +237,7 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
         }
         final Proxy proxy = getProxy();
         if (proxy != null && proxy.type() == Proxy.Type.HTTP) {
-            InetSocketAddress inetSocketAddress = ((InetSocketAddress) proxy.address());
+            InetSocketAddress inetSocketAddress = (InetSocketAddress) proxy.address();
             client.getProperties().put(ClientProperties.PROXY_URI, "http://" + inetSocketAddress.getHostName() + ':' + inetSocketAddress.getPort());
         }
 

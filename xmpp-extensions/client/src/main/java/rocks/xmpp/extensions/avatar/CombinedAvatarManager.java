@@ -100,7 +100,7 @@ public final class CombinedAvatarManager extends AbstractAvatarManager {
                         logger.log(System.Logger.Level.WARNING, "Failed to publish avatar to vCard.");
                     }
                 })
-                .thenCompose((aVoid) -> userAvatarProtocol.publishAvatar(imageData))
+                .thenCompose(aVoid -> userAvatarProtocol.publishAvatar(imageData))
                 .thenRun(() -> {
                 });
     }

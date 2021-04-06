@@ -117,8 +117,8 @@ public final class StreamHeader implements SessionOpen, CharSequence {
             Set<String> prefixes = new HashSet<>();
             Set<String> namespaces = new HashSet<>();
             for (QName additionalNamespace : additionalNamespaces) {
-                if ((additionalNamespace.getNamespaceURI() == null || XMLConstants.NULL_NS_URI.equals(additionalNamespace.getNamespaceURI())
-                        || (additionalNamespace.getPrefix() == null || XMLConstants.DEFAULT_NS_PREFIX.equals(additionalNamespace.getPrefix())))) {
+                if (additionalNamespace.getNamespaceURI() == null || XMLConstants.NULL_NS_URI.equals(additionalNamespace.getNamespaceURI())
+                        || (additionalNamespace.getPrefix() == null || XMLConstants.DEFAULT_NS_PREFIX.equals(additionalNamespace.getPrefix()))) {
                     throw new IllegalArgumentException("Namespace URI and prefix must not be empty.");
                 }
                 if (!prefixes.add(additionalNamespace.getPrefix())) {

@@ -360,8 +360,8 @@ public final class DebugController implements Initializable {
                                 if (selectedStanza instanceof IQ && otherStanza instanceof IQ) {
                                     IQ selectedIQ = (IQ) selectedStanza;
                                     IQ otherIQ = (IQ) otherStanza;
-                                    if (((selectedIQ.isRequest() && otherIQ.isResponse())
-                                            || (selectedIQ.isResponse() && otherIQ.isRequest()))) {
+                                    if ((selectedIQ.isRequest() && otherIQ.isResponse())
+                                            || (selectedIQ.isResponse() && otherIQ.isRequest())) {
                                         // Add the highlighted items.
                                         viewModel.highlightedItems.add(entry);
                                     }

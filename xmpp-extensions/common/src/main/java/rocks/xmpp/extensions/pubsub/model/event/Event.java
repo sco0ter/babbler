@@ -258,7 +258,7 @@ public final class Event {
      */
     public final Subscription getSubscription() {
         if (type instanceof SubscriptionInfo) {
-            return ((SubscriptionInfo) type);
+            return (SubscriptionInfo) type;
         }
         return null;
     }

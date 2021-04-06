@@ -10,4 +10,4 @@ pipelines:
     - step:
         image: maven:3-jdk-11
         script:
-          - mvn clean install
+          - mvn -V -B -s settings.xml deploy

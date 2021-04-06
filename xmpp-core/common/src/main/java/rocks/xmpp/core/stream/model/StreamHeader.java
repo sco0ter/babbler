@@ -361,7 +361,7 @@ public final class StreamHeader implements SessionOpen, CharSequence {
     public final String toString() {
         final StringBuilder sb = new StringBuilder("<?xml version='1.0' encoding='UTF-8'?><")
                 .append(STREAM_NAMESPACE_PREFIX)
-                .append(":")
+                .append(':')
                 .append(LOCAL_NAME)
                 .append(" xmlns=\"")
                 .append(contentNamespace)

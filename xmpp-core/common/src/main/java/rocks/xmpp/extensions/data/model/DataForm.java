@@ -404,7 +404,7 @@ public final class DataForm implements Comparable<DataForm> {
     public final String toString() {
         StringBuilder sb = new StringBuilder();
         if (title != null) {
-            sb.append("Title         : ").append(title).append("\n");
+            sb.append("Title         : ").append(title).append('\n');
         }
         sb.append("Data Form Type: ").append(type.name().toLowerCase()).append('\n');
         String ft = getFormType();

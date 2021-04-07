@@ -61,9 +61,8 @@ public class SoftwareInfoTest extends XmlTest {
     }
 
     @Test
-    public void testSoftwareInfoSystemPropertiesCreation() throws JAXBException, XMLStreamException {
+    public void testSoftwareInfoSystemPropertiesCreation() {
         SoftwareInformation softwareInfo = new SoftwareInformation(new Media(), "xmpp.rocks", "1.0");
-        String xml = marshal(softwareInfo.getDataForm());
 
         Assert.assertNotNull(softwareInfo.getIcon());
         Assert.assertEquals(softwareInfo.getOs(), System.getProperty("os.name"));
@@ -73,7 +72,7 @@ public class SoftwareInfoTest extends XmlTest {
     }
 
     @Test
-    public void testSoftwareInfoFromDataForm() throws JAXBException, XMLStreamException {
+    public void testSoftwareInfoFromDataForm() {
 
         DataForm dataForm = new DataForm(DataForm.Type.RESULT, Arrays.asList(
                 DataForm.Field.builder().name(DataForm.FORM_TYPE).value(SoftwareInformation.FORM_TYPE).type(DataForm.Field.Type.HIDDEN).build(),

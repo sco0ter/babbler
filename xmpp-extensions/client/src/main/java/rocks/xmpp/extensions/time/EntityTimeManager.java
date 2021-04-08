@@ -80,6 +80,16 @@ public final class EntityTimeManager extends Manager implements IQHandler, Exten
         });
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@value EntityTime#NAMESPACE}
+     */
+    @Override
+    public final String getNamespace() {
+        return iqHandler.getNamespace();
+    }
+
     @Override
     public Set<String> getFeatures() {
         return iqHandler.getFeatures();

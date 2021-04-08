@@ -50,6 +50,16 @@ public final class PingHandler extends AbstractIQHandler implements ExtensionPro
         return iq.createResult();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@value Ping#NAMESPACE}
+     */
+    @Override
+    public final String getNamespace() {
+        return Ping.NAMESPACE;
+    }
+
     @Override
     public final boolean isEnabled() {
         return true;

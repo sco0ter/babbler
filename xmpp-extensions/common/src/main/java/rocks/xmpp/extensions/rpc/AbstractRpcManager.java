@@ -68,6 +68,16 @@ public abstract class AbstractRpcManager extends AbstractIQHandler implements In
         this.rpcHandler = rpcHandler;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@value Rpc#NAMESPACE}
+     */
+    @Override
+    public final String getNamespace() {
+        return Rpc.NAMESPACE;
+    }
+
     @Override
     public final synchronized boolean isEnabled() {
         return rpcHandler != null;

@@ -72,6 +72,16 @@ public abstract class AbstractServiceDiscoveryManager implements ServiceDiscover
         this.discoItemHandler = new DiscoItemsHandler();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@value InfoDiscovery#NAMESPACE}
+     */
+    @Override
+    public final String getNamespace() {
+        return InfoDiscovery.NAMESPACE;
+    }
+
     @Override
     public final boolean isEnabled() {
         return true;

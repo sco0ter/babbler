@@ -67,7 +67,7 @@ public abstract class AbstractStreamManager implements StreamFeatureNegotiator<S
      * Guarded by "this".
      */
     protected final AtomicBoolean enabledByClient = new AtomicBoolean();
-    
+
     private final Session session;
     /**
      * Tracks the count of inbound stanzas, we have received from the server.
@@ -124,6 +124,16 @@ public abstract class AbstractStreamManager implements StreamFeatureNegotiator<S
      */
     public final synchronized void setRequestStrategy(Predicate<Stanza> requestStrategy) {
         this.requestStrategy = requestStrategy;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@value StreamManagement#NAMESPACE}
+     */
+    @Override
+    public final String getNamespace() {
+        return StreamManagement.NAMESPACE;
     }
 
     @Override

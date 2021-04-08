@@ -90,6 +90,16 @@ public abstract class AbstractEntityCapabilities1Protocol extends AbstractEntity
         this.node = node;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@value EntityCapabilities1#NAMESPACE}
+     */
+    @Override
+    public final String getNamespace() {
+        return EntityCapabilities1.NAMESPACE;
+    }
+
     @Override
     public final boolean isEnabled() {
         return true;

@@ -170,11 +170,11 @@ public final class Extension implements ExtensionProtocol {
     }
 
     public static Extension of(ExtensionProtocol extensionProtocol, boolean enabled) {
-        return new Extension(null, null, extensionProtocol.getFeatures(), enabled);
+        return new Extension(extensionProtocol.getNamespace(), null, extensionProtocol.getFeatures(), enabled);
     }
 
     public static Extension of(ExtensionProtocol extensionProtocol, Class<? extends Manager> manager, boolean enabled) {
-        return new Extension(extensionProtocol.getFeatures().iterator().next(), manager, extensionProtocol.getFeatures(), enabled);
+        return new Extension(extensionProtocol.getNamespace(), manager, extensionProtocol.getFeatures(), enabled);
     }
 
     /**
@@ -182,6 +182,7 @@ public final class Extension implements ExtensionProtocol {
      *
      * @return The protocol namespace or null.
      */
+    @Override
     public final String getNamespace() {
         return namespace;
     }

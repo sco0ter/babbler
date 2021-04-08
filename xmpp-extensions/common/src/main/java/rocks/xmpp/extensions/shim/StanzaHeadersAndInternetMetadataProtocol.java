@@ -72,6 +72,16 @@ public class StanzaHeadersAndInternetMetadataProtocol implements HeaderManager {
                         .collect(Collectors.toList()));
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@value Headers#NAMESPACE}
+     */
+    @Override
+    public final String getNamespace() {
+        return Headers.NAMESPACE;
+    }
+
     @Override
     public final boolean isEnabled() {
         return !supportedHeaders.isEmpty();

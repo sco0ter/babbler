@@ -320,6 +320,16 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager imple
         this.hashesLocalStore.forEach((jid, hash) -> this.userHashes.put(Jid.of(jid.replace(".userhash", "")), new String(hash, StandardCharsets.UTF_16)));
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@value AvatarUpdate#NAMESPACE}
+     */
+    @Override
+    public final String getNamespace() {
+        return AvatarUpdate.NAMESPACE;
+    }
+
     @Override
     public final Set<String> getFeatures() {
         return Collections.emptySet();

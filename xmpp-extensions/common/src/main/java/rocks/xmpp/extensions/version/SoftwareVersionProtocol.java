@@ -75,6 +75,16 @@ public class SoftwareVersionProtocol extends AbstractIQHandler implements Softwa
         this.softwareVersion = softwareVersion;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@value SoftwareVersion#NAMESPACE}
+     */
+    @Override
+    public final String getNamespace() {
+        return SoftwareVersion.NAMESPACE;
+    }
+
     @Override
     public final boolean isEnabled() {
         return getSoftwareInfo() != null;

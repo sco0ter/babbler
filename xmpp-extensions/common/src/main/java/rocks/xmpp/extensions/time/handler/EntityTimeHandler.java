@@ -52,6 +52,16 @@ public final class EntityTimeHandler extends AbstractIQHandler implements Extens
         return iq.createResult(new EntityTime(OffsetDateTime.now(ZoneId.systemDefault())));
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@value EntityTime#NAMESPACE}
+     */
+    @Override
+    public final String getNamespace() {
+        return EntityTime.NAMESPACE;
+    }
+
     @Override
     public final boolean isEnabled() {
         return true;

@@ -35,6 +35,13 @@ import java.util.Set;
 public interface ExtensionProtocol {
 
     /**
+     * The protocol's main namespace. This is used to uniquely identify the extension protocol.
+     *
+     * @return The main namespace.
+     */
+    String getNamespace();
+
+    /**
      * Indicates whether this protocol is enabled.
      *
      * @return true, if enabled; false if disabled.

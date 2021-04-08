@@ -68,6 +68,16 @@ public final class SoftwareInformationProtocol implements InfoProvider, Software
         this.softwareInformation = softwareInformation;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@value SoftwareInformation#FORM_TYPE}
+     */
+    @Override
+    public final String getNamespace() {
+        return SoftwareInformation.FORM_TYPE;
+    }
+
     @Override
     public final synchronized boolean isEnabled() {
         return softwareInformation != null;

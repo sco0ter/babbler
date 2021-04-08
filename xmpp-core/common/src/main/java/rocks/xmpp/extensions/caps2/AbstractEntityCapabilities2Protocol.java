@@ -60,6 +60,16 @@ public abstract class AbstractEntityCapabilities2Protocol extends AbstractEntity
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@value EntityCapabilities2#NAMESPACE}
+     */
+    @Override
+    public final String getNamespace() {
+        return EntityCapabilities2.NAMESPACE;
+    }
+
     @Override
     public final boolean isEnabled() {
         return true;

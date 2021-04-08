@@ -40,6 +40,16 @@ public final class ResultSetManagementProtocol implements ExtensionProtocol {
 
     private static final Set<String> FEATURES = Collections.singleton(ResultSetManagement.NAMESPACE);
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@value ResultSetManagement#NAMESPACE}
+     */
+    @Override
+    public final String getNamespace() {
+        return ResultSetManagement.NAMESPACE;
+    }
+
     @Override
     public final boolean isEnabled() {
         return true;

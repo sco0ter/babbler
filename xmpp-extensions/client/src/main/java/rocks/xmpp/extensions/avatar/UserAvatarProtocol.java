@@ -78,6 +78,16 @@ public final class UserAvatarProtocol extends AbstractAvatarManager implements I
         xmppSession.removeInboundMessageListener(inboundMessageListener);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@value AvatarData#NAMESPACE}
+     */
+    @Override
+    public final String getNamespace() {
+        return AvatarData.NAMESPACE;
+    }
+
     @Override
     public final Set<String> getFeatures() {
         return Collections.emptySet();

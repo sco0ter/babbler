@@ -50,6 +50,16 @@ public final class CryptographicHashFunctionsProtocol implements ExtensionProtoc
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@value Hash#NAMESPACE}
+     */
+    @Override
+    public final String getNamespace() {
+        return Hash.NAMESPACE;
+    }
+
     @Override
     public final boolean isEnabled() {
         return true;

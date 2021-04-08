@@ -62,6 +62,16 @@ public final class LastActivityHandler extends AbstractIQHandler implements Exte
         return iq.createError(Condition.SERVICE_UNAVAILABLE);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@value LastActivity#NAMESPACE}
+     */
+    @Override
+    public final String getNamespace() {
+        return LastActivity.NAMESPACE;
+    }
+
     @Override
     public final boolean isEnabled() {
         return true;

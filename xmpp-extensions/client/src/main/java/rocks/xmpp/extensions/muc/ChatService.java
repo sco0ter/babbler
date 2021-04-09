@@ -37,9 +37,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * A chat service hosts chat rooms. It allows you to discover public chat rooms or create new (instant) rooms, if allowed by the service.
- * <p>
- * You get an instance of this class by either using the {@link MultiUserChatManager#createChatService(Jid)} method or by {@linkplain rocks.xmpp.extensions.muc.MultiUserChatManager#discoverChatServices() discovering} the chat services at your connected domain.
- * </p>
+ *
+ * <p>You get an instance of this class by either using the {@link MultiUserChatManager#createChatService(Jid)} method or by {@linkplain rocks.xmpp.extensions.muc.MultiUserChatManager#discoverChatServices() discovering} the chat services at your connected domain.</p>
  *
  * @author Christian Schudt
  * @see MultiUserChatManager#createChatService(Jid)

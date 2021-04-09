@@ -24,9 +24,8 @@
 
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0167.html">XEP-0167: Jingle RTP Sessions</a>.
- * <p>
- * It defines a Jingle application type for negotiating one or more sessions that use the Real-time Transport Protocol (RTP) to exchange media such as voice or video. The application type includes a straightforward mapping to Session Description Protocol (SDP) for interworking with SIP media endpoints.
- * </p>
+ *
+ * <p>It defines a Jingle application type for negotiating one or more sessions that use the Real-time Transport Protocol (RTP) to exchange media such as voice or video. The application type includes a straightforward mapping to Session Description Protocol (SDP) for interworking with SIP media endpoints.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = Rtp.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

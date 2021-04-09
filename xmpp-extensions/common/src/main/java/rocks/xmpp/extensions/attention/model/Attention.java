@@ -34,8 +34,9 @@ import javax.xml.bind.annotation.XmlType;
  * <p>This feature is known as 'nudge' or 'buzz' in some non-XMPP IM protocols.</p>
  * </blockquote>
  * <h3>Listening for Attention Requests</h3>
- * <p>If you want to listen for inbound attention requests, listen for inbound messages and check if they have the {@link rocks.xmpp.extensions.attention.model.Attention} extension.
- * </p>
+ *
+ * <p>If you want to listen for inbound attention requests, listen for inbound messages and check if they have the {@link rocks.xmpp.extensions.attention.model.Attention} extension.</p>
+ *
  * <pre>{@code
  * xmppClient.addInboundMessageListener(e -> {
  *     if (e.getMessage().hasExtension(Attention.class)) {
@@ -43,19 +44,24 @@ import javax.xml.bind.annotation.XmlType;
  *     }
  * });
  * }</pre>
+ *
  * <p>You should also enable this feature (preferably before login), in order to register this extension in service discovery:</p>
+ *
  * <pre>{@code
  * xmppClient.enableFeature(Attention.NAMESPACE);
  * }</pre>
  *
  * <h3>Requesting Attention</h3>
- * Attention requests are sent via a 'headline' message:
+ *
+ * <p>Attention requests are sent via a 'headline' message:</p>
+ *
  * <pre>{@code
  * Message message = new Message(jid, Message.Type.HEADLINE);
  * message.addExtension(Attention.INSTANCE);
  * xmppClient.send(message);
  * }</pre>
- * This class is immutable.
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0224.html">XEP-0224: Attention</a>

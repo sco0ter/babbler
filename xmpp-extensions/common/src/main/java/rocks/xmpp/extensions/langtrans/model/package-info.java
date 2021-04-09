@@ -24,9 +24,8 @@
 
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0171.html">XEP-0171: Language Translation</a>.
- * <p>
- * It defines an XMPP protocol extension for providing language translation facilities over XMPP. It supports human, machine, client-based, and server-based translations.
- * </p>
+ *
+ * <p>It defines an XMPP protocol extension for providing language translation facilities over XMPP. It supports human, machine, client-based, and server-based translations.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = LanguageTranslation.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

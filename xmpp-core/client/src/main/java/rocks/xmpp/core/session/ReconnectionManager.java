@@ -52,8 +52,7 @@ import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
  * The second attempt chooses a random number between 0 and 180.<br>
  * The third attempt chooses a random number between 0 and 420.<br>
  * The forth attempt chooses a random number between 0 and 900.<br>
- * The fifth attempt chooses a random number between 0 and 1860.<br>
- * </p>
+ * The fifth attempt chooses a random number between 0 and 1860.<br></p>
  *
  * <p>Generally speaking it is <code>2^attempt * 60</code> seconds.</p>
  *

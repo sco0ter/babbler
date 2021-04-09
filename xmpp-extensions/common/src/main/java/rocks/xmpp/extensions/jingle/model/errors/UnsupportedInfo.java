@@ -28,9 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <unsupported-info/>} jingle error.
- * <p>
- * The recipient does not support the informational payload of a session-info action.
- * </p>
+ *
+ * <p>The recipient does not support the informational payload of a session-info action.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0166.html#errors">10. Error Handling</a>

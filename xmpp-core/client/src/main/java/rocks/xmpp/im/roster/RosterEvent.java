@@ -36,10 +36,10 @@ import rocks.xmpp.im.roster.model.Contact;
 
 /**
  * A roster event which holds information about added, updated and removed contacts of the roster.
- * <p>
- * This event is dispatched by the {@link RosterManager}, whenever a roster push or result is received.
- * </p>
- * This class is immutable.
+ *
+ * <p>This event is dispatched by the {@link RosterManager}, whenever a roster push or result is received.</p>
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see RosterManager#addRosterListener(Consumer)

@@ -28,9 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <out-of-order/>} jingle error.
- * <p>
- * The request cannot occur at this point in the state machine (e.g., session-initiate after session-accept).
- * </p>
+ *
+ * <p>The request cannot occur at this point in the state machine (e.g., session-initiate after session-accept).</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0166.html#errors">10. Error Handling</a>

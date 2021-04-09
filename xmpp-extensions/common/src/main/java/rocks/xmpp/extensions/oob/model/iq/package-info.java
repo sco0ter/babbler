@@ -24,9 +24,8 @@
 
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a> (jabber:iq:oob).
- * <p>
- * This package is for the <code>jabber:iq:oob</code> namespace.
- * </p>
+ *
+ * <p>This package is for the <code>jabber:iq:oob</code> namespace.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = OobIQ.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

@@ -29,9 +29,8 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <si:bad-profile/>} error condition.
- * <p>
- * The profile is not understood or invalid. The profile MAY supply a profile-specific error condition.
- * </p>
+ *
+ * <p>The profile is not understood or invalid. The profile MAY supply a profile-specific error condition.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0095.html">XEP-0095: Stream Initiation</a>

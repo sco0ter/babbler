@@ -117,18 +117,18 @@ import rocks.xmpp.util.concurrent.QueuedExecutorService;
 
 /**
  * The base class for different kinds of XMPP sessions.
- * <p>
- * To date there are three kinds of sessions:
- * </p>
+ *
+ * <p>To date there are three kinds of sessions:</p>
+ *
  * <ul>
  * <li>A normal client-to-server session. This is the default and most used XMPP session. It's concrete implementation is the {@link XmppClient}.</li>
  * <li>An external component session (<a href="https://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>).</li>
  * <li>A client-to-client session (<a href="https://xmpp.org/extensions/xep-0174.html">XEP-0174: Serverless Messaging</a>) (no implementation yet).</li>
  * </ul>
- * <p>
- * This class provides the common functionality and abstract methods for connection establishment, sending and receiving XML stanzas, closing the session, etc.
- * </p>
- * Concrete implementations may have different concepts for authentication, e.g. normal C2S sessions use SASL, while the Jabber Component Protocol uses a different kind of handshake for authenticating.
+ *
+ * <p>This class provides the common functionality and abstract methods for connection establishment, sending and receiving XML stanzas, closing the session, etc.</p>
+ *
+ * <p>Concrete implementations may have different concepts for authentication, e.g. normal C2S sessions use SASL, while the Jabber Component Protocol uses a different kind of handshake for authenticating.</p>
  *
  * @author Christian Schudt
  * @see XmppClient
@@ -1147,9 +1147,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
     /**
      * Creates a new unmarshaller, which can be used to unmarshal XML to objects.
-     * <p>
-     * Note that the returned unmarshaller is not thread-safe.
-     * </p>
+     *
+     * <p>Note that the returned unmarshaller is not thread-safe.</p>
      *
      * @return The unmarshaller.
      * @see #createMarshaller()
@@ -1160,9 +1159,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
     /**
      * Creates a new unmarshaller with a default locale. If child objects have not explicitly set a locale, the default locale is assigned to them.
-     * <p>
-     * Note that the returned unmarshaller is not thread-safe.
-     * </p>
+     *
+     * <p>Note that the returned unmarshaller is not thread-safe.</p>
      *
      * @param rootLocale The root locale, usually set in the stream header.
      * @return The unmarshaller.
@@ -1180,11 +1178,11 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
     /**
      * Creates a marshaller, which can be used to create XML from objects.
-     * <p>
-     * The returned marshaller is configured with {@code Marshaller.JAXB_FRAGMENT = true}, so that no XML header is written
-     * (which is usually what we want in XMPP when writing stanzas).
-     * </p>
-     * Note that the returned unmarshaller is not thread-safe.
+     *
+     * <p>The returned marshaller is configured with {@code Marshaller.JAXB_FRAGMENT = true}, so that no XML header is written
+     * (which is usually what we want in XMPP when writing stanzas).</p>
+     *
+     * <p>Note that the returned unmarshaller is not thread-safe.</p>
      *
      * @return The marshaller.
      * @see #createUnmarshaller()
@@ -1221,9 +1219,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
     /**
      * Handles an XMPP element.
-     * <p>
-     * This method should be called on the reader thread.
-     * </p>
+     *
+     * <p>This method should be called on the reader thread.</p>
      *
      * @param element The XMPP element.
      * @return True, if the stream needs to be restarted; otherwise false.
@@ -1431,9 +1428,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
     /**
      * Called if any unhandled exception is thrown during reading or writing.
-     * <p>
-     * This method will close the stream.
-     * </p>
+     *
+     * <p>This method will close the stream.</p>
      *
      * @param e The exception. If an unrecoverable XMPP stream error occurred, the exception is a {@link rocks.xmpp.core.stream.model.StreamError}.
      */
@@ -1561,11 +1557,11 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
     /**
      * Determines support of another XMPP entity for a given feature.
-     * <p>
-     * Note that if you want to determine support of another client, you have to provide that client's full JID (user@domain/resource).
-     * If you want to determine the server's capabilities provide only the domain JID of the server.
-     * </p>
-     * This method uses cached information and the presence based entity capabilities (XEP-0115) to determine support. Only if no information is available an explicit service discovery request is made.
+     *
+     * <p>Note that if you want to determine support of another client, you have to provide that client's full JID (user@domain/resource).
+     * If you want to determine the server's capabilities provide only the domain JID of the server.</p>
+     *
+     * <p>This method uses cached information and the presence based entity capabilities (XEP-0115) to determine support. Only if no information is available an explicit service discovery request is made.</p>
      *
      * @param feature The feature, usually defined by an XMPP Extension Protocol, e.g. "urn:xmpp:ping".
      * @param jid     The XMPP entity.
@@ -1577,9 +1573,9 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
     /**
      * Represents the session status.
-     * <p>
-     * The following chart illustrates the valid status transitions:
-     * </p>
+     *
+     * <p>The following chart illustrates the valid status transitions:</p>
+     *
      * <pre>
      * ┌────── INITIAL
      * │          │

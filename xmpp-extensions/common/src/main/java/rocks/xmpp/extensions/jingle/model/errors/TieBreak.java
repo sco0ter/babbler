@@ -28,9 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <tie-break/>} jingle error.
- * <p>
- * The request is rejected because it was sent while the initiator was awaiting a reply on a similar request.
- * </p>
+ *
+ * <p>The request is rejected because it was sent while the initiator was awaiting a reply on a similar request.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0166.html#errors">10. Error Handling</a>

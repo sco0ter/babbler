@@ -24,9 +24,8 @@
 
 /**
  * Provides classes for <a href="https://xmpp.org/extensions/xep-0013.html">XEP-0013: Flexible Offline Message Retrieval</a>.
- * <p>
- * It defines an XMPP protocol extension for flexible, POP3-like handling of offline messages. The protocol enables a connecting client to retrieve its offline messages on login in a controlled fashion, without receiving a flood of messages. Messages can also be left on the server for later retrieval.
- * </p>
+ *
+ * <p>It defines an XMPP protocol extension for flexible, POP3-like handling of offline messages. The protocol enables a connecting client to retrieve its offline messages on login in a controlled fashion, without receiving a flood of messages. Messages can also be left on the server for later retrieval.</p>
  */
 package rocks.xmpp.extensions.offline;
 

@@ -33,10 +33,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * The implementation of the {@code <section/>} element in the {@code http://jabber.org/protocol/xdata-layout} namespace.
- * <p>
- * A section is used to partition a page.
- * </p>
- * This class is immutable.
+ *
+ * <p>A section is used to partition a page.</p>
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0141.html">XEP-0141: Data Forms Layout</a>

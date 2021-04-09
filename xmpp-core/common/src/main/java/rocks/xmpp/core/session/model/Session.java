@@ -35,10 +35,10 @@ import rocks.xmpp.core.stream.model.StreamFeature;
  * <p>If a server supports sessions, it MUST include a {@code <session/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-session' namespace in the stream features it advertises to a client after the completion of stream authentication as defined in [XMPP-CORE].</p>
  * <p>Upon being so informed that session establishment is required (and after completing resource binding), the client MUST establish a session if it desires to engage in instant messaging and presence functionality; it completes this step by sending to the server an IQ stanza of type "set" containing an empty {@code <session/>} child element qualified by the 'urn:ietf:params:xml:ns:xmpp-session' namespace.</p>
  * </blockquote>
- * <p>
- * <b>Note:</b> <i>Session establishment has been removed from the <a href="https://xmpp.org/rfcs/rfc6120.html#diffs">updated specification</a>.</i>
- * </p>
- * This class is immutable.
+ *
+ * <p><b>Note:</b> <i>Session establishment has been removed from the <a href="https://xmpp.org/rfcs/rfc6120.html#diffs">updated specification</a>.</i></p>
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  */

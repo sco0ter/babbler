@@ -42,15 +42,20 @@ import rocks.xmpp.util.XmppUtils;
 
 /**
  * This class manages one-to-one chat sessions, which are described in <a href="https://xmpp.org/rfcs/rfc6121.html#message-chat">5.1.  One-to-One Chat Sessions</a> and <a href="https://xmpp.org/extensions/xep-0201.html">XEP-0201: Best Practices for Message Threads</a>.
+ *
  * <h3>Creating a new chat session</h3>
+ *
  * <pre>{@code
  * ChatSession chatSession = xmppSession.getManager(ChatManager.class).createChatSession(chatPartner);
  * }</pre>
+ *
  * <h3>Listen for new chat sessions</h3>
+ *
  * <p>When a contact initiates a new chat session with you, you can listen for it with {@link #addChatSessionListener(Consumer)}.
- * The listener will be called either if you created the session programmatically as shown above, or if it is created by a contact, i.e. because he or she sent you a chat message.
- * </p>
+ * The listener will be called either if you created the session programmatically as shown above, or if it is created by a contact, i.e. because he or she sent you a chat message.</p>
+ *
  * <p>You should add a {@link ChatSession#addInboundMessageListener(Consumer)} to the chat session in order to listen for messages.</p>
+ *
  * <pre>{@code
  * xmppSession.getManager(ChatManager.class).addChatSessionListener(chatSessionEvent -> {
  *     ChatSession chatSession = chatSessionEvent.getChatSession();

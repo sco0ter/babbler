@@ -45,20 +45,24 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 /**
  * This class manages Chat State Notifications, which are used to communicate the status of a user in a chat session, thus indicating whether a chat partner is actively engaged in the chat, composing a message, temporarily paused, inactive, or gone.
  * Chat states can be used in the context of a one-to-one chat session or a multi-user chat room.
- * <p>
- * Because the Chat State protocol is relatively simple, the primary purpose of this manager is to enable or disable the Chat State protocol for Service Discovery purposes.
- * </p>
- * <p>
- * Furthermore it ensures that every sent message has a chat state notification as required by XEP-0085.
- * </p>
+ *
+ * <p>Because the Chat State protocol is relatively simple, the primary purpose of this manager is to enable or disable the Chat State protocol for Service Discovery purposes.</p>
+ *
+ * <p>Furthermore it ensures that every sent message has a chat state notification as required by XEP-0085.</p>
+ *
  * <h3>Sending Chat States</h3>
- * Setting your own chat state can either be done in a one-to-one chat session or a group chat.
+ *
+ * <p>Setting your own chat state can either be done in a one-to-one chat session or a group chat.</p>
+ *
  * <pre>{@code
  * ChatStateManager chatStateManager = xmppSession.getManager(ChatStateManager.class);
  * chatStateManager.setChatState(ChatState.COMPOSING, chat);
  * }</pre>
+ *
  * <h3>Receiving Chat States</h3>
- * If you want to react to chat states of your chat partner(s), just check for chat state extension and deal with it accordingly.
+ *
+ * <p>If you want to react to chat states of your chat partner(s), just check for chat state extension and deal with it accordingly.</p>
+ *
  * <pre>{@code
  * ChatState chatState = message.getExtension(ChatState.class);
  * if (chatState == ChatState.COMPOSING) {

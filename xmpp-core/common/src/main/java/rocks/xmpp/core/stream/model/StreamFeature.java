@@ -69,8 +69,7 @@ public abstract class StreamFeature implements Comparable<StreamFeature> {
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-negotiation-features">4.3.2.  Stream Features Format</a></cite></p>
      * <p>A {@code <features/>} element that contains both mandatory-to-negotiate and voluntary-to-negotiate features
      * indicates that the negotiation is not complete but that the initiating entity MAY complete
-     * the voluntary-to-negotiate feature(s) before it attempts to negotiate the mandatory-to-negotiate feature(s).
-     * </p>
+     * the voluntary-to-negotiate feature(s) before it attempts to negotiate the mandatory-to-negotiate feature(s).</p>
      * </blockquote>
      *
      * @param o The other feature.

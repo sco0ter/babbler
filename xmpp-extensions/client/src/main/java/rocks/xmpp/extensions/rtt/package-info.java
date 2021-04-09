@@ -24,9 +24,8 @@
 
 /**
  * Provides classes for <a href="https://xmpp.org/extensions/xep-0301.html">XEP-0301: In-Band Real Time Text</a>.
- * <p>
- * It is a specification for real-time text transmitted in-band over an XMPP session. Real-time text is text transmitted instantly while it is being typed or created.
- * </p>
+ *
+ * <p>It is a specification for real-time text transmitted in-band over an XMPP session. Real-time text is text transmitted instantly while it is being typed or created.</p>
  */
 package rocks.xmpp.extensions.rtt;
 

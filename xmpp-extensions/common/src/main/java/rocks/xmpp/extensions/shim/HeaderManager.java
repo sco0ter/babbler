@@ -49,10 +49,9 @@ public interface HeaderManager extends InfoProvider, ExtensionProtocol {
 
     /**
      * Gets the supported headers.
-     * <p>
-     * If you want to advertise support for a specific header, add it to this set.
-     * Service discovery requests to the 'header' node will then reveal supported headers.
-     * </p>
+     *
+     * <p>If you want to advertise support for a specific header, add it to this set.
+     * Service discovery requests to the 'header' node will then reveal supported headers.</p>
      *
      * @return The supported headers.
      */

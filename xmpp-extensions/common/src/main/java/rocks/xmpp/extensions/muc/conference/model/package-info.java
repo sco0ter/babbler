@@ -24,9 +24,8 @@
 
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0249.html">XEP-0249: Direct MUC Invitations</a>.
- * <p>
- * It defines a method for inviting a contact to a multi-user chat room directly, instead of sending the invitation through the chat room.
- * </p>
+ *
+ * <p>It defines a method for inviting a contact to a multi-user chat room directly, instead of sending the invitation through the chat room.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = DirectInvitation.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

@@ -35,10 +35,10 @@ import rocks.xmpp.extensions.version.model.SoftwareVersion;
 
 /**
  * An abstract implementation of <a href="https://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>.
- * <p>
- * It handles IQ queries and provides the required service discovery features.
- * </p>
- * This class is thread-safe.
+ *
+ * <p>It handles IQ queries and provides the required service discovery features.</p>
+ *
+ * <p>This class is thread-safe.</p>
  *
  * @author Christian Schudt
  */

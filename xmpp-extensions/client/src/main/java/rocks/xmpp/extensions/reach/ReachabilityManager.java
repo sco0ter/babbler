@@ -52,9 +52,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 /**
  * Allows to query for reachability addresses of another contact, automatically responds to reachability queries and notifies {@linkplain Consumer}s,
  * when the reachability of a contact has changed either via presence or PEP.
- * <p>
- * By default this manager is not enabled. If you support reachability addresses you have to {@linkplain #setEnabled(boolean) enable} it.
- * </p>
+ *
+ * <p>By default this manager is not enabled. If you support reachability addresses you have to {@linkplain #setEnabled(boolean) enable} it.</p>
  *
  * @author Christian Schudt
  */

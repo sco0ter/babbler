@@ -24,9 +24,8 @@
 
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0049.html">XEP-0049: Private XML Storage</a>.
- * <p>
- * It provides canonical documentation of the 'jabber:iq:private' namespace currently in common usage.
- * </p>
+ *
+ * <p>It provides canonical documentation of the 'jabber:iq:private' namespace currently in common usage.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = PrivateData.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

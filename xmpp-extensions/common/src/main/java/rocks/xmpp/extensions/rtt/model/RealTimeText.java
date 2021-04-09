@@ -90,6 +90,7 @@ public final class RealTimeText {
 
     /**
      * Gets the event.
+     *
      * <blockquote>
      * <p>This attribute signals events for real-time text. If the 'event' attribute is omitted, event="edit" is assumed as the default.</p>
      * </blockquote>

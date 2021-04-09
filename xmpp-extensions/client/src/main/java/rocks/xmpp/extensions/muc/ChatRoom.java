@@ -618,9 +618,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
 
     /**
      * Changes the affiliation for an user.
-     * <p>
-     * Use this method for one of the following use cases:
-     * </p>
+     *
+     * <p>Use this method for one of the following use cases:</p>
+     *
      * <ul>
      * <li>Banning a User (affiliation = {@link Affiliation#OUTCAST})</li>
      * <li>Granting Membership (affiliation = {@link Affiliation#MEMBER})</li>
@@ -748,9 +748,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
 
     /**
      * Changes the role for an occupant.
-     * <p>
-     * Use this method for one of the following use cases:
-     * </p>
+     *
+     * <p>Use this method for one of the following use cases:</p>
+     *
      * <ul>
      * <li>Kicking an Occupant (role = {@link Role#NONE})</li>
      * <li>Granting Voice to a Visitor (role = {@link Role#PARTICIPANT})</li>
@@ -869,12 +869,11 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
 
     /**
      * Gets the members of the room.
-     * <p>
-     * In the context of a members-only room, the member list is essentially a "whitelist" of people who are allowed to enter the room.
-     * </p>
-     * <p>
-     * In the context of an open room, the member list is simply a list of users (bare JID and reserved nick) who are registered with the room.
-     * </p>
+     *
+     * <p>In the context of a members-only room, the member list is essentially a "whitelist" of people who are allowed to enter the room.</p>
+     *
+     *
+     * <p>In the context of an open room, the member list is simply a list of users (bare JID and reserved nick) who are registered with the room.</p>
      *
      * @return The async result with the members.
      * @see <a href="https://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
@@ -986,9 +985,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     /**
      * Gets the configuration form for the room.
      * You can wrap the form into {@link RoomConfiguration} for easier processing.
-     * <p>
-     * Use this method if you want to create a reserved room or configure an existing room.
-     * </p>
+     *
+     * <p>Use this method if you want to create a reserved room or configure an existing room.</p>
      *
      * @return The async result with the configuration form.
      * @see RoomConfiguration

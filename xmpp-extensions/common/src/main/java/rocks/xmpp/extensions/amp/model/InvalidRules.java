@@ -28,9 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <invalid-rules/>} element in the {@code http://jabber.org/protocol/amp} namespace.
- * <p>
- * One or more rules are not acceptable by this server, usually because the condition/action combination is restricted. It contains the rules that are not acceptable.
- * </p>
+ *
+ * <p>One or more rules are not acceptable by this server, usually because the condition/action combination is restricted. It contains the rules that are not acceptable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>

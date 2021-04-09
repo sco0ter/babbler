@@ -52,17 +52,15 @@ public final class StreamInitiation {
 
     /**
      * The implementation of the {@code <si:bad-profile/>} error condition.
-     * <p>
-     * The profile is not understood or invalid. The profile MAY supply a profile-specific error condition.
-     * </p>
+     *
+     * <p>The profile is not understood or invalid. The profile MAY supply a profile-specific error condition.</p>
      */
     public static final Object BAD_PROFILE = new BadProfile();
 
     /**
      * The implementation of the {@code <si:no-valid-streams/>} error condition.
-     * <p>
-     * None of the available streams are acceptable.
-     * </p>
+     *
+     * <p>None of the available streams are acceptable.</p>
      */
     public static final Object NO_VALID_STREAMS = new NoValidStreams();
 

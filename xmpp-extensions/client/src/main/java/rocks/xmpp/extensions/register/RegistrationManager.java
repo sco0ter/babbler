@@ -67,10 +67,10 @@ public final class RegistrationManager extends Manager {
 
     /**
      * Gets the registration data (instructions, fields and form) from the server.
-     * <p>
-     * In order to check if a field is required, you should check if a field is not null.
-     * </p>
-     * If you are already registered to the server, this method returns your registration data and {@link rocks.xmpp.extensions.register.model.Registration#isRegistered()} returns true.
+     *
+     * <p>In order to check if a field is required, you should check if a field is not null.</p>
+     *
+     * <p>If you are already registered to the server, this method returns your registration data and {@link rocks.xmpp.extensions.register.model.Registration#isRegistered()} returns true.</p>
      *
      * @return The async result with the registration data.
      * @see <a href="https://xmpp.org/extensions/xep-0077.html#usecases-register">3.1 Entity Registers with a Host</a>

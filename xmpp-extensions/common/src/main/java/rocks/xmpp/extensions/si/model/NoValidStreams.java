@@ -29,9 +29,8 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <si:no-valid-streams/>} error condition.
- * <p>
- * None of the available streams are acceptable.
- * </p>
+ *
+ * <p>None of the available streams are acceptable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0095.html">XEP-0095: Stream Initiation</a>

@@ -24,9 +24,8 @@
 
 /**
  * Provides classes for <a href="https://xmpp.org/extensions/xep-0070.html">XEP-0070: Verifying HTTP Requests via XMPP</a>.
- * <p>
- * It defines an XMPP protocol extension that enables verification of an HTTP request via XMPP.
- * </p>
+ *
+ * <p>It defines an XMPP protocol extension that enables verification of an HTTP request via XMPP.</p>
  */
 package rocks.xmpp.extensions.httpauth;
 

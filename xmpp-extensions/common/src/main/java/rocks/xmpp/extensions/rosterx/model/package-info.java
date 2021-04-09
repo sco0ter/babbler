@@ -24,9 +24,8 @@
 
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0144.html">XEP-0144: Roster Item Exchange</a>.
- * <p>
- * It defines an XMPP protocol extension for exchanging contact list items, including the ability to suggest whether the item is to be added, deleted, or modified in the contact list of the recipient, as well as the suggested roster group for the item.
- * </p>
+ *
+ * <p>It defines an XMPP protocol extension for exchanging contact list items, including the ability to suggest whether the item is to be added, deleted, or modified in the contact list of the recipient, as well as the suggested roster group for the item.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = ContactExchange.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

@@ -97,9 +97,8 @@ public class StanzaError implements LanguageElement {
 
     /**
      * Creates an error with a given condition.
-     * <p>
-     * The error type is set by the condition's associated error type.
-     * </p>
+     *
+     * <p>The error type is set by the condition's associated error type.</p>
      *
      * @param condition The condition.
      */
@@ -109,9 +108,8 @@ public class StanzaError implements LanguageElement {
 
     /**
      * Creates an error with a given condition and text.
-     * <p>
-     * The error type is set by the condition's associated error type.
-     * </p>
+     *
+     * <p>The error type is set by the condition's associated error type.</p>
      *
      * @param condition The condition.
      * @param text      The text.
@@ -122,9 +120,8 @@ public class StanzaError implements LanguageElement {
 
     /**
      * Creates an error with a given condition and extension.
-     * <p>
-     * The error type is set by the condition's associated error type.
-     * </p>
+     *
+     * <p>The error type is set by the condition's associated error type.</p>
      *
      * @param condition The condition.
      * @param extension The extension.

@@ -24,9 +24,8 @@
 
 /**
  * Provides classes for <a href="http://www.xmpp.org/extensions/xep-0182.html">XEP-0182: Application-Specific Error Conditions</a>.
- * <p>
- * It defines a registry of application-specific error conditions.
- * </p>
+ *
+ * <p>It defines a registry of application-specific error conditions.</p>
  *
  * @see <a href="https://xmpp.org/registrar/errors.html">Application-Specific Error Conditions</a>
  */

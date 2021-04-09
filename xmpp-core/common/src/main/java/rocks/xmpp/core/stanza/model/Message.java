@@ -193,9 +193,8 @@ public class Message extends ExtensibleStanza {
      * <p>The {@code <body/>} element contains human-readable XML character data that specifies the textual contents of the message; this child element is normally included but is OPTIONAL.</p>
      * </blockquote>
      * If there's no default body, but only bodies with a language attribute, the first body is returned.
-     * <p>
-     * If there are no bodies at all, null is returned.
-     * </p>
+     *
+     * <p>If there are no bodies at all, null is returned.</p>
      *
      * @return The body or null.
      * @see #getBodies()

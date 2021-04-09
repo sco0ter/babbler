@@ -24,9 +24,8 @@
 
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0335.html">XEP-0335: JSON Containers</a>.
- * <p>
- * It defines an element to be used for encapsulating JSON data in XMPP.
- * </p>
+ *
+ * <p>It defines an element to be used for encapsulating JSON data in XMPP.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = Json.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

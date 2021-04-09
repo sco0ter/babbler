@@ -63,9 +63,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * </blockquote>
  * <p>Enabled extensions are automatically added to the list of features by their respective manager class.
  * Disabled extensions are removed.</p>
- * <p>
- * This class automatically manages inbound service discovery requests by responding with a list of enabled extensions (features).
- * </p>
+ *
+ * <p>This class automatically manages inbound service discovery requests by responding with a list of enabled extensions (features).</p>
  *
  * @author Christian Schudt
  */

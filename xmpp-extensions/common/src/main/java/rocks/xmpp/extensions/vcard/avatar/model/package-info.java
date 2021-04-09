@@ -24,9 +24,8 @@
 
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a>.
- * <p>
- * It provides historical documentation of a vCard-based protocol for exchanging user avatars.
- * </p>
+ *
+ * <p>It provides historical documentation of a vCard-based protocol for exchanging user avatars.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = AvatarUpdate.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

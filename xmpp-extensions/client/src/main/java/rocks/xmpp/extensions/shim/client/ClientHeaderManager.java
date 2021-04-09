@@ -30,9 +30,8 @@ import rocks.xmpp.extensions.shim.StanzaHeadersAndInternetMetadataProtocol;
 
 /**
  * Manages support for <a href="https://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>.
- * <p>
- * By default support is disabled, so that service discovery won't reveal the 'http://jabber.org/protocol/shim' feature.
- * </p>
+ *
+ * <p>By default support is disabled, so that service discovery won't reveal the 'http://jabber.org/protocol/shim' feature.</p>
  *
  * @author Christian Schudt
  */

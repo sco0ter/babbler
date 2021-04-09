@@ -24,9 +24,8 @@
 
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0234.html">XEP-0234: Jingle File Transfer</a>.
- * <p>
- * It defines a Jingle application type for transferring files between two entities. The protocol provides a modular framework that enables the exchange of information about the file to be transferred as well as the negotiation of parameters such as the transport to be used.
- * </p>
+ *
+ * <p>It defines a Jingle application type for transferring files between two entities. The protocol provides a modular framework that enables the exchange of information about the file to be transferred as well as the negotiation of parameters such as the transport to be used.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = JingleFileTransfer.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

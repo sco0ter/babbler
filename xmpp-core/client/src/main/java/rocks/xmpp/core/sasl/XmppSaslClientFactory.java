@@ -34,9 +34,8 @@ import rocks.xmpp.core.sasl.scram.ScramClient;
 
 /**
  * A factory which creates {@linkplain SaslClient}s, which are used in XMPP context and are not natively provided by the default security provider.
- * <p>
- * For example, the <a href="http://tools.ietf.org/html/rfc2245">ANONYMOUS</a> and <a href="http://tools.ietf.org/html/rfc5802">SCRAM-SHA-1</a> mechanisms are not provided by default.
- * </p>
+ *
+ * <p>For example, the <a href="http://tools.ietf.org/html/rfc2245">ANONYMOUS</a> and <a href="http://tools.ietf.org/html/rfc5802">SCRAM-SHA-1</a> mechanisms are not provided by default.</p>
  *
  * @author Christian Schudt
  */

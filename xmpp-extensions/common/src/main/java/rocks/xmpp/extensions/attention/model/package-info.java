@@ -24,9 +24,8 @@
 
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0224.html">XEP-0224: Attention</a>.
- * <p>
- * It defines an XMPP protocol extension for getting the attention of another user.
- * </p>
+ *
+ * <p>It defines an XMPP protocol extension for getting the attention of another user.</p>
  */
 @XmlSchema(namespace = Attention.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
 package rocks.xmpp.extensions.attention.model;

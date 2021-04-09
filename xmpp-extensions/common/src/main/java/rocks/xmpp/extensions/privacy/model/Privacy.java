@@ -38,10 +38,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * The implementation of the the {@code <query/>} element in the {@code jabber:iq:privacy} namespace.
- * <p>
- * This class contains information about the active and default list and holds the privacy lists.
- * </p>
- * This class is immutable.
+ *
+ * <p>This class contains information about the active and default list and holds the privacy lists.</p>
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>

@@ -24,9 +24,8 @@
 
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0261.html">XEP-0261: Jingle In-Band Bytestreams Transport Method</a>.
- * <p>
- * It defines a Jingle transport method that results in sending data via the In-Band Bytestreams (IBB) protocol defined in XEP-0047. Essentially this transport method reuses XEP-0047 semantics for sending the data and defines native Jingle methods for starting and ending an IBB session.
- * </p>
+ *
+ * <p>It defines a Jingle transport method that results in sending data via the In-Band Bytestreams (IBB) protocol defined in XEP-0047. Essentially this transport method reuses XEP-0047 semantics for sending the data and defines native Jingle methods for starting and ending an IBB session.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = InBandByteStreamsTransportMethod.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

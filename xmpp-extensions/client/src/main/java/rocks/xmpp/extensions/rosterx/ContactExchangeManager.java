@@ -220,17 +220,14 @@ public final class ContactExchangeManager extends Manager {
 
     /**
      * Approves a roster exchange item by modifying the roster accordingly.
-     * <p>
-     * If the item is to be added and does not yet exist, it will be added to your roster and you are subscribed to its presence.<br>
-     * If it already exists in your roster but in a different group than suggested, it will additionally be added to the suggested group.
-     * </p>
-     * <p>
-     * If the item is to be deleted, it will be deleted from your roster, if the suggested group(s) matches the same group(s) in your roster.<br>
-     * Otherwise it will be edited, so that it no longer belongs to the suggested groups.
-     * </p>
-     * <p>
-     * If the item is to be modified, it will be modified accordingly, if it exists.
-     * </p>
+     *
+     * <p>If the item is to be added and does not yet exist, it will be added to your roster and you are subscribed to its presence.<br>
+     * If it already exists in your roster but in a different group than suggested, it will additionally be added to the suggested group.</p>
+     *
+     * <p>If the item is to be deleted, it will be deleted from your roster, if the suggested group(s) matches the same group(s) in your roster.<br>
+     * Otherwise it will be edited, so that it no longer belongs to the suggested groups.</p>
+     *
+     * <p>If the item is to be modified, it will be modified accordingly, if it exists.</p>
      *
      * @param item The roster exchange item.
      * @return The action, which was actually performed. This may vary from the specified action, e.g. if you add a contact that already exists, only its groups are updated. If no action was performed, e.g. if you want to delete a contact, that does not exist, null is returned.

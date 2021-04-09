@@ -28,10 +28,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <unsupported-actions/>} element in the {@code http://jabber.org/protocol/amp} namespace.
- * <p>
- * One or more rule's specified actions are not supported. It contains the rules that specify the unsupported actions.
- * </p>
- * This class is immutable.
+ *
+ * <p>One or more rule's specified actions are not supported. It contains the rules that specify the unsupported actions.</p>
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>

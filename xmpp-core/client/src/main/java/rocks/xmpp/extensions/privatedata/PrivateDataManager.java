@@ -35,10 +35,10 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * This class implements <a href="https://xmpp.org/extensions/xep-0049.html">XEP-0049: Private XML Storage</a>.
- * <p>
- * It allows to retrieve and store private data in the server's private XML storage.
- * </p>
- * This class is thread-safe.
+ *
+ * <p>It allows to retrieve and store private data in the server's private XML storage.</p>
+ *
+ * <p>This class is thread-safe.</p>
  *
  * @author Christian Schudt
  */

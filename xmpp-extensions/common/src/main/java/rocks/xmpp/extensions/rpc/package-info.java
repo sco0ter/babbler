@@ -24,9 +24,8 @@
 
 /**
  * Provides classes for <a href="https://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>.
- * <p>
- * It defines an XMPP protocol extension for transporting XML-RPC encoded requests and responses between two XMPP entities. The protocol supports all syntax and semantics of XML-RPC except that it uses XMPP instead of HTTP as the underlying transport.
- * </p>
+ *
+ * <p>It defines an XMPP protocol extension for transporting XML-RPC encoded requests and responses between two XMPP entities. The protocol supports all syntax and semantics of XML-RPC except that it uses XMPP instead of HTTP as the underlying transport.</p>
  */
 package rocks.xmpp.extensions.rpc;
 

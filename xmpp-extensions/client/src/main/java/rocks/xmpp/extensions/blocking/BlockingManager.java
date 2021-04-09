@@ -49,10 +49,10 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * This manager allows to block communications with contacts.
- * <p>
- * Enabling or disabling this manager has no effect, because blocking is done on server side.
- * </p>
- * This class is thread-safe.
+ *
+ * <p>Enabling or disabling this manager has no effect, because blocking is done on server side.</p>
+ *
+ * <p>This class is thread-safe.</p>
  *
  * @author Christian Schudt
  */

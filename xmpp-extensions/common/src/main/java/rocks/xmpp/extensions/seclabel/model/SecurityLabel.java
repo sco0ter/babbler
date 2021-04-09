@@ -116,10 +116,8 @@ public final class SecurityLabel {
      * The implementation of the {@code <displaymarking/>} element.
      * 
      * <blockquote>
-     * <p>
-     * The {@code <displaymarking/>} element contains a display string for use by implementations which are unable to utilize the applicable security policy to generate display markings.
-     * The element may optionally contain two attributes, fgcolor= and bgcolor=, whose values are HTML color strings (e.g., 'red' or '#ff0000'), for use in colorizing the display marking. The fgcolor= default is black. The bgcolor= default is white.
-     * </p>
+     * <p>The {@code <displaymarking/>} element contains a display string for use by implementations which are unable to utilize the applicable security policy to generate display markings.
+     * The element may optionally contain two attributes, fgcolor= and bgcolor=, whose values are HTML color strings (e.g., 'red' or '#ff0000'), for use in colorizing the display marking. The fgcolor= default is black. The bgcolor= default is white.</p>
      * </blockquote>
      */
     public static final class DisplayMarking {

@@ -24,9 +24,8 @@
 
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>.
- * <p>
- * It defines an XMPP protocol extension that enables entities to request, and servers to perform, advanced processing of XMPP message stanzas, including reliable data transport, time-sensitive delivery, and expiration of transient messages.
- * </p>
+ *
+ * <p>It defines an XMPP protocol extension that enables entities to request, and servers to perform, advanced processing of XMPP message stanzas, including reliable data transport, time-sensitive delivery, and expiration of transient messages.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = AdvancedMessageProcessing.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

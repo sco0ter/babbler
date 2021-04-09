@@ -24,9 +24,8 @@
 
 /**
  * Provides classes for <a href="https://xmpp.org/extensions/xep-0260.html">XEP-0260: Jingle SOCKS5 Bytestreams Transport Method</a>.
- * <p>
- * It defines a Jingle transport method that results in sending data via the SOCKS5 Bytestreams (S5B) protocol defined in XEP-0065. Essentially this transport method reuses XEP-0065 semantics for sending the data and defines native Jingle methods for starting and ending an S5B session.
- * </p>
+ *
+ * <p>It defines a Jingle transport method that results in sending data via the SOCKS5 Bytestreams (S5B) protocol defined in XEP-0065. Essentially this transport method reuses XEP-0065 semantics for sending the data and defines native Jingle methods for starting and ending an S5B session.</p>
  */
 package rocks.xmpp.extensions.jingle.transports.s5b;
 

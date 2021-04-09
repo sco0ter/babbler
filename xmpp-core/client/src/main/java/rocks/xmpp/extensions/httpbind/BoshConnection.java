@@ -348,10 +348,10 @@ public final class BoshConnection extends AbstractConnection {
 
     /**
      * Gets the body element from the response and unpacks its content.
-     * <p>
-     * If it is the session creation response it contains additional attributes like the session id. These attributes are set to this connection.
-     * </p>
-     * The contents are delegated to the {@link rocks.xmpp.core.session.XmppSession#handleElement(Object)} method, where they are treated as normal XMPP elements, i.e. the same way as in a normal TCP connection.
+     *
+     * <p>If it is the session creation response it contains additional attributes like the session id. These attributes are set to this connection.</p>
+     *
+     * <p>The contents are delegated to the {@link rocks.xmpp.core.session.XmppSession#handleElement(Object)} method, where they are treated as normal XMPP elements, i.e. the same way as in a normal TCP connection.</p>
      *
      * @param responseBody The body.
      * @throws Exception If any exception occurred during handling the inner XMPP elements.
@@ -408,6 +408,7 @@ public final class BoshConnection extends AbstractConnection {
 
     /**
      * Restarts the stream.
+     *
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/extensions/xep-0206.html#preconditions-sasl">Authentication and Resource Binding</a></cite></p>
      * <p>Upon receiving the {@code <success/>} element, the client MUST then ask the connection manager to restart the stream by sending a "restart request" that is structured as follows</p>
@@ -569,9 +570,8 @@ public final class BoshConnection extends AbstractConnection {
 
     /**
      * Sends all elements waiting in the queue to the server.
-     * <p>
-     * If there are currently more requests than allowed by the server, the waiting elements will be send as soon one of the requests return.
-     * </p>
+     *
+     * <p>If there are currently more requests than allowed by the server, the waiting elements will be send as soon one of the requests return.</p>
      *
      * @param bodyBuilder      The body builder.
      * @param resendAfterError If the body is resent after an error has occurred. In this case the RID is not incremented.

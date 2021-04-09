@@ -30,10 +30,10 @@ import rocks.xmpp.extensions.amp.model.AdvancedMessageProcessingError;
 
 /**
  * The implementation of the {@code <failed-rules/>} element in the {@code http://jabber.org/protocol/amp#errors} namespace.
- * <p>
- * One or more rules triggered the "error" action. This condition contains the triggered rules.
- * </p>
- * This class is immutable.
+ *
+ * <p>One or more rules triggered the "error" action. This condition contains the triggered rules.</p>
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0079.html">XEP-0079: Advanced Message Processing</a>

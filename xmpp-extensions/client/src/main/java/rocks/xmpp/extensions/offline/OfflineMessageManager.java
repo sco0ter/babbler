@@ -42,10 +42,10 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * This manager covers the use cases of <a href="https://xmpp.org/extensions/xep-0013.html">XEP-0013: Flexible Offline Message Retrieval</a>.
- * <p>
- * Offline Message Retrieval must be used before sending initial presence, in order to tell the server, that it must not flood the client with offline messages later.
- * </p>
- * Enabling or disabling this manager has no effect.
+ *
+ * <p>Offline Message Retrieval must be used before sending initial presence, in order to tell the server, that it must not flood the client with offline messages later.</p>
+ *
+ * <p>Enabling or disabling this manager has no effect.</p>
  *
  * @author Christian Schudt
  */

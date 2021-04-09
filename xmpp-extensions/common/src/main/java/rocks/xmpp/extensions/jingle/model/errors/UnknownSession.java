@@ -28,9 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <unknown-session/>} jingle error.
- * <p>
- * The 'sid' attribute specifies a session that is unknown to the recipient (e.g., no longer live according to the recipient's state machine because the recipient previously terminated the session).
- * </p>
+ *
+ * <p>The 'sid' attribute specifies a session that is unknown to the recipient (e.g., no longer live according to the recipient's state machine because the recipient previously terminated the session).</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0166.html#errors">10. Error Handling</a>

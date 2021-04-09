@@ -24,9 +24,8 @@
 
 /**
  * Provides classes for <a href="https://xmpp.org/extensions/xep-0191.html">XEP-0191: Blocking Command</a>.
- * <p>
- * It specifies an XMPP protocol extension for communications blocking that is intended to be simpler than privacy lists (XEP-0016).
- * </p>
+ *
+ * <p>It specifies an XMPP protocol extension for communications blocking that is intended to be simpler than privacy lists (XEP-0016).</p>
  */
 package rocks.xmpp.extensions.blocking;
 

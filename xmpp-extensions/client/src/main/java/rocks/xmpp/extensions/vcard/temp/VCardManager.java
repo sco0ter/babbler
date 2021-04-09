@@ -36,9 +36,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * This manager allows to retrieve or save one owns vCard or retrieve another user's vCard.
- * <p>
- * The use cases are also described in <a href="https://xmpp.org/extensions/xep-0054.html">XEP-0054: vcard-temp</a> in more detail.
- * </p>
+ *
+ * <p>The use cases are also described in <a href="https://xmpp.org/extensions/xep-0054.html">XEP-0054: vcard-temp</a> in more detail.</p>
  *
  * @author Christian Schudt
  */

@@ -38,8 +38,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * The second attempt chooses a random number &gt;= 0 and &lt; 180 seconds.<br>
  * The third attempt chooses a random number &gt;= 0 and &lt; 420 seconds.<br>
  * The fourth attempt chooses a random number &gt;= 0 and &lt; 900 seconds.<br>
- * The fifth attempt chooses a random number &gt;= 0 and &lt; 1860 seconds (= 31 minutes)<br>
- * </p>
+ * The fifth attempt chooses a random number &gt;= 0 and &lt; 1860 seconds (= 31 minutes)<br></p>
  *
  * <p>The strategy is called "truncated", because it won't increase the time span after the nth iteration, which means in the example above, the sixth and any further attempt
  * behaves equally to the fifth attempt.</p>

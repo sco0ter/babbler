@@ -24,9 +24,8 @@
 
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0262.html">XEP-0262: Use of ZRTP in Jingle RTP Sessions</a>.
- * <p>
- * It defines how to use ZRTP (RFC 6189) in the Jingle application type for the Real-time Transport Protocol (RTP) as a way to negotiate media path key agreement for secure RTP in one-to-one media sessions.
- * </p>
+ *
+ * <p>It defines how to use ZRTP (RFC 6189) in the Jingle application type for the Real-time Transport Protocol (RTP) as a way to negotiate media path key agreement for secure RTP in one-to-one media sessions.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:xmpp:jingle:apps:rtp:zrtp:1", elementFormDefault = XmlNsForm.QUALIFIED)

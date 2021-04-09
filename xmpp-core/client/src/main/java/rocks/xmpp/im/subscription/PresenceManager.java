@@ -39,10 +39,10 @@ import rocks.xmpp.core.stanza.model.Presence;
 
 /**
  * Manages subscription requests and presences.
- * <p>
- * This class allows to request, approve, deny and unsubscribe subscriptions.
- * </p>
- * This class is unconditionally thread-safe.
+ *
+ * <p>This class allows to request, approve, deny and unsubscribe subscriptions.</p>
+ *
+ * <p>This class is unconditionally thread-safe.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub">3.  Managing Presence Subscriptions</a>
@@ -91,16 +91,13 @@ public final class PresenceManager extends Manager {
 
     /**
      * Gets the presence for a given contact.
-     * <p>
-     * If the given JID is a bare JID, and the contact has sent multiple presences with different resources,
-     * the "best" presence is returned, i.e. the presence with the highest priority or the presence with the "most available" {@code <show/>} element.
-     * </p>
-     * <p>
-     * If the JID is a full JID, the exact presence of that JID is returned.
-     * </p>
-     * <p>
-     * If no presence could be found an unavailable presence is returned.
-     * </p>
+     *
+     * <p>If the given JID is a bare JID, and the contact has sent multiple presences with different resources,
+     * the "best" presence is returned, i.e. the presence with the highest priority or the presence with the "most available" {@code <show/>} element.</p>
+     *
+     * <p>If the JID is a full JID, the exact presence of that JID is returned.</p>
+     *
+     * <p>If no presence could be found an unavailable presence is returned.</p>
      *
      * @param jid The JID.
      * @return The presence.
@@ -161,9 +158,8 @@ public final class PresenceManager extends Manager {
 
     /**
      * Cancels a previously granted subscription or denies a subscription request.
-     * <p>
-     * This basically means that the contact won't receive presence information from you.
-     * </p>
+     *
+     * <p>This basically means that the contact won't receive presence information from you.</p>
      *
      * @param jid The contact's JID, whose subscription is denied or canceled.
      * @return The id, which is used for the subscription denial.
@@ -178,9 +174,8 @@ public final class PresenceManager extends Manager {
 
     /**
      * Unsubscribes from a contact's presence.
-     * <p>
-     * That basically means, that you will not receive any presence information from the contact anymore.
-     * </p>
+     *
+     * <p>That basically means, that you will not receive any presence information from the contact anymore.</p>
      *
      * @param jid The contact's JID.
      * @return The id, which is used for the unsubscription.

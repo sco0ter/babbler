@@ -44,9 +44,8 @@ import rocks.xmpp.util.XmppUtils;
  * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#message-chat">5.1.  One-to-One Chat Sessions</a></cite></p>
  * <p>In practice, instant messaging activity between human users tends to occur in the form of a conversational burst that we call a "chat session": the exchange of multiple messages between two parties in relatively rapid succession within a relatively brief period of time.</p>
  * </blockquote>
- * <p>
- * In order to create a new chat session, use the {@linkplain ChatManager#createChatSession(Jid) chat manager}.
- * </p>
+ *
+ * <p>In order to create a new chat session, use the {@linkplain ChatManager#createChatSession(Jid) chat manager}.</p>
  */
 public final class ChatSession extends Chat implements AutoCloseable {
 

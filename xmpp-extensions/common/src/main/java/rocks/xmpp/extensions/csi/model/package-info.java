@@ -24,9 +24,8 @@
 
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0352.html">XEP-0352: Client State Indication</a>.
- * <p>
- * It defines a way for the client to indicate its active/inactive state.
- * </p>
+ *
+ * <p>It defines a way for the client to indicate its active/inactive state.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = ClientState.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

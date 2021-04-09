@@ -24,9 +24,8 @@
 
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0390.html">XEP-0390: Entity Capabilities 2.0</a>.
- * <p>
- * It overhauls the XMPP protocol extension Entity Capabilities (XEP-0115). It defines an XMPP protocol extension for broadcasting and dynamically discovering client, device, or generic entity capabilities. In order to minimize network impact, the transport mechanism is standard XMPP presence broadcast (thus forestalling the need for polling related to service discovery data), the capabilities information can be cached either within a session or across sessions, and the format has been kept as small as possible.
- * </p>
+ *
+ * <p>It overhauls the XMPP protocol extension Entity Capabilities (XEP-0115). It defines an XMPP protocol extension for broadcasting and dynamically discovering client, device, or generic entity capabilities. In order to minimize network impact, the transport mechanism is standard XMPP presence broadcast (thus forestalling the need for polling related to service discovery data), the capabilities information can be cached either within a session or across sessions, and the format has been kept as small as possible.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = EntityCapabilities2.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

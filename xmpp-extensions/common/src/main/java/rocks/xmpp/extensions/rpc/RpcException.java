@@ -28,9 +28,8 @@ import rocks.xmpp.addr.Jid;
 
 /**
  * This exception can be thrown by a {@link RpcHandler} to indicate application-level errors.
- * <p>
- * By throwing this exception in the  {@link RpcHandler#process(Jid, String, java.util.List)} method a {@code <fault/>} will be returned.
- * </p>
+ *
+ * <p>By throwing this exception in the  {@link RpcHandler#process(Jid, String, java.util.List)} method a {@code <fault/>} will be returned.</p>
  *
  * @author Christian Schudt
  * @see RpcHandler#process(Jid, String, java.util.List)

@@ -34,13 +34,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <page/>} element in the {@code http://jabber.org/protocol/xdata-layout} namespace.
- * <p>
- * A page is the top-level layout container for data forms. It may contain sections, which partition the page into smaller parts.
- * </p>
- * <p>
- * Each page in a data form contains references to a field in the data form, in order to know which fields should be displayed on this page.
- * </p>
- * This class is immutable.
+ *
+ * <p>A page is the top-level layout container for data forms. It may contain sections, which partition the page into smaller parts.</p>
+ *
+ * <p>Each page in a data form contains references to a field in the data form, in order to know which fields should be displayed on this page.</p>
+ *
+ * <p>This class is immutable.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0141.html">XEP-0141: Data Forms Layout</a>

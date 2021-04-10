@@ -30,8 +30,12 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <not-authorized/>} stanza error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-not-authorized">8.3.3.11.  not-authorized</a></cite></p>
- * <p>The sender needs to provide credentials before being allowed to perform the action, or has provided improper credentials (the name "not-authorized", which was borrowed from the "401 Unauthorized" error of [HTTP], might lead the reader to think that this condition relates to authorization, but instead it is typically used in relation to authentication); the associated error type SHOULD be "auth".</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-not-authorized">8.3.3.11.
+ * not-authorized</a></cite></p>
+ * <p>The sender needs to provide credentials before being allowed to perform the action, or has provided improper
+ * credentials (the name "not-authorized", which was borrowed from the "401 Unauthorized" error of [HTTP], might lead
+ * the reader to think that this condition relates to authorization, but instead it is typically used in relation to
+ * authentication); the associated error type SHOULD be "auth".</p>
  * </blockquote>
  * This class is a singleton.
  *

@@ -61,7 +61,8 @@ public final class JingleFileTransferManager extends Manager {
     @Override
     protected void onEnable() {
         super.onEnable();
-        jingleManager.registerApplicationFormat(JingleFileTransfer.class, JingleFileTransferManager::onFileTransferRequest);
+        jingleManager
+                .registerApplicationFormat(JingleFileTransfer.class, JingleFileTransferManager::onFileTransferRequest);
     }
 
     @Override
@@ -74,10 +75,13 @@ public final class JingleFileTransferManager extends Manager {
         jingleSession.accept(jingleSession.getContents().get(0));
     }
 
-    public JingleFileTransferSession initiateFileTransferSession(final Jid responder, Path file, String description, long timeout) throws XmppException, IOException {
+    public JingleFileTransferSession initiateFileTransferSession(final Jid responder, Path file, String description,
+                                                                 long timeout) throws XmppException, IOException {
 
         // Create the jingle file transfer description element with a file element.
-        JingleFileTransfer.File jingleFile = new JingleFileTransfer.File(file.getFileName().toString(), Files.size(file), Files.getLastModifiedTime(file).toInstant(), null, description);
+        JingleFileTransfer.File jingleFile =
+                new JingleFileTransfer.File(file.getFileName().toString(), Files.size(file),
+                        Files.getLastModifiedTime(file).toInstant(), null, description);
         JingleFileTransfer jingleFileTransfer = new JingleFileTransfer(jingleFile);
 
         // Create an IBB transport.
@@ -85,12 +89,15 @@ public final class JingleFileTransferManager extends Manager {
         InBandByteStreamsTransportMethod ibbTransportMethod = new InBandByteStreamsTransportMethod(4096, sessionId);
 
         // Create the content element with the application format and transport method.
-        Jingle.Content content = new Jingle.Content("a-file-offer", Jingle.Content.Creator.INITIATOR, jingleFileTransfer, ibbTransportMethod, null, Jingle.Content.Senders.INITIATOR);
+        Jingle.Content content =
+                new Jingle.Content("a-file-offer", Jingle.Content.Creator.INITIATOR, jingleFileTransfer,
+                        ibbTransportMethod, null, Jingle.Content.Senders.INITIATOR);
         final JingleSession jingleSession = jingleManager.createSession(responder, sessionId, content);
 
         CompletableFuture<Jingle> jingleResponseFuture = new CompletableFuture<>();
         jingleSession.addJingleListener(e -> {
-            if (e.getJingle().getAction() == Jingle.Action.SESSION_ACCEPT || e.getJingle().getAction() == Jingle.Action.SESSION_TERMINATE) {
+            if (e.getJingle().getAction() == Jingle.Action.SESSION_ACCEPT
+                    || e.getJingle().getAction() == Jingle.Action.SESSION_TERMINATE) {
                 jingleResponseFuture.complete(e.getJingle());
             }
         });

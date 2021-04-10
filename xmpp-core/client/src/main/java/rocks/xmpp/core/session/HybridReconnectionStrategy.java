@@ -28,7 +28,8 @@ import java.time.Duration;
 import java.util.function.BiPredicate;
 
 /**
- * Combines two reconnection strategies. The primary strategy is used, if {@link ReconnectionStrategy#mayReconnect(int, Throwable)} returns true, otherwise the secondary reconnection strategy is used.
+ * Combines two reconnection strategies. The primary strategy is used, if {@link ReconnectionStrategy#mayReconnect(int,
+ * Throwable)} returns true, otherwise the secondary reconnection strategy is used.
  *
  * @author Christian Schudt
  */
@@ -40,7 +41,8 @@ final class HybridReconnectionStrategy implements ReconnectionStrategy {
 
     private final BiPredicate<Integer, Throwable> predicate;
 
-    public HybridReconnectionStrategy(ReconnectionStrategy primaryStrategy, ReconnectionStrategy secondaryStrategy, BiPredicate<Integer, Throwable> predicate) {
+    public HybridReconnectionStrategy(ReconnectionStrategy primaryStrategy, ReconnectionStrategy secondaryStrategy,
+                                      BiPredicate<Integer, Throwable> predicate) {
         this.primaryStrategy = primaryStrategy;
         this.secondaryStrategy = secondaryStrategy;
         this.predicate = predicate;
@@ -48,6 +50,7 @@ final class HybridReconnectionStrategy implements ReconnectionStrategy {
 
     @Override
     public final Duration getNextReconnectionAttempt(final int attempt, final Throwable cause) {
-        return (predicate.test(attempt, cause) ? primaryStrategy : secondaryStrategy).getNextReconnectionAttempt(attempt, cause);
+        return (predicate.test(attempt, cause) ? primaryStrategy : secondaryStrategy)
+                .getNextReconnectionAttempt(attempt, cause);
     }
 }

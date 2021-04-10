@@ -160,7 +160,8 @@ public final class ContactExchange {
             /**
              * Suggests roster item modification.
              *
-             * @see <a href="https://xmpp.org/extensions/xep-0144.html#modify">3.3 Suggesting Roster Item Modification</a>
+             * @see <a href="https://xmpp.org/extensions/xep-0144.html#modify">3.3 Suggesting Roster Item
+             * Modification</a>
              */
             @XmlEnumValue("modify")
             MODIFY

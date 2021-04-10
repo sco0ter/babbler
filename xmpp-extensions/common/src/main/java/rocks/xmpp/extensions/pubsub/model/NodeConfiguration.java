@@ -37,7 +37,8 @@ import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 /**
- * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/pubsub#node_config}, which can be used to configure a pubsub node.
+ * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code
+ * http://jabber.org/protocol/pubsub#node_config}, which can be used to configure a pubsub node.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
  * <pre>{@code
@@ -83,7 +84,8 @@ import rocks.xmpp.extensions.data.model.DataForm;
  * }</pre>
  *
  * @author Christian Schudt
- * @see <a href="https://xmpp.org/extensions/xep-0060.html#registrar-formtypes-config">16.4.4 pubsub#node_config FORM_TYPE</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#registrar-formtypes-config">16.4.4 pubsub#node_config
+ * FORM_TYPE</a>
  */
 public final class NodeConfiguration implements StandardizedDataForm {
 
@@ -199,9 +201,8 @@ public final class NodeConfiguration implements StandardizedDataForm {
     }
 
     /**
-     * The URL of an XSL transformation which can be
-     * applied to payloads in order to generate an
-     * appropriate message body element.
+     * The URL of an XSL transformation which can be applied to payloads in order to generate an appropriate message
+     * body element.
      *
      * @return The URL.
      */
@@ -273,11 +274,8 @@ public final class NodeConfiguration implements StandardizedDataForm {
     }
 
     /**
-     * The URL of an XSL transformation which can be
-     * applied to the payload format in order to generate
-     * a valid Data Forms result that the client could
-     * display using a generic Data Forms rendering
-     * engine.
+     * The URL of an XSL transformation which can be applied to the payload format in order to generate a valid Data
+     * Forms result that the client could display using a generic Data Forms rendering engine.
      *
      * @return The URL.
      */
@@ -518,8 +516,7 @@ public final class NodeConfiguration implements StandardizedDataForm {
     }
 
     /**
-     * The type of node data, usually specified by
-     * the namespace of the payload (if any).
+     * The type of node data, usually specified by the namespace of the payload (if any).
      *
      * @return The payload type.
      */
@@ -613,9 +610,8 @@ public final class NodeConfiguration implements StandardizedDataForm {
         }
 
         /**
-         * The URL of an XSL transformation which can be
-         * applied to payloads in order to generate an
-         * appropriate message body element.
+         * The URL of an XSL transformation which can be applied to payloads in order to generate an appropriate message
+         * body element.
          *
          * @param bodyXslt The URL.
          * @return The builder.
@@ -692,11 +688,8 @@ public final class NodeConfiguration implements StandardizedDataForm {
         }
 
         /**
-         * The URL of an XSL transformation which can be
-         * applied to the payload format in order to generate
-         * a valid Data Forms result that the client could
-         * display using a generic Data Forms rendering
-         * engine
+         * The URL of an XSL transformation which can be applied to the payload format in order to generate a valid Data
+         * Forms result that the client could display using a generic Data Forms rendering engine
          *
          * @param dataformXslt The URL.
          * @return The builder.
@@ -988,16 +981,20 @@ public final class NodeConfiguration implements StandardizedDataForm {
 
             Collection<DataForm.Field> fields = new ArrayDeque<>();
             if (accessModel != null) {
-                fields.add(DataForm.Field.builder().name(ACCESS_MODEL).value(accessModel.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(ACCESS_MODEL).value(accessModel.name().toLowerCase())
+                        .type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (bodyXslt != null) {
                 fields.add(DataForm.Field.builder().name(BODY_XSLT).value(bodyXslt.toString()).build());
             }
             if (childrenAssociationPolicy != null) {
-                fields.add(DataForm.Field.builder().name(CHILDREN_ASSOCIATION_POLICY).value(childrenAssociationPolicy.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(CHILDREN_ASSOCIATION_POLICY)
+                        .value(childrenAssociationPolicy.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE)
+                        .build());
             }
             if (childrenAssociationWhitelist != null && !childrenAssociationWhitelist.isEmpty()) {
-                fields.add(DataForm.Field.builder().name(CHILDREN_ASSOCIATION_WHITELIST).valuesJid(childrenAssociationWhitelist).build());
+                fields.add(DataForm.Field.builder().name(CHILDREN_ASSOCIATION_WHITELIST)
+                        .valuesJid(childrenAssociationWhitelist).build());
             }
             if (children != null && !children.isEmpty()) {
                 fields.add(DataForm.Field.builder().name(CHILDREN).values(children).build());
@@ -1027,10 +1024,12 @@ public final class NodeConfiguration implements StandardizedDataForm {
                 fields.add(DataForm.Field.builder().name(ITEM_EXPIRE).value(itemExpire.toString()).build());
             }
             if (itemReply != null) {
-                fields.add(DataForm.Field.builder().name(ITEM_REPLY).value(itemReply.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(ITEM_REPLY).value(itemReply.name().toLowerCase())
+                        .type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (language != null) {
-                fields.add(DataForm.Field.builder().name(LANGUAGE).value(language.toLanguageTag()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(LANGUAGE).value(language.toLanguageTag())
+                        .type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (maxItems != null) {
                 fields.add(DataForm.Field.builder().name(MAX_ITEMS).value(maxItems.toString()).build());
@@ -1039,10 +1038,12 @@ public final class NodeConfiguration implements StandardizedDataForm {
                 fields.add(DataForm.Field.builder().name(MAX_PAYLOAD_SIZE).value(maxPayloadSize.toString()).build());
             }
             if (nodeType != null) {
-                fields.add(DataForm.Field.builder().name(NODE_TYPE).value(nodeType.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(NODE_TYPE).value(nodeType.name().toLowerCase())
+                        .type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (notificationType != null) {
-                fields.add(DataForm.Field.builder().name(NOTIFICATION_TYPE).value(notificationType.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(NOTIFICATION_TYPE).value(notificationType.name().toLowerCase())
+                        .type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (notifyConfig != null) {
                 fields.add(DataForm.Field.builder().name(NOTIFY_CONFIG).value(notifyConfig).build());
@@ -1063,16 +1064,20 @@ public final class NodeConfiguration implements StandardizedDataForm {
                 fields.add(DataForm.Field.builder().name(PRESENCE_BASED_DELIVERY).value(presenceBasedDelivery).build());
             }
             if (publisherModel != null) {
-                fields.add(DataForm.Field.builder().name(PUBLISH_MODEL).value(publisherModel.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(PUBLISH_MODEL).value(publisherModel.name().toLowerCase())
+                        .type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (purgeOffline != null) {
                 fields.add(DataForm.Field.builder().name(PURGE_OFFLINE).value(purgeOffline).build());
             }
             if (rosterGroupsAllowed != null && !rosterGroupsAllowed.isEmpty()) {
-                fields.add(DataForm.Field.builder().name(ROSTER_GROUPS_ALLOWED).values(rosterGroupsAllowed).type(DataForm.Field.Type.LIST_MULTI).build());
+                fields.add(DataForm.Field.builder().name(ROSTER_GROUPS_ALLOWED).values(rosterGroupsAllowed)
+                        .type(DataForm.Field.Type.LIST_MULTI).build());
             }
             if (sendLastPublishedItem != null) {
-                fields.add(DataForm.Field.builder().name(SEND_LAST_PUBLISHED_ITEM).value(sendLastPublishedItem.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(SEND_LAST_PUBLISHED_ITEM)
+                        .value(sendLastPublishedItem.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE)
+                        .build());
             }
             if (temporarySubscriptions != null) {
                 fields.add(DataForm.Field.builder().name(TEMPSUB).value(temporarySubscriptions).build());

@@ -22,8 +22,8 @@ public final class Strings {
     /**
      * Converts a string from camel case to a string with dashes.
      *
-     * <p>Each upper case character (except the first one) followed by a lower case character is converted to a lower case character preceded by a dash,
-     * e.g. "CamelCase" is converted to "camel-case".</p>
+     * <p>Each upper case character (except the first one) followed by a lower case character is converted to a lower
+     * case character preceded by a dash, e.g. "CamelCase" is converted to "camel-case".</p>
      *
      * @param str The string.
      * @return The string with dashes.
@@ -38,8 +38,8 @@ public final class Strings {
     /**
      * Converts a string from camel case to a string with underscores.
      *
-     * <p>Each upper case character (except the first one) followed by a lower case character is converted to a lower case character preceded by an underscore,
-     * e.g. "CamelCase" is converted to "camel_case".</p>
+     * <p>Each upper case character (except the first one) followed by a lower case character is converted to a lower
+     * case character preceded by an underscore, e.g. "CamelCase" is converted to "camel_case".</p>
      *
      * @param str The string.
      * @return The string with dashes.
@@ -52,8 +52,8 @@ public final class Strings {
     }
 
     /**
-     * Compares two string by comparing their byte arrays.
-     * The "i;octet" collation is described in <a href="https://tools.ietf.org/html/rfc4790#section-9.3.1">9.3.1.  Octet Collation Description</a>.
+     * Compares two string by comparing their byte arrays. The "i;octet" collation is described in <a
+     * href="https://tools.ietf.org/html/rfc4790#section-9.3.1">9.3.1.  Octet Collation Description</a>.
      *
      * @param s1      The first byte array.
      * @param s2      The second byte array.

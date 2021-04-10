@@ -70,7 +70,8 @@ public final class CompressionNegotiator implements StreamFeatureProvider<Compre
                 connection.compressConnection(compress.getMethod(), onSuccess);
                 return StreamNegotiationResult.RESTART;
             } catch (Exception e) {
-                connection.closeAsync(new StreamError(Condition.UNDEFINED_CONDITION, new StreamCompression.Failure(StreamCompression.Failure.Condition.UNSUPPORTED_METHOD)));
+                connection.closeAsync(new StreamError(Condition.UNDEFINED_CONDITION,
+                        new StreamCompression.Failure(StreamCompression.Failure.Condition.UNSUPPORTED_METHOD)));
             }
         }
         return StreamNegotiationResult.IGNORE;

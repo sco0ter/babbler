@@ -56,6 +56,7 @@ public class ThumbsTest extends XmlTest {
     public void marshalThumbs() throws XMLStreamException, JAXBException {
         Thumbnail thumbnail = new Thumbnail(URI.create("cid:sha1+test"), "image/png", 12, 23);
         String xml = marshal(thumbnail);
-        Assert.assertEquals(xml, "<thumbnail xmlns=\"urn:xmpp:thumbs:1\" uri=\"cid:sha1+test\" media-type=\"image/png\" width=\"12\" height=\"23\"></thumbnail>");
+        Assert.assertEquals(xml,
+                "<thumbnail xmlns=\"urn:xmpp:thumbs:1\" uri=\"cid:sha1+test\" media-type=\"image/png\" width=\"12\" height=\"23\"></thumbnail>");
     }
 }

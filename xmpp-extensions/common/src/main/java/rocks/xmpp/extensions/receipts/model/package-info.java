@@ -23,9 +23,11 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0184.html">XEP-0184: Message Delivery Receipts</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0184.html">XEP-0184: Message Delivery
+ * Receipts</a>.
  *
- * <p>It defines an XMPP protocol extension for message delivery receipts, whereby the sender of a message can request notification that the message has been delivered to a client controlled by the intended recipient.</p>
+ * <p>It defines an XMPP protocol extension for message delivery receipts, whereby the sender of a message can request
+ * notification that the message has been delivered to a client controlled by the intended recipient.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = MessageDeliveryReceipts.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

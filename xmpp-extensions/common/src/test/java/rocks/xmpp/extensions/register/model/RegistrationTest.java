@@ -115,7 +115,8 @@ public class RegistrationTest extends XmlTest {
         IQ iq = unmarshal(xml, IQ.class);
         Registration registration = iq.getExtension(Registration.class);
         Assert.assertNotNull(registration);
-        Assert.assertEquals(registration.getInstructions(), "Use the enclosed form to register. If your Jabber client does not");
+        Assert.assertEquals(registration.getInstructions(),
+                "Use the enclosed form to register. If your Jabber client does not");
         Assert.assertNotNull(registration.getRegistrationForm());
     }
 
@@ -145,7 +146,8 @@ public class RegistrationTest extends XmlTest {
                 .build();
 
         String xml = marshal(registration);
-        Assert.assertEquals(xml, "<query xmlns=\"jabber:iq:register\"><name>name</name><first>First name</first><last>Last name</last><email>mail@mail</email><city>City</city><zip>12345</zip></query>");
+        Assert.assertEquals(xml,
+                "<query xmlns=\"jabber:iq:register\"><name>name</name><first>First name</first><last>Last name</last><email>mail@mail</email><city>City</city><zip>12345</zip></query>");
     }
 
     @Test

@@ -57,8 +57,10 @@ public final class Forwarded {
     @XmlElementRef
     private final DelayedDelivery delayedDelivery;
 
-    @XmlElementRefs({@XmlElementRef(type = ClientMessage.class), @XmlElementRef(type = ClientPresence.class), @XmlElementRef(type = ClientIQ.class),
-            @XmlElementRef(type = ServerMessage.class), @XmlElementRef(type = ServerPresence.class), @XmlElementRef(type = ServerIQ.class)
+    @XmlElementRefs({@XmlElementRef(type = ClientMessage.class), @XmlElementRef(type = ClientPresence.class),
+            @XmlElementRef(type = ClientIQ.class),
+            @XmlElementRef(type = ServerMessage.class), @XmlElementRef(type = ServerPresence.class),
+            @XmlElementRef(type = ServerIQ.class)
     })
     private final Stanza stanza;
 
@@ -79,7 +81,8 @@ public final class Forwarded {
     /**
      * Creates a forwarded element.
      *
-     * @param delayedDelivery The delayed delivery, which indicates, when the forwarded stanza was originally received by the forwarder.
+     * @param delayedDelivery The delayed delivery, which indicates, when the forwarded stanza was originally received
+     *                        by the forwarder.
      * @param stanza          The stanza to forward.
      */
     public Forwarded(Stanza stanza, DelayedDelivery delayedDelivery) {

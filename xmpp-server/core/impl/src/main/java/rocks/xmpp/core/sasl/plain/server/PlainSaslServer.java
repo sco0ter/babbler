@@ -85,14 +85,17 @@ public final class PlainSaslServer implements SaslServer {
                 tokens.add(messageToken.toString());
                 // validate response
                 if (tokens.size() != 3) {
-                    throw new SaslFailureException(new Failure(Failure.Condition.MALFORMED_REQUEST, "Invalid PLAIN message format", Locale.US));
+                    throw new SaslFailureException(
+                            new Failure(Failure.Condition.MALFORMED_REQUEST, "Invalid PLAIN message format",
+                                    Locale.US));
                 }
 
                 final String passwd = tokens.removeLast();
                 final String authcId = tokens.removeLast();
 
                 if (authcId == null || authcId.isEmpty()) {
-                    throw new SaslFailureException(new Failure(Failure.Condition.MALFORMED_REQUEST), "No username provided");
+                    throw new SaslFailureException(new Failure(Failure.Condition.MALFORMED_REQUEST),
+                            "No username provided");
                 }
                 if (passwd == null || passwd.isEmpty()) {
                     throw new SaslException("No password provided");
@@ -104,14 +107,17 @@ public final class PlainSaslServer implements SaslServer {
                 }
 
                 final UsernamePasswordCredential credential = new UsernamePasswordCredential(authcId, passwd);
-                final CredentialValidationCallback credentialValidationCallback = new CredentialValidationCallback(credential);
+                final CredentialValidationCallback credentialValidationCallback =
+                        new CredentialValidationCallback(credential);
 
                 handler.handle(new Callback[]{credentialValidationCallback});
 
-                final CredentialValidationResult credentialValidationResult = credentialValidationCallback.getCredentialValidationResult();
+                final CredentialValidationResult credentialValidationResult =
+                        credentialValidationCallback.getCredentialValidationResult();
 
                 complete = true;
-                if (credentialValidationResult == null || credentialValidationResult.getStatus() != CredentialValidationResult.Status.VALID) {
+                if (credentialValidationResult == null
+                        || credentialValidationResult.getStatus() != CredentialValidationResult.Status.VALID) {
                     throw new SaslException("Authentication failed");
                 }
             } else {
@@ -177,7 +183,8 @@ public final class PlainSaslServer implements SaslServer {
     public static final class PlainSaslServerFactory implements SaslServerFactory {
 
         @Override
-        public SaslServer createSaslServer(String mechanism, String protocol, String serverName, Map<String, ?> props, CallbackHandler cbh) {
+        public SaslServer createSaslServer(String mechanism, String protocol, String serverName, Map<String, ?> props,
+                                           CallbackHandler cbh) {
             if (PLAIN_MECHANISM.equals(mechanism)) {
                 return new PlainSaslServer(cbh);
             }

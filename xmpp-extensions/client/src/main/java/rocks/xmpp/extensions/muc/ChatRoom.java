@@ -77,7 +77,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 /**
  * Represents a multi-user chat room.
  *
- * <p>Use this class to enter a chat room, to send and receive messages, invite others and to manage members (e.g. kick or ban a user, grant admin status, etc.).</p>
+ * <p>Use this class to enter a chat room, to send and receive messages, invite others and to manage members (e.g. kick
+ * or ban a user, grant admin status, etc.).</p>
  *
  * @author Christian Schudt
  */
@@ -109,7 +110,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
 
     private boolean entered;
 
-    ChatRoom(final Jid roomJid, String name, XmppSession xmppSession, ServiceDiscoveryManager serviceDiscoveryManager, MultiUserChatManager multiUserChatManager) {
+    ChatRoom(final Jid roomJid, String name, XmppSession xmppSession, ServiceDiscoveryManager serviceDiscoveryManager,
+             MultiUserChatManager multiUserChatManager) {
         if (Objects.requireNonNull(roomJid).getLocal() == null) {
             throw new IllegalArgumentException("roomJid must have a local part.");
         }
@@ -125,18 +127,25 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
             Message message = e.getMessage();
             if (message.getFrom().asBareJid().equals(roomJid)) {
                 if (message.getType() == Message.Type.GROUPCHAT) {
-                    // This is a <message/> stanza from the room JID (or from the occupant JID of the entity that set the subject), with a <subject/> element but no <body/> element
+                    // This is a <message/> stanza from the room JID (or from the occupant JID of the entity that set
+                    // the subject), with a <subject/> element but no <body/> element
                     if (message.getSubject() != null && message.getBody() == null) {
-                        XmppUtils.notifyEventListeners(subjectChangeListeners, new SubjectChangeEvent(ChatRoom.this, message.getSubject(), message.getFrom().getResource(), message.hasExtension(DelayedDelivery.class), DelayedDelivery.sendDate(message)));
+                        XmppUtils.notifyEventListeners(subjectChangeListeners,
+                                new SubjectChangeEvent(ChatRoom.this, message.getSubject(),
+                                        message.getFrom().getResource(), message.hasExtension(DelayedDelivery.class),
+                                        DelayedDelivery.sendDate(message)));
                     } else {
-                        XmppUtils.notifyEventListeners(inboundMessageListeners, new MessageEvent(ChatRoom.this, message, true));
+                        XmppUtils.notifyEventListeners(inboundMessageListeners,
+                                new MessageEvent(ChatRoom.this, message, true));
                     }
                 } else {
                     MucUser mucUser = message.getExtension(MucUser.class);
                     if (mucUser != null) {
                         Decline decline = mucUser.getDecline();
                         if (decline != null) {
-                            XmppUtils.notifyEventListeners(invitationDeclineListeners, new InvitationDeclineEvent(ChatRoom.this, roomJid, decline.getFrom(), decline.getReason()));
+                            XmppUtils.notifyEventListeners(invitationDeclineListeners,
+                                    new InvitationDeclineEvent(ChatRoom.this, roomJid, decline.getFrom(),
+                                            decline.getReason()));
                         }
                     }
                 }
@@ -159,13 +168,15 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                             final OccupantEvent.Type type;
                             // A new occupant entered the room.
                             if (previousOccupant == null && (isSelfPresence || hasEntered())) {
-                                // Only notify about "joins", if it's either our own join, or another occupant joining after we have already joined.
+                                // Only notify about "joins", if it's either our own join, or another occupant joining
+                                // after we have already joined.
                                 type = OccupantEvent.Type.ENTERED;
                             } else {
                                 // For existing occupants (before we joined), always dispatch a status change event.
                                 type = OccupantEvent.Type.STATUS_CHANGED;
                             }
-                            XmppUtils.notifyEventListeners(occupantListeners, new OccupantEvent(ChatRoom.this, occupant, type, null, null, null));
+                            XmppUtils.notifyEventListeners(occupantListeners,
+                                    new OccupantEvent(ChatRoom.this, occupant, type, null, null, null));
                         } else if (presence.getType() == Presence.Type.UNAVAILABLE) {
                             // Occupant has exited the room.
                             occupantMap.remove(nick);
@@ -176,23 +187,36 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                                 String reason = mucUser.getItem().getReason();
                                 if (!mucUser.getStatusCodes().isEmpty()) {
                                     if (mucUser.getStatusCodes().contains(Status.KICKED)) {
-                                        occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.KICKED, actor, reason, null);
+                                        occupantEvent =
+                                                new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.KICKED,
+                                                        actor, reason, null);
                                     } else if (mucUser.getStatusCodes().contains(Status.BANNED)) {
-                                        occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.BANNED, actor, reason, null);
+                                        occupantEvent =
+                                                new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.BANNED,
+                                                        actor, reason, null);
                                     } else if (mucUser.getStatusCodes().contains(Status.MEMBERSHIP_REVOKED)) {
-                                        occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.MEMBERSHIP_REVOKED, actor, reason, null);
+                                        occupantEvent = new OccupantEvent(ChatRoom.this, occupant,
+                                                OccupantEvent.Type.MEMBERSHIP_REVOKED, actor, reason, null);
                                     } else if (mucUser.getStatusCodes().contains(Status.NICK_CHANGED)) {
-                                        occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.NICKNAME_CHANGED, actor, reason, null);
+                                        occupantEvent = new OccupantEvent(ChatRoom.this, occupant,
+                                                OccupantEvent.Type.NICKNAME_CHANGED, actor, reason, null);
                                     } else if (mucUser.getStatusCodes().contains(Status.SERVICE_SHUT_DOWN)) {
-                                        occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.SYSTEM_SHUTDOWN, actor, reason, null);
+                                        occupantEvent = new OccupantEvent(ChatRoom.this, occupant,
+                                                OccupantEvent.Type.SYSTEM_SHUTDOWN, actor, reason, null);
                                     }
                                 } else if (mucUser.getDestroy() != null) {
-                                    occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.ROOM_DESTROYED, actor, mucUser.getDestroy().getReason(), mucUser.getDestroy().getJid());
+                                    occupantEvent = new OccupantEvent(ChatRoom.this, occupant,
+                                            OccupantEvent.Type.ROOM_DESTROYED, actor, mucUser.getDestroy().getReason(),
+                                            mucUser.getDestroy().getJid());
                                 } else {
-                                    occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null, null, null);
+                                    occupantEvent =
+                                            new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null,
+                                                    null, null);
                                 }
                             } else {
-                                occupantEvent = new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null, null, null);
+                                occupantEvent =
+                                        new OccupantEvent(ChatRoom.this, occupant, OccupantEvent.Type.EXITED, null,
+                                                null, null);
                             }
                             if (occupantEvent != null) {
                                 XmppUtils.notifyEventListeners(occupantListeners, occupantEvent);
@@ -223,7 +247,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         boolean isSelfPresence = false;
         MucUser mucUser = presence.getExtension(MucUser.class);
         if (mucUser != null) {
-            // If the presence is self-presence (110) or if the service assigned another nickname (210) to the user (but didn't include 110).
+            // If the presence is self-presence (110) or if the service assigned another nickname (210) to the user
+            // (but didn't include 110).
             boolean nicknameChanged = mucUser.getStatusCodes().contains(Status.SERVICE_HAS_ASSIGNED_OR_MODIFIED_NICK);
             if (nicknameChanged) {
                 nick = presence.getFrom().getResource();
@@ -231,7 +256,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
             isSelfPresence = mucUser.getStatusCodes().contains(Status.SELF_PRESENCE) || nicknameChanged;
         }
         String usedNick = nick != null ? nick : currentNick;
-        return isSelfPresence || (usedNick != null && presence.getFrom() != null && usedNick.equals(presence.getFrom().getResource()));
+        return isSelfPresence || (usedNick != null && presence.getFrom() != null && usedNick
+                .equals(presence.getFrom().getResource()));
     }
 
     /**
@@ -334,7 +360,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @param history  The history.
      * @return The async result with the self-presence returned by the chat room.
      */
-    public final AsyncResult<Presence> enter(final String nick, final String password, final DiscussionHistory history) {
+    public final AsyncResult<Presence> enter(final String nick, final String password,
+                                             final DiscussionHistory history) {
         Objects.requireNonNull(nick, "nick must not be null.");
         synchronized (this) {
             if (entered) {
@@ -370,7 +397,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      */
     public AsyncResult<Message> changeSubject(final String subject) {
         Message message = new Message(roomJid, Message.Type.GROUPCHAT, null, subject, null);
-        return xmppSession.sendAndAwaitMessage(message, message1 -> message1.getBody() == null && message1.getSubject() != null && message1.getSubject().equals(subject));
+        return xmppSession.sendAndAwaitMessage(message,
+                message1 -> message1.getBody() == null && message1.getSubject() != null && message1.getSubject()
+                        .equals(subject));
     }
 
     /**
@@ -393,7 +422,9 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      */
     @Override
     public SendTask<Message> sendMessage(Message message) {
-        Message m = new Message(roomJid, Message.Type.GROUPCHAT, message.getBodies(), message.getSubjects(), message.getThread(), message.getParentThread(), message.getId(), message.getFrom(), message.getLanguage(), message.getExtensions(), message.getError());
+        Message m = new Message(roomJid, Message.Type.GROUPCHAT, message.getBodies(), message.getSubjects(),
+                message.getThread(), message.getParentThread(), message.getId(), message.getFrom(),
+                message.getLanguage(), message.getExtensions(), message.getError());
         return xmppSession.sendMessage(m);
     }
 
@@ -409,7 +440,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
             throw new IllegalStateException("You must have entered the room to change your nickname.");
         }
         final Presence changeNickNamePresence = new Presence(roomJid.withResource(newNickname));
-        return xmppSession.sendAndAwaitPresence(changeNickNamePresence, presence -> presence.getFrom().equals(changeNickNamePresence.getTo()));
+        return xmppSession.sendAndAwaitPresence(changeNickNamePresence,
+                presence -> presence.getFrom().equals(changeNickNamePresence.getTo()));
     }
 
     /**
@@ -494,7 +526,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
                 throw new IllegalArgumentException("Data Form must be of type 'submit'");
             }
             if (!"http://jabber.org/protocol/muc#register".equals(registration.getRegistrationForm().getFormType())) {
-                throw new IllegalArgumentException("Data Form is not of type 'http://jabber.org/protocol/muc#register'");
+                throw new IllegalArgumentException(
+                        "Data Form is not of type 'http://jabber.org/protocol/muc#register'");
             }
         }
         return xmppSession.query(IQ.set(roomJid, registration));
@@ -555,13 +588,16 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
         }
         // Store the current nick, to determine self-presence (because nick gets null before determining self-presence).
         final String usedNick = getNick();
-        return xmppSession.sendAndAwaitPresence(new Presence(roomJid.withResource(usedNick), Presence.Type.UNAVAILABLE, message), presence -> {
-            Jid room = presence.getFrom().asBareJid();
-            return !presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence, usedNick);
-        }).handle((result, throwable) -> {
-            userHasExited();
-            return null;
-        });
+        return xmppSession
+                .sendAndAwaitPresence(new Presence(roomJid.withResource(usedNick), Presence.Type.UNAVAILABLE, message),
+                        presence -> {
+                            Jid room = presence.getFrom().asBareJid();
+                            return !presence.isAvailable() && room.equals(roomJid) && isSelfPresence(presence,
+                                    usedNick);
+                        }).handle((result, throwable) -> {
+                    userHasExited();
+                    return null;
+                });
     }
 
     /**
@@ -610,10 +646,11 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="https://xmpp.org/extensions/xep-0045.html#modifyban">9.2 Modifying the Ban List</a>
      */
     public AsyncResult<List<rocks.xmpp.extensions.muc.model.Item>> getBanList() {
-        return xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Affiliation.OUTCAST, null, null))).thenApply(result -> {
-            MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
-            return mucAdmin.getItems();
-        });
+        return xmppSession.query(IQ.get(roomJid, MucAdmin.withItem(Affiliation.OUTCAST, null, null)))
+                .thenApply(result -> {
+                    MucAdmin mucAdmin = result.getExtension(MucAdmin.class);
+                    return mucAdmin.getItems();
+                });
     }
 
     /**
@@ -667,7 +704,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * Grants membership to a user. Note that you must be an owner or admin of the room.
      *
      * @param user   The user.
-     * @param nick   The nick (optional). That nick becomes the user's default nick in the room if that functionality is supported by the implementation. May be <code>null</code>.
+     * @param nick   The nick (optional). That nick becomes the user's default nick in the room if that functionality is
+     *               supported by the implementation. May be <code>null</code>.
      * @param reason The reason (optional). May be <code>null</code>.
      * @return The async result.
      * @see <a href="https://xmpp.org/extensions/xep-0045.html#grantmember">9.3 Granting Membership</a>
@@ -704,9 +742,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     /**
-     * Revokes a user's owner status. The new status of the user will be 'admin'.
-     * Note that you must be an owner of the room.
-     * This method does basically the same as {@link #grantAdminStatus(Jid, String)}}.
+     * Revokes a user's owner status. The new status of the user will be 'admin'. Note that you must be an owner of the
+     * room. This method does basically the same as {@link #grantAdminStatus(Jid, String)}}.
      *
      * @param user   The user.
      * @param reason The reason (optional). May be <code>null</code>.
@@ -719,8 +756,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     /**
-     * Grants admin status to a user. Note that you must be an owner of the room.
-     * This method does basically the same as {@link #revokeOwnerStatus(Jid, String)}.
+     * Grants admin status to a user. Note that you must be an owner of the room. This method does basically the same as
+     * {@link #revokeOwnerStatus(Jid, String)}.
      *
      * @param user   The user.
      * @param reason The reason (optional). May be <code>null</code>.
@@ -733,8 +770,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     /**
-     * Revokes a user's admin status. The new status of the user will be 'member'.
-     * Note that you must be an owner of the room.
+     * Revokes a user's admin status. The new status of the user will be 'member'. Note that you must be an owner of the
+     * room.
      *
      * @param user   The user.
      * @param reason The reason (optional). May be <code>null</code>.
@@ -786,8 +823,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     /**
-     * Grants voice to a visitor. Note that you must be a moderator in the room.
-     * This method does basically the same as {@link #revokeModeratorStatus(String, String)}}}.
+     * Grants voice to a visitor. Note that you must be a moderator in the room. This method does basically the same as
+     * {@link #revokeModeratorStatus(String, String)}}}.
      *
      * @param nickname The nickname.
      * @param reason   The reason (optional). May be <code>null</code>.
@@ -825,8 +862,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     /**
-     * Revokes moderator status from a participant or visitor. Note that you must be an admin in the room.
-     * This method does basically the same as {@link #grantVoice(String, String)}.
+     * Revokes moderator status from a participant or visitor. Note that you must be an admin in the room. This method
+     * does basically the same as {@link #grantVoice(String, String)}.
      *
      * @param nickname The nickname.
      * @param reason   The reason (optional). May be <code>null</code>.
@@ -870,10 +907,12 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     /**
      * Gets the members of the room.
      *
-     * <p>In the context of a members-only room, the member list is essentially a "whitelist" of people who are allowed to enter the room.</p>
+     * <p>In the context of a members-only room, the member list is essentially a "whitelist" of people who are allowed
+     * to enter the room.</p>
      *
      *
-     * <p>In the context of an open room, the member list is simply a list of users (bare JID and reserved nick) who are registered with the room.</p>
+     * <p>In the context of an open room, the member list is simply a list of users (bare JID and reserved nick) who
+     * are registered with the room.</p>
      *
      * @return The async result with the members.
      * @see <a href="https://xmpp.org/extensions/xep-0045.html#modifymember">9.5 Modifying the Member List</a>
@@ -942,7 +981,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     /**
-     * Gets the occupants in this room, i.e. their nicknames. This method should be used, when you are not yet in the room.
+     * Gets the occupants in this room, i.e. their nicknames. This method should be used, when you are not yet in the
+     * room.
      *
      * @return The async result with the occupants.
      * @see <a href="https://xmpp.org/extensions/xep-0045.html#disco-roomitems">6.5 Querying for Room Items</a>
@@ -983,8 +1023,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     /**
-     * Gets the configuration form for the room.
-     * You can wrap the form into {@link RoomConfiguration} for easier processing.
+     * Gets the configuration form for the room. You can wrap the form into {@link RoomConfiguration} for easier
+     * processing.
      *
      * <p>Use this method if you want to create a reserved room or configure an existing room.</p>
      *
@@ -1024,7 +1064,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
     }
 
     /**
-     * Gets the nickname in this room. Usually this is the nick used to enter the room, but can also be a nickname assigned by the chat service.
+     * Gets the nickname in this room. Usually this is the nick used to enter the room, but can also be a nickname
+     * assigned by the chat service.
      *
      * @return The nickname in this room or {@code null}, if not entered.
      */
@@ -1070,7 +1111,8 @@ public final class ChatRoom extends Chat implements Comparable<ChatRoom> {
      * @see <a href="http://www.xmpp.org/extensions/xep-0045.html#impl-service-traffic">17.1.1 Allowable Traffic</a>
      */
     public AsyncResult<Set<String>> discoverAllowableTraffic() {
-        return serviceDiscoveryManager.discoverInformation(roomJid, "http://jabber.org/protocol/muc#traffic").thenApply(DiscoverableInfo::getFeatures);
+        return serviceDiscoveryManager.discoverInformation(roomJid, "http://jabber.org/protocol/muc#traffic")
+                .thenApply(DiscoverableInfo::getFeatures);
     }
 
     @Override

@@ -37,8 +37,14 @@ import rocks.xmpp.util.Strings;
  * Represents an identity of an XMPP entity.
  *
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber Entity</a></cite></p>
- * <p>In disco, an entity's identity is broken down into its category (server, client, gateway, directory, etc.) and its particular type within that category (IM server, phone vs. handheld client, MSN gateway vs. AIM gateway, user directory vs. chatroom directory, etc.). This information helps requesting entities to determine the group or "bucket" of services into which the entity is most appropriately placed (e.g., perhaps the entity is shown in a GUI with an appropriate icon). An entity MAY have multiple identities. When multiple identity elements are provided, the name attributes for each identity element SHOULD have the same value.</p>
+ * <p><cite><a href="https://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber
+ * Entity</a></cite></p>
+ * <p>In disco, an entity's identity is broken down into its category (server, client, gateway, directory, etc.) and
+ * its particular type within that category (IM server, phone vs. handheld client, MSN gateway vs. AIM gateway, user
+ * directory vs. chatroom directory, etc.). This information helps requesting entities to determine the group or
+ * "bucket" of services into which the entity is most appropriately placed (e.g., perhaps the entity is shown in a GUI
+ * with an appropriate icon). An entity MAY have multiple identities. When multiple identity elements are provided, the
+ * name attributes for each identity element SHOULD have the same value.</p>
  * </blockquote>
  *
  * <p>This class is immutable.</p>
@@ -128,7 +134,8 @@ public final class Identity implements LanguageElement, Comparable<Identity> {
     /**
      * Creates an identity with a category and type.
      *
-     * <p>Only use this method in exceptional cases, in most case you should use one of the many static factory methods, which creates a registered identity, e.g. {@link #clientBot()}.</p>
+     * <p>Only use this method in exceptional cases, in most case you should use one of the many static factory
+     * methods, which creates a registered identity, e.g. {@link #clientBot()}.</p>
      *
      * @param category The category.
      * @param type     The type.
@@ -310,7 +317,8 @@ public final class Identity implements LanguageElement, Comparable<Identity> {
     }
 
     /**
-     * A client that is not actually using an instant messaging client; however, messages sent to this contact will be delivered as Short Message Service (SMS) messages.
+     * A client that is not actually using an instant messaging client; however, messages sent to this contact will be
+     * delivered as Short Message Service (SMS) messages.
      *
      * @return The identity.
      */
@@ -832,7 +840,8 @@ public final class Identity implements LanguageElement, Comparable<Identity> {
     }
 
     /**
-     * Gets the type within the {@linkplain #getCategory() category}, e.g. IM server, phone vs. handheld client, MSN gateway vs. AIM gateway, user directory vs. chatroom directory, etc.
+     * Gets the type within the {@linkplain #getCategory() category}, e.g. IM server, phone vs. handheld client, MSN
+     * gateway vs. AIM gateway, user directory vs. chatroom directory, etc.
      *
      * @return The type.
      */
@@ -860,7 +869,8 @@ public final class Identity implements LanguageElement, Comparable<Identity> {
     }
 
     /**
-     * An identity is considered equal, if category, type and language are equal, because there cannot be two identities with the same category, type and language, but with different names.
+     * An identity is considered equal, if category, type and language are equal, because there cannot be two identities
+     * with the same category, type and language, but with different names.
      *
      * @param o The other object.
      * @return True, if category, type and language are equal.
@@ -886,7 +896,8 @@ public final class Identity implements LanguageElement, Comparable<Identity> {
     }
 
     /**
-     * Implements a natural ordering of an identity, as suggested and required by <a href="https://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>.
+     * Implements a natural ordering of an identity, as suggested and required by <a
+     * href="https://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>.
      *
      * @param o The other identity.
      * @return The result of the comparison.
@@ -928,7 +939,8 @@ public final class Identity implements LanguageElement, Comparable<Identity> {
                 } else if (o.lang == null) {
                     result = 1;
                 } else {
-                    result = Strings.compareUnsignedBytes(lang.toLanguageTag(), o.lang.toLanguageTag(), StandardCharsets.UTF_8);
+                    result = Strings.compareUnsignedBytes(lang.toLanguageTag(), o.lang.toLanguageTag(),
+                            StandardCharsets.UTF_8);
                 }
             }
 

@@ -37,32 +37,33 @@ import rocks.xmpp.core.stanza.model.Presence;
  */
 public enum DefinedState implements SubscriptionState {
     /**
-     * Contact and user are not subscribed to each other, and neither has requested a subscription from the other;
-     * this is reflected in the user's roster by subscription='none'.
+     * Contact and user are not subscribed to each other, and neither has requested a subscription from the other; this
+     * is reflected in the user's roster by subscription='none'.
      */
     NONE(Subscription.NONE, false, false),
     /**
-     * Contact and user are not subscribed to each other, and user has sent contact a subscription request but contact has not replied yet;
-     * this is reflected in the user's roster by subscription='none' and ask='subscribe'.
+     * Contact and user are not subscribed to each other, and user has sent contact a subscription request but contact
+     * has not replied yet; this is reflected in the user's roster by subscription='none' and ask='subscribe'.
      */
     NONE_PENDING_OUT(Subscription.NONE, true, false),
     /**
-     * Contact and user are not subscribed to each other, and contact has sent user a subscription request but user has not replied yet.
-     * This state might or might not be reflected in the user's roster, as follows:
-     * if the user has created a roster item for the contact then the server MUST maintain that roster item and also note the existence of the inbound presence subscription request,
-     * whereas if the user has not created a roster item for the contact then the user's server MUST note the existence of the inbound presence subscription request but MUST NOT create a roster item for the contact
-     * (instead, the server MUST wait until the user has approved the subscription request before adding the contact to the user's roster).
+     * Contact and user are not subscribed to each other, and contact has sent user a subscription request but user has
+     * not replied yet. This state might or might not be reflected in the user's roster, as follows: if the user has
+     * created a roster item for the contact then the server MUST maintain that roster item and also note the existence
+     * of the inbound presence subscription request, whereas if the user has not created a roster item for the contact
+     * then the user's server MUST note the existence of the inbound presence subscription request but MUST NOT create a
+     * roster item for the contact (instead, the server MUST wait until the user has approved the subscription request
+     * before adding the contact to the user's roster).
      */
     NONE_PENDING_IN(Subscription.NONE, false, true),
     /**
-     * Contact and user are not subscribed to each other, contact has sent user a subscription request but user has not replied yet,
-     * and user has sent contact a subscription request but contact has not replied yet;
-     * this is reflected in the user's roster by subscription='none' and ask='subscribe'.
+     * Contact and user are not subscribed to each other, contact has sent user a subscription request but user has not
+     * replied yet, and user has sent contact a subscription request but contact has not replied yet; this is reflected
+     * in the user's roster by subscription='none' and ask='subscribe'.
      */
     NONE_PENDING_OUT_IN(Subscription.NONE, true, true),
     /**
-     * User is subscribed to contact (one-way);
-     * this is reflected in the user's roster by subscription='to'.
+     * User is subscribed to contact (one-way); this is reflected in the user's roster by subscription='to'.
      */
     TO(Subscription.TO, false, false),
     /**
@@ -71,8 +72,7 @@ public enum DefinedState implements SubscriptionState {
      */
     TO_PENDING_IN(Subscription.TO, false, true),
     /**
-     * Contact is subscribed to user (one-way);
-     * this is reflected in the user's roster by subscription='from'.
+     * Contact is subscribed to user (one-way); this is reflected in the user's roster by subscription='from'.
      */
     FROM(Subscription.FROM, false, false),
     /**
@@ -81,8 +81,8 @@ public enum DefinedState implements SubscriptionState {
      */
     FROM_PENDING_OUT(Subscription.FROM, true, false),
     /**
-     * User and contact are subscribed to each other (two-way);
-     * this is reflected in the user's roster by subscription='both'.
+     * User and contact are subscribed to each other (two-way); this is reflected in the user's roster by
+     * subscription='both'.
      */
     BOTH(Subscription.BOTH, false, false);
 
@@ -154,11 +154,13 @@ public enum DefinedState implements SubscriptionState {
     }
 
     /**
-     * Transforms an existing subscription state into a new state, depending on an outbound presence subscription change.
+     * Transforms an existing subscription state into a new state, depending on an outbound presence subscription
+     * change.
      *
      * @param type The presence subscription type.
      * @return The new subscription state.
-     * @see <a href="https://xmpp.org/rfcs/rfc6121.html#substates-out">A.2.  Server Processing of Outbound Presence Subscription Stanzas</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6121.html#substates-out">A.2.  Server Processing of Outbound Presence
+     * Subscription Stanzas</a>
      */
     public final DefinedState onOutboundSubscriptionChange(final Presence.Type type) {
         switch (type) {
@@ -222,11 +224,13 @@ public enum DefinedState implements SubscriptionState {
     }
 
     /**
-     * Transforms an existing subscription state into a new state, depending on an inbound presence subscription change.
+     * Transforms an existing subscription state into a new state, depending on an inbound presence subscription
+     * change.
      *
      * @param type The presence subscription type.
      * @return The new subscription state.
-     * @see <a href="https://xmpp.org/rfcs/rfc6121.html#substates-in">A.3.  Server Processing of Inbound Presence Subscription Stanzas</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6121.html#substates-in">A.3.  Server Processing of Inbound Presence
+     * Subscription Stanzas</a>
      */
     public final DefinedState onInboundSubscriptionChange(final Presence.Type type) {
         switch (type) {

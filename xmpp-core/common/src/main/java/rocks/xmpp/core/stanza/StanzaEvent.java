@@ -57,8 +57,7 @@ abstract class StanzaEvent<S extends Stanza> extends EventObject {
     }
 
     /**
-     * Marks this event as consumed.
-     * For outbound stanzas, consuming this event cancels sending the stanza.
+     * Marks this event as consumed. For outbound stanzas, consuming this event cancels sending the stanza.
      *
      * @see #isConsumed()
      */

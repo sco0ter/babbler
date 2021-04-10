@@ -64,7 +64,8 @@ public final class Candidate extends RemoteCandidate {
     }
 
     public Candidate(Integer pComponent, String pIp, Integer pPort, Short pFoundation, Short pGeneration, String pId,
-                     Short pNetwork, Integer pPriority, String pProtocol, String pRelatedAddress, Integer pRelatedPort, Type pType) {
+                     Short pNetwork, Integer pPriority, String pProtocol, String pRelatedAddress, Integer pRelatedPort,
+                     Type pType) {
         super(pComponent, pIp, pPort);
         foundation = pFoundation;
         generation = pGeneration;

@@ -55,10 +55,12 @@ public final class BoshConnectionManager {
 
     @POST
     @Produces(MediaType.TEXT_XML)
-    public void handleRequest(final Body body, @Suspended final AsyncResponse asyncResponse, @Context final SecurityContext securityContext) {
+    public void handleRequest(final Body body, @Suspended final AsyncResponse asyncResponse,
+                              @Context final SecurityContext securityContext) {
         try {
             if (body.getRid() == null || body.getRid() < 0) {
-                asyncResponse.resume(Body.builder().type(Body.Type.TERMINATE).condition(Body.Condition.BAD_REQUEST).build());
+                asyncResponse
+                        .resume(Body.builder().type(Body.Type.TERMINATE).condition(Body.Condition.BAD_REQUEST).build());
                 return;
             }
 
@@ -70,7 +72,8 @@ public final class BoshConnectionManager {
                     return;
                 }
                 InboundClientSession session = CDI.current().select(InboundClientSession.class).get();
-                BoshConnection connection = new BoshConnection(session::handleElement, body, asyncResponse, securityContext, this);
+                BoshConnection connection =
+                        new BoshConnection(session::handleElement, body, asyncResponse, securityContext, this);
                 session.setConnection(connection);
                 connections.put(session.getId(), connection);
                 connection.closeFuture().whenComplete((aVoid, throwable) -> connections.remove(session.getId()));
@@ -81,13 +84,17 @@ public final class BoshConnectionManager {
                 // Subsequent requests
                 BoshConnection boshConnection = connections.get(body.getSid());
                 if (boshConnection == null) {
-                    asyncResponse.resume(Body.builder().type(Body.Type.TERMINATE).condition(Body.Condition.ITEM_NOT_FOUND).build());
+                    asyncResponse
+                            .resume(Body.builder().type(Body.Type.TERMINATE).condition(Body.Condition.ITEM_NOT_FOUND)
+                                    .build());
                 } else {
                     boshConnection.requestReceived(body, asyncResponse, securityContext);
                 }
             }
         } catch (Exception e) {
-            asyncResponse.resume(Body.builder().type(Body.Type.TERMINATE).condition(Body.Condition.INTERNAL_SERVER_ERROR).build());
+            asyncResponse
+                    .resume(Body.builder().type(Body.Type.TERMINATE).condition(Body.Condition.INTERNAL_SERVER_ERROR)
+                            .build());
         }
     }
 

@@ -43,7 +43,9 @@ import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
- * This class manages privacy lists, which allow users to block communications from other users as described in <a href="https://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>.
+ * This class manages privacy lists, which allow users to block communications from other users as described in <a
+ * href="https://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>.
+ *
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/extensions/xep-0016.html#protocol">2. Protocol</a></cite></p>
  * <p>Server-side privacy lists enable successful completion of the following use cases:</p>
@@ -53,8 +55,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * <li>Setting, changing, or declining active lists.</li>
  * <li>Setting, changing, or declining the default list (i.e., the list that is active by default).</li>
  * <li>Allowing or blocking messages based on JID, group, or subscription type (or globally).</li>
- * <li>Allowing or blocking inbound presence notifications based on JID, group, or subscription type (or globally).</li>
- * <li>Allowing or blocking outbound presence notifications based on JID, group, or subscription type (or globally).</li>
+ * <li>Allowing or blocking inbound presence notifications based on JID, group or subscription type (or globally).</li>
+ * <li>Allowing or blocking outbound presence notifications based on JID, group or subscription type (or globally).</li>
  * <li>Allowing or blocking IQ stanzas based on JID, group, or subscription type (or globally).</li>
  * <li>Allowing or blocking all communications based on JID, group, or subscription type (or globally).</li>
  * </ul>
@@ -77,10 +79,12 @@ public final class PrivacyListManager extends Manager {
                     if (privacy != null) {
                         List<PrivacyList> privacyLists = privacy.getPrivacyLists();
                         if (privacyLists.size() == 1) {
-                            XmppUtils.notifyEventListeners(privacyListListeners, new PrivacyListEvent(PrivacyListManager.this, privacyLists.get(0).getName()));
+                            XmppUtils.notifyEventListeners(privacyListListeners,
+                                    new PrivacyListEvent(PrivacyListManager.this, privacyLists.get(0).getName()));
                         }
                     }
-                    // In accordance with the semantics of IQ stanzas defined in XMPP Core [7], each connected resource MUST return an IQ result to the server as well.
+                    // In accordance with the semantics of IQ stanzas defined in XMPP Core [7], each connected resource
+                    // MUST return an IQ result to the server as well.
                     return iq.createResult();
                 }
                 return iq.createError(Condition.NOT_ACCEPTABLE);

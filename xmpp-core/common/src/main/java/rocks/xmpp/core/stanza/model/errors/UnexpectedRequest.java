@@ -30,8 +30,10 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <unexpected-request/>} stanza error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-unexpected-request">8.3.3.22.  unexpected-request</a></cite></p>
- * <p>The recipient or server understood the request but was not expecting it at this time (e.g., the request was out of order); the associated error type SHOULD be "wait" or "modify".</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-unexpected-request">8.3.3.22.
+ * unexpected-request</a></cite></p>
+ * <p>The recipient or server understood the request but was not expecting it at this time (e.g., the request was out
+ * of order); the associated error type SHOULD be "wait" or "modify".</p>
  * </blockquote>
  * This class is a singleton.
  *

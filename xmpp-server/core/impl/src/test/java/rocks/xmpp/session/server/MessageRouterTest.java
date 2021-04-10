@@ -108,7 +108,8 @@ public class MessageRouterTest extends XmlTest {
         Mockito.when(testSession2b.getPresence()).thenReturn(new Presence());
         Mockito.when(testSession2cNegative.getPresence()).thenReturn(new Presence((byte) -1));
 
-        Mockito.when(userManager.userExists(Mockito.anyString())).thenAnswer(invocationOnMock -> !invocationOnMock.getArgument(0, String.class).equals("nosuchuser"));
+        Mockito.when(userManager.userExists(Mockito.anyString()))
+                .thenAnswer(invocationOnMock -> !invocationOnMock.getArgument(0, String.class).equals("nosuchuser"));
         Mockito.when(sessionManager.getSession(JID_1_FULL)).thenReturn(testSession1);
         Mockito.when(sessionManager.getSession(JID_2_FULL_A)).thenReturn(testSession2a);
         Mockito.when(sessionManager.getSession(JID_2_FULL_B)).thenReturn(testSession2b);
@@ -124,7 +125,8 @@ public class MessageRouterTest extends XmlTest {
         Mockito.clearInvocations(testSession2b);
         Mockito.clearInvocations(messageRouter);
         Mockito.when(sessionManager.getUserSessions(JID_1_FULL.asBareJid())).thenReturn(Stream.of(testSession1));
-        Mockito.when(sessionManager.getUserSessions(JID_2_FULL_A.asBareJid())).thenReturn(Stream.of(testSession2a, testSession2b, testSession2cNegative));
+        Mockito.when(sessionManager.getUserSessions(JID_2_FULL_A.asBareJid()))
+                .thenReturn(Stream.of(testSession2a, testSession2b, testSession2cNegative));
     }
 
     @Test

@@ -95,7 +95,8 @@ public class NettyServer {
             sslContext.init(kmf.getKeyManagers(), null, null);
             SSL_CONTEXT = sslContext;
 
-        } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | UnrecoverableKeyException | IOException | KeyManagementException e) {
+        } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | UnrecoverableKeyException
+                | IOException | KeyManagementException e) {
             throw new RuntimeException(e);
         }
     }
@@ -117,22 +118,27 @@ public class NettyServer {
                         final InboundClientSession session = CDI.current().select(InboundClientSession.class).get();
 
                         // Create a new connection for the client.
-                        final TcpBinding connection = new NettyChannelConnection(ch, session, null, serverConfiguration::getUnmarshaller, Collections.emptyList(), serverConfiguration::getMarshaller, null, new ConnectionConfiguration() {
-                            @Override
-                            public ChannelEncryption getChannelEncryption() {
-                                return ChannelEncryption.DIRECT;
-                            }
+                        final TcpBinding connection =
+                                new NettyChannelConnection(ch, session, null, serverConfiguration::getUnmarshaller,
+                                        Collections.emptyList(), serverConfiguration::getMarshaller, null,
+                                        new ConnectionConfiguration() {
+                                            @Override
+                                            public ChannelEncryption getChannelEncryption() {
+                                                return ChannelEncryption.DIRECT;
+                                            }
 
-                            @Override
-                            public SSLContext getSSLContext() {
-                                return SSL_CONTEXT;
-                            }
-                        });
+                                            @Override
+                                            public SSLContext getSSLContext() {
+                                                return SSL_CONTEXT;
+                                            }
+                                        });
                         // Create a new session for the new client connection.
 
                         session.setConnection(connection);
-                        session.getStreamFeatureManager().registerStreamFeatureProvider(new StartTlsNegotiator(connection));
-                        session.getStreamFeatureManager().registerStreamFeatureProvider(new CompressionNegotiator(connection));
+                        session.getStreamFeatureManager()
+                                .registerStreamFeatureProvider(new StartTlsNegotiator(connection));
+                        session.getStreamFeatureManager()
+                                .registerStreamFeatureProvider(new CompressionNegotiator(connection));
                         ch.pipeline().addLast(new InboundXmppHandler(session));
                     }
                 })

@@ -55,7 +55,8 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
     /**
      * Executor that will schedule the tasks.
      */
-    private static final ScheduledThreadPoolExecutor SCHEDULER = new ScheduledThreadPoolExecutor(1, XmppUtils.createNamedThreadFactory("Scheduler Thread"));
+    private static final ScheduledThreadPoolExecutor SCHEDULER =
+            new ScheduledThreadPoolExecutor(1, XmppUtils.createNamedThreadFactory("Scheduler Thread"));
 
     /**
      * Sequence number to break scheduling ties.
@@ -124,7 +125,8 @@ public class QueuedScheduledExecutorService extends QueuedExecutorService implem
         return newScheduledFuture(Executors.callable(command, null), getInitialDelay(initialDelay, unit), -delay, unit);
     }
 
-    private <V> ScheduledFuture<V> newScheduledFuture(Callable<V> callable, long initialDelay, long delay, TimeUnit unit) {
+    private <V> ScheduledFuture<V> newScheduledFuture(Callable<V> callable, long initialDelay, long delay,
+                                                      TimeUnit unit) {
         if (isShutdown()) {
             throw new RejectedExecutionException("Executor is shutdown");
         }

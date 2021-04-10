@@ -116,7 +116,8 @@ public final class EntityCapabilities2 extends StreamFeature implements EntityCa
             }
             // 5.1.2. Append an octet of value 0x1f (ASCII Unit Separator) to each resulting octet string.
             sb.appendCodePoint('\u001F');
-            // 5.1.3. Join the resulting octet strings together, in the order of 'category', 'type', 'xml:lang' and 'name', resulting in a single octet string for the <identity/> node.
+            // 5.1.3. Join the resulting octet strings together, in the order of 'category', 'type', 'xml:lang'
+            // and 'name', resulting in a single octet string for the <identity/> node.
             // 5.1.4. Append an octet of value 0x1e (ASCII Record Separator).
             sb.appendCodePoint('\u001E');
         }
@@ -164,10 +165,12 @@ public final class EntityCapabilities2 extends StreamFeature implements EntityCa
 
     @Override
     public final String createCapabilityHashNode(final Hashed hashed) {
-        // To the namespace prefix "urn:xmpp:caps#", append the name of the hash function as per Use of Cryptographic Hash Functions in XMPP (XEP-0300) [9].
+        // To the namespace prefix "urn:xmpp:caps#", append the name of the hash function
+        // as per Use of Cryptographic Hash Functions in XMPP (XEP-0300) [9].
         // Append a FULL STOP character (U+002E, ".").
         // Append the Base64 encoded (as specified in RFC 3548 [14]) hash value.
-        return NAMESPACE + '#' + hashed.getHashAlgorithm() + '.' + Base64.getEncoder().encodeToString(hashed.getHashValue());
+        return NAMESPACE + '#' + hashed.getHashAlgorithm() + '.'
+                + Base64.getEncoder().encodeToString(hashed.getHashValue());
     }
 
     @Override

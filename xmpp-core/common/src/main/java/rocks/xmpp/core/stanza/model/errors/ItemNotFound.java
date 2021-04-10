@@ -30,7 +30,8 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <item-not-found/>} stanza error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-item-not-found">8.3.3.7.  item-not-found</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-item-not-found">8.3.3.7.
+ * item-not-found</a></cite></p>
  * <p>The addressed JID or item requested cannot be found; the associated error type SHOULD be "cancel".</p>
  * </blockquote>
  * This class is a singleton.

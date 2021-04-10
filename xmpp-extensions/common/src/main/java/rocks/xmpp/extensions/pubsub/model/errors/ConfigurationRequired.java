@@ -28,12 +28,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * The implementation of the {@code <configuration-required/>} pubsub error.
- * This class is a singleton.
+ * The implementation of the {@code <configuration-required/>} pubsub error. This class is a singleton.
  *
  * @author Christian Schudt
  * @see #CONFIGURATION_REQUIRED
- * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-configure">6.1.5 Configuration Required</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-configure">6.1.5 Configuration
+ * Required</a>
  */
 @XmlRootElement(name = "configuration-required")
 @XmlType(factoryMethod = "create")

@@ -89,7 +89,8 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         marshaller.marshal(iq, prefixFreeWriter);
         prefixFreeWriter.flush();
-        Assert.assertEquals(writer.toString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?><stream:stream xmlns=\"jabber:client\" xmlns:stream=\"http://etherx.jabber.org/streams\" version=\"1.0\"><iq id=\"1\" type=\"get\"><query xmlns=\"jabber:iq:roster\"><item jid=\"domain\"></item></query></iq>");
+        Assert.assertEquals(writer.toString(),
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><stream:stream xmlns=\"jabber:client\" xmlns:stream=\"http://etherx.jabber.org/streams\" version=\"1.0\"><iq id=\"1\" type=\"get\"><query xmlns=\"jabber:iq:roster\"><item jid=\"domain\"></item></query></iq>");
     }
 
     @Test
@@ -107,7 +108,8 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         marshaller.marshal(body, xmppStreamWriter);
         xmppStreamWriter.flush();
-        Assert.assertEquals(writer.toString(), "<body xmlns=\"http://jabber.org/protocol/httpbind\" rid=\"1\" xmlns:xmpp=\"urn:xmpp:xbosh\" xmpp:version=\"1.0\" xmpp:restart=\"true\"></body>");
+        Assert.assertEquals(writer.toString(),
+                "<body xmlns=\"http://jabber.org/protocol/httpbind\" rid=\"1\" xmlns:xmpp=\"urn:xmpp:xbosh\" xmpp:version=\"1.0\" xmpp:restart=\"true\"></body>");
     }
 
     @Test
@@ -128,7 +130,8 @@ public class PrefixFreeCanonicalizationWriterTest {
         Response response = new Response(null);
         marshaller.marshal(response, xmppStreamWriter);
         xmppStreamWriter.flush();
-        Assert.assertEquals(writer.toString(), "<stream><auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\"></auth><response xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\"></response>");
+        Assert.assertEquals(writer.toString(),
+                "<stream><auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\"></auth><response xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\"></response>");
     }
 
     @Test
@@ -149,7 +152,8 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         marshaller.marshal(streamFeatures, xmppStreamWriter);
         xmppStreamWriter.flush();
-        Assert.assertEquals(writer.toString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?><stream:stream xmlns=\"jabber:client\" xmlns:stream=\"http://etherx.jabber.org/streams\" version=\"1.0\"><stream:features><bind xmlns=\"urn:ietf:params:xml:ns:xmpp-bind\"><resource>res</resource></bind></stream:features>");
+        Assert.assertEquals(writer.toString(),
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><stream:stream xmlns=\"jabber:client\" xmlns:stream=\"http://etherx.jabber.org/streams\" version=\"1.0\"><stream:features><bind xmlns=\"urn:ietf:params:xml:ns:xmpp-bind\"><resource>res</resource></bind></stream:features>");
     }
 
     @Test
@@ -165,9 +169,12 @@ public class PrefixFreeCanonicalizationWriterTest {
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
         StreamFeatures streamFeatures = new StreamFeatures(Collections.singleton(new Bind("res")));
 
-        marshaller.marshal(Body.builder().xmppVersion("1.0").wrappedObjects(Collections.singleton(streamFeatures)).build(), xmppStreamWriter);
+        marshaller.marshal(
+                Body.builder().xmppVersion("1.0").wrappedObjects(Collections.singleton(streamFeatures)).build(),
+                xmppStreamWriter);
         xmppStreamWriter.flush();
-        Assert.assertEquals(writer.toString(), "<body xmlns=\"http://jabber.org/protocol/httpbind\" xmlns:stream=\"http://etherx.jabber.org/streams\" xmlns:xmpp=\"urn:xmpp:xbosh\" xmpp:version=\"1.0\"><stream:features><bind xmlns=\"urn:ietf:params:xml:ns:xmpp-bind\"><resource>res</resource></bind></stream:features></body>");
+        Assert.assertEquals(writer.toString(),
+                "<body xmlns=\"http://jabber.org/protocol/httpbind\" xmlns:stream=\"http://etherx.jabber.org/streams\" xmlns:xmpp=\"urn:xmpp:xbosh\" xmpp:version=\"1.0\"><stream:features><bind xmlns=\"urn:ietf:params:xml:ns:xmpp-bind\"><resource>res</resource></bind></stream:features></body>");
     }
 
     @Test
@@ -183,9 +190,11 @@ public class PrefixFreeCanonicalizationWriterTest {
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
         Auth auth = new Auth("PLAIN", null);
 
-        marshaller.marshal(Body.builder().xmppVersion("1.0").wrappedObjects(Collections.singleton(auth)).build(), xmppStreamWriter);
+        marshaller.marshal(Body.builder().xmppVersion("1.0").wrappedObjects(Collections.singleton(auth)).build(),
+                xmppStreamWriter);
         xmppStreamWriter.flush();
-        Assert.assertEquals(writer.toString(), "<body xmlns=\"http://jabber.org/protocol/httpbind\" xmlns:xmpp=\"urn:xmpp:xbosh\" xmpp:version=\"1.0\"><auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\"></auth></body>");
+        Assert.assertEquals(writer.toString(),
+                "<body xmlns=\"http://jabber.org/protocol/httpbind\" xmlns:xmpp=\"urn:xmpp:xbosh\" xmpp:version=\"1.0\"><auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\"></auth></body>");
     }
 
     @Test
@@ -196,14 +205,17 @@ public class PrefixFreeCanonicalizationWriterTest {
         XMLStreamWriter xmlStreamWriter = XmlTest.OUTPUT_FACTORY.createXMLStreamWriter(writer);
         XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
 
-        JAXBContext jaxbContext = JAXBContext.newInstance(Body.class, StreamFeatures.class, Bind.class, ClientMessage.class);
+        JAXBContext jaxbContext =
+                JAXBContext.newInstance(Body.class, StreamFeatures.class, Bind.class, ClientMessage.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
         Message message = ClientMessage.from(new Message());
 
-        marshaller.marshal(Body.builder().xmppVersion("1.0").wrappedObjects(Collections.singleton(message)).build(), xmppStreamWriter);
+        marshaller.marshal(Body.builder().xmppVersion("1.0").wrappedObjects(Collections.singleton(message)).build(),
+                xmppStreamWriter);
         xmppStreamWriter.flush();
-        Assert.assertEquals(writer.toString(), "<body xmlns=\"http://jabber.org/protocol/httpbind\" xmlns:stream=\"http://etherx.jabber.org/streams\" xmlns:xmpp=\"urn:xmpp:xbosh\" xmpp:version=\"1.0\"><message xmlns=\"jabber:client\"></message></body>");
+        Assert.assertEquals(writer.toString(),
+                "<body xmlns=\"http://jabber.org/protocol/httpbind\" xmlns:stream=\"http://etherx.jabber.org/streams\" xmlns:xmpp=\"urn:xmpp:xbosh\" xmpp:version=\"1.0\"><message xmlns=\"jabber:client\"></message></body>");
     }
 
     @Test
@@ -239,7 +251,8 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         marshaller.marshal(streamFeatures, xmppStreamWriter);
         xmppStreamWriter.flush();
-        Assert.assertEquals(writer.toString(), "<stream:features xmlns:stream=\"http://etherx.jabber.org/streams\"></stream:features>");
+        Assert.assertEquals(writer.toString(),
+                "<stream:features xmlns:stream=\"http://etherx.jabber.org/streams\"></stream:features>");
     }
 
     @Test
@@ -262,7 +275,8 @@ public class PrefixFreeCanonicalizationWriterTest {
         marshaller.marshal(message2, xmppStreamWriter);
 
         xmppStreamWriter.flush();
-        Assert.assertEquals(writer.toString(), "<message></message><message xmlns=\"jabber:client\"></message><message></message>");
+        Assert.assertEquals(writer.toString(),
+                "<message></message><message xmlns=\"jabber:client\"></message><message></message>");
     }
 
     @Test
@@ -279,7 +293,8 @@ public class PrefixFreeCanonicalizationWriterTest {
 
         marshaller.marshal(new StreamError(Condition.INTERNAL_SERVER_ERROR), xmppStreamWriter);
         xmppStreamWriter.flush();
-        Assert.assertEquals(writer.toString(), "<stream:error xmlns:stream=\"http://etherx.jabber.org/streams\"><internal-server-error xmlns=\"urn:ietf:params:xml:ns:xmpp-streams\"></internal-server-error></stream:error>");
+        Assert.assertEquals(writer.toString(),
+                "<stream:error xmlns:stream=\"http://etherx.jabber.org/streams\"><internal-server-error xmlns=\"urn:ietf:params:xml:ns:xmpp-streams\"></internal-server-error></stream:error>");
     }
 
     @Test
@@ -311,7 +326,8 @@ public class PrefixFreeCanonicalizationWriterTest {
         StreamHeader streamHeader = StreamHeader.create(null, null, null, "1.0", null, "jabber:client");
         streamHeader.writeTo(xmppStreamWriter);
         xmppStreamWriter.flush();
-        Assert.assertEquals(writer.toString(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?><stream:stream version=\"1.0\">");
+        Assert.assertEquals(writer.toString(),
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?><stream:stream version=\"1.0\">");
     }
 
     @Test
@@ -332,6 +348,7 @@ public class PrefixFreeCanonicalizationWriterTest {
         IQ iq = new IQ(Jid.of("romeo@example.net"), IQ.Type.SET, childElem, "1");
         marshaller.marshal(ClientIQ.from(iq), xmppStreamWriter);
         xmppStreamWriter.flush();
-        Assert.assertEquals(writer.toString(), "<iq xmlns=\"jabber:client\" id=\"1\" to=\"romeo@example.net\" type=\"set\"><myElement xmlns=\"http://testnamespace.com\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"childType\"></myElement></iq>");
+        Assert.assertEquals(writer.toString(),
+                "<iq xmlns=\"jabber:client\" id=\"1\" to=\"romeo@example.net\" type=\"set\"><myElement xmlns=\"http://testnamespace.com\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"childType\"></myElement></iq>");
     }
 }

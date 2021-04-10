@@ -83,10 +83,9 @@ public abstract class ScramBase {
     }
 
     /**
-     * Apply the exclusive-or operation to combine the octet string
-     * on the left of this operator with the octet string on the right of
-     * this operator.  The length of the output and each of the two
-     * inputs will be the same for this use.
+     * Apply the exclusive-or operation to combine the octet string on the left of this operator with the octet string
+     * on the right of this operator.  The length of the output and each of the two inputs will be the same for this
+     * use.
      *
      * @param a The first byte array.
      * @param b The second byte array.
@@ -150,7 +149,8 @@ public abstract class ScramBase {
      * @throws InvalidKeyException      If the key is invalid.
      * @throws NoSuchAlgorithmException If the mac algorithm does not exist.
      */
-    protected final byte[] computeClientSignature(byte[] clientKey, String authMessage) throws InvalidKeyException, NoSuchAlgorithmException {
+    protected final byte[] computeClientSignature(byte[] clientKey, String authMessage)
+            throws InvalidKeyException, NoSuchAlgorithmException {
         byte[] storedKey = computeStoredKey(clientKey);
         // ClientSignature := HMAC(StoredKey, AuthMessage)
         return hmac(storedKey, authMessage.getBytes(StandardCharsets.UTF_8));
@@ -179,7 +179,8 @@ public abstract class ScramBase {
      * @throws InvalidKeyException      If the key is invalid.
      * @throws NoSuchAlgorithmException If the hash algorithm does not exist.
      */
-    public final byte[] computeSaltedPassword(char[] password, byte[] salt, int iterationCount) throws InvalidKeyException, NoSuchAlgorithmException {
+    public final byte[] computeSaltedPassword(char[] password, byte[] salt, int iterationCount)
+            throws InvalidKeyException, NoSuchAlgorithmException {
         // SaltedPassword  := Hi(Normalize(password), salt, i)
         return hi(SaslPrep.prepare(new String(password)).getBytes(StandardCharsets.UTF_8), salt, iterationCount);
     }
@@ -223,10 +224,8 @@ public abstract class ScramBase {
     }
 
     /**
-     * Apply the cryptographic hash function to the octet string
-     * "str", producing an octet string as a result.  The size of the
-     * result depends on the hash result size for the hash function in
-     * use.
+     * Apply the cryptographic hash function to the octet string "str", producing an octet string as a result.  The size
+     * of the result depends on the hash result size for the hash function in use.
      *
      * @param str The byte array.
      * @return The hash value.
@@ -239,11 +238,9 @@ public abstract class ScramBase {
     }
 
     /**
-     * Apply the HMAC keyed hash algorithm (defined in
-     * [RFC2104]) using the octet string represented by "key" as the key
-     * and the octet string "str" as the input string.  The size of the
-     * result is the hash result size for the hash function in use.  For
-     * example, it is 20 octets for SHA-1 (see [RFC3174]).
+     * Apply the HMAC keyed hash algorithm (defined in [RFC2104]) using the octet string represented by "key" as the key
+     * and the octet string "str" as the input string.  The size of the result is the hash result size for the hash
+     * function in use.  For example, it is 20 octets for SHA-1 (see [RFC3174]).
      *
      * @param key The key.
      * @param str The input.

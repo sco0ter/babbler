@@ -56,11 +56,12 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  *
  * @author Christian Schudt
  */
-public final class UserAvatarProtocol extends AbstractAvatarManager implements InboundMessageHandler, ExtensionProtocol {
+public final class UserAvatarProtocol extends AbstractAvatarManager
+        implements InboundMessageHandler, ExtensionProtocol {
 
     private static final System.Logger logger = System.getLogger(UserAvatarProtocol.class.getName());
 
-    private Consumer<MessageEvent> inboundMessageListener = this::handleInboundMessage;
+    private final Consumer<MessageEvent> inboundMessageListener = this::handleInboundMessage;
 
     public UserAvatarProtocol(XmppSession xmppSession) {
         super(xmppSession);
@@ -102,15 +103,15 @@ public final class UserAvatarProtocol extends AbstractAvatarManager implements I
             if (addresses != null) {
                 // See https://xmpp.org/extensions/xep-0163.html#notify-addressing
                 for (Address address : addresses.getAddresses()) {
-                    if (address.getType() == Address.Type.REPLYTO && xmppSession.getConnectedResource().equals(address.getJid())) {
+                    if (address.getType() == Address.Type.REPLYTO && xmppSession.getConnectedResource()
+                            .equals(address.getJid())) {
                         // Don't notify if the message came from our own connected resource.
                         return;
                     }
                 }
             }
-            handleMetaData(event.getItems(), message.getFrom().asBareJid()).thenAccept(avatar -> {
-                notifyListeners(message.getFrom().asBareJid(), avatar);
-            });
+            handleMetaData(event.getItems(), message.getFrom().asBareJid())
+                    .thenAccept(avatar -> notifyListeners(message.getFrom().asBareJid(), avatar));
         }
     }
 
@@ -133,7 +134,8 @@ public final class UserAvatarProtocol extends AbstractAvatarManager implements I
 
                         // Determine the best info
                         AvatarMetadata.Info chosenInfo = null;
-                        // Check if there's an avatar, which is stored in PubSub node (and therefore must be in PNG format).
+                        // Check if there's an avatar, which is stored in PubSub node
+                        // (and therefore must be in PNG format).
                         for (AvatarMetadata.Info info : avatarMetadata.getInfoList()) {
                             if (info.getUrl() == null) {
                                 chosenInfo = info;
@@ -166,25 +168,30 @@ public final class UserAvatarProtocol extends AbstractAvatarManager implements I
                                 storeToCache(item.getId(), data);
                                 return CompletableFuture.completedFuture(data);
                             } catch (IOException e1) {
-                                logger.log(System.Logger.Level.WARNING, "Failed to download avatar from advertised URL: {0}.", chosenInfo.getUrl());
+                                logger.log(System.Logger.Level.WARNING,
+                                        "Failed to download avatar from advertised URL: {0}.", chosenInfo.getUrl());
                             }
                         } else {
-                            PubSubService pubSubService = xmppSession.getManager(PubSubManager.class).createPubSubService(contact.asBareJid());
-                            return pubSubService.node(AvatarData.NAMESPACE).getItems(item.getId()).thenCompose(items -> {
-                                if (!items.isEmpty()) {
-                                    Item i = items.get(0);
-                                    if (i.getPayload() instanceof AvatarData) {
-                                        AvatarData avatarData = (AvatarData) i.getPayload();
-                                        storeToCache(item.getId(), avatarData.getData());
-                                        return CompletableFuture.completedFuture(avatarData.getData());
-                                    }
-                                }
-                                return CompletableFuture.completedFuture(new byte[0]);
-                            }).whenComplete((items, ex) -> {
-                                if (ex != null) {
-                                    logger.log(System.Logger.Level.WARNING, () -> String.format("Failed to retrieve avatar '%s' from PEP service for user '%s'", item.getId(), contact.asBareJid()));
-                                }
-                            });
+                            PubSubService pubSubService = xmppSession.getManager(PubSubManager.class)
+                                    .createPubSubService(contact.asBareJid());
+                            return pubSubService.node(AvatarData.NAMESPACE).getItems(item.getId())
+                                    .thenCompose(items -> {
+                                        if (!items.isEmpty()) {
+                                            Item i = items.get(0);
+                                            if (i.getPayload() instanceof AvatarData) {
+                                                AvatarData avatarData = (AvatarData) i.getPayload();
+                                                storeToCache(item.getId(), avatarData.getData());
+                                                return CompletableFuture.completedFuture(avatarData.getData());
+                                            }
+                                        }
+                                        return CompletableFuture.completedFuture(new byte[0]);
+                                    }).whenComplete((items, ex) -> {
+                                        if (ex != null) {
+                                            logger.log(System.Logger.Level.WARNING, () -> String.format(
+                                                    "Failed to retrieve avatar '%s' from PEP service for user '%s'",
+                                                    item.getId(), contact.asBareJid()));
+                                        }
+                                    });
                         }
                     }
                 }
@@ -195,8 +202,10 @@ public final class UserAvatarProtocol extends AbstractAvatarManager implements I
 
     @Override
     public final AsyncResult<byte[]> getAvatar(Jid contact) {
-        PubSubService pubSubService = xmppSession.getManager(PubSubManager.class).createPubSubService(contact.asBareJid());
-        return pubSubService.node(AvatarMetadata.NAMESPACE).getItems(1).thenCompose(items -> handleMetaData(items, contact));
+        PubSubService pubSubService =
+                xmppSession.getManager(PubSubManager.class).createPubSubService(contact.asBareJid());
+        return pubSubService.node(AvatarMetadata.NAMESPACE).getItems(1)
+                .thenCompose(items -> handleMetaData(items, contact));
     }
 
     /**
@@ -208,7 +217,8 @@ public final class UserAvatarProtocol extends AbstractAvatarManager implements I
     @Override
     public final AsyncResult<Void> publishAvatar(final byte[] imageData) {
         final String hash = imageData != null ? XmppUtils.hash(imageData) : null;
-        final PubSubService personalEventingService = xmppSession.getManager(PubSubManager.class).createPersonalEventingService();
+        final PubSubService personalEventingService =
+                xmppSession.getManager(PubSubManager.class).createPersonalEventingService();
         final AsyncResult<String> publishResult;
         if (imageData != null) {
             // See https://xmpp.org/extensions/xep-0084.html#process-pubdata
@@ -218,7 +228,8 @@ public final class UserAvatarProtocol extends AbstractAvatarManager implements I
                         final AvatarMetadata.Info info = new AvatarMetadata.Info(imageData.length, hash, "image/png");
                         // Publish meta data.
                         // See https://xmpp.org/extensions/xep-0084.html#process-pubmeta
-                        return personalEventingService.node(AvatarMetadata.NAMESPACE).publish(hash, new AvatarMetadata(info));
+                        return personalEventingService.node(AvatarMetadata.NAMESPACE)
+                                .publish(hash, new AvatarMetadata(info));
                     });
         } else {
             // See https://xmpp.org/extensions/xep-0084.html#pub-disable

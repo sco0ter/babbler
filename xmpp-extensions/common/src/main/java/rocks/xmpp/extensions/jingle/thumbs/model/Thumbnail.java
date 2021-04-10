@@ -65,7 +65,9 @@ public final class Thumbnail {
     /**
      * Creates a thumbnail.
      *
-     * @param uri A URI where the thumbnail data can be accessed (typically by using a URI scheme of 'cid:', 'https:', or 'http:'). If the URI scheme is 'cid:' then the identifier MUST refer to a bit of binary data as described in <a href="https://xmpp.org/extensions/xep-0231.html">Bits of Binary (XEP-0231)</a>.
+     * @param uri A URI where the thumbnail data can be accessed (typically by using a URI scheme of 'cid:', 'https:',
+     *            or 'http:'). If the URI scheme is 'cid:' then the identifier MUST refer to a bit of binary data as
+     *            described in <a href="https://xmpp.org/extensions/xep-0231.html">Bits of Binary (XEP-0231)</a>.
      */
     public Thumbnail(URI uri) {
         this(uri, null, null, null);
@@ -74,10 +76,17 @@ public final class Thumbnail {
     /**
      * Creates a thumbnail.
      *
-     * @param uri       A URI where the thumbnail data can be accessed (typically by using a URI scheme of 'cid:', 'https:', or 'http:'). If the URI scheme is 'cid:' then the identifier MUST refer to a bit of binary data as described in <a href="https://xmpp.org/extensions/xep-0231.html">Bits of Binary (XEP-0231)</a>.
-     * @param mediaType The value of the 'media-type' attribute MUST match the syntax specified in RFC 2045 [3]. That is, the value MUST include a top-level media type, the "/" character, and a subtype; in addition, it MAY include one or more optional parameters.
-     * @param width     The intended display width of the thumbnail image. Used as a hint for the receiving client to prepare the appropriate UI, such as a dialog window.
-     * @param height    The intended display height of the thumbnail image. Used as a hint for the receiving client to prepare the appropriate UI, such as a dialog window.
+     * @param uri       A URI where the thumbnail data can be accessed (typically by using a URI scheme of 'cid:',
+     *                  'https:', or 'http:'). If the URI scheme is 'cid:' then the identifier MUST refer to a bit of
+     *                  binary data as described in <a href="https://xmpp.org/extensions/xep-0231.html">Bits of Binary
+     *                  (XEP-0231)</a>.
+     * @param mediaType The value of the 'media-type' attribute MUST match the syntax specified in RFC 2045 [3]. That
+     *                  is, the value MUST include a top-level media type, the "/" character, and a subtype; in
+     *                  addition, it MAY include one or more optional parameters.
+     * @param width     The intended display width of the thumbnail image. Used as a hint for the receiving client to
+     *                  prepare the appropriate UI, such as a dialog window.
+     * @param height    The intended display height of the thumbnail image. Used as a hint for the receiving client to
+     *                  prepare the appropriate UI, such as a dialog window.
      */
     public Thumbnail(URI uri, String mediaType, Integer width, Integer height) {
         this.uri = Objects.requireNonNull(uri);
@@ -87,7 +96,9 @@ public final class Thumbnail {
     }
 
     /**
-     * A URI where the thumbnail data can be accessed (typically by using a URI scheme of 'cid:', 'https:', or 'http:'). If the URI scheme is 'cid:' then the identifier MUST refer to a bit of binary data as described in <a href="https://xmpp.org/extensions/xep-0231.html">Bits of Binary (XEP-0231)</a>.
+     * A URI where the thumbnail data can be accessed (typically by using a URI scheme of 'cid:', 'https:', or 'http:').
+     * If the URI scheme is 'cid:' then the identifier MUST refer to a bit of binary data as described in <a
+     * href="https://xmpp.org/extensions/xep-0231.html">Bits of Binary (XEP-0231)</a>.
      *
      * @return The URI.
      * @see <a href="https://xmpp.org/extensions/xep-0231.html">Bits of Binary (XEP-0231)</a>
@@ -97,7 +108,9 @@ public final class Thumbnail {
     }
 
     /**
-     * The value of the 'media-type' attribute MUST match the syntax specified in RFC 2045 [3]. That is, the value MUST include a top-level media type, the "/" character, and a subtype; in addition, it MAY include one or more optional parameters.
+     * The value of the 'media-type' attribute MUST match the syntax specified in RFC 2045 [3]. That is, the value MUST
+     * include a top-level media type, the "/" character, and a subtype; in addition, it MAY include one or more
+     * optional parameters.
      *
      * @return The media type.
      */
@@ -106,7 +119,8 @@ public final class Thumbnail {
     }
 
     /**
-     * The intended display width of the thumbnail image. Used as a hint for the receiving client to prepare the appropriate UI, such as a dialog window.
+     * The intended display width of the thumbnail image. Used as a hint for the receiving client to prepare the
+     * appropriate UI, such as a dialog window.
      *
      * @return The width.
      */
@@ -115,7 +129,8 @@ public final class Thumbnail {
     }
 
     /**
-     * The intended display height of the thumbnail image. Used as a hint for the receiving client to prepare the appropriate UI, such as a dialog window.
+     * The intended display height of the thumbnail image. Used as a hint for the receiving client to prepare the
+     * appropriate UI, such as a dialog window.
      *
      * @return The height.
      */

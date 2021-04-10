@@ -35,9 +35,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * The implementation of the {@code <page/>} element in the {@code http://jabber.org/protocol/xdata-layout} namespace.
  *
- * <p>A page is the top-level layout container for data forms. It may contain sections, which partition the page into smaller parts.</p>
+ * <p>A page is the top-level layout container for data forms. It may contain sections, which partition the page into
+ * smaller parts.</p>
  *
- * <p>Each page in a data form contains references to a field in the data form, in order to know which fields should be displayed on this page.</p>
+ * <p>Each page in a data form contains references to a field in the data form, in order to know which fields should be
+ * displayed on this page.</p>
  *
  * <p>This class is immutable.</p>
  *
@@ -101,7 +103,8 @@ public final class Page {
      * @param text              The text.
      * @param reportedReference The reference to a reported field.
      */
-    public Page(String label, Collection<FieldReference> fieldReferences, Collection<String> text, FieldReference reportedReference) {
+    public Page(String label, Collection<FieldReference> fieldReferences, Collection<String> text,
+                FieldReference reportedReference) {
         this.label = label;
         if (text != null) {
             this.text.addAll(text);

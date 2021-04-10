@@ -70,6 +70,7 @@ public final class ComponentIQ extends IQ {
      * @return The client IQ.
      */
     public static ComponentIQ from(IQ iq) {
-        return new ComponentIQ(iq.getTo(), iq.getType(), iq.getExtension(Object.class), iq.getId(), iq.getFrom(), iq.getLanguage(), iq.getError());
+        return new ComponentIQ(iq.getTo(), iq.getType(), iq.getExtension(Object.class), iq.getId(), iq.getFrom(),
+                iq.getLanguage(), iq.getError());
     }
 }

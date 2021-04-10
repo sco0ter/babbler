@@ -71,8 +71,8 @@ import rocks.xmpp.im.subscription.PresenceManager;
  * xmppClient.connect();
  * xmppClient.login("username", "password");
  * }</pre>
- * By default, the session will try to establish a TCP connection over port 5222 and will try BOSH as fallback.
- * You can configure a session and its connection methods by passing appropriate configurations in its constructor.
+ * By default, the session will try to establish a TCP connection over port 5222 and will try BOSH as fallback. You can
+ * configure a session and its connection methods by passing appropriate configurations in its constructor.
  * <h3>Sending Messages</h3>
  * Once connected, you can send messages:
  * <pre>{@code
@@ -94,7 +94,8 @@ import rocks.xmpp.im.subscription.PresenceManager;
  *     // Handle inbound presence.
  * );
  * }</pre>
- * This class is thread-safe, which means you can safely add listeners or call <code>send()</code>, <code>close()</code> (and other methods) from different threads.
+ * This class is thread-safe, which means you can safely add listeners or call <code>send()</code>, <code>close()</code>
+ * (and other methods) from different threads.
  *
  * @author Christian Schudt
  * @see XmppSessionConfiguration
@@ -108,7 +109,8 @@ public final class XmppClient extends XmppSession {
     private final AuthenticationManager authenticationManager;
 
     /**
-     * The resource, which the user requested during resource binding. This value is stored, so that it can be reused during reconnection.
+     * The resource, which the user requested during resource binding. This value is stored, so that it can be reused
+     * during reconnection.
      */
     private volatile String resource;
 
@@ -127,7 +129,8 @@ public final class XmppClient extends XmppSession {
      * @param configuration            The configuration.
      * @param connectionConfigurations The connection configurations.
      */
-    private XmppClient(String xmppServiceDomain, XmppSessionConfiguration configuration, ClientConnectionConfiguration... connectionConfigurations) {
+    private XmppClient(String xmppServiceDomain, XmppSessionConfiguration configuration,
+                       ClientConnectionConfiguration... connectionConfigurations) {
         super(xmppServiceDomain, configuration, connectionConfigurations);
 
         authenticationManager = new AuthenticationManager(this);
@@ -143,25 +146,29 @@ public final class XmppClient extends XmppSession {
     }
 
     /**
-     * Creates a new XMPP client instance. Any registered {@link #addCreationListener(Consumer) creation listeners} are triggered.
+     * Creates a new XMPP client instance. Any registered {@link #addCreationListener(Consumer) creation listeners} are
+     * triggered.
      *
      * @param xmppServiceDomain        The XMPP service domain.
      * @param connectionConfigurations The connection methods, which are used to connect.
      * @return The XMPP client.
      */
-    public static XmppClient create(String xmppServiceDomain, ClientConnectionConfiguration... connectionConfigurations) {
+    public static XmppClient create(String xmppServiceDomain,
+                                    ClientConnectionConfiguration... connectionConfigurations) {
         return create(xmppServiceDomain, XmppSessionConfiguration.getDefault(), connectionConfigurations);
     }
 
     /**
-     * Creates a new XMPP client instance. Any registered {@link #addCreationListener(Consumer) creation listeners} are triggered.
+     * Creates a new XMPP client instance. Any registered {@link #addCreationListener(Consumer) creation listeners} are
+     * triggered.
      *
      * @param xmppServiceDomain        The XMPP service domain.
      * @param configuration            The configuration.
      * @param connectionConfigurations The connection methods, which are used to connect.
      * @return The XMPP client.
      */
-    public static XmppClient create(String xmppServiceDomain, XmppSessionConfiguration configuration, ClientConnectionConfiguration... connectionConfigurations) {
+    public static XmppClient create(String xmppServiceDomain, XmppSessionConfiguration configuration,
+                                    ClientConnectionConfiguration... connectionConfigurations) {
         XmppClient xmppClient = new XmppClient(xmppServiceDomain, configuration, connectionConfigurations);
         notifyCreationListeners(xmppClient);
         return xmppClient;
@@ -171,7 +178,8 @@ public final class XmppClient extends XmppSession {
      * Connects to the XMPP server.
      *
      * @param from The 'from' attribute.
-     * @throws ConnectionException        If a connection error occurred on the transport layer, e.g. the socket could not connect.
+     * @throws ConnectionException        If a connection error occurred on the transport layer, e.g. the socket could
+     *                                    not connect.
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
@@ -192,7 +200,8 @@ public final class XmppClient extends XmppSession {
             updateStatus(Status.CONNECTING);
 
             synchronized (this) {
-                // Double-checked locking: Recheck connected status. In a multi-threaded environment multiple threads could have passed the first check.
+                // Double-checked locking: Recheck connected status. In a multi-threaded environment multiple
+                // threads could have passed the first check.
                 if (checkConnected()) {
                     return;
                 }
@@ -201,14 +210,17 @@ public final class XmppClient extends XmppSession {
 
                 tryConnect(from, "jabber:client", "1.0");
 
-                logger.log(System.Logger.Level.DEBUG, "Negotiating stream, waiting until SASL is ready to be negotiated.");
+                logger.log(System.Logger.Level.DEBUG,
+                        "Negotiating stream, waiting until SASL is ready to be negotiated.");
 
                 // Check if connecting failed with an exception.
                 throwAsXmppExceptionIfNotNull(exception);
 
-                // Wait until the reader thread signals, that we are connected. That is after TLS negotiation and before SASL negotiation.
+                // Wait until the reader thread signals, that we are connected. That is after TLS negotiation
+                // and before SASL negotiation.
                 try {
-                    streamFeaturesManager.awaitNegotiation(Mechanisms.class).get(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                    streamFeaturesManager.awaitNegotiation(Mechanisms.class)
+                            .get(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
                 } catch (TimeoutException e) {
                     throw new NoResponseException("Timeout while waiting on advertised authentication mechanisms.");
                 } catch (InterruptedException e) {
@@ -223,9 +235,12 @@ public final class XmppClient extends XmppSession {
                 logger.log(System.Logger.Level.DEBUG, "Stream negotiated until SASL, now ready to login.");
             }
 
-            // If a secure connection has been configured, but hasn't been negotiated for some reason (e.g. MitM attack), throw an exception.
-            if (!activeConnection.isSecure() && activeConnection.getConfiguration().getChannelEncryption() == ChannelEncryption.REQUIRED) {
-                throw new StreamNegotiationException("Transport Layer Security has been configured, but hasn't been negotiated.");
+            // If a secure connection has been configured, but hasn't been negotiated
+            // for some reason (e.g. MitM attack), throw an exception.
+            if (!activeConnection.isSecure()
+                    && activeConnection.getConfiguration().getChannelEncryption() == ChannelEncryption.REQUIRED) {
+                throw new StreamNegotiationException(
+                        "Transport Layer Security has been configured, but hasn't been negotiated.");
             }
 
             // Don't call listeners from within synchronized blocks to avoid possible deadlocks.
@@ -233,7 +248,8 @@ public final class XmppClient extends XmppSession {
 
             // This is for reconnection.
             if (wasLoggedIn) {
-                logger.log(System.Logger.Level.DEBUG, "Was already logged in. Re-login automatically with known credentials.");
+                logger.log(System.Logger.Level.DEBUG,
+                        "Was already logged in. Re-login automatically with known credentials.");
                 login(lastMechanisms, lastAuthorizationId, lastCallbackHandler, resource);
             }
 
@@ -252,7 +268,8 @@ public final class XmppClient extends XmppSession {
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
-     * @throws StanzaErrorException       If the server returned a stanza error during resource binding or roster retrieval.
+     * @throws StanzaErrorException       If the server returned a stanza error during resource binding or roster
+     *                                    retrieval.
      * @throws XmppException              If the login failed, due to another error.
      */
     public final byte[] login(String user, String password) throws XmppException {
@@ -270,7 +287,8 @@ public final class XmppClient extends XmppSession {
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
-     * @throws StanzaErrorException       If the server returned a stanza error during resource binding or roster retrieval.
+     * @throws StanzaErrorException       If the server returned a stanza error during resource binding or roster
+     *                                    retrieval.
      * @throws XmppException              If the login failed, due to another error.
      */
     public final byte[] login(String user, String password, String resource) throws XmppException {
@@ -289,10 +307,12 @@ public final class XmppClient extends XmppSession {
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
-     * @throws StanzaErrorException       If the server returned a stanza error during resource binding or roster retrieval.
+     * @throws StanzaErrorException       If the server returned a stanza error during resource binding or roster
+     *                                    retrieval.
      * @throws XmppException              If the login failed, due to another error.
      */
-    public final byte[] login(String authorizationId, final String user, final String password, String resource) throws XmppException {
+    public final byte[] login(String authorizationId, final String user, final String password, String resource)
+            throws XmppException {
         Objects.requireNonNull(user, "user must not be null.");
         Objects.requireNonNull(password, "password must not be null.");
 
@@ -321,14 +341,17 @@ public final class XmppClient extends XmppSession {
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
-     * @throws StanzaErrorException       If the server returned a stanza error during resource binding or roster retrieval.
+     * @throws StanzaErrorException       If the server returned a stanza error during resource binding or roster
+     *                                    retrieval.
      * @throws XmppException              If the login failed, due to another error.
      */
-    public final byte[] login(String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
+    public final byte[] login(String authorizationId, CallbackHandler callbackHandler, String resource)
+            throws XmppException {
         return login(configuration.getAuthenticationMechanisms(), authorizationId, callbackHandler, resource);
     }
 
-    private byte[] login(Collection<String> mechanisms, String authorizationId, CallbackHandler callbackHandler, String resource) throws XmppException {
+    private byte[] login(Collection<String> mechanisms, String authorizationId, CallbackHandler callbackHandler,
+                         String resource) throws XmppException {
 
         if (checkAuthenticated()) {
             // Silently return, when we are already authenticated.
@@ -379,8 +402,8 @@ public final class XmppClient extends XmppSession {
                 // Then negotiate resource binding manually.
                 bindResource(resource);
 
-                // Proceed with any outstanding stream features which are negotiated after resource binding, e.g. XEP-0198
-                // and wait until all features have been negotiated.
+                // Proceed with any outstanding stream features which are negotiated after resource binding,
+                // e.g. XEP-0198 and wait until all features have been negotiated.
                 try {
                     streamFeaturesManager.completeNegotiation().get(timeout * 2, TimeUnit.MILLISECONDS);
                 } catch (TimeoutException e) {
@@ -468,7 +491,8 @@ public final class XmppClient extends XmppSession {
         // Bind the resource
         IQ result;
         try {
-            result = query(IQ.set(new Bind(this.resource))).getResult(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
+            result = query(IQ.set(new Bind(this.resource)))
+                    .getResult(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
             throw new NoResponseException("Could not bind resource due to timeout.");
         }
@@ -476,15 +500,18 @@ public final class XmppClient extends XmppSession {
         Bind bindResult = result.getExtension(Bind.class);
         this.connectedResource = bindResult.getJid();
 
-        logger.log(System.Logger.Level.DEBUG, "Resource binding completed, connected resource: {0}.", connectedResource);
+        logger.log(System.Logger.Level.DEBUG, "Resource binding completed, connected resource: {0}.",
+                connectedResource);
 
         // At this point the entity is free to send stanzas:
-        // "If, before completing the resource binding step, the client attempts to send an XML stanza to an entity other
-        // than the server itself or the client's account, the server MUST NOT process the stanza
+        // "If, before completing the resource binding step, the client attempts to send an XML stanza to an entity
+        // other than the server itself or the client's account, the server MUST NOT process the stanza
         // and MUST close the stream with a <not-authorized/> stream error."
 
-        // Deprecated method of session binding, according to the <a href="https://xmpp.org/rfcs/rfc3921.html#session">old specification</a>
-        // This is no longer used, according to the <a href="https://xmpp.org/rfcs/rfc6120.html">updated specification</a>.
+        // Deprecated method of session binding, according to the
+        // <a href="https://xmpp.org/rfcs/rfc3921.html#session">old specification</a>
+        // This is no longer used, according to the
+        // <a href="https://xmpp.org/rfcs/rfc6120.html">updated specification</a>.
         // But some old server implementation still require it.
         Session session = (Session) streamFeaturesManager.getFeatures().get(Session.class);
         if (session != null && session.isMandatory()) {
@@ -492,8 +519,8 @@ public final class XmppClient extends XmppSession {
             query(IQ.set(new Session()));
         }
 
-        // Set this status after session establishment. It's used to auto-send service discovery to a server and some servers won't response,
-        // if it's send before.
+        // Set this status after session establishment. It's used to auto-send service discovery to a server and
+        // some servers won't response, if it's send before.
         updateStatus(Status.AUTHENTICATED);
     }
 

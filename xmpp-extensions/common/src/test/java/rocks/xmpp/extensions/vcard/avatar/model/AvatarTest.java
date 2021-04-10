@@ -57,7 +57,8 @@ public class AvatarTest extends XmlTest {
     }
 
     @Test
-    public void marshalVCardUpdateWithPhotoElement() throws JAXBException, XMLStreamException, NoSuchAlgorithmException {
+    public void marshalVCardUpdateWithPhotoElement()
+            throws JAXBException, XMLStreamException, NoSuchAlgorithmException {
         byte[] image = new byte[]{1, 2, 3, 4};
         String sha1 = XmppUtils.hash(image);
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");

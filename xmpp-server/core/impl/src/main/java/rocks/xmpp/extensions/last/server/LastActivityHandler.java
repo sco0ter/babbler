@@ -57,7 +57,8 @@ public final class LastActivityHandler extends AbstractIQHandler implements Exte
     protected IQ processRequest(IQ iq) {
 
         if (iq.getTo().isDomainJid()) {
-            return iq.createResult(new LastActivity(Duration.between(server.getStartTime(), Instant.now()).getSeconds(), null));
+            return iq.createResult(
+                    new LastActivity(Duration.between(server.getStartTime(), Instant.now()).getSeconds(), null));
         }
         return iq.createError(Condition.SERVICE_UNAVAILABLE);
     }

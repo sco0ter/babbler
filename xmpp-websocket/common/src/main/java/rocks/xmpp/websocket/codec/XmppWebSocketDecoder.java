@@ -44,10 +44,12 @@ import rocks.xmpp.util.XmppStreamDecoder;
 /**
  * Decodes WebSocket text messages to XMPP {@link StreamElement}s.
  *
- * <p>The required {@link Unmarshaller} for decoding must be supplied via {@link EndpointConfig#getUserProperties()}, see {@link UserProperties#UNMARSHALLER}.</p>
+ * <p>The required {@link Unmarshaller} for decoding must be supplied via {@link EndpointConfig#getUserProperties()},
+ * see {@link UserProperties#UNMARSHALLER}.</p>
  *
- * <p>Optionally you can also provide a callback, which is called after unmarshalling with the XML string (the text message) and the unmarshalled element.
- * This is useful for debugging purposes, see {@link UserProperties#ON_READ}.</p>
+ * <p>Optionally you can also provide a callback, which is called after unmarshalling with the XML string (the text
+ * message) and the unmarshalled element. This is useful for debugging purposes, see {@link
+ * UserProperties#ON_READ}.</p>
  *
  * @author Christian Schudt
  * @see XmppWebSocketEncoder
@@ -77,13 +79,16 @@ public final class XmppWebSocketDecoder implements Decoder.TextStream<StreamElem
     @SuppressWarnings("unchecked")
     @Override
     public final void init(final EndpointConfig config) {
-        XMLInputFactory xmlInputFactory = (XMLInputFactory) config.getUserProperties().get(XmppWebSocketDecoder.UserProperties.XML_INPUT_FACTORY);
+        XMLInputFactory xmlInputFactory =
+                (XMLInputFactory) config.getUserProperties().get(XmppWebSocketDecoder.UserProperties.XML_INPUT_FACTORY);
         if (xmlInputFactory == null) {
             xmlInputFactory = XMLInputFactory.newFactory();
         }
-        Supplier<Unmarshaller> unmarshaller = (Supplier<Unmarshaller>) config.getUserProperties().get(UserProperties.UNMARSHALLER);
+        Supplier<Unmarshaller> unmarshaller =
+                (Supplier<Unmarshaller>) config.getUserProperties().get(UserProperties.UNMARSHALLER);
         List<ReaderInterceptor> readerInterceptors = new ArrayList<>();
-        Iterable<ReaderInterceptor> additionalInterceptors = (Iterable<ReaderInterceptor>) config.getUserProperties().get(UserProperties.ON_READ);
+        Iterable<ReaderInterceptor> additionalInterceptors =
+                (Iterable<ReaderInterceptor>) config.getUserProperties().get(UserProperties.ON_READ);
         if (additionalInterceptors != null) {
             additionalInterceptors.forEach(readerInterceptors::add);
         }
@@ -100,8 +105,11 @@ public final class XmppWebSocketDecoder implements Decoder.TextStream<StreamElem
      * User properties for usage in {@link EndpointConfig#getUserProperties()}.
      */
     public static final class UserProperties {
+
         /**
-         * The property key to set the unmarshaller. The value must be a {@code java.util.function.Supplier<Unmarshaller>}.
+         * The property key to set the unmarshaller.
+         *
+         * <p>The value must be a {@code java.util.function.Supplier<Unmarshaller>}.</p>
          */
         public static final String UNMARSHALLER = "unmarshaller";
 
@@ -111,7 +119,9 @@ public final class XmppWebSocketDecoder implements Decoder.TextStream<StreamElem
         public static final String XML_INPUT_FACTORY = "xmlInputFactory";
 
         /**
-         * The property to set the read callback. The value must be a {@code java.util.function.BiConsumer<String, StreamElement>}.
+         * The property to set the read callback.
+         *
+         * <p>The value must be a {@code java.util.function.BiConsumer<String, StreamElement>}.</p>
          */
         public static final String ON_READ = "onRead";
 

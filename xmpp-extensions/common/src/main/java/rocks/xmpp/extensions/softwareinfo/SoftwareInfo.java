@@ -25,8 +25,9 @@
 package rocks.xmpp.extensions.softwareinfo;
 
 /**
- * A common interface for the different but similar software information protocols <a href="https://xmpp.org/extensions/xep-0232.html">XEP-0232: Software Information</a>
- * and <a href="https://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>.
+ * A common interface for the different but similar software information protocols <a
+ * href="https://xmpp.org/extensions/xep-0232.html">XEP-0232: Software Information</a> and <a
+ * href="https://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>.
  */
 public interface SoftwareInfo {
 

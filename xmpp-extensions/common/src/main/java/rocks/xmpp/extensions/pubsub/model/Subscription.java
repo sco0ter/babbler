@@ -30,7 +30,8 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Addressable;
 
 /**
- * Represents the {@code <subscription/>} element, which is used in 'pubsub', 'pubsub#event' and 'pubsub#owner' namespace.
+ * Represents the {@code <subscription/>} element, which is used in 'pubsub', 'pubsub#event' and 'pubsub#owner'
+ * namespace.
  *
  * @author Christian Schudt
  */

@@ -89,7 +89,9 @@ public class RosterManagerTest extends BaseTest {
         rosterManager.updateRoster(roster2, true);
 
         rosterPushCount[0]++;
-        Roster roster3 = new Roster(new Contact(Jid.of("contact2@domain"), null, false, null, Contact.Subscription.REMOVE, Collections.emptyList()));
+        Roster roster3 = new Roster(
+                new Contact(Jid.of("contact2@domain"), null, false, null, Contact.Subscription.REMOVE,
+                        Collections.emptyList()));
         rosterManager.updateRoster(roster3, true);
 
         rosterPushCount[0]++;
@@ -159,25 +161,33 @@ public class RosterManagerTest extends BaseTest {
         // Initial roster
         Roster roster1 = new Roster(new Contact(Jid.of("contact1@domain"), "contact1", "group1"),
                 new Contact(Jid.of("contact2@domain"), "contact2", "group2"),
-                new Contact(Jid.of("contact3@domain"), "contact3", true, null, Contact.Subscription.FROM, Collections.emptyList()),
-                new Contact(Jid.of("contact4@domain"), "contact4", true, null, Contact.Subscription.FROM, Collections.singleton("group2")));
+                new Contact(Jid.of("contact3@domain"), "contact3", true, null, Contact.Subscription.FROM,
+                        Collections.emptyList()),
+                new Contact(Jid.of("contact4@domain"), "contact4", true, null, Contact.Subscription.FROM,
+                        Collections.singleton("group2")));
         rosterManager.updateRoster(roster1, false);
 
         Assert.assertEquals(rosterManager.getUnaffiliatedContacts().size(), 1);
-        Assert.assertEquals(rosterManager.getUnaffiliatedContacts().iterator().next().getSubscription(), Contact.Subscription.FROM);
+        Assert.assertEquals(rosterManager.getUnaffiliatedContacts().iterator().next().getSubscription(),
+                Contact.Subscription.FROM);
         List<ContactGroup> groups = new ArrayList<>(rosterManager.getContactGroups());
         Assert.assertEquals(groups.get(0).getContacts().size(), 1);
         Assert.assertEquals(groups.get(1).getContacts().size(), 2);
 
-        Roster roster2 = new Roster(new Contact(Jid.of("contact3@domain"), "contact3", true, null, Contact.Subscription.BOTH, Collections.emptyList()));
+        Roster roster2 = new Roster(
+                new Contact(Jid.of("contact3@domain"), "contact3", true, null, Contact.Subscription.BOTH,
+                        Collections.emptyList()));
         rosterManager.updateRoster(roster2, true);
 
         Assert.assertEquals(rosterManager.getUnaffiliatedContacts().size(), 1);
-        Assert.assertEquals(rosterManager.getUnaffiliatedContacts().iterator().next().getSubscription(), Contact.Subscription.BOTH);
+        Assert.assertEquals(rosterManager.getUnaffiliatedContacts().iterator().next().getSubscription(),
+                Contact.Subscription.BOTH);
 
         Assert.assertEquals(rosterManager.getContactGroups().size(), 2);
 
-        Roster roster3 = new Roster(new Contact(Jid.of("contact2@domain"), "contact2", true, null, Contact.Subscription.TO, Collections.singleton("group1")));
+        Roster roster3 = new Roster(
+                new Contact(Jid.of("contact2@domain"), "contact2", true, null, Contact.Subscription.TO,
+                        Collections.singleton("group1")));
         rosterManager.updateRoster(roster3, true);
 
         groups = new ArrayList<>(rosterManager.getContactGroups());
@@ -187,13 +197,15 @@ public class RosterManagerTest extends BaseTest {
         Assert.assertTrue(contacts.get(1).isPendingOut());
         Assert.assertEquals(groups.get(1).getContacts().size(), 1);
 
-        Roster roster4 = new Roster(new Contact(Jid.of("contact3@domain"), "", false, null, Contact.Subscription.REMOVE, Collections.emptyList()));
+        Roster roster4 = new Roster(new Contact(Jid.of("contact3@domain"), "", false, null, Contact.Subscription.REMOVE,
+                Collections.emptyList()));
         rosterManager.updateRoster(roster4, true);
         Assert.assertTrue(rosterManager.getUnaffiliatedContacts().isEmpty());
     }
 
     /**
-     * Tests the behavior of contact group removal. All roster items in the removed group should become a member of the group's parent group.
+     * Tests the behavior of contact group removal. All roster items in the removed group should become a member of the
+     * group's parent group.
      */
     @Test
     public void contactGroupRemovalShouldMoveAllContactsToParent() {
@@ -221,7 +233,8 @@ public class RosterManagerTest extends BaseTest {
         rosterManager.removeContactGroup(contactGroup);
 
         contactArgumentCaptor = ArgumentCaptor.forClass(Contact.class);
-        Mockito.verify(rosterManager, Mockito.times(3)).addContact(contactArgumentCaptor.capture(), Mockito.eq(false), Mockito.isNull());
+        Mockito.verify(rosterManager, Mockito.times(3))
+                .addContact(contactArgumentCaptor.capture(), Mockito.eq(false), Mockito.isNull());
 
         Assert.assertEquals(contactArgumentCaptor.getAllValues().get(0), contact1.withoutGroups());
         Assert.assertEquals(contactArgumentCaptor.getAllValues().get(1), contact2.withoutGroups());

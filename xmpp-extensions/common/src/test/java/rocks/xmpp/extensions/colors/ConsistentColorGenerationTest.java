@@ -43,7 +43,8 @@ public class ConsistentColorGenerationTest {
         double angle1 = ConsistentColor.generateAngle("Romeo", ConsistentColor.ColorVisionDeficiency.NONE);
         assertEqualsRounded(angle1, 5.711769, 6);
 
-        double angle2 = ConsistentColor.generateAngle(Jid.of("juliet@capulet.lit"), ConsistentColor.ColorVisionDeficiency.NONE);
+        double angle2 =
+                ConsistentColor.generateAngle(Jid.of("juliet@capulet.lit"), ConsistentColor.ColorVisionDeficiency.NONE);
         assertEqualsRounded(angle2, 3.654957, 6);
 
         double angle3 = ConsistentColor.generateAngle("\uD83D\uDE3A", ConsistentColor.ColorVisionDeficiency.NONE);
@@ -68,26 +69,32 @@ public class ConsistentColorGenerationTest {
     @Test
     public void testRedGreenBlindnessCorrection() {
 
-        double angle1 = ConsistentColor.generateAngle("Romeo", ConsistentColor.ColorVisionDeficiency.RED_GREEN_BLINDNESS);
+        double angle1 =
+                ConsistentColor.generateAngle("Romeo", ConsistentColor.ColorVisionDeficiency.RED_GREEN_BLINDNESS);
         assertEqualsRounded(angle1, 2.855884, 6);
 
-        double angle2 = ConsistentColor.generateAngle(Jid.of("juliet@capulet.lit"), ConsistentColor.ColorVisionDeficiency.RED_GREEN_BLINDNESS);
+        double angle2 = ConsistentColor
+                .generateAngle(Jid.of("juliet@capulet.lit"), ConsistentColor.ColorVisionDeficiency.RED_GREEN_BLINDNESS);
         assertEqualsRounded(angle2, 1.827478, 6);
 
-        double angle3 = ConsistentColor.generateAngle("\uD83D\uDE3A", ConsistentColor.ColorVisionDeficiency.RED_GREEN_BLINDNESS);
+        double angle3 = ConsistentColor
+                .generateAngle("\uD83D\uDE3A", ConsistentColor.ColorVisionDeficiency.RED_GREEN_BLINDNESS);
         assertEqualsRounded(angle3, 2.890304, 6);
 
-        ConsistentColor color1 = ConsistentColor.generate("Romeo", ConsistentColor.ColorVisionDeficiency.RED_GREEN_BLINDNESS);
+        ConsistentColor color1 =
+                ConsistentColor.generate("Romeo", ConsistentColor.ColorVisionDeficiency.RED_GREEN_BLINDNESS);
         assertEqualsRounded(color1.getRed(), 0.938, 3);
         assertEqualsRounded(color1.getGreen(), 0.799, 3);
         assertEqualsRounded(color1.getBlue(), 0.0, 3);
 
-        ConsistentColor color2 = ConsistentColor.generate(Jid.of("juliet@capulet.lit"), ConsistentColor.ColorVisionDeficiency.RED_GREEN_BLINDNESS);
+        ConsistentColor color2 = ConsistentColor
+                .generate(Jid.of("juliet@capulet.lit"), ConsistentColor.ColorVisionDeficiency.RED_GREEN_BLINDNESS);
         assertEqualsRounded(color2.getRed(), 1.0, 3);
         assertEqualsRounded(color2.getGreen(), 0.420, 3);
         assertEqualsRounded(color2.getBlue(), 0.499, 3);
 
-        ConsistentColor color3 = ConsistentColor.generate("\uD83D\uDE3A", ConsistentColor.ColorVisionDeficiency.RED_GREEN_BLINDNESS);
+        ConsistentColor color3 =
+                ConsistentColor.generate("\uD83D\uDE3A", ConsistentColor.ColorVisionDeficiency.RED_GREEN_BLINDNESS);
         assertEqualsRounded(color3.getRed(), 0.912, 3);
         assertEqualsRounded(color3.getGreen(), 0.812, 3);
         assertEqualsRounded(color3.getBlue(), 0.0, 3);
@@ -99,23 +106,28 @@ public class ConsistentColorGenerationTest {
         double angle1 = ConsistentColor.generateAngle("Romeo", ConsistentColor.ColorVisionDeficiency.BLUE_BLINDNESS);
         assertEqualsRounded(angle1, 4.426681, 6);
 
-        double angle2 = ConsistentColor.generateAngle(Jid.of("juliet@capulet.lit"), ConsistentColor.ColorVisionDeficiency.BLUE_BLINDNESS);
+        double angle2 = ConsistentColor
+                .generateAngle(Jid.of("juliet@capulet.lit"), ConsistentColor.ColorVisionDeficiency.BLUE_BLINDNESS);
         assertEqualsRounded(angle2, 3.398275, 6);
 
-        double angle3 = ConsistentColor.generateAngle("\uD83D\uDE3A", ConsistentColor.ColorVisionDeficiency.BLUE_BLINDNESS);
+        double angle3 =
+                ConsistentColor.generateAngle("\uD83D\uDE3A", ConsistentColor.ColorVisionDeficiency.BLUE_BLINDNESS);
         assertEqualsRounded(angle3, 4.461100, 6);
 
-        ConsistentColor color1 = ConsistentColor.generate("Romeo", ConsistentColor.ColorVisionDeficiency.BLUE_BLINDNESS);
+        ConsistentColor color1 =
+                ConsistentColor.generate("Romeo", ConsistentColor.ColorVisionDeficiency.BLUE_BLINDNESS);
         assertEqualsRounded(color1.getRed(), 0.031, 3);
         assertEqualsRounded(color1.getGreen(), 1.0, 3);
         assertEqualsRounded(color1.getBlue(), 0.472, 3);
 
-        ConsistentColor color2 = ConsistentColor.generate(Jid.of("juliet@capulet.lit"), ConsistentColor.ColorVisionDeficiency.BLUE_BLINDNESS);
+        ConsistentColor color2 = ConsistentColor
+                .generate(Jid.of("juliet@capulet.lit"), ConsistentColor.ColorVisionDeficiency.BLUE_BLINDNESS);
         assertEqualsRounded(color2.getRed(), 0.548, 3);
         assertEqualsRounded(color2.getGreen(), 0.998, 3);
         assertEqualsRounded(color2.getBlue(), 0.0, 3);
 
-        ConsistentColor color3 = ConsistentColor.generate("\uD83D\uDE3A", ConsistentColor.ColorVisionDeficiency.BLUE_BLINDNESS);
+        ConsistentColor color3 =
+                ConsistentColor.generate("\uD83D\uDE3A", ConsistentColor.ColorVisionDeficiency.BLUE_BLINDNESS);
         assertEqualsRounded(color3.getRed(), 0.031, 3);
         assertEqualsRounded(color3.getGreen(), 1.0, 3);
         assertEqualsRounded(color3.getBlue(), 0.505, 3);

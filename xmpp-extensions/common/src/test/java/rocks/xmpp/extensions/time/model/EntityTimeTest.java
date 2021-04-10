@@ -80,8 +80,10 @@ public class EntityTimeTest extends XmlTest {
 
     @Test
     public void marshalEntityTimeResponse() throws Exception {
-        OffsetDateTime offsetDateTime = OffsetDateTime.of(LocalDateTime.of(2015, 3, 22, 20, 48, 11), ZoneOffset.ofHours(-2));
+        OffsetDateTime offsetDateTime =
+                OffsetDateTime.of(LocalDateTime.of(2015, 3, 22, 20, 48, 11), ZoneOffset.ofHours(-2));
         String xml = marshal(new EntityTime(offsetDateTime));
-        Assert.assertEquals(xml, "<time xmlns=\"urn:xmpp:time\"><tzo>-02:00</tzo><utc>2015-03-22T22:48:11Z</utc></time>");
+        Assert.assertEquals(xml,
+                "<time xmlns=\"urn:xmpp:time\"><tzo>-02:00</tzo><utc>2015-03-22T22:48:11Z</utc></time>");
     }
 }

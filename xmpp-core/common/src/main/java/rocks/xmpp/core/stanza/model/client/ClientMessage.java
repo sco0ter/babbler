@@ -62,7 +62,9 @@ public final class ClientMessage extends Message {
      * @param extensions   The extensions.
      * @param error        The error.
      */
-    private ClientMessage(Jid to, Type type, Collection<Text> bodies, Collection<Text> subjects, String thread, String parentThread, String id, Jid from, Locale language, Collection<?> extensions, StanzaError error) {
+    private ClientMessage(Jid to, Type type, Collection<Text> bodies, Collection<Text> subjects, String thread,
+                          String parentThread, String id, Jid from, Locale language, Collection<?> extensions,
+                          StanzaError error) {
         super(to, type, bodies, subjects, thread, parentThread, id, from, language, extensions, error);
     }
 
@@ -76,6 +78,7 @@ public final class ClientMessage extends Message {
         if (m instanceof ClientMessage) {
             return (ClientMessage) m;
         }
-        return new ClientMessage(m.getTo(), m.getType(), m.getBodies(), m.getSubjects(), m.getThread(), m.getParentThread(), m.getId(), m.getFrom(), m.getLanguage(), m.getExtensions(), m.getError());
+        return new ClientMessage(m.getTo(), m.getType(), m.getBodies(), m.getSubjects(), m.getThread(),
+                m.getParentThread(), m.getId(), m.getFrom(), m.getLanguage(), m.getExtensions(), m.getError());
     }
 }

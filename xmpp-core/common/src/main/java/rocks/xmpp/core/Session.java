@@ -33,7 +33,7 @@ import rocks.xmpp.core.stream.model.StreamError;
 
 /**
  * A generic interface for different kinds of XMPP sessions.
- * 
+ *
  * <ul>
  * <li>A client-to-server session</li>
  * <li>An external component session (<a href="https://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>).</li>
@@ -46,16 +46,15 @@ import rocks.xmpp.core.stream.model.StreamError;
 public interface Session extends AutoCloseable {
 
     /**
-     * Gets the local XMPP address.
-     * This method may return null, e.g. for client-to-server sessions before resource binding.
+     * Gets the local XMPP address. This method may return null, e.g. for client-to-server sessions before resource
+     * binding.
      *
      * @return The local XMPP address or null.
      */
     Jid getLocalXmppAddress();
 
     /**
-     * Gets the remote XMPP address.
-     * This method may return null, if the session is not fully negotiated.
+     * Gets the remote XMPP address. This method may return null, if the session is not fully negotiated.
      *
      * @return The remote XMPP address or null.
      */
@@ -72,8 +71,8 @@ public interface Session extends AutoCloseable {
     /**
      * Asynchronously closes the session.
      *
-     * <p>Closing usually involves a round-trip with the peer on the XMPP layer first by sending a closing stream element,
-     * then waiting on the response and then closing the underlying transport layer.</p>
+     * <p>Closing usually involves a round-trip with the peer on the XMPP layer first by sending a closing stream
+     * element, then waiting on the response and then closing the underlying transport layer.</p>
      *
      * @return The completion stage, which is complete, when the session is closed.
      * @see #close()

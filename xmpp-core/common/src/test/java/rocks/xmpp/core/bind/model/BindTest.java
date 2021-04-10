@@ -56,7 +56,8 @@ public class BindTest extends XmlTest {
     public void testMarshalResource() throws XMLStreamException, JAXBException {
         Bind bind = new Bind("balcony");
         String xml = marshal(bind);
-        Assert.assertEquals(xml, "<bind xmlns=\"urn:ietf:params:xml:ns:xmpp-bind\"><resource>balcony</resource></bind>");
+        Assert.assertEquals(xml,
+                "<bind xmlns=\"urn:ietf:params:xml:ns:xmpp-bind\"><resource>balcony</resource></bind>");
     }
 
     @Test

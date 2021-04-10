@@ -23,7 +23,8 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a> (#admin).
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User
+ * Chat</a> (#admin).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = Muc.NAMESPACE + "#admin", elementFormDefault = XmlNsForm.QUALIFIED)

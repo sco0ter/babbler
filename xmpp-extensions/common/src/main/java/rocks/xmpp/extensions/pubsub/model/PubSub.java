@@ -76,7 +76,11 @@ import rocks.xmpp.util.adapters.InstantAdapter;
  * @see <a href="https://xmpp.org/extensions/xep-0060.html#schemas-pubsub">XML Schema</a>
  */
 @XmlRootElement(name = "pubsub")
-@XmlSeeAlso({Unsupported.class, InvalidJid.class, PresenceSubscriptionRequired.class, NotInRosterGroup.class, ClosedNode.class, PendingSubscription.class, TooManySubscriptions.class, ConfigurationRequired.class, SubIdRequired.class, NotSubscribed.class, NotSubscribed.class, InvalidSubId.class, JidRequired.class, InvalidOptions.class, PayloadTooBig.class, InvalidPayload.class, ItemRequired.class, PayloadRequired.class, ItemForbidden.class, NodeIdRequired.class, MaxItemsExceeded.class, MaxNodesExceeded.class,
+@XmlSeeAlso({Unsupported.class, InvalidJid.class, PresenceSubscriptionRequired.class, NotInRosterGroup.class,
+        ClosedNode.class, PendingSubscription.class, TooManySubscriptions.class, ConfigurationRequired.class,
+        SubIdRequired.class, NotSubscribed.class, NotSubscribed.class, InvalidSubId.class, JidRequired.class,
+        InvalidOptions.class, PayloadTooBig.class, InvalidPayload.class, ItemRequired.class, PayloadRequired.class,
+        ItemForbidden.class, NodeIdRequired.class, MaxItemsExceeded.class, MaxNodesExceeded.class,
         Event.class,
         PubSubOwner.class
 })
@@ -245,7 +249,8 @@ public final class PubSub {
      * @param node              The node.
      * @param configurationForm The configuration form.
      * @return The pubsub instance.
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-create-and-configure">8.1.3 Create and Configure a Node</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-create-and-configure">8.1.3 Create and Configure a
+     * Node</a>
      */
     public static PubSub withCreate(String node, DataForm configurationForm) {
         return new PubSub(new Create(node), new Configure(configurationForm));
@@ -309,7 +314,8 @@ public final class PubSub {
     }
 
     /**
-     * Creates a pubsub element with a {@code <subscribe/>} and {@code <options/>} child element with a 'node' and 'jid' attribute.
+     * Creates a pubsub element with a {@code <subscribe/>} and {@code <options/>} child element with a 'node' and 'jid'
+     * attribute.
      *
      * <p><b>Sample:</b></p>
      *
@@ -327,7 +333,8 @@ public final class PubSub {
      * @param jid      The JID.
      * @param dataForm The dataForm.
      * @return The pubsub instance.
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-subandconfig">6.3.7 Subscribe and Configure</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-subandconfig">6.3.7 Subscribe and
+     * Configure</a>
      */
     public static PubSub withSubscribe(String node, Jid jid, DataForm dataForm) {
         return new PubSub(new Subscribe(node, jid), (dataForm != null) ? new Options(dataForm) : null);
@@ -391,7 +398,8 @@ public final class PubSub {
      * }</pre>
      *
      * @return The pubsub instance.
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscribe-default">6.4 Request Default Subscription Configuration Options</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscribe-default">6.4 Request Default Subscription
+     * Configuration Options</a>
      */
     public static PubSub withDefault() {
         return withDefault(null);
@@ -410,7 +418,8 @@ public final class PubSub {
      *
      * @param node The node.
      * @return The pubsub instance.
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscribe-default">6.4 Request Default Subscription Configuration Options</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscribe-default">6.4 Request Default Subscription
+     * Configuration Options</a>
      */
     public static PubSub withDefault(String node) {
         return new PubSub(new Default(node));
@@ -429,14 +438,16 @@ public final class PubSub {
      *
      * @param node The node.
      * @return The pubsub instance.
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestall">6.5.2 Requesting All Items</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestall">6.5.2 Requesting All
+     * Items</a>
      */
     public static PubSub withItems(String node) {
         return new PubSub(new Items(node));
     }
 
     /**
-     * Creates a pubsub element with an {@code <items/>} child element, containing multiple item elements with an 'id' attribute.
+     * Creates a pubsub element with an {@code <items/>} child element, containing multiple item elements with an 'id'
+     * attribute.
      *
      * <p><b>Sample:</b></p>
      *
@@ -452,7 +463,8 @@ public final class PubSub {
      * @param node The node.
      * @param ids  The ids.
      * @return The pubsub instance.
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-returnnotify">6.5.6 Returning Notifications Only</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-returnnotify">6.5.6 Returning
+     * Notifications Only</a>
      */
     public static PubSub withItems(String node, String... ids) {
         List<ItemElement> items = new ArrayList<>();
@@ -476,7 +488,8 @@ public final class PubSub {
      * @param node     The node.
      * @param maxItems The max items.
      * @return The pubsub instance.
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestrecent">6.5.7 Requesting the Most Recent Items</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestrecent">6.5.7 Requesting the
+     * Most Recent Items</a>
      */
     public static PubSub withItems(String node, int maxItems) {
         return new PubSub(new Items(node, maxItems));
@@ -504,7 +517,8 @@ public final class PubSub {
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-publish">7.1 Publish an Item to a Node</a>
      */
     public static PubSub withPublish(String node, String id, Object item, DataForm options) {
-        return new PubSub(new Publish(node, new ItemElement(id, item, null)), options != null ? new PublishOptions(options) : null);
+        return new PubSub(new Publish(node, new ItemElement(id, item, null)),
+                options != null ? new PublishOptions(options) : null);
     }
 
     /**
@@ -864,7 +878,8 @@ public final class PubSub {
             this(null, null, null, null, null, null);
         }
 
-        private SubscriptionInfo(String node, Jid jid, String subid, SubscriptionState subscription, Instant expiry, SubscribeOptions options) {
+        private SubscriptionInfo(String node, Jid jid, String subid, SubscriptionState subscription, Instant expiry,
+                                 SubscribeOptions options) {
             super(node);
             this.jid = jid;
             this.subid = subid;

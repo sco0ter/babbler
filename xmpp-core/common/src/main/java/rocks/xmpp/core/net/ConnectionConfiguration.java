@@ -34,7 +34,8 @@ import javax.net.ssl.SSLContext;
 public interface ConnectionConfiguration {
 
     /**
-     * Gets the channel encryption mode used for the connection, which indicates, if and how the connection is to be secured.
+     * Gets the channel encryption mode used for the connection, which indicates, if and how the connection is to be
+     * secured.
      *
      * @return The channel encryption mode.
      */

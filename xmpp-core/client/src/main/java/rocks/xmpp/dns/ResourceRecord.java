@@ -41,16 +41,13 @@ final class ResourceRecord {
     private final String name;
 
     /**
-     * two octets which specify the class of the data in the
-     * RDATA field.
+     * two octets which specify the class of the data in the RDATA field.
      */
     private final Classification clazz;
 
     /**
-     * a 32 bit unsigned integer that specifies the time
-     * interval (in seconds) that the resource record may be
-     * cached before it should be discarded.  Zero values are
-     * interpreted to mean that the RR can only be used for the
+     * a 32 bit unsigned integer that specifies the time interval (in seconds) that the resource record may be cached
+     * before it should be discarded.  Zero values are interpreted to mean that the RR can only be used for the
      * transaction in progress, and should not be cached.
      */
     private final long ttl;
@@ -129,7 +126,8 @@ final class ResourceRecord {
                     count = data.get() & 0xFF;
                 } else {
                     if (data.hasArray()) {
-                        sb.append(new String(data.array(), data.arrayOffset() + offset + 1, count, StandardCharsets.US_ASCII));
+                        sb.append(new String(data.array(), data.arrayOffset() + offset + 1, count,
+                                StandardCharsets.US_ASCII));
                     }
                     offset += count + 1;
                     count = data.get(offset) & 0xFF;
@@ -191,7 +189,8 @@ final class ResourceRecord {
     }
 
     /**
-     * @see <a href="http://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-4">Resource Record (RR) TYPEs</a>
+     * @see <a href="http://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-4">Resource
+     * Record (RR) TYPEs</a>
      */
     enum Type {
 

@@ -46,12 +46,16 @@ public final class ConsoleDebugger implements XmppDebugger {
 
     @Override
     public void writeStanza(String xml, Object stanza) {
-        System.out.println("OUT (" + (xmppSession.getActiveConnection() != null ? xmppSession.getActiveConnection().getStreamId() : "") + "): " + xml);
+        System.out.println("OUT ("
+                + (xmppSession.getActiveConnection() != null ? xmppSession.getActiveConnection().getStreamId() : "")
+                + "): " + xml);
     }
 
     @Override
     public void readStanza(String xml, Object stanza) {
-        System.out.println("IN  (" + (xmppSession.getActiveConnection() != null ? xmppSession.getActiveConnection().getStreamId() : "") + "): " + xml);
+        System.out.println("IN  ("
+                + (xmppSession.getActiveConnection() != null ? xmppSession.getActiveConnection().getStreamId() : "")
+                + "): " + xml);
     }
 
     @Override

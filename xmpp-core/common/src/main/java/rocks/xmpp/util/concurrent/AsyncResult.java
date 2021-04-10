@@ -42,7 +42,8 @@ import rocks.xmpp.core.XmppException;
 /**
  * Represents the result of an asynchronous operation.
  *
- * <p>It implements both {@link Future} and {@link CompletionStage} and is therefore similar to {@link CompletableFuture}, but read-only, i.e. it cannot be completed.</p>
+ * <p>It implements both {@link Future} and {@link CompletionStage} and is therefore similar to {@link
+ * CompletableFuture}, but read-only, i.e. it cannot be completed.</p>
  *
  * @author Christian Schudt
  * @see CompletableFuture
@@ -101,32 +102,38 @@ public class AsyncResult<T> implements Future<T>, CompletionStage<T> {
     }
 
     @Override
-    public <U, V> AsyncResult<V> thenCombine(CompletionStage<? extends U> other, BiFunction<? super T, ? super U, ? extends V> fn) {
+    public <U, V> AsyncResult<V> thenCombine(CompletionStage<? extends U> other,
+                                             BiFunction<? super T, ? super U, ? extends V> fn) {
         return new AsyncResult<>(completableFuture.thenCombine(other, fn));
     }
 
     @Override
-    public <U, V> AsyncResult<V> thenCombineAsync(CompletionStage<? extends U> other, BiFunction<? super T, ? super U, ? extends V> fn) {
+    public <U, V> AsyncResult<V> thenCombineAsync(CompletionStage<? extends U> other,
+                                                  BiFunction<? super T, ? super U, ? extends V> fn) {
         return new AsyncResult<>(completableFuture.thenCombineAsync(other, fn));
     }
 
     @Override
-    public <U, V> AsyncResult<V> thenCombineAsync(CompletionStage<? extends U> other, BiFunction<? super T, ? super U, ? extends V> fn, Executor executor) {
+    public <U, V> AsyncResult<V> thenCombineAsync(CompletionStage<? extends U> other,
+                                                  BiFunction<? super T, ? super U, ? extends V> fn, Executor executor) {
         return new AsyncResult<>(completableFuture.thenCombineAsync(other, fn, executor));
     }
 
     @Override
-    public <U> AsyncResult<Void> thenAcceptBoth(CompletionStage<? extends U> other, BiConsumer<? super T, ? super U> action) {
+    public <U> AsyncResult<Void> thenAcceptBoth(CompletionStage<? extends U> other,
+                                                BiConsumer<? super T, ? super U> action) {
         return new AsyncResult<>(completableFuture.thenAcceptBoth(other, action));
     }
 
     @Override
-    public <U> AsyncResult<Void> thenAcceptBothAsync(CompletionStage<? extends U> other, BiConsumer<? super T, ? super U> action) {
+    public <U> AsyncResult<Void> thenAcceptBothAsync(CompletionStage<? extends U> other,
+                                                     BiConsumer<? super T, ? super U> action) {
         return new AsyncResult<>(completableFuture.thenAcceptBothAsync(other, action));
     }
 
     @Override
-    public <U> AsyncResult<Void> thenAcceptBothAsync(CompletionStage<? extends U> other, BiConsumer<? super T, ? super U> action, Executor executor) {
+    public <U> AsyncResult<Void> thenAcceptBothAsync(CompletionStage<? extends U> other,
+                                                     BiConsumer<? super T, ? super U> action, Executor executor) {
         return new AsyncResult<>(completableFuture.thenAcceptBothAsync(other, action, executor));
     }
 
@@ -156,7 +163,8 @@ public class AsyncResult<T> implements Future<T>, CompletionStage<T> {
     }
 
     @Override
-    public <U> AsyncResult<U> applyToEitherAsync(CompletionStage<? extends T> other, Function<? super T, U> fn, Executor executor) {
+    public <U> AsyncResult<U> applyToEitherAsync(CompletionStage<? extends T> other, Function<? super T, U> fn,
+                                                 Executor executor) {
         return new AsyncResult<>(completableFuture.applyToEitherAsync(other, fn, executor));
     }
 
@@ -171,7 +179,8 @@ public class AsyncResult<T> implements Future<T>, CompletionStage<T> {
     }
 
     @Override
-    public AsyncResult<Void> acceptEitherAsync(CompletionStage<? extends T> other, Consumer<? super T> action, Executor executor) {
+    public AsyncResult<Void> acceptEitherAsync(CompletionStage<? extends T> other, Consumer<? super T> action,
+                                               Executor executor) {
         return new AsyncResult<>(completableFuture.acceptEitherAsync(other, action, executor));
     }
 
@@ -201,7 +210,8 @@ public class AsyncResult<T> implements Future<T>, CompletionStage<T> {
     }
 
     @Override
-    public <U> AsyncResult<U> thenComposeAsync(Function<? super T, ? extends CompletionStage<U>> fn, Executor executor) {
+    public <U> AsyncResult<U> thenComposeAsync(Function<? super T, ? extends CompletionStage<U>> fn,
+                                               Executor executor) {
         return new AsyncResult<>(completableFuture.thenComposeAsync(fn, executor));
     }
 
@@ -249,9 +259,8 @@ public class AsyncResult<T> implements Future<T>, CompletionStage<T> {
     /**
      * Cancels the processing of this {@link Future}, i.e. completes it with a {@link CancellationException}.
      *
-     * @param mayInterruptIfRunning this value has no effect in this
-     *                              implementation because interrupts are not used to control
-     *                              processing.
+     * @param mayInterruptIfRunning this value has no effect in this implementation because interrupts are not used to
+     *                              control processing.
      * @return If this {@link Future} is now cancelled.
      * @see #cancel()
      */
@@ -263,7 +272,8 @@ public class AsyncResult<T> implements Future<T>, CompletionStage<T> {
     /**
      * Cancels the processing of this {@link Future}, i.e. completes it with a {@link CancellationException}.
      *
-     * <p>This method is a shortcut to {@link #cancel(boolean)}, because the boolean parameter has no effect in this implementation.</p>
+     * <p>This method is a shortcut to {@link #cancel(boolean)}, because the boolean parameter has no effect in this
+     * implementation.</p>
      *
      * @return If this {@link Future} is now cancelled.
      */
@@ -294,7 +304,8 @@ public class AsyncResult<T> implements Future<T>, CompletionStage<T> {
     /**
      * Waits uninterruptibly on the result of the query and returns it.
      *
-     * <p>If the thread, waiting on the result is interrupted, this method continues to block until the result is available.</p>
+     * <p>If the thread, waiting on the result is interrupted, this method continues to block until the result is
+     * available.</p>
      *
      * @return The result.
      * @throws XmppException If the response threw an exception.
@@ -328,7 +339,8 @@ public class AsyncResult<T> implements Future<T>, CompletionStage<T> {
     /**
      * Waits uninterruptibly on the result of the query (with a timeout) and returns it.
      *
-     * <p>If the thread, waiting on the result is interrupted, this method continues to block until the result is available or the timeout elapses.</p>
+     * <p>If the thread, waiting on the result is interrupted, this method continues to block until the result is
+     * available or the timeout elapses.</p>
      *
      * @param timeout The timeout
      * @param unit    The time unit.

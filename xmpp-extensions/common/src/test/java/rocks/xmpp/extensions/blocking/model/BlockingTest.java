@@ -62,7 +62,8 @@ public class BlockingTest extends XmlTest {
         items.add(Jid.of("romeo@montague.net"));
         IQ iq = new IQ(IQ.Type.SET, new Block(items), "1");
         String xml = marshal(iq);
-        Assert.assertEquals(xml, "<iq id=\"1\" type=\"set\"><block xmlns=\"urn:xmpp:blocking\"><item jid=\"romeo@montague.net\"></item></block></iq>");
+        Assert.assertEquals(xml,
+                "<iq id=\"1\" type=\"set\"><block xmlns=\"urn:xmpp:blocking\"><item jid=\"romeo@montague.net\"></item></block></iq>");
     }
 
     @Test
@@ -71,6 +72,7 @@ public class BlockingTest extends XmlTest {
         items.add(Jid.of("romeo@montague.net"));
         IQ iq = new IQ(IQ.Type.SET, new Unblock(items), "1");
         String xml = marshal(iq);
-        Assert.assertEquals(xml, "<iq id=\"1\" type=\"set\"><unblock xmlns=\"urn:xmpp:blocking\"><item jid=\"romeo@montague.net\"></item></unblock></iq>");
+        Assert.assertEquals(xml,
+                "<iq id=\"1\" type=\"set\"><unblock xmlns=\"urn:xmpp:blocking\"><item jid=\"romeo@montague.net\"></item></unblock></iq>");
     }
 }

@@ -63,7 +63,8 @@ public final class InBandByteStreamsTransportMethod extends TransportMethod {
         this(blockSize, sessionId, null);
     }
 
-    public InBandByteStreamsTransportMethod(int blockSize, String sessionId, InBandByteStream.Open.StanzaType stanzaType) {
+    public InBandByteStreamsTransportMethod(int blockSize, String sessionId,
+                                            InBandByteStream.Open.StanzaType stanzaType) {
         this.sid = Objects.requireNonNull(sessionId);
         this.blockSize = blockSize;
         this.stanza = stanzaType;

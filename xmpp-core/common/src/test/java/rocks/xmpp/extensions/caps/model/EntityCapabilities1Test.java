@@ -94,12 +94,16 @@ public class EntityCapabilities1Test extends XmlTest {
     @Test
     public void testSortDataForms() {
 
-        DataForm dataForm1 = new DataForm(DataForm.Type.FORM, Arrays.asList(DataForm.Field.builder().name("ccc").type(DataForm.Field.Type.BOOLEAN).build(),
-                DataForm.Field.builder().name("FORM_TYPE").value("aaa").type(DataForm.Field.Type.HIDDEN).build()));
+        DataForm dataForm1 = new DataForm(DataForm.Type.FORM,
+                Arrays.asList(DataForm.Field.builder().name("ccc").type(DataForm.Field.Type.BOOLEAN).build(),
+                        DataForm.Field.builder().name("FORM_TYPE").value("aaa").type(DataForm.Field.Type.HIDDEN)
+                                .build()));
 
-        DataForm dataForm2 = new DataForm(DataForm.Type.FORM, Collections.singleton(DataForm.Field.builder().name("bbb").type(DataForm.Field.Type.BOOLEAN).build()));
+        DataForm dataForm2 = new DataForm(DataForm.Type.FORM,
+                Collections.singleton(DataForm.Field.builder().name("bbb").type(DataForm.Field.Type.BOOLEAN).build()));
 
-        DataForm dataForm3 = new DataForm(DataForm.Type.FORM, Arrays.asList(DataForm.Field.builder().name("FORM_TYPE").value("bbb").type(DataForm.Field.Type.HIDDEN).build(),
+        DataForm dataForm3 = new DataForm(DataForm.Type.FORM, Arrays.asList(
+                DataForm.Field.builder().name("FORM_TYPE").value("bbb").type(DataForm.Field.Type.HIDDEN).build(),
                 DataForm.Field.builder().name("aaa").type(DataForm.Field.Type.BOOLEAN).build()));
 
         List<DataForm> dataForms = new ArrayList<>();
@@ -119,8 +123,10 @@ public class EntityCapabilities1Test extends XmlTest {
     public void testSortDataFormFields() {
 
         List<DataForm.Field> dataFields = new ArrayList<>();
-        DataForm.Field field1 = DataForm.Field.builder().name("ccc").type(DataForm.Field.Type.BOOLEAN).value("ccc").build();
-        DataForm.Field field2 = DataForm.Field.builder().name("FORM_TYPE").value("aaa").type(DataForm.Field.Type.HIDDEN).build();
+        DataForm.Field field1 =
+                DataForm.Field.builder().name("ccc").type(DataForm.Field.Type.BOOLEAN).value("ccc").build();
+        DataForm.Field field2 =
+                DataForm.Field.builder().name("FORM_TYPE").value("aaa").type(DataForm.Field.Type.HIDDEN).build();
         DataForm.Field field3 = DataForm.Field.builder().name("aaa").type(DataForm.Field.Type.BOOLEAN).build();
         DataForm.Field field4 = DataForm.Field.builder().name("ggg").type(DataForm.Field.Type.BOOLEAN).build();
         DataForm.Field field5 = DataForm.Field.builder().name("eee").type(DataForm.Field.Type.BOOLEAN).build();
@@ -142,7 +148,8 @@ public class EntityCapabilities1Test extends XmlTest {
     }
 
     /**
-     * Generation example from <a href="https://xmpp.org/extensions/xep-0115.html#ver-gen-simple">5.2 Simple Generation Example</a>
+     * Generation example from <a href="https://xmpp.org/extensions/xep-0115.html#ver-gen-simple">5.2 Simple Generation
+     * Example</a>
      *
      * @throws NoSuchAlgorithmException If SHA-1 algorithm could not be found.
      */
@@ -158,12 +165,14 @@ public class EntityCapabilities1Test extends XmlTest {
         features.add("http://jabber.org/protocol/caps");
 
         DiscoverableInfo discoverableInfo = new InfoDiscovery(identities, features);
-        EntityCapabilities1 entityCaps = new EntityCapabilities1("", discoverableInfo, MessageDigest.getInstance("sha-1"));
+        EntityCapabilities1 entityCaps =
+                new EntityCapabilities1("", discoverableInfo, MessageDigest.getInstance("sha-1"));
         Assert.assertEquals(entityCaps.getVerificationString(), "QgayPKawpkPSDYmwT/WM94uAlu0=");
     }
 
     /**
-     * Generation example from <a href="https://xmpp.org/extensions/xep-0115.html#ver-gen-complex">5.3 Complex Generation Example</a>
+     * Generation example from <a href="https://xmpp.org/extensions/xep-0115.html#ver-gen-complex">5.3 Complex
+     * Generation Example</a>
      *
      * @throws NoSuchAlgorithmException If SHA-1 algorithm could not be found.
      */
@@ -180,12 +189,16 @@ public class EntityCapabilities1Test extends XmlTest {
         features.add("http://jabber.org/protocol/muc");
 
         DataForm dataForm = new DataForm(DataForm.Type.RESULT, Arrays.asList(
-                DataForm.Field.builder().name("FORM_TYPE").value("urn:xmpp:dataforms:softwareinfo").type(DataForm.Field.Type.HIDDEN).build(),
-                DataForm.Field.builder().name("ip_version").values(Arrays.asList("ipv4", "ipv6")).type(DataForm.Field.Type.TEXT_SINGLE).build(),
+                DataForm.Field.builder().name("FORM_TYPE").value("urn:xmpp:dataforms:softwareinfo")
+                        .type(DataForm.Field.Type.HIDDEN).build(),
+                DataForm.Field.builder().name("ip_version").values(Arrays.asList("ipv4", "ipv6"))
+                        .type(DataForm.Field.Type.TEXT_SINGLE).build(),
                 DataForm.Field.builder().name("os").value("Mac").type(DataForm.Field.Type.TEXT_SINGLE).build(),
-                DataForm.Field.builder().name("os_version").value("10.5.1").type(DataForm.Field.Type.TEXT_SINGLE).build(),
+                DataForm.Field.builder().name("os_version").value("10.5.1").type(DataForm.Field.Type.TEXT_SINGLE)
+                        .build(),
                 DataForm.Field.builder().name("software").value("Psi").type(DataForm.Field.Type.TEXT_SINGLE).build(),
-                DataForm.Field.builder().name("software_version").value("0.11").type(DataForm.Field.Type.TEXT_SINGLE).build()
+                DataForm.Field.builder().name("software_version").value("0.11").type(DataForm.Field.Type.TEXT_SINGLE)
+                        .build()
 
         ));
         InfoDiscovery infoNode = new InfoDiscovery(identities, features, Collections.singleton(dataForm));
@@ -194,7 +207,8 @@ public class EntityCapabilities1Test extends XmlTest {
     }
 
     @Test
-    public void testVerificationStringComplexFromDiscoInfo() throws NoSuchAlgorithmException, JAXBException, XMLStreamException {
+    public void testVerificationStringComplexFromDiscoInfo()
+            throws NoSuchAlgorithmException, JAXBException, XMLStreamException {
 
         InfoDiscovery infoDiscovery = unmarshal("<query xmlns='http://jabber.org/protocol/disco#info'\n" +
                 "         node='http://psi-im.org#q07IKJEyjvHSyhy//CH0CxmKi8w='>\n" +
@@ -242,8 +256,9 @@ public class EntityCapabilities1Test extends XmlTest {
         features.add("http://jabber.org/protocol/muc");
         features.add("http://jabber.org/protocol/caps");
 
-        DataForm dataForm1 = new DataForm(DataForm.Type.FORM, Arrays.asList(DataForm.Field.builder().name("ccc").build(),
-                DataForm.Field.builder().name("FORM_TYPE").type(DataForm.Field.Type.HIDDEN).build()));
+        DataForm dataForm1 =
+                new DataForm(DataForm.Type.FORM, Arrays.asList(DataForm.Field.builder().name("ccc").build(),
+                        DataForm.Field.builder().name("FORM_TYPE").type(DataForm.Field.Type.HIDDEN).build()));
 
         DataForm dataForm2 = new DataForm(DataForm.Type.FORM, Collections.singleton(
                 DataForm.Field.builder().name("bbb").type(DataForm.Field.Type.BOOLEAN).build()
@@ -254,7 +269,8 @@ public class EntityCapabilities1Test extends XmlTest {
                 DataForm.Field.builder().name("aaa").type(DataForm.Field.Type.BOOLEAN).build()
         ));
 
-        InfoDiscovery infoNode = new InfoDiscovery(identities, features, Arrays.asList(dataForm1, dataForm2, dataForm3));
+        InfoDiscovery infoNode =
+                new InfoDiscovery(identities, features, Arrays.asList(dataForm1, dataForm2, dataForm3));
         EntityCapabilities1 entityCaps = new EntityCapabilities1("", infoNode, MessageDigest.getInstance("sha-1"));
         Assert.assertEquals(entityCaps.getVerificationString(), "EwaG/3/PLTavYdlrevpQmoqM3nw=");
     }
@@ -277,7 +293,8 @@ public class EntityCapabilities1Test extends XmlTest {
         features.add("http://jabber.org/protocol/caps");
 
         DiscoverableInfo discoverableInfo = new InfoDiscovery(identities, features);
-        EntityCapabilities1 entityCaps = new EntityCapabilities1("", discoverableInfo, MessageDigest.getInstance("sha-1"));
+        EntityCapabilities1 entityCaps =
+                new EntityCapabilities1("", discoverableInfo, MessageDigest.getInstance("sha-1"));
         Assert.assertEquals(entityCaps.getVerificationString(), "40K55pBx86cs2cR44flP35MpLCk=");
     }
 }

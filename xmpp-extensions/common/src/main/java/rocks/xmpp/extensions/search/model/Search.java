@@ -102,7 +102,8 @@ public final class Search {
      * @param instructions The instructions.
      * @param dataForm     The data form.
      */
-    public Search(String first, String last, String nick, String email, ResultSetManagement resultSet, String instructions, DataForm dataForm) {
+    public Search(String first, String last, String nick, String email, ResultSetManagement resultSet,
+                  String instructions, DataForm dataForm) {
         this.first = first;
         this.last = last;
         this.nick = nick;
@@ -172,7 +173,10 @@ public final class Search {
      *
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/extensions/xep-0055.html#extensibility">3. Extensibility</a></cite></p>
-     * <p>The fields defined in the 'jabber:iq:search' namespace are strictly limited to those specified in the schema. If a host needs to gather additional information, Data Forms SHOULD be used; a host MUST NOT add new fields to the 'jabber:iq:search' namespace. Support for extensibility via Data Forms is RECOMMENDED, but is not required for compliance with this document.</p>
+     * <p>The fields defined in the 'jabber:iq:search' namespace are strictly limited to those specified in the schema.
+     * If a host needs to gather additional information, Data Forms SHOULD be used; a host MUST NOT add new fields to
+     * the 'jabber:iq:search' namespace. Support for extensibility via Data Forms is RECOMMENDED, but is not required
+     * for compliance with this document.</p>
      * </blockquote>
      *
      * @return The data form, which contains additional information.

@@ -45,7 +45,8 @@ public final class OobX {
     public static final String NAMESPACE = "jabber:x:oob";
 
     /**
-     * XEP-0066: All of these usages are allowed by the existing OOB namespaces, as long as the value of the <url/> element is a valid URI
+     * XEP-0066: All of these usages are allowed by the existing OOB namespaces, as long as the value of the <url/>
+     * element is a valid URI
      */
     private final URI url;
 

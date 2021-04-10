@@ -48,13 +48,15 @@ public class AddressTest extends XmlTest {
         addressList.add(new Address(Address.Type.CC, Jid.of("jer@jabber.org/Home"), new Roster()));
         Addresses addresses = new Addresses(addressList);
 
-        Addresses addresses2 = new Addresses(new Address(Address.Type.TO, Jid.of("hildjj@jabber.org/Work"), "description", "node"),
-                new Address(Address.Type.CC, Jid.of("jer@jabber.org/Home"), new Roster()));
+        Addresses addresses2 =
+                new Addresses(new Address(Address.Type.TO, Jid.of("hildjj@jabber.org/Work"), "description", "node"),
+                        new Address(Address.Type.CC, Jid.of("jer@jabber.org/Home"), new Roster()));
 
         String xml = marshal(addresses);
         String xml2 = marshal(addresses2);
         Assert.assertEquals(xml, xml2);
-        Assert.assertEquals(xml, "<addresses xmlns=\"http://jabber.org/protocol/address\"><address type=\"to\" jid=\"hildjj@jabber.org/Work\" node=\"node\" desc=\"description\"></address><address type=\"cc\" jid=\"jer@jabber.org/Home\"><query xmlns=\"jabber:iq:roster\"></query></address></addresses>");
+        Assert.assertEquals(xml,
+                "<addresses xmlns=\"http://jabber.org/protocol/address\"><address type=\"to\" jid=\"hildjj@jabber.org/Work\" node=\"node\" desc=\"description\"></address><address type=\"cc\" jid=\"jer@jabber.org/Home\"><query xmlns=\"jabber:iq:roster\"></query></address></addresses>");
         Assert.assertNotNull(addressList.get(1).getExtension(Roster.class));
     }
 

@@ -72,8 +72,7 @@ public final class ScramClient extends ScramBase implements SaslClient {
     }
 
     /**
-     * The characters ',' or '=' in usernames are sent as '=2C' and
-     * '=3D' respectively.
+     * The characters ',' or '=' in usernames are sent as '=2C' and '=3D' respectively.
      *
      * @param username The username.
      * @return The replaced username.
@@ -99,8 +98,8 @@ public final class ScramClient extends ScramBase implements SaslClient {
         // Initial response
         if (challenge.length == 0) {
             NameCallback ncb = authorizationId == null
-                                       ? new NameCallback("SCRAM username: ")
-                                       : new NameCallback("SCRAM username: ", authorizationId);
+                    ? new NameCallback("SCRAM username: ")
+                    : new NameCallback("SCRAM username: ", authorizationId);
             PasswordCallback pcb = new PasswordCallback("SCRAM-SHA-1 password: ", false);
             try {
                 callbackHandler.handle(new Callback[]{ncb, pcb});
@@ -205,7 +204,8 @@ public final class ScramClient extends ScramBase implements SaslClient {
                     // The client then responds by sending a "client-final-message" with the
                     // same nonce and a ClientProof computed using the selected hash
                     // function as explained earlier.
-                    String clientFinalMessage = clientFinalMessageWithoutProof + ",p=" + DatatypeConverter.printBase64Binary(clientProof);
+                    String clientFinalMessage =
+                            clientFinalMessageWithoutProof + ",p=" + DatatypeConverter.printBase64Binary(clientProof);
                     return clientFinalMessage.getBytes(StandardCharsets.UTF_8);
 
                 } catch (GeneralSecurityException e) {

@@ -57,10 +57,12 @@ public class InboundStanzaProcessor {
     public void process(Stanza stanza) {
         if (stanza instanceof Message) {
             MessageEvent messageEvent = new MessageEvent(this, (Message) stanza, true);
-            inboundMessageHandlers.forEach(inboundPresenceHandler -> inboundPresenceHandler.handleInboundMessage(messageEvent));
+            inboundMessageHandlers
+                    .forEach(inboundPresenceHandler -> inboundPresenceHandler.handleInboundMessage(messageEvent));
         } else if (stanza instanceof Presence) {
             PresenceEvent presenceEvent = new PresenceEvent(this, (Presence) stanza, true);
-            inboundPresenceHandlers.forEach(inboundPresenceHandler -> inboundPresenceHandler.handleInboundPresence(presenceEvent));
+            inboundPresenceHandlers
+                    .forEach(inboundPresenceHandler -> inboundPresenceHandler.handleInboundPresence(presenceEvent));
         } else if (stanza instanceof IQ) {
             IQEvent iqEvent = new IQEvent(this, (IQ) stanza, true);
             inboundIQHandlers.forEach(inboundPresenceHandler -> inboundPresenceHandler.handleInboundIQ(iqEvent));

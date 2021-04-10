@@ -28,12 +28,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * The implementation of the {@code <payload-too-big/>} pubsub error.
- * This class is a singleton.
+ * The implementation of the {@code <payload-too-big/>} pubsub error. This class is a singleton.
  *
  * @author Christian Schudt
  * @see #PAYLOAD_TOO_BIG
- * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-publish-error-bigpayload">7.1.3.4 Payload Too Big</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-publish-error-bigpayload">7.1.3.4 Payload Too
+ * Big</a>
  */
 @XmlRootElement(name = "payload-too-big")
 @XmlType(factoryMethod = "create")

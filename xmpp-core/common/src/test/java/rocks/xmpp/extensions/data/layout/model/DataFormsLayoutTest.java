@@ -195,11 +195,16 @@ public class DataFormsLayoutTest extends XmlTest {
         Assert.assertEquals(dataForm.getPages().get(0).getSections().size(), 3);
         Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getLabel(), "Personal Information");
         Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getText().size(), 1);
-        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getFieldReferences().get(0).getName(), "name.first");
-        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getFieldReferences().get(1).getName(), "name.last");
-        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getFieldReferences().get(2).getName(), "email");
-        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getFieldReferences().get(3).getName(), "jid");
-        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getFieldReferences().get(4).getName(), "background");
+        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getFieldReferences().get(0).getName(),
+                "name.first");
+        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getFieldReferences().get(1).getName(),
+                "name.last");
+        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getFieldReferences().get(2).getName(),
+                "email");
+        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getFieldReferences().get(3).getName(),
+                "jid");
+        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getFieldReferences().get(4).getName(),
+                "background");
     }
 
     @Test
@@ -256,11 +261,20 @@ public class DataFormsLayoutTest extends XmlTest {
         Assert.assertEquals(dataForm.getPages().get(0).getSections().size(), 3);
         Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getLabel(), "Personal Information");
         Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getSections().size(), 2);
-        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getSections().get(0).getFieldReferences().get(0).getName(), "name.first");
-        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getSections().get(0).getFieldReferences().get(1).getName(), "name.last");
-        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getSections().get(1).getFieldReferences().get(0).getName(), "email");
-        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getSections().get(1).getFieldReferences().get(1).getName(), "jid");
-        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getFieldReferences().get(0).getName(), "background");
+        Assert.assertEquals(
+                dataForm.getPages().get(0).getSections().get(0).getSections().get(0).getFieldReferences().get(0)
+                        .getName(), "name.first");
+        Assert.assertEquals(
+                dataForm.getPages().get(0).getSections().get(0).getSections().get(0).getFieldReferences().get(1)
+                        .getName(), "name.last");
+        Assert.assertEquals(
+                dataForm.getPages().get(0).getSections().get(0).getSections().get(1).getFieldReferences().get(0)
+                        .getName(), "email");
+        Assert.assertEquals(
+                dataForm.getPages().get(0).getSections().get(0).getSections().get(1).getFieldReferences().get(1)
+                        .getName(), "jid");
+        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getFieldReferences().get(0).getName(),
+                "background");
     }
 
     @Test
@@ -291,6 +305,7 @@ public class DataFormsLayoutTest extends XmlTest {
         Assert.assertEquals(dataForm.getPages().size(), 1);
         Assert.assertEquals(dataForm.getPages().get(0).getSections().size(), 1);
         Assert.assertEquals(dataForm.getPages().get(0).getReportedReference().getName(), "background");
-        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getReportedReference().getName(), "name.first");
+        Assert.assertEquals(dataForm.getPages().get(0).getSections().get(0).getReportedReference().getName(),
+                "name.first");
     }
 }

@@ -48,7 +48,9 @@ public abstract class AbstractSubscriptionHandler {
      * @param item     The roster item to update. If null, a new item is created.
      * @return True, if the subscription state has changed; false otherwise.
      */
-    protected boolean updateRosterAndPush(String username, Presence presence, Runnable onStateChange, RosterItem item, BiFunction<DefinedState, Presence.Type, DefinedState> function, boolean approved) {
+    protected boolean updateRosterAndPush(String username, Presence presence, Runnable onStateChange, RosterItem item,
+                                          BiFunction<DefinedState, Presence.Type, DefinedState> function,
+                                          boolean approved) {
 
         if (item != null) {
             DefinedState oldState = DefinedState.valueOf(item);

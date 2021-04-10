@@ -40,7 +40,8 @@ public class ReconnectionStrategyTest {
 
     @Test
     public void testTruncatedBinaryExponentialBackoff() {
-        ReconnectionStrategy truncatedBinaryExponentialBackoffStrategy = ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy(60, 4);
+        ReconnectionStrategy truncatedBinaryExponentialBackoffStrategy =
+                ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy(60, 4);
         shouldBackoffBinaryExponentially(truncatedBinaryExponentialBackoffStrategy, null);
     }
 
@@ -56,7 +57,8 @@ public class ReconnectionStrategyTest {
 
     @Test
     public void testAlwaysAfterRandom() {
-        ReconnectionStrategy alwaysRandomlyAfter = ReconnectionStrategy.alwaysRandomlyAfter(Duration.ofSeconds(5), Duration.ofSeconds(7));
+        ReconnectionStrategy alwaysRandomlyAfter =
+                ReconnectionStrategy.alwaysRandomlyAfter(Duration.ofSeconds(5), Duration.ofSeconds(7));
         Duration first = alwaysRandomlyAfter.getNextReconnectionAttempt(0, null);
 
         Assert.assertTrue(first.getSeconds() >= 5 && first.getSeconds() < 7);

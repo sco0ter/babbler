@@ -50,10 +50,11 @@ import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
- * Allows to query for reachability addresses of another contact, automatically responds to reachability queries and notifies {@linkplain Consumer}s,
- * when the reachability of a contact has changed either via presence or PEP.
+ * Allows to query for reachability addresses of another contact, automatically responds to reachability queries and
+ * notifies {@linkplain Consumer}s, when the reachability of a contact has changed either via presence or PEP.
  *
- * <p>By default this manager is not enabled. If you support reachability addresses you have to {@linkplain #setEnabled(boolean) enable} it.</p>
+ * <p>By default this manager is not enabled. If you support reachability addresses you have to {@linkplain
+ * #setEnabled(boolean) enable} it.</p>
  *
  * @author Christian Schudt
  */
@@ -81,8 +82,10 @@ public final class ReachabilityManager extends Manager {
             boolean hasReachability = checkStanzaForReachabilityAndNotify(presence);
             Jid contact = presence.getFrom().asBareJid();
             if (!hasReachability && reachabilities.remove(contact) != null) {
-                // If no reachability was found in presence, check, if the contact has previously sent any reachability via presence.
-                XmppUtils.notifyEventListeners(reachabilityListeners, new ReachabilityEvent(ReachabilityManager.this, contact, Collections.emptyList()));
+                // If no reachability was found in presence, check, if the contact has previously sent any reachability
+                // via presence.
+                XmppUtils.notifyEventListeners(reachabilityListeners,
+                        new ReachabilityEvent(ReachabilityManager.this, contact, Collections.emptyList()));
             }
         };
 
@@ -102,7 +105,8 @@ public final class ReachabilityManager extends Manager {
         this.iqHandler = new AbstractIQHandler(Reachability.class, IQ.Type.GET) {
             @Override
             protected IQ processRequest(IQ iq) {
-                // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
+                // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type
+                // "get"
                 return iq.createResult(new Reachability(addresses));
             }
         };
@@ -144,9 +148,11 @@ public final class ReachabilityManager extends Manager {
             if (reachability != null) {
                 synchronized (reachabilities) {
                     List<Address> oldReachabilityAddresses = reachabilities.get(contact);
-                    if (oldReachabilityAddresses == null || !oldReachabilityAddresses.equals(reachability.getAddresses())) {
+                    if (oldReachabilityAddresses == null || !oldReachabilityAddresses
+                            .equals(reachability.getAddresses())) {
                         reachabilities.put(contact, reachability.getAddresses());
-                        XmppUtils.notifyEventListeners(reachabilityListeners, new ReachabilityEvent(this, contact, reachability.getAddresses()));
+                        XmppUtils.notifyEventListeners(reachabilityListeners,
+                                new ReachabilityEvent(this, contact, reachability.getAddresses()));
                     }
                 }
             }

@@ -25,7 +25,11 @@
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0071.html">XEP-0071: XHTML-IM</a>.
  *
- * <p>It defines an XHTML 1.0 Integration Set for use in exchanging instant messages that contain lightweight text markup. The protocol enables an XMPP entity to format a message using a small range of commonly-used HTML elements, attributes, and style properties that are suitable for use in instant messaging. The protocol also excludes HTML constructs that may introduce malware and other vulnerabilities (such as scripts and objects) for improved security.</p>
+ * <p>It defines an XHTML 1.0 Integration Set for use in exchanging instant messages that contain lightweight text
+ * markup. The protocol enables an XMPP entity to format a message using a small range of commonly-used HTML elements,
+ * attributes, and style properties that are suitable for use in instant messaging. The protocol also excludes HTML
+ * constructs that may introduce malware and other vulnerabilities (such as scripts and objects) for improved
+ * security.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = Html.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

@@ -50,19 +50,25 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 
 /**
- * This class implements the application-level ping mechanism as specified in <a href="https://xmpp.org/extensions/xep-0199.html">XEP-0199: XMPP Ping</a>.
+ * This class implements the application-level ping mechanism as specified in <a href="https://xmpp.org/extensions/xep-0199.html">XEP-0199:
+ * XMPP Ping</a>.
  *
- * <p>If enabled, it periodically pings the server to ensure a stable connection. These pings are not sent as long as other stanzas are sent, because they serve the same purpose (telling the server, that we are still available).</p>
+ * <p>If enabled, it periodically pings the server to ensure a stable connection. These pings are not sent as long as
+ * other stanzas are sent, because they serve the same purpose (telling the server, that we are still available).</p>
  *
- * <p>For <a href="https://xmpp.org/extensions/xep-0199.html#s2c">Server-To-Client Pings</a> it automatically responds with a result (pong), if enabled.</p>
+ * <p>For <a href="https://xmpp.org/extensions/xep-0199.html#s2c">Server-To-Client Pings</a> it automatically responds
+ * with a result (pong), if enabled.</p>
  *
- * <p>It also allows to ping the server manually (<a href="https://xmpp.org/extensions/xep-0199.html#c2s">Client-To-Server Pings</a>) or to ping other XMPP entities (<a href="https://xmpp.org/extensions/xep-0199.html#e2e">Client-to-Client Pings</a>).</p>
+ * <p>It also allows to ping the server manually (<a href="https://xmpp.org/extensions/xep-0199.html#c2s">Client-To-Server
+ * Pings</a>) or to ping other XMPP entities (<a href="https://xmpp.org/extensions/xep-0199.html#e2e">Client-to-Client
+ * Pings</a>).</p>
  *
  * @author Christian Schudt
  */
 public final class PingManager extends Manager {
 
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Scheduled Ping Thread"));
+    private static final ExecutorService EXECUTOR_SERVICE =
+            Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Scheduled Ping Thread"));
 
     private final QueuedScheduledExecutorService scheduledExecutorService;
 
@@ -129,7 +135,8 @@ public final class PingManager extends Manager {
      * Pings the given XMPP entity.
      *
      * @param jid The JID to ping.
-     * @return The async result with true if a response has been received within the timeout and the recipient is available, false otherwise.
+     * @return The async result with true if a response has been received within the timeout and the recipient is
+     * available, false otherwise.
      */
     public final AsyncResult<Boolean> ping(Jid jid) {
         IQ request = IQ.get(jid, Ping.INSTANCE);
@@ -144,16 +151,20 @@ public final class PingManager extends Manager {
 
                     if (jid != null && jid.isFullJid()) {
                         Jid from = ((StanzaErrorException) cause).getStanza().getFrom();
-                        // If we pinged a full JID and the resource if offline, the server will respond on behalf of the user with <service-unavailable/>.
-                        // In this case we want to return false, because the intended recipient is unavailable.
-                        // If the response came from the full JID, the recipient is online, even if it returned an error.
+                        // If we pinged a full JID and the resource if offline, the server will respond on behalf of the
+                        // user with <service-unavailable/>.
+                        // In this case we want to return false, because the intended recipient is unavailable. If the
+                        // response came from the full JID, the recipient is online, even if it returned an error.
                         return from != null && from.isFullJid() && from.equals(jid);
                     } else {
-                        // If we pinged a bare JID, the server will respond. If it returned a <service-unavailable/> or <feature-not-implemented/> error, it just means it doesn't understand the ping protocol.
+                        // If we pinged a bare JID, the server will respond. If it returned a <service-unavailable/> or
+                        // <feature-not-implemented/> error, it just means it doesn't understand the ping protocol.
                         // Nonetheless an error response is still a valid pong, hence always return true in this case.
-                        // If any other error is returned, most likely <remote-server-not-found/>, <remote-server-timeout/>, <gone/> return false.
+                        // If any other error is returned, most likely <remote-server-not-found/>,
+                        // <remote-server-timeout/>, <gone/> return false.
                         Condition condition = ((StanzaErrorException) cause).getCondition();
-                        return condition == Condition.SERVICE_UNAVAILABLE || condition == Condition.FEATURE_NOT_IMPLEMENTED;
+                        return condition == Condition.SERVICE_UNAVAILABLE
+                                || condition == Condition.FEATURE_NOT_IMPLEMENTED;
                     }
                 }
             }
@@ -181,7 +192,8 @@ public final class PingManager extends Manager {
     }
 
     /**
-     * Sets the automatic ping interval. Any scheduled future ping is canceled and a new ping is scheduled after the specified interval.
+     * Sets the automatic ping interval. Any scheduled future ping is canceled and a new ping is scheduled after the
+     * specified interval.
      *
      * @param pingInterval The ping interval in seconds.
      * @see #getPingInterval()
@@ -192,7 +204,8 @@ public final class PingManager extends Manager {
     }
 
     private synchronized void rescheduleNextPing() {
-        // Reschedule in a separate thread, so that it won't interrupt the "pinging" thread due to the cancel, which then causes the ping to fail.
+        // Reschedule in a separate thread, so that it won't interrupt the "pinging" thread due to the cancel, which
+        // then causes the ping to fail.
         if (pingInterval != null && !pingInterval.isNegative() && !scheduledExecutorService.isShutdown()) {
             cancelNextPing();
             nextPing = scheduledExecutorService.schedule(() -> {

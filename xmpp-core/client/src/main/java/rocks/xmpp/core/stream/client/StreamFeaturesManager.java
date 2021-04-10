@@ -53,16 +53,15 @@ import rocks.xmpp.core.tls.model.StartTls;
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-negotiation">4.3.  Stream Negotiation</a></cite></p>
  * <p>Because the receiving entity for a stream acts as a gatekeeper to the domains it services, it imposes
- * certain conditions for connecting as a client or as a peer server. At a minimum, the initiating entity
- * needs to authenticate with the receiving entity before it is allowed to send stanzas to the receiving
- * entity (for client-to-server streams this means using SASL as described under Section 6). However, the
- * receiving entity can consider conditions other than authentication to be mandatory-to-negotiate, such as
- * encryption using TLS as described under Section 5. The receiving entity informs the initiating entity
- * about such conditions by communicating "stream features": the set of particular protocol interactions that
- * the initiating entity needs to complete before the receiving entity will accept XML stanzas from the
- * initiating entity, as well as any protocol interactions that are voluntary-to-negotiate but that might
- * improve the handling of an XML stream (e.g., establishment of application-layer compression as described
- * in [XEP-0138]).</p>
+ * certain conditions for connecting as a client or as a peer server. At a minimum, the initiating entity needs to
+ * authenticate with the receiving entity before it is allowed to send stanzas to the receiving entity (for
+ * client-to-server streams this means using SASL as described under Section 6). However, the receiving entity can
+ * consider conditions other than authentication to be mandatory-to-negotiate, such as encryption using TLS as described
+ * under Section 5. The receiving entity informs the initiating entity about such conditions by communicating "stream
+ * features": the set of particular protocol interactions that the initiating entity needs to complete before the
+ * receiving entity will accept XML stanzas from the initiating entity, as well as any protocol interactions that are
+ * voluntary-to-negotiate but that might improve the handling of an XML stream (e.g., establishment of application-layer
+ * compression as described in [XEP-0138]).</p>
  * </blockquote>
  *
  * <p>Each feature is associated with a {@linkplain StreamFeatureNegotiator feature negotiator}, which
@@ -79,7 +78,8 @@ import rocks.xmpp.core.tls.model.StartTls;
  */
 public final class StreamFeaturesManager extends Manager implements StreamHandler {
 
-    private final Map<Class<? extends StreamFeature>, CompletableFuture<Void>> featureNegotiationStartedFutures = new ConcurrentHashMap<>();
+    private final Map<Class<? extends StreamFeature>, CompletableFuture<Void>> featureNegotiationStartedFutures =
+            new ConcurrentHashMap<>();
 
     /**
      * The features which have been advertised by the server.
@@ -94,7 +94,8 @@ public final class StreamFeaturesManager extends Manager implements StreamHandle
     /**
      * The feature negotiators, which are responsible to negotiate each individual feature.
      */
-    private final Set<StreamFeatureNegotiator<? extends StreamFeature>> streamFeatureNegotiators = new CopyOnWriteArraySet<>();
+    private final Set<StreamFeatureNegotiator<? extends StreamFeature>> streamFeatureNegotiators =
+            new CopyOnWriteArraySet<>();
 
     private CompletableFuture<Void> negotiationCompleted;
 
@@ -142,7 +143,8 @@ public final class StreamFeaturesManager extends Manager implements StreamHandle
     @SuppressWarnings("unchecked")
     public final Map<Class<? extends StreamFeature>, StreamFeature> getFeatures() {
         // return defensive copies of mutable internal fields
-        return Collections.unmodifiableMap((HashMap<Class<? extends StreamFeature>, StreamFeature>) advertisedFeatures.clone());
+        return Collections
+                .unmodifiableMap((HashMap<Class<? extends StreamFeature>, StreamFeature>) advertisedFeatures.clone());
     }
 
     @SuppressWarnings("unchecked")
@@ -167,7 +169,8 @@ public final class StreamFeaturesManager extends Manager implements StreamHandle
      *
      * @param streamFeatureNegotiator The feature negotiator.
      */
-    public final void removeFeatureNegotiator(StreamFeatureNegotiator<? extends StreamFeature> streamFeatureNegotiator) {
+    public final void removeFeatureNegotiator(
+            StreamFeatureNegotiator<? extends StreamFeature> streamFeatureNegotiator) {
         streamFeatureNegotiators.remove(streamFeatureNegotiator);
     }
 
@@ -188,10 +191,12 @@ public final class StreamFeaturesManager extends Manager implements StreamHandle
         featureList.stream().filter(feature -> feature instanceof StreamFeature).sorted().forEach(feature -> {
             StreamFeature f = (StreamFeature) feature;
             advertisedFeatures.put(f.getClass(), f);
-            // Store the list of features. Each feature will be negotiated sequentially, if there is a corresponding feature negotiator.
+            // Store the list of features. Each feature will be negotiated sequentially, if there is a corresponding
+            // feature negotiator.
             featuresToNegotiate.add(f);
         });
-        // If the receiving entity advertises only the STARTTLS feature [...] the parties MUST consider TLS as mandatory-to-negotiate.
+        // If the receiving entity advertises only the STARTTLS feature [...] the parties MUST consider TLS as
+        // mandatory-to-negotiate.
         if (featureList.size() == 1 && featureList.get(0) instanceof StartTls) {
             ((StartTls) featureList.get(0)).setMandatory(true);
         }
@@ -201,7 +206,8 @@ public final class StreamFeaturesManager extends Manager implements StreamHandle
     }
 
     /**
-     * Tries to process an element, which is a feature or may belong to a feature protocol, e.g. the {@code <proceed/>} element from TLS negotiation.
+     * Tries to process an element, which is a feature or may belong to a feature protocol, e.g. the {@code <proceed/>}
+     * element from TLS negotiation.
      *
      * @param element The element.
      * @return True, if the stream needs to be restarted, after a feature has been negotiated.
@@ -238,7 +244,8 @@ public final class StreamFeaturesManager extends Manager implements StreamHandle
     }
 
     /**
-     * Negotiates the next feature. If the feature has been successfully negotiated, the next feature is automatically negotiated.
+     * Negotiates the next feature. If the feature has been successfully negotiated, the next feature is automatically
+     * negotiated.
      *
      * @throws StreamNegotiationException If an exception occurred during feature negotiation.
      */
@@ -246,7 +253,8 @@ public final class StreamFeaturesManager extends Manager implements StreamHandle
         final StreamFeature advertisedFeature;
         // Get the next feature
         if ((advertisedFeature = featuresToNegotiate.poll()) != null) {
-            final CompletableFuture<Void> streamFuture = featureNegotiationStartedFutures.computeIfAbsent(advertisedFeature.getClass(), k -> new CompletableFuture<>());
+            final CompletableFuture<Void> streamFuture = featureNegotiationStartedFutures
+                    .computeIfAbsent(advertisedFeature.getClass(), k -> new CompletableFuture<>());
             if (!streamFuture.isDone()) {
                 handleElement(advertisedFeature);
                 // Complete the future, which means, negotiation of the feature has been started.
@@ -267,7 +275,8 @@ public final class StreamFeaturesManager extends Manager implements StreamHandle
     }
 
     /**
-     * Waits until the given feature will be negotiated. If the feature has already been negotiated it immediately returns.
+     * Waits until the given feature will be negotiated. If the feature has already been negotiated it immediately
+     * returns.
      *
      * @param streamFeature The stream feature class.
      * @return The future which is complete when the negotiation of the stream feature is completed.

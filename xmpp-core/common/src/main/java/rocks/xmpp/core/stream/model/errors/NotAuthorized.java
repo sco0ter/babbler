@@ -30,8 +30,11 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <not-authorized/>} stream error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-not-authorized">4.9.3.12.  not-authorized</a></cite></p>
- * <p>The entity has attempted to send XML stanzas or other outbound data before the stream has been authenticated, or otherwise is not authorized to perform an action related to stream negotiation; the receiving entity MUST NOT process the offending data before sending the stream error.</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-not-authorized">4.9.3.12.
+ * not-authorized</a></cite></p>
+ * <p>The entity has attempted to send XML stanzas or other outbound data before the stream has been authenticated, or
+ * otherwise is not authorized to perform an action related to stream negotiation; the receiving entity MUST NOT process
+ * the offending data before sending the stream error.</p>
  * </blockquote>
  * This class is a singleton.
  *

@@ -23,9 +23,12 @@
  */
 
 /**
- * Provides an implementation of <a href="https://xmpp.org/extensions/xep-0392.html">XEP-0392: Consistent Color Generation</a>.
+ * Provides an implementation of <a href="https://xmpp.org/extensions/xep-0392.html">XEP-0392: Consistent Color
+ * Generation</a>.
  *
- * <p>It provides a set of algorithms to consistently generate colors given a string. The string can be a nickname, a JID or any other piece of information. All entities adhering to this specification generate the same color for the same string, which provides a consistent user experience across platforms.</p>
+ * <p>It provides a set of algorithms to consistently generate colors given a string. The string can be a nickname, a
+ * JID or any other piece of information. All entities adhering to this specification generate the same color for the
+ * same string, which provides a consistent user experience across platforms.</p>
  */
 package rocks.xmpp.extensions.colors;
 

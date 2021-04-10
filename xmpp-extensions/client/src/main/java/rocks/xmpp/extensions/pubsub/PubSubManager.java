@@ -37,10 +37,12 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 /**
  * This class is the entry point to work with pubsub.
  *
- * <p>You should first {@linkplain #createPubSubService(Jid) create a pubsub service}, which allows you to work with that service.
- * If you don't know the service address, you can {@linkplain #discoverPubSubServices()} discover} the pubsub services hosted at your server.</p>
+ * <p>You should first {@linkplain #createPubSubService(Jid) create a pubsub service}, which allows you to work with
+ * that service. If you don't know the service address, you can {@linkplain #discoverPubSubServices()} discover} the
+ * pubsub services hosted at your server.</p>
  *
- * <p>It also allows you to {@linkplain #createPersonalEventingService() create a Personal Eventing Service}, which is a virtual pubsub service, bound to your account.</p>
+ * <p>It also allows you to {@linkplain #createPersonalEventingService() create a Personal Eventing Service}, which is
+ * a virtual pubsub service, bound to your account.</p>
  *
  * @author Christian Schudt
  * @see rocks.xmpp.extensions.pubsub.PubSubService
@@ -64,7 +66,8 @@ public final class PubSubManager extends Manager {
     public AsyncResult<List<PubSubService>> discoverPubSubServices() {
         return serviceDiscoveryManager.discoverServices(xmppSession.getRemoteXmppAddress(), Identity.pubsubService())
                 .thenApply(services -> services.stream()
-                        .map(service -> new PubSubService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager))
+                        .map(service -> new PubSubService(service.getJid(), service.getName(), xmppSession,
+                                serviceDiscoveryManager))
                         .collect(Collectors.toList()));
     }
 
@@ -85,6 +88,7 @@ public final class PubSubManager extends Manager {
      * @see <a href="https://xmpp.org/extensions/xep-0163.html">XEP-0163: Personal Eventing Protocol</a>
      */
     public PubSubService createPersonalEventingService() {
-        return new PubSubService(xmppSession.getConnectedResource().asBareJid(), "Personal Eventing Service", xmppSession, serviceDiscoveryManager);
+        return new PubSubService(xmppSession.getConnectedResource().asBareJid(), "Personal Eventing Service",
+                xmppSession, serviceDiscoveryManager);
     }
 }

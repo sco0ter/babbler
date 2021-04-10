@@ -59,7 +59,8 @@ public class IdleTest extends XmlTest {
         Idle idle = Idle.since(now);
         String xml = marshal(idle);
         Assert.assertNotNull(idle);
-        Assert.assertEquals(xml, "<idle xmlns=\"urn:xmpp:idle:1\" since=\"" + new OffsetDateTimeAdapter().marshal(now) + "\"></idle>");
+        Assert.assertEquals(xml,
+                "<idle xmlns=\"urn:xmpp:idle:1\" since=\"" + new OffsetDateTimeAdapter().marshal(now) + "\"></idle>");
     }
 
     @Test

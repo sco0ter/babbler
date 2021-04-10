@@ -46,7 +46,8 @@ public class PubSubOwnerUseCasesTest extends XmlTest {
     public void marshalCreate() throws JAXBException, XMLStreamException {
         PubSub pubSub = PubSub.withCreate("princely_musings");
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><create node=\"princely_musings\"></create></pubsub>");
+        Assert.assertEquals(xml,
+                "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><create node=\"princely_musings\"></create></pubsub>");
     }
 
     @Test
@@ -60,7 +61,8 @@ public class PubSubOwnerUseCasesTest extends XmlTest {
     public void marshalConfigure() throws JAXBException, XMLStreamException {
         PubSub pubSub = PubSub.withConfigure("princely_musings", null);
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><configure node=\"princely_musings\"></configure></pubsub>");
+        Assert.assertEquals(xml,
+                "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><configure node=\"princely_musings\"></configure></pubsub>");
     }
 
     @Test
@@ -74,28 +76,33 @@ public class PubSubOwnerUseCasesTest extends XmlTest {
     public void marshalDeleteNode() throws JAXBException, XMLStreamException {
         PubSubOwner pubSub = PubSubOwner.withDelete("princely_musings");
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><delete node=\"princely_musings\"></delete></pubsub>");
+        Assert.assertEquals(xml,
+                "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><delete node=\"princely_musings\"></delete></pubsub>");
     }
 
     @Test
     public void marshalDeleteNodeWithRedirect() throws JAXBException, XMLStreamException {
-        PubSubOwner pubSub = PubSubOwner.withDelete("princely_musings", URI.create("xmpp:hamlet@denmark.lit?;node=blog"));
+        PubSubOwner pubSub =
+                PubSubOwner.withDelete("princely_musings", URI.create("xmpp:hamlet@denmark.lit?;node=blog"));
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><delete node=\"princely_musings\"><redirect uri=\"xmpp:hamlet@denmark.lit?;node=blog\"></redirect></delete></pubsub>");
+        Assert.assertEquals(xml,
+                "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><delete node=\"princely_musings\"><redirect uri=\"xmpp:hamlet@denmark.lit?;node=blog\"></redirect></delete></pubsub>");
     }
 
     @Test
     public void marshalPurgeNodes() throws JAXBException, XMLStreamException {
         PubSubOwner pubSub = PubSubOwner.withPurge("princely_musings");
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><purge node=\"princely_musings\"></purge></pubsub>");
+        Assert.assertEquals(xml,
+                "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><purge node=\"princely_musings\"></purge></pubsub>");
     }
 
     @Test
     public void marshalPubSubOwnerSubscriptions() throws JAXBException, XMLStreamException {
         PubSubOwner pubSub = PubSubOwner.withSubscriptions("princely_musings");
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><subscriptions node=\"princely_musings\"></subscriptions></pubsub>");
+        Assert.assertEquals(xml,
+                "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><subscriptions node=\"princely_musings\"></subscriptions></pubsub>");
     }
 
     @Test
@@ -117,7 +124,8 @@ public class PubSubOwnerUseCasesTest extends XmlTest {
             }
         });
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><affiliations node=\"princely_musings\"><affiliation affiliation=\"member\" jid=\"test\"></affiliation></affiliations></pubsub>");
+        Assert.assertEquals(xml,
+                "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><affiliations node=\"princely_musings\"><affiliation affiliation=\"member\" jid=\"test\"></affiliation></affiliations></pubsub>");
     }
 
     @Test
@@ -168,7 +176,8 @@ public class PubSubOwnerUseCasesTest extends XmlTest {
     public void marshalDeleteItem() throws JAXBException, XMLStreamException {
         PubSub pubSub = PubSub.withRetract("princely_musings", "ae890ac52d0df67ed7cfdf51b644e901", false);
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><retract node=\"princely_musings\" notify=\"false\"><item id=\"ae890ac52d0df67ed7cfdf51b644e901\"></item></retract></pubsub>");
+        Assert.assertEquals(xml,
+                "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><retract node=\"princely_musings\" notify=\"false\"><item id=\"ae890ac52d0df67ed7cfdf51b644e901\"></item></retract></pubsub>");
     }
 
     @Test
@@ -260,7 +269,8 @@ public class PubSubOwnerUseCasesTest extends XmlTest {
                 "               label='When to send the last published item'>\n" +
                 "          <option label='Never'><value>never</value></option>\n" +
                 "          <option label='When a new subscription is processed'><value>on_sub</value></option>\n" +
-                "          <option label='When a new subscription is processed and whenever a subscriber comes online'>\n" +
+                "          <option label='When a new subscription is processed and whenever a subscriber comes online'>\n"
+                +
                 "            <value>on_sub_and_presence</value>\n" +
                 "          </option>\n" +
                 "          <value>never</value>\n" +
@@ -385,7 +395,8 @@ public class PubSubOwnerUseCasesTest extends XmlTest {
                 "               label='When to send the last published item'>\n" +
                 "          <option label='Never'><value>never</value></option>\n" +
                 "          <option label='When a new subscription is processed'><value>on_sub</value></option>\n" +
-                "          <option label='When a new subscription is processed and whenever a subscriber comes online'>\n" +
+                "          <option label='When a new subscription is processed and whenever a subscriber comes online'>\n"
+                +
                 "            <value>on_sub_and_presence</value>\n" +
                 "          </option>\n" +
                 "          <value>never</value>\n" +
@@ -479,6 +490,7 @@ public class PubSubOwnerUseCasesTest extends XmlTest {
     public void marshalPubSubOwnerDelete() throws JAXBException, XMLStreamException {
         PubSubOwner pubSubOwner = PubSubOwner.withDelete("test");
         String xml = marshal(pubSubOwner);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><delete node=\"test\"></delete></pubsub>");
+        Assert.assertEquals(xml,
+                "<pubsub xmlns=\"http://jabber.org/protocol/pubsub#owner\"><delete node=\"test\"></delete></pubsub>");
     }
 }

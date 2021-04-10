@@ -23,9 +23,14 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0166.html">XEP-0166: Jingle</a> (errors).
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0166.html">XEP-0166: Jingle</a>
+ * (errors).
  *
- * <p>It defines an XMPP protocol extension for initiating and managing peer-to-peer media sessions between two XMPP entities in a way that is interoperable with existing Internet standards. The protocol provides a pluggable model that enables the core session management semantics (compatible with SIP) to be used for a wide variety of application types (e.g., voice chat, video chat, file transfer) and with a wide variety of transport methods (e.g., TCP, UDP, ICE, application-specific transports).</p>
+ * <p>It defines an XMPP protocol extension for initiating and managing peer-to-peer media sessions between two XMPP
+ * entities in a way that is interoperable with existing Internet standards. The protocol provides a pluggable model
+ * that enables the core session management semantics (compatible with SIP) to be used for a wide variety of application
+ * types (e.g., voice chat, video chat, file transfer) and with a wide variety of transport methods (e.g., TCP, UDP,
+ * ICE, application-specific transports).</p>
  */
 @XmlSchema(namespace = "urn:xmpp:jingle:errors:1", elementFormDefault = XmlNsForm.QUALIFIED)
 package rocks.xmpp.extensions.jingle.model.errors;

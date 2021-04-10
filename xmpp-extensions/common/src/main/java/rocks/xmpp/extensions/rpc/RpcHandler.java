@@ -45,7 +45,8 @@ public interface RpcHandler {
      * @param methodName The method name.
      * @param parameters The parameter list.
      * @return The result.
-     * @throws RpcException If this exception is thrown, an application-level error (fault) is returned in the XML-RPC structure.
+     * @throws RpcException If this exception is thrown, an application-level error (fault) is returned in the XML-RPC
+     *                      structure.
      */
     Value process(Jid requester, String methodName, List<Value> parameters) throws RpcException;
 }

@@ -23,7 +23,8 @@
  */
 
 /**
- * Provides XML schema implementations for <a href="https://xmpp.org/extensions/xep-0402.html">XEP-0402: PEP Native Bookmarks</a>
+ * Provides XML schema implementations for <a href="https://xmpp.org/extensions/xep-0402.html">XEP-0402: PEP Native
+ * Bookmarks</a>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = PepNativeBookmark.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

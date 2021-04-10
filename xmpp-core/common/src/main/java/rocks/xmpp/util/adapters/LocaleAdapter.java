@@ -28,7 +28,8 @@ import java.util.Locale;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
- * Converts an {@link Locale} to a string representation using {@link Locale#toLanguageTag()} and vice versa, using {@link Locale#forLanguageTag(String)}}.
+ * Converts an {@link Locale} to a string representation using {@link Locale#toLanguageTag()} and vice versa, using
+ * {@link Locale#forLanguageTag(String)}}.
  *
  * @author Christian Schudt
  */

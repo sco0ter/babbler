@@ -34,12 +34,17 @@ import rocks.xmpp.core.stream.model.StreamFeature;
  *
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#bind-feature">7.4.  Advertising Support</a></cite></p>
- * <p>Upon sending a new response stream header to the client after successful SASL negotiation, the server MUST include a {@code <bind/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-bind' namespace in the stream features it presents to the client.</p>
+ * <p>Upon sending a new response stream header to the client after successful SASL negotiation, the server MUST
+ * include a {@code <bind/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-bind' namespace in the stream
+ * features it presents to the client.</p>
  * </blockquote>
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#bind-servergen-success">7.6.1.  Success Case</a></cite></p>
- * <p>A client requests a server-generated resourcepart by sending an IQ stanza of type "set" (see Section 8.2.3) containing an empty {@code <bind/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-bind' namespace.</p>
- * <p>Once the server has generated an XMPP resourcepart for the client, it MUST return an IQ stanza of type "result" to the client, which MUST include a {@code <jid/>} child element that specifies the full JID for the connected resource as determined by the server. </p>
+ * <p>A client requests a server-generated resourcepart by sending an IQ stanza of type "set" (see Section 8.2.3)
+ * containing an empty {@code <bind/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-bind' namespace.</p>
+ * <p>Once the server has generated an XMPP resourcepart for the client, it MUST return an IQ stanza of type "result"
+ * to the client, which MUST include a {@code <jid/>} child element that specifies the full JID for the connected
+ * resource as determined by the server. </p>
  * </blockquote>
  *
  * <p>This class is immutable.</p>
@@ -111,6 +116,7 @@ public final class Bind extends StreamFeature {
 
     @Override
     public final String toString() {
-        return "Resource binding" + (resource != null ? ": " + resource : jid != null ? ", JID: " + jid.toString() : "");
+        return "Resource binding" + (resource != null ? ": " + resource
+                : jid != null ? ", JID: " + jid.toString() : "");
     }
 }

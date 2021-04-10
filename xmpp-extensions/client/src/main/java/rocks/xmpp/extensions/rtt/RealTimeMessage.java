@@ -31,13 +31,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rocks.xmpp.util.XmppUtils;
 
 /**
- * The base class for real-time messages. Derived classes are {@link InboundRealTimeMessage} and {@link OutboundRealTimeMessage}.
+ * The base class for real-time messages. Derived classes are {@link InboundRealTimeMessage} and {@link
+ * OutboundRealTimeMessage}.
  *
  * @author Christian Schudt
  */
 abstract class RealTimeMessage {
 
-    static final ExecutorService REAL_TIME_TEXT_EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Real-time Text Processing Thread"));
+    static final ExecutorService REAL_TIME_TEXT_EXECUTOR =
+            Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Real-time Text Processing Thread"));
 
     volatile boolean complete;
 

@@ -34,14 +34,16 @@ package rocks.xmpp.extensions.filetransfer.model;
 public interface Range {
 
     /**
-     * Gets the position, in bytes, to start transferring the file data from. This defaults to zero (0) if not specified.
+     * Gets the position, in bytes, to start transferring the file data from. This defaults to zero (0) if not
+     * specified.
      *
      * @return The offset.
      */
     long getOffset();
 
     /**
-     * Gets the number of bytes to retrieve starting at offset. This defaults to the length of the file from offset to the end.
+     * Gets the number of bytes to retrieve starting at offset. This defaults to the length of the file from offset to
+     * the end.
      *
      * @return The length.
      */

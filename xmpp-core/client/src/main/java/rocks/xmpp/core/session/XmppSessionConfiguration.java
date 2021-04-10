@@ -53,11 +53,13 @@ import rocks.xmpp.util.XmppUtils;
 /**
  * A configuration for an {@link XmppSession}.
  *
- * <p>Most importantly it allows you to introduce custom extensions to your {@link XmppSession}, simply by passing your JAXB annotated classes to the builder of this class
- * and then {@linkplain XmppSession#XmppSession(String, XmppSessionConfiguration, ClientConnectionConfiguration...) use this configuration for the session}.</p>
+ * <p>Most importantly it allows you to introduce custom extensions to your {@link XmppSession}, simply by passing your
+ * JAXB annotated classes to the builder of this class and then {@linkplain XmppSession#XmppSession(String,
+ * XmppSessionConfiguration, ClientConnectionConfiguration...) use this configuration for the session}.</p>
  *
- * <p>Since creating the JAXB context is quite expensive, this class allows you to create the context once and reuse it by multiple sessions.
- * You can also {@linkplain #setDefault(XmppSessionConfiguration) set} an application-wide default configuration (used by all XMPP sessions).</p>
+ * <p>Since creating the JAXB context is quite expensive, this class allows you to create the context once and reuse it
+ * by multiple sessions. You can also {@linkplain #setDefault(XmppSessionConfiguration) set} an application-wide default
+ * configuration (used by all XMPP sessions).</p>
  *
  * <p>Use the {@link #builder()} to create instances of this class:</p>
  *
@@ -135,7 +137,8 @@ public final class XmppSessionConfiguration {
     private final Executor executor;
 
     /**
-     * Creates a configuration for an {@link XmppSession}. If you want to add custom classes to the {@link JAXBContext}, you can pass them as parameters.
+     * Creates a configuration for an {@link XmppSession}. If you want to add custom classes to the {@link JAXBContext},
+     * you can pass them as parameters.
      *
      * @param builder The builder.
      */
@@ -161,7 +164,8 @@ public final class XmppSessionConfiguration {
             extensions.addAll(module.getExtensions());
         }
 
-        // Then remove any extensions, which are custom defined, e.g. a new Roster extension for the jabber:iq:roster class.
+        // Then remove any extensions, which are custom defined, e.g. a new Roster extension
+        // for the jabber:iq:roster class.
         this.extensions.removeAll(builder.extensions);
         // Then add the custom extensions.
         this.extensions.addAll(builder.extensions);
@@ -221,7 +225,8 @@ public final class XmppSessionConfiguration {
     }
 
     /**
-     * Gets the current debugger for this session. If no debugger was set, the default debugger is the {@link rocks.xmpp.core.session.debug.ConsoleDebugger}.
+     * Gets the current debugger for this session. If no debugger was set, the default debugger is the {@link
+     * rocks.xmpp.core.session.debug.ConsoleDebugger}.
      *
      * @return The debugger.
      */
@@ -255,12 +260,13 @@ public final class XmppSessionConfiguration {
      * <li><a href="https://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a></li>
      * <li><a href="https://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a></li>
      * </ul>
-     * By default this directory is called <code>xmpp.rocks</code> and is located in the operating system's application data folder:<br>
+     * By default this directory is called <code>xmpp.rocks</code> and is located in the operating system's application
+     * data folder:<br>
      *
-     * <p>For Windows it is <code>%APPDATA%</code>, which usually is <code>C:\Users\{USERNAME}\AppData\Roaming</code><br>
+     * <p>For Windows it is <code>%APPDATA%</code>, which usually is
+     * <code>C:\Users\{USERNAME}\AppData\Roaming</code><br>
      * For Mac it is <code>~/Library/Application Support</code><br>
      * Else it is the user's home directory.</p>
-     *
      *
      * @return The directory.
      */
@@ -439,16 +445,16 @@ public final class XmppSessionConfiguration {
         /**
          * Sets the preferred mechanisms used for this XMPP session.
          * <blockquote>
-         * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#sasl-rules-preferences">6.3.3.  Mechanism Preferences</a></cite></p>
+         * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#sasl-rules-preferences">6.3.3.  Mechanism
+         * Preferences</a></cite></p>
          * <p>Any entity that will act as a SASL client or a SASL server MUST maintain an ordered list
-         * of its preferred SASL mechanisms according to the client or server,
-         * where the list is ordered according to local policy or user configuration
-         * (which SHOULD be in order of perceived strength to enable the strongest authentication possible).
-         * The initiating entity MUST maintain its own preference order independent of the preference order of the receiving entity.
-         * A client MUST try SASL mechanisms in its preference order.
-         * For example, if the server offers the ordered list "PLAIN SCRAM-SHA-1 GSSAPI" or "SCRAM-SHA-1 GSSAPI PLAIN"
-         * but the client's ordered list is "GSSAPI SCRAM-SHA-1",
-         * the client MUST try GSSAPI first and then SCRAM-SHA-1 but MUST NOT try PLAIN (since PLAIN is not on its list).</p>
+         * of its preferred SASL mechanisms according to the client or server, where the list is ordered according to
+         * local policy or user configuration (which SHOULD be in order of perceived strength to enable the strongest
+         * authentication possible). The initiating entity MUST maintain its own preference order independent of the
+         * preference order of the receiving entity. A client MUST try SASL mechanisms in its preference order. For
+         * example, if the server offers the ordered list "PLAIN SCRAM-SHA-1 GSSAPI" or "SCRAM-SHA-1 GSSAPI PLAIN" but
+         * the client's ordered list is "GSSAPI SCRAM-SHA-1", the client MUST try GSSAPI first and then SCRAM-SHA-1 but
+         * MUST NOT try PLAIN (since PLAIN is not on its list).</p>
          * </blockquote>
          *
          * @param authenticationMechanisms The preferred mechanisms.
@@ -481,7 +487,8 @@ public final class XmppSessionConfiguration {
         }
 
         /**
-         * Sets a supplier for initial presence which is sent during login. If the supplier is null or returns null, no initial presence is sent.
+         * Sets a supplier for initial presence which is sent during login. If the supplier is null or returns null, no
+         * initial presence is sent.
          *
          * @param presenceSupplier The presence supplier.
          * @return The builder.
@@ -548,7 +555,8 @@ public final class XmppSessionConfiguration {
         /**
          * Indicates whether the XMPP session is closed, when the JVM is shut down.
          *
-         * <p>If <code>true</code> (default), a shutdown hook is added to the runtime, which will gracefully close the session on shutdown.</p>
+         * <p>If <code>true</code> (default), a shutdown hook is added to the runtime, which will gracefully close the
+         * session on shutdown.</p>
          * <p>If <code>false</code>, no shutdown hook will be added to the runtime.</p>
          *
          * @param closeOnShutdown true, if a shutdown hook shall be added to the runtime.

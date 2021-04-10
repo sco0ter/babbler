@@ -32,8 +32,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
 
+import rocks.xmpp.extensions.data.model.DataForm;
+
 /**
- * The implementation of the {@code <validate/>} element in the {@code http://jabber.org/protocol/xdata-validate} namespace, which is used to validate form fields.
+ * The implementation of the {@code <validate/>} element in the {@code http://jabber.org/protocol/xdata-validate}
+ * namespace, which is used to validate form fields.
  *
  * <p>This class is immutable.</p>
  *
@@ -98,7 +101,7 @@ public final class Validation {
      *
      * @param dataType         The data type.
      * @param validationMethod The validation method.
-     * @param listRange        The list range, used for {@link rocks.xmpp.extensions.data.model.DataForm.Field.Type#LIST_MULTI} fields.
+     * @param listRange        The list range, used for {@link DataForm.Field.Type#LIST_MULTI} fields.
      */
     public Validation(String dataType, ValidationMethod validationMethod, ListRange listRange) {
         this.dataType = dataType;
@@ -191,9 +194,15 @@ public final class Validation {
         }
 
         /**
-         * For {@linkplain rocks.xmpp.extensions.data.model.DataForm.Field.Type#LIST_SINGLE "list-single"} or {@linkplain rocks.xmpp.extensions.data.model.DataForm.Field.Type#LIST_MULTI "list-multi"}, to indicate that the user may enter a custom value (matching the datatype constraints) or choose from the predefined values.
+         * For {@linkplain rocks.xmpp.extensions.data.model.DataForm.Field.Type#LIST_SINGLE "list-single"} or
+         * {@linkplain rocks.xmpp.extensions.data.model.DataForm.Field.Type#LIST_MULTI "list-multi"}, to indicate that
+         * the user may enter a custom value (matching the datatype constraints) or choose from the predefined values.
          *
-         * <p>This validation method applies to {@linkplain rocks.xmpp.extensions.data.model.DataForm.Field.Type#TEXT_MULTI "text-multi"} differently; it hints that each value for a "text-multi" field shall be validated separately. This effectively turns "text-multi" fields into an open-ended "list-multi", with no options and all values automatically selected.</p>
+         * <p>This validation method applies to
+         * {@linkplain rocks.xmpp.extensions.data.model.DataForm.Field.Type#TEXT_MULTI "text-multi"} differently; it
+         * hints that each value for a "text-multi" field shall be validated separately. This effectively turns
+         * "text-multi" fields into an open-ended "list-multi", with no options and all values automatically
+         * selected.</p>
          */
         public static final class Open extends ValidationMethod {
 
@@ -314,7 +323,9 @@ public final class Validation {
     }
 
     /**
-     * For {@linkplain rocks.xmpp.extensions.data.model.DataForm.Field.Type#LIST_MULTI "list-multi"}, validation can indicate that a minimum and maximum number of options should be selected and/or entered. This selection range MAY be combined with the other methods to provide more flexibility.
+     * For {@linkplain rocks.xmpp.extensions.data.model.DataForm.Field.Type#LIST_MULTI "list-multi"}, validation can
+     * indicate that a minimum and maximum number of options should be selected and/or entered. This selection range MAY
+     * be combined with the other methods to provide more flexibility.
      *
      * @see <a href="https://xmpp.org/extensions/xep-0122.html#usecases-ranges">3.3 Selection Ranges in "list-multi"</a>
      */

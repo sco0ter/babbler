@@ -53,7 +53,8 @@ import rocks.xmpp.core.stream.model.errors.Condition;
  *
  * <p>This class is capable to encode elements to either an {@link OutputStream} or to a {@link ByteBuffer}.</p>
  *
- * <p>Encoding is thread-safe, as long as the supplied {@link Marshaller} is not shared by another thread, e.g. if a {@linkplain ThreadLocal thread-local} {@link Marshaller} is supplied.</p>
+ * <p>Encoding is thread-safe, as long as the supplied {@link Marshaller} is not shared by another thread, e.g. if a
+ * {@linkplain ThreadLocal thread-local} {@link Marshaller} is supplied.</p>
  *
  * @author Christian Schudt
  */
@@ -70,13 +71,15 @@ public final class XmppStreamEncoder implements WriterInterceptor {
     /**
      * Creates the XMPP encoder.
      *
-     * <p>Because {@link Marshaller} is not thread-safe, it is recommended to pass a {@code ThreadLocal<Marshaller>} to this constructor, which ensures thread-safety during marshalling.</p>
+     * <p>Because {@link Marshaller} is not thread-safe, it is recommended to pass a {@code ThreadLocal<Marshaller>} to
+     * this constructor, which ensures thread-safety during marshalling.</p>
      *
      * @param outputFactory        The XML output factory.
      * @param marshaller           Supplies the marshaller which will convert objects to XML.
      * @param writeStreamNamespace If the stream namespace should be written in the root element.
      */
-    public XmppStreamEncoder(final XMLOutputFactory outputFactory, final Supplier<Marshaller> marshaller, final Function<StreamElement, Boolean> writeStreamNamespace) {
+    public XmppStreamEncoder(final XMLOutputFactory outputFactory, final Supplier<Marshaller> marshaller,
+                             final Function<StreamElement, Boolean> writeStreamNamespace) {
         this.marshaller = marshaller;
         this.outputFactory = outputFactory;
         this.writeStreamNamespace = writeStreamNamespace;
@@ -85,7 +88,8 @@ public final class XmppStreamEncoder implements WriterInterceptor {
     /**
      * Encodes an XMPP element to a byte buffer.
      *
-     * <p>The returned {@link ByteBuffer} is ready to be read, i.e. its {@linkplain ByteBuffer#position() position} is 0.</p>
+     * <p>The returned {@link ByteBuffer} is ready to be read, i.e. its {@linkplain ByteBuffer#position() position} is
+     * 0.</p>
      *
      * @param streamElement The stream element.
      * @return The byte buffer.
@@ -93,7 +97,7 @@ public final class XmppStreamEncoder implements WriterInterceptor {
      */
     public final ByteBuffer encode(StreamElement streamElement) throws StreamErrorException {
         try (ByteBufferOutputStream outputStream = new ByteBufferOutputStream(512, false);
-             Writer writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
+                Writer writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
             encode(streamElement, writer);
             return outputStream.getBuffer().flip();
         } catch (IOException e) {
@@ -126,8 +130,10 @@ public final class XmppStreamEncoder implements WriterInterceptor {
                     return;
                 }
 
-                streamWriter = XmppUtils.createXmppStreamWriter(outputFactory.createXMLStreamWriter(writer), writeStreamNamespace.apply(streamElement));
-                streamWriter.setDefaultNamespace(contentNamespace != null ? contentNamespace : XMLConstants.DEFAULT_NS_PREFIX);
+                streamWriter = XmppUtils.createXmppStreamWriter(outputFactory.createXMLStreamWriter(writer),
+                        writeStreamNamespace.apply(streamElement));
+                streamWriter.setDefaultNamespace(
+                        contentNamespace != null ? contentNamespace : XMLConstants.DEFAULT_NS_PREFIX);
                 final Marshaller m = marshaller.get();
                 m.setProperty(Marshaller.JAXB_FRAGMENT, true);
                 m.marshal(streamElement, streamWriter);

@@ -52,7 +52,8 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.RETRIEVE_SUBSCRIPTIONS);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(),
+                PubSubFeature.RETRIEVE_SUBSCRIPTIONS);
     }
 
     @Test
@@ -69,7 +70,8 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.RETRIEVE_AFFILIATIONS);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(),
+                PubSubFeature.RETRIEVE_AFFILIATIONS);
     }
 
     @Test
@@ -299,7 +301,8 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertSame(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.SUBSCRIPTION_OPTIONS);
+        Assert.assertSame(((Unsupported) iq.getError().getExtension()).getFeature(),
+                PubSubFeature.SUBSCRIPTION_OPTIONS);
     }
 
     @Test
@@ -332,7 +335,8 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertSame(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.RETRIEVE_DEFAULT_SUB);
+        Assert.assertSame(((Unsupported) iq.getError().getExtension()).getFeature(),
+                PubSubFeature.RETRIEVE_DEFAULT_SUB);
     }
 
     @Test
@@ -563,7 +567,8 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.MANAGE_SUBSCRIPTIONS);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(),
+                PubSubFeature.MANAGE_SUBSCRIPTIONS);
     }
 
     @Test
@@ -579,7 +584,8 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.MODIFY_AFFILIATIONS);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(),
+                PubSubFeature.MODIFY_AFFILIATIONS);
     }
 
     @Test
@@ -595,7 +601,8 @@ public class PubSubErrorTest extends XmlTest {
                 "</iq>\n";
         IQ iq = unmarshal(xml, IQ.class);
         Assert.assertTrue(iq.getError().getExtension() instanceof Unsupported);
-        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(), PubSubFeature.MEMBER_AFFILIATION);
+        Assert.assertEquals(((Unsupported) iq.getError().getExtension()).getFeature(),
+                PubSubFeature.MEMBER_AFFILIATION);
     }
 
     @Test
@@ -616,7 +623,8 @@ public class PubSubErrorTest extends XmlTest {
 
     @Test
     public void testPubSubFeature() {
-        Assert.assertEquals(PubSubFeature.ACCESS_AUTHORIZE.getFeatureName(), "http://jabber.org/protocol/pubsub#access-authorize");
+        Assert.assertEquals(PubSubFeature.ACCESS_AUTHORIZE.getFeatureName(),
+                "http://jabber.org/protocol/pubsub#access-authorize");
         for (PubSubFeature feature : PubSubFeature.values()) {
             Assert.assertNotNull(feature.getFeatureName());
         }

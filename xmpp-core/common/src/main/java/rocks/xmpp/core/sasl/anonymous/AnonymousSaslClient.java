@@ -30,7 +30,8 @@ import javax.security.sasl.SaslClient;
  * The client implementation of the "ANONYMOUS" SASL mechanism.
  *
  * @author Christian Schudt
- * @see <a href="http://tools.ietf.org/html/rfc4505">Anonymous Simple Authentication and Security Layer (SASL) Mechanism</a>
+ * @see <a href="http://tools.ietf.org/html/rfc4505">Anonymous Simple Authentication and Security Layer (SASL)
+ * Mechanism</a>
  */
 public final class AnonymousSaslClient implements SaslClient {
     @Override

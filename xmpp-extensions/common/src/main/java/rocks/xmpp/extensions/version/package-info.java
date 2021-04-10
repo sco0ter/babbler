@@ -25,7 +25,10 @@
 /**
  * Provides classes for <a href="https://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>.
  *
- * <p>It defines an XMPP protocol extension for retrieving information about the software application associated with an XMPP entity. The protocol enables one entity to explicitly query another entity, where the response can include the name of the software application, the version of the software application, and the operating system on which the application is running.</p>
+ * <p>It defines an XMPP protocol extension for retrieving information about the software application associated with
+ * an XMPP entity. The protocol enables one entity to explicitly query another entity, where the response can include
+ * the name of the software application, the version of the software application, and the operating system on which the
+ * application is running.</p>
  */
 package rocks.xmpp.extensions.version;
 

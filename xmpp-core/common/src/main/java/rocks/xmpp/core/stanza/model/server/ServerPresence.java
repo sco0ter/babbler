@@ -61,7 +61,8 @@ public final class ServerPresence extends Presence {
      * @param extensions The extensions.
      * @param error      The stanza error.
      */
-    private ServerPresence(Jid to, Type type, Show show, Collection<Text> status, Byte priority, String id, Jid from, Locale language, Collection<?> extensions, StanzaError error) {
+    private ServerPresence(Jid to, Type type, Show show, Collection<Text> status, Byte priority, String id, Jid from,
+                           Locale language, Collection<?> extensions, StanzaError error) {
         super(to, type, show, status, priority, id, from, language, extensions, error);
     }
 
@@ -72,6 +73,7 @@ public final class ServerPresence extends Presence {
      * @return The client presence.
      */
     public static ServerPresence from(Presence p) {
-        return new ServerPresence(p.getTo(), p.getType(), p.getShow(), p.getStatuses(), p.getPriority(), p.getId(), p.getFrom(), p.getLanguage(), p.getExtensions(), p.getError());
+        return new ServerPresence(p.getTo(), p.getType(), p.getShow(), p.getStatuses(), p.getPriority(), p.getId(),
+                p.getFrom(), p.getLanguage(), p.getExtensions(), p.getError());
     }
 }

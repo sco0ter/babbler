@@ -59,7 +59,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  *
  * @author Christian Schudt
  */
-public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager implements InboundPresenceHandler, OutboundPresenceHandler, ExtensionProtocol {
+public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager
+        implements InboundPresenceHandler, OutboundPresenceHandler, ExtensionProtocol {
 
     private static final System.Logger logger = System.getLogger(VCardBasedAvatarsProtocol.class.getName());
 
@@ -83,7 +84,9 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager imple
     public VCardBasedAvatarsProtocol(XmppSession xmppSession) {
         this(xmppSession,
                 xmppSession.getManager(VCardManager.class),
-                xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("userhashes")) : Collections.synchronizedMap(new HashMap<>()));
+                xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(
+                        xmppSession.getConfiguration().getCacheDirectory().resolve("userhashes"))
+                        : Collections.synchronizedMap(new HashMap<>()));
     }
 
     VCardBasedAvatarsProtocol(XmppSession xmppSession,
@@ -117,26 +120,37 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager imple
         final AvatarUpdate avatarUpdate = presence.getExtension(AvatarUpdate.class);
 
         // 4.3 Multiple Resources
-        if (presence.getFrom().asBareJid().equals(xmppSession.getLocalXmppAddress().asBareJid()) && presence.getFrom().getResource() != null && !presence.getFrom().getResource().equals(xmppSession.getLocalXmppAddress().getResource())) {
+        if (presence.getFrom().asBareJid().equals(xmppSession.getLocalXmppAddress().asBareJid())
+                && presence.getFrom().getResource() != null && !presence.getFrom().getResource()
+                .equals(xmppSession.getLocalXmppAddress().getResource())) {
             // We received a presence stanza from another resource of our own JID.
 
             if (avatarUpdate == null) {
-                // 1. If the presence stanza received from the other resource does not contain the update child element, then the other resource does not support vCard-based avatars.
+                // 1. If the presence stanza received from the other resource does not contain the update child element,
+                // then the other resource does not support vCard-based avatars.
                 // That resource could modify the contents of the vCard (including the photo element);
-                // because polling for vCard updates is not allowed, the client MUST stop advertising the avatar image hash.
+                // because polling for vCard updates is not allowed, the client MUST stop advertising the avatar image
+                // hash.
                 if (presence.isAvailable()) {
                     nonConformingResources.add(presence.getFrom().getResource());
                 } else {
-                    // However, the client MAY reset its hash if all instances of non-conforming resources have gone offline.
-                    if (presence.getType() == Presence.Type.UNAVAILABLE && nonConformingResources.remove(presence.getFrom().getResource()) && nonConformingResources.isEmpty()) {
+                    // However, the client MAY reset its hash if all instances of non-conforming resources have gone
+                    // offline.
+                    if (presence.getType() == Presence.Type.UNAVAILABLE && nonConformingResources
+                            .remove(presence.getFrom().getResource()) && nonConformingResources.isEmpty()) {
                         resetHash();
                     }
                 }
             } else {
-                // If the presence stanza received from the other resource contains the update child element, then the other resource conforms to the protocol for vCard-based avatars. There are three possible scenarios.
-                // If the update child element contains a non-empty photo element, then the client MUST compare the image hashes.
-                if (avatarUpdate.getHash() != null && !avatarUpdate.getHash().equals(userHashes.get(xmppSession.getLocalXmppAddress().asBareJid()))) {
-                    // If the hashes are different, then the client MUST NOT attempt to resolve the conflict by uploading its avatar image again. Instead, it MUST defer to the content of the retrieved vCard by resetting its image hash
+                // If the presence stanza received from the other resource contains the update child element, then the
+                // other resource conforms to the protocol for vCard-based avatars. There are three possible scenarios.
+                // If the update child element contains a non-empty photo element, then the client MUST compare the
+                // image hashes.
+                if (avatarUpdate.getHash() != null && !avatarUpdate.getHash()
+                        .equals(userHashes.get(xmppSession.getLocalXmppAddress().asBareJid()))) {
+                    // If the hashes are different, then the client MUST NOT attempt to resolve the conflict by
+                    // uploading its avatar image again. Instead, it MUST defer to the content of the retrieved vCard by
+                    // resetting its image hash
                     resetHash();
                 }
             }
@@ -157,7 +171,8 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager imple
             }
             // If the user sends the same hash as we already know, it's the same avatar. Therefore do nothing.
             if (!avatarUpdate.getHash().equals(userHashes.put(contact, avatarUpdate.getHash()))) {
-                // When the recipient's client receives the hash of the avatar image, it SHOULD check the hash to determine if it already has a cached copy of that avatar image.
+                // When the recipient's client receives the hash of the avatar image, it SHOULD check the hash to
+                // determine if it already has a cached copy of that avatar image.
                 byte[] imageData = loadFromCache(avatarUpdate.getHash());
                 byte[] avatar = null;
                 if (imageData != null) {
@@ -171,7 +186,8 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager imple
                         if (ex == null) {
                             notifyListeners(contact, avatarResult);
                         } else {
-                            logger.log(System.Logger.Level.WARNING, () -> "Failed to retrieve vCard based avatar for user: " + contact, ex);
+                            logger.log(System.Logger.Level.WARNING,
+                                    () -> "Failed to retrieve vCard based avatar for user: " + contact, ex);
                         }
                     });
                 }
@@ -195,7 +211,8 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager imple
     public final void handleOutboundPresence(PresenceEvent e) {
         final Presence presence = e.getPresence();
         if (presence.isAvailable() && nonConformingResources.isEmpty()) {
-            // 1. If a client supports the protocol defined herein, it MUST include the update child element in every presence broadcast it sends and SHOULD also include the update child in directed presence stanzas.
+            // 1. If a client supports the protocol defined herein, it MUST include the update child element in every
+            // presence broadcast it sends and SHOULD also include the update child in directed presence stanzas.
 
             String myHash = userHashes.get(xmppSession.getLocalXmppAddress().asBareJid());
 
@@ -208,15 +225,20 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager imple
                     if (ex == null) {
                         notifyListeners(xmppSession.getLocalXmppAddress().asBareJid(), avatarResult);
 
-                        // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/> element.
+                        // If the client subsequently obtains an avatar image (e.g., by updating or retrieving the
+                        // vCard), it SHOULD then publish a new <presence/> stanza with character data in the <photo/>
+                        // element.
                         Presence lastPresence = xmppSession.getManager(PresenceManager.class).getLastSentPresence();
                         Presence presence1;
                         if (lastPresence != null) {
-                            presence1 = new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null);
+                            presence1 = new Presence(null, lastPresence.getType(), lastPresence.getShow(),
+                                    lastPresence.getStatuses(), lastPresence.getPriority(), null, null,
+                                    lastPresence.getLanguage(), null, null);
                         } else {
                             presence1 = new Presence();
                         }
-                        // Send out a presence, which will be filled with the extension later, because we now know or own avatar and have the hash for it.
+                        // Send out a presence, which will be filled with the extension later, because we now know or
+                        // own avatar and have the hash for it.
                         xmppSession.send(presence1);
                     } else {
                         logger.log(System.Logger.Level.WARNING, "Failed to retrieve own vCard based avatar.");
@@ -292,8 +314,8 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager imple
         }).thenCompose(vCard -> {
             if (avatar != null) {
                 // Within a given session, a client MUST NOT attempt to upload a given avatar image more than once.
-                // The client MAY upload the avatar image to the vCard on login and after that MUST NOT upload the vCard again
-                // unless the user actively changes the avatar image.
+                // The client MAY upload the avatar image to the vCard on login and after that MUST NOT upload the vCard
+                // again unless the user actively changes the avatar image.
                 if (vCard.getPhoto() == null || !Arrays.equals(vCard.getPhoto().getValue(), avatar)) {
                     userHashes.put(xmppSession.getLocalXmppAddress().asBareJid(), hash);
                     // If either there is avatar yet, or the old avatar is different from the new one: update
@@ -313,11 +335,13 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager imple
     }
 
     private void backupUserHashes() {
-        this.userHashes.forEach((jid, hash) -> this.hashesLocalStore.put(jid + ".userhash", hash.getBytes(StandardCharsets.UTF_16)));
+        this.userHashes.forEach(
+                (jid, hash) -> this.hashesLocalStore.put(jid + ".userhash", hash.getBytes(StandardCharsets.UTF_16)));
     }
 
     private void restoreUserHashes() {
-        this.hashesLocalStore.forEach((jid, hash) -> this.userHashes.put(Jid.of(jid.replace(".userhash", "")), new String(hash, StandardCharsets.UTF_16)));
+        this.hashesLocalStore.forEach((jid, hash) -> this.userHashes
+                .put(Jid.of(jid.replace(".userhash", "")), new String(hash, StandardCharsets.UTF_16)));
     }
 
     /**

@@ -124,7 +124,8 @@ public abstract class PubSubError {
     /**
      * The {@code <presence-subscription-required/>} pubsub error.
      */
-    public static final PresenceSubscriptionRequired PRESENCE_SUBSCRIPTION_REQUIRED = new PresenceSubscriptionRequired();
+    public static final PresenceSubscriptionRequired PRESENCE_SUBSCRIPTION_REQUIRED =
+            new PresenceSubscriptionRequired();
 
     /**
      * The {@code <subid-required/>} pubsub error.

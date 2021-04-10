@@ -48,7 +48,8 @@ final class IbbEvent extends ByteStreamEvent {
 
     private final InBandByteStream.Open.StanzaType stanzaType;
 
-    IbbEvent(Object source, String sessionId, XmppSession xmppSession, IQ iq, int blockSize, InBandByteStream.Open.StanzaType stanzaType) {
+    IbbEvent(Object source, String sessionId, XmppSession xmppSession, IQ iq, int blockSize,
+             InBandByteStream.Open.StanzaType stanzaType) {
         super(source, sessionId);
         this.xmppSession = xmppSession;
         this.iq = iq;
@@ -59,12 +60,14 @@ final class IbbEvent extends ByteStreamEvent {
     @Override
     public final AsyncResult<ByteStreamSession> accept() {
         xmppSession.send(iq.createResult());
-        return new AsyncResult<>(CompletableFuture.completedFuture(xmppSession.getManager(InBandByteStreamManager.class).createSession(iq.getFrom(), getSessionId(), blockSize, stanzaType)));
+        return new AsyncResult<>(CompletableFuture.completedFuture(xmppSession.getManager(InBandByteStreamManager.class)
+                .createSession(iq.getFrom(), getSessionId(), blockSize, stanzaType)));
     }
 
     @Override
     public final void reject() {
-        // If the responder supports IBB but does not wish to proceed with the session, it returns a <not-acceptable/> error.
+        // If the responder supports IBB but does not wish to proceed with the session,
+        // it returns a <not-acceptable/> error.
         xmppSession.send(iq.createError(new StanzaError(StanzaError.Type.CANCEL, Condition.NOT_ACCEPTABLE)));
     }
 }

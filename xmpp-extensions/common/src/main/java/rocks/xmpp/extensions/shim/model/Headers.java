@@ -89,7 +89,8 @@ public final class Headers {
      * @return The header.
      */
     public static Headers of(Map<String, String> headers) {
-        return of(headers.entrySet().stream().map(entry -> Header.of(entry.getKey(), entry.getValue())).collect(Collectors.toList()));
+        return of(headers.entrySet().stream().map(entry -> Header.of(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -133,7 +134,8 @@ public final class Headers {
     }
 
     /**
-     * Creates a new headers extension with an additional header. If the header already exists (by their name), it is replaced; otherwise it's added.
+     * Creates a new headers extension with an additional header. If the header already exists (by their name), it is
+     * replaced; otherwise it's added.
      *
      * @param name  The header name.
      * @param value The header value.
@@ -144,7 +146,8 @@ public final class Headers {
     }
 
     /**
-     * Creates a new headers extension with an additional header. If the header already exists (by their name), it is replaced; otherwise it's added.
+     * Creates a new headers extension with an additional header. If the header already exists (by their name), it is
+     * replaced; otherwise it's added.
      *
      * @param header The header.
      * @return The headers.

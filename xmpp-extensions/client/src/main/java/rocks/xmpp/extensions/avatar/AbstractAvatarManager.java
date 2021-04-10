@@ -62,11 +62,13 @@ public abstract class AbstractAvatarManager extends Manager implements AvatarMan
 
     protected AbstractAvatarManager(XmppSession xmppSession) {
         super(xmppSession, true);
-        this.avatarCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("avatars")) : null;
+        this.avatarCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(
+                xmppSession.getConfiguration().getCacheDirectory().resolve("avatars")) : null;
     }
 
     protected void notifyListeners(Jid contact, byte[] avatar) {
-        XmppUtils.notifyEventListeners(avatarChangeListeners, new AvatarChangeEvent(AbstractAvatarManager.this, contact, avatar));
+        XmppUtils.notifyEventListeners(avatarChangeListeners,
+                new AvatarChangeEvent(AbstractAvatarManager.this, contact, avatar));
     }
 
     public final byte[] loadFromCache(String hash) {
@@ -134,8 +136,7 @@ public abstract class AbstractAvatarManager extends Manager implements AvatarMan
      * Converts {@code bitmap} into {@link BufferedImage}.
      *
      * @param bitmap The bitmap to convert. Must not be {@code null}.
-     * @return Instance of {@link BufferedImage} created from {@code bitmap}.
-     * Never {@code null}.
+     * @return Instance of {@link BufferedImage} created from {@code bitmap}. Never {@code null}.
      * @throws ConversionException if conversion failed
      */
     static BufferedImage asBufferedImage(final byte[] bitmap) throws ConversionException {
@@ -165,8 +166,7 @@ public abstract class AbstractAvatarManager extends Manager implements AvatarMan
     }
 
     /**
-     * Indicates the inability to convert a value from one data type into
-     * another.
+     * Indicates the inability to convert a value from one data type into another.
      *
      * @author Markus KARG (markus@headcrashing.eu)
      */

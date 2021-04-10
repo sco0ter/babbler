@@ -41,7 +41,7 @@ final class SettableStringReader extends Reader {
     @Override
     public int read(char[] cbuf, int off, int len) throws IOException {
         if ((off < 0) || (off > cbuf.length) || (len < 0)
-                    || ((off + len) > cbuf.length) || ((off + len) < 0)) {
+                || ((off + len) > cbuf.length) || ((off + len) < 0)) {
             throw new IndexOutOfBoundsException();
         } else if (len == 0) {
             return 0;

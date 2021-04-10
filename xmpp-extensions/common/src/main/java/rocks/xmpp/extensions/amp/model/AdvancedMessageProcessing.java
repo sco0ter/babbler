@@ -134,7 +134,8 @@ public final class AdvancedMessageProcessing extends StreamFeature {
     }
 
     /**
-     * The 'per-hop' attribute flags the contained ruleset for processing at each server in the route between the original sender and original intended recipient.
+     * The 'per-hop' attribute flags the contained ruleset for processing at each server in the route between the
+     * original sender and original intended recipient.
      *
      * @return The per-hop attribute.
      */
@@ -143,7 +144,10 @@ public final class AdvancedMessageProcessing extends StreamFeature {
     }
 
     /**
-     * The 'status' attribute specifies the reason for this {@code <amp/>} element. When specifying semantics to be applied (client to server), this attribute MUST NOT be present. When replying to a sending entity regarding a met condition, this attribute MUST be present and SHOULD be the value of the 'action' attribute for the triggered rule. (Note: Individual action definitions MAY provide their own requirements.)
+     * The 'status' attribute specifies the reason for this {@code <amp/>} element. When specifying semantics to be
+     * applied (client to server), this attribute MUST NOT be present. When replying to a sending entity regarding a met
+     * condition, this attribute MUST be present and SHOULD be the value of the 'action' attribute for the triggered
+     * rule. (Note: Individual action definitions MAY provide their own requirements.)
      *
      * @return The status.
      */
@@ -152,7 +156,10 @@ public final class AdvancedMessageProcessing extends StreamFeature {
     }
 
     /**
-     * The 'from' attribute specifies the original sender of the containing {@code <message/>} stanza. This attribute MUST be specified for any {@code <message/>} stanza sent from a supporting server, regardless of the recipient. It SHOULD NOT be specified otherwise. The value of the 'from' attribute MUST be the full JID (node@domain/resource) of the sender for the original {@code <message/>} stanza.
+     * The 'from' attribute specifies the original sender of the containing {@code <message/>} stanza. This attribute
+     * MUST be specified for any {@code <message/>} stanza sent from a supporting server, regardless of the recipient.
+     * It SHOULD NOT be specified otherwise. The value of the 'from' attribute MUST be the full JID
+     * (node@domain/resource) of the sender for the original {@code <message/>} stanza.
      *
      * @return The from attribute.
      */
@@ -161,7 +168,10 @@ public final class AdvancedMessageProcessing extends StreamFeature {
     }
 
     /**
-     * The 'to' attribute specifies the original (intended) recipient of the containing {@code <message/>} stanza. This attribute MUST be specified for any {@code <message/>} stanza sent from a supporting server, regardless of the recipient. It SHOULD NOT be specified otherwise. The value of the 'to' attribute MUST be the full JID (node@domain/resource) of the intended recipient for the original {@code <message/>} stanza.
+     * The 'to' attribute specifies the original (intended) recipient of the containing {@code <message/>} stanza. This
+     * attribute MUST be specified for any {@code <message/>} stanza sent from a supporting server, regardless of the
+     * recipient. It SHOULD NOT be specified otherwise. The value of the 'to' attribute MUST be the full JID
+     * (node@domain/resource) of the intended recipient for the original {@code <message/>} stanza.
      *
      * @return The to attribute.
      */

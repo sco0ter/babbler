@@ -91,10 +91,12 @@ public class IbbTest extends BaseTest {
     public void testIbbInputStream() throws IOException {
         MockServer mockServer = new MockServer();
         final XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
-        IbbSession ibbSession = new IbbSession("1", xmppSession1, ROMEO, 4096, Duration.ofSeconds(5), xmppSession1.getManager(InBandByteStreamManager.class), InBandByteStream.Open.StanzaType.IQ);
+        IbbSession ibbSession = new IbbSession("1", xmppSession1, ROMEO, 4096, Duration.ofSeconds(5),
+                xmppSession1.getManager(InBandByteStreamManager.class), InBandByteStream.Open.StanzaType.IQ);
         IbbInputStream ibbInputStream = (IbbInputStream) ibbSession.getInputStream();
 
-        IbbSession ibbSession2 = new IbbSession("1", xmppSession1, ROMEO, 4096, Duration.ofSeconds(5), xmppSession1.getManager(InBandByteStreamManager.class), InBandByteStream.Open.StanzaType.IQ);
+        IbbSession ibbSession2 = new IbbSession("1", xmppSession1, ROMEO, 4096, Duration.ofSeconds(5),
+                xmppSession1.getManager(InBandByteStreamManager.class), InBandByteStream.Open.StanzaType.IQ);
         IbbInputStream ibbInputStream2 = (IbbInputStream) ibbSession2.getInputStream();
 
 

@@ -81,13 +81,14 @@ public final class DirectoryCache implements Map<String, byte[]> {
 
     @Override
     public final byte[] get(final Object key) {
-        return Optional.ofNullable(key).map(Object::toString).filter(((Predicate<String>) String::isEmpty).negate()).map(cacheDirectory::resolve).filter(Files::isReadable).map(file -> {
-            try {
-                return Files.readAllBytes(file);
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        }).orElse(null);
+        return Optional.ofNullable(key).map(Object::toString).filter(((Predicate<String>) String::isEmpty).negate())
+                .map(cacheDirectory::resolve).filter(Files::isReadable).map(file -> {
+                    try {
+                        return Files.readAllBytes(file);
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                }).orElse(null);
     }
 
     @Override
@@ -151,7 +152,8 @@ public final class DirectoryCache implements Map<String, byte[]> {
     @Override
     public final Set<String> keySet() {
         try (final Stream<Path> files = Files.list(cacheDirectory)) {
-            return Collections.unmodifiableSet(files.map(Path::getFileName).map(Path::toString).collect(Collectors.toSet()));
+            return Collections
+                    .unmodifiableSet(files.map(Path::getFileName).map(Path::toString).collect(Collectors.toSet()));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

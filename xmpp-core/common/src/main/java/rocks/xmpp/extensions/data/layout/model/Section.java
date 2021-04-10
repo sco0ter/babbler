@@ -32,7 +32,8 @@ import java.util.Objects;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * The implementation of the {@code <section/>} element in the {@code http://jabber.org/protocol/xdata-layout} namespace.
+ * The implementation of the {@code <section/>} element in the {@code http://jabber.org/protocol/xdata-layout}
+ * namespace.
  *
  * <p>A section is used to partition a page.</p>
  *
@@ -90,7 +91,8 @@ public final class Section {
      * @param text              The text.
      * @param reportedReference The reference to a reported field.
      */
-    public Section(String label, Collection<FieldReference> fieldReferences, Collection<String> text, FieldReference reportedReference) {
+    public Section(String label, Collection<FieldReference> fieldReferences, Collection<String> text,
+                   FieldReference reportedReference) {
         this.label = label;
         if (text != null) {
             this.text.addAll(text);

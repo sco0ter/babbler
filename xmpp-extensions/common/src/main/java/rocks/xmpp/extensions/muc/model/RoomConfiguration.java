@@ -39,7 +39,8 @@ import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 /**
- * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#roomconfig}, which can be used to configure a MUC room.
+ * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code
+ * http://jabber.org/protocol/muc#roomconfig}, which can be used to configure a MUC room.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
  * <pre>{@code
@@ -173,7 +174,8 @@ public final class RoomConfiguration implements StandardizedDataForm {
     }
 
     private static Set<Role> valuesToRoles(Collection<String> values) {
-        Set<Role> roles = values.stream().map(value -> Role.valueOf(value.toUpperCase())).collect(Collectors.toCollection(LinkedHashSet::new));
+        Set<Role> roles = values.stream().map(value -> Role.valueOf(value.toUpperCase()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
         return Collections.unmodifiableSet(roles);
     }
 
@@ -391,7 +393,7 @@ public final class RoomConfiguration implements StandardizedDataForm {
     }
 
     /**
-     * A builder to build a room configuration. The form is of type {@link rocks.xmpp.extensions.data.model.DataForm.Type#SUBMIT} by default.
+     * A builder to build a room configuration. The form is of type {@link DataForm.Type#SUBMIT} by default.
      */
     public static final class Builder extends DataForm.Builder<Builder> {
         private Integer maxHistoryFetch;
@@ -687,7 +689,9 @@ public final class RoomConfiguration implements StandardizedDataForm {
                 fields.add(DataForm.Field.builder().name(MAX_HISTORY_FETCH).value(maxHistoryFetch).build());
             }
             if (rolesThatMaySendPrivateMessages != null && !rolesThatMaySendPrivateMessages.isEmpty()) {
-                fields.add(DataForm.Field.builder().name(ALLOW_PM).value(rolesToValue(rolesThatMaySendPrivateMessages, false)).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(ALLOW_PM)
+                        .value(rolesToValue(rolesThatMaySendPrivateMessages, false))
+                        .type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (invitesAllowed != null) {
                 fields.add(DataForm.Field.builder().name(ALLOW_INVITES).value(invitesAllowed).build());
@@ -699,7 +703,8 @@ public final class RoomConfiguration implements StandardizedDataForm {
                 fields.add(DataForm.Field.builder().name(ENABLE_LOGGING).value(loggingEnabled).build());
             }
             if (rolesThatMayRetrieveMemberList != null && !rolesThatMayRetrieveMemberList.isEmpty()) {
-                fields.add(DataForm.Field.builder().name(GET_MEMBER_LIST).valuesEnum(rolesThatMayRetrieveMemberList).type(DataForm.Field.Type.LIST_MULTI).build());
+                fields.add(DataForm.Field.builder().name(GET_MEMBER_LIST).valuesEnum(rolesThatMayRetrieveMemberList)
+                        .type(DataForm.Field.Type.LIST_MULTI).build());
             }
             if (language != null) {
                 fields.add(DataForm.Field.builder().name(LANGUAGE).value(language.toLanguageTag()).build());
@@ -708,7 +713,9 @@ public final class RoomConfiguration implements StandardizedDataForm {
                 fields.add(DataForm.Field.builder().name(PUBSUB).value(pubsubNode.toString()).build());
             }
             if (maxUsers != null) {
-                fields.add(DataForm.Field.builder().name(MAX_USERS).value(maxUsers).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(
+                        DataForm.Field.builder().name(MAX_USERS).value(maxUsers).type(DataForm.Field.Type.LIST_SINGLE)
+                                .build());
             }
             if (membersOnly != null) {
                 fields.add(DataForm.Field.builder().name(MEMBERS_ONLY).value(membersOnly).build());
@@ -723,7 +730,8 @@ public final class RoomConfiguration implements StandardizedDataForm {
                 fields.add(DataForm.Field.builder().name(PERSISTENT_ROOM).value(persistent).build());
             }
             if (presenceBroadcast != null) {
-                fields.add(DataForm.Field.builder().name(PRESENCE_BROADCAST).valuesEnum(presenceBroadcast).type(DataForm.Field.Type.LIST_MULTI).build());
+                fields.add(DataForm.Field.builder().name(PRESENCE_BROADCAST).valuesEnum(presenceBroadcast)
+                        .type(DataForm.Field.Type.LIST_MULTI).build());
             }
             if (publicRoom != null) {
                 fields.add(DataForm.Field.builder().name(PUBLIC_ROOM).value(publicRoom).build());
@@ -744,7 +752,8 @@ public final class RoomConfiguration implements StandardizedDataForm {
                 fields.add(DataForm.Field.builder().name(ROOM_SECRET).value(password).build());
             }
             if (whois != null && !whois.isEmpty()) {
-                fields.add(DataForm.Field.builder().name(WHOIS).value(rolesToValue(whois, true)).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(WHOIS).value(rolesToValue(whois, true))
+                        .type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);
             return new RoomConfiguration(new DataForm(this));

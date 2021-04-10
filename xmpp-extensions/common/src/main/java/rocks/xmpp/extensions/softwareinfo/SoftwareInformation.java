@@ -31,8 +31,8 @@ import rocks.xmpp.extensions.data.mediaelement.model.Media;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 /**
- * Represents a view of the standardized fields of the 'urn:xmpp:dataforms:softwareinfo' data form
- * to be included in service discovery responses to provide detailed information about the software.
+ * Represents a view of the standardized fields of the 'urn:xmpp:dataforms:softwareinfo' data form to be included in
+ * service discovery responses to provide detailed information about the software.
  *
  * <p>This class is immutable.</p>
  *
@@ -56,7 +56,8 @@ public final class SoftwareInformation implements StandardizedDataForm, Software
     private final DataForm dataForm;
 
     /**
-     * Creates a new Software Info data form, where the OS name and version are automatically taken from their respective system properties "os.name" and "os.version".
+     * Creates a new Software Info data form, where the OS name and version are automatically taken from their
+     * respective system properties "os.name" and "os.version".
      *
      * @param icon            A default icon to show for a device running the software.
      * @param software        The XMPP software running at the entity.
@@ -75,10 +76,12 @@ public final class SoftwareInformation implements StandardizedDataForm, Software
      * @param os              The operating system on which the XMPP software is running.
      * @param osVersion       The operating system version.
      */
-    public SoftwareInformation(final Media icon, final String software, final String softwareVersion, final String os, final String osVersion) {
+    public SoftwareInformation(final Media icon, final String software, final String softwareVersion, final String os,
+                               final String osVersion) {
         this.dataForm = new DataForm(DataForm.Type.RESULT,
                 Arrays.asList(
-                        DataForm.Field.builder().name(DataForm.FORM_TYPE).value(FORM_TYPE).type(DataForm.Field.Type.HIDDEN).build(),
+                        DataForm.Field.builder().name(DataForm.FORM_TYPE).value(FORM_TYPE)
+                                .type(DataForm.Field.Type.HIDDEN).build(),
                         DataForm.Field.builder().name(ICON).media(icon).build(),
                         DataForm.Field.builder().name(OS).value(os).build(),
                         DataForm.Field.builder().name(OS_VERSION).value(osVersion).build(),

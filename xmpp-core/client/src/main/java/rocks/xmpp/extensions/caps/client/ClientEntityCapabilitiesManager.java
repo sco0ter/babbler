@@ -52,7 +52,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 /**
  * @author Christian Schudt
  */
-public class ClientEntityCapabilitiesManager extends Manager implements EntityCapabilitiesCache, EntityCapabilitiesManager {
+public class ClientEntityCapabilitiesManager extends Manager
+        implements EntityCapabilitiesCache, EntityCapabilitiesManager {
 
     private static final System.Logger logger = System.getLogger(ClientEntityCapabilitiesManager.class.getName());
 
@@ -68,7 +69,8 @@ public class ClientEntityCapabilitiesManager extends Manager implements EntityCa
 
     public ClientEntityCapabilitiesManager(XmppSession xmppSession) {
         super(xmppSession);
-        this.directoryCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("caps")) : null;
+        this.directoryCache = xmppSession.getConfiguration().getCacheDirectory() != null
+                ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("caps")) : null;
     }
 
     @Override
@@ -84,14 +86,16 @@ public class ClientEntityCapabilitiesManager extends Manager implements EntityCa
             try {
                 byte[] bytes = directoryCache.get(fileName);
                 if (bytes != null) {
-                    try (Reader reader = new InputStreamReader(new ByteArrayInputStream(bytes), StandardCharsets.UTF_8)) {
+                    try (Reader reader = new InputStreamReader(new ByteArrayInputStream(bytes),
+                            StandardCharsets.UTF_8)) {
                         discoverableInfo = (DiscoverableInfo) xmppSession.createUnmarshaller().unmarshal(reader);
                         CAPS_CACHE.put(hash, discoverableInfo);
                         return discoverableInfo;
                     }
                 }
             } catch (Exception e) {
-                logger.log(System.Logger.Level.WARNING, () -> "Could not read entity capabilities from persistent cache (file: " + fileName + ')', e);
+                logger.log(System.Logger.Level.WARNING,
+                        () -> "Could not read entity capabilities from persistent cache (file: " + fileName + ')', e);
             }
         }
         // The verification string is unknown, Service Discovery needs to be done.
@@ -108,7 +112,9 @@ public class ClientEntityCapabilitiesManager extends Manager implements EntityCa
             try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
                 XMLStreamWriter xmppStreamWriter = null;
                 try {
-                    xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(byteArrayOutputStream, StandardCharsets.UTF_8.name()));
+                    xmppStreamWriter = XmppUtils.createXmppStreamWriter(
+                            xmppSession.getConfiguration().getXmlOutputFactory()
+                                    .createXMLStreamWriter(byteArrayOutputStream, StandardCharsets.UTF_8.name()));
                     xmppSession.createMarshaller().marshal(discoverableInfo, xmppStreamWriter);
                     xmppStreamWriter.flush();
                 } finally {
@@ -116,9 +122,11 @@ public class ClientEntityCapabilitiesManager extends Manager implements EntityCa
                         xmppStreamWriter.close();
                     }
                 }
-                directoryCache.put(XmppUtils.hash(hash.toString().getBytes(StandardCharsets.UTF_8)) + ".caps", byteArrayOutputStream.toByteArray());
+                directoryCache.put(XmppUtils.hash(hash.toString().getBytes(StandardCharsets.UTF_8)) + ".caps",
+                        byteArrayOutputStream.toByteArray());
             } catch (Exception e) {
-                logger.log(System.Logger.Level.WARNING, () -> "Could not write entity capabilities to persistent cache. Reason: " + e.getMessage(), e);
+                logger.log(System.Logger.Level.WARNING,
+                        () -> "Could not write entity capabilities to persistent cache. Reason: " + e.getMessage(), e);
             }
         }
     }
@@ -137,7 +145,8 @@ public class ClientEntityCapabilitiesManager extends Manager implements EntityCa
      * Discovers the capabilities of another XMPP entity.
      *
      * @param jid The JID, which should usually be a full JID.
-     * @return The async result with the capabilities in form of the discovered info, which contains the identities, the features and service discovery extensions.
+     * @return The async result with the capabilities in form of the discovered info, which contains the identities, the
+     * features and service discovery extensions.
      * @see <a href="https://xmpp.org/extensions/xep-0115.html#discover">6.2 Discovering Capabilities</a>
      */
     @Override
@@ -145,13 +154,14 @@ public class ClientEntityCapabilitiesManager extends Manager implements EntityCa
         DiscoverableInfo discoverableInfo = readEntityCapabilities(jid);
         if (discoverableInfo == null) {
             // Make sure, that for the same JID no multiple concurrent queries are sent. One is enough.
-            return REQUESTS.computeIfAbsent(jid, key -> xmppSession.getManager(ServiceDiscoveryManager.class).discoverInformation(jid)
-                    .whenComplete((result, e) -> {
-                        if (result != null) {
-                            writeEntityCapabilities(jid, result);
-                        }
-                        REQUESTS.remove(jid);
-                    }));
+            return REQUESTS.computeIfAbsent(jid,
+                    key -> xmppSession.getManager(ServiceDiscoveryManager.class).discoverInformation(jid)
+                            .whenComplete((result, e) -> {
+                                if (result != null) {
+                                    writeEntityCapabilities(jid, result);
+                                }
+                                REQUESTS.remove(jid);
+                            }));
         }
         return new AsyncResult<>(CompletableFuture.completedFuture(discoverableInfo));
     }

@@ -31,7 +31,12 @@ import javax.xml.bind.annotation.XmlType;
  * The implementation of the {@code <reset/>} stream error.
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-reset">4.9.3.16.  reset</a></cite></p>
- * <p>The server is closing the stream because it has new (typically security-critical) features to offer, because the keys or certificates used to establish a secure context for the stream have expired or have been revoked during the life of the stream (Section 13.7.2.3), because the TLS sequence number has wrapped (Section 5.3.5), etc. The reset applies to the stream and to any security context established for that stream (e.g., via TLS and SASL), which means that encryption and authentication need to be negotiated again for the new stream (e.g., TLS session resumption cannot be used).</p>
+ * <p>The server is closing the stream because it has new (typically security-critical) features to offer, because the
+ * keys or certificates used to establish a secure context for the stream have expired or have been revoked during the
+ * life of the stream (Section 13.7.2.3), because the TLS sequence number has wrapped (Section 5.3.5), etc. The reset
+ * applies to the stream and to any security context established for that stream (e.g., via TLS and SASL), which means
+ * that encryption and authentication need to be negotiated again for the new stream (e.g., TLS session resumption
+ * cannot be used).</p>
  * </blockquote>
  * This class is a singleton.
  *

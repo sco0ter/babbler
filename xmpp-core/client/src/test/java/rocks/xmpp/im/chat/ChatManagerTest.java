@@ -63,7 +63,8 @@ public class ChatManagerTest {
 
         Jid to = Jid.of("to/resource");
         chatManager.createChatSession(to, "123");
-        ArgumentCaptor<ChatSessionEvent> chatSessionEventArgumentCaptor = ArgumentCaptor.forClass(ChatSessionEvent.class);
+        ArgumentCaptor<ChatSessionEvent> chatSessionEventArgumentCaptor =
+                ArgumentCaptor.forClass(ChatSessionEvent.class);
         Mockito.verify(chatSessionEventlistener).accept(chatSessionEventArgumentCaptor.capture());
         ChatSessionEvent chatSessionEvent = chatSessionEventArgumentCaptor.getValue();
         Assert.assertFalse(chatSessionEvent.isInbound());
@@ -90,7 +91,8 @@ public class ChatManagerTest {
         Message message = messageArgumentCaptor.getValue().getMessage();
         Assert.assertSame(message, messageResponse);
 
-        ArgumentCaptor<ChatSession.ChatPartnerEvent> chatPartnerCaptor = ArgumentCaptor.forClass(ChatSession.ChatPartnerEvent.class);
+        ArgumentCaptor<ChatSession.ChatPartnerEvent> chatPartnerCaptor =
+                ArgumentCaptor.forClass(ChatSession.ChatPartnerEvent.class);
         Mockito.verify(chatPartnerListener).accept(chatPartnerCaptor.capture());
         // The message should also lock the chat session to the full JID.
         Assert.assertEquals(chatPartnerCaptor.getValue().getNewChatPartner(), to);
@@ -131,7 +133,8 @@ public class ChatManagerTest {
         message1.setThread("123");
         xmppSession.handleElement(message1);
 
-        ArgumentCaptor<ChatSessionEvent> chatSessionEventArgumentCaptor = ArgumentCaptor.forClass(ChatSessionEvent.class);
+        ArgumentCaptor<ChatSessionEvent> chatSessionEventArgumentCaptor =
+                ArgumentCaptor.forClass(ChatSessionEvent.class);
         Mockito.verify(listener).accept(chatSessionEventArgumentCaptor.capture());
         ChatSessionEvent chatSessionEvent = chatSessionEventArgumentCaptor.getValue();
         Assert.assertTrue(chatSessionEvent.isInbound());
@@ -170,7 +173,8 @@ public class ChatManagerTest {
 
         Mockito.verifyNoInteractions(messageListener);
 
-        ArgumentCaptor<ChatSession.ChatPartnerEvent> chatPartnerCaptor = ArgumentCaptor.forClass(ChatSession.ChatPartnerEvent.class);
+        ArgumentCaptor<ChatSession.ChatPartnerEvent> chatPartnerCaptor =
+                ArgumentCaptor.forClass(ChatSession.ChatPartnerEvent.class);
 
         Mockito.verify(chatPartnerListener).accept(chatPartnerCaptor.capture());
         Jid newChatPartner = chatPartnerCaptor.getValue().getNewChatPartner();
@@ -201,7 +205,8 @@ public class ChatManagerTest {
         message1.setThread("123");
         xmppSession.handleElement(message1);
 
-        ArgumentCaptor<ChatSessionEvent> chatSessionEventArgumentCaptor = ArgumentCaptor.forClass(ChatSessionEvent.class);
+        ArgumentCaptor<ChatSessionEvent> chatSessionEventArgumentCaptor =
+                ArgumentCaptor.forClass(ChatSessionEvent.class);
         Mockito.verify(listener).accept(chatSessionEventArgumentCaptor.capture());
         ChatSessionEvent chatSessionEvent = chatSessionEventArgumentCaptor.getValue();
         Assert.assertTrue(chatSessionEvent.isInbound());
@@ -215,7 +220,8 @@ public class ChatManagerTest {
         presence.setFrom(from.withResource("another"));
         xmppSession.handleElement(presence);
 
-        ArgumentCaptor<ChatSession.ChatPartnerEvent> chatPartnerCaptor = ArgumentCaptor.forClass(ChatSession.ChatPartnerEvent.class);
+        ArgumentCaptor<ChatSession.ChatPartnerEvent> chatPartnerCaptor =
+                ArgumentCaptor.forClass(ChatSession.ChatPartnerEvent.class);
 
         Mockito.verify(chatPartnerListener).accept(chatPartnerCaptor.capture());
         Jid newChatPartner = chatPartnerCaptor.getValue().getNewChatPartner();

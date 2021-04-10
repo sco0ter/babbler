@@ -99,14 +99,18 @@ public final class StreamHeader implements SessionOpen, CharSequence {
     private final List<QName> additionalNamespaces = new ArrayList<>();
 
     /**
-     * @param from                 The 'from' attribute specifies an XMPP identity of the entity sending the stream element.
+     * @param from                 The 'from' attribute specifies an XMPP identity of the entity sending the stream
+     *                             element.
      * @param to                   The 'to' attribute.
-     * @param id                   The 'id' attribute specifies a unique identifier for the stream, called a "stream ID".
-     * @param lang                 The 'xml:lang' attribute specifies an entity's preferred or default language for any human-readable XML character data to be sent over the stream.
+     * @param id                   The 'id' attribute specifies a unique identifier for the stream, called a "stream
+     *                             ID".
+     * @param lang                 The 'xml:lang' attribute specifies an entity's preferred or default language for any
+     *                             human-readable XML character data to be sent over the stream.
      * @param contentNamespace     The content namespace.
      * @param additionalNamespaces Any optional additional namespace declarations.
      */
-    private StreamHeader(Jid from, Jid to, String id, String version, Locale lang, String contentNamespace, QName... additionalNamespaces) {
+    private StreamHeader(Jid from, Jid to, String id, String version, Locale lang, String contentNamespace,
+                         QName... additionalNamespaces) {
         this.from = from;
         this.to = to;
         this.id = id;
@@ -117,8 +121,10 @@ public final class StreamHeader implements SessionOpen, CharSequence {
             Set<String> prefixes = new HashSet<>();
             Set<String> namespaces = new HashSet<>();
             for (QName additionalNamespace : additionalNamespaces) {
-                if (additionalNamespace.getNamespaceURI() == null || XMLConstants.NULL_NS_URI.equals(additionalNamespace.getNamespaceURI())
-                        || (additionalNamespace.getPrefix() == null || XMLConstants.DEFAULT_NS_PREFIX.equals(additionalNamespace.getPrefix()))) {
+                if (additionalNamespace.getNamespaceURI() == null
+                        || XMLConstants.NULL_NS_URI.equals(additionalNamespace.getNamespaceURI())
+                        || additionalNamespace.getPrefix() == null
+                        || XMLConstants.DEFAULT_NS_PREFIX.equals(additionalNamespace.getPrefix())) {
                     throw new IllegalArgumentException("Namespace URI and prefix must not be empty.");
                 }
                 if (!prefixes.add(additionalNamespace.getPrefix())) {
@@ -133,33 +139,45 @@ public final class StreamHeader implements SessionOpen, CharSequence {
     }
 
     /**
-     * Creates a stream header. In contrary to the other factory methods, this one does not perform any logical checks on the input parameters,
-     * i.e. it does not distinguish between client-to-server, server-to-server, initiating and responding entity.
+     * Creates a stream header. In contrary to the other factory methods, this one does not perform any logical checks
+     * on the input parameters, i.e. it does not distinguish between client-to-server, server-to-server, initiating and
+     * responding entity.
      *
-     * @param from                 The XMPP identity of the principal controlling the client, i.e., a JID of the form {@code localpart@domainpart>}.
-     * @param to                   A domainpart that the initiating entity knows or expects the receiving entity to service.
+     * @param from                 The XMPP identity of the principal controlling the client, i.e., a JID of the form
+     *                             {@code localpart@domainpart>}.
+     * @param to                   A domainpart that the initiating entity knows or expects the receiving entity to
+     *                             service.
      * @param id                   The stream id.
      * @param version              The XMPP version.
-     * @param lang                 An entity's preferred or default language for any human-readable XML character data to be sent over the stream.
+     * @param lang                 An entity's preferred or default language for any human-readable XML character data
+     *                             to be sent over the stream.
      * @param contentNamespace     The content namespace.
-     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a namespace URI and a prefix set.
+     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a
+     *                             namespace URI and a prefix set.
      * @return The stream header.
      */
-    public static StreamHeader create(Jid from, Jid to, String id, String version, Locale lang, String contentNamespace, QName... additionalNamespaces) {
+    public static StreamHeader create(Jid from, Jid to, String id, String version, Locale lang, String contentNamespace,
+                                      QName... additionalNamespaces) {
         return new StreamHeader(from, to, id, version, lang, contentNamespace, additionalNamespaces);
     }
 
     /**
      * Creates an initial stream header for client-to-server streams.
      *
-     * @param from                 The XMPP identity of the principal controlling the client, i.e., a JID of the form {@code localpart@domainpart>}.
-     * @param to                   A domainpart that the initiating entity knows or expects the receiving entity to service.
-     * @param lang                 An entity's preferred or default language for any human-readable XML character data to be sent over the stream.
-     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a namespace URI and a prefix set.
+     * @param from                 The XMPP identity of the principal controlling the client, i.e., a JID of the form
+     *                             {@code localpart@domainpart>}.
+     * @param to                   A domainpart that the initiating entity knows or expects the receiving entity to
+     *                             service.
+     * @param lang                 An entity's preferred or default language for any human-readable XML character data
+     *                             to be sent over the stream.
+     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a
+     *                             namespace URI and a prefix set.
      * @return The stream header.
      */
     public static StreamHeader initialClientToServer(Jid from, Jid to, Locale lang, QName... additionalNamespaces) {
-        // For initial stream headers in both client-to-server and server-to-server communication, the initiating entity MUST include the 'to' attribute and MUST set its value to a domainpart that the initiating entity knows or expects the receiving entity to service.
+        // For initial stream headers in both client-to-server and server-to-server communication, the initiating entity
+        // MUST include the 'to' attribute and MUST set its value to a domainpart that the initiating entity knows or
+        // expects the receiving entity to service.
         // For initial stream headers, the initiating entity MUST NOT include the 'id' attribute;
         return initialClientToServer(from, to, lang, "jabber:client", additionalNamespaces);
     }
@@ -167,17 +185,25 @@ public final class StreamHeader implements SessionOpen, CharSequence {
     /**
      * Creates an initial stream header for client-to-server or component-to-server streams.
      *
-     * @param from                 The XMPP identity of the principal controlling the client, i.e., a JID of the form {@code localpart@domainpart>}.
-     * @param to                   A domainpart that the initiating entity knows or expects the receiving entity to service.
-     * @param lang                 An entity's preferred or default language for any human-readable XML character data to be sent over the stream.
+     * @param from                 The XMPP identity of the principal controlling the client, i.e., a JID of the form
+     *                             {@code localpart@domainpart>}.
+     * @param to                   A domainpart that the initiating entity knows or expects the receiving entity to
+     *                             service.
+     * @param lang                 An entity's preferred or default language for any human-readable XML character data
+     *                             to be sent over the stream.
      * @param contentNamespace     The content namespace.
-     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a namespace URI and a prefix set.
+     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a
+     *                             namespace URI and a prefix set.
      * @return The stream header.
      */
-    public static StreamHeader initialClientToServer(Jid from, Jid to, Locale lang, String contentNamespace, QName... additionalNamespaces) {
-        // For initial stream headers in both client-to-server and server-to-server communication, the initiating entity MUST include the 'to' attribute and MUST set its value to a domainpart that the initiating entity knows or expects the receiving entity to service.
+    public static StreamHeader initialClientToServer(Jid from, Jid to, Locale lang, String contentNamespace,
+                                                     QName... additionalNamespaces) {
+        // For initial stream headers in both client-to-server and server-to-server communication, the initiating entity
+        // MUST include the 'to' attribute and MUST set its value to a domainpart that the initiating entity knows or
+        // expects the receiving entity to service.
         // For initial stream headers, the initiating entity MUST NOT include the 'id' attribute;
-        return new StreamHeader(from, Objects.requireNonNull(to).asBareJid().withLocal(null), null, "1.0", lang, contentNamespace, additionalNamespaces);
+        return new StreamHeader(from, Objects.requireNonNull(to).asBareJid().withLocal(null), null, "1.0", lang,
+                contentNamespace, additionalNamespaces);
     }
 
     /**
@@ -186,31 +212,46 @@ public final class StreamHeader implements SessionOpen, CharSequence {
      * @param from                 One of the receiving entity's FQDNs.
      * @param to                   The bare JID specified in the 'from' attribute of the initial stream header
      * @param id                   A unique identifier for the stream, called a "stream ID".
-     * @param lang                 An entity's preferred or default language for any human-readable XML character data to be sent over the stream.
-     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a namespace URI and a prefix set.
+     * @param lang                 An entity's preferred or default language for any human-readable XML character data
+     *                             to be sent over the stream.
+     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a
+     *                             namespace URI and a prefix set.
      * @return The stream header.
      */
-    public static StreamHeader responseClientToServer(Jid from, Jid to, String id, Locale lang, QName... additionalNamespaces) {
-        // For response stream headers in both client-to-server and server-to-server communication, the receiving entity MUST include the 'from' attribute and MUST set its value to one of the receiving entity's FQDNs
-        // For response stream headers in client-to-server communication, if the client included a 'from' attribute in the initial stream header then the server MUST include a 'to' attribute in the response stream header and MUST set its value to the bare JID specified in the 'from' attribute of the initial stream header.
+    public static StreamHeader responseClientToServer(Jid from, Jid to, String id, Locale lang,
+                                                      QName... additionalNamespaces) {
+        // For response stream headers in both client-to-server and server-to-server communication, the receiving
+        // entity MUST include the 'from' attribute and MUST set its value to one of the receiving entity's FQDNs
+        // For response stream headers in client-to-server communication, if the client included a 'from' attribute in
+        // the initial stream header then the server MUST include a 'to' attribute in the response stream header and
+        // MUST set its value to the bare JID specified in the 'from' attribute of the initial stream header.
         // For response stream headers, the receiving entity MUST include the 'id' attribute.
         // For response stream headers, the receiving entity MUST include the 'xml:lang' attribute.
-        return new StreamHeader(Objects.requireNonNull(from).asBareJid().withLocal(null), to != null ? to.asBareJid() : null, Objects.requireNonNull(id), "1.0", Objects.requireNonNull(lang), "jabber:client", additionalNamespaces);
+        return new StreamHeader(Objects.requireNonNull(from).asBareJid().withLocal(null),
+                to != null ? to.asBareJid() : null, Objects.requireNonNull(id), "1.0", Objects.requireNonNull(lang),
+                "jabber:client", additionalNamespaces);
     }
 
     /**
      * Creates an initial stream header for server-to-server streams.
      *
-     * @param from                 One of the configured FQDNs of the server, i.e., a JID of the form {@code <domainpart>}.
-     * @param to                   A domainpart that the initiating entity knows or expects the receiving entity to service.
-     * @param lang                 An entity's preferred or default language for any human-readable XML character data to be sent over the stream.
-     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a namespace URI and a prefix set.
+     * @param from                 One of the configured FQDNs of the server, i.e., a JID of the form {@code
+     *                             <domainpart>}.
+     * @param to                   A domainpart that the initiating entity knows or expects the receiving entity to
+     *                             service.
+     * @param lang                 An entity's preferred or default language for any human-readable XML character data
+     *                             to be sent over the stream.
+     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a
+     *                             namespace URI and a prefix set.
      * @return The stream header.
      */
     public static StreamHeader initialServerToServer(Jid from, Jid to, Locale lang, QName... additionalNamespaces) {
-        // For initial stream headers in both client-to-server and server-to-server communication, the initiating entity MUST include the 'to' attribute and MUST set its value to a domainpart that the initiating entity knows or expects the receiving entity to service.
+        // For initial stream headers in both client-to-server and server-to-server communication, the initiating entity
+        // MUST include the 'to' attribute and MUST set its value to a domainpart that the initiating entity knows or
+        // expects the receiving entity to service.
         // For initial stream headers, the initiating entity MUST NOT include the 'id' attribute;
-        return new StreamHeader(from, Objects.requireNonNull(to).asBareJid().withLocal(null), null, "1.0", lang, "jabber:server", additionalNamespaces);
+        return new StreamHeader(from, Objects.requireNonNull(to).asBareJid().withLocal(null), null, "1.0", lang,
+                "jabber:server", additionalNamespaces);
     }
 
     /**
@@ -219,16 +260,24 @@ public final class StreamHeader implements SessionOpen, CharSequence {
      * @param from                 One of the receiving entity's FQDNs.
      * @param to                   The domainpart specified in the 'from' attribute of the initial stream header.
      * @param id                   A unique identifier for the stream, called a "stream ID".
-     * @param lang                 An entity's preferred or default language for any human-readable XML character data to be sent over the stream.
-     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a namespace URI and a prefix set.
+     * @param lang                 An entity's preferred or default language for any human-readable XML character data
+     *                             to be sent over the stream.
+     * @param additionalNamespaces Any optional additional namespace declarations. Each QName element must have a
+     *                             namespace URI and a prefix set.
      * @return The stream header.
      */
-    public static StreamHeader responseServerToServer(Jid from, Jid to, String id, Locale lang, QName... additionalNamespaces) {
-        // For response stream headers in both client-to-server and server-to-server communication, the receiving entity MUST include the 'from' attribute and MUST set its value to one of the receiving entity's FQDNs
-        // For response stream headers in server-to-server communication, the receiving entity MUST include a 'to' attribute in the response stream header and MUST set its value to the domainpart specified in the 'from' attribute of the initial stream header.
+    public static StreamHeader responseServerToServer(Jid from, Jid to, String id, Locale lang,
+                                                      QName... additionalNamespaces) {
+        // For response stream headers in both client-to-server and server-to-server communication, the receiving
+        // entity MUST include the 'from' attribute and MUST set its value to one of the receiving entity's FQDNs
+        // For response stream headers in server-to-server communication, the receiving entity MUST include a 'to'
+        // attribute in the response stream header and MUST set its value to the domainpart specified in
+        // the 'from' attribute of the initial stream header.
         // For response stream headers, the receiving entity MUST include the 'id' attribute.
         // For response stream headers, the receiving entity MUST include the 'xml:lang' attribute.
-        return new StreamHeader(Objects.requireNonNull(from).asBareJid().withLocal(null), Objects.requireNonNull(to).asBareJid().withLocal(null), Objects.requireNonNull(id), "1.0", Objects.requireNonNull(lang), "jabber:server", additionalNamespaces);
+        return new StreamHeader(Objects.requireNonNull(from).asBareJid().withLocal(null),
+                Objects.requireNonNull(to).asBareJid().withLocal(null), Objects.requireNonNull(id), "1.0",
+                Objects.requireNonNull(lang), "jabber:server", additionalNamespaces);
     }
 
     /**

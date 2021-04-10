@@ -30,8 +30,10 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <service-unavailable/>} stanza error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-service-unavailable">8.3.3.19.  service-unavailable</a></cite></p>
- * <p>The server or recipient does not currently provide the requested service; the associated error type SHOULD be "cancel".</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-service-unavailable">8.3.3.19.
+ * service-unavailable</a></cite></p>
+ * <p>The server or recipient does not currently provide the requested service; the associated error type SHOULD be
+ * "cancel".</p>
  * </blockquote>
  * This class is a singleton.
  *

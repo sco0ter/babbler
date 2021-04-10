@@ -101,7 +101,8 @@ public class SecurityLabelTest extends XmlTest {
     public void marshalCatalogRequest() throws JAXBException, XMLStreamException {
         IQ iq = new IQ(IQ.Type.GET, new Catalog(), "id");
         String xml = marshal(iq);
-        Assert.assertEquals(xml, "<iq id=\"id\" type=\"get\"><catalog xmlns=\"urn:xmpp:sec-label:catalog:2\"></catalog></iq>");
+        Assert.assertEquals(xml,
+                "<iq id=\"id\" type=\"get\"><catalog xmlns=\"urn:xmpp:sec-label:catalog:2\"></catalog></iq>");
     }
 
     @Test

@@ -25,7 +25,8 @@
 /**
  * Provides classes for <a href="https://xmpp.org/extensions/xep-0199.html">XEP-0199: XMPP Ping</a>.
  *
- * <p>It defines an XMPP protocol extension for sending application-level pings over XML streams. Such pings can be sent from a client to a server, from one server to another, or end-to-end.</p>
+ * <p>It defines an XMPP protocol extension for sending application-level pings over XML streams. Such pings can be
+ * sent from a client to a server, from one server to another, or end-to-end.</p>
  */
 package rocks.xmpp.extensions.ping;
 

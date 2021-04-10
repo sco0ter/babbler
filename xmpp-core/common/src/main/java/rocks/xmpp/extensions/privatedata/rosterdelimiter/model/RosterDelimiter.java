@@ -34,8 +34,13 @@ import javax.xml.bind.annotation.XmlValue;
  *
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/extensions/xep-0083.html#namespace">2. roster:delimiter Namespace</a></cite></p>
- * <p>Therefore, the delimiter SHOULD contain multiple characters in order to avoid inconveniencing the user, but single-character delimiters MUST be honored by the client. The exception is if the delimiter is a single alphanumeric character (a-z, A-Z, 0-9); in this case compliant clients MUST treat the situation as if nesting were disabled, to avoid malicious use of this element by setting 'e' or 'm' or some other common single character as a delimiter.</p>
- * <p>A compliant client SHOULD ask for the nested delimiter before requesting the user's roster, in order to know whether or not to parse the roster 'group' fields accordingly. If there is no delimiter stored, a client MAY set a delimiter but MUST either prompt the user for a delimiter, or use a user-configurable default.</p>
+ * <p>Therefore, the delimiter SHOULD contain multiple characters in order to avoid inconveniencing the user, but
+ * single-character delimiters MUST be honored by the client. The exception is if the delimiter is a single alphanumeric
+ * character (a-z, A-Z, 0-9); in this case compliant clients MUST treat the situation as if nesting were disabled, to
+ * avoid malicious use of this element by setting 'e' or 'm' or some other common single character as a delimiter.</p>
+ * <p>A compliant client SHOULD ask for the nested delimiter before requesting the user's roster, in order to know
+ * whether or not to parse the roster 'group' fields accordingly. If there is no delimiter stored, a client MAY set a
+ * delimiter but MUST either prompt the user for a delimiter, or use a user-configurable default.</p>
  * </blockquote>
  *
  * <p>This class is immutable.</p>

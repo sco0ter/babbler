@@ -59,7 +59,9 @@ public class ContactExchangeManagerTest extends BaseTest {
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
-        suggestedContacts.add(new ContactExchange.Item(Jid.of("contact@example.net"), "juliet", Collections.singleton("friends"), ContactExchange.Item.Action.ADD));
+        suggestedContacts
+                .add(new ContactExchange.Item(Jid.of("contact@example.net"), "juliet", Collections.singleton("friends"),
+                        ContactExchange.Item.Action.ADD));
 
         List<ContactExchange.Item> items = contactExchangeManager.getItemsToProcess(suggestedContacts);
 
@@ -76,7 +78,9 @@ public class ContactExchangeManagerTest extends BaseTest {
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
-        suggestedContacts.add(new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet", Collections.singleton("friends"), ContactExchange.Item.Action.ADD));
+        suggestedContacts
+                .add(new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet", Collections.singleton("friends"),
+                        ContactExchange.Item.Action.ADD));
 
         Collection<ContactExchange.Item> items = contactExchangeManager.getItemsToProcess(suggestedContacts);
 
@@ -85,7 +89,9 @@ public class ContactExchangeManagerTest extends BaseTest {
 
         // Contact already exists, but not in the suggested group
         Collection<ContactExchange.Item> suggestedContacts2 = new ArrayDeque<>();
-        suggestedContacts2.add(new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet", Collections.singleton("newGroup"), ContactExchange.Item.Action.ADD));
+        suggestedContacts2
+                .add(new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet", Collections.singleton("newGroup"),
+                        ContactExchange.Item.Action.ADD));
 
         List<ContactExchange.Item> items2 = contactExchangeManager.getItemsToProcess(suggestedContacts2);
         Assert.assertEquals(items2.size(), 1);
@@ -100,7 +106,9 @@ public class ContactExchangeManagerTest extends BaseTest {
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
-        suggestedContacts.add(new ContactExchange.Item(Jid.of("contact@example.net"), "juliet", Collections.singleton("friends"), ContactExchange.Item.Action.DELETE));
+        suggestedContacts
+                .add(new ContactExchange.Item(Jid.of("contact@example.net"), "juliet", Collections.singleton("friends"),
+                        ContactExchange.Item.Action.DELETE));
 
         List<ContactExchange.Item> items = contactExchangeManager.getItemsToProcess(suggestedContacts);
 
@@ -113,7 +121,8 @@ public class ContactExchangeManagerTest extends BaseTest {
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
-        suggestedContacts.add(new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet", Collections.singleton("otherGroup"), ContactExchange.Item.Action.DELETE));
+        suggestedContacts.add(new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet",
+                Collections.singleton("otherGroup"), ContactExchange.Item.Action.DELETE));
 
         List<ContactExchange.Item> items = contactExchangeManager.getItemsToProcess(suggestedContacts);
 
@@ -127,7 +136,8 @@ public class ContactExchangeManagerTest extends BaseTest {
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
-        suggestedContacts.add(new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet", Arrays.asList("friends", "unknownGroup"), ContactExchange.Item.Action.DELETE));
+        suggestedContacts.add(new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet",
+                Arrays.asList("friends", "unknownGroup"), ContactExchange.Item.Action.DELETE));
 
         List<ContactExchange.Item> items = contactExchangeManager.getItemsToProcess(suggestedContacts);
 
@@ -144,7 +154,8 @@ public class ContactExchangeManagerTest extends BaseTest {
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
-        suggestedContacts.add(new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet", Collections.emptyList(), ContactExchange.Item.Action.DELETE));
+        suggestedContacts.add(new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet", Collections.emptyList(),
+                ContactExchange.Item.Action.DELETE));
 
         List<ContactExchange.Item> items = contactExchangeManager.getItemsToProcess(suggestedContacts);
 
@@ -158,7 +169,8 @@ public class ContactExchangeManagerTest extends BaseTest {
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
-        suggestedContacts.add(new ContactExchange.Item(Jid.of("juliet@example.net"), "Juliet", Collections.singleton("newGroup1"), ContactExchange.Item.Action.MODIFY));
+        suggestedContacts.add(new ContactExchange.Item(Jid.of("juliet@example.net"), "Juliet",
+                Collections.singleton("newGroup1"), ContactExchange.Item.Action.MODIFY));
 
         List<ContactExchange.Item> items = contactExchangeManager.getItemsToProcess(suggestedContacts);
 
@@ -176,8 +188,11 @@ public class ContactExchangeManagerTest extends BaseTest {
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         Collection<ContactExchange.Item> suggestedContacts = new ArrayDeque<>();
-        suggestedContacts.add(new ContactExchange.Item(Jid.of("contact@example.net"), "contact", Collections.emptyList(), ContactExchange.Item.Action.MODIFY));
-        suggestedContacts.add(new ContactExchange.Item(Jid.of("romeo@example.net"), "romeo", Collections.emptyList(), ContactExchange.Item.Action.MODIFY));
+        suggestedContacts
+                .add(new ContactExchange.Item(Jid.of("contact@example.net"), "contact", Collections.emptyList(),
+                        ContactExchange.Item.Action.MODIFY));
+        suggestedContacts.add(new ContactExchange.Item(Jid.of("romeo@example.net"), "romeo", Collections.emptyList(),
+                ContactExchange.Item.Action.MODIFY));
 
         List<ContactExchange.Item> items = contactExchangeManager.getItemsToProcess(suggestedContacts);
 
@@ -191,27 +206,44 @@ public class ContactExchangeManagerTest extends BaseTest {
         ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
 
         // Does already exist, therefore return null.
-        Assert.assertNull(contactExchangeManager.approve(new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet", Collections.singleton("friends"), ContactExchange.Item.Action.ADD)));
+        Assert.assertNull(contactExchangeManager.approve(
+                new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet", Collections.singleton("friends"),
+                        ContactExchange.Item.Action.ADD)));
 
         // Does already exist, but not in all groups, therefore return modify.
-        Assert.assertEquals(contactExchangeManager.approve(new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet", Arrays.asList("friends", "newGroup"), ContactExchange.Item.Action.ADD)), ContactExchange.Item.Action.MODIFY);
+        Assert.assertEquals(contactExchangeManager.approve(
+                new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet", Arrays.asList("friends", "newGroup"),
+                        ContactExchange.Item.Action.ADD)), ContactExchange.Item.Action.MODIFY);
 
         // Does not yet exist
-        Assert.assertEquals(contactExchangeManager.approve(new ContactExchange.Item(Jid.of("contact1@example.net"), "contact1", Arrays.asList("friends", "newGroup"), ContactExchange.Item.Action.ADD)), ContactExchange.Item.Action.ADD);
+        Assert.assertEquals(contactExchangeManager.approve(
+                new ContactExchange.Item(Jid.of("contact1@example.net"), "contact1",
+                        Arrays.asList("friends", "newGroup"), ContactExchange.Item.Action.ADD)),
+                ContactExchange.Item.Action.ADD);
 
         // Does not exist, therefore return null.
-        Assert.assertNull(contactExchangeManager.approve(new ContactExchange.Item(Jid.of("contact2@example.net"), "contact2", Collections.emptyList(), ContactExchange.Item.Action.DELETE)));
+        Assert.assertNull(contactExchangeManager.approve(
+                new ContactExchange.Item(Jid.of("contact2@example.net"), "contact2", Collections.emptyList(),
+                        ContactExchange.Item.Action.DELETE)));
 
         // Is only removed from group "friends", but still in group "friends2".
-        Assert.assertEquals(contactExchangeManager.approve(new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet", Collections.singleton("friends"), ContactExchange.Item.Action.DELETE)), ContactExchange.Item.Action.MODIFY);
+        Assert.assertEquals(contactExchangeManager.approve(
+                new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet", Collections.singleton("friends"),
+                        ContactExchange.Item.Action.DELETE)), ContactExchange.Item.Action.MODIFY);
 
         // Is removed completely.
-        Assert.assertEquals(contactExchangeManager.approve(new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet", Arrays.asList("friends", "friends2"), ContactExchange.Item.Action.DELETE)), ContactExchange.Item.Action.DELETE);
+        Assert.assertEquals(contactExchangeManager.approve(
+                new ContactExchange.Item(Jid.of("juliet@example.net"), "juliet", Arrays.asList("friends", "friends2"),
+                        ContactExchange.Item.Action.DELETE)), ContactExchange.Item.Action.DELETE);
 
         // Does not exist, therefore return null.
-        Assert.assertNull(contactExchangeManager.approve(new ContactExchange.Item(Jid.of("contact3@example.net"), "contact3", Collections.emptyList(), ContactExchange.Item.Action.MODIFY)));
+        Assert.assertNull(contactExchangeManager.approve(
+                new ContactExchange.Item(Jid.of("contact3@example.net"), "contact3", Collections.emptyList(),
+                        ContactExchange.Item.Action.MODIFY)));
 
         // Does not exist, therefore return null.
-        Assert.assertEquals(contactExchangeManager.approve(new ContactExchange.Item(Jid.of("romeo@example.net"), "Romeo", Collections.emptyList(), ContactExchange.Item.Action.MODIFY)), ContactExchange.Item.Action.MODIFY);
+        Assert.assertEquals(contactExchangeManager.approve(
+                new ContactExchange.Item(Jid.of("romeo@example.net"), "Romeo", Collections.emptyList(),
+                        ContactExchange.Item.Action.MODIFY)), ContactExchange.Item.Action.MODIFY);
     }
 }

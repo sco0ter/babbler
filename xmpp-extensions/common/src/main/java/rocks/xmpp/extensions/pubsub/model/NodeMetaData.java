@@ -35,7 +35,8 @@ import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 /**
- * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/pubsub#meta-data}, which can be used to retrieve node meta data.
+ * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code
+ * http://jabber.org/protocol/pubsub#meta-data}, which can be used to retrieve node meta data.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
  * <pre>{@code
@@ -59,7 +60,8 @@ import rocks.xmpp.extensions.data.model.DataForm;
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0060.html#entity-metadata">5.4 Discover Node Metadata</a>
- * @see <a href="https://xmpp.org/extensions/xep-0060.html#registrar-formtypes-metadata">16.4.3 pubsub#meta-data FORM_TYPE</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#registrar-formtypes-metadata">16.4.3 pubsub#meta-data
+ * FORM_TYPE</a>
  */
 public final class NodeMetaData implements StandardizedDataForm {
 
@@ -242,7 +244,8 @@ public final class NodeMetaData implements StandardizedDataForm {
     }
 
     /**
-     * A builder class to build the meta data form. If not provided the default data form type is {@link rocks.xmpp.extensions.data.model.DataForm.Type#RESULT}.
+     * A builder class to build the meta data form. If not provided the default data form type is {@link
+     * rocks.xmpp.extensions.data.model.DataForm.Type#RESULT}.
      */
     public static final class Builder extends DataForm.Builder<Builder> {
         private Collection<Jid> contacts;
@@ -405,7 +408,8 @@ public final class NodeMetaData implements StandardizedDataForm {
                 fields.add(DataForm.Field.builder().name(DESCRIPTION).value(description).build());
             }
             if (language != null) {
-                fields.add(DataForm.Field.builder().name(LANGUAGE).value(language.toLanguageTag()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(LANGUAGE).value(language.toLanguageTag())
+                        .type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (numberOfSubscribers != null) {
                 fields.add(DataForm.Field.builder().name(NUM_SUBSCRIBERS).value(numberOfSubscribers).build());

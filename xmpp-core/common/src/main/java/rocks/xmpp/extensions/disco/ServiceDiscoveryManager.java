@@ -47,8 +47,10 @@ public interface ServiceDiscoveryManager extends IQHandler, ExtensionProtocol {
      * Discovers information about another XMPP entity.
      *
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber Entity</a></cite></p>
-     * <p>A requesting entity may want to discover information about another entity on the network. The information desired generally is of two kinds:</p>
+     * <p><cite><a href="https://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber
+     * Entity</a></cite></p>
+     * <p>A requesting entity may want to discover information about another entity on the network. The information
+     * desired generally is of two kinds:</p>
      * <ol>
      * <li>The target entity's identity.</li>
      * <li>The features offered and protocols supported by the target entity.</li>
@@ -150,8 +152,9 @@ public interface ServiceDiscoveryManager extends IQHandler, ExtensionProtocol {
     void removeIdentity(Identity identity);
 
     /**
-     * Adds a feature. Features should not be added or removed directly. Instead enable or disable the respective extension manager, which will then add or remove the feature.
-     * That way, supported features are consistent with enabled extension managers and service discovery won't reveal features, that are in fact not supported.
+     * Adds a feature. Features should not be added or removed directly. Instead enable or disable the respective
+     * extension manager, which will then add or remove the feature. That way, supported features are consistent with
+     * enabled extension managers and service discovery won't reveal features, that are in fact not supported.
      *
      * @param feature The feature.
      * @see #removeFeature(String)

@@ -65,8 +65,12 @@ public final class S5bTransportNegotiator extends TransportNegotiator<S5bTranspo
 
             int localPriority = 0;
             for (StreamHost streamHost : streamHosts) {
-                S5bTransportMethod.Candidate.Type type = streamHost.getJid().equals(xmppSession.getConnectedResource()) ? S5bTransportMethod.Candidate.Type.DIRECT : S5bTransportMethod.Candidate.Type.PROXY;
-                candidateList.add(new S5bTransportMethod.Candidate(UUID.randomUUID().toString(), streamHost.getHostname(), streamHost.getPort(), streamHost.getJid(), type, S5bTransportMethod.calculatePriority(type, localPriority++)));
+                S5bTransportMethod.Candidate.Type type = streamHost.getJid().equals(xmppSession.getConnectedResource())
+                        ? S5bTransportMethod.Candidate.Type.DIRECT : S5bTransportMethod.Candidate.Type.PROXY;
+                candidateList
+                        .add(new S5bTransportMethod.Candidate(UUID.randomUUID().toString(), streamHost.getHostname(),
+                                streamHost.getPort(), streamHost.getJid(), type,
+                                S5bTransportMethod.calculatePriority(type, localPriority++)));
             }
             return new S5bTransportMethod(sessionId, hash, Socks5ByteStream.Mode.TCP, candidateList);
         });

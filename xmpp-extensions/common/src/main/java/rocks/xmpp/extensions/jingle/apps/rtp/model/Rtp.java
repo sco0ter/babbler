@@ -47,7 +47,9 @@ import rocks.xmpp.extensions.jingle.apps.rtp.model.info.Unmute;
  * @author Christian Schudt
  */
 @XmlRootElement(name = "description")
-@XmlSeeAlso({InvalidCrypto.class, CryptoRequired.class, Active.class, Hold.class, Unhold.class, Mute.class, Unmute.class, Ringing.class})
+@XmlSeeAlso(
+        {InvalidCrypto.class, CryptoRequired.class, Active.class, Hold.class, Unhold.class, Mute.class, Unmute.class,
+                Ringing.class})
 public final class Rtp extends ApplicationFormat {
 
     /**
@@ -72,14 +74,16 @@ public final class Rtp extends ApplicationFormat {
     }
 
     /**
-     * @param media The media type, such as "audio" or "video", where the media type SHOULD be as registered at <a href="www.iana.org/assignments/media-types">IANA MIME Media Types Registry</a>.
+     * @param media The media type, such as "audio" or "video", where the media type SHOULD be as registered at <a
+     *              href="www.iana.org/assignments/media-types">IANA MIME Media Types Registry</a>.
      */
     public Rtp(String media) {
         this.media = media;
     }
 
     /**
-     * @param media      The media type, such as "audio" or "video", where the media type SHOULD be as registered at <a href="www.iana.org/assignments/media-types">IANA MIME Media Types Registry</a>.
+     * @param media      The media type, such as "audio" or "video", where the media type SHOULD be as registered at <a
+     *                   href="www.iana.org/assignments/media-types">IANA MIME Media Types Registry</a>.
      * @param ssrc       Specifies the 32-bit synchronization source for this media stream, as defined in RFC 3550.
      * @param bandwidth  The allowable or preferred bandwidth for use by this application type.
      * @param encryption The encryption.
@@ -209,7 +213,8 @@ public final class Rtp extends ApplicationFormat {
         /**
          * Creates a bandwidth object.
          *
-         * @param type Should be a value for the SDP "bwtype" parameter as listed in the IANA Session Description Protocol Parameters Registry.
+         * @param type Should be a value for the SDP "bwtype" parameter as listed in the IANA Session Description
+         *             Protocol Parameters Registry.
          */
         public Bandwidth(String type) {
             this.type = type;
@@ -309,7 +314,8 @@ public final class Rtp extends ApplicationFormat {
         }
 
         /**
-         * Gets the parameters. For example, as described in RFC 5574, the "cng", "mode", and "vbr" parameters can be specified in relation to usage of the Speex codec.
+         * Gets the parameters. For example, as described in RFC 5574, the "cng", "mode", and "vbr" parameters can be
+         * specified in relation to usage of the Speex codec.
          *
          * @return The parameters.
          */

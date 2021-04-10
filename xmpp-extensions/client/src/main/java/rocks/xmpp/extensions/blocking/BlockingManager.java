@@ -80,7 +80,8 @@ public final class BlockingManager extends Manager {
                                 pushedContacts.add(item);
                             }
                         }
-                        XmppUtils.notifyEventListeners(blockingListeners, new BlockingEvent(BlockingManager.this, pushedContacts, Collections.emptyList()));
+                        XmppUtils.notifyEventListeners(blockingListeners,
+                                new BlockingEvent(BlockingManager.this, pushedContacts, Collections.emptyList()));
                         return iq.createResult();
                     } else if (block instanceof Unblock) {
                         List<Jid> pushedContacts = new ArrayList<>();
@@ -96,7 +97,8 @@ public final class BlockingManager extends Manager {
                                 }
                             }
                         }
-                        XmppUtils.notifyEventListeners(blockingListeners, new BlockingEvent(BlockingManager.this, Collections.emptyList(), pushedContacts));
+                        XmppUtils.notifyEventListeners(blockingListeners,
+                                new BlockingEvent(BlockingManager.this, Collections.emptyList(), pushedContacts));
                         return iq.createResult();
                     }
                 }
@@ -168,7 +170,8 @@ public final class BlockingManager extends Manager {
     }
 
     /**
-     * Unblocks communications with specific contacts or with all contacts. If you want to unblock all communications, pass no arguments to this method.
+     * Unblocks communications with specific contacts or with all contacts. If you want to unblock all communications,
+     * pass no arguments to this method.
      *
      * @param jids The contacts.
      * @return The async result.

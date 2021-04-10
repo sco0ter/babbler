@@ -79,7 +79,8 @@ public final class DiscussionHistory {
     }
 
     /**
-     * Limit the total number of characters in the history to "X" (where the character count is the characters of the complete XML stanzas, not only their XML character data).
+     * Limit the total number of characters in the history to "X" (where the character count is the characters of the
+     * complete XML stanzas, not only their XML character data).
      *
      * @param maxChars The maximal character count.
      * @return The history.

@@ -23,7 +23,8 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0145.html">XEP-0145: Annotations</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0145.html">XEP-0145:
+ * Annotations</a>.
  *
  * <p>It defines a protocol for making annotations about roster items and other entities.</p>
  */

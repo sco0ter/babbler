@@ -70,6 +70,7 @@ public final class MucAdmin {
 
     /**
      * Creates a {@code <query/>} element with an {@code <item/>} child element.
+     *
      * <p><b>Sample:</b></p>
      * <pre>{@code
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
@@ -86,6 +87,7 @@ public final class MucAdmin {
 
     /**
      * Creates a {@code <query/>} element with an {@code <item/>} child element.
+     *
      * <p><b>Sample:</b></p>
      * <pre>{@code
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
@@ -102,6 +104,7 @@ public final class MucAdmin {
 
     /**
      * Creates a {@code <query/>} element with an {@code <item/>} child element.
+     *
      * <p><b>Sample:</b></p>
      * <pre>{@code
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
@@ -123,6 +126,7 @@ public final class MucAdmin {
 
     /**
      * Creates a {@code <query/>} element with an {@code <item/>} child element.
+     *
      * <p><b>Sample:</b></p>
      * <pre>{@code
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
@@ -142,6 +146,7 @@ public final class MucAdmin {
 
     /**
      * Creates a {@code <query/>} element with an {@code <item/>} child element.
+     *
      * <p><b>Sample:</b></p>
      * <pre>{@code
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
@@ -164,7 +169,9 @@ public final class MucAdmin {
 
     /**
      * Creates a {@code <query/>} element with {@code <item/>} child elements.
+     *
      * <p><b>Sample:</b></p>
+     *
      * <pre>{@code
      * <query xmlns='http://jabber.org/protocol/muc#admin'>
      *     <item affiliation='none'
@@ -196,14 +203,14 @@ public final class MucAdmin {
      *
      * @param items The items.
      * @return The {@link MucAdmin} instance.
-     * @see #withItems(rocks.xmpp.extensions.muc.model.Item...)
+     * @see #withItems(Item...)
      */
     public static MucAdmin withItems(Item... items) {
         return new MucAdmin(items);
     }
 
     /**
-     * Creates an item, which can be used as input parameter for {@link #withItems(rocks.xmpp.extensions.muc.model.Item...)}.
+     * Creates an item, which can be used as input parameter for {@link #withItems(Item...)}.
      *
      * @param affiliation The affiliation.
      * @param role        The role.
@@ -213,12 +220,13 @@ public final class MucAdmin {
      * @param reason      The reason.
      * @return The item.
      */
-    public static Item createItem(Affiliation affiliation, Role role, Jid jid, String nick, Actor actor, String reason) {
+    public static Item createItem(Affiliation affiliation, Role role, Jid jid, String nick, Actor actor,
+                                  String reason) {
         return new MucAdminItem(affiliation, role, jid, nick, actor, reason);
     }
 
     /**
-     * Creates an item, which can be used as input parameter for {@link #withItems(rocks.xmpp.extensions.muc.model.Item...)}.
+     * Creates an item, which can be used as input parameter for {@link #withItems(Item...)}.
      *
      * @param role   The role.
      * @param nick   The nick.
@@ -230,7 +238,7 @@ public final class MucAdmin {
     }
 
     /**
-     * Creates an item, which can be used as input parameter for {@link #withItems(rocks.xmpp.extensions.muc.model.Item...)}.
+     * Creates an item, which can be used as input parameter for {@link #withItems(Item...)}.
      *
      * @param role The role.
      * @param nick The nick.
@@ -241,7 +249,7 @@ public final class MucAdmin {
     }
 
     /**
-     * Creates an item, which can be used as input parameter for {@link #withItems(rocks.xmpp.extensions.muc.model.Item...)}.
+     * Creates an item, which can be used as input parameter for {@link #withItems(Item...)}.
      *
      * @param role The role.
      * @return The item.
@@ -251,7 +259,7 @@ public final class MucAdmin {
     }
 
     /**
-     * Creates an item, which can be used as input parameter for {@link #withItems(rocks.xmpp.extensions.muc.model.Item...)}.
+     * Creates an item, which can be used as input parameter for {@link #withItems(Item...)}.
      *
      * @param affiliation The affiliation.
      * @return The item.
@@ -261,7 +269,7 @@ public final class MucAdmin {
     }
 
     /**
-     * Creates an item, which can be used as input parameter for {@link #withItems(rocks.xmpp.extensions.muc.model.Item...)}.
+     * Creates an item, which can be used as input parameter for {@link #withItems(Item...)}.
      *
      * @param affiliation The affiliation.
      * @param jid         The JID.
@@ -272,7 +280,7 @@ public final class MucAdmin {
     }
 
     /**
-     * Creates an item, which can be used as input parameter for {@link #withItems(rocks.xmpp.extensions.muc.model.Item...)}.
+     * Creates an item, which can be used as input parameter for {@link #withItems(Item...)}.
      *
      * @param affiliation The affiliation.
      * @param jid         The JID.
@@ -284,7 +292,7 @@ public final class MucAdmin {
     }
 
     /**
-     * Creates an item, which can be used as input parameter for {@link #withItems(rocks.xmpp.extensions.muc.model.Item...)}.
+     * Creates an item, which can be used as input parameter for {@link #withItems(Item...)}.
      *
      * @param affiliation The affiliation.
      * @param jid         The JID.

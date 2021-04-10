@@ -38,7 +38,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 /**
  * This manager implements <a href="https://xmpp.org/extensions/xep-0092.html">XEP-0092: Software Version</a>.
  *
- * <p>If enabled and a software version has been set, it automatically responds to inbound queries for the software version.</p>
+ * <p>If enabled and a software version has been set, it automatically responds to inbound queries for the software
+ * version.</p>
  *
  * <p>It also allows to query for the software version of another entity.</p>
  *
@@ -51,7 +52,8 @@ public final class ClientSoftwareVersionManager extends SoftwareVersionProtocol 
     static {
         Properties properties = new Properties();
         SoftwareVersion version;
-        try (InputStream inputStream = ClientSoftwareVersionManager.class.getResourceAsStream("/META-INF/maven/rocks.xmpp/xmpp-extensions-client/pom.properties")) {
+        try (InputStream inputStream = ClientSoftwareVersionManager.class
+                .getResourceAsStream("/META-INF/maven/rocks.xmpp/xmpp-extensions-client/pom.properties")) {
             properties.load(inputStream);
             version = new SoftwareVersion("Babbler", properties.getProperty("version"));
         } catch (Exception e) {
@@ -70,7 +72,8 @@ public final class ClientSoftwareVersionManager extends SoftwareVersionProtocol 
     /**
      * Gets the software version of another entity.
      *
-     * @param jid The JID of the entity you want get the software version from. You can also pass null, if you want to get the server's software version.
+     * @param jid The JID of the entity you want get the software version from. You can also pass null, if you want to
+     *            get the server's software version.
      * @return The async result with the software version or null, if this protocol is not supported.
      */
     @Override

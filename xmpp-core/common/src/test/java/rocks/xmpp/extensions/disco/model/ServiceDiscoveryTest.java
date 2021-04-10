@@ -66,7 +66,8 @@ public class ServiceDiscoveryTest extends XmlTest {
                 "        type='chatroom'\n" +
                 "        name='Play-Specific Chatrooms'/>\n" +
                 "    <feature/>\n" +
-                "    <feature xmlns=\"urn:xmpp:archive\"><optional xmlns=\"urn:xmpp:archive\"><default xmlns=\"urn:xmpp:archive\"/></optional></feature>\n" +
+                "    <feature xmlns=\"urn:xmpp:archive\"><optional xmlns=\"urn:xmpp:archive\"><default xmlns=\"urn:xmpp:archive\"/></optional></feature>\n"
+                +
                 "    <feature var='http://jabber.org/protocol/disco#info'/>\n" +
                 "    <feature var='http://jabber.org/protocol/disco#items'/>\n" +
                 "    <feature var='http://jabber.org/protocol/muc'/>\n" +

@@ -91,7 +91,8 @@ public final class StreamInitiation {
         this(null, null, null, null, featureNegotiation);
     }
 
-    public StreamInitiation(String id, String profile, String mimeType, Object profileElement, FeatureNegotiation featureNegotiation) {
+    public StreamInitiation(String id, String profile, String mimeType, Object profileElement,
+                            FeatureNegotiation featureNegotiation) {
         this.id = id;
         this.profile = profile;
         this.mimeType = mimeType;
@@ -100,7 +101,8 @@ public final class StreamInitiation {
     }
 
     /**
-     * The "id" attribute is an opaque identifier. This attribute MUST be present on type='set', and MUST be a valid string.
+     * The "id" attribute is an opaque identifier. This attribute MUST be present on type='set', and MUST be a valid
+     * string.
      *
      * @return The id.
      */
@@ -118,7 +120,8 @@ public final class StreamInitiation {
     }
 
     /**
-     * The "profile" attribute defines the SI profile in use. This value MUST be present during negotiation, and is the namespace of the profile to use.
+     * The "profile" attribute defines the SI profile in use. This value MUST be present during negotiation, and is the
+     * namespace of the profile to use.
      *
      * @return The profile.
      */

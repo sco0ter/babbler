@@ -43,7 +43,9 @@ import rocks.xmpp.addr.Jid;
  * The implementation of a privacy list.
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/extensions/xep-0016.html#protocol">2. Protocol</a></cite></p>
- * <p>Most instant messaging systems have found it necessary to implement some method for users to block communications from particular other users (this is also required by sections 5.1.5, 5.1.15, 5.3.2, and 5.4.10 of RFC 2779 [3]. In XMPP this is done by managing one's privacy lists using the 'jabber:iq:privacy' namespace.</p>
+ * <p>Most instant messaging systems have found it necessary to implement some method for users to block communications
+ * from particular other users (this is also required by sections 5.1.5, 5.1.15, 5.3.2, and 5.4.10 of RFC 2779 [3]. In
+ * XMPP this is done by managing one's privacy lists using the 'jabber:iq:privacy' namespace.</p>
  * </blockquote>
  * This class is immutable.
  *
@@ -55,7 +57,8 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     private static final Comparator<PrivacyList> COMPARATOR = Comparator
             .comparing(PrivacyList::isDefault, Comparator.reverseOrder())
             .thenComparing(PrivacyList::isActive, Comparator.reverseOrder())
-            .thenComparing(PrivacyList::getName, Comparator.nullsLast((o1, o2) -> Collator.getInstance().compare(o1, o2)))
+            .thenComparing(PrivacyList::getName,
+                    Comparator.nullsLast((o1, o2) -> Collator.getInstance().compare(o1, o2)))
             .thenComparing(PrivacyList::getPrivacyRules, nullsFirst((o1, o2) -> {
                 int diff = o1.size() - o2.size();
                 if (diff == 0) {
@@ -124,7 +127,8 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     /**
      * Creates a global invisibility list, where you are still visible to some contacts.
      *
-     * @param listName The list name. See <a href="https://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
+     * @param listName The list name. See <a href="https://xmpp.org/extensions/xep-0126.html#impl">4. Implementation
+     *                 Notes</a> for recommended list names.
      * @param jids     The JIDs to which you are still visible.
      * @return The invisibility list.
      * @see <a href="https://xmpp.org/extensions/xep-0126.html">XEP-0126: Invisibility</a>
@@ -143,11 +147,13 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     /**
      * Creates a global invisibility list, where you are still visible to some contacts.
      *
-     * @param listName The list name. See <a href="https://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
+     * @param listName The list name. See <a href="https://xmpp.org/extensions/xep-0126.html#impl">4. Implementation
+     *                 Notes</a> for recommended list names.
      * @param groups   The roster groups to which you are still visible.
      * @return The invisibility list.
      * @see <a href="https://xmpp.org/extensions/xep-0126.html">XEP-0126: Invisibility</a>
-     * @see <a href="https://xmpp.org/extensions/xep-0126.html#vis-select-roster">3.2.2 Becoming Visible by Roster Group</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0126.html#vis-select-roster">3.2.2 Becoming Visible by Roster
+     * Group</a>
      */
     public static PrivacyList createInvisibilityListExceptForGroups(String listName, String... groups) {
         Collection<PrivacyRule> rules = new ArrayDeque<>();
@@ -160,9 +166,11 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     }
 
     /**
-     * Creates a selective invisibility list. You are only invisible to the provided JIDs. You are visible to everyone else.
+     * Creates a selective invisibility list. You are only invisible to the provided JIDs. You are visible to everyone
+     * else.
      *
-     * @param listName The list name. See <a href="https://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
+     * @param listName The list name. See <a href="https://xmpp.org/extensions/xep-0126.html#impl">4. Implementation
+     *                 Notes</a> for recommended list names.
      * @param jids     The JIDs to which you appear invisible.
      * @return The invisibility list.
      * @see <a href="https://xmpp.org/extensions/xep-0126.html">XEP-0126: Invisibility</a>
@@ -179,13 +187,16 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     }
 
     /**
-     * Creates a selective invisibility list. You are only invisible to the provided JIDs. You are visible to everyone else.
+     * Creates a selective invisibility list. You are only invisible to the provided JIDs. You are visible to everyone
+     * else.
      *
-     * @param listName The list name. See <a href="https://xmpp.org/extensions/xep-0126.html#impl">4. Implementation Notes</a> for recommended list names.
+     * @param listName The list name. See <a href="https://xmpp.org/extensions/xep-0126.html#impl">4. Implementation
+     *                 Notes</a> for recommended list names.
      * @param groups   The roster groups to which you appear invisible.
      * @return The invisibility list.
      * @see <a href="https://xmpp.org/extensions/xep-0126.html">XEP-0126: Invisibility</a>
-     * @see <a href="https://xmpp.org/extensions/xep-0126.html#invis-select-roster">3.4.2 Becoming Invisible by Roster Group</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0126.html#invis-select-roster">3.4.2 Becoming Invisible by Roster
+     * Group</a>
      */
     public static PrivacyList createInvisibilityListForGroups(String listName, String... groups) {
         Collection<PrivacyRule> rules = new ArrayDeque<>();
@@ -258,7 +269,8 @@ public final class PrivacyList implements Comparable<PrivacyList> {
     }
 
     /**
-     * Compares this privacy list with another list. When sorted, default lists are listed first, then active lists, then lists are sorted by their name.
+     * Compares this privacy list with another list. When sorted, default lists are listed first, then active lists,
+     * then lists are sorted by their name.
      *
      * @param o The other list.
      * @return The comparison result.

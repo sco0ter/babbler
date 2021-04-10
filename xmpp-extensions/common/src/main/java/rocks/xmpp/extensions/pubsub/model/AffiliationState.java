@@ -44,7 +44,9 @@ public enum AffiliationState {
     @XmlEnumValue("publisher")
     PUBLISHER,
     /**
-     * An entity that is allowed to publish items to a node but that is not allowed to receive notifications. (This affiliation is useful in the context of nodes that do not have an open access model when automated entities need to generate notifications on behalf of the owner.)
+     * An entity that is allowed to publish items to a node but that is not allowed to receive notifications. (This
+     * affiliation is useful in the context of nodes that do not have an open access model when automated entities need
+     * to generate notifications on behalf of the owner.)
      */
     @XmlEnumValue("publish-only")
     PUBLISH_ONLY,

@@ -39,27 +39,31 @@ import rocks.xmpp.core.stream.model.StreamFeature;
 /**
  * Negotiates stream features from a server perspective.
  *
- * <p>Each feature which shall be advertised during stream negotiation, must be {@linkplain #registerStreamFeatureProvider(StreamFeatureProvider) registered} first.</p>
+ * <p>Each feature which shall be advertised during stream negotiation, must be {@linkplain
+ * #registerStreamFeatureProvider(StreamFeatureProvider) registered} first.</p>
  *
  * @author Christian Schudt
  * @see StreamFeatureProvider
  */
 public final class ServerStreamFeaturesManager {
 
-    private final Map<StreamFeatureProvider<? extends StreamFeature>, StreamFeature> toBeNegotiated = new ConcurrentHashMap<>();
+    private final Map<StreamFeatureProvider<? extends StreamFeature>, StreamFeature> toBeNegotiated =
+            new ConcurrentHashMap<>();
 
     /**
      * Registers a stream feature negotiator.
      *
      * @param streamFeatureProvider The negotiator.
      */
-    public final void registerStreamFeatureProvider(final StreamFeatureProvider<? extends StreamFeature> streamFeatureProvider) {
+    public final void registerStreamFeatureProvider(
+            final StreamFeatureProvider<? extends StreamFeature> streamFeatureProvider) {
         toBeNegotiated.put(streamFeatureProvider, streamFeatureProvider.createStreamFeature());
     }
 
     /**
      * Gets the stream features which shall be advertised. Different stream features may be advertised during different
-     * phases of the stream negotiation. E.g. the first and only feature should be STARTTLS, then SASL and only then Resource Binding.
+     * phases of the stream negotiation. E.g. the first and only feature should be STARTTLS, then SASL and only then
+     * Resource Binding.
      *
      * @return The stream features.
      */

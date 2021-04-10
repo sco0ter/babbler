@@ -28,8 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * The implementation of the {@code <max-nodes-exceeded/>} pubsub error.
- * This class is a singleton.
+ * The implementation of the {@code <max-nodes-exceeded/>} pubsub error. This class is a singleton.
  *
  * @author Christian Schudt
  * @see #MAX_NODES_EXCEEDED

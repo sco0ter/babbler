@@ -65,7 +65,8 @@ public final class LanguageTranslationManager extends Manager {
      * @see <a href="https://xmpp.org/extensions/xep-0171.html#disco">4.2 Discovering Translation Providers</a>
      */
     public AsyncResult<List<Item>> discoverTranslationProviders() {
-        return serviceDiscoveryManager.discoverServices(xmppSession.getRemoteXmppAddress(), Identity.automationTranslation());
+        return serviceDiscoveryManager
+                .discoverServices(xmppSession.getRemoteXmppAddress(), Identity.automationTranslation());
     }
 
     /**
@@ -76,7 +77,8 @@ public final class LanguageTranslationManager extends Manager {
      * @see <a href="https://xmpp.org/extensions/xep-0171.html#disco-lang">4.2.3 Discovering Language Support</a>
      */
     public AsyncResult<List<LanguageSupport.Item>> discoverLanguageSupport(Jid translationProvider) {
-        return xmppSession.query(IQ.get(translationProvider, new LanguageSupport()), LanguageSupport.class).thenApply(LanguageSupport::getItems);
+        return xmppSession.query(IQ.get(translationProvider, new LanguageSupport()), LanguageSupport.class)
+                .thenApply(LanguageSupport::getItems);
     }
 
     /**
@@ -89,11 +91,17 @@ public final class LanguageTranslationManager extends Manager {
      * @return The translations.
      * @see <a href="https://xmpp.org/extensions/xep-0171.html#request">4.3 Requesting a Translation from a Service</a>
      */
-    public AsyncResult<List<LanguageTranslation.Translation>> translate(Jid translationProvider, String text, Locale sourceLanguage, Locale... destinationLanguage) {
+    public AsyncResult<List<LanguageTranslation.Translation>> translate(Jid translationProvider, String text,
+                                                                        Locale sourceLanguage,
+                                                                        Locale... destinationLanguage) {
         Collection<LanguageTranslation.Translation> translations = new ArrayDeque<>();
         for (Locale dl : destinationLanguage) {
             translations.add(LanguageTranslation.Translation.forDestinationLanguage(dl));
         }
-        return xmppSession.query(IQ.get(translationProvider, new LanguageTranslation(text, sourceLanguage, translations)), LanguageTranslation.class).thenApply(languageTranslation -> languageTranslation != null ? languageTranslation.getTranslations() : Collections.emptyList());
+        return xmppSession
+                .query(IQ.get(translationProvider, new LanguageTranslation(text, sourceLanguage, translations)),
+                        LanguageTranslation.class).thenApply(
+                        languageTranslation -> languageTranslation != null ? languageTranslation.getTranslations()
+                                : Collections.emptyList());
     }
 }

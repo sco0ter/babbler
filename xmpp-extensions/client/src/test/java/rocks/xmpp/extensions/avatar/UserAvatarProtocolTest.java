@@ -109,33 +109,38 @@ public class UserAvatarProtocolTest {
 
         Mockito.when(pepService.node(Mockito.eq(AvatarMetadata.NAMESPACE))).thenReturn(metaDataNode);
         Mockito.when(pepService.node(Mockito.eq(AvatarData.NAMESPACE))).thenReturn(dataNode);
-        Mockito.when(metaDataNode.publish(Mockito.any(), Mockito.any(Object.class))).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture("")));
-        Mockito.when(metaDataNode.publish(Mockito.any(Object.class))).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture("")));
-        Mockito.when(dataNode.publish(Mockito.anyString(), Mockito.any(Object.class))).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture("")));
-        Mockito.when(dataNode.getItems(Mockito.eq(IMAGE_HASH))).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(Collections.singletonList(
-                new Item() {
-                    @Override
-                    public Object getPayload() {
-                        return new AvatarData(IMAGE);
-                    }
+        Mockito.when(metaDataNode.publish(Mockito.any(), Mockito.any(Object.class)))
+                .thenReturn(new AsyncResult<>(CompletableFuture.completedFuture("")));
+        Mockito.when(metaDataNode.publish(Mockito.any(Object.class)))
+                .thenReturn(new AsyncResult<>(CompletableFuture.completedFuture("")));
+        Mockito.when(dataNode.publish(Mockito.anyString(), Mockito.any(Object.class)))
+                .thenReturn(new AsyncResult<>(CompletableFuture.completedFuture("")));
+        Mockito.when(dataNode.getItems(Mockito.eq(IMAGE_HASH)))
+                .thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(Collections.singletonList(
+                        new Item() {
+                            @Override
+                            public Object getPayload() {
+                                return new AvatarData(IMAGE);
+                            }
 
-                    @Override
-                    public String getId() {
-                        return IMAGE_HASH;
-                    }
+                            @Override
+                            public String getId() {
+                                return IMAGE_HASH;
+                            }
 
-                    @Override
-                    public Jid getPublisher() {
-                        return null;
-                    }
-                }
-        ))));
+                            @Override
+                            public Jid getPublisher() {
+                                return null;
+                            }
+                        }
+                ))));
         Mockito.when(metaDataNode.getItems(Mockito.anyInt())).thenReturn(new AsyncResult<>(
                 CompletableFuture.completedFuture(Collections.singletonList(
                         new Item() {
                             @Override
                             public Object getPayload() {
-                                return new AvatarMetadata(new AvatarMetadata.Info(IMAGE.length, IMAGE_HASH, "image/png"));
+                                return new AvatarMetadata(
+                                        new AvatarMetadata.Info(IMAGE.length, IMAGE_HASH, "image/png"));
                             }
 
                             @Override
@@ -197,23 +202,24 @@ public class UserAvatarProtocolTest {
 
         PubSubNode metaNode = Mockito.mock(PubSubNode.class);
         Mockito.when(pepService.node(Mockito.eq(AvatarMetadata.NAMESPACE))).thenReturn(metaNode);
-        Mockito.when(metaNode.getItems(1)).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(Collections.singletonList(new Item() {
-            @Override
-            public Object getPayload() {
-                // Empty meta data.
-                return new AvatarMetadata();
-            }
+        Mockito.when(metaNode.getItems(1))
+                .thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(Collections.singletonList(new Item() {
+                    @Override
+                    public Object getPayload() {
+                        // Empty meta data.
+                        return new AvatarMetadata();
+                    }
 
-            @Override
-            public String getId() {
-                return null;
-            }
+                    @Override
+                    public String getId() {
+                        return null;
+                    }
 
-            @Override
-            public Jid getPublisher() {
-                return null;
-            }
-        }))));
+                    @Override
+                    public Jid getPublisher() {
+                        return null;
+                    }
+                }))));
 
         byte[] avatar = userAvatarProtocol.getAvatar(Jid.of("contact")).getResult();
 
@@ -285,7 +291,8 @@ public class UserAvatarProtocolTest {
 
         Message message = new Message();
         message.setFrom(Jid.of("contact@avatar/test"));
-        message.addExtensions(Event.withItem(AvatarMetadata.NAMESPACE, new AvatarMetadata(new AvatarMetadata.Info(IMAGE.length, IMAGE_HASH, "image/png")), IMAGE_HASH, null));
+        message.addExtensions(Event.withItem(AvatarMetadata.NAMESPACE,
+                new AvatarMetadata(new AvatarMetadata.Info(IMAGE.length, IMAGE_HASH, "image/png")), IMAGE_HASH, null));
 
         MessageEvent messageEvent = new MessageEvent(xmppSession, message, true);
         userAvatarProtocol.handleInboundMessage(messageEvent);

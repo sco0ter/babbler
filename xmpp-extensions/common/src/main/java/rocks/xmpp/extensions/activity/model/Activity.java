@@ -36,7 +36,9 @@ import rocks.xmpp.util.Strings;
  * The implementation of the {@code <activity/>} element in the {@code http://jabber.org/protocol/activity} namespace.
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/extensions/xep-0108.html#activities">3. Activity Values</a></cite></p>
- * <p>Each activity has a REQUIRED general category and an OPTIONAL specific instance. One can understand each specifier as '[user] is [activity]' (e.g., 'Juliet is partying'), where the relevant value is the most specific activity provided (e.g., specifically "partying" rather than generally "relaxing").</p>
+ * <p>Each activity has a REQUIRED general category and an OPTIONAL specific instance. One can understand each
+ * specifier as '[user] is [activity]' (e.g., 'Juliet is partying'), where the relevant value is the most specific
+ * activity provided (e.g., specifically "partying" rather than generally "relaxing").</p>
  * </blockquote>
  * This class is immutable.
  *
@@ -116,7 +118,8 @@ public final class Activity {
      */
     public Activity(Category category, SpecificActivity specificActivity, String text) {
         try {
-            this.category = category.categoryClass.getDeclaredConstructor(SpecificActivity.class).newInstance(specificActivity);
+            this.category =
+                    category.categoryClass.getDeclaredConstructor(SpecificActivity.class).newInstance(specificActivity);
             this.text = text;
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);

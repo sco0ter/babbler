@@ -54,7 +54,8 @@ public class JingleFileTransferReceiver {
                 xmppSession.enableFeature(Jingle.NAMESPACE);
                 xmppSession.enableFeature(JingleFileTransfer.NAMESPACE);
 
-                JingleFileTransferManager jingleFileTransferManager = xmppSession.getManager(JingleFileTransferManager.class);
+                JingleFileTransferManager jingleFileTransferManager =
+                        xmppSession.getManager(JingleFileTransferManager.class);
 
 
                 // Connect

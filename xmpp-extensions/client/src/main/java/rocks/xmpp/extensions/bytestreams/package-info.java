@@ -23,7 +23,8 @@
  */
 
 /**
- * Provides classes for byte streams (<a href="https://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a> and <a href="https://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>).
+ * Provides classes for byte streams (<a href="https://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band
+ * Bytestreams</a> and <a href="https://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>).
  */
 package rocks.xmpp.extensions.bytestreams;
 

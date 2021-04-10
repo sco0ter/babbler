@@ -34,12 +34,14 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 /**
  * @author Christian Schudt
  */
-public class ClientEntityCapabilities1Protocol extends AbstractEntityCapabilities1Protocol implements OutboundPresenceHandler {
+public class ClientEntityCapabilities1Protocol extends AbstractEntityCapabilities1Protocol
+        implements OutboundPresenceHandler {
 
     private final ClientEntityCapabilitiesSupport capsSupport;
 
     public ClientEntityCapabilities1Protocol(XmppSession xmppSession) {
-        super(xmppSession.getManager(ServiceDiscoveryManager.class), xmppSession.getManager(EntityCapabilitiesCache.class));
+        super(xmppSession.getManager(ServiceDiscoveryManager.class),
+                xmppSession.getManager(EntityCapabilitiesCache.class));
         this.capsSupport = new ClientEntityCapabilitiesSupport(xmppSession, this);
     }
 

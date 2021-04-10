@@ -44,10 +44,12 @@ public final class SaslPrep {
     /**
      * B.1 Commonly mapped to nothing
      */
-    private static final Pattern MAP_TO_NOTHING = Pattern.compile("([\u00AD\u034F\u1806\u180B-\u180D\u200B-\u200D\u2060\uFE00-\uFE0F\uFEFF])");
+    private static final Pattern MAP_TO_NOTHING =
+            Pattern.compile("([\u00AD\u034F\u1806\u180B-\u180D\u200B-\u200D\u2060\uFE00-\uFE0F\uFEFF])");
 
     /**
-     * Every character, which is not a letter, number, punctuation, symbol character, marker character or space is prohibited.
+     * Every character, which is not a letter, number, punctuation, symbol character, marker character or space is
+     * prohibited.
      */
     private static final Pattern PROHIBITED_CHARACTERS = Pattern.compile("[^\\p{L}\\p{N}\\p{P}\\p{S}\\p{M}\\s]");
 
@@ -91,7 +93,8 @@ public final class SaslPrep {
                 // 3) If a string contains any RandALCat character, a RandALCat
                 //    character MUST be the first character of the string, and a
                 //    RandALCat character MUST be the last character of the string.
-                if (!(bidi.getLevelAt(0) == Bidi.DIRECTION_RIGHT_TO_LEFT && bidi.getLevelAt(0) == bidi.getLevelAt(input.length() - 1))) {
+                if (!(bidi.getLevelAt(0) == Bidi.DIRECTION_RIGHT_TO_LEFT
+                        && bidi.getLevelAt(0) == bidi.getLevelAt(input.length() - 1))) {
                     throw new IllegalArgumentException("String contains mixed bidirectional characters.");
                 }
             }

@@ -38,16 +38,19 @@ import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 /**
  * Abstract base class for the second Entity Capabilities protocol (XEP-0390: Entity Capabilities 2.0).
  *
- * <p>It provides the Service Discovery feature <code>{@value EntityCapabilities2#NAMESPACE}</code> and creates the entity capabilities extension
- * for either inclusion in presence (applicable for client entities) or inclusion as stream feature (for server entities).</p>
+ * <p>It provides the Service Discovery feature <code>{@value EntityCapabilities2#NAMESPACE}</code> and creates the
+ * entity capabilities extension for either inclusion in presence (applicable for client entities) or inclusion as
+ * stream feature (for server entities).</p>
  *
  * @author Christian Schudt
  */
-public abstract class AbstractEntityCapabilities2Protocol extends AbstractEntityCapabilitiesProtocol<EntityCapabilities2> {
+public abstract class AbstractEntityCapabilities2Protocol
+        extends AbstractEntityCapabilitiesProtocol<EntityCapabilities2> {
 
     private static final Set<String> FEATURES = Collections.singleton(EntityCapabilities2.NAMESPACE);
 
-    protected AbstractEntityCapabilities2Protocol(ServiceDiscoveryManager serviceDiscoveryManager, EntityCapabilitiesCache entityCapabilitiesCache) {
+    protected AbstractEntityCapabilities2Protocol(ServiceDiscoveryManager serviceDiscoveryManager,
+                                                  EntityCapabilitiesCache entityCapabilitiesCache) {
         super(EntityCapabilities2.class, serviceDiscoveryManager, entityCapabilitiesCache);
     }
 

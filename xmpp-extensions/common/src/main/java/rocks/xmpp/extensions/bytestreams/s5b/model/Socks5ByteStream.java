@@ -124,10 +124,12 @@ public final class Socks5ByteStream {
      * @param requesterJid The requester JID
      * @param targetJid    The target JID.
      * @return The hexadecimal-encoded SHA-1 hash.
-     * @see <a href="https://xmpp.org/extensions/xep-0065.html#mediated-proto-establish">6.3.2 Target Establishes SOCKS5 Connection with Proxy</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0065.html#mediated-proto-establish">6.3.2 Target Establishes SOCKS5
+     * Connection with Proxy</a>
      */
     public static String hash(String sessionId, Jid requesterJid, Jid targetJid) {
-        return XmppUtils.hash((sessionId + requesterJid.toEscapedString() + targetJid.toEscapedString()).getBytes(StandardCharsets.UTF_8));
+        return XmppUtils.hash((sessionId + requesterJid.toEscapedString() + targetJid.toEscapedString())
+                .getBytes(StandardCharsets.UTF_8));
     }
 
     /**

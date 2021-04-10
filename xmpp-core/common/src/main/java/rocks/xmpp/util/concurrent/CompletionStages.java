@@ -45,7 +45,8 @@ import rocks.xmpp.util.XmppUtils;
  */
 public final class CompletionStages {
 
-    private static final ScheduledExecutorService TIMEOUT_EXECUTOR = Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("timeout-scheduler"));
+    private static final ScheduledExecutorService TIMEOUT_EXECUTOR =
+            Executors.newSingleThreadScheduledExecutor(XmppUtils.createNamedThreadFactory("timeout-scheduler"));
 
     private CompletionStages() {
     }
@@ -59,14 +60,15 @@ public final class CompletionStages {
      * @return The completion stage with a fallback.
      */
     public static <T> CompletionStage<T> withFallback(final CompletionStage<T> stage,
-                                                      final BiFunction<CompletionStage<T>, Throwable, ? extends CompletionStage<T>> fallback) {
+                                                      final BiFunction<CompletionStage<T>, Throwable,
+                                                              ? extends CompletionStage<T>> fallback) {
         return stage.handle((response, error) -> error)
-                       .thenCompose(error -> error != null ? fallback.apply(stage, error) : stage);
+                .thenCompose(error -> error != null ? fallback.apply(stage, error) : stage);
     }
 
     /**
-     * Returns a completion stage, which is complete when all the completion stages are complete.
-     * The lists of each stage are flat mapped into one list, so that the returned stage has one accumulated list.
+     * Returns a completion stage, which is complete when all the completion stages are complete. The lists of each
+     * stage are flat mapped into one list, so that the returned stage has one accumulated list.
      *
      * @param stages The stages.
      * @param <T>    The type.
@@ -75,19 +77,21 @@ public final class CompletionStages {
     public static <T> CompletionStage<List<T>> allOf(final Collection<? extends CompletionStage<List<T>>> stages) {
         // First convert the list of stages to an array of CompletableFuture.
         // Then use CompletableFuture.allOf to combine them all.
-        return CompletableFuture.allOf(stages.stream().map(CompletionStage::toCompletableFuture).toArray(CompletableFuture[]::new))
-                       .thenApply(result ->
-                                          stages.stream()
-                                                  // Get the result of each future (List<T>)
-                                                  .map(stage -> stage.toCompletableFuture().join())
-                                                  // Map the List<List<T>> to one stream
-                                                  .flatMap(Collection::stream)
-                                                  // Collect all items into one list.
-                                                  .collect(Collectors.toList()));
+        return CompletableFuture
+                .allOf(stages.stream().map(CompletionStage::toCompletableFuture).toArray(CompletableFuture[]::new))
+                .thenApply(result ->
+                        stages.stream()
+                                // Get the result of each future (List<T>)
+                                .map(stage -> stage.toCompletableFuture().join())
+                                // Map the List<List<T>> to one stream
+                                .flatMap(Collection::stream)
+                                // Collect all items into one list.
+                                .collect(Collectors.toList()));
     }
 
     /**
-     * Creates a completion stage, which times out after the specified time, i.e. it completes exceptionally with a {@link TimeoutException}.
+     * Creates a completion stage, which times out after the specified time, i.e. it completes exceptionally with a
+     * {@link TimeoutException}.
      *
      * @param delay The delay.
      * @param unit  The time unit.
@@ -99,7 +103,8 @@ public final class CompletionStages {
     }
 
     /**
-     * Creates a completion stage, which times out after the specified time, i.e. it completes exceptionally with the supplied exception.
+     * Creates a completion stage, which times out after the specified time, i.e. it completes exceptionally with the
+     * supplied exception.
      *
      * @param delay             The delay.
      * @param unit              The time unit.
@@ -107,7 +112,8 @@ public final class CompletionStages {
      * @param <T>               The type.
      * @return The stage.
      */
-    public static <T> CompletionStage<T> timeoutAfter(final long delay, final TimeUnit unit, final Supplier<Throwable> throwableSupplier) {
+    public static <T> CompletionStage<T> timeoutAfter(final long delay, final TimeUnit unit,
+                                                      final Supplier<Throwable> throwableSupplier) {
         CompletableFuture<T> completableFuture = new CompletableFuture<>();
         TIMEOUT_EXECUTOR.schedule(() -> completableFuture.completeExceptionally(throwableSupplier.get()), delay, unit);
         return completableFuture;

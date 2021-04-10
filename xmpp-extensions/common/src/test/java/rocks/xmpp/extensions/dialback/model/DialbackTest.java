@@ -65,32 +65,39 @@ public class DialbackTest extends XmlTest {
 
     @Test
     public void marshalResultError() throws JAXBException, XMLStreamException {
-        String xml = marshal(new Dialback.Result(Jid.ofDomain("from.domain"), Jid.ofDomain("to.domain"), new StanzaError(Condition.ITEM_NOT_FOUND)));
-        Assert.assertEquals(xml, "<db:result from=\"from.domain\" to=\"to.domain\" type=\"error\"><error type=\"cancel\"><item-not-found xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></item-not-found></error></db:result>");
+        String xml = marshal(new Dialback.Result(Jid.ofDomain("from.domain"), Jid.ofDomain("to.domain"),
+                new StanzaError(Condition.ITEM_NOT_FOUND)));
+        Assert.assertEquals(xml,
+                "<db:result from=\"from.domain\" to=\"to.domain\" type=\"error\"><error type=\"cancel\"><item-not-found xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></item-not-found></error></db:result>");
     }
 
     @Test
     public void marshalVerifificationRequest() throws JAXBException, XMLStreamException {
-        String xml = marshal(new Dialback.Verify(Jid.ofDomain("from.domain"), Jid.ofDomain("to.domain"), "123", "secret"));
+        String xml =
+                marshal(new Dialback.Verify(Jid.ofDomain("from.domain"), Jid.ofDomain("to.domain"), "123", "secret"));
         Assert.assertEquals(xml, "<db:verify from=\"from.domain\" to=\"to.domain\" id=\"123\">secret</db:verify>");
     }
 
     @Test
     public void marshalVerifyValidKey() throws JAXBException, XMLStreamException {
         String xml = marshal(new Dialback.Verify(Jid.ofDomain("from.domain"), Jid.ofDomain("to.domain"), "123", true));
-        Assert.assertEquals(xml, "<db:verify from=\"from.domain\" to=\"to.domain\" type=\"valid\" id=\"123\"></db:verify>");
+        Assert.assertEquals(xml,
+                "<db:verify from=\"from.domain\" to=\"to.domain\" type=\"valid\" id=\"123\"></db:verify>");
     }
 
     @Test
     public void marshalVerifyInvalidKey() throws JAXBException, XMLStreamException {
         String xml = marshal(new Dialback.Verify(Jid.ofDomain("from.domain"), Jid.ofDomain("to.domain"), "123", false));
-        Assert.assertEquals(xml, "<db:verify from=\"from.domain\" to=\"to.domain\" type=\"invalid\" id=\"123\"></db:verify>");
+        Assert.assertEquals(xml,
+                "<db:verify from=\"from.domain\" to=\"to.domain\" type=\"invalid\" id=\"123\"></db:verify>");
     }
 
     @Test
     public void marshalVerifyError() throws JAXBException, XMLStreamException {
-        String xml = marshal(new Dialback.Verify(Jid.ofDomain("from.domain"), Jid.ofDomain("to.domain"), "123", new StanzaError(Condition.ITEM_NOT_FOUND)));
-        Assert.assertEquals(xml, "<db:verify from=\"from.domain\" to=\"to.domain\" type=\"error\" id=\"123\"><error type=\"cancel\"><item-not-found xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></item-not-found></error></db:verify>");
+        String xml = marshal(new Dialback.Verify(Jid.ofDomain("from.domain"), Jid.ofDomain("to.domain"), "123",
+                new StanzaError(Condition.ITEM_NOT_FOUND)));
+        Assert.assertEquals(xml,
+                "<db:verify from=\"from.domain\" to=\"to.domain\" type=\"error\" id=\"123\"><error type=\"cancel\"><item-not-found xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></item-not-found></error></db:verify>");
     }
 
     @Test

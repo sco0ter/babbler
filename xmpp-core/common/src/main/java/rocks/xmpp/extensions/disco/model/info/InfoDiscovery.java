@@ -107,11 +107,13 @@ public final class InfoDiscovery implements DiscoverableInfo, ServiceDiscoveryNo
      * @param features   The features.
      * @param extensions The extensions.
      */
-    public InfoDiscovery(Collection<Identity> identities, Collection<String> features, Collection<DataForm> extensions) {
+    public InfoDiscovery(Collection<Identity> identities, Collection<String> features,
+                         Collection<DataForm> extensions) {
         this(null, identities, features, extensions);
     }
 
-    public InfoDiscovery(String node, Collection<Identity> identities, Collection<String> features, Collection<DataForm> extensions) {
+    public InfoDiscovery(String node, Collection<Identity> identities, Collection<String> features,
+                         Collection<DataForm> extensions) {
         this(node, identities, features, extensions, null);
     }
 
@@ -124,7 +126,8 @@ public final class InfoDiscovery implements DiscoverableInfo, ServiceDiscoveryNo
      * @param extensions The extensions.
      * @param lang       The language.
      */
-    public InfoDiscovery(String node, Collection<Identity> identities, Collection<String> features, Collection<DataForm> extensions, Locale lang) {
+    public InfoDiscovery(String node, Collection<Identity> identities, Collection<String> features,
+                         Collection<DataForm> extensions, Locale lang) {
         this.node = node;
         if (identities != null) {
             this.identity.addAll(identities);
@@ -145,7 +148,8 @@ public final class InfoDiscovery implements DiscoverableInfo, ServiceDiscoveryNo
 
     @Override
     public final Set<String> getFeatures() {
-        Set<String> set = feature.stream().filter(f -> f.getFeatureName() != null).map(FeatureElement::getFeatureName).collect(Collectors.toCollection(TreeSet::new));
+        Set<String> set = feature.stream().filter(f -> f.getFeatureName() != null).map(FeatureElement::getFeatureName)
+                .collect(Collectors.toCollection(TreeSet::new));
         return Collections.unmodifiableSet(set);
     }
 

@@ -91,7 +91,8 @@ public class IceUdpTransportMethodTest extends XmlTest {
         Jingle jingle = iq.getExtension(Jingle.class);
         Assert.assertNotNull(jingle);
         Assert.assertTrue(jingle.getContents().get(0).getTransportMethod() instanceof IceUdpTransportMethod);
-        IceUdpTransportMethod iceUdpTransport = (IceUdpTransportMethod) jingle.getContents().get(0).getTransportMethod();
+        IceUdpTransportMethod iceUdpTransport =
+                (IceUdpTransportMethod) jingle.getContents().get(0).getTransportMethod();
         Assert.assertNotNull(iceUdpTransport);
         Assert.assertEquals(iceUdpTransport.getPassword(), "asd88fgpdd777uzjYhagZg");
         Assert.assertEquals(iceUdpTransport.getUserFragment(), "8hhy");

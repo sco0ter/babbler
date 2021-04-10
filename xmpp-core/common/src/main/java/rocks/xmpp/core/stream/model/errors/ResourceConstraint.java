@@ -30,7 +30,8 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <resource-constraint/>} stream error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-resource-constraint">4.9.3.17.  resource-constraint</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-resource-constraint">4.9.3.17.
+ * resource-constraint</a></cite></p>
  * <p>The server lacks the system resources necessary to service the stream.</p>
  * </blockquote>
  * This class is a singleton.

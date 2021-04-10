@@ -29,7 +29,8 @@ import rocks.xmpp.addr.Jid;
 /**
  * This exception can be thrown by a {@link RpcHandler} to indicate application-level errors.
  *
- * <p>By throwing this exception in the  {@link RpcHandler#process(Jid, String, java.util.List)} method a {@code <fault/>} will be returned.</p>
+ * <p>By throwing this exception in the  {@link RpcHandler#process(Jid, String, java.util.List)} method a {@code
+ * <fault/>} will be returned.</p>
  *
  * @author Christian Schudt
  * @see RpcHandler#process(Jid, String, java.util.List)
@@ -43,7 +44,8 @@ public final class RpcException extends Exception {
     /**
      * Creates a RPC exception.
      *
-     * @param faultCode   The fault code. It is up to the server implementer, or higher-level standards to specify fault codes.
+     * @param faultCode   The fault code. It is up to the server implementer, or higher-level standards to specify fault
+     *                    codes.
      * @param faultString The fault string, i.e. error message.
      */
     public RpcException(int faultCode, String faultString) {

@@ -44,7 +44,8 @@ public class FeatureRegistryTest {
     public void testEnablingAndDisablingOfFeatures() {
         XmppSession xmppSession = new TestXmppSession();
         // By default ping is enabled.
-        Assert.assertTrue(xmppSession.getManager(ServiceDiscoveryManager.class).getDefaultInfo().getFeatures().contains(Ping.NAMESPACE));
+        Assert.assertTrue(xmppSession.getManager(ServiceDiscoveryManager.class).getDefaultInfo().getFeatures()
+                .contains(Ping.NAMESPACE));
         Assert.assertTrue(xmppSession.getManager(PingManager.class).isEnabled());
 
         // Then remove the feature from service discovery
@@ -52,14 +53,16 @@ public class FeatureRegistryTest {
 
         // As a consequence PingManager should be disabled.
         Assert.assertFalse(xmppSession.getManager(PingManager.class).isEnabled());
-        Assert.assertFalse(xmppSession.getManager(ServiceDiscoveryManager.class).getDefaultInfo().getFeatures().contains(Ping.NAMESPACE));
+        Assert.assertFalse(xmppSession.getManager(ServiceDiscoveryManager.class).getDefaultInfo().getFeatures()
+                .contains(Ping.NAMESPACE));
         Assert.assertFalse(xmppSession.getEnabledFeatures().contains(Ping.NAMESPACE));
 
         // Enable by namespace.
         xmppSession.enableFeature(Ping.NAMESPACE);
 
         Assert.assertTrue(xmppSession.getManager(PingManager.class).isEnabled());
-        Assert.assertTrue(xmppSession.getManager(ServiceDiscoveryManager.class).getDefaultInfo().getFeatures().contains(Ping.NAMESPACE));
+        Assert.assertTrue(xmppSession.getManager(ServiceDiscoveryManager.class).getDefaultInfo().getFeatures()
+                .contains(Ping.NAMESPACE));
     }
 
     @Test(enabled = false)

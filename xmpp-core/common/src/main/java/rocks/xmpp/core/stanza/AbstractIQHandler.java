@@ -34,9 +34,11 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
 /**
  * This class is an IQ handler for extension managers.
  *
- * <p>If an extension is disabled, IQs with this extension are automatically responded to with {@code <service-unavailable}.</p>
+ * <p>If an extension is disabled, IQs with this extension are automatically responded to with {@code
+ * <service-unavailable}.</p>
  *
- * <p>If the extension is known, but the request contains a wrong type (e.g. 'set' instead of 'get') this manager automatically responds with a {@code <bad-request/>} error.</p>
+ * <p>If the extension is known, but the request contains a wrong type (e.g. 'set' instead of 'get') this manager
+ * automatically responds with a {@code <bad-request/>} error.</p>
  *
  * @author Christian Schudt
  */
@@ -77,12 +79,15 @@ public abstract class AbstractIQHandler implements IQHandler {
         if (type.contains(iq.getType())) {
             return processRequest(iq);
         } else {
-            return iq.createError(new StanzaError(Condition.BAD_REQUEST, "Type was '" + iq.getType().toString().toLowerCase() + "', but expected '" + type.toString().toLowerCase() + "'."));
+            return iq.createError(new StanzaError(Condition.BAD_REQUEST,
+                    "Type was '" + iq.getType().toString().toLowerCase() + "', but expected '"
+                            + type.toString().toLowerCase() + "'."));
         }
     }
 
     /**
-     * Processes the IQ, after checking if the extension is enabled and after checking if the IQ has correct type, which is specified for the extension.
+     * Processes the IQ, after checking if the extension is enabled and after checking if the IQ has correct type, which
+     * is specified for the extension.
      *
      * @param iq The IQ request.
      * @return The IQ response.

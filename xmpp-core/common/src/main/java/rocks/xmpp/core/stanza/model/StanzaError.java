@@ -65,7 +65,10 @@ public class StanzaError implements LanguageElement {
      * Private default constructor for unmarshalling.
      * <p/>
      * By default set an undefined condition.
-     * <blockquote><p>The "defined-condition" MUST correspond to one of the stanza error conditions defined under Section 8.3.3. However, because additional error conditions might be defined in the future, if an entity receives a stanza error condition that it does not understand then it MUST treat the unknown condition as equivalent to {@code <undefined-condition/>}</p></blockquote>
+     * <blockquote><p>The "defined-condition" MUST correspond to one of the stanza error conditions defined under
+     * Section 8.3.3. However, because additional error conditions might be defined in the future, if an entity receives
+     * a stanza error condition that it does not understand then it MUST treat the unknown condition as equivalent to
+     * {@code <undefined-condition/>}</p></blockquote>
      */
     @SuppressWarnings("unused")
     protected StanzaError() {
@@ -156,7 +159,8 @@ public class StanzaError implements LanguageElement {
      * Gets the 'by' attribute.
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-rules">8.3.1.  Rules</a></cite></p>
-     * The entity that returns an error stanza MAY pass along its JID to the sender of the generated stanza (e.g., for diagnostic or tracking purposes) through the addition of a 'by' attribute to the {@code <error/>} child element.
+     * The entity that returns an error stanza MAY pass along its JID to the sender of the generated stanza (e.g., for
+     * diagnostic or tracking purposes) through the addition of a 'by' attribute to the {@code <error/>} child element.
      * </blockquote>
      *
      * @return The JID.
@@ -202,8 +206,11 @@ public class StanzaError implements LanguageElement {
     /**
      * Gets the application specific condition, if any.
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-app">8.3.4.  Application-Specific Conditions</a></cite></p>
-     * <p>As noted, an application MAY provide application-specific stanza error information by including a properly namespaced child within the error element. Typically, the application-specific element supplements or further qualifies a defined element. Thus, the {@code <error/>} element will contain two or three child elements.</p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-app">8.3.4.  Application-Specific
+     * Conditions</a></cite></p>
+     * <p>As noted, an application MAY provide application-specific stanza error information by including a properly
+     * namespaced child within the error element. Typically, the application-specific element supplements or further
+     * qualifies a defined element. Thus, the {@code <error/>} element will contain two or three child elements.</p>
      * </blockquote>
      *
      * @return The application specific condition.

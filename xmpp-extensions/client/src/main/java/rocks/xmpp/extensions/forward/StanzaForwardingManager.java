@@ -36,11 +36,13 @@ import rocks.xmpp.extensions.forward.model.Forwarded;
 /**
  * This manager allows to forward stanzas to other XMPP entities.
  *
- * <p>Enabling this manager simply indicates support for the stanza forwarding extension in a service discovery response and has no further effect.</p>
+ * <p>Enabling this manager simply indicates support for the stanza forwarding extension in a service discovery
+ * response and has no further effect.</p>
  *
  * <p>By default, stanza forwarding support is not enabled.</p>
  *
- * <p>In order to check for a forwarded stanza, simply check for the {@link rocks.xmpp.extensions.forward.model.Forwarded} extension:</p>
+ * <p>In order to check for a forwarded stanza, simply check for the {@link Forwarded}
+ * extension:</p>
  *
  * <pre>{@code
  * Forwarded forwarded = message.getExtension(Forwarded.class);

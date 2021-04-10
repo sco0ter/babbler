@@ -319,7 +319,8 @@ public final class DebugController implements Initializable {
                 try {
                     if (newValue.getStanza() != null) {
                         StreamResult result = new StreamResult(new StringWriter());
-                        Source source = new SAXSource(parser.getXMLReader(), new InputSource(new StringReader(newValue.getXml())));
+                        Source source = new SAXSource(parser.getXMLReader(),
+                                new InputSource(new StringReader(newValue.getXml())));
                         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
                         transformer.transform(source, result);
                         stanzaView.setText(result.getWriter().toString());
@@ -331,7 +332,8 @@ public final class DebugController implements Initializable {
                     try {
                         StreamResult result = new StreamResult(new StringWriter());
                         String streamEndTag = "</stream:stream>";
-                        Source source = new SAXSource(parser.getXMLReader(), new InputSource(new StringReader(newValue.getXml() + streamEndTag)));
+                        Source source = new SAXSource(parser.getXMLReader(),
+                                new InputSource(new StringReader(newValue.getXml() + streamEndTag)));
                         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
                         transformer.transform(source, result);
                         String stream = result.getWriter().toString().trim();
@@ -382,7 +384,8 @@ public final class DebugController implements Initializable {
                         List<StanzaEntry> requests = entry.isInbound() ? inBoundRequests : outBoundRequests;
                         requests.add(entry);
                         if (newValue == entry) {
-                            requestIndex = (newValue.isInbound() ? inBoundRequests.size() : outBoundRequests.size()) - 1;
+                            requestIndex =
+                                    (newValue.isInbound() ? inBoundRequests.size() : outBoundRequests.size()) - 1;
                         }
                     }
                 }
@@ -413,7 +416,8 @@ public final class DebugController implements Initializable {
                     @Override
                     protected void updateItem(StanzaEntry item, boolean empty) {
                         super.updateItem(item, empty);
-                        getStyleClass().removeAll(CSS_INBOUND_STANZA, CSS_OUTBOUND_STANZA, CSS_ERROR_STANZA, CSS_HIGHLIGHT_ROW);
+                        getStyleClass().removeAll(CSS_INBOUND_STANZA, CSS_OUTBOUND_STANZA, CSS_ERROR_STANZA,
+                                CSS_HIGHLIGHT_ROW);
                         setContextMenu(null);
                         if (!empty) {
                             if (item.isError()) {
@@ -442,55 +446,59 @@ public final class DebugController implements Initializable {
         // Do not use PropertyValueFactory for columns, because it requires the item class to be public
 
         columnInbound.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().isInbound()));
-        columnInbound.setCellFactory(new Callback<TableColumn<StanzaEntry, Boolean>, TableCell<StanzaEntry, Boolean>>() {
-            @Override
-            public TableCell<StanzaEntry, Boolean> call(TableColumn<StanzaEntry, Boolean> booleanStanzaEntryTableColumn) {
-                TableCell<StanzaEntry, Boolean> cell = new TableCell<StanzaEntry, Boolean>() {
+        columnInbound
+                .setCellFactory(new Callback<TableColumn<StanzaEntry, Boolean>, TableCell<StanzaEntry, Boolean>>() {
                     @Override
-                    protected void updateItem(Boolean item, boolean empty) {
-                        super.updateItem(item, empty);
-                        setText(null);
-                        setGraphic(null);
+                    public TableCell<StanzaEntry, Boolean> call(
+                            TableColumn<StanzaEntry, Boolean> booleanStanzaEntryTableColumn) {
+                        TableCell<StanzaEntry, Boolean> cell = new TableCell<StanzaEntry, Boolean>() {
+                            @Override
+                            protected void updateItem(Boolean item, boolean empty) {
+                                super.updateItem(item, empty);
+                                setText(null);
+                                setGraphic(null);
 
-                        if (!empty && item != null) {
-                            // Make a region, so that -fx-shape can be applied from CSS.
-                            Region rectangle = new Region();
-                            rectangle.setMaxWidth(Control.USE_PREF_SIZE);
-                            rectangle.setMaxHeight(Control.USE_PREF_SIZE);
-                            rectangle.setRotate(item ? 90 : 270);
-                            rectangle.getStyleClass().add("arrow");
-                            setGraphic(rectangle);
-                        }
+                                if (!empty && item != null) {
+                                    // Make a region, so that -fx-shape can be applied from CSS.
+                                    Region rectangle = new Region();
+                                    rectangle.setMaxWidth(Control.USE_PREF_SIZE);
+                                    rectangle.setMaxHeight(Control.USE_PREF_SIZE);
+                                    rectangle.setRotate(item ? 90 : 270);
+                                    rectangle.getStyleClass().add("arrow");
+                                    setGraphic(rectangle);
+                                }
+                            }
+                        };
+                        cell.setAlignment(Pos.CENTER);
+                        return cell;
                     }
-                };
-                cell.setAlignment(Pos.CENTER);
-                return cell;
-            }
-        });
+                });
 
         columnDate.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getDate()));
-        columnDate.setCellFactory(new Callback<TableColumn<StanzaEntry, LocalDateTime>, TableCell<StanzaEntry, LocalDateTime>>() {
-            @Override
-            public TableCell<StanzaEntry, LocalDateTime> call(TableColumn<StanzaEntry, LocalDateTime> dateStanzaEntryTableColumn) {
-                TableCell<StanzaEntry, LocalDateTime> cell = new TableCell<StanzaEntry, LocalDateTime>() {
+        columnDate.setCellFactory(
+                new Callback<TableColumn<StanzaEntry, LocalDateTime>, TableCell<StanzaEntry, LocalDateTime>>() {
                     @Override
-                    protected void updateItem(LocalDateTime item, boolean empty) {
-                        super.updateItem(item, empty);
-                        setText(null);
-                        setTooltip(null);
+                    public TableCell<StanzaEntry, LocalDateTime> call(
+                            TableColumn<StanzaEntry, LocalDateTime> dateStanzaEntryTableColumn) {
+                        TableCell<StanzaEntry, LocalDateTime> cell = new TableCell<StanzaEntry, LocalDateTime>() {
+                            @Override
+                            protected void updateItem(LocalDateTime item, boolean empty) {
+                                super.updateItem(item, empty);
+                                setText(null);
+                                setTooltip(null);
 
-                        if (!empty) {
-                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
-                            String formatted = formatter.format(item);
-                            setText(formatted);
-                            setTooltip(new Tooltip(formatted));
-                        }
+                                if (!empty) {
+                                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
+                                    String formatted = formatter.format(item);
+                                    setText(formatted);
+                                    setTooltip(new Tooltip(formatted));
+                                }
+                            }
+                        };
+                        cell.setAlignment(Pos.CENTER);
+                        return cell;
                     }
-                };
-                cell.setAlignment(Pos.CENTER);
-                return cell;
-            }
-        });
+                });
 
         columnStanza.setMaxWidth(Double.MAX_VALUE);
         columnStanza.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getXml()));
@@ -568,7 +576,8 @@ public final class DebugController implements Initializable {
 
     void addStanza(StanzaEntry stanzaEntry) {
         viewModel.stanzas.add(stanzaEntry);
-        // Select the first item. This should actually happen automatically by TableView, but there's some displaying glitch.
+        // Select the first item. This should actually happen automatically by TableView,
+        // but there's some displaying glitch.
         if (viewModel.stanzas.size() == 1) {
             stanzaTableView.getSelectionModel().select(0);
         }

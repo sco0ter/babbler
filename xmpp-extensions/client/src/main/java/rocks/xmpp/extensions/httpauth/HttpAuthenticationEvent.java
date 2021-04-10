@@ -58,7 +58,8 @@ public final class HttpAuthenticationEvent extends EventObject {
      * @param confirmationRequest The confirmation request.
      * @throws IllegalArgumentException if source is null.
      */
-    HttpAuthenticationEvent(Object source, XmppSession xmppSession, Stanza stanza, ConfirmationRequest confirmationRequest) {
+    HttpAuthenticationEvent(Object source, XmppSession xmppSession, Stanza stanza,
+                            ConfirmationRequest confirmationRequest) {
         super(source);
         this.confirmationRequest = confirmationRequest;
         this.xmppSession = xmppSession;
@@ -91,7 +92,9 @@ public final class HttpAuthenticationEvent extends EventObject {
             // If the user wishes to confirm the request, the <iq/> response stanza MUST be of type "result"
             xmppSession.send(((IQ) stanza).createResult());
         } else if (stanza instanceof Message) {
-            // If the user wishes to confirm the request, the <message/> response stanza SHOULD be of type "normal", MUST mirror the <thread/> ID (if provided by the XMPP Server), and MUST contain the original <confirm/> child element
+            // If the user wishes to confirm the request, the <message/> response stanza SHOULD be of type "normal",
+            // MUST mirror the <thread/> ID (if provided by the XMPP Server), and MUST contain the original <confirm/>
+            // child element
             Message m = new Message(getRequester(), Message.Type.NORMAL, null, null, ((Message) stanza).getThread());
             m.putExtension(confirmationRequest);
             xmppSession.send(m);
@@ -104,7 +107,8 @@ public final class HttpAuthenticationEvent extends EventObject {
     public void deny() {
         if (stanza instanceof IQ) {
             // If the user wishes to deny the request, the <iq/> response stanza MUST be of type "error",
-            // MAY contain the original <confirm/> child element (although this is not necessary since the XMPP 'id' attribute can be used for tracking purposes),
+            // MAY contain the original <confirm/> child element (although this is not necessary since the XMPP 'id'
+            // attribute can be used for tracking purposes),
             // and MUST specify an error, which SHOULD be <not-authorized/>
             xmppSession.send(((IQ) stanza).createError(Condition.NOT_AUTHORIZED));
         } else if (stanza instanceof Message) {
@@ -112,7 +116,9 @@ public final class HttpAuthenticationEvent extends EventObject {
             // MUST mirror the <thread/> ID (if provided by the XMPP Server),
             // MUST contain the original <confirm/> child element,
             // and MUST specify an error, which SHOULD be <not-authorized/>
-            xmppSession.send(new Message(getRequester(), Message.Type.ERROR, Collections.emptyList(), null, ((Message) stanza).getThread(), null, null, null, null, Collections.singleton(confirmationRequest), new StanzaError(Condition.NOT_AUTHORIZED)));
+            xmppSession.send(new Message(getRequester(), Message.Type.ERROR, Collections.emptyList(), null,
+                    ((Message) stanza).getThread(), null, null, null, null, Collections.singleton(confirmationRequest),
+                    new StanzaError(Condition.NOT_AUTHORIZED)));
         }
     }
 }

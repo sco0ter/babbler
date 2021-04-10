@@ -32,7 +32,8 @@ import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 /**
- * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#request}, which can be used to request voice in a MUC room.
+ * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code
+ * http://jabber.org/protocol/muc#request}, which can be used to request voice in a MUC room.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
  * <pre>{@code
@@ -152,7 +153,7 @@ public final class RequestVoice implements StandardizedDataForm {
     }
 
     /**
-     * A builder to build a request voice form. The form is of type {@link rocks.xmpp.extensions.data.model.DataForm.Type#SUBMIT} by default.
+     * A builder to build a request voice form. The form is of type {@link DataForm.Type#SUBMIT} by default.
      */
     public static final class Builder extends DataForm.Builder<Builder> {
 

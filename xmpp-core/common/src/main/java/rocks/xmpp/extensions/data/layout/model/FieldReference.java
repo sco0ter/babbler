@@ -28,8 +28,8 @@ import java.util.Objects;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * A field reference is used to reference to a field in a data form.
- * The {@link #getName() var attribute} must be equal to the field's {@link rocks.xmpp.extensions.data.model.DataForm.Field#getName() var attribute}.
+ * A field reference is used to reference to a field in a data form. The {@link #getName() var attribute} must be equal
+ * to the field's {@link rocks.xmpp.extensions.data.model.DataForm.Field#getName() var attribute}.
  *
  * <p>This class is immutable.</p>
  *

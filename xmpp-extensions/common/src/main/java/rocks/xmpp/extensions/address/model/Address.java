@@ -111,7 +111,8 @@ public final class Address implements Addressable {
     /**
      * @param type        The address type.
      * @param jid         Specifies a simple Jabber ID associated with this address.
-     * @param description Specifies human-readable information for this address. This data may be used by clients to provide richer address-book integration.
+     * @param description Specifies human-readable information for this address. This data may be used by clients to
+     *                    provide richer address-book integration.
      * @param extensions  The extensions.
      */
     public Address(Type type, Jid jid, CharSequence description, Object... extensions) {
@@ -121,8 +122,10 @@ public final class Address implements Addressable {
     /**
      * @param type        The address type.
      * @param jid         Specifies a simple Jabber ID associated with this address.
-     * @param description Specifies human-readable information for this address. This data may be used by clients to provide richer address-book integration.
-     * @param node        Specifies a sub-addressable unit at a particular JID, corresponding to a Service Discovery node.
+     * @param description Specifies human-readable information for this address. This data may be used by clients to
+     *                    provide richer address-book integration.
+     * @param node        Specifies a sub-addressable unit at a particular JID, corresponding to a Service Discovery
+     *                    node.
      * @param extensions  The extensions.
      */
     public Address(Type type, Jid jid, CharSequence description, CharSequence node, Object... extensions) {
@@ -132,7 +135,8 @@ public final class Address implements Addressable {
     /**
      * @param type        The address type.
      * @param uri         Specifies an external system address, such as a sip:, sips:, or im: URI.
-     * @param description Specifies human-readable information for this address. This data may be used by clients to provide richer address-book integration.
+     * @param description Specifies human-readable information for this address. This data may be used by clients to
+     *                    provide richer address-book integration.
      * @param extensions  The extensions.
      */
     public Address(Type type, URI uri, CharSequence description, Object... extensions) {
@@ -140,7 +144,8 @@ public final class Address implements Addressable {
         this(type, null, uri, description, null, null, extensions);
     }
 
-    private Address(Type type, Jid jid, URI uri, CharSequence description, CharSequence node, Boolean delivered, Object... extensions) {
+    private Address(Type type, Jid jid, URI uri, CharSequence description, CharSequence node, Boolean delivered,
+                    Object... extensions) {
         this.type = Objects.requireNonNull(type);
         this.jid = jid;
         this.uri = uri;
@@ -182,7 +187,8 @@ public final class Address implements Addressable {
     }
 
     /**
-     * Gets the node. It specifies a sub-addressable unit at a particular JID, corresponding to a Service Discovery node.
+     * Gets the node. It specifies a sub-addressable unit at a particular JID, corresponding to a Service Discovery
+     * node.
      *
      * @return The node.
      * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-node">4.3 'node' attribute</a>
@@ -192,7 +198,8 @@ public final class Address implements Addressable {
     }
 
     /**
-     * Gets the description. It specifies human-readable information for this address. This data may be used by clients to provide richer address-book integration.
+     * Gets the description. It specifies human-readable information for this address. This data may be used by clients
+     * to provide richer address-book integration.
      *
      * @return The description.
      * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-desc">4.4 'desc' attribute</a>
@@ -265,7 +272,9 @@ public final class Address implements Addressable {
     public enum Type {
 
         /**
-         * These addressees should receive 'blind carbon copies' of the stanza. This means that the server MUST remove these addresses before the stanza is delivered to anyone other than the given bcc addressee or the multicast service of the bcc addressee.
+         * These addressees should receive 'blind carbon copies' of the stanza. This means that the server MUST remove
+         * these addresses before the stanza is delivered to anyone other than the given bcc addressee or the multicast
+         * service of the bcc addressee.
          *
          * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-type-bcc">4.6.3 Address type='bcc'</a>
          */
@@ -281,7 +290,8 @@ public final class Address implements Addressable {
         CC,
 
         /**
-         * This address type contains no actual address information. Instead, it means that the receiver SHOULD NOT reply to the message. This is useful when broadcasting messages to many receivers.
+         * This address type contains no actual address information. Instead, it means that the receiver SHOULD NOT
+         * reply to the message. This is useful when broadcasting messages to many receivers.
          *
          * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-type-noreply">4.6.6 Address type='noreply'</a>
          */
@@ -289,15 +299,21 @@ public final class Address implements Addressable {
         NOREPLY,
 
         /**
-         * This is the JID of a Multi-User Chat (XEP-0045) [5] room to which responses should be sent. When a user wants to reply to this stanza, the client SHOULD join this room first. Clients SHOULD respect this request unless an explicit override occurs. There MAY be more than one replyto or replyroom on a stanza, in which case the reply stanza MUST be routed to all of the addresses.
+         * This is the JID of a Multi-User Chat (XEP-0045) [5] room to which responses should be sent. When a user wants
+         * to reply to this stanza, the client SHOULD join this room first. Clients SHOULD respect this request unless
+         * an explicit override occurs. There MAY be more than one replyto or replyroom on a stanza, in which case the
+         * reply stanza MUST be routed to all of the addresses.
          *
-         * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-type-replyroom">4.6.5 Address type='replyroom'</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-type-replyroom">4.6.5 Address
+         * type='replyroom'</a>
          */
         @XmlEnumValue(value = "replyroom")
         REPLYROOM,
 
         /**
-         * This is the address to which all replies are requested to be sent. Clients SHOULD respect this request unless an explicit override occurs. There MAY be more than one replyto or replyroom on a stanza, in which case the reply stanza MUST be routed to all of the addresses.
+         * This is the address to which all replies are requested to be sent. Clients SHOULD respect this request unless
+         * an explicit override occurs. There MAY be more than one replyto or replyroom on a stanza, in which case the
+         * reply stanza MUST be routed to all of the addresses.
          *
          * @see <a href="https://xmpp.org/extensions/xep-0033.html#addr-type-replyto">4.6.4 Address type='replyto'</a>
          */
@@ -311,7 +327,7 @@ public final class Address implements Addressable {
          */
         @XmlEnumValue(value = "to")
         TO,
-        
+
         /**
          * In Multi-User Chat, if the room is non-anonymous, notes the original full JID of the sender.
          *

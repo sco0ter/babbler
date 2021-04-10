@@ -72,16 +72,19 @@ public class VCardBasedAvatarsProtocolTest {
     public void beforeClass() {
         MockitoAnnotations.openMocks(this);
         Mockito.when(xmppSession.getLocalXmppAddress()).thenReturn(Jid.of("user"));
-        Mockito.when(xmppSession.getManager(Mockito.eq(PresenceManager.class))).thenReturn(Mockito.mock(PresenceManager.class));
+        Mockito.when(xmppSession.getManager(Mockito.eq(PresenceManager.class)))
+                .thenReturn(Mockito.mock(PresenceManager.class));
         Mockito.when(xmppSession.getConfiguration()).thenReturn(Mockito.mock(XmppSessionConfiguration.class));
         Mockito.when(xmppSession.getManager(Mockito.eq(VCardManager.class))).thenReturn(vCardManager);
 
         VCard vCard = new VCard();
         vCard.setPhoto(new VCard.Image("image/png", IMAGE));
 
-        Mockito.when(vCardManager.getVCard(Mockito.any())).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(vCard)));
+        Mockito.when(vCardManager.getVCard(Mockito.any()))
+                .thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(vCard)));
         Mockito.when(vCardManager.getVCard()).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(vCard)));
-        Mockito.when(vCardManager.setVCard(Mockito.any())).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(null)));
+        Mockito.when(vCardManager.setVCard(Mockito.any()))
+                .thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(null)));
     }
 
     @BeforeMethod
@@ -126,7 +129,8 @@ public class VCardBasedAvatarsProtocolTest {
 
     @Test
     public void getAvatarWithUserHashOnly() throws XmppException {
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
         vCardBasedAvatarsProtocol.userHashes.put(Jid.of("contact"), IMAGE_HASH);
 
         Mockito.when(vCardBasedAvatarsProtocol.loadFromCache(Mockito.anyString())).thenReturn(null);
@@ -146,10 +150,12 @@ public class VCardBasedAvatarsProtocolTest {
     @Test
     public void getAvatarWithEmptyVCard() throws XmppException {
         VCardManager vCardManager = Mockito.mock(VCardManager.class);
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
 
 
-        Mockito.when(vCardManager.getVCard(Mockito.any())).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(new VCard())));
+        Mockito.when(vCardManager.getVCard(Mockito.any()))
+                .thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(new VCard())));
         Mockito.when(vCardBasedAvatarsProtocol.loadFromCache(Mockito.anyString())).thenReturn(null);
 
         byte[] avatar = vCardBasedAvatarsProtocol.getAvatar(Jid.of("contact")).getResult();
@@ -164,9 +170,11 @@ public class VCardBasedAvatarsProtocolTest {
     public void getAvatarWithNoVCardAtAll() throws XmppException {
 
         VCardManager vCardManager = Mockito.mock(VCardManager.class);
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
 
-        Mockito.when(vCardManager.getVCard(Mockito.any())).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(null)));
+        Mockito.when(vCardManager.getVCard(Mockito.any()))
+                .thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(null)));
         Mockito.when(vCardBasedAvatarsProtocol.loadFromCache(Mockito.anyString())).thenReturn(null);
 
         byte[] avatar = vCardBasedAvatarsProtocol.getAvatar(Jid.of("contact")).getResult();
@@ -181,10 +189,12 @@ public class VCardBasedAvatarsProtocolTest {
     public void getAvatarWithVCardReturnedStanzaError() throws XmppException {
 
         VCardManager vCardManager = Mockito.mock(VCardManager.class);
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
 
         CompletableFuture<VCard> completableFuture = new CompletableFuture<>();
-        completableFuture.completeExceptionally(new StanzaErrorException(new IQ(IQ.Type.GET, null).createError(Condition.ITEM_NOT_FOUND)));
+        completableFuture.completeExceptionally(
+                new StanzaErrorException(new IQ(IQ.Type.GET, null).createError(Condition.ITEM_NOT_FOUND)));
         Mockito.when(vCardManager.getVCard(Mockito.any())).thenReturn(new AsyncResult<>(completableFuture));
         Mockito.when(vCardBasedAvatarsProtocol.loadFromCache(Mockito.anyString())).thenReturn(null);
 
@@ -200,7 +210,8 @@ public class VCardBasedAvatarsProtocolTest {
     public void getAvatarWithVCardRetrievalThrew() throws XmppException {
 
         VCardManager vCardManager = Mockito.mock(VCardManager.class);
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
         vCardBasedAvatarsProtocol.getAvatar(Jid.of("contact")).getResult();
 
         CompletableFuture<VCard> completableFuture = new CompletableFuture<>();
@@ -212,7 +223,8 @@ public class VCardBasedAvatarsProtocolTest {
     @Test
     public void shouldNotPublishSameAvatarTwice() throws XmppException {
 
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
         vCardBasedAvatarsProtocol.publishAvatar(IMAGE).getResult();
         Mockito.verify(vCardManager, Mockito.times(0)).setVCard(Mockito.any());
     }
@@ -220,60 +232,78 @@ public class VCardBasedAvatarsProtocolTest {
     @Test
     public void shouldPublishAvatarIfNotYetSet() throws XmppException {
         VCardManager vCardManager = Mockito.mock(VCardManager.class);
-        Mockito.when(vCardManager.getVCard()).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(new VCard())));
-        Mockito.when(vCardManager.setVCard(Mockito.any())).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(null)));
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+        Mockito.when(vCardManager.getVCard())
+                .thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(new VCard())));
+        Mockito.when(vCardManager.setVCard(Mockito.any()))
+                .thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(null)));
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
         vCardBasedAvatarsProtocol.publishAvatar(IMAGE).getResult();
         Mockito.verify(vCardManager, Mockito.times(1)).setVCard(Mockito.any());
-        Assert.assertEquals(vCardBasedAvatarsProtocol.userHashes.get(xmppSession.getLocalXmppAddress().asBareJid()), IMAGE_HASH);
+        Assert.assertEquals(vCardBasedAvatarsProtocol.userHashes.get(xmppSession.getLocalXmppAddress().asBareJid()),
+                IMAGE_HASH);
     }
 
     @Test
     public void shouldPublishNewAvatar() throws XmppException {
         VCardManager vCardManager = Mockito.mock(VCardManager.class);
-        Mockito.when(vCardManager.getVCard()).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(new VCard())));
-        Mockito.when(vCardManager.setVCard(Mockito.any())).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(null)));
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+        Mockito.when(vCardManager.getVCard())
+                .thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(new VCard())));
+        Mockito.when(vCardManager.setVCard(Mockito.any()))
+                .thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(null)));
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
         vCardBasedAvatarsProtocol.publishAvatar(new byte[]{5, 6, 7, 8}).getResult();
         ArgumentCaptor<VCard> vCardCaptor = ArgumentCaptor.forClass(VCard.class);
         Mockito.verify(vCardManager, Mockito.times(1)).setVCard(vCardCaptor.capture());
         Assert.assertEquals(vCardCaptor.getValue().getPhoto().getValue(), new byte[]{5, 6, 7, 8});
-        Assert.assertEquals(vCardBasedAvatarsProtocol.userHashes.get(xmppSession.getLocalXmppAddress().asBareJid()), XmppUtils.hash(new byte[]{5, 6, 7, 8}));
+        Assert.assertEquals(vCardBasedAvatarsProtocol.userHashes.get(xmppSession.getLocalXmppAddress().asBareJid()),
+                XmppUtils.hash(new byte[]{5, 6, 7, 8}));
     }
 
     @Test
     public void shouldResetAvatar() throws XmppException {
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
         vCardBasedAvatarsProtocol.publishAvatar(null).getResult();
         ArgumentCaptor<VCard> vCardCaptor = ArgumentCaptor.forClass(VCard.class);
         Mockito.verify(vCardManager, Mockito.times(1)).setVCard(vCardCaptor.capture());
-        Assert.assertEquals(vCardBasedAvatarsProtocol.userHashes.get(xmppSession.getLocalXmppAddress().asBareJid()), "");
+        Assert.assertEquals(vCardBasedAvatarsProtocol.userHashes.get(xmppSession.getLocalXmppAddress().asBareJid()),
+                "");
         Assert.assertNull(vCardCaptor.getValue().getPhoto());
     }
 
     /**
-     * If a client supports the protocol defined herein, it MUST include the update child element in every presence broadcast it sends and SHOULD also include the update child in directed presence stanzas (e.g., directed presence sent when joining Multi-User Chat (XEP-0045) [5] rooms).
+     * If a client supports the protocol defined herein, it MUST include the update child element in every presence
+     * broadcast it sends and SHOULD also include the update child in directed presence stanzas (e.g., directed presence
+     * sent when joining Multi-User Chat (XEP-0045) [5] rooms).
      *
-     * @see <a href="https://xmpp.org/extensions/xep-0153.html#bizrules-presence">4.1 Inclusion of Update Data in Presence</a>>
+     * @see <a href="https://xmpp.org/extensions/xep-0153.html#bizrules-presence">4.1 Inclusion of Update Data in
+     * Presence</a>>
      */
     @Test
     public void shouldIncludeAvatarUpdateInOutboundPresence() {
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>());
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>());
         Presence presence = new Presence();
-        vCardBasedAvatarsProtocol.handleOutboundPresence(new PresenceEvent(Mockito.mock(XmppSession.class), presence, false));
+        vCardBasedAvatarsProtocol
+                .handleOutboundPresence(new PresenceEvent(Mockito.mock(XmppSession.class), presence, false));
         Assert.assertTrue(presence.hasExtension(AvatarUpdate.class));
     }
 
     /**
      * If a client is not yet ready to advertise an image, it MUST send an empty update child element.
      *
-     * @see <a href="https://xmpp.org/extensions/xep-0153.html#bizrules-presence">4.1 Inclusion of Update Data in Presence</a>>
+     * @see <a href="https://xmpp.org/extensions/xep-0153.html#bizrules-presence">4.1 Inclusion of Update Data in
+     * Presence</a>>
      */
     @Test
     public void shouldIncludeEmptyAvatarUpdateIfNotReady() {
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>());
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>());
         Presence presence = new Presence();
-        vCardBasedAvatarsProtocol.handleOutboundPresence(new PresenceEvent(Mockito.mock(XmppSession.class), presence, false));
+        vCardBasedAvatarsProtocol
+                .handleOutboundPresence(new PresenceEvent(Mockito.mock(XmppSession.class), presence, false));
         AvatarUpdate avatarUpdate = presence.getExtension(AvatarUpdate.class);
         Assert.assertNotNull(avatarUpdate);
         Assert.assertNull(avatarUpdate.getHash());
@@ -282,11 +312,13 @@ public class VCardBasedAvatarsProtocolTest {
     /**
      * If there is no avatar image to be advertised, the photo element MUST be empty.
      *
-     * @see <a href="https://xmpp.org/extensions/xep-0153.html#bizrules-presence">4.1 Inclusion of Update Data in Presence</a>>
+     * @see <a href="https://xmpp.org/extensions/xep-0153.html#bizrules-presence">4.1 Inclusion of Update Data in
+     * Presence</a>>
      */
     @Test
     public void shouldIncludeEmptyPhotoIfNoAvatar() {
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>());
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>());
         // Empty hash == no avatar
         vCardBasedAvatarsProtocol.userHashes.put(xmppSession.getLocalXmppAddress().asBareJid(), "");
         Presence presence = new Presence();
@@ -298,16 +330,17 @@ public class VCardBasedAvatarsProtocolTest {
     }
 
     /**
-     * If the presence stanza received from the other resource does not contain the update child element,
-     * then the other resource does not support vCard-based avatars.
-     * That resource could modify the contents of the vCard (including the photo element);
-     * because polling for vCard updates is not allowed, the client MUST stop advertising the avatar image hash.
+     * If the presence stanza received from the other resource does not contain the update child element, then the other
+     * resource does not support vCard-based avatars. That resource could modify the contents of the vCard (including
+     * the photo element); because polling for vCard updates is not allowed, the client MUST stop advertising the avatar
+     * image hash.
      *
      * @see <a href="https://xmpp.org/extensions/xep-0153.html#bizrules-resources">4.3 Multiple Resources</a>
      */
     @Test
     public void presenceOfOtherResourceDoesNotConform() {
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>());
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>());
         Presence presence = new Presence();
         presence.setFrom(xmppSession.getLocalXmppAddress().withResource("other"));
         vCardBasedAvatarsProtocol.handleInboundPresence(new PresenceEvent(xmppSession, presence, true));
@@ -318,14 +351,16 @@ public class VCardBasedAvatarsProtocolTest {
     }
 
     /**
-     * If the update child element is empty, then the other resource supports the protocol but does not have its own avatar image.
-     * Therefore the client can ignore the other resource and continue to broadcast the existing image hash.
+     * If the update child element is empty, then the other resource supports the protocol but does not have its own
+     * avatar image. Therefore the client can ignore the other resource and continue to broadcast the existing image
+     * hash.
      *
      * @see <a href="https://xmpp.org/extensions/xep-0153.html#bizrules-resources">4.3 Multiple Resources</a>
      */
     @Test
     public void presenceOfOtherResourceSendsEmptyAvatarUpdate() {
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
         Presence presence = new Presence();
         presence.setFrom(xmppSession.getLocalXmppAddress().withResource("other"));
         presence.addExtension(new AvatarUpdate());
@@ -335,16 +370,16 @@ public class VCardBasedAvatarsProtocolTest {
     }
 
     /**
-     * If the update child element contains an empty photo element,
-     * then the other resource has updated the vCard with an empty BINVAL.
-     * Therefore the client MUST retrieve the vCard.
-     * If the retrieved vCard contains a photo element with an empty BINVAL, then the client MUST stop advertising the old image.
+     * If the update child element contains an empty photo element, then the other resource has updated the vCard with
+     * an empty BINVAL. Therefore the client MUST retrieve the vCard. If the retrieved vCard contains a photo element
+     * with an empty BINVAL, then the client MUST stop advertising the old image.
      *
      * @see <a href="https://xmpp.org/extensions/xep-0153.html#bizrules-resources">4.3 Multiple Resources</a>
      */
     @Test
     public void presenceOfOtherResourceSendsEmptyPhoto() {
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
         Presence presence = new Presence();
         presence.setFrom(xmppSession.getLocalXmppAddress().withResource("other"));
         presence.addExtension(new AvatarUpdate(""));
@@ -354,14 +389,16 @@ public class VCardBasedAvatarsProtocolTest {
     }
 
     /**
-     * If the update child element contains a non-empty photo element, then the client MUST compare the image hashes. If the hashes are identical,
-     * then the client can ignore the other resource and continue to broadcast the existing image hash.
+     * If the update child element contains a non-empty photo element, then the client MUST compare the image hashes. If
+     * the hashes are identical, then the client can ignore the other resource and continue to broadcast the existing
+     * image hash.
      *
      * @see <a href="https://xmpp.org/extensions/xep-0153.html#bizrules-resources">4.3 Multiple Resources</a>
      */
     @Test
     public void presenceOfOtherResourceSendsIdenticalImageHash() {
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
         vCardBasedAvatarsProtocol.userHashes.put(xmppSession.getLocalXmppAddress().asBareJid(), IMAGE_HASH);
         Presence presence = new Presence();
         presence.setFrom(xmppSession.getLocalXmppAddress().withResource("other"));
@@ -372,14 +409,16 @@ public class VCardBasedAvatarsProtocolTest {
     }
 
     /**
-     * If the hashes are different, then the client MUST NOT attempt to resolve the conflict by uploading its avatar image again.
-     * Instead, it MUST defer to the content of the retrieved vCard by resetting its image hash (see below) and providing that hash in future presence broadcasts.
+     * If the hashes are different, then the client MUST NOT attempt to resolve the conflict by uploading its avatar
+     * image again. Instead, it MUST defer to the content of the retrieved vCard by resetting its image hash (see below)
+     * and providing that hash in future presence broadcasts.
      *
      * @see <a href="https://xmpp.org/extensions/xep-0153.html#bizrules-resources">4.3 Multiple Resources</a>
      */
     @Test
     public void presenceOfOtherResourceSendsDifferentImageHash() {
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
         vCardBasedAvatarsProtocol.userHashes.put(xmppSession.getLocalXmppAddress().asBareJid(), IMAGE_HASH);
         Presence presence = new Presence();
         presence.setFrom(xmppSession.getLocalXmppAddress().withResource("other"));
@@ -390,8 +429,9 @@ public class VCardBasedAvatarsProtocolTest {
     }
 
     /**
-     * If the hashes are different, then the client MUST NOT attempt to resolve the conflict by uploading its avatar image again.
-     * Instead, it MUST defer to the content of the retrieved vCard by resetting its image hash (see below) and providing that hash in future presence broadcasts.
+     * If the hashes are different, then the client MUST NOT attempt to resolve the conflict by uploading its avatar
+     * image again. Instead, it MUST defer to the content of the retrieved vCard by resetting its image hash (see below)
+     * and providing that hash in future presence broadcasts.
      *
      * @see <a href="https://xmpp.org/extensions/xep-0153.html#bizrules-reset">4.4 Resetting the Image Hash</a>
      */
@@ -401,13 +441,17 @@ public class VCardBasedAvatarsProtocolTest {
         vCard.setPhoto(new VCard.Image("image/png", IMAGE));
 
         VCardManager vCardManager = Mockito.mock(VCardManager.class);
-        Mockito.when(vCardManager.getVCard(Mockito.any())).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(vCard)));
+        Mockito.when(vCardManager.getVCard(Mockito.any()))
+                .thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(vCard)));
         Mockito.when(vCardManager.getVCard()).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(vCard)));
-        Mockito.when(vCardManager.setVCard(Mockito.any())).thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(null)));
+        Mockito.when(vCardManager.setVCard(Mockito.any()))
+                .thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(null)));
 
-        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol = Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
+        VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
+                Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
         Mockito.when(xmppSession.send(Mockito.any())).then(invocation -> {
-            vCardBasedAvatarsProtocol.handleOutboundPresence(new PresenceEvent(xmppSession, invocation.getArgument(0), false));
+            vCardBasedAvatarsProtocol
+                    .handleOutboundPresence(new PresenceEvent(xmppSession, invocation.getArgument(0), false));
             return new AsyncResult<>(CompletableFuture.completedFuture(null));
         });
         vCardBasedAvatarsProtocol.resetHash();

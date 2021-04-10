@@ -63,7 +63,8 @@ public final class RosterEvent extends EventObject {
      * @param source          The object on which the Event initially occurred.
      * @throws IllegalArgumentException if source is null.
      */
-    RosterEvent(Object source, List<Contact> addedContacts, List<Contact> updatedContacts, List<Contact> deletedContacts) {
+    RosterEvent(Object source, List<Contact> addedContacts, List<Contact> updatedContacts,
+                List<Contact> deletedContacts) {
         super(source);
         this.addedContacts.addAll(addedContacts);
         this.updatedContacts.addAll(updatedContacts);
@@ -71,7 +72,8 @@ public final class RosterEvent extends EventObject {
     }
 
     /**
-     * Gets the added contacts, which have been added since the last roster push or which have been initially set by the first roster result.
+     * Gets the added contacts, which have been added since the last roster push or which have been initially set by the
+     * first roster result.
      *
      * @return The added contacts.
      */

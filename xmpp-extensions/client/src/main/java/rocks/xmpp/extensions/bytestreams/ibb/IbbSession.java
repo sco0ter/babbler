@@ -72,7 +72,8 @@ final class IbbSession extends ByteStreamSession {
      */
     private boolean closed;
 
-    IbbSession(String sessionId, XmppSession xmppSession, Jid jid, int blockSize, Duration readTimeout, InBandByteStreamManager manager, InBandByteStream.Open.StanzaType stanzaType) {
+    IbbSession(String sessionId, XmppSession xmppSession, Jid jid, int blockSize, Duration readTimeout,
+               InBandByteStreamManager manager, InBandByteStream.Open.StanzaType stanzaType) {
         super(sessionId);
         this.outputStream = new IbbOutputStream(this, blockSize);
         this.inputStream = new IbbInputStream(this, readTimeout.toMillis());
@@ -119,7 +120,10 @@ final class IbbSession extends ByteStreamSession {
             result = xmppSession.query(IQ.set(jid, data));
         }
 
-        // The 'seq' value starts at 0 (zero) for each sender and MUST be incremented for each packet sent by that entity. Thus, the second chunk sent has a 'seq' value of 1, the third chunk has a 'seq' value of 2, and so on. The counter loops at maximum, so that after value 65535 (215 - 1) the 'seq' MUST start again at 0.
+        // The 'seq' value starts at 0 (zero) for each sender and MUST be incremented for each packet sent by that
+        // entity. Thus, the second chunk sent has a 'seq' value of 1, the third chunk has a 'seq' value of 2,
+        // and so on.
+        // The counter loops at maximum, so that after value 65535 (215 - 1) the 'seq' MUST start again at 0.
         if (++outboundSequence > 65535) {
             outboundSequence = 0;
         }
@@ -139,7 +143,8 @@ final class IbbSession extends ByteStreamSession {
             outputStream.close();
             xmppSession.send(IQ.set(jid, new InBandByteStream.Close(getSessionId())));
         } finally {
-            // the party that sent the original <close/> element SHOULD wait to receive the IQ response from the receiving party before considering the bytestream to be closed.
+            // the party that sent the original <close/> element SHOULD wait to receive the IQ response from the
+            // receiving party before considering the bytestream to be closed.
             // Remove this session from the map.
             inBandByteStreamManager.ibbSessionMap.remove(getSessionId());
         }

@@ -86,7 +86,8 @@ public class FileTransferIT extends IntegrationTest {
     public void testInBandFileTransferWithMessages() throws InterruptedException, TimeoutException, ExecutionException {
         // Disable SOCKS 5 transfer method, so that IBB will be used.
         xmppSession[1].disableFeature(Socks5ByteStream.NAMESPACE);
-        xmppSession[0].getManager(InBandByteStreamManager.class).setStanzaType(InBandByteStream.Open.StanzaType.MESSAGE);
+        xmppSession[0].getManager(InBandByteStreamManager.class)
+                .setStanzaType(InBandByteStream.Open.StanzaType.MESSAGE);
         testFileTransfer();
     }
 
@@ -128,7 +129,9 @@ public class FileTransferIT extends IntegrationTest {
         try {
             // Let the receiver listen for incoming file transfers.
             fileTransferManagers[1].addFileTransferOfferListener(listener);
-            FileTransfer fileTransfer = fileTransferManagers[0].offerFile(new ByteArrayInputStream(data), "test.txt", data.length, Instant.now(), "Description", xmppSession[1].getConnectedResource(), Duration.ofSeconds(12)).get();
+            FileTransfer fileTransfer = fileTransferManagers[0]
+                    .offerFile(new ByteArrayInputStream(data), "test.txt", data.length, Instant.now(), "Description",
+                            xmppSession[1].getConnectedResource(), Duration.ofSeconds(12)).get();
             fileTransfer.addFileTransferStatusListener(ev -> {
                 //System.out.println(ev.getStatus() + ", " + fileTransfer.isDone());
             });

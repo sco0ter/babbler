@@ -110,7 +110,8 @@ public final class NettyTcpConnectionConfiguration extends TcpConnectionConfigur
     /**
      * A builder to create a {@link NettyTcpConnectionConfiguration} instance.
      */
-    public static final class Builder extends TcpConnectionConfiguration.Builder<NettyTcpConnectionConfiguration.Builder> {
+    public static final class Builder
+            extends TcpConnectionConfiguration.Builder<NettyTcpConnectionConfiguration.Builder> {
 
         private EventLoopGroup eventLoopGroup;
 

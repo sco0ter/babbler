@@ -148,7 +148,8 @@ final class ScramServer extends ScramBase implements SaslServer {
             // In response, the server sends a "server-first-message" containing the
             // user's iteration count i and the user's salt, and appends its own
             // nonce to the client-specified one.
-            serverFirstMessage = "r=" + nonce + ",s=" + DatatypeConverter.printBase64Binary(salt) + ",i=" + ITERATION_COUNT;
+            serverFirstMessage =
+                    "r=" + nonce + ",s=" + DatatypeConverter.printBase64Binary(salt) + ",i=" + ITERATION_COUNT;
             return serverFirstMessage.getBytes(StandardCharsets.UTF_8);
 
         } else {
@@ -185,7 +186,8 @@ final class ScramServer extends ScramBase implements SaslServer {
                     complete = true;
                     byte[] serverKey = hmac(saltedPassword, "Server Key".getBytes(StandardCharsets.UTF_8));
                     // return ServerSignature
-                    String serverFinalMessage = "v=" + DatatypeConverter.printBase64Binary(hmac(serverKey, authMessage.getBytes(StandardCharsets.UTF_8)));
+                    String serverFinalMessage = "v=" + DatatypeConverter
+                            .printBase64Binary(hmac(serverKey, authMessage.getBytes(StandardCharsets.UTF_8)));
                     return serverFinalMessage.getBytes(StandardCharsets.UTF_8);
                 } else {
                     // On failed authentication, the entire server-

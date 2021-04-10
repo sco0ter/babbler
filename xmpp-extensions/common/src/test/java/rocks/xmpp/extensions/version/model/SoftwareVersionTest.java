@@ -76,6 +76,7 @@ public class SoftwareVersionTest extends XmlTest {
     public void marshalSoftwareVersion() throws JAXBException, XMLStreamException {
         SoftwareVersion softwareVersion = new SoftwareVersion("Babbler", "1.0");
         String xml = marshal(softwareVersion);
-        Assert.assertEquals("<query xmlns=\"jabber:iq:version\"><name>Babbler</name><version>1.0</version><os>" + System.getProperty("os.name") + "</os></query>", xml);
+        Assert.assertEquals("<query xmlns=\"jabber:iq:version\"><name>Babbler</name><version>1.0</version><os>" + System
+                .getProperty("os.name") + "</os></query>", xml);
     }
 }

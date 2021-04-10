@@ -80,11 +80,14 @@ public final class S5bTransportMethod extends TransportMethod {
         this(null, null, null, Collections.emptyList());
     }
 
-    public S5bTransportMethod(String sessionId, String dstaddr, Socks5ByteStream.Mode mode, Collection<Candidate> candidates) {
+    public S5bTransportMethod(String sessionId, String dstaddr, Socks5ByteStream.Mode mode,
+                              Collection<Candidate> candidates) {
         this(sessionId, dstaddr, mode, candidates, null, null, false, false);
     }
 
-    private S5bTransportMethod(String sessionId, String dstaddr, Socks5ByteStream.Mode mode, Collection<Candidate> candidates, CandidateUsed candidateUsed, Activated activated, boolean candidateError, boolean proxyError) {
+    private S5bTransportMethod(String sessionId, String dstaddr, Socks5ByteStream.Mode mode,
+                               Collection<Candidate> candidates, CandidateUsed candidateUsed, Activated activated,
+                               boolean candidateError, boolean proxyError) {
         this.sid = sessionId;
         this.dstaddr = dstaddr;
         this.mode = mode;
@@ -103,7 +106,8 @@ public final class S5bTransportMethod extends TransportMethod {
      * @return The transport method.
      */
     public static S5bTransportMethod candidateUsed(String sid, String cid) {
-        return new S5bTransportMethod(sid, null, null, Collections.emptyList(), new CandidateUsed(cid), null, false, false);
+        return new S5bTransportMethod(sid, null, null, Collections.emptyList(), new CandidateUsed(cid), null, false,
+                false);
     }
 
     /**
@@ -146,12 +150,13 @@ public final class S5bTransportMethod extends TransportMethod {
      */
     public static int calculatePriority(S5bTransportMethod.Candidate.Type type, int localPreference) {
         // (2^16)*(type preference) + (local preference)
-        return 0xFFFF * (type == null ? Candidate.Type.DIRECT.getPreferenceValue() : type.getPreferenceValue()) + localPreference;
+        return 0xFFFF * (type == null ? Candidate.Type.DIRECT.getPreferenceValue() : type.getPreferenceValue())
+                + localPreference;
     }
 
     /**
-     * Gets the DST.ADDR field for the SOCKS5 protocol.
-     * In XMPP this is SHA-1 hash of <i>session id</i> + <i>requester JID</i> + <i>receiver JID</i>
+     * Gets the DST.ADDR field for the SOCKS5 protocol. In XMPP this is SHA-1 hash of <i>session id</i> + <i>requester
+     * JID</i> + <i>receiver JID</i>
      *
      * @return The DST.ADDR field.
      */
@@ -223,7 +228,8 @@ public final class S5bTransportMethod extends TransportMethod {
     }
 
     /**
-     * The implementation of the {@code <candidate/>} element in the {@code urn:xmpp:jingle:transports:s5b:1} namespace.
+     * The implementation of the {@code <candidate/>} element in the {@code urn:xmpp:jingle:transports:s5b:1}
+     * namespace.
      *
      * <p>Candidates are possible stream hosts for the transport.</p>
      *
@@ -337,7 +343,7 @@ public final class S5bTransportMethod extends TransportMethod {
          * The transport type.
          */
         public enum Type {
-            
+
             /**
              * Direct connection using the given interface.
              */
@@ -355,7 +361,7 @@ public final class S5bTransportMethod extends TransportMethod {
              */
             @XmlEnumValue("tunnel")
             TUNNEL(110),
-            
+
             /**
              * SOCKS5 Relay.
              */

@@ -67,9 +67,15 @@ public class RosterItemTest {
         EntityTransaction transaction = seContainer.select(EntityManager.class).get().getTransaction();
         transaction.begin();
 
-        rosterItemDao.create("test", new RosterItemEntity("test", Jid.of("111"), false, false, false, "name", Contact.Subscription.BOTH, Collections.singleton("aaa"), null));
-        rosterItemDao.create("test", new RosterItemEntity("test", Jid.of("222"), false, true, false, "name", Contact.Subscription.NONE, Collections.singleton("bbb"), null));
-        rosterItemDao.create("test1", new RosterItemEntity("test1", Jid.of("333"), false, false, true, "name", Contact.Subscription.NONE, Collections.emptyList(), null));
+        rosterItemDao.create("test",
+                new RosterItemEntity("test", Jid.of("111"), false, false, false, "name", Contact.Subscription.BOTH,
+                        Collections.singleton("aaa"), null));
+        rosterItemDao.create("test",
+                new RosterItemEntity("test", Jid.of("222"), false, true, false, "name", Contact.Subscription.NONE,
+                        Collections.singleton("bbb"), null));
+        rosterItemDao.create("test1",
+                new RosterItemEntity("test1", Jid.of("333"), false, false, true, "name", Contact.Subscription.NONE,
+                        Collections.emptyList(), null));
 
         Connection conn = DriverManager.getConnection("jdbc:h2:mem:test", "sa", "");
         DBTablePrinter.printTable(conn, "RosterItem_groups");

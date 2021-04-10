@@ -23,9 +23,15 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy Lists</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0016.html">XEP-0016: Privacy
+ * Lists</a>.
  *
- * <p>It defines an XMPP protocol extension for enabling or disabling communication with other entities on a network. The protocol, which was first standardized in Section 10 of RFC 3921, can be used to block communication with unknown or undesirable entities. Blocking can be based on Jabber Identifier, subscription state, or roster group. The blocked stanzas can be messages, IQs, inbound or outbound presence stanzas, or all stanzas. The protocol also enables an entity to create, modify, or delete its privacy lists, apply different lists to different connected resources, define a default list, and decline the use of any privacy list during a particular communications session.</p>
+ * <p>It defines an XMPP protocol extension for enabling or disabling communication with other entities on a network.
+ * The protocol, which was first standardized in Section 10 of RFC 3921, can be used to block communication with unknown
+ * or undesirable entities. Blocking can be based on Jabber Identifier, subscription state, or roster group. The blocked
+ * stanzas can be messages, IQs, inbound or outbound presence stanzas, or all stanzas. The protocol also enables an
+ * entity to create, modify, or delete its privacy lists, apply different lists to different connected resources, define
+ * a default list, and decline the use of any privacy list during a particular communications session.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = Privacy.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

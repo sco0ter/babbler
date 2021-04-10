@@ -157,7 +157,9 @@ public class InboundClientSession implements Addressable, Session, StreamHandler
     @Override
     public final CompletionStage<Void> closeAsync() {
         if (open.compareAndSet(false, true)) {
-            StreamHeader streamHeader = StreamHeader.responseClientToServer(CDI.current().select(DefaultServerConfiguration.class).get().getDomain(), null, getId(), getLanguage());
+            StreamHeader streamHeader = StreamHeader
+                    .responseClientToServer(CDI.current().select(DefaultServerConfiguration.class).get().getDomain(),
+                            null, getId(), getLanguage());
             connection.write(streamHeader);
         }
         return connection.closeAsync();
@@ -166,7 +168,9 @@ public class InboundClientSession implements Addressable, Session, StreamHandler
     @Override
     public final CompletionStage<Void> closeAsync(StreamError streamError) {
         if (open.compareAndSet(false, true)) {
-            StreamHeader streamHeader = StreamHeader.responseClientToServer(CDI.current().select(DefaultServerConfiguration.class).get().getDomain(), null, getId(), getLanguage());
+            StreamHeader streamHeader = StreamHeader
+                    .responseClientToServer(CDI.current().select(DefaultServerConfiguration.class).get().getDomain(),
+                            null, getId(), getLanguage());
             connection.write(streamHeader);
         }
         return connection.closeAsync(streamError);
@@ -182,7 +186,9 @@ public class InboundClientSession implements Addressable, Session, StreamHandler
     public final boolean handleElement(Object element) throws StreamNegotiationException {
         if (element instanceof SessionOpen) {
             SessionOpen initialStreamHeader = (SessionOpen) element;
-            SessionOpen responseStreamHeader = StreamHeader.create(Jid.ofDomain("domain"), initialStreamHeader.getTo(), getId(), "1.0", Locale.ENGLISH, "jabber:client");
+            SessionOpen responseStreamHeader = StreamHeader
+                    .create(Jid.ofDomain("domain"), initialStreamHeader.getTo(), getId(), "1.0", Locale.ENGLISH,
+                            "jabber:client");
             connection.open(responseStreamHeader);
             connection.send(new StreamFeatures(streamFeaturesManager.getStreamFeatures()));
             open.set(true);
@@ -202,8 +208,10 @@ public class InboundClientSession implements Addressable, Session, StreamHandler
                 Optional<Jid> address = getAddress();
                 if (address.isPresent()) {
                     // RFC 6120 § 8.1.2.1.  Client-to-Server Streams
-                    // When a server receives an XML stanza from a connected client, the server MUST add a 'from' attribute to the stanza
-                    // or override the 'from' attribute specified by the client, where the value of the 'from' attribute MUST be the full JID (<localpart@domainpart/resource>) determined by the server for the connected resource that generated the stanza (see Section 4.3.6),
+                    // When a server receives an XML stanza from a connected client, the server MUST add a 'from'
+                    // attribute to the stanza or override the 'from' attribute specified by the client, where the value
+                    // of the 'from' attribute MUST be the full JID (<localpart@domainpart/resource>) determined by the
+                    // server for the connected resource that generated the stanza (see Section 4.3.6),
                     // or the bare JID (<localpart@domainpart>) in the case of subscription-related presence stanzas
                     if (stanza instanceof Presence && ((Presence) stanza).isSubscription()) {
                         stanza.setFrom(address.get().asBareJid());
@@ -216,7 +224,10 @@ public class InboundClientSession implements Addressable, Session, StreamHandler
                     return false;
                 }
                 if (stanza.getTo() instanceof MalformedJid) {
-                    Stanza errorStanza = stanza.createError(new StanzaError(StanzaError.Type.MODIFY, rocks.xmpp.core.stanza.model.errors.Condition.JID_MALFORMED, ((MalformedJid) stanza.getTo()).getCause().getMessage(), Locale.ENGLISH, null, serverConfiguration.getDomain()));
+                    Stanza errorStanza = stanza.createError(new StanzaError(StanzaError.Type.MODIFY,
+                            rocks.xmpp.core.stanza.model.errors.Condition.JID_MALFORMED,
+                            ((MalformedJid) stanza.getTo()).getCause().getMessage(), Locale.ENGLISH, null,
+                            serverConfiguration.getDomain()));
                     send(errorStanza);
                     return false;
                 }

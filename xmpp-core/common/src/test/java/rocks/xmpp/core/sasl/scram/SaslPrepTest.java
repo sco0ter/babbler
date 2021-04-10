@@ -35,13 +35,15 @@ public class SaslPrepTest {
     @Test
     public void shouldMapToSpace() {
         // http://tools.ietf.org/html/rfc3454#appendix-B.1
-        String s = "\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u200B\u202F\u205F\u3000";
+        String s =
+                "\u00A0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u200B\u202F\u205F\u3000";
         Assert.assertEquals(SaslPrep.prepare(s), "                 ");
     }
 
     @Test
     public void shouldMapToNothing() {
-        String s = "\u034F\u1806\u180B\u180C\u180D\u200C\u200D\u2060\uFE00\uFE01\uFE02\uFE03\uFE04\uFE05\uFE06\uFE07\uFE08\uFE09\uFE0A\uFE0B\uFE0C\uFE0D\uFE0E\uFE0F\uFEFF";
+        String s =
+                "\u034F\u1806\u180B\u180C\u180D\u200C\u200D\u2060\uFE00\uFE01\uFE02\uFE03\uFE04\uFE05\uFE06\uFE07\uFE08\uFE09\uFE0A\uFE0B\uFE0C\uFE0D\uFE0E\uFE0F\uFEFF";
         Assert.assertEquals(SaslPrep.prepare(s), "");
     }
 
@@ -75,7 +77,10 @@ public class SaslPrepTest {
 
     @Test
     public void testNonAsciiControlCharacters() {
-        String[] chars = new String[]{"\u0080", "\u06DD", "\u070F", "\u180E", "\u2028", "\u2029", "\u2061", "\u2062", "\u2063", "\u206A", "\u206B", "\u206C", "\u206D", "\u206E", "\u206F", "\uFFF9", "\uFFFA", "\uFFFB", "\uD834\uDD73", "\uD834\uDD7A"};
+        String[] chars =
+                new String[]{"\u0080", "\u06DD", "\u070F", "\u180E", "\u2028", "\u2029", "\u2061", "\u2062", "\u2063",
+                        "\u206A", "\u206B", "\u206C", "\u206D", "\u206E", "\u206F", "\uFFF9", "\uFFFA", "\uFFFB",
+                        "\uD834\uDD73", "\uD834\uDD7A"};
         int failed = 0;
         for (String aChar : chars) {
 
@@ -133,7 +138,9 @@ public class SaslPrepTest {
      */
     @Test
     public void testProhibitedChars() {
-        String[] str = new String[]{"\u200E", "\u200F", "\u202A", "\u202B", "\u202C", "\u202D", "\u202E", "\u206A", "\u206B", "\u206C", "\u206D", "\u206E", "\u206F"};
+        String[] str =
+                new String[]{"\u200E", "\u200F", "\u202A", "\u202B", "\u202C", "\u202D", "\u202E", "\u206A", "\u206B",
+                        "\u206C", "\u206D", "\u206E", "\u206F"};
 
         int fails = 0;
         for (String s : str) {

@@ -93,7 +93,8 @@ public class InBandByteStreamIT extends IntegrationTest {
         });
 
         InBandByteStreamManager inBandBytestreamManager1 = xmppSession1.getManager(InBandByteStreamManager.class);
-        ByteStreamSession ibbSession = inBandBytestreamManager1.initiateSession(xmppSession2.getConnectedResource(), "sid", 4096).get();
+        ByteStreamSession ibbSession =
+                inBandBytestreamManager1.initiateSession(xmppSession2.getConnectedResource(), "sid", 4096).get();
         OutputStream os = ibbSession.getOutputStream();
         os.write(new byte[]{1, 2, 3, 4});
         os.flush();

@@ -23,7 +23,8 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0297.html">XEP-0297: Stanza Forwarding</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0297.html">XEP-0297: Stanza
+ * Forwarding</a>.
  *
  * <p>It defines a protocol to forward a stanza from one entity to another.</p>
  */

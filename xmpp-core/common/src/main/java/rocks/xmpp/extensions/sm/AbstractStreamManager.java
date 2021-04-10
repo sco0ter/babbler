@@ -54,8 +54,8 @@ public abstract class AbstractStreamManager implements StreamFeatureNegotiator<S
     /**
      * 2^32 - 1
      *
-     * <p>In the unlikely case that the number of stanzas handled during a stream management session exceeds the number of
-     * digits that can be represented by the unsignedInt datatype as specified in XML Schema Part 2 [10] (i.e., 232),
+     * <p>In the unlikely case that the number of stanzas handled during a stream management session exceeds the number
+     * of digits that can be represented by the unsignedInt datatype as specified in XML Schema Part 2 [10] (i.e., 232),
      * the value of 'h' SHALL be reset from 232-1 back to zero (rather than being incremented to 232).</p>
      */
     private static final long MAX_H = 0xFFFFFFFFL;
@@ -145,8 +145,9 @@ public abstract class AbstractStreamManager implements StreamFeatureNegotiator<S
     public StreamNegotiationResult processNegotiation(Object element) throws StreamNegotiationException {
         try {
             if (element instanceof StreamManagement.Request) {
-                // When an <r/> element ("request") is received, the recipient MUST acknowledge it by sending an <a/> element
-                // to the sender containing a value of 'h' that is equal to the number of stanzas handled by the recipient of the <r/> element.
+                // When an <r/> element ("request") is received, the recipient MUST acknowledge it by sending
+                // an <a/> element to the sender containing a value of 'h' that is equal to the number of stanzas
+                // handled by the recipient of the <r/> element.
                 StreamManagement.Answer answer;
                 synchronized (this) {
                     answer = new StreamManagement.Answer(inboundCount);
@@ -172,10 +173,12 @@ public abstract class AbstractStreamManager implements StreamFeatureNegotiator<S
             synchronized (this) {
                 x = diff(h, acknowledgedStanzaCount);
                 // When a party receives an <a/> element, it SHOULD keep a record of the 'h' value returned as the
-                // sequence number of the last handled outbound stanza for the current stream (and discard the previous value).
+                // sequence number of the last handled outbound stanza for the current stream
+                // (and discard the previous value).
                 acknowledgedStanzaCount = h;
                 if (h > outboundCount) {
-                    throw new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, "", Locale.ENGLISH, new StreamManagement.HandledCountTooHigh(h, outboundCount)));
+                    throw new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, "", Locale.ENGLISH,
+                            new StreamManagement.HandledCountTooHigh(h, outboundCount)));
                 }
             }
 

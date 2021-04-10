@@ -78,7 +78,8 @@ public class HeadersManagerTest extends BaseTest {
         Assert.assertTrue(discoverableInfo.getFeatures().contains("http://jabber.org/protocol/shim"));
 
         try {
-            DiscoverableInfo discoverableInfo1 = serviceDiscoveryManager.discoverInformation(JULIET, "http://jabber.org/protocol/shim").get();
+            DiscoverableInfo discoverableInfo1 =
+                    serviceDiscoveryManager.discoverInformation(JULIET, "http://jabber.org/protocol/shim").get();
             Assert.assertTrue(discoverableInfo1.getFeatures().contains("http://jabber.org/protocol/shim#In-Reply-To"));
             Assert.assertTrue(discoverableInfo1.getFeatures().contains("http://jabber.org/protocol/shim#Keywords"));
         } catch (ExecutionException e) {

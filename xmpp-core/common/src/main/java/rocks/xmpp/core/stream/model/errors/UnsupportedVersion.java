@@ -30,8 +30,10 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <unsupported-version/>} stream error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-unsupported-version">4.9.3.25.  unsupported-version</a></cite></p>
- * <p>The 'version' attribute provided by the initiating entity in the stream header specifies a version of XMPP that is not supported by the server.</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-unsupported-version">4.9.3.25.
+ * unsupported-version</a></cite></p>
+ * <p>The 'version' attribute provided by the initiating entity in the stream header specifies a version of XMPP that
+ * is not supported by the server.</p>
  * </blockquote>
  * This class is a singleton.
  *

@@ -86,7 +86,9 @@ public final class ContactExchangeManager extends Manager {
             protected IQ processRequest(IQ iq) {
                 ContactExchange contactExchange = iq.getExtension(ContactExchange.class);
                 if (xmppSession.getManager(RosterManager.class).getContact(iq.getFrom().asBareJid()) == null) {
-                    // If the receiving entity will not process the suggested action(s) because the sending entity is not in the receiving entity's roster, the receiving entity MUST return an error to the sending entity, which error SHOULD be <not-authorized/>.
+                    // If the receiving entity will not process the suggested action(s) because the sending entity is
+                    // not in the receiving entity's roster, the receiving entity MUST return an error to the sending
+                    // entity, which error SHOULD be <not-authorized/>.
                     return iq.createError(Condition.NOT_AUTHORIZED);
                 } else {
                     List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
@@ -117,7 +119,8 @@ public final class ContactExchangeManager extends Manager {
         if (getTrustedEntities().contains(sender.asBareJid())) {
             items.forEach(this::approve);
         } else {
-            XmppUtils.notifyEventListeners(contactExchangeListeners, new ContactExchangeEvent(this, items, sender, message, date));
+            XmppUtils.notifyEventListeners(contactExchangeListeners,
+                    new ContactExchangeEvent(this, items, sender, message, date));
         }
     }
 
@@ -128,39 +131,51 @@ public final class ContactExchangeManager extends Manager {
             // If "action" attribute is missing, it is implicitly "add" by default.
             if (item.getAction() == null || item.getAction() == ContactExchange.Item.Action.ADD) {
                 if (contact != null) {
-                    // 1. If the item already exists in the roster and the item is in the specified group (or no group is specified),
-                    // the receiving application MUST NOT prompt a human user for approval regarding that item and MUST NOT add that item to the roster.
+                    // 1. If the item already exists in the roster and the item is in the specified group (or no group
+                    // is specified),
+                    // the receiving application MUST NOT prompt a human user for approval regarding that item and MUST
+                    // NOT add that item to the roster.
 
-                    // 3. If the item already exists in the roster but not in the specified group, the receiving application MAY prompt the user
-                    // for approval and SHOULD edit the existing item so that will also belong to the specified group (in addition to the existing group, if any).
+                    // 3. If the item already exists in the roster but not in the specified group, the receiving
+                    // application MAY prompt the user
+                    // for approval and SHOULD edit the existing item so that will also belong to the specified group
+                    // (in addition to the existing group, if any).
                     Collection<String> specifiedGroups = new ArrayDeque<>(item.getGroups());
                     // Remove all existing groups.
                     specifiedGroups.removeAll(contact.getGroups());
                     // If there are still new groups.
                     if (!specifiedGroups.isEmpty()) {
                         // Only notify if the item will be added to new groups.
-                        newItems.add(new ContactExchange.Item(item.getJid(), item.getName(), specifiedGroups, ContactExchange.Item.Action.ADD));
+                        newItems.add(new ContactExchange.Item(item.getJid(), item.getName(), specifiedGroups,
+                                ContactExchange.Item.Action.ADD));
                     }
                 } else {
-                    // 2. If the item does not already exist in the roster, the receiving application SHOULD prompt a human user for approval
+                    // 2. If the item does not already exist in the roster, the receiving application SHOULD prompt a
+                    // human user for approval
                     // regarding that item and, if approval is granted, MUST add that item to the roster.
                     newItems.add(item);
                 }
             } else if (item.getAction() == ContactExchange.Item.Action.DELETE) {
-                // 1. If the item does not exist in the roster, the receiving application MUST NOT prompt a human user for approval regarding that item and MUST NOT delete that item from the roster.
+                // 1. If the item does not exist in the roster, the receiving application MUST NOT prompt a human user
+                // for approval regarding that item and MUST NOT delete that item from the roster.
                 if (contact != null) {
-                    // 2. If the item exists in the roster but not in the specified group, the receiving application MUST NOT prompt the user for approval and MUST NOT delete the existing item.
-                    // 3. If the item exists in the roster and is in both the specified group and another group, the receiving application MAY prompt the user for approval and SHOULD edit the existing item so that it no longer belongs to the specified group.
+                    // 2. If the item exists in the roster but not in the specified group, the receiving application
+                    // MUST NOT prompt the user for approval and MUST NOT delete the existing item.
+                    // 3. If the item exists in the roster and is in both the specified group and another group, the
+                    // receiving application MAY prompt the user for approval and SHOULD edit the existing item so that
+                    // it no longer belongs to the specified group.
                     Collection<String> specifiedGroups = new ArrayDeque<>(item.getGroups());
                     // Retain only the groups, that exist in the roster.
                     specifiedGroups.retainAll(contact.getGroups());
                     if (!specifiedGroups.isEmpty() || contact.getGroups().isEmpty()) {
                         // Only notify if the item will be added to new groups.
-                        newItems.add(new ContactExchange.Item(item.getJid(), item.getName(), specifiedGroups, ContactExchange.Item.Action.DELETE));
+                        newItems.add(new ContactExchange.Item(item.getJid(), item.getName(), specifiedGroups,
+                                ContactExchange.Item.Action.DELETE));
                     }
                 }
             } else if (item.getAction() == ContactExchange.Item.Action.MODIFY) {
-                // 1. If the item does not exist in the roster, the receiving application MUST NOT prompt a human user for approval regarding that item and MUST NOT add that item to the roster.
+                // 1. If the item does not exist in the roster, the receiving application MUST NOT prompt a human user
+                // for approval regarding that item and MUST NOT add that item to the roster.
                 if (contact != null) {
                     newItems.add(item);
                 }
@@ -171,8 +186,8 @@ public final class ContactExchangeManager extends Manager {
     }
 
     /**
-     * Gets a collection of trusted entities for which roster item exchange suggestions are approved automatically (no listeners will be called).
-     * The JIDs contained in this collection must be bare JIDs.
+     * Gets a collection of trusted entities for which roster item exchange suggestions are approved automatically (no
+     * listeners will be called). The JIDs contained in this collection must be bare JIDs.
      *
      * @return The trusted entities.
      * @see <a href="https://xmpp.org/extensions/xep-0144.html#security-trust">8.1 Trusted Entities</a>
@@ -191,7 +206,9 @@ public final class ContactExchangeManager extends Manager {
     public AsyncResult<Void> suggestContactAddition(Jid jid, Contact... contacts) {
 
         // Only support adding contacts for now:
-        // However, if the sender is a human user and/or the sending application has a primary Service Discovery category of "client" (e.g., a bot) [10], the sending application SHOULD NOT specify an 'action' attribute other than "add"
+        // However, if the sender is a human user and/or the sending application has a primary Service Discovery
+        // category of "client" (e.g., a bot) [10], the sending application SHOULD NOT specify an 'action' attribute
+        // other than "add"
 
         if (contacts.length > 0) {
             Collection<ContactExchange.Item> rosterItems = new ArrayDeque<>();
@@ -200,7 +217,8 @@ public final class ContactExchangeManager extends Manager {
                     // ... MUST possess a 'jid' attribute that specifies the JabberID of the item to be added
                     throw new IllegalArgumentException("Contact contains no JID.");
                 }
-                rosterItems.add(new ContactExchange.Item(contact.getJid(), contact.getName(), contact.getGroups(), ContactExchange.Item.Action.ADD));
+                rosterItems.add(new ContactExchange.Item(contact.getJid(), contact.getName(), contact.getGroups(),
+                        ContactExchange.Item.Action.ADD));
             }
             ContactExchange contactExchange = new ContactExchange(rosterItems);
 
@@ -209,7 +227,9 @@ public final class ContactExchangeManager extends Manager {
             if (presence.isAvailable()) {
                 return xmppSession.query(IQ.set(presence.getFrom(), contactExchange), Void.class);
             } else {
-                // If the sending entity does not know that the receiving entity is online and available, it MUST send a <message/> stanza to the receiving entity's "bare JID" (user@host) rather than an <iq/> stanza to a particular resource.
+                // If the sending entity does not know that the receiving entity is online and available, it MUST send
+                // a <message/> stanza to the receiving entity's "bare JID" (user@host) rather than an <iq/> stanza to
+                // a particular resource.
                 Message message = new Message(jid, Message.Type.NORMAL);
                 message.addExtension(contactExchange);
                 xmppSession.send(message);
@@ -221,23 +241,27 @@ public final class ContactExchangeManager extends Manager {
     /**
      * Approves a roster exchange item by modifying the roster accordingly.
      *
-     * <p>If the item is to be added and does not yet exist, it will be added to your roster and you are subscribed to its presence.<br>
-     * If it already exists in your roster but in a different group than suggested, it will additionally be added to the suggested group.</p>
+     * <p>If the item is to be added and does not yet exist, it will be added to your roster and you are subscribed to
+     * its presence. If it already exists in your roster but in a different group than suggested, it will additionally
+     * be added to the suggested group.</p>
      *
-     * <p>If the item is to be deleted, it will be deleted from your roster, if the suggested group(s) matches the same group(s) in your roster.<br>
-     * Otherwise it will be edited, so that it no longer belongs to the suggested groups.</p>
+     * <p>If the item is to be deleted, it will be deleted from your roster, if the suggested group(s) matches the same
+     * group(s) in your roster. Otherwise it will be edited, so that it no longer belongs to the suggested groups.</p>
      *
      * <p>If the item is to be modified, it will be modified accordingly, if it exists.</p>
      *
      * @param item The roster exchange item.
-     * @return The action, which was actually performed. This may vary from the specified action, e.g. if you add a contact that already exists, only its groups are updated. If no action was performed, e.g. if you want to delete a contact, that does not exist, null is returned.
+     * @return The action, which was actually performed. This may vary from the specified action, e.g. if you add a
+     * contact that already exists, only its groups are updated. If no action was performed, e.g. if you want to delete
+     * a contact, that does not exist, null is returned.
      */
     public ContactExchange.Item.Action approve(ContactExchange.Item item) {
         RosterManager rosterManager = xmppSession.getManager(RosterManager.class);
         Contact contact = rosterManager.getContact(item.getJid());
         if (item.getAction() == null || item.getAction() == ContactExchange.Item.Action.ADD) {
             // If the contact does not exist yes, add it and request subscription.
-            // (After completing the roster set, the receiving application SHOULD also send a <presence/> stanza of type "subscribe" to the JID of the new item.)
+            // (After completing the roster set, the receiving application SHOULD also send a <presence/> stanza of typ
+            // "subscribe" to the JID of the new item.)
             if (contact == null) {
                 rosterManager.addContact(new Contact(item.getJid(), item.getName(), item.getGroups()), true, null);
                 return ContactExchange.Item.Action.ADD;
@@ -249,7 +273,8 @@ public final class ContactExchangeManager extends Manager {
                 if (!additionalGroups.isEmpty()) {
                     // Then add all additional groups to the existing groups.
                     newGroups.addAll(additionalGroups);
-                    // ... SHOULD edit the existing item so that will also belong to the specified group (in addition to the existing group, if any).
+                    // ... SHOULD edit the existing item so that will also belong to the specified group (in addition to
+                    // the existing group, if any).
                     rosterManager.updateContact(new Contact(contact.getJid(), contact.getName(), newGroups));
                     return ContactExchange.Item.Action.MODIFY;
                 }

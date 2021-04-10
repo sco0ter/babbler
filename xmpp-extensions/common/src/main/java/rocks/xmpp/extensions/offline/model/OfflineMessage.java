@@ -162,7 +162,7 @@ public final class OfflineMessage {
 
             @XmlEnumValue("remove")
             REMOVE,
-            
+
             @XmlEnumValue("view")
             VIEW
         }

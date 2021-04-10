@@ -30,7 +30,8 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.extensions.httpbind.model.Body;
 
 /**
- * A BOSH exception is thrown when the BOSH connection manager returned an error condition or the HTTP request responded with an HTTP error code.
+ * A BOSH exception is thrown when the BOSH connection manager returned an error condition or the HTTP request responded
+ * with an HTTP error code.
  *
  * @author Christian Schudt
  * @see rocks.xmpp.extensions.httpbind.model.Body.Condition
@@ -54,7 +55,8 @@ public final class BoshException extends XmppException {
     }
 
     BoshException(Body.Condition condition, URI uri) {
-        super("The connection was terminated with condition: " + (condition != null ? condition.toString() : Body.Condition.UNDEFINED_CONDITION.toString()));
+        super("The connection was terminated with condition: "
+                + (condition != null ? condition.toString() : Body.Condition.UNDEFINED_CONDITION.toString()));
         this.uri = uri;
         this.condition = condition;
         this.httpErrorCode = -1;

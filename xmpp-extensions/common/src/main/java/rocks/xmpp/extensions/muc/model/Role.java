@@ -27,7 +27,9 @@ package rocks.xmpp.extensions.muc.model;
 import javax.xml.bind.annotation.XmlEnumValue;
 
 /**
- * A temporary position or privilege level within a room, distinct from a user's long-lived affiliation with the room; the possible roles are "moderator", "participant", and "visitor" (it is also possible to have no defined role). A role lasts only for the duration of an occupant's visit to a room.
+ * A temporary position or privilege level within a room, distinct from a user's long-lived affiliation with the room;
+ * the possible roles are "moderator", "participant", and "visitor" (it is also possible to have no defined role). A
+ * role lasts only for the duration of an occupant's visit to a room.
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#roles">5.1 Roles</a>
@@ -59,8 +61,8 @@ public enum Role {
     NONE;
 
     /**
-     * Compares two roles and returns true, if this role is higher than the other
-     * with regards to their privileges in a multi-user chat.
+     * Compares two roles and returns true, if this role is higher than the other with regards to their privileges in a
+     * multi-user chat.
      *
      * <p>The highest role is moderator, followed by participant, followed by visitor, followed by none.</p>
      *

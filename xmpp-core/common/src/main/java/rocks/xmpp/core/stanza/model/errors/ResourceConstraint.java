@@ -30,8 +30,10 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <resource-constraint/>} stanza error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-resource-constraint">8.3.3.18.  resource-constraint</a></cite></p>
- * <p>The server or recipient is busy or lacks the system resources necessary to service the request; the associated error type SHOULD be "wait".</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-resource-constraint">8.3.3.18.
+ * resource-constraint</a></cite></p>
+ * <p>The server or recipient is busy or lacks the system resources necessary to service the request; the associated
+ * error type SHOULD be "wait".</p>
  * </blockquote>
  * This class is a singleton.
  *

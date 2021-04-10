@@ -54,6 +54,7 @@ public class PepNativeBookmarkTest extends XmlTest {
         PepNativeBookmark pepNativeBookmark = new PepNativeBookmark("Council of Oberon", "Puck", "pwd", true);
         String xml = marshal(pepNativeBookmark);
 
-        Assert.assertEquals(xml, "<conference xmlns=\"urn:xmpp:bookmarks:1\" name=\"Council of Oberon\" autojoin=\"true\"><nick>Puck</nick><password>pwd</password></conference>");
+        Assert.assertEquals(xml,
+                "<conference xmlns=\"urn:xmpp:bookmarks:1\" name=\"Council of Oberon\" autojoin=\"true\"><nick>Puck</nick><password>pwd</password></conference>");
     }
 }

@@ -39,7 +39,8 @@ public interface StreamFeatureNegotiator<T extends StreamFeature> {
     /**
      * Processes a feature protocol element or the feature element itself.
      *
-     * @param element The XML element, which belongs to the feature negotiation, e.g. {@code <challenge/>} for SASL negotiation or the feature element itself, e.g. {@code <mechanisms/>}.
+     * @param element The XML element, which belongs to the feature negotiation, e.g. {@code <challenge/>} for SASL
+     *                negotiation or the feature element itself, e.g. {@code <mechanisms/>}.
      * @return The result of the feature negotiation.
      * @throws StreamNegotiationException Any exception which might be thrown during a feature negotiation.
      */

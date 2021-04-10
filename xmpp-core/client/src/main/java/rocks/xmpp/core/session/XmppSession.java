@@ -121,14 +121,20 @@ import rocks.xmpp.util.concurrent.QueuedExecutorService;
  * <p>To date there are three kinds of sessions:</p>
  *
  * <ul>
- * <li>A normal client-to-server session. This is the default and most used XMPP session. It's concrete implementation is the {@link XmppClient}.</li>
- * <li>An external component session (<a href="https://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>).</li>
- * <li>A client-to-client session (<a href="https://xmpp.org/extensions/xep-0174.html">XEP-0174: Serverless Messaging</a>) (no implementation yet).</li>
+ * <li>A normal client-to-server session. This is the default and most used XMPP session. It's concrete implementation
+ * is the {@link XmppClient}.</li>
+ * <li>An external component session
+ * (<a href="https://xmpp.org/extensions/xep-0114.html">XEP-0114: Jabber Component Protocol</a>).</li>
+ * <li>A client-to-client session
+ * (<a href="https://xmpp.org/extensions/xep-0174.html">XEP-0174: Serverless Messaging</a>) (no implementation yet).
+ * </li>
  * </ul>
  *
- * <p>This class provides the common functionality and abstract methods for connection establishment, sending and receiving XML stanzas, closing the session, etc.</p>
+ * <p>This class provides the common functionality and abstract methods for connection establishment, sending and
+ * receiving XML stanzas, closing the session, etc.</p>
  *
- * <p>Concrete implementations may have different concepts for authentication, e.g. normal C2S sessions use SASL, while the Jabber Component Protocol uses a different kind of handshake for authenticating.</p>
+ * <p>Concrete implementations may have different concepts for authentication, e.g. normal C2S sessions use SASL,
+ * while the Jabber Component Protocol uses a different kind of handshake for authenticating.</p>
  *
  * @author Christian Schudt
  * @see XmppClient
@@ -141,9 +147,11 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
     private static final System.Logger logger = System.getLogger(XmppSession.class.getName());
 
-    private static final EnumSet<Status> IS_CONNECTED = EnumSet.of(Status.CONNECTED, Status.AUTHENTICATED, Status.AUTHENTICATING);
+    private static final EnumSet<Status> IS_CONNECTED =
+            EnumSet.of(Status.CONNECTED, Status.AUTHENTICATED, Status.AUTHENTICATING);
 
-    private static final ExecutorService STANZA_LISTENER_EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Stanza Listener Thread"));
+    private static final ExecutorService STANZA_LISTENER_EXECUTOR =
+            Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Stanza Listener Thread"));
 
     protected final XmppSessionConfiguration configuration;
 
@@ -177,8 +185,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     private final Set<IQHandler> iqHandlers = new CopyOnWriteArraySet<>();
 
     /**
-     * Maps handlers to executors. Each handler should get their own {@link QueuedExecutorService}, so that
-     * stanzas handled by the same handler are handled in order.
+     * Maps handlers to executors. Each handler should get their own {@link QueuedExecutorService}, so that stanzas
+     * handled by the same handler are handled in order.
      */
     private final Map<Object, Executor> executorMap = Collections.synchronizedMap(new WeakHashMap<>());
 
@@ -198,7 +206,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     private final Queue<Stanza> unacknowledgedStanzas = new ConcurrentLinkedDeque<>();
 
     /**
-     * Maps a stanza to its send date. This is used when resending unacknowledged stanzas during reconnection (to have the original send date).
+     * Maps a stanza to its send date. This is used when resending unacknowledged stanzas during reconnection (to have
+     * the original send date).
      */
     private final Map<Stanza, Instant> stanzaSendDate = new ConcurrentHashMap<>();
 
@@ -238,10 +247,13 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
     private volatile XmppDebugger debugger;
 
-    protected XmppSession(String xmppServiceDomain, XmppSessionConfiguration configuration, ClientConnectionConfiguration... connectionConfigurations) {
-        this.xmppServiceDomain = Jid.of(Objects.requireNonNull(xmppServiceDomain, "The XMPP service domain must not be null. It's a required attribute in the stream header"));
+    protected XmppSession(String xmppServiceDomain, XmppSessionConfiguration configuration,
+                          ClientConnectionConfiguration... connectionConfigurations) {
+        this.xmppServiceDomain = Jid.of(Objects.requireNonNull(xmppServiceDomain,
+                "The XMPP service domain must not be null. It's a required attribute in the stream header"));
         this.configuration = configuration;
-        this.stanzaListenerExecutor = new QueuedExecutorService(configuration.getExecutor() != null ? configuration.getExecutor() : STANZA_LISTENER_EXECUTOR);
+        this.stanzaListenerExecutor = new QueuedExecutorService(
+                configuration.getExecutor() != null ? configuration.getExecutor() : STANZA_LISTENER_EXECUTOR);
         this.serviceDiscoveryManager = getManager(ClientServiceDiscoveryManager.class);
         this.streamFeaturesManager = getManager(StreamFeaturesManager.class);
         getManager(ClientEntityCapabilitiesManager.class);
@@ -374,7 +386,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     /**
      * Connects to the XMPP server.
      *
-     * @throws ConnectionException        If a connection error occurred on the transport layer, e.g. the socket could not connect.
+     * @throws ConnectionException        If a connection error occurred on the transport layer, e.g. the socket could
+     *                                    not connect.
      * @throws StreamErrorException       If the server returned a stream error.
      * @throws StreamNegotiationException If any exception occurred during stream feature negotiation.
      * @throws NoResponseException        If the server didn't return a response during stream establishment.
@@ -392,7 +405,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      */
     protected final void afterLogin() {
         if (wasLoggedIn) {
-            XmppUtils.notifyEventListeners(connectionListeners, new ConnectionEvent(this, ConnectionEvent.Type.RECONNECTION_SUCCEEDED, null, Duration.ZERO));
+            XmppUtils.notifyEventListeners(connectionListeners,
+                    new ConnectionEvent(this, ConnectionEvent.Type.RECONNECTION_SUCCEEDED, null, Duration.ZERO));
         }
         wasLoggedIn = true;
         // Copy the unacknowledged stanzas.
@@ -429,7 +443,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                 Connection connection = null;
                 try {
                     connection = connectionConfiguration.createConnection(this);
-                    connection.open(StreamHeader.create(from, xmppServiceDomain, null, version, configuration.getLanguage(), namespace));
+                    connection.open(StreamHeader
+                            .create(from, xmppServiceDomain, null, version, configuration.getLanguage(), namespace));
                     activeConnection = connection;
                     break;
                 } catch (Exception e) {
@@ -441,7 +456,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                         }
                     }
                     if (connectionIterator.hasNext()) {
-                        logger.log(System.Logger.Level.WARNING, "{0} failed to connect. Trying alternative connection.", connectionConfiguration);
+                        logger.log(System.Logger.Level.WARNING, "{0} failed to connect. Trying alternative connection.",
+                                connectionConfiguration);
                         logger.log(System.Logger.Level.DEBUG, e.getMessage(), e);
                     } else {
                         throw new ConnectionException("Failed to connect to " + connectionConfiguration, e);
@@ -480,10 +496,12 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Called, when the connection has failed. It closes the connection and reverts the session status to the previous status.
+     * Called, when the connection has failed. It closes the connection and reverts the session status to the previous
+     * status.
      *
      * @param previousStatus The previous status.
-     * @param e              The exception. Any exception during closing the connection will be added as suppressed exception to this one.
+     * @param e              The exception. Any exception during closing the connection will be added as suppressed
+     *                       exception to this one.
      * @throws XmppException The exception, which will be rethrown.
      */
     protected final void onConnectionFailed(Status previousStatus, Throwable e) throws XmppException {
@@ -504,7 +522,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     protected final Status preLogin() {
         Status previousStatus = getStatus();
         if (!IS_CONNECTED.contains(previousStatus)) {
-            throw new IllegalStateException("You must be connected to the server before trying to login. Status is " + previousStatus);
+            throw new IllegalStateException(
+                    "You must be connected to the server before trying to login. Status is " + previousStatus);
         }
         if (getDomain() == null) {
             throw new IllegalStateException("The XMPP domain must not be null.");
@@ -709,25 +728,28 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Adds an IQ handler for a given payload type. The handler will process the IQ stanzas asynchronously, but in order,
-     * i.e. IQ stanzas handled by the same handler are handled synchronously, but IQ stanzas with different payloads can be handled in parallel.
+     * Adds an IQ handler for a given payload type. The handler will process the IQ stanzas asynchronously, but in
+     * order, i.e. IQ stanzas handled by the same handler are handled synchronously, but IQ stanzas with different
+     * payloads can be handled in parallel.
      *
      * @param iqHandler The IQ handler.
      * @see #removeIQHandler(IQHandler)
      */
     public final void addIQHandler(IQHandler iqHandler) {
-        executorMap.computeIfAbsent(iqHandler, k -> new QueuedExecutorService(configuration.getExecutor() != null ? configuration.getExecutor() : STANZA_LISTENER_EXECUTOR));
+        executorMap.computeIfAbsent(iqHandler, k -> new QueuedExecutorService(
+                configuration.getExecutor() != null ? configuration.getExecutor() : STANZA_LISTENER_EXECUTOR));
         iqHandlers.add(iqHandler);
     }
 
     /**
-     * Adds an IQ handler for a given payload type. The handler can either be processed asynchronously (which means it won't block the inbound stanza processing queue),
-     * or synchronously, which means IQ requests are processed on the same thread as other stanzas.
-     * In other words synchronous processing means, the IQ requests are processed in the same order as they arrive and no other stanzas can be
-     * processed until the handler has returned.
+     * Adds an IQ handler for a given payload type. The handler can either be processed asynchronously (which means it
+     * won't block the inbound stanza processing queue), or synchronously, which means IQ requests are processed on the
+     * same thread as other stanzas. In other words synchronous processing means, the IQ requests are processed in the
+     * same order as they arrive and no other stanzas can be processed until the handler has returned.
      *
      * @param iqHandler   The IQ handler.
-     * @param invokeAsync True, if the handler should be processed asynchronously; false, if the handler should be processed asynchronously.
+     * @param invokeAsync True, if the handler should be processed asynchronously; false, if the handler should be
+     *                    processed asynchronously.
      * @see #removeIQHandler(IQHandler)
      * @deprecated Simply use {@link #addIQHandler(IQHandler)}, this method now behaves the same.
      */
@@ -747,8 +769,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Adds a session listener, which listens for session status changes.
-     * Each time the {@linkplain Status session status} changes, all listeners will be notified.
+     * Adds a session listener, which listens for session status changes. Each time the {@linkplain Status session
+     * status} changes, all listeners will be notified.
      *
      * @param sessionStatusListener The session listener.
      * @see #removeSessionStatusListener(Consumer)
@@ -768,7 +790,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Adds a connection listener, which is triggered, when the connection used by this session is disconnected or reconnected.
+     * Adds a connection listener, which is triggered, when the connection used by this session is disconnected or
+     * reconnected.
      *
      * @param connectionListener The connection listener.
      * @see #removeConnectionListener(Consumer)
@@ -792,9 +815,12 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Sends an {@code <iq/>} stanza and returns an async result, which can be used to wait for the response. The result is completed if the response IQ has arrived or the default timeout has exceeded, in which case the result completes with a {@link NoResponseException}.
+     * Sends an {@code <iq/>} stanza and returns an async result, which can be used to wait for the response. The result
+     * is completed if the response IQ has arrived or the default timeout has exceeded, in which case the result
+     * completes with a {@link NoResponseException}.
      *
-     * @param iq The {@code <iq/>} stanza, which must be of type {@linkplain Type#GET get} or {@linkplain Type#SET set}.
+     * @param iq The {@code <iq/>} stanza, which must be of type {@linkplain Type#GET get} or {@linkplain Type#SET
+     *           set}.
      * @return The async IQ result.
      */
     public final AsyncResult<IQ> query(IQ iq) {
@@ -802,9 +828,12 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Sends an {@code <iq/>} stanza and returns an async result, which can be used to wait for the response. The result is completed if the response IQ has arrived or the timeout has exceeded, in which case the result completes with a {@link NoResponseException}.
+     * Sends an {@code <iq/>} stanza and returns an async result, which can be used to wait for the response. The result
+     * is completed if the response IQ has arrived or the timeout has exceeded, in which case the result completes with
+     * a {@link NoResponseException}.
      *
-     * @param iq      The {@code <iq/>} stanza, which must be of type {@linkplain Type#GET get} or {@linkplain Type#SET set}.
+     * @param iq      The {@code <iq/>} stanza, which must be of type {@linkplain Type#GET get} or {@linkplain Type#SET
+     *                set}.
      * @param timeout The timeout.
      * @return The async IQ result.
      */
@@ -823,11 +852,14 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Sends an {@code <iq/>} stanza and returns an async result, which can be used to wait for the response. The result is completed if the response IQ has arrived or the default timeout has exceeded, in which case the result completes with a {@link NoResponseException}.
-     * The payload of the response IQ is returned in the async result class.
+     * Sends an {@code <iq/>} stanza and returns an async result, which can be used to wait for the response. The result
+     * is completed if the response IQ has arrived or the default timeout has exceeded, in which case the result
+     * completes with a {@link NoResponseException}. The payload of the response IQ is returned in the async result
+     * class.
      *
      * @param <T>   The type.
-     * @param iq    The {@code <iq/>} stanza, which must be of type {@linkplain rocks.xmpp.core.stanza.model.IQ.Type#GET get} or {@linkplain rocks.xmpp.core.stanza.model.IQ.Type#SET set}.
+     * @param iq    The {@code <iq/>} stanza, which must be of type {@linkplain rocks.xmpp.core.stanza.model.IQ.Type#GET
+     *              get} or {@linkplain rocks.xmpp.core.stanza.model.IQ.Type#SET set}.
      * @param clazz The class which is IQ response's payload.
      * @return The async result with the IQ response's payload.
      */
@@ -837,7 +869,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Sends a stanza and returns an async result which can wait for the presence stanza, which matches the predicate, to arrive.
+     * Sends a stanza and returns an async result which can wait for the presence stanza, which matches the predicate,
+     * to arrive.
      *
      * @param stanza The stanza, which is sent.
      * @param filter The presence filter.
@@ -855,7 +888,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Sends a stanza and returns an async result which can wait for the message stanza, which matches the predicate, to arrive.
+     * Sends a stanza and returns an async result which can wait for the message stanza, which matches the predicate, to
+     * arrive.
      *
      * @param stanza The stanza, which is sent.
      * @param filter The message filter.
@@ -872,7 +906,12 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
         );
     }
 
-    private <S extends Stanza, E extends EventObject> AsyncResult<S> sendAndAwait(S stanza, Function<E, S> stanzaMapper, final Predicate<S> filter, Function<S, SendTask<S>> sendFunction, Consumer<Consumer<E>> addListener, Consumer<Consumer<E>> removeListener, Duration timeout) {
+    private <S extends Stanza, E extends EventObject> AsyncResult<S> sendAndAwait(S stanza, Function<E, S> stanzaMapper,
+                                                                                  final Predicate<S> filter,
+                                                                                  Function<S, SendTask<S>> sendFunction,
+                                                                                  Consumer<Consumer<E>> addListener,
+                                                                                  Consumer<Consumer<E>> removeListener,
+                                                                                  Duration timeout) {
         CompletableFuture<S> completableFuture = new CompletableFuture<>();
 
         final Consumer<E> listener = e -> {
@@ -894,7 +933,10 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                 // When a response has received, mark the requesting stanza as acknowledged.
                 // This is especially important for Bind and Roster IQs, so that they won't be resend after login.
                 .whenComplete((result, e) -> removeFromQueue(sendTask.getStanza()))
-                .applyToEither(CompletionStages.timeoutAfter(timeout.toMillis(), TimeUnit.MILLISECONDS, () -> new NoResponseException("Timeout reached, while waiting on a response for request: " + stanza)), Function.identity()))
+                .applyToEither(CompletionStages.timeoutAfter(timeout.toMillis(), TimeUnit.MILLISECONDS,
+                        () -> new NoResponseException(
+                                "Timeout reached, while waiting on a response for request: " + stanza)),
+                        Function.identity()))
                 // When either a timeout happened or response has received, remove the listener.
                 .whenComplete((result, e) -> removeListener.accept(listener));
 
@@ -915,7 +957,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      * Sends an XML element to the server, usually a stanza, i.e. a message, presence or IQ.
      *
      * @param element The XML element.
-     * @return The sent stream element, which is usually the same as the parameter, but may differ in case a stanza is sent, e.g. a {@link Message} is translated to a {@link rocks.xmpp.core.stanza.model.client.ClientMessage}.
+     * @return The sent stream element, which is usually the same as the parameter, but may differ in case a stanza is
+     * sent, e.g. a {@link Message} is translated to a {@link rocks.xmpp.core.stanza.model.client.ClientMessage}.
      */
     @Override
     public AsyncResult<Void> send(StreamElement element) {
@@ -927,7 +970,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      *
      * @param element The XML element.
      * @param queue   If the element should be queued for later resending.
-     * @return The sent stream element, which is usually the same as the parameter, but may differ in case a stanza is sent, e.g. a {@link Message} is translated to a {@link rocks.xmpp.core.stanza.model.client.ClientMessage}.
+     * @return The sent stream element, which is usually the same as the parameter, but may differ in case a stanza is
+     * sent, e.g. a {@link Message} is translated to a {@link rocks.xmpp.core.stanza.model.client.ClientMessage}.
      */
     final Future<Void> send(StreamElement element, boolean queue) {
         return sendInternal(prepareElement(element), queue);
@@ -942,13 +986,15 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                 stanza = (Stanza) element;
                 if (queue) {
                     // Put the stanzas in an unacknowledged queue.
-                    // They will be removed if either the stanza has been sent without error or if it has been acknowledged by the server (if the connection supports acknowledgements).
+                    // They will be removed if either the stanza has been sent without error or if it has been
+                    // acknowledged by the server (if the connection supports acknowledgements).
                     // In case of IQ queries, they will be removed, when the IQ response arrives.
                     unacknowledgedStanzas.offer(stanza);
                     stanzaSendDate.put(stanza, Instant.now());
                 }
                 // If resource binding has not completed and it's tried to send a stanza which doesn't serve the purpose
-                // of resource binding, throw an exception, because otherwise the server will terminate the connection with a stream error.
+                // of resource binding, throw an exception, because otherwise the server will terminate the connection
+                // with a stream error.
                 if (!EnumSet.of(Status.AUTHENTICATED, Status.DISCONNECTED).contains(getStatus())
                         && !Stanza.isToItselfOrServer(stanza, getDomain(), getConnectedResource())) {
                     throw new IllegalStateException("Cannot send stanzas before resource binding has completed.");
@@ -979,7 +1025,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
             Connection connection = getActiveConnection();
             if (connection == null) {
-                IllegalStateException ise = new IllegalStateException("Session is not connected to server (status: " + getStatus() + ')');
+                IllegalStateException ise =
+                        new IllegalStateException("Session is not connected to server (status: " + getStatus() + ')');
                 Throwable cause = exception;
                 if (cause != null) {
                     ise.initCause(cause);
@@ -1009,7 +1056,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                         logger.log(System.Logger.Level.WARNING, e.getMessage(), e);
                     }
                 });
-                // The stanza has been successfully sent. Don't track it any longer, unless the connection supports acknowledgements.
+                // The stanza has been successfully sent. Don't track it any longer, unless the connection supports
+                // acknowledgements.
                 if (element instanceof Stanza) {
                     Connection connection = getActiveConnection();
                     if (connection == null || !connection.isUsingAcknowledgements()) {
@@ -1074,9 +1122,10 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Prepares a stream element for sending.
-     * Usually only stanzas need to be prepared, which usually means converting it to the correct type (e.g. {@link Message} to {@link rocks.xmpp.core.stanza.model.client.ClientMessage}.so that it's in the correct namespace).
-     * Preparing could also be used to add the 'from' attribute (as required for external components).
+     * Prepares a stream element for sending. Usually only stanzas need to be prepared, which usually means converting
+     * it to the correct type (e.g. {@link Message} to {@link rocks.xmpp.core.stanza.model.client.ClientMessage}.so that
+     * it's in the correct namespace). Preparing could also be used to add the 'from' attribute (as required for
+     * external components).
      *
      * @param element The element.
      * @return The prepared stanza.
@@ -1131,7 +1180,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
         boolean hasChanged = this.status.compareAndSet(expected, status);
         if (hasChanged) {
             // Make sure to not call listeners from within synchronized region.
-            XmppUtils.notifyEventListeners(sessionStatusListeners, new SessionStatusEvent(this, status, expected, null));
+            XmppUtils
+                    .notifyEventListeners(sessionStatusListeners, new SessionStatusEvent(this, status, expected, null));
         }
         return hasChanged;
     }
@@ -1158,7 +1208,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Creates a new unmarshaller with a default locale. If child objects have not explicitly set a locale, the default locale is assigned to them.
+     * Creates a new unmarshaller with a default locale. If child objects have not explicitly set a locale, the default
+     * locale is assigned to them.
      *
      * <p>Note that the returned unmarshaller is not thread-safe.</p>
      *
@@ -1179,8 +1230,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     /**
      * Creates a marshaller, which can be used to create XML from objects.
      *
-     * <p>The returned marshaller is configured with {@code Marshaller.JAXB_FRAGMENT = true}, so that no XML header is written
-     * (which is usually what we want in XMPP when writing stanzas).</p>
+     * <p>The returned marshaller is configured with {@code Marshaller.JAXB_FRAGMENT = true}, so that no XML header is
+     * written (which is usually what we want in XMPP when writing stanzas).</p>
      *
      * <p>Note that the returned unmarshaller is not thread-safe.</p>
      *
@@ -1200,7 +1251,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     /**
      * Indicates, whether the session is connected.
      *
-     * @return True, if the status is {@link Status#CONNECTED}, {@link Status#AUTHENTICATED} or {@link Status#AUTHENTICATING}.
+     * @return True, if the status is {@link Status#CONNECTED}, {@link Status#AUTHENTICATED} or {@link
+     * Status#AUTHENTICATING}.
      * @see #getStatus()
      */
     public final boolean isConnected() {
@@ -1208,7 +1260,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Returns true, if the session is authenticated. For a normal client-to-server session this means, when the user has logged in (successfully completed SASL negotiation and resource binding).
+     * Returns true, if the session is authenticated. For a normal client-to-server session this means, when the user
+     * has logged in (successfully completed SASL negotiation and resource binding).
      *
      * @return True, if authenticated.
      * @since 0.7.0
@@ -1246,7 +1299,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                     send(iq.createError(Condition.BAD_REQUEST));
                 } else {
                     final Optional<IQHandler> iqHandler = iqHandlers.stream()
-                            .filter(handler -> handler.getPayloadClass() != null && handler.getPayloadClass().isAssignableFrom(payload.getClass()))
+                            .filter(handler -> handler.getPayloadClass() != null
+                                    && handler.getPayloadClass().isAssignableFrom(payload.getClass()))
                             .findFirst();
 
                     if (iqHandler.isPresent()) {
@@ -1258,7 +1312,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                                     send(response);
                                 }
                             } catch (Exception e) {
-                                logger.log(System.Logger.Level.WARNING, () -> "Failed to handle IQ request: " + e.getMessage(), e);
+                                logger.log(System.Logger.Level.WARNING,
+                                        () -> "Failed to handle IQ request: " + e.getMessage(), e);
                                 // If any exception occurs during processing the IQ, return <service-unavailable/>.
                                 send(iq.createError(Condition.SERVICE_UNAVAILABLE));
                             }
@@ -1267,7 +1322,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                             iqExecutor.execute(runnable);
                         } else {
                             // Should never happen.
-                            logger.log(System.Logger.Level.WARNING, "No Executor found for IQHandler, handling IQ directly");
+                            logger.log(System.Logger.Level.WARNING,
+                                    "No Executor found for IQHandler, handling IQ directly");
                             runnable.run();
                         }
                     } else {
@@ -1282,12 +1338,14 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
             });
         } else if (element instanceof Message) {
             stanzaListenerExecutor.execute(() -> {
-                XmppUtils.notifyEventListeners(inboundMessageListeners, new MessageEvent(this, (Message) element, true));
+                XmppUtils
+                        .notifyEventListeners(inboundMessageListeners, new MessageEvent(this, (Message) element, true));
                 streamManager.incrementInboundStanzaCount();
             });
         } else if (element instanceof Presence) {
             stanzaListenerExecutor.execute(() -> {
-                XmppUtils.notifyEventListeners(inboundPresenceListeners, new PresenceEvent(this, (Presence) element, true));
+                XmppUtils.notifyEventListeners(inboundPresenceListeners,
+                        new PresenceEvent(this, (Presence) element, true));
                 streamManager.incrementInboundStanzaCount();
             });
         } else if (element instanceof StreamFeatures) {
@@ -1302,7 +1360,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Gets an instance of the specified manager class. The class MUST have a constructor which takes a single parameter, whose type is {@link rocks.xmpp.core.session.XmppSession}.
+     * Gets an instance of the specified manager class. The class MUST have a constructor which takes a single
+     * parameter, whose type is {@link rocks.xmpp.core.session.XmppSession}.
      *
      * @param clazz The class of the manager.
      * @param <T>   The type.
@@ -1314,7 +1373,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
         if ((instance = (T) instances.get(clazz)) == null) {
             synchronized (instances) {
                 if ((instance = (T) instances.get(clazz)) == null) {
-                    Optional<Object> in = instances.values().stream().filter(i -> clazz.isAssignableFrom(i.getClass())).findFirst();
+                    Optional<Object> in =
+                            instances.values().stream().filter(i -> clazz.isAssignableFrom(i.getClass())).findFirst();
                     if (in.isPresent()) {
                         return (T) in.get();
                     }
@@ -1332,7 +1392,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                             instance = constructor.newInstance();
                             instances.put(clazz, instance);
                         }
-                    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException
+                            | InvocationTargetException e) {
                         throw new IllegalArgumentException("Can't instantiate the provided class:" + clazz, e);
                     }
                 }
@@ -1352,9 +1413,11 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Explicitly closes the session and performs a clean up of all listeners. Calling this method, if the session is already closing or closed has no effect.
+     * Explicitly closes the session and performs a clean up of all listeners. Calling this method, if the session is
+     * already closing or closed has no effect.
      *
-     * @throws XmppException If an exception occurs while closing the connection, e.g. the underlying socket connection.
+     * @throws XmppException If an exception occurs while closing the connection, e.g. the underlying socket
+     *                       connection.
      */
     @Override
     public final void close() throws XmppException {
@@ -1431,14 +1494,17 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      *
      * <p>This method will close the stream.</p>
      *
-     * @param e The exception. If an unrecoverable XMPP stream error occurred, the exception is a {@link rocks.xmpp.core.stream.model.StreamError}.
+     * @param e The exception. If an unrecoverable XMPP stream error occurred, the exception is a {@link
+     *          rocks.xmpp.core.stream.model.StreamError}.
      */
     public void notifyException(Throwable e) {
-        // If the exception occurred during stream negotiation, i.e. before the connect() method has finished, the exception will be thrown.
+        // If the exception occurred during stream negotiation, i.e. before the connect() method has finished,
+        // the exception will be thrown.
         exception = Objects.requireNonNull(e, "exception must not be null");
         // Release a potential waiting thread.
         streamFeaturesManager.cancelNegotiation();
-        if (EnumSet.of(Status.AUTHENTICATED, Status.AUTHENTICATING, Status.CONNECTED, Status.CONNECTING).contains(getStatus()) && !(e instanceof AuthenticationException)) {
+        if (EnumSet.of(Status.AUTHENTICATED, Status.AUTHENTICATING, Status.CONNECTED, Status.CONNECTING)
+                .contains(getStatus()) && !(e instanceof AuthenticationException)) {
             try {
                 closeAndNullifyConnection();
             } catch (Exception e1) {
@@ -1449,7 +1515,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Gets the XMPP domain of the connected server. This variable is set after server has responded with a stream header. The domain is the stream header's 'from' attribute.
+     * Gets the XMPP domain of the connected server. This variable is set after server has responded with a stream
+     * header. The domain is the stream header's 'from' attribute.
      *
      * @return The XMPP domain.
      */
@@ -1535,9 +1602,9 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     }
 
     /**
-     * Marks a stanza as acknowledged.
-     * This method removes a stanza from the unacknowledged queue, so that it won't be resent during reconnection
-     * and notifies the {@linkplain #addMessageAcknowledgedListener(Consumer) acknowledged listeners}.
+     * Marks a stanza as acknowledged. This method removes a stanza from the unacknowledged queue, so that it won't be
+     * resent during reconnection and notifies the {@linkplain #addMessageAcknowledgedListener(Consumer) acknowledged
+     * listeners}.
      *
      * @param acknowledgedStanza The acknowledged stanza.
      * @see #addMessageAcknowledgedListener(Consumer)
@@ -1546,7 +1613,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
         if (acknowledgedStanza != null) {
             removeFromQueue(acknowledgedStanza);
             if (acknowledgedStanza instanceof Message) {
-                XmppUtils.notifyEventListeners(messageAcknowledgedListeners, new MessageEvent(this, (Message) acknowledgedStanza, false));
+                XmppUtils.notifyEventListeners(messageAcknowledgedListeners,
+                        new MessageEvent(this, (Message) acknowledgedStanza, false));
             }
             SendTask<?> sendTask = stanzaTrackingMap.remove(acknowledgedStanza);
             if (sendTask != null) {
@@ -1558,10 +1626,12 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     /**
      * Determines support of another XMPP entity for a given feature.
      *
-     * <p>Note that if you want to determine support of another client, you have to provide that client's full JID (user@domain/resource).
-     * If you want to determine the server's capabilities provide only the domain JID of the server.</p>
+     * <p>Note that if you want to determine support of another client, you have to provide that client's full JID
+     * (user@domain/resource). If you want to determine the server's capabilities provide only the domain JID of the
+     * server.</p>
      *
-     * <p>This method uses cached information and the presence based entity capabilities (XEP-0115) to determine support. Only if no information is available an explicit service discovery request is made.</p>
+     * <p>This method uses cached information and the presence based entity capabilities (XEP-0115) to determine
+     * support. Only if no information is available an explicit service discovery request is made.</p>
      *
      * @param feature The feature, usually defined by an XMPP Extension Protocol, e.g. "urn:xmpp:ping".
      * @param jid     The XMPP entity.

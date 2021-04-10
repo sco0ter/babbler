@@ -30,7 +30,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import rocks.xmpp.addr.Jid;
 
 /**
- * The implementation of the {@code <x/>} element in the {@code jabber:x:conference} namespace, which represents a direct multi-user chat invitation.
+ * The implementation of the {@code <x/>} element in the {@code jabber:x:conference} namespace, which represents a
+ * direct multi-user chat invitation.
  *
  * <p>This class is immutable.</p>
  *

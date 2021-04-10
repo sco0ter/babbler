@@ -80,7 +80,8 @@ public final class ResourceBindingNegotiator implements StreamFeatureProvider<Bi
                         session.send(iq.createResult(new Bind(jid)));
                         return StreamNegotiationResult.SUCCESS;
                     } catch (IllegalArgumentException e) {
-                        // If the client submitted a bad resource identifier, send a bad request error in accordance with:
+                        // If the client submitted a bad resource identifier,
+                        // send a bad request error in accordance with:
                         // https://xmpp.org/rfcs/rfc6120.html#bind-clientsubmit-error-badrequest
                         session.send(iq.createError(Condition.BAD_REQUEST));
                     }

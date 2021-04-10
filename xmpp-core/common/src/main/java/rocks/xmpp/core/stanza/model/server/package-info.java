@@ -23,7 +23,10 @@
  */
 
 /**
- * Provides <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas">XML Stanzas</a> from the <a href="https://xmpp.org/rfcs/rfc6120.html#schemas-server">Server Namespace</a> ({@linkplain rocks.xmpp.core.stanza.model.server.ServerMessage}, {@linkplain rocks.xmpp.core.stanza.model.server.ServerPresence} and {@linkplain rocks.xmpp.core.stanza.model.server.ServerIQ}).
+ * Provides <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas">XML Stanzas</a> from the <a
+ * href="https://xmpp.org/rfcs/rfc6120.html#schemas-server">Server Namespace</a> ({@linkplain
+ * rocks.xmpp.core.stanza.model.server.ServerMessage}, {@linkplain rocks.xmpp.core.stanza.model.server.ServerPresence}
+ * and {@linkplain rocks.xmpp.core.stanza.model.server.ServerIQ}).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "jabber:server", elementFormDefault = XmlNsForm.QUALIFIED)

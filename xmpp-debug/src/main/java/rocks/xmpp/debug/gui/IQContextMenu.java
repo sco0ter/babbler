@@ -39,7 +39,10 @@ final class IQContextMenu extends ContextMenu {
         MenuItem menuItem = new MenuItem("Go To Response");
         menuItem.setOnAction(event -> {
             for (StanzaEntry entry : stanzaTableView.getItems()) {
-                if (entry.getStanza() instanceof IQ && ((IQ) entry.getStanza()).getId().equals(((IQ) stanzaEntry.getStanza()).getId()) && (((IQ) entry.getStanza()).getType() == IQ.Type.RESULT || ((IQ) entry.getStanza()).getType() == IQ.Type.ERROR)) {
+                if (entry.getStanza() instanceof IQ && ((IQ) entry.getStanza()).getId()
+                        .equals(((IQ) stanzaEntry.getStanza()).getId()) && (
+                        ((IQ) entry.getStanza()).getType() == IQ.Type.RESULT
+                                || ((IQ) entry.getStanza()).getType() == IQ.Type.ERROR)) {
                     stanzaTableView.getSelectionModel().select(entry);
                     stanzaTableView.scrollTo(entry);
                     break;

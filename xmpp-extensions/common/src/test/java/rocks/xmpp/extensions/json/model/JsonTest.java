@@ -38,7 +38,8 @@ public class JsonTest extends XmlTest {
 
     @Test
     public void unmarshalJson() throws XMLStreamException, JAXBException {
-        String xml = "<json xmlns=\"urn:xmpp:json:0\">{ \"name\": \"romeo\", \"age\": \"421\", \"status\": \"single\" }</json>";
+        String xml =
+                "<json xmlns=\"urn:xmpp:json:0\">{ \"name\": \"romeo\", \"age\": \"421\", \"status\": \"single\" }</json>";
         Json json = unmarshal(xml, Json.class);
         Assert.assertNotNull(json);
         Assert.assertEquals(json.getValue(), "{ \"name\": \"romeo\", \"age\": \"421\", \"status\": \"single\" }");

@@ -39,16 +39,22 @@ import rocks.xmpp.im.roster.model.RosterItem;
 /**
  * Handles outbound presence subscription requests, approvals, cancellations and unsubscriptions.
  *
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-request-outbound">3.1.2.  Server Processing of Outbound Subscription Request</a>
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-request-approvalout">3.1.5.  Server Processing of Outbound Subscription Approval</a>
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-cancel-outbound">3.2.2.  Server Processing of Outbound Subscription Cancellation</a>
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-unsub-outbound">3.3.2.  Server Processing of Outbound Unsubscribe</a>
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#substates-out">A.2.  Server Processing of Outbound Presence Subscription Stanzas</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-request-outbound">3.1.2.  Server Processing of Outbound
+ * Subscription Request</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-request-approvalout">3.1.5.  Server Processing of Outbound
+ * Subscription Approval</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-cancel-outbound">3.2.2.  Server Processing of Outbound
+ * Subscription Cancellation</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-unsub-outbound">3.3.2.  Server Processing of Outbound
+ * Unsubscribe</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#substates-out">A.2.  Server Processing of Outbound Presence
+ * Subscription Stanzas</a>
  */
 @ApplicationScoped
 public class OutboundSubscriptionHandler extends AbstractSubscriptionHandler implements OutboundPresenceHandler {
 
-    private static final Set<DefinedState> PRE_APPROVAL_STATES = EnumSet.of(DefinedState.TO, DefinedState.NONE, DefinedState.NONE_PENDING_OUT);
+    private static final Set<DefinedState> PRE_APPROVAL_STATES =
+            EnumSet.of(DefinedState.TO, DefinedState.NONE, DefinedState.NONE_PENDING_OUT);
 
     @Inject
     private SessionManager sessionManager;
@@ -63,15 +69,18 @@ public class OutboundSubscriptionHandler extends AbstractSubscriptionHandler imp
 
         if (presence.isSubscription()) {
             // RFC 6121 § 3.  Managing Presence Subscriptions
-            // When a server processes or generates an outbound presence stanza of type "subscribe", "subscribed", "unsubscribe", or "unsubscribed",
-            // the server MUST stamp the outgoing presence stanza with the bare JID <localpart@domainpart> of the sending entity, not the full JID <localpart@domainpart/resourcepart>.
+            // When a server processes or generates an outbound presence stanza of type "subscribe", "subscribed",
+            // "unsubscribe", or "unsubscribed",
+            // the server MUST stamp the outgoing presence stanza with the bare JID <localpart@domainpart> of the
+            // sending entity, not the full JID <localpart@domainpart/resourcepart>.
             if (presence.getFrom().isFullJid()) {
                 presence.setFrom(presence.getFrom().asBareJid());
             }
 
             // RFC 6121 § 3.1.2.  Server Processing of Outbound Subscription Request
             // If the JID is of the form <contact@domainpart/resourcepart> instead of <contact@domainpart>,
-            // the user's server SHOULD treat it as if the request had been directed to the contact's bare JID and modify the 'to' address accordingly.
+            // the user's server SHOULD treat it as if the request had been directed to the contact's bare JID and
+            // modify the 'to' address accordingly.
             if (presence.getTo().isFullJid()) {
                 presence.setTo(presence.getTo().asBareJid());
             }
@@ -84,7 +93,8 @@ public class OutboundSubscriptionHandler extends AbstractSubscriptionHandler imp
                 case UNSUBSCRIBE:
                     // Always route the presence, no matter if the subscription state has changed.
                     stanzaRouter.route(presence);
-                    updateRosterAndPush(username, presence, null, rosterItem, DefinedState::onOutboundSubscriptionChange, rosterItem != null && rosterItem.isApproved());
+                    updateRosterAndPush(username, presence, null, rosterItem,
+                            DefinedState::onOutboundSubscriptionChange, rosterItem != null && rosterItem.isApproved());
                     break;
                 case SUBSCRIBED:
                     if (rosterItem != null) {
@@ -97,7 +107,8 @@ public class OutboundSubscriptionHandler extends AbstractSubscriptionHandler imp
                         approved = true;
                     }
                     // Only route the presence stanza, if the subscription state has changed
-                    updateRosterAndPush(username, presence, () -> stanzaRouter.route(presence), rosterItem, DefinedState::onOutboundSubscriptionChange, approved);
+                    updateRosterAndPush(username, presence, () -> stanzaRouter.route(presence), rosterItem,
+                            DefinedState::onOutboundSubscriptionChange, approved);
                     break;
                 case UNSUBSCRIBED:
                     if (rosterItem != null) {
@@ -108,15 +119,18 @@ public class OutboundSubscriptionHandler extends AbstractSubscriptionHandler imp
                         }
 
                         updateRosterAndPush(username, presence, () -> {
-                            // While the user is still subscribed to the contact's presence (i.e., before the contact's server routes or delivers the presence stanza
-                            // of type "unsubscribed" to the user), the contact's server MUST send a presence stanza of type "unavailable" from all of the contact's online resources to the user.
-                            sessionManager.getUserSessions(serverConfiguration.getDomain().withLocal(username)).forEach(session -> {
-                                        Presence unavailablePresence = new Presence(Presence.Type.UNAVAILABLE);
-                                        unavailablePresence.setFrom(session.getRemoteXmppAddress());
-                                        unavailablePresence.setTo(presence.getTo());
-                                        stanzaRouter.route(unavailablePresence);
-                                    }
-                            );
+                            // While the user is still subscribed to the contact's presence (i.e., before the contact's
+                            // server routes or delivers the presence stanza of type "unsubscribed" to the user),
+                            // the contact's server MUST send a presence stanza of type "unavailable" from all of the
+                            // contact's online resources to the user.
+                            sessionManager.getUserSessions(serverConfiguration.getDomain().withLocal(username))
+                                    .forEach(session -> {
+                                                Presence unavailablePresence = new Presence(Presence.Type.UNAVAILABLE);
+                                                unavailablePresence.setFrom(session.getRemoteXmppAddress());
+                                                unavailablePresence.setTo(presence.getTo());
+                                                stanzaRouter.route(unavailablePresence);
+                                            }
+                                    );
                             stanzaRouter.route(presence);
                         }, rosterItem, DefinedState::onOutboundSubscriptionChange, approved);
                     }

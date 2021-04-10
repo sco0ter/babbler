@@ -104,14 +104,16 @@ public final class Addresses {
     }
 
     /**
-     * Creates a copy of this addresses extension, but without any BCC addresses.
-     * This is useful for server processing (multicast usage).
+     * Creates a copy of this addresses extension, but without any BCC addresses. This is useful for server processing
+     * (multicast usage).
      *
      * @return A new addresses extension.
      * @see <a href="https://xmpp.org/extensions/xep-0033.html#multicast">6. Multicast Usage</a>
      */
     public final Addresses deliveredAndWithoutBlindCarbonCopies() {
-        return new Addresses(this.address.stream().map(Address::delivered).filter(address -> address.getType() != Address.Type.BCC).collect(Collectors.toList()));
+        return new Addresses(
+                this.address.stream().map(Address::delivered).filter(address -> address.getType() != Address.Type.BCC)
+                        .collect(Collectors.toList()));
     }
 
     /**
@@ -126,10 +128,11 @@ public final class Addresses {
     }
 
     /**
-     * Creates a reply for a message.
-     * If the original message contains address information, a new address extension is created based on the original one and added to the reply.
+     * Creates a reply for a message. If the original message contains address information, a new address extension is
+     * created based on the original one and added to the reply.
      *
-     * <p>This method return false, if either no address information is found on the original message or it contains either {@link Address.Type#NOREPLY} or {@link Address.Type#REPLYROOM} addresses.</p>
+     * <p>This method return false, if either no address information is found on the original message or it contains
+     * either {@link Address.Type#NOREPLY} or {@link Address.Type#REPLYROOM} addresses.</p>
      *
      * @param original The original message.
      * @param reply    The reply message.
@@ -145,7 +148,8 @@ public final class Addresses {
         if (addresses.shouldNotReply()) {
             return false;
         }
-        // an extended-address aware client MUST copy the address header from the original message into the reply, removing any delivered attributes
+        // an extended-address aware client MUST copy the address header from the original message into the reply,
+        // removing any delivered attributes
         List<Address> addressList = new ArrayList<>();
         Jid sender = original.getFrom() != null ? original.getFrom().asBareJid() : null;
         Jid receiver = original.getTo() != null ? original.getTo().asBareJid() : null;

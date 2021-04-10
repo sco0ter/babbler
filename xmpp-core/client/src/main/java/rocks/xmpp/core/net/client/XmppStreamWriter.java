@@ -58,7 +58,8 @@ import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
  */
 final class XmppStreamWriter {
 
-    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Writer Thread"));
+    private static final ExecutorService EXECUTOR =
+            Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Writer Thread"));
 
     private final XmppSession xmppSession;
 
@@ -79,14 +80,16 @@ final class XmppStreamWriter {
     XmppStreamWriter(Iterable<WriterInterceptor> writerInterceptors, final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
         writerInterceptors.forEach(this.writerInterceptors::add);
-        this.writerInterceptors.add(new XmppStreamEncoder(xmppSession.getConfiguration().getXmlOutputFactory(), xmppSession::createMarshaller, s -> false));
+        this.writerInterceptors.add(new XmppStreamEncoder(xmppSession.getConfiguration().getXmlOutputFactory(),
+                xmppSession::createMarshaller, s -> false));
         this.executor = new QueuedScheduledExecutorService(EXECUTOR);
     }
 
     void initialize(int keepAliveInterval) {
         if (keepAliveInterval > 0) {
             executor.scheduleAtFixedRate(() -> {
-                if (EnumSet.of(XmppSession.Status.CONNECTED, XmppSession.Status.AUTHENTICATED).contains(xmppSession.getStatus())) {
+                if (EnumSet.of(XmppSession.Status.CONNECTED, XmppSession.Status.AUTHENTICATED)
+                        .contains(xmppSession.getStatus())) {
                     try {
                         outputStreamWriter.write(' ');
                         outputStreamWriter.flush();
@@ -181,8 +184,8 @@ final class XmppStreamWriter {
     }
 
     /**
-     * Closes the stream by sending a closing {@code </stream:stream>} to the server.
-     * This method waits until this task is completed, but not more than 0.25 seconds.
+     * Closes the stream by sending a closing {@code </stream:stream>} to the server. This method waits until this task
+     * is completed, but not more than 0.25 seconds.
      */
     CompletableFuture<Void> shutdown() {
         return closeStream().whenCompleteAsync((aVoid, throwable) -> {

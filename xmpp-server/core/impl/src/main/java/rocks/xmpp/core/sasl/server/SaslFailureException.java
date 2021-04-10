@@ -30,7 +30,8 @@ import javax.security.sasl.SaslException;
 import rocks.xmpp.core.sasl.model.Failure;
 
 /**
- * A {@link SaslException} for usage in {@link javax.security.sasl.SaslServer} implementations to report XMPP specific SASL failures.
+ * A {@link SaslException} for usage in {@link javax.security.sasl.SaslServer} implementations to report XMPP specific
+ * SASL failures.
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#sasl-errors">6.5.  SASL Errors</a>

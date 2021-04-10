@@ -76,7 +76,8 @@ public final class ChatRoomBookmark extends AbstractBookmark implements Conferen
      * @param name     The bookmark name.
      * @param room     The JID of the chat room.
      * @param nick     The user's preferred roomnick for the chatroom.
-     * @param password The unencrypted string for the password needed to enter a password-protected room. See also {@link #getPassword()}.
+     * @param password The unencrypted string for the password needed to enter a password-protected room. See also
+     *                 {@link #getPassword()}.
      * @param autojoin Whether the client should automatically join the conference room on login.
      */
     public ChatRoomBookmark(String name, Jid room, String nick, String password, boolean autojoin) {
@@ -98,7 +99,8 @@ public final class ChatRoomBookmark extends AbstractBookmark implements Conferen
     }
 
     /**
-     * Gets the unencrypted string for the password needed to enter a password-protected room. For security reasons, use of this element is NOT RECOMMENDED.
+     * Gets the unencrypted string for the password needed to enter a password-protected room. For security reasons, use
+     * of this element is NOT RECOMMENDED.
      *
      * @return The password.
      */

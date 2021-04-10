@@ -23,7 +23,8 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a> (#errors).
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0060.html">XEP-0060:
+ * Publish-Subscribe</a> (#errors).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = PubSub.NAMESPACE + "#errors", elementFormDefault = XmlNsForm.QUALIFIED)

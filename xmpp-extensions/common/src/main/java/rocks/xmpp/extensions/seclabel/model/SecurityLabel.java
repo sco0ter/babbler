@@ -103,7 +103,8 @@ public final class SecurityLabel {
     /**
      * Gets the equivalent security labels.
      *
-     * <p>Each equivalent label represents an equivalent security label under other policies. This element might be used when a recipient is known to hold a clearance under a different policy than the sender.</p>
+     * <p>Each equivalent label represents an equivalent security label under other policies. This element might be
+     * used when a recipient is known to hold a clearance under a different policy than the sender.</p>
      *
      * @return The equivalent security labels.
      */
@@ -114,10 +115,12 @@ public final class SecurityLabel {
 
     /**
      * The implementation of the {@code <displaymarking/>} element.
-     * 
+     *
      * <blockquote>
-     * <p>The {@code <displaymarking/>} element contains a display string for use by implementations which are unable to utilize the applicable security policy to generate display markings.
-     * The element may optionally contain two attributes, fgcolor= and bgcolor=, whose values are HTML color strings (e.g., 'red' or '#ff0000'), for use in colorizing the display marking. The fgcolor= default is black. The bgcolor= default is white.</p>
+     * <p>The {@code <displaymarking/>} element contains a display string for use by implementations which are unable
+     * to utilize the applicable security policy to generate display markings. The element may optionally contain two
+     * attributes, fgcolor= and bgcolor=, whose values are HTML color strings (e.g., 'red' or '#ff0000'), for use in
+     * colorizing the display marking. The fgcolor= default is black. The bgcolor= default is white.</p>
      * </blockquote>
      */
     public static final class DisplayMarking {

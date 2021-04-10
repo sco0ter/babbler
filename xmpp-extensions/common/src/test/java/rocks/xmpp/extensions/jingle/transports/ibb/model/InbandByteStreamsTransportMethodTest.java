@@ -56,7 +56,8 @@ public class InbandByteStreamsTransportMethodTest extends XmlTest {
         Jingle jingle = unmarshal(xml, Jingle.class);
         Assert.assertNotNull(jingle);
         Assert.assertTrue(jingle.getContents().get(0).getTransportMethod() instanceof InBandByteStreamsTransportMethod);
-        InBandByteStreamsTransportMethod inBandByteStreamsTransportMethod = (InBandByteStreamsTransportMethod) jingle.getContents().get(0).getTransportMethod();
+        InBandByteStreamsTransportMethod inBandByteStreamsTransportMethod =
+                (InBandByteStreamsTransportMethod) jingle.getContents().get(0).getTransportMethod();
         Assert.assertNotNull(inBandByteStreamsTransportMethod);
         Assert.assertNull(jingle.getContents().get(0).getApplicationFormat());
         Assert.assertEquals(inBandByteStreamsTransportMethod.getSessionId(), "ch3d9s71");

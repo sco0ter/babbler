@@ -206,16 +206,18 @@ public class MultiThreadingIT extends IntegrationTest {
     }
 
     /**
-     * Tests, that the behavior when calling connect() from multiple threads.
-     * After connect(), it should always be in the correct status {@link rocks.xmpp.core.session.XmppSession.Status#CONNECTED}.
-     * Listeners should only be notified once for status changes.
+     * Tests, that the behavior when calling connect() from multiple threads. After connect(), it should always be in
+     * the correct status {@link rocks.xmpp.core.session.XmppSession.Status#CONNECTED}. Listeners should only be
+     * notified once for status changes.
      *
      * @throws Exception *
      */
     @Test
     public void testConnectedStatusAfterConnect() throws Exception {
 
-        final XmppClient xmppSession = XmppClient.create(DOMAIN, XmppSessionConfiguration.builder().debugger(ConsoleDebugger.class).build(), SocketConnectionConfiguration.getDefault());
+        final XmppClient xmppSession = XmppClient
+                .create(DOMAIN, XmppSessionConfiguration.builder().debugger(ConsoleDebugger.class).build(),
+                        SocketConnectionConfiguration.getDefault());
         final AtomicInteger exceptions = new AtomicInteger();
         final AtomicInteger connecting = new AtomicInteger();
         final AtomicInteger connected = new AtomicInteger();
@@ -257,7 +259,9 @@ public class MultiThreadingIT extends IntegrationTest {
     @Test
     public void testLoginStatusAfterConnect() throws Exception {
 
-        final XmppClient xmppSession = XmppClient.create(DOMAIN, XmppSessionConfiguration.builder().debugger(ConsoleDebugger.class).build(), SocketConnectionConfiguration.getDefault());
+        final XmppClient xmppSession = XmppClient
+                .create(DOMAIN, XmppSessionConfiguration.builder().debugger(ConsoleDebugger.class).build(),
+                        SocketConnectionConfiguration.getDefault());
         final AtomicInteger exceptions = new AtomicInteger();
         final AtomicInteger connecting = new AtomicInteger();
         final AtomicInteger connected = new AtomicInteger();

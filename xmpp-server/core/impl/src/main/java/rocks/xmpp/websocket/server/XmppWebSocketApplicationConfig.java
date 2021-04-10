@@ -39,8 +39,8 @@ import rocks.xmpp.websocket.codec.XmppWebSocketDecoder;
 import rocks.xmpp.websocket.codec.XmppWebSocketEncoder;
 
 /**
- * The configuration for the a WebSocket server application.
- * It creates one endpoint only which speaks the "xmpp" sub-protocol.
+ * The configuration for the a WebSocket server application. It creates one endpoint only which speaks the "xmpp"
+ * sub-protocol.
  *
  * @author Christian Schudt
  */
@@ -48,15 +48,19 @@ public final class XmppWebSocketApplicationConfig implements ServerApplicationCo
 
     @Override
     public final Set<ServerEndpointConfig> getEndpointConfigs(final Set<Class<? extends Endpoint>> endpointClasses) {
-        final ServerEndpointConfig serverEndpointConfig = ServerEndpointConfig.Builder.create(XmppWebSocketEndpoint.class, "/ws")
-                .decoders(Collections.singletonList(XmppWebSocketDecoder.class))
-                .encoders(Collections.singletonList(XmppWebSocketEncoder.class))
-                .subprotocols(Collections.singletonList("xmpp"))
-                .configurator(new XmppWebSocketConfigurator())
-                .build();
+        final ServerEndpointConfig serverEndpointConfig =
+                ServerEndpointConfig.Builder.create(XmppWebSocketEndpoint.class, "/ws")
+                        .decoders(Collections.singletonList(XmppWebSocketDecoder.class))
+                        .encoders(Collections.singletonList(XmppWebSocketEncoder.class))
+                        .subprotocols(Collections.singletonList("xmpp"))
+                        .configurator(new XmppWebSocketConfigurator())
+                        .build();
         // CDI is not possible in this class, but it is when the Decoder/Encoder instance is initialized.
-        serverEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.UNMARSHALLER, (Supplier<Unmarshaller>) () -> CDI.current().select(ServerConfiguration.class).get().getUnmarshaller(null));
-        serverEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.MARSHALLER, (Supplier<Marshaller>) () -> CDI.current().select(ServerConfiguration.class).get().getMarshaller());
+        serverEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.UNMARSHALLER,
+                (Supplier<Unmarshaller>) () -> CDI.current().select(ServerConfiguration.class).get()
+                        .getUnmarshaller(null));
+        serverEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.MARSHALLER,
+                (Supplier<Marshaller>) () -> CDI.current().select(ServerConfiguration.class).get().getMarshaller());
         return Collections.singleton(serverEndpointConfig);
     }
 

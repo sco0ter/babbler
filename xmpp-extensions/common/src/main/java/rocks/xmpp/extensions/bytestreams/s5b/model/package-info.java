@@ -23,7 +23,8 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5
+ * Bytestreams</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = Socks5ByteStream.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

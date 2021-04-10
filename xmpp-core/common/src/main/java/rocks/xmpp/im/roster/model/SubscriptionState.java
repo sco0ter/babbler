@@ -31,24 +31,29 @@ import javax.xml.bind.annotation.XmlEnumValue;
 /**
  * Represents a presence subscription state.
  *
- * <p>There are four primary subscription states (these states are described from the perspective of the user, not the contact):</p>
+ * <p>There are four primary subscription states (these states are described from the perspective of the user, not the
+ * contact):</p>
  *
  * <ul>
  * <li>None:
- * The user does not have a subscription to the contact's presence, and the contact does not have a subscription to the user's presence.
+ * The user does not have a subscription to the contact's presence, and the contact does not have a subscription
+ * to the user's presence.
  * </li>
  * <li>To:
- * The user has a subscription to the contact's presence, but the contact does not have a subscription to the user's presence.
+ * The user has a subscription to the contact's presence, but the contact does not have a subscription
+ * to the user's presence.
  * </li>
  * <li>From:
- * The contact has a subscription to the user's presence, but the user does not have a subscription to the contact's presence.
+ * The contact has a subscription to the user's presence, but the user does not have a subscription
+ * to the contact's presence.
  * </li>
  * <li>Both:
  * Both the user and the contact have subscriptions to each other's presence (i.e., the union of 'from' and 'to').
  * </li>
  * </ul>
  *
- * <p>The foregoing states are supplemented by various sub-states related to pending inbound and outbound subscriptions.</p>
+ * <p>The foregoing states are supplemented by various sub-states related to pending inbound and outbound
+ * subscriptions.</p>
  *
  * @author Christian Schudt
  * @see DefinedState
@@ -70,24 +75,24 @@ public interface SubscriptionState {
     }
 
     /**
-     * Gets the primary subscription state.
-     * It may be one of {@link Subscription#NONE}, {@link Subscription#TO}, {@link Subscription#FROM} or {@link Subscription#BOTH}.
+     * Gets the primary subscription state. It may be one of {@link Subscription#NONE}, {@link Subscription#TO}, {@link
+     * Subscription#FROM} or {@link Subscription#BOTH}.
      *
      * @return The primary subscription state.
      */
     Subscription getSubscription();
 
     /**
-     * If the presence subscription is pending out from a user's perspective.
-     * The user has sent contact a subscription request but contact has not replied yet.
+     * If the presence subscription is pending out from a user's perspective. The user has sent contact a subscription
+     * request but contact has not replied yet.
      *
      * @return If the state is pending out.
      */
     boolean isPendingOut();
 
     /**
-     * If the presence subscription is pending in from a user's perspective.
-     * The contact has sent user a subscription request but user has not replied yet.
+     * If the presence subscription is pending in from a user's perspective. The contact has sent user a subscription
+     * request but user has not replied yet.
      *
      * @return If the state is pending in.
      */
@@ -101,28 +106,34 @@ public interface SubscriptionState {
         @XmlEnumValue("both")
         BOTH,
         /**
-         * The contact has a subscription to the user's presence, but the user does not have a subscription to the contact's presence.
+         * The contact has a subscription to the user's presence, but the user does not have a subscription to the
+         * contact's presence.
          */
         @XmlEnumValue("from")
         FROM,
         /**
-         * The user has a subscription to the contact's presence, but the contact does not have a subscription to the user's presence.
+         * The user has a subscription to the contact's presence, but the contact does not have a subscription to the
+         * user's presence.
          */
         @XmlEnumValue("to")
         TO,
         /**
-         * The user does not have a subscription to the contact's presence, and the contact does not have a subscription to the user's presence; this is the default value, so if the subscription attribute is not included then the state is to be understood as "none".
+         * The user does not have a subscription to the contact's presence, and the contact does not have a subscription
+         * to the user's presence; this is the default value, so if the subscription attribute is not included then the
+         * state is to be understood as "none".
          */
         @XmlEnumValue("none")
         NONE,
         /**
-         * At any time, a client can delete an item from his or her roster by sending a roster set and specifying a value of "remove" for the 'subscription' attribute.
+         * At any time, a client can delete an item from his or her roster by sending a roster set and specifying a
+         * value of "remove" for the 'subscription' attribute.
          */
         @XmlEnumValue("remove")
         REMOVE;
 
         /**
-         * Returns true, if the user has a subscription to the contact, e.g. if the subscription state is {@link #TO} or {@link #BOTH}.
+         * Returns true, if the user has a subscription to the contact, e.g. if the subscription state is {@link #TO} or
+         * {@link #BOTH}.
          *
          * @return True, if the subscription state is {@link #TO} or {@link #BOTH}.
          */
@@ -131,7 +142,8 @@ public interface SubscriptionState {
         }
 
         /**
-         * Returns true, if the contact has a subscription to the user, e.g. if the subscription state is {@link #FROM} or {@link #BOTH}.
+         * Returns true, if the contact has a subscription to the user, e.g. if the subscription state is {@link #FROM}
+         * or {@link #BOTH}.
          *
          * @return True, if the subscription state is {@link #FROM} or {@link #BOTH}.
          */

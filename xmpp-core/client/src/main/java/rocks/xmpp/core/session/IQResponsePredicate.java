@@ -34,7 +34,7 @@ import rocks.xmpp.core.stanza.model.IQ;
  * A predicate which checks for valid IQ responses to a IQ request.
  *
  * <p>An IQ response matches to an IQ request if:</p>
- * 
+ *
  * <ol>
  * <li>the response IQ is of type 'result' or 'error'</li>
  * <li>both stanza IDs of request and response are equal</li>
@@ -45,7 +45,8 @@ import rocks.xmpp.core.stanza.model.IQ;
  * </ul>
  * </ol>
  *
- * <p>Checking the 'from' attribute in addition to the to stanza id is recommended, because an attacker could spoof an IQ response when guessing the correct stanza id.</p>
+ * <p>Checking the 'from' attribute in addition to the to stanza id is recommended, because an attacker could spoof an
+ * IQ response when guessing the correct stanza id.</p>
  *
  * @author Christian Schudt
  */
@@ -80,9 +81,12 @@ final class IQResponsePredicate implements Predicate<IQ> {
                 && (
                 Objects.equals(to, responseIQ.getFrom())
                         // unless the 'from' is null and the 'to' was the user's bare JID
-                        || (responseIQ.getFrom() == null && (connectedResource == null || to.equals(connectedResource.asBareJid())))
+                        || (responseIQ.getFrom() == null
+                        && (connectedResource == null || to.equals(connectedResource.asBareJid())))
                         // or the 'to' is null and the response is from the user's account or from the server
-                        || (to == null && (connectedResource == null || responseIQ.getFrom().asBareJid().equals(connectedResource.asBareJid()) || responseIQ.getFrom().asBareJid().getDomain().equals(connectedResource.getDomain())))
+                        || (to == null && (connectedResource == null
+                        || responseIQ.getFrom().asBareJid().equals(connectedResource.asBareJid())
+                        || responseIQ.getFrom().asBareJid().getDomain().equals(connectedResource.getDomain())))
         );
     }
 }

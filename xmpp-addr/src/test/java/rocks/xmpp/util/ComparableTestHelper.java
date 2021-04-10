@@ -77,7 +77,8 @@ public final class ComparableTestHelper {
     }
 
     /**
-     * Checks if the {@code Comparable}s in the collection are all consistent with {@code equals()}, i.e. {@code (x.compareTo(y)==0) == (x.equals(y))}.
+     * Checks if the {@code Comparable}s in the collection are all consistent with {@code equals()}, i.e. {@code
+     * (x.compareTo(y)==0) == (x.equals(y))}.
      *
      * @param collection The collection of {@code Comparable}s.
      * @param <T>        The type.
@@ -85,7 +86,8 @@ public final class ComparableTestHelper {
      * @return true, if all items are consistens with equals; false otherwise.
      * @see Comparable#compareTo(Object)
      */
-    public static <T extends C, C extends Comparable<C>> boolean isConsistentWithEquals(final Collection<T> collection) {
+    public static <T extends C, C extends Comparable<C>> boolean isConsistentWithEquals(
+            final Collection<T> collection) {
         final List<C> list = new ArrayList<>(collection);
         for (int i = 0; i < list.size(); i++) {
             for (int j = i; j < list.size(); j++) {

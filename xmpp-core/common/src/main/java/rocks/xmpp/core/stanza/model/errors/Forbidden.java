@@ -30,8 +30,11 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <forbidden/>} stanza error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-forbidden">8.3.3.4.  forbidden</a></cite></p>
- * <p>The requesting entity does not possess the necessary permissions to perform an action that only certain authorized roles or individuals are allowed to complete (i.e., it typically relates to authorization rather than authentication); the associated error type SHOULD be "auth".</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-forbidden">8.3.3.4.
+ * forbidden</a></cite></p>
+ * <p>The requesting entity does not possess the necessary permissions to perform an action that only certain
+ * authorized roles or individuals are allowed to complete (i.e., it typically relates to authorization rather than
+ * authentication); the associated error type SHOULD be "auth".</p>
  * </blockquote>
  * This class is a singleton.
  *

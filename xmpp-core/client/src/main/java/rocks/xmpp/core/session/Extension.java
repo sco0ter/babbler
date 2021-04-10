@@ -43,20 +43,24 @@ import rocks.xmpp.core.ExtensionProtocol;
  * <li>A namespace, which uniquely identifies the extension, e.g. {@code "urn:xmpp:receipts"}</li>
  * <li>A {@link Manager} class, which is associated with the extension and manages its business logic.</li>
  * <li>A collection of classes which are implementations of the XML schema.</li>
- * <li>A set of features, which are advertised together with the namespace in service discovery, e.g. "urn:xmpp:hash-function-text-names:sha-1"</li>
+ * <li>A set of features, which are advertised together with the namespace in service discovery,
+ * e.g. "urn:xmpp:hash-function-text-names:sha-1"</li>
  * </ul>
  *
  * <p>All of these characteristics are optional:</p>
  *
- * <p>An extension could have an XML schema implementation, but no business logic and therefore no manager class, like XEP-0203: Delayed Delivery.</p>
+ * <p>An extension could have an XML schema implementation, but no business logic and therefore no manager class,
+ * like XEP-0203: Delayed Delivery.</p>
  *
- * <p>The namespace is optional as well: If an extension has no namespace, it won't be advertised in Service Discovery.</p>
+ * <p>The namespace is optional as well: If an extension has no namespace,
+ * it won't be advertised in Service Discovery.</p>
  *
  * <p>Extensions which have business logic (and hence a manager class), can be enabled or disabled.</p>
  *
  * <p>In order to create an extension, use one of its static factory methods.</p>
  *
- * <p>This class overrides {@link #equals(Object)} and {@link #hashCode()}, so that two extensions are considered equal if either their namespace are equal or their manager classes.
+ * <p>This class overrides {@link #equals(Object)} and {@link #hashCode()}, so that two extensions are considered equal
+ * if either their namespace are equal or their manager classes.
  * This allows to disable certain extensions or managers by default.</p>
  *
  * @author Christian Schudt
@@ -85,7 +89,8 @@ public final class Extension implements ExtensionProtocol {
     /**
      * Creates an extension with a set of classes (XML schema implementations) used by this extension.
      *
-     * <p>Use it for extensions without business logic and no namespace which needs to be advertised, e.g. for Delayed Delivery.</p>
+     * <p>Use it for extensions without business logic and no namespace which needs to be advertised, e.g. for Delayed
+     * Delivery.</p>
      *
      * @param classes The classes.
      * @return The extension.
@@ -114,8 +119,8 @@ public final class Extension implements ExtensionProtocol {
     }
 
     /**
-     * Creates an extension without business logic, but an XML schema class. If enabled, it will be advertised as a feature in service discovery.
-     * Examples are XEP-0020, XEP-0122 or XEP-0141.
+     * Creates an extension without business logic, but an XML schema class. If enabled, it will be advertised as a
+     * feature in service discovery. Examples are XEP-0020, XEP-0122 or XEP-0141.
      *
      * @param namespace The protocol namespace.
      * @param enabled   If this extension is enabled, i.e. whether it's advertised in service discovery.
@@ -133,7 +138,8 @@ public final class Extension implements ExtensionProtocol {
      *
      * @param namespace The protocol namespace.
      * @param manager   The manager class, which covers the business logic.
-     * @param enabled   If this extension is enabled, i.e. whether its manager class is enabled and whether it's advertised in service discovery.
+     * @param enabled   If this extension is enabled, i.e. whether its manager class is enabled and whether it's
+     *                  advertised in service discovery.
      * @param classes   The XML schema classes.
      * @return The extension.
      */
@@ -142,17 +148,22 @@ public final class Extension implements ExtensionProtocol {
     }
 
     /**
-     * Creates an PEP (<a href="https://xmpp.org/extensions/xep-0163.html">Personal Eventing Protocol</a>) extension with a namespace, business logic and XML schema classes.
+     * Creates an PEP (<a href="https://xmpp.org/extensions/xep-0163.html">Personal Eventing Protocol</a>) extension
+     * with a namespace, business logic and XML schema classes.
      *
      * @param namespace The protocol namespace.
      * @param manager   The manager class, which covers the business logic.
-     * @param notify    True, if this feature should be advertised along with a "filtered notification", i.e. as "namespace+notify".
-     * @param enabled   If this extension is enabled, i.e. whether its manager class is enabled and whether it's advertised in service discovery.
+     * @param notify    True, if this feature should be advertised along with a "filtered notification", i.e. as
+     *                  "namespace+notify".
+     * @param enabled   If this extension is enabled, i.e. whether its manager class is enabled and whether it's
+     *                  advertised in service discovery.
      * @param classes   The XML schema classes.
      * @return The extension.
      */
-    public static Extension of(String namespace, Class<? extends Manager> manager, boolean notify, boolean enabled, Class<?>... classes) {
-        return new Extension(Objects.requireNonNull(namespace), manager, notify ? Collections.singleton(namespace + "+notify") : Collections.emptySet(), enabled, classes);
+    public static Extension of(String namespace, Class<? extends Manager> manager, boolean notify, boolean enabled,
+                               Class<?>... classes) {
+        return new Extension(Objects.requireNonNull(namespace), manager,
+                notify ? Collections.singleton(namespace + "+notify") : Collections.emptySet(), enabled, classes);
     }
 
     /**
@@ -161,11 +172,13 @@ public final class Extension implements ExtensionProtocol {
      * @param namespace The protocol namespace.
      * @param manager   The manager class, which covers the business logic.
      * @param features  The features, which are advertised in service discovery.
-     * @param enabled   If this extension is enabled, i.e. whether its manager class is enabled and whether it's advertised in service discovery.
+     * @param enabled   If this extension is enabled, i.e. whether its manager class is enabled and whether it's
+     *                  advertised in service discovery.
      * @param classes   The XML schema classes.
      * @return The extension.
      */
-    public static Extension of(String namespace, Class<? extends Manager> manager, Set<String> features, boolean enabled, Class<?>... classes) {
+    public static Extension of(String namespace, Class<? extends Manager> manager, Set<String> features,
+                               boolean enabled, Class<?>... classes) {
         return new Extension(namespace, manager, features, enabled, classes);
     }
 

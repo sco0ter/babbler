@@ -75,7 +75,8 @@ public class AbstractStreamManagerTest {
         ArgumentCaptor<StreamElement> argumentCaptor = ArgumentCaptor.forClass(StreamElement.class);
         Mockito.verify(session).send(argumentCaptor.capture());
         Assert.assertTrue(argumentCaptor.getValue() instanceof StreamManagement.Answer);
-        Assert.assertEquals(((StreamManagement.Answer) argumentCaptor.getValue()).getLastHandledStanza(), Long.valueOf(2));
+        Assert.assertEquals(((StreamManagement.Answer) argumentCaptor.getValue()).getLastHandledStanza(),
+                Long.valueOf(2));
     }
 
     @Test

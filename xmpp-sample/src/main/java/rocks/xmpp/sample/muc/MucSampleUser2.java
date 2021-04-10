@@ -67,7 +67,8 @@ public final class MucSampleUser2 {
                 xmppSession.login("222", "222", "muc");
 
                 MultiUserChatManager multiUserChatManager = xmppSession.getManager(MultiUserChatManager.class);
-                ChatService chatService = multiUserChatManager.createChatService(Jid.of("conference." + xmppSession.getDomain()));
+                ChatService chatService =
+                        multiUserChatManager.createChatService(Jid.of("conference." + xmppSession.getDomain()));
                 ChatRoom chatRoom = chatService.createRoom("test");
                 chatRoom.addOccupantListener(e -> {
                     if (e.getType() == OccupantEvent.Type.ENTERED) {

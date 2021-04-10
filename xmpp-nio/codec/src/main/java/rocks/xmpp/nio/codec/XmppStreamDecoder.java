@@ -56,9 +56,11 @@ import rocks.xmpp.core.stream.model.errors.Condition;
 /**
  * Decodes a stream of byte buffers to XMPP elements.
  *
- * <p>Decoding is thread-safe, as long as the supplied {@link Unmarshaller} is not shared by another thread, e.g. if a {@linkplain ThreadLocal thread-local} {@link Unmarshaller} is supplied.</p>
+ * <p>Decoding is thread-safe, as long as the supplied {@link Unmarshaller} is not shared by another thread, e.g. if a
+ * {@linkplain ThreadLocal thread-local} {@link Unmarshaller} is supplied.</p>
  *
- * <p>Stream restarts can be achieved by using the {@link #restart()} methods. Decoding and restarts are thread-safe, i.e. can be called by different threads.</p>
+ * <p>Stream restarts can be achieved by using the {@link #restart()} methods. Decoding and restarts are thread-safe,
+ * i.e. can be called by different threads.</p>
  *
  * @author Christian Schudt
  */
@@ -79,7 +81,8 @@ public final class XmppStreamDecoder {
     /**
      * Creates the XMPP decoder.
      *
-     * <p>Because {@link Unmarshaller} is not thread-safe, it is recommended to pass a {@code ThreadLocal<Unmarshaller>} to this constructor, which ensures thread-safety during unmarshalling.</p>
+     * <p>Because {@link Unmarshaller} is not thread-safe, it is recommended to pass a {@code
+     * ThreadLocal<Unmarshaller>} to this constructor, which ensures thread-safety during unmarshalling.</p>
      *
      * @param unmarshaller Supplies the unmarshaller which will convert XML to objects.
      */
@@ -102,7 +105,8 @@ public final class XmppStreamDecoder {
      * @param out Consumes any decoded elements as string and as unmarshalled object.
      * @throws StreamErrorException If parsing XML fails or any other stream error occurred (e.g. invalid XML).
      */
-    public final synchronized void decode(final ByteBuffer in, final BiConsumer<String, StreamElement> out) throws StreamErrorException {
+    public final synchronized void decode(final ByteBuffer in, final BiConsumer<String, StreamElement> out)
+            throws StreamErrorException {
 
         // Append the buffer to stream
         byte[] b = new byte[in.remaining()];
@@ -117,7 +121,8 @@ public final class XmppStreamDecoder {
             // Feed the reader with the read bytes.
             xmlStreamReader.getInputFeeder().feedInput(in);
             int type;
-            while ((type = xmlStreamReader.next()) != XMLStreamConstants.END_DOCUMENT && type != AsyncXMLStreamReader.EVENT_INCOMPLETE) {
+            while ((type = xmlStreamReader.next()) != XMLStreamConstants.END_DOCUMENT
+                    && type != AsyncXMLStreamReader.EVENT_INCOMPLETE) {
 
                 switch (type) {
 
@@ -129,29 +134,36 @@ public final class XmppStreamDecoder {
                             // Validate namespace URI.
                             final String namespaceUri = xmlStreamReader.getNamespaceURI();
                             if (!StreamHeader.STREAM_NAMESPACE.equals(namespaceUri)) {
-                                throw new StreamErrorException(new StreamError(Condition.INVALID_NAMESPACE, "Invalid stream namespace '" + namespaceUri + "'", Locale.US));
+                                throw new StreamErrorException(new StreamError(Condition.INVALID_NAMESPACE,
+                                        "Invalid stream namespace '" + namespaceUri + "'", Locale.US));
                             }
 
                             // Validate local name.
                             final String localName = xmlStreamReader.getLocalName();
                             if (!StreamHeader.LOCAL_NAME.equals(localName)) {
-                                throw new StreamErrorException(new StreamError(Condition.INVALID_XML, "Invalid stream element '" + localName + "'", Locale.US));
+                                throw new StreamErrorException(new StreamError(Condition.INVALID_XML,
+                                        "Invalid stream element '" + localName + "'", Locale.US));
                             }
 
-                            final String version = xmlStreamReader.getAttributeValue(XMLConstants.DEFAULT_NS_PREFIX, "version");
-                            final String from = xmlStreamReader.getAttributeValue(XMLConstants.DEFAULT_NS_PREFIX, "from");
+                            final String version =
+                                    xmlStreamReader.getAttributeValue(XMLConstants.DEFAULT_NS_PREFIX, "version");
+                            final String from =
+                                    xmlStreamReader.getAttributeValue(XMLConstants.DEFAULT_NS_PREFIX, "from");
                             final String to = xmlStreamReader.getAttributeValue(XMLConstants.DEFAULT_NS_PREFIX, "to");
                             final String id = xmlStreamReader.getAttributeValue(XMLConstants.DEFAULT_NS_PREFIX, "id");
                             final String lang = xmlStreamReader.getAttributeValue(XMLConstants.XML_NS_URI, "lang");
-                            final String contentNamespace = xmlStreamReader.getNamespaceURI(XMLConstants.DEFAULT_NS_PREFIX);
+                            final String contentNamespace =
+                                    xmlStreamReader.getNamespaceURI(XMLConstants.DEFAULT_NS_PREFIX);
                             final List<QName> additionalNamespaces = new ArrayList<>();
 
                             int namespaceCount = xmlStreamReader.getNamespaceCount();
                             if (namespaceCount > 2) {
                                 for (int i = 0; i < namespaceCount; i++) {
                                     String namespace = xmlStreamReader.getNamespaceURI(i);
-                                    if (!StreamHeader.STREAM_NAMESPACE.equals(namespace) && !Objects.equals(namespace, contentNamespace)) {
-                                        additionalNamespaces.add(new QName(namespace, "", xmlStreamReader.getNamespacePrefix(i)));
+                                    if (!StreamHeader.STREAM_NAMESPACE.equals(namespace) && !Objects
+                                            .equals(namespace, contentNamespace)) {
+                                        additionalNamespaces
+                                                .add(new QName(namespace, "", xmlStreamReader.getNamespacePrefix(i)));
                                     }
                                 }
                             }
@@ -159,7 +171,8 @@ public final class XmppStreamDecoder {
                             elementEnd = xmlStreamReader.getLocationInfo().getEndingByteOffset();
 
                             // Store the stream header so that it can be reused while unmarshalling further bytes.
-                            final String streamHeaderStr = new String(byteStream, 0, (int) elementEnd, StandardCharsets.UTF_8);
+                            final String streamHeaderStr =
+                                    new String(byteStream, 0, (int) elementEnd, StandardCharsets.UTF_8);
 
                             // Copy the rest of the stream.
                             // From now on, only store the XML stream without the stream header.
@@ -202,8 +215,8 @@ public final class XmppStreamDecoder {
                                 //xmlStream.delete(0, element.length());
                                 byteStream = Arrays.copyOfRange(byteStream, elementLength, byteStream.length);
 
-                                // Create a partial stream, which always consists of the stream header (to have namespace declarations)
-                                // and the current element.
+                                // Create a partial stream, which always consists of the stream header
+                                // (to have namespace declarations) and the current element.
                                 // Add one more byte to prevent EOF Exception.
                                 String partialStream = streamHeader + element + ' ';
                                 XMLStreamReader reader = null;
@@ -214,12 +227,14 @@ public final class XmppStreamDecoder {
                                     reader.next();
                                     // Move the reader to the next element after the stream header.
                                     int t = reader.next();
-                                    // Usually we should be at the next start element now, unless there are characters between the elements.
+                                    // Usually we should be at the next start element now, unless there are characters
+                                    // between the elements.
                                     // Make sure, we are at the start element before unmarshalling.
                                     while (reader.hasNext() && t != XMLStreamConstants.START_ELEMENT) {
                                         t = reader.next();
                                     }
-                                    out.accept(element, (StreamElement) unmarshaller.apply(streamHeader.getLanguage()).unmarshal(reader));
+                                    out.accept(element, (StreamElement) unmarshaller.apply(streamHeader.getLanguage())
+                                            .unmarshal(reader));
                                 } finally {
                                     if (reader != null) {
                                         reader.close();

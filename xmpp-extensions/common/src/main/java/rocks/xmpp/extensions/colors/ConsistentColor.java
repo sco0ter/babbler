@@ -30,13 +30,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 /**
- * A consistent color which is generated from an input string such as a nickname or a bare JID.
- * Consistent means, the resulting color is always the same for same input strings.
+ * A consistent color which is generated from an input string such as a nickname or a bare JID. Consistent means, the
+ * resulting color is always the same for same input strings.
  *
  * <h2>Generating a Color</h2>
  *
- * <p>To generate a color pass either a nickname or the bare JID of the conversation as <code>input</code> to the {@link #generate(CharSequence)} method.
- * Generally, nick names should be preferred over bare JIDs.</p>
+ * <p>To generate a color pass either a nickname or the bare JID of the conversation as <code>input</code> to the
+ * {@link #generate(CharSequence)} method. Generally, nick names should be preferred over bare JIDs.</p>
  *
  * <pre>{@code
  * ConsistentColor color = ConsistentColor.generate(input);
@@ -48,7 +48,7 @@ import java.util.Objects;
  * <h2>Corrections for Color Vision Deficiencies</h2>
  *
  * <p>In order to ensure accessibility to users with color vision deficiencies, you can generate corrected colors.</p>
- * 
+ *
  * <pre>{@code
  * ConsistentColor color = ConsistentColor.generate(input, ConsistentColor.ColorVisionDeficiency.RED_GREEN_BLINDNESS);}
  * }</pre>
@@ -120,20 +120,22 @@ public final class ConsistentColor {
      * @return The color.
      * @see #generate(CharSequence, ColorVisionDeficiency, float)
      */
-    public static ConsistentColor generate(final CharSequence input, final ColorVisionDeficiency colorVisionDeficiency) {
+    public static ConsistentColor generate(final CharSequence input,
+                                           final ColorVisionDeficiency colorVisionDeficiency) {
         return generate(input, colorVisionDeficiency, 0.732f);
     }
 
     /**
-     * Generates a color for an input string and for a color vision deficiency.
-     * This method also allow to pass other values than 0.732 for the Y value in the YCbCr color space.
+     * Generates a color for an input string and for a color vision deficiency. This method also allow to pass other
+     * values than 0.732 for the Y value in the YCbCr color space.
      *
      * @param input                 The input string.
      * @param colorVisionDeficiency The color vision deficiency.
      * @param y                     The Y value in the YCbCr color space.
      * @return The color.
      */
-    public static ConsistentColor generate(final CharSequence input, final ColorVisionDeficiency colorVisionDeficiency, final float y) {
+    public static ConsistentColor generate(final CharSequence input, final ColorVisionDeficiency colorVisionDeficiency,
+                                           final float y) {
         final double angle = generateAngle(input, colorVisionDeficiency);
 
         double cr = Math.sin(angle);
@@ -275,8 +277,8 @@ public final class ConsistentColor {
     }
 
     /**
-     * Represents a color vision deficiency, used to re-map the angle to map it away from ranges
-     * which can not be distinguished by people with the respective color vision deficiencies.
+     * Represents a color vision deficiency, used to re-map the angle to map it away from ranges which can not be
+     * distinguished by people with the respective color vision deficiencies.
      *
      * @see #generate(CharSequence, ColorVisionDeficiency)
      */

@@ -35,9 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
 public abstract class StreamFeature implements Comparable<StreamFeature> {
 
     /**
-     * Indicates, whether this feature is mandatory to negotiate.
-     * By default a feature is not mandatory.
-     * Override this method for mandatory-to-negotiate features.
+     * Indicates, whether this feature is mandatory to negotiate. By default a feature is not mandatory. Override this
+     * method for mandatory-to-negotiate features.
      *
      * @return True, if the feature is mandatory.
      */
@@ -66,15 +65,17 @@ public abstract class StreamFeature implements Comparable<StreamFeature> {
     /**
      * Compares two features by their priority and mandatory-to-negotiate flag.
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-negotiation-features">4.3.2.  Stream Features Format</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-negotiation-features">4.3.2.  Stream Features
+     * Format</a></cite></p>
      * <p>A {@code <features/>} element that contains both mandatory-to-negotiate and voluntary-to-negotiate features
-     * indicates that the negotiation is not complete but that the initiating entity MAY complete
-     * the voluntary-to-negotiate feature(s) before it attempts to negotiate the mandatory-to-negotiate feature(s).</p>
+     * indicates that the negotiation is not complete but that the initiating entity MAY complete the
+     * voluntary-to-negotiate feature(s) before it attempts to negotiate the mandatory-to-negotiate feature(s).</p>
      * </blockquote>
      *
      * @param o The other feature.
      * @return The comparison result.
-     * @see <a href="https://xmpp.org/extensions/xep-0170.html">XEP-0170: Recommended Order of Stream Feature Negotiation</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0170.html">XEP-0170: Recommended Order of Stream Feature
+     * Negotiation</a>
      */
     @Override
     public final int compareTo(StreamFeature o) {

@@ -30,8 +30,11 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <invalid-from/>} stream error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-invalid-from">4.9.3.9.  invalid-from</a></cite></p>
- * <p>The data provided in a 'from' attribute does not match an authorized Jid or validated domain as negotiated (1) between two servers using SASL or Server Dialback, or (2) between a client and a server via SASL authentication and resource binding.</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-invalid-from">4.9.3.9.
+ * invalid-from</a></cite></p>
+ * <p>The data provided in a 'from' attribute does not match an authorized Jid or validated domain as negotiated (1)
+ * between two servers using SASL or Server Dialback, or (2) between a client and a server via SASL authentication and
+ * resource binding.</p>
  * </blockquote>
  * This class is a singleton.
  *

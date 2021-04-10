@@ -68,7 +68,8 @@ public interface Connection extends AutoCloseable {
     CompletionStage<Void> open(SessionOpen sessionOpen);
 
     /**
-     * Sends an element to the peer entity. This is basically a short cut for {@linkplain #write(StreamElement) write} + {@linkplain #flush() flush}.
+     * Sends an element to the peer entity. This is basically a short cut for {@linkplain #write(StreamElement) write} +
+     * {@linkplain #flush() flush}.
      *
      * @param streamElement The element.
      * @return The future representing the send process and which allows to cancel it.
@@ -105,8 +106,8 @@ public interface Connection extends AutoCloseable {
     /**
      * Asynchronously closes the connection.
      *
-     * <p>Closing usually involves a round-trip with the peer on the XMPP layer first by sending a closing stream element,
-     * then waiting on the response and then closing the underlying transport layer.</p>
+     * <p>Closing usually involves a round-trip with the peer on the XMPP layer first by sending a closing stream
+     * element, then waiting on the response and then closing the underlying transport layer.</p>
      *
      * <p>Implementations wait a maximum of 500ms for the XMPP level close.</p>
      *

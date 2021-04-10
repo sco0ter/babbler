@@ -65,9 +65,12 @@ public final class PresenceManager extends Manager {
             Presence presence = e.getPresence();
             if (presence.getFrom() != null) {
                 // Store the user (bare JID) in the map, associated with different resources.
-                Map<String, Presence> presencesPerResource = presenceMap.computeIfAbsent(presence.getFrom().asBareJid(), key -> new ConcurrentHashMap<>());
+                Map<String, Presence> presencesPerResource =
+                        presenceMap.computeIfAbsent(presence.getFrom().asBareJid(), key -> new ConcurrentHashMap<>());
                 // Update the contact's resource with the presence.
-                presencesPerResource.put(presence.getFrom().getResource() != null ? presence.getFrom().getResource() : "", presence);
+                presencesPerResource
+                        .put(presence.getFrom().getResource() != null ? presence.getFrom().getResource() : "",
+                                presence);
             }
         });
         xmppSession.addOutboundPresenceListener(e -> {
@@ -93,7 +96,8 @@ public final class PresenceManager extends Manager {
      * Gets the presence for a given contact.
      *
      * <p>If the given JID is a bare JID, and the contact has sent multiple presences with different resources,
-     * the "best" presence is returned, i.e. the presence with the highest priority or the presence with the "most available" {@code <show/>} element.</p>
+     * the "best" presence is returned, i.e. the presence with the highest priority or the presence with the "most
+     * available" {@code <show/>} element.</p>
      *
      * <p>If the JID is a full JID, the exact presence of that JID is returned.</p>
      *
@@ -133,11 +137,13 @@ public final class PresenceManager extends Manager {
      * @param jid    The contact's JID.
      * @param status The status, which is used for additional information during the subscription request.
      * @return The id, which is used for the request.
-     * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-request-gen">3.1.1.  Client Generation of Outbound Subscription Request</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-request-gen">3.1.1.  Client Generation of Outbound
+     * Subscription Request</a>
      */
     public final String requestSubscription(Jid jid, String status) {
         // the value of the 'to' attribute MUST be a bare JID
-        Presence presence = new Presence(jid.asBareJid(), Presence.Type.SUBSCRIBE, status, UUID.randomUUID().toString());
+        Presence presence =
+                new Presence(jid.asBareJid(), Presence.Type.SUBSCRIBE, status, UUID.randomUUID().toString());
         xmppSession.send(presence);
         return presence.getId();
     }
@@ -147,10 +153,12 @@ public final class PresenceManager extends Manager {
      *
      * @param jid The contact's JID, who has previously requested a subscription.
      * @return The id, which is used for the approval.
-     * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-request-handle">3.1.4.  Client Processing of Inbound Subscription Request</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-request-handle">3.1.4.  Client Processing of Inbound
+     * Subscription Request</a>
      */
     public final String approveSubscription(Jid jid) {
-        // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.
+        // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription
+        // denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.
         Presence presence = new Presence(jid, Presence.Type.SUBSCRIBED, null, UUID.randomUUID().toString());
         xmppSession.send(presence);
         return presence.getId();
@@ -163,10 +171,12 @@ public final class PresenceManager extends Manager {
      *
      * @param jid The contact's JID, whose subscription is denied or canceled.
      * @return The id, which is used for the subscription denial.
-     * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-cancel-gen">3.2.1.  Client Generation of Subscription Cancellation</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-cancel-gen">3.2.1.  Client Generation of Subscription
+     * Cancellation</a>
      */
     public final String denySubscription(Jid jid) {
-        // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.
+        // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription
+        // denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.
         Presence presence = new Presence(jid, Presence.Type.UNSUBSCRIBED, null, UUID.randomUUID().toString());
         xmppSession.send(presence);
         return presence.getId();
@@ -182,7 +192,8 @@ public final class PresenceManager extends Manager {
      * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-unsub-gen">3.3.1.  Client Generation of Unsubscribe</a>
      */
     public final String unsubscribe(Jid jid) {
-        // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.
+        // For tracking purposes, a client SHOULD include an 'id' attribute in a subscription approval or subscription
+        // denial; this 'id' attribute MUST NOT mirror the 'id' attribute of the subscription request.
         Presence presence = new Presence(jid, Presence.Type.UNSUBSCRIBE, null, UUID.randomUUID().toString());
         xmppSession.send(presence);
         return presence.getId();

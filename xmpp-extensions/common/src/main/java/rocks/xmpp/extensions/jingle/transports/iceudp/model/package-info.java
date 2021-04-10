@@ -23,9 +23,12 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0176.html">XEP-0176: Jingle ICE-UDP Transport Method</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0176.html">XEP-0176: Jingle ICE-UDP
+ * Transport Method</a>.
  *
- * <p>It defines a Jingle transport method that results in sending media data using raw datagram associations via the User Datagram Protocol (UDP). This transport method is negotiated via the Interactive Connectivity Establishment (ICE) methodology, which provides robust NAT traversal for media traffic.</p>
+ * <p>It defines a Jingle transport method that results in sending media data using raw datagram associations via the
+ * User Datagram Protocol (UDP). This transport method is negotiated via the Interactive Connectivity Establishment
+ * (ICE) methodology, which provides robust NAT traversal for media traffic.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = IceUdpTransportMethod.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

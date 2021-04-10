@@ -25,7 +25,8 @@
 /**
  * Provides classes for <a href="https://xmpp.org/extensions/xep-0232.html">XEP-0232: Software Information</a>.
  *
- * <p>It specifies an extended data format whereby XMPP service discovery responses can include detailed information about the software application that powers a given XMPP entity for includion in service discovery responses.</p>
+ * <p>It specifies an extended data format whereby XMPP service discovery responses can include detailed information
+ * about the software application that powers a given XMPP entity for includion in service discovery responses.</p>
  */
 package rocks.xmpp.extensions.softwareinfo;
 

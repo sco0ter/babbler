@@ -51,7 +51,14 @@ import rocks.xmpp.util.Strings;
  * The implementation of the {@code <x/>} element in the {@code jabber:x:data} namespace, which represents data forms.
  *
  * <blockquote>
- * <p>This specification defines an XMPP protocol extension for data forms that can be used in workflows such as service configuration as well as for application-specific data description and reporting. The protocol includes lightweight semantics for forms processing (such as request, response, submit, and cancel), defines several common field types (boolean, list options with single or multiple choice, text with single line or multiple lines, single or multiple JabberIDs, hidden fields, etc.), provides extensibility for future data types, and can be embedded in a wide range of applications. The protocol is not intended to provide complete forms-processing functionality as is provided in the W3C XForms technology, but instead provides a basic subset of such functionality for use by XMPP entities.</p>
+ * <p>This specification defines an XMPP protocol extension for data forms that can be used in workflows such as
+ * service configuration as well as for application-specific data description and reporting. The protocol includes
+ * lightweight semantics for forms processing (such as request, response, submit, and cancel), defines several common
+ * field types (boolean, list options with single or multiple choice, text with single line or multiple lines, single or
+ * multiple JabberIDs, hidden fields, etc.), provides extensibility for future data types, and can be embedded in a wide
+ * range of applications. The protocol is not intended to provide complete forms-processing functionality as is provided
+ * in the W3C XForms technology, but instead provides a basic subset of such functionality for use by XMPP
+ * entities.</p>
  * </blockquote>
  *
  * <p>This class is immutable.</p>
@@ -145,7 +152,8 @@ public final class DataForm implements Comparable<DataForm> {
         }
     }
 
-    public DataForm(Type type, String title, Collection<Field> fields, Collection<Field> reportedFields, Collection<Item> items, Collection<String> instructions, Collection<Page> pages) {
+    public DataForm(Type type, String title, Collection<Field> fields, Collection<Field> reportedFields,
+                    Collection<Item> items, Collection<String> instructions, Collection<Page> pages) {
         this.type = type;
         this.title = title;
         if (instructions != null) {
@@ -271,7 +279,11 @@ public final class DataForm implements Comparable<DataForm> {
     /**
      * Gets the title of the form.
      * <blockquote>
-     * <p>The OPTIONAL {@code <title/>} and {@code <instructions/>} elements enable the form-processing entity to label the form as a whole and specify natural-language instructions to be followed by the form-submitting entity. The XML character data for these elements SHOULD NOT contain newlines (the \n and \r characters), and any handling of newlines (e.g., presentation in a user interface) is unspecified herein; however, multiple instances of the {@code <instructions/>} element MAY be included.</p>
+     * <p>The OPTIONAL {@code <title/>} and {@code <instructions/>} elements enable the form-processing entity to label
+     * the form as a whole and specify natural-language instructions to be followed by the form-submitting entity. The
+     * XML character data for these elements SHOULD NOT contain newlines (the \n and \r characters), and any handling of
+     * newlines (e.g., presentation in a user interface) is unspecified herein; however, multiple instances of the
+     * {@code <instructions/>} element MAY be included.</p>
      * </blockquote>
      *
      * @return The title.
@@ -292,7 +304,11 @@ public final class DataForm implements Comparable<DataForm> {
     /**
      * Gets the instructions of the form.
      * <blockquote>
-     * <p>The OPTIONAL {@code <title/>} and {@code <instructions/>} elements enable the form-processing entity to label the form as a whole and specify natural-language instructions to be followed by the form-submitting entity. The XML character data for these elements SHOULD NOT contain newlines (the \n and \r characters), and any handling of newlines (e.g., presentation in a user interface) is unspecified herein; however, multiple instances of the {@code <instructions/>} element MAY be included.</p>
+     * <p>The OPTIONAL {@code <title/>} and {@code <instructions/>} elements enable the form-processing entity to label
+     * the form as a whole and specify natural-language instructions to be followed by the form-submitting entity. The
+     * XML character data for these elements SHOULD NOT contain newlines (the \n and \r characters), and any handling of
+     * newlines (e.g., presentation in a user interface) is unspecified herein; however, multiple instances of the
+     * {@code <instructions/>} element MAY be included.</p>
      * </blockquote>
      *
      * @return The instructions.
@@ -356,8 +372,8 @@ public final class DataForm implements Comparable<DataForm> {
 
 
     /**
-     * Compares this data form with another data form.
-     * Data forms which have a "FORM_TYPE" field are are listed first in a collection.
+     * Compares this data form with another data form. Data forms which have a "FORM_TYPE" field are are listed first in
+     * a collection.
      *
      * @param o The other data form.
      * @return The comparison result.
@@ -432,12 +448,15 @@ public final class DataForm implements Comparable<DataForm> {
         @XmlEnumValue(value = "form")
         FORM,
         /**
-         * The form-processing entity is returning data (e.g., search results) to the form-submitting entity, or the data is a generic data set.
+         * The form-processing entity is returning data (e.g., search results) to the form-submitting entity, or the
+         * data is a generic data set.
          */
         @XmlEnumValue(value = "result")
         RESULT,
         /**
-         * The form-submitting entity is submitting data to the form-processing entity. The submission MAY include fields that were not provided in the empty form, but the form-processing entity MUST ignore any fields that it does not understand.
+         * The form-submitting entity is submitting data to the form-processing entity. The submission MAY include
+         * fields that were not provided in the empty form, but the form-processing entity MUST ignore any fields that
+         * it does not understand.
          */
         @XmlEnumValue(value = "submit")
         SUBMIT
@@ -447,8 +466,9 @@ public final class DataForm implements Comparable<DataForm> {
      * A data form field.
      * <h2>Usage</h2>
      * <h3>Creating a field</h3>
-     * Since a field can have multiple different properties like type, value, label, description, required, options, etc. it uses the builder pattern to construct an (immutable) instance of a field.
-     * If the field type is omitted it's inferred from the value, as you see in the following examples.
+     * Since a field can have multiple different properties like type, value, label, description, required, options,
+     * etc. it uses the builder pattern to construct an (immutable) instance of a field. If the field type is omitted
+     * it's inferred from the value, as you see in the following examples.
      * <pre>{@code
      * // <field type="boolean" var="test"><value>1</value></field>
      * DataForm.Field field = DataForm.Field.builder()
@@ -578,7 +598,8 @@ public final class DataForm implements Comparable<DataForm> {
         }
 
         /**
-         * Gets the values of the field. Fields of type {@link Field.Type#LIST_MULTI}, {@link Field.Type#JID_MULTI} or {@link Field.Type#TEXT_MULTI} may contain multiple values.
+         * Gets the values of the field. Fields of type {@link Field.Type#LIST_MULTI}, {@link Field.Type#JID_MULTI} or
+         * {@link Field.Type#TEXT_MULTI} may contain multiple values.
          *
          * @return The values.
          */
@@ -654,7 +675,8 @@ public final class DataForm implements Comparable<DataForm> {
         }
 
         /**
-         * Gets a natural-language description of the field, intended for presentation in a user-agent (e.g., as a "tool-tip", help button, or explanatory text provided near the field).
+         * Gets a natural-language description of the field, intended for presentation in a user-agent (e.g., as a
+         * "tool-tip", help button, or explanatory text provided near the field).
          *
          * @return The description.
          */
@@ -750,29 +772,39 @@ public final class DataForm implements Comparable<DataForm> {
         /**
          * Defines field types.
          * <blockquote>
-         * <p><cite><a href="https://xmpp.org/extensions/xep-0004.html#protocol-fieldtypes">3.3 Field Types</a></cite></p>
-         * <p>The following field types represent data "types" that are commonly exchanged between Jabber/XMPP entities.</p>
+         * <p><cite><a href="https://xmpp.org/extensions/xep-0004.html#protocol-fieldtypes">3.3 Field
+         * Types</a></cite></p>
+         * <p>The following field types represent data "types" that are commonly exchanged between Jabber/XMPP
+         * entities.</p>
          * </blockquote>
          */
         @XmlType(name = "field-type")
         public enum Type {
             /**
-             * The field enables an entity to gather or provide an either-or choice between two options. The default value is "false".
+             * The field enables an entity to gather or provide an either-or choice between two options. The default
+             * value is "false".
              */
             @XmlEnumValue(value = "boolean")
             BOOLEAN,
             /**
-             * The field is intended for data description (e.g., human-readable text such as "section" headers) rather than data gathering or provision. The {@code <value/>} child SHOULD NOT contain newlines (the \n and \r characters); instead an application SHOULD generate multiple fixed fields, each with one {@code <value/>} child.
+             * The field is intended for data description (e.g., human-readable text such as "section" headers) rather
+             * than data gathering or provision. The {@code <value/>} child SHOULD NOT contain newlines (the \n and \r
+             * characters); instead an application SHOULD generate multiple fixed fields, each with one {@code <value/>}
+             * child.
              */
             @XmlEnumValue(value = "fixed")
             FIXED,
             /**
-             * The field is not shown to the form-submitting entity, but instead is returned with the form. The form-submitting entity SHOULD NOT modify the value of a hidden field, but MAY do so if such behavior is defined for the "using protocol".
+             * The field is not shown to the form-submitting entity, but instead is returned with the form. The
+             * form-submitting entity SHOULD NOT modify the value of a hidden field, but MAY do so if such behavior is
+             * defined for the "using protocol".
              */
             @XmlEnumValue(value = "hidden")
             HIDDEN,
             /**
-             * The field enables an entity to gather or provide multiple Jabber IDs. Each provided JID SHOULD be unique (as determined by comparison that includes application of the Nodeprep, Nameprep, and Resourceprep profiles of Stringprep as specified in XMPP Core), and duplicate JIDs MUST be ignored.
+             * The field enables an entity to gather or provide multiple Jabber IDs. Each provided JID SHOULD be unique
+             * (as determined by comparison that includes application of the Nodeprep, Nameprep, and Resourceprep
+             * profiles of Stringprep as specified in XMPP Core), and duplicate JIDs MUST be ignored.
              */
             @XmlEnumValue(value = "jid-multi")
             JID_MULTI,
@@ -782,12 +814,17 @@ public final class DataForm implements Comparable<DataForm> {
             @XmlEnumValue(value = "jid-single")
             JID_SINGLE,
             /**
-             * The field enables an entity to gather or provide one or more options from among many. A form-submitting entity chooses one or more items from among the options presented by the form-processing entity and MUST NOT insert new options. The form-submitting entity MUST NOT modify the order of items as received from the form-processing entity, since the order of items MAY be significant.
+             * The field enables an entity to gather or provide one or more options from among many. A form-submitting
+             * entity chooses one or more items from among the options presented by the form-processing entity and MUST
+             * NOT insert new options. The form-submitting entity MUST NOT modify the order of items as received from
+             * the form-processing entity, since the order of items MAY be significant.
              */
             @XmlEnumValue(value = "list-multi")
             LIST_MULTI,
             /**
-             * The field enables an entity to gather or provide one option from among many. A form-submitting entity chooses one item from among the options presented by the form-processing entity and MUST NOT insert new options.
+             * The field enables an entity to gather or provide one option from among many. A form-submitting entity
+             * chooses one item from among the options presented by the form-processing entity and MUST NOT insert new
+             * options.
              */
             @XmlEnumValue(value = "list-single")
             LIST_SINGLE,
@@ -797,12 +834,15 @@ public final class DataForm implements Comparable<DataForm> {
             @XmlEnumValue(value = "text-multi")
             TEXT_MULTI,
             /**
-             * The field enables an entity to gather or provide a single line or word of text, which shall be obscured in an interface (e.g., with multiple instances of the asterisk character).
+             * The field enables an entity to gather or provide a single line or word of text, which shall be obscured
+             * in an interface (e.g., with multiple instances of the asterisk character).
              */
             @XmlEnumValue(value = "text-private")
             TEXT_PRIVATE,
             /**
-             * The field enables an entity to gather or provide a single line or word of text, which may be shown in an interface. This field type is the default and MUST be assumed if a form-submitting entity receives a field type it does not understand.
+             * The field enables an entity to gather or provide a single line or word of text, which may be shown in an
+             * interface. This field type is the default and MUST be assumed if a form-submitting entity receives a
+             * field type it does not understand.
              */
             @XmlEnumValue(value = "text-single")
             TEXT_SINGLE
@@ -949,7 +989,8 @@ public final class DataForm implements Comparable<DataForm> {
             }
 
             /**
-             * Sets the value as integer. This methods sets the field type implicitly to {@link Field.Type#TEXT_SINGLE}.
+             * Sets the value as integer. This methods sets the field type implicitly to {@link
+             * Field.Type#TEXT_SINGLE}.
              *
              * @param value The value.
              * @return The builder.
@@ -1000,14 +1041,16 @@ public final class DataForm implements Comparable<DataForm> {
             }
 
             /**
-             * Sets the values from an enum. This methods sets the field type implicitly to {@link Field.Type#LIST_SINGLE}.
+             * Sets the values from an enum. This methods sets the field type implicitly to {@link
+             * Field.Type#LIST_SINGLE}.
              *
              * @param values The values.
              * @return The builder.
              */
             public final Builder valuesEnum(Collection<? extends Enum<?>> values) {
                 this.values.clear();
-                this.values.addAll(values.stream().map(enumValue -> enumValue.name().toLowerCase()).collect(Collectors.toList()));
+                this.values.addAll(values.stream().map(enumValue -> enumValue.name().toLowerCase())
+                        .collect(Collectors.toList()));
                 return type(Type.LIST_SINGLE);
             }
 
@@ -1082,7 +1125,8 @@ public final class DataForm implements Comparable<DataForm> {
     }
 
     /**
-     * Defines an option in a field of type {@link DataForm.Field.Type#LIST_SINGLE} or {@link DataForm.Field.Type#LIST_MULTI}.
+     * Defines an option in a field of type {@link DataForm.Field.Type#LIST_SINGLE} or {@link
+     * DataForm.Field.Type#LIST_MULTI}.
      */
     public static final class Option {
 

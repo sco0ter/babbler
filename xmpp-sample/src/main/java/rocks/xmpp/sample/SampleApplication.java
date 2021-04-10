@@ -87,14 +87,18 @@ public final class SampleApplication {
                 long now = System.currentTimeMillis();
                 for (int i = 0; i < 1; i++) {
 
-                    SocketConnectionConfiguration socketConnectionConfiguration = SocketConnectionConfiguration.builder()
-                            .hostname("localhost") // The hostname.
-                            .port(5222) // The XMPP default port.
-                            .sslContext(getTrustAllSslContext()) // Use an SSL context, which trusts every server. Only use it for testing!
-                            .channelEncryption(ChannelEncryption.OPTIONAL) // We want to negotiate a TLS connection.
-                            .hostnameVerifier((s, sslSession) -> true)
-
-                            .build();
+                    SocketConnectionConfiguration socketConnectionConfiguration =
+                            SocketConnectionConfiguration.builder()
+                                    // The hostname.
+                                    .hostname("localhost")
+                                    // The XMPP default port.
+                                    .port(5222)
+                                    // Use an SSL context, which trusts every server. Only use it for testing!
+                                    .sslContext(getTrustAllSslContext())
+                                    // We want to negotiate a TLS connection.
+                                    .channelEncryption(ChannelEncryption.OPTIONAL)
+                                    .hostnameVerifier((s, sslSession) -> true)
+                                    .build();
 
                     BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()
                             .hostname("localhost")
@@ -114,24 +118,28 @@ public final class SampleApplication {
                             .channelEncryption(ChannelEncryption.DIRECT)
                             .build();
 
-                    NettyTcpConnectionConfiguration nettyTcpConnectionConfiguration = NettyTcpConnectionConfiguration.builder()
-                            //.hostname("localhost")
-                            .port(5222)
-                            .sslContext(getTrustAllSslContext())
-                            //.channelEncryption(ChannelEncryption.DIRECT)
-                            .hostnameVerifier((s, sslSession) -> true)
-                            .eventLoopGroup(eventLoopGroup)
-                            .build();
+                    NettyTcpConnectionConfiguration nettyTcpConnectionConfiguration =
+                            NettyTcpConnectionConfiguration.builder()
+                                    //.hostname("localhost")
+                                    .port(5222)
+                                    .sslContext(getTrustAllSslContext())
+                                    //.channelEncryption(ChannelEncryption.DIRECT)
+                                    .hostnameVerifier((s, sslSession) -> true)
+                                    .eventLoopGroup(eventLoopGroup)
+                                    .build();
 
 
-                    XmppClient xmppClient = XmppClient.create("localhost", configuration, socketConnectionConfiguration);
+                    XmppClient xmppClient =
+                            XmppClient.create("localhost", configuration, socketConnectionConfiguration);
 
 
                     // Listen for inbound messages.
-                    xmppClient.addInboundMessageListener(e -> logger.log(System.Logger.Level.INFO, "Received: " + e.getMessage()));
+                    xmppClient.addInboundMessageListener(
+                            e -> logger.log(System.Logger.Level.INFO, "Received: " + e.getMessage()));
 
                     // Listen for inbound presence.
-                    xmppClient.addInboundPresenceListener(e -> logger.log(System.Logger.Level.INFO, "Received: " + e.getPresence()));
+                    xmppClient.addInboundPresenceListener(
+                            e -> logger.log(System.Logger.Level.INFO, "Received: " + e.getPresence()));
                     xmppClient.enableFeature(StreamManagement.NAMESPACE);
                     // Connect
                     xmppClient.connect();
@@ -139,16 +147,22 @@ public final class SampleApplication {
                     xmppClient.login("admin", "admin");
 
                     // Send a message to myself, which is caught by the listener above.
-                    xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT, "Hello World! öäü!"));
-                    xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
-                    xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT, "Hello World! Echo!"));
+                    xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT,
+                            "Hello World! öäü!"));
+                    xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT,
+                            "Hello World! Echo!"));
+                    xmppClient.send(new Message(xmppClient.getConnectedResource(), Message.Type.CHAT,
+                            "Hello World! Echo!"));
                     xmppClient.getManager(PingManager.class).pingServer().getResult();
 
-                    OffsetDateTime entityTime = xmppClient.getManager(EntityTimeManager.class).getEntityTime(null).getResult();
+                    OffsetDateTime entityTime =
+                            xmppClient.getManager(EntityTimeManager.class).getEntityTime(null).getResult();
                     System.out.println(entityTime);
 
-                    xmppClient.getManager(RosterManager.class).addContact(new Contact(Jid.of("admin@test"), "test", "group"), false, "").getResult();
-                    xmppClient.getManager(LastActivityManager.class).getLastActivity(Jid.ofDomain(xmppClient.getConnectedResource().getDomain())).getResult();
+                    xmppClient.getManager(RosterManager.class)
+                            .addContact(new Contact(Jid.of("admin@test"), "test", "group"), false, "").getResult();
+                    xmppClient.getManager(LastActivityManager.class)
+                            .getLastActivity(Jid.ofDomain(xmppClient.getConnectedResource().getDomain())).getResult();
                     xmppClient.getManager(ServiceDiscoveryManager.class).discoverInformation(xmppClient.getDomain());
                     now = System.currentTimeMillis();
                     // xmppClient.close();

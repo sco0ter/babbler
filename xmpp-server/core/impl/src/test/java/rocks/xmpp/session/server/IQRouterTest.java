@@ -106,7 +106,8 @@ public class IQRouterTest extends XmlTest {
         testSession1.setAddress(JID_1_FULL);
         testSession2.setAddress(JID_2_FULL);
 
-        Mockito.when(userManager.userExists(Mockito.anyString())).thenAnswer(invocationOnMock -> !invocationOnMock.getArgument(0, String.class).equals("nosuchuser"));
+        Mockito.when(userManager.userExists(Mockito.anyString()))
+                .thenAnswer(invocationOnMock -> !invocationOnMock.getArgument(0, String.class).equals("nosuchuser"));
         Mockito.when(sessionManager.getSession(JID_1_FULL)).thenReturn(testSession1);
         Mockito.when(sessionManager.getSession(JID_2_FULL)).thenReturn(testSession2);
     }
@@ -180,8 +181,8 @@ public class IQRouterTest extends XmlTest {
     }
 
     /**
-     * Tests, that known IQ namespaces are correctly handled by a handler.
-     * If that handler returns null, the handler is responsible for sending the response IQ.
+     * Tests, that known IQ namespaces are correctly handled by a handler. If that handler returns null, the handler is
+     * responsible for sending the response IQ.
      */
     @Test
     public void testKnownNamespaceHandlerReturnsNull() {
@@ -194,8 +195,8 @@ public class IQRouterTest extends XmlTest {
     }
 
     /**
-     * Tests, that known IQ namespaces are correctly handled by a handler.
-     * If that handler returns null, the handler is responsible for sending the response IQ.
+     * Tests, that known IQ namespaces are correctly handled by a handler. If that handler returns null, the handler is
+     * responsible for sending the response IQ.
      */
     @Test
     public void testKnownNamespaceHandlerThrows() {
@@ -231,8 +232,8 @@ public class IQRouterTest extends XmlTest {
     /**
      * Tests, that unknown IQ namespaces and IQ with no 'to' attribute are responded to with service-unavailable.
      * <p>
-     * If the IQ stanza is of type "get" or "set" and the server does not understand the namespace that qualifies the payload,
-     * the server MUST return an error to the sending entity, which MUST be {@code <service-unavailable/>}.
+     * If the IQ stanza is of type "get" or "set" and the server does not understand the namespace that qualifies the
+     * payload, the server MUST return an error to the sending entity, which MUST be {@code <service-unavailable/>}.
      *
      * @see <a href="https://xmpp.org/rfcs/rfc6120.html#rules-noto-IQ">10.3.3.  IQ, §2</a>
      */

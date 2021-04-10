@@ -60,8 +60,11 @@ public final class VCard implements Addressable {
     public static final String NAMESPACE = "vcard-temp";
 
     /**
-     * To specify the version of the vCard specification used to format this vCard.
-     * Some Jabber implementations add a 'version' attribute to the {@code <vCard/>} element, with the value set at "2.0" or "3.0". The DTD is incorrect, and the examples in draft-dawson-vcard-xml-dtd-01 clearly show that version information is to be included by means of a 'version' attribute, not the {@code <VERSION/>} element as defined in the DTD. However, to conform to draft-dawson-vcard-xml-dtd-01, the value should be "3.0", not "2.0".
+     * To specify the version of the vCard specification used to format this vCard. Some Jabber implementations add a
+     * 'version' attribute to the {@code <vCard/>} element, with the value set at "2.0" or "3.0". The DTD is incorrect,
+     * and the examples in draft-dawson-vcard-xml-dtd-01 clearly show that version information is to be included by
+     * means of a 'version' attribute, not the {@code <VERSION/>} element as defined in the DTD. However, to conform to
+     * draft-dawson-vcard-xml-dtd-01, the value should be "3.0", not "2.0".
      */
     @XmlAttribute
     @SuppressWarnings("unused")
@@ -117,15 +120,13 @@ public final class VCard implements Addressable {
     private List<Address> addresses;
 
     /**
-     * To specify the telephone number for telephony
-     * communication with the object the vCard represents.
+     * To specify the telephone number for telephony communication with the object the vCard represents.
      */
     @XmlElement(name = "TEL")
     private List<TelephoneNumber> telephoneNumbers;
 
     /**
-     * To specify the electronic mail address for
-     * communication with the object the vCard represents.
+     * To specify the electronic mail address for communication with the object the vCard represents.
      */
     @XmlElement(name = "EMAIL")
     private List<Email> emails;
@@ -170,7 +171,8 @@ public final class VCard implements Addressable {
     private String role;
 
     /**
-     * To specify information about another person who will act on behalf of the individual or resource associated with the vCard.
+     * To specify information about another person who will act on behalf of the individual or resource associated with
+     * the vCard.
      */
     @XmlElement(name = "AGENT")
     private String agent;
@@ -207,28 +209,29 @@ public final class VCard implements Addressable {
     private Instant revision;
 
     /**
-     * To specify the family name or given name text to be used for national-language-specific sorting of the FN and N types.
+     * To specify the family name or given name text to be used for national-language-specific sorting of the FN and N
+     * types.
      */
     @XmlElement(name = "SORT-STRING")
     private String sortString;
 
     /**
-     * To specify a digital sound content information that annotates some aspect of the vCard. By default this type is used to
-     * specify the proper pronunciation of the name type value of the vCard.
+     * To specify a digital sound content information that annotates some aspect of the vCard. By default this type is
+     * used to specify the proper pronunciation of the name type value of the vCard.
      */
     @XmlElement(name = "SOUND")
     private String sound;
 
     /**
-     * To specify a value that represents a globally unique identifier corresponding to the individual or resource associated
-     * with the vCard.
+     * To specify a value that represents a globally unique identifier corresponding to the individual or resource
+     * associated with the vCard.
      */
     @XmlElement(name = "UID")
     private String uid;
 
     /**
-     * Type purpose: To specify a public key or authentication certificate
-     * associated with the object that the vCard represents.
+     * Type purpose: To specify a public key or authentication certificate associated with the object that the vCard
+     * represents.
      */
     @XmlElement(name = "KEY")
     private Key key;
@@ -550,7 +553,8 @@ public final class VCard implements Addressable {
     }
 
     /**
-     * Gets information about another person who will act on behalf of the individual or resource associated with the vCard.
+     * Gets information about another person who will act on behalf of the individual or resource associated with the
+     * vCard.
      *
      * @return The agent.
      * @see #setAgent(String)
@@ -662,7 +666,8 @@ public final class VCard implements Addressable {
     }
 
     /**
-     * Gets the sort string, specifying the family name or given name text to be used for national-language-specific sorting of the {@linkplain #getFormattedName() FN} and {@linkplain Name N} types.
+     * Gets the sort string, specifying the family name or given name text to be used for national-language-specific
+     * sorting of the {@linkplain #getFormattedName() FN} and {@linkplain Name N} types.
      *
      * @return The sort string.
      * @see #setSortString(String)
@@ -682,8 +687,8 @@ public final class VCard implements Addressable {
     }
 
     /**
-     * Gets the sound, zo specify a digital sound content information that annotates some aspect of the vCard. By default this type is used to
-     * specify the proper pronunciation of the name type value of the vCard.
+     * Gets the sound, zo specify a digital sound content information that annotates some aspect of the vCard. By
+     * default this type is used to specify the proper pronunciation of the name type value of the vCard.
      *
      * @return The sound, either as pronunciation string, as URL or as base64 encoded binary.
      * @see #setSound(String)
@@ -703,8 +708,8 @@ public final class VCard implements Addressable {
     }
 
     /**
-     * Gets the UID, to specify a value that represents a globally unique identifier corresponding to the individual or resource associated
-     * with the vCard.
+     * Gets the UID, to specify a value that represents a globally unique identifier corresponding to the individual or
+     * resource associated with the vCard.
      *
      * @return The UID.
      * @see #setUid(String)
@@ -889,7 +894,9 @@ public final class VCard implements Addressable {
          * @param postalCode      The postal code.
          * @param country         The country.
          */
-        public Address(boolean preferred, boolean home, boolean work, boolean postal, boolean parcel, boolean international, String postOfficeBox, String extendedAddress, String street, String city, String region, String postalCode, String country) {
+        public Address(boolean preferred, boolean home, boolean work, boolean postal, boolean parcel,
+                       boolean international, String postOfficeBox, String extendedAddress, String street, String city,
+                       String region, String postalCode, String country) {
             super(preferred, home, work, postal, parcel, international);
             this.postOfficeBox = postOfficeBox;
             this.extendedAddress = extendedAddress;
@@ -1090,7 +1097,8 @@ public final class VCard implements Addressable {
          * @param international If it is a international address.
          * @param addressLine   The address label lines.
          */
-        public AddressLabel(boolean preferred, boolean home, boolean work, boolean postal, boolean parcel, boolean international, String... addressLine) {
+        public AddressLabel(boolean preferred, boolean home, boolean work, boolean postal, boolean parcel,
+                            boolean international, String... addressLine) {
             super(preferred, home, work, postal, parcel, international);
             // The DTD requires at least one LINE element.
             if (addressLine.length == 0 || addressLine[0] == null) {
@@ -1128,7 +1136,8 @@ public final class VCard implements Addressable {
          * @param parcel        If it is a parcel address.
          * @param international If it is a international address.
          */
-        protected AbstractAddress(boolean preferred, boolean home, boolean work, boolean postal, boolean parcel, boolean international) {
+        protected AbstractAddress(boolean preferred, boolean home, boolean work, boolean postal, boolean parcel,
+                                  boolean international) {
             super(preferred, home, work);
             this.postal = postal;
             this.parcel = parcel;
@@ -1390,7 +1399,9 @@ public final class VCard implements Addressable {
          * @param pcs       Indicates a personal communication services telephone number.
          * @param isdn      Indicates an ISDN service telephone number.
          */
-        public TelephoneNumber(String number, boolean preferred, boolean home, boolean work, boolean message, boolean voice, boolean fax, boolean cell, boolean video, boolean pager, boolean bbs, boolean modem, boolean pcs, boolean isdn) {
+        public TelephoneNumber(String number, boolean preferred, boolean home, boolean work, boolean message,
+                               boolean voice, boolean fax, boolean cell, boolean video, boolean pager, boolean bbs,
+                               boolean modem, boolean pcs, boolean isdn) {
             super(preferred, home, work);
             // If no telephone number is included in a <TEL/> element, an empty <NUMBER/> child MUST be included.
             this.number = number == null ? "" : number;

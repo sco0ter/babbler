@@ -129,55 +129,68 @@ public class MultiUserChatAdminTest extends XmlTest {
     public void marshalBanUser() throws JAXBException, XMLStreamException {
         MucAdmin mucAdmin = MucAdmin.withItem(Affiliation.OUTCAST, Jid.of("earlofcambridge@shakespeare.lit"), null);
         String xml = marshal(mucAdmin);
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item affiliation=\"outcast\" jid=\"earlofcambridge@shakespeare.lit\"></item></query>");
+        Assert.assertEquals(xml,
+                "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item affiliation=\"outcast\" jid=\"earlofcambridge@shakespeare.lit\"></item></query>");
     }
 
     @Test
     public void marshalRequestBanlist() throws JAXBException, XMLStreamException {
         MucAdmin mucAdmin = MucAdmin.withItem(Affiliation.OUTCAST);
         String xml = marshal(mucAdmin);
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item affiliation=\"outcast\"></item></query>");
+        Assert.assertEquals(xml,
+                "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item affiliation=\"outcast\"></item></query>");
     }
 
     @Test
     public void marshalModifiedBanlist() throws JAXBException, XMLStreamException {
-        MucAdmin mucAdmin = MucAdmin.withItems(MucAdmin.createItem(Affiliation.OUTCAST, Jid.of("lordscroop@shakespeare.lit"), "Treason"), MucAdmin.createItem(Affiliation.OUTCAST, Jid.of("sirthomasgrey@shakespeare.lit"), "Treason"));
+        MucAdmin mucAdmin = MucAdmin.withItems(
+                MucAdmin.createItem(Affiliation.OUTCAST, Jid.of("lordscroop@shakespeare.lit"), "Treason"),
+                MucAdmin.createItem(Affiliation.OUTCAST, Jid.of("sirthomasgrey@shakespeare.lit"), "Treason"));
         String xml = marshal(mucAdmin);
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item affiliation=\"outcast\" jid=\"lordscroop@shakespeare.lit\"><reason>Treason</reason></item><item affiliation=\"outcast\" jid=\"sirthomasgrey@shakespeare.lit\"><reason>Treason</reason></item></query>");
+        Assert.assertEquals(xml,
+                "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item affiliation=\"outcast\" jid=\"lordscroop@shakespeare.lit\"><reason>Treason</reason></item><item affiliation=\"outcast\" jid=\"sirthomasgrey@shakespeare.lit\"><reason>Treason</reason></item></query>");
     }
 
     @Test
     public void marshalGrantMembership() throws JAXBException, XMLStreamException {
-        MucAdmin mucAdmin = MucAdmin.withItem(Affiliation.MEMBER, Jid.of("hag66@shakespeare.lit"), "A worthy witch indeed!");
+        MucAdmin mucAdmin =
+                MucAdmin.withItem(Affiliation.MEMBER, Jid.of("hag66@shakespeare.lit"), "A worthy witch indeed!");
         String xml = marshal(mucAdmin);
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item affiliation=\"member\" jid=\"hag66@shakespeare.lit\"><reason>A worthy witch indeed!</reason></item></query>");
+        Assert.assertEquals(xml,
+                "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item affiliation=\"member\" jid=\"hag66@shakespeare.lit\"><reason>A worthy witch indeed!</reason></item></query>");
     }
 
     @Test
     public void marshalGrantModerator() throws JAXBException, XMLStreamException {
         MucAdmin mucAdmin = MucAdmin.withItem(Role.MODERATOR, "thirdwitch", "A worthy witch indeed!");
         String xml = marshal(mucAdmin);
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item nick=\"thirdwitch\" role=\"moderator\"><reason>A worthy witch indeed!</reason></item></query>");
+        Assert.assertEquals(xml,
+                "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item nick=\"thirdwitch\" role=\"moderator\"><reason>A worthy witch indeed!</reason></item></query>");
     }
 
     @Test
     public void marshalRevokeModerator() throws JAXBException, XMLStreamException {
         MucAdmin mucAdmin = MucAdmin.withItem(Role.PARTICIPANT, "thirdwitch", "Not so worthy after all!");
         String xml = marshal(mucAdmin);
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item nick=\"thirdwitch\" role=\"participant\"><reason>Not so worthy after all!</reason></item></query>");
+        Assert.assertEquals(xml,
+                "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item nick=\"thirdwitch\" role=\"participant\"><reason>Not so worthy after all!</reason></item></query>");
     }
 
     @Test
     public void marshalModifyModeratorList() throws JAXBException, XMLStreamException {
-        MucAdmin mucAdmin = MucAdmin.withItems(MucAdmin.createItem(Role.PARTICIPANT, "thirdwitch"), MucAdmin.createItem(Role.MODERATOR, "Hecate"));
+        MucAdmin mucAdmin = MucAdmin.withItems(MucAdmin.createItem(Role.PARTICIPANT, "thirdwitch"),
+                MucAdmin.createItem(Role.MODERATOR, "Hecate"));
         String xml = marshal(mucAdmin);
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item nick=\"thirdwitch\" role=\"participant\"></item><item nick=\"Hecate\" role=\"moderator\"></item></query>");
+        Assert.assertEquals(xml,
+                "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item nick=\"thirdwitch\" role=\"participant\"></item><item nick=\"Hecate\" role=\"moderator\"></item></query>");
     }
 
     @Test
     public void marshalModifyModeratorList2() throws JAXBException, XMLStreamException {
-        MucAdmin mucAdmin = MucAdmin.withItems(Arrays.asList(MucAdmin.createItem(Role.PARTICIPANT, "thirdwitch"), MucAdmin.createItem(Role.MODERATOR, "Hecate")));
+        MucAdmin mucAdmin = MucAdmin.withItems(Arrays.asList(MucAdmin.createItem(Role.PARTICIPANT, "thirdwitch"),
+                MucAdmin.createItem(Role.MODERATOR, "Hecate")));
         String xml = marshal(mucAdmin);
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item nick=\"thirdwitch\" role=\"participant\"></item><item nick=\"Hecate\" role=\"moderator\"></item></query>");
+        Assert.assertEquals(xml,
+                "<query xmlns=\"http://jabber.org/protocol/muc#admin\"><item nick=\"thirdwitch\" role=\"participant\"></item><item nick=\"Hecate\" role=\"moderator\"></item></query>");
     }
 }

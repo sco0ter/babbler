@@ -35,7 +35,8 @@ import javax.xml.bind.annotation.XmlValue;
 /**
  * This class represents a hash value in conjunction with its algorithm.
  *
- * <p>This class overrides {@link #equals} and {@link #hashCode()}, two instances equal each other, if their hash algorithm and value are equal.</p>
+ * <p>This class overrides {@link #equals} and {@link #hashCode()}, two instances equal each other, if their hash
+ * algorithm and value are equal.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0300.html">XEP-0300: Use of Cryptographic Hash Functions in XMPP</a>

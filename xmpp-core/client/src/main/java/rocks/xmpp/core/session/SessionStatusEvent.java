@@ -28,7 +28,8 @@ import java.util.EventObject;
 import java.util.function.Consumer;
 
 /**
- * An XMPP session event is fired, whenever the status of a session has changed, e.g. when it is abnormally disconnected.
+ * An XMPP session event is fired, whenever the status of a session has changed, e.g. when it is abnormally
+ * disconnected.
  *
  * @author Christian Schudt
  * @see XmppSession#addSessionStatusListener(Consumer)
@@ -48,7 +49,8 @@ public final class SessionStatusEvent extends EventObject {
      * @param throwable An optional throwable.
      * @throws IllegalArgumentException if source is null.
      */
-    SessionStatusEvent(XmppSession source, XmppSession.Status status, XmppSession.Status oldStatus, Throwable throwable) {
+    SessionStatusEvent(XmppSession source, XmppSession.Status status, XmppSession.Status oldStatus,
+                       Throwable throwable) {
         super(source);
         this.throwable = throwable;
         this.status = status;

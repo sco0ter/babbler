@@ -46,7 +46,8 @@ public class SoftwareInfoTest extends XmlTest {
 
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"result\">" +
                 "<field type=\"hidden\" var=\"FORM_TYPE\"><value>urn:xmpp:dataforms:softwareinfo</value></field>" +
-                "<field var=\"icon\"><media xmlns=\"urn:xmpp:media-element\" height=\"0\" width=\"0\"></media></field>" +
+                "<field var=\"icon\"><media xmlns=\"urn:xmpp:media-element\" height=\"0\" width=\"0\"></media></field>"
+                +
                 "<field type=\"text-single\" var=\"os\"><value>Windows</value></field>" +
                 "<field type=\"text-single\" var=\"os_version\"><value>10</value></field>" +
                 "<field type=\"text-single\" var=\"software\"><value>xmpp.rocks</value></field>" +
@@ -75,7 +76,8 @@ public class SoftwareInfoTest extends XmlTest {
     public void testSoftwareInfoFromDataForm() {
 
         DataForm dataForm = new DataForm(DataForm.Type.RESULT, Arrays.asList(
-                DataForm.Field.builder().name(DataForm.FORM_TYPE).value(SoftwareInformation.FORM_TYPE).type(DataForm.Field.Type.HIDDEN).build(),
+                DataForm.Field.builder().name(DataForm.FORM_TYPE).value(SoftwareInformation.FORM_TYPE)
+                        .type(DataForm.Field.Type.HIDDEN).build(),
                 DataForm.Field.builder().name(SoftwareInformation.ICON).media(null).build(),
                 DataForm.Field.builder().name(SoftwareInformation.OS).value("Linux").build(),
                 DataForm.Field.builder().name(SoftwareInformation.OS_VERSION).value("123").build(),

@@ -57,7 +57,8 @@ import rocks.xmpp.websocket.net.WebSocketConnection;
  */
 public final class WebSocketClientConnection extends WebSocketConnection {
 
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("WebSocket Ping Scheduler"));
+    private static final ExecutorService EXECUTOR_SERVICE =
+            Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("WebSocket Ping Scheduler"));
 
     private final StreamFeaturesManager streamFeaturesManager;
 
@@ -77,7 +78,8 @@ public final class WebSocketClientConnection extends WebSocketConnection {
      */
     private Future<?> pongFuture;
 
-    WebSocketClientConnection(Session session, CompletableFuture<Void> closeFuture, XmppSession xmppSession, WebSocketConnectionConfiguration connectionConfiguration) {
+    WebSocketClientConnection(Session session, CompletableFuture<Void> closeFuture, XmppSession xmppSession,
+                              WebSocketConnectionConfiguration connectionConfiguration) {
         super(session, xmppSession, xmppSession::notifyException, closeFuture, connectionConfiguration);
         this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         this.streamManager = xmppSession.getManager(ClientStreamManager.class);
@@ -85,7 +87,8 @@ public final class WebSocketClientConnection extends WebSocketConnection {
         this.streamManager.reset();
         this.executorService = new QueuedScheduledExecutorService(EXECUTOR_SERVICE);
         session.addMessageHandler(new PongHandler());
-        if (connectionConfiguration.getPingInterval() != null && !connectionConfiguration.getPingInterval().isNegative() && !connectionConfiguration.getPingInterval().isZero()) {
+        if (connectionConfiguration.getPingInterval() != null && !connectionConfiguration.getPingInterval().isNegative()
+                && !connectionConfiguration.getPingInterval().isZero()) {
             pingFuture = this.executorService.scheduleAtFixedRate(() -> {
                 // Send a WebSocket ping in an interval.
                 synchronized (this) {
@@ -94,15 +97,18 @@ public final class WebSocketClientConnection extends WebSocketConnection {
                             String uuid = UUID.randomUUID().toString();
                             if (pings.add(uuid)) {
                                 // Send the ping with the UUID as application data, so that we can match it to the pong.
-                                this.session.getBasicRemote().sendPing(ByteBuffer.wrap(uuid.getBytes(StandardCharsets.UTF_8)));
+                                this.session.getBasicRemote()
+                                        .sendPing(ByteBuffer.wrap(uuid.getBytes(StandardCharsets.UTF_8)));
                                 // Later check if the ping has been answered by a pong.
                                 pongFuture = this.executorService.schedule(() -> {
-                                    if (pings.remove(uuid)) {
-                                        // Ping has not been removed by a corresponding pong (still unanswered).
-                                        // Notify the session with an exception.
-                                        xmppSession.notifyException(new XmppException("No WebSocket pong received in time."));
-                                    }
-                                }, xmppSession.getConfiguration().getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                                            if (pings.remove(uuid)) {
+                                                // Ping has not been removed by a corresponding pong (still unanswered).
+                                                // Notify the session with an exception.
+                                                xmppSession.notifyException(
+                                                        new XmppException("No WebSocket pong received in time."));
+                                            }
+                                        }, xmppSession.getConfiguration().getDefaultResponseTimeout().toMillis(),
+                                        TimeUnit.MILLISECONDS);
                             }
                         }
                     } catch (IOException e) {

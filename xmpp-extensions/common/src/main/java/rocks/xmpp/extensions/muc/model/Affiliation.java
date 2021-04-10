@@ -27,7 +27,9 @@ package rocks.xmpp.extensions.muc.model;
 import javax.xml.bind.annotation.XmlEnumValue;
 
 /**
- * A long-lived association or connection with a room; the possible affiliations are "owner", "admin", "member", and "outcast" (naturally it is also possible to have no affiliation); affiliation is distinct from role. An affiliation lasts across a user's visits to a room.
+ * A long-lived association or connection with a room; the possible affiliations are "owner", "admin", "member", and
+ * "outcast" (naturally it is also possible to have no affiliation); affiliation is distinct from role. An affiliation
+ * lasts across a user's visits to a room.
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#affil">5.2 Affiliations</a>
@@ -64,10 +66,11 @@ public enum Affiliation {
     OUTCAST;
 
     /**
-     * Compares two affiliations and returns true, if this affiliation is higher than the other
-     * with regards to their privileges in a multi-user chat.
+     * Compares two affiliations and returns true, if this affiliation is higher than the other with regards to their
+     * privileges in a multi-user chat.
      *
-     * <p>The highest affiliation is owner, followed by admin, followed by member, followed by none and then outcast.</p>
+     * <p>The highest affiliation is owner, followed by admin, followed by member, followed by none and then
+     * outcast.</p>
      *
      * @param affiliation The other affiliation.
      * @return True, if this affiliation is higher than the other.

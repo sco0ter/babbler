@@ -53,9 +53,12 @@ import rocks.xmpp.im.roster.model.SubscriptionState;
 @Entity(name = "RosterItem")
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"username", "jid"})})
 @NamedQueries({
-        @NamedQuery(name = RosterItemEntity.NamedQueries.GET_BY_USERNAME_AND_JID, query = "select ri from RosterItem ri where ri.username = :username and jid = :jid"),
-        @NamedQuery(name = RosterItemEntity.NamedQueries.GET_ROSTER_ITEMS, query = "select ri from RosterItem ri where ri.username = :username and ri.pendingIn = false"),
-        @NamedQuery(name = RosterItemEntity.NamedQueries.GET_ITEM_COUNT, query = "select count(ri) from RosterItem ri where ri.username = :username and ri.pendingIn = false")
+        @NamedQuery(name = RosterItemEntity.NamedQueries.GET_BY_USERNAME_AND_JID,
+                query = "select ri from RosterItem ri where ri.username = :username and jid = :jid"),
+        @NamedQuery(name = RosterItemEntity.NamedQueries.GET_ROSTER_ITEMS,
+                query = "select ri from RosterItem ri where ri.username = :username and ri.pendingIn = false"),
+        @NamedQuery(name = RosterItemEntity.NamedQueries.GET_ITEM_COUNT,
+                query = "select count(ri) from RosterItem ri where ri.username = :username and ri.pendingIn = false")
 })
 public class RosterItemEntity implements RosterItem {
 
@@ -100,7 +103,9 @@ public class RosterItemEntity implements RosterItem {
         this(username, jid, false, false, false, name, subscription, null, null);
     }
 
-    public RosterItemEntity(String username, Jid jid, boolean approved, boolean pendingOut, boolean pendingIn, String name, SubscriptionState.Subscription subscription, Collection<String> groups, String presenceStanza) {
+    public RosterItemEntity(String username, Jid jid, boolean approved, boolean pendingOut, boolean pendingIn,
+                            String name, SubscriptionState.Subscription subscription, Collection<String> groups,
+                            String presenceStanza) {
         this.username = Objects.requireNonNull(username);
         this.jid = jid;
         this.approved = approved;

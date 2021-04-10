@@ -33,15 +33,18 @@ import rocks.xmpp.core.sasl.anonymous.AnonymousSaslClient;
 import rocks.xmpp.core.sasl.scram.ScramClient;
 
 /**
- * A factory which creates {@linkplain SaslClient}s, which are used in XMPP context and are not natively provided by the default security provider.
+ * A factory which creates {@linkplain SaslClient}s, which are used in XMPP context and are not natively provided by the
+ * default security provider.
  *
- * <p>For example, the <a href="http://tools.ietf.org/html/rfc2245">ANONYMOUS</a> and <a href="http://tools.ietf.org/html/rfc5802">SCRAM-SHA-1</a> mechanisms are not provided by default.</p>
+ * <p>For example, the <a href="http://tools.ietf.org/html/rfc2245">ANONYMOUS</a> and <a
+ * href="http://tools.ietf.org/html/rfc5802">SCRAM-SHA-1</a> mechanisms are not provided by default.</p>
  *
  * @author Christian Schudt
  */
 public final class XmppSaslClientFactory implements SaslClientFactory {
     @Override
-    public final SaslClient createSaslClient(String[] mechanisms, String authorizationId, String protocol, String serverName, Map<String, ?> props, CallbackHandler cbh) {
+    public final SaslClient createSaslClient(String[] mechanisms, String authorizationId, String protocol,
+                                             String serverName, Map<String, ?> props, CallbackHandler cbh) {
 
         for (String mechanism : mechanisms) {
             if ("ANONYMOUS".equals(mechanism)) {

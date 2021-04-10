@@ -73,13 +73,15 @@ public class ActivityTest extends XmlTest {
     @Test
     public void marshalDoingChores() throws JAXBException, XMLStreamException {
         String xml = marshal(new Activity(Category.DOING_CHORES));
-        Assert.assertEquals(xml, "<activity xmlns=\"http://jabber.org/protocol/activity\"><doing_chores></doing_chores></activity>");
+        Assert.assertEquals(xml,
+                "<activity xmlns=\"http://jabber.org/protocol/activity\"><doing_chores></doing_chores></activity>");
     }
 
     @Test
     public void marshalActivityWithText() throws JAXBException, XMLStreamException {
         String xml = marshal(new Activity(Category.DOING_CHORES, "test"));
-        Assert.assertEquals(xml, "<activity xmlns=\"http://jabber.org/protocol/activity\"><doing_chores></doing_chores><text>test</text></activity>");
+        Assert.assertEquals(xml,
+                "<activity xmlns=\"http://jabber.org/protocol/activity\"><doing_chores></doing_chores><text>test</text></activity>");
     }
 
     @Test

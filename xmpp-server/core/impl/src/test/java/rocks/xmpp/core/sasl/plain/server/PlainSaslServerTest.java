@@ -46,11 +46,15 @@ public class PlainSaslServerTest {
             if (callback instanceof CredentialValidationCallback) {
                 CredentialValidationCallback credentialValidationCallback = (CredentialValidationCallback) callback;
                 if (credentialValidationCallback.getCredential() instanceof UsernamePasswordCredential) {
-                    UsernamePasswordCredential usernamePasswordCredential = (UsernamePasswordCredential) credentialValidationCallback.getCredential();
-                    if ("admin".equals(usernamePasswordCredential.getCaller()) && "pwd".equals(usernamePasswordCredential.getPasswordAsString())) {
-                        credentialValidationCallback.setCredentialValidationResult(new CredentialValidationResult("admin"));
+                    UsernamePasswordCredential usernamePasswordCredential =
+                            (UsernamePasswordCredential) credentialValidationCallback.getCredential();
+                    if ("admin".equals(usernamePasswordCredential.getCaller()) && "pwd"
+                            .equals(usernamePasswordCredential.getPasswordAsString())) {
+                        credentialValidationCallback
+                                .setCredentialValidationResult(new CredentialValidationResult("admin"));
                     } else {
-                        credentialValidationCallback.setCredentialValidationResult(CredentialValidationResult.INVALID_RESULT);
+                        credentialValidationCallback
+                                .setCredentialValidationResult(CredentialValidationResult.INVALID_RESULT);
                     }
                 }
             }

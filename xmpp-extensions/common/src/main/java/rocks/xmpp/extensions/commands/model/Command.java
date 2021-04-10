@@ -50,7 +50,8 @@ import rocks.xmpp.core.LanguageElement;
  * @see <a href="https://xmpp.org/extensions/xep-0050.html#schema">XML Schema</a>
  */
 @XmlRootElement
-@XmlSeeAlso({Command.MalformedAction.class, Command.BadAction.class, Command.BadLocale.class, Command.BadPayload.class, Command.BadSessionId.class, Command.SessionExpired.class})
+@XmlSeeAlso({Command.MalformedAction.class, Command.BadAction.class, Command.BadLocale.class, Command.BadPayload.class,
+        Command.BadSessionId.class, Command.SessionExpired.class})
 public final class Command implements LanguageElement {
 
     /**
@@ -121,7 +122,8 @@ public final class Command implements LanguageElement {
      * @param language  The language.
      * @param notes     The notes.
      */
-    public Command(String node, String sessionId, Action action, List<Object> payloads, Locale language, List<Note> notes) {
+    public Command(String node, String sessionId, Action action, List<Object> payloads, Locale language,
+                   List<Note> notes) {
         this(node, sessionId, action, null, null, null, payloads, language, notes);
     }
 
@@ -135,7 +137,8 @@ public final class Command implements LanguageElement {
      * @param defaultAction The default action, which should be executed by the requester.
      * @param payloads      The payloads.
      */
-    public Command(String node, String sessionId, Status status, Collection<Action> actions, Action defaultAction, List<Object> payloads) {
+    public Command(String node, String sessionId, Status status, Collection<Action> actions, Action defaultAction,
+                   List<Object> payloads) {
         this(node, sessionId, status, actions, defaultAction, payloads, null, null);
     }
 
@@ -151,7 +154,8 @@ public final class Command implements LanguageElement {
      * @param language      The language.
      * @param notes         The notes.
      */
-    public Command(String node, String sessionId, Status status, Collection<Action> actions, Action defaultAction, List<Object> payloads, Locale language, List<Note> notes) {
+    public Command(String node, String sessionId, Status status, Collection<Action> actions, Action defaultAction,
+                   List<Object> payloads, Locale language, List<Note> notes) {
         this(node, sessionId, null, status, actions, defaultAction, payloads, language, notes);
     }
 
@@ -163,7 +167,8 @@ public final class Command implements LanguageElement {
      * @param sessionId The session id.
      * @param payloads  The payloads.
      */
-    private Command(String node, String sessionId, Action action, Status status, Collection<Action> actions, Action defaultAction, List<Object> payloads, Locale language, List<Note> notes) {
+    private Command(String node, String sessionId, Action action, Status status, Collection<Action> actions,
+                    Action defaultAction, List<Object> payloads, Locale language, List<Note> notes) {
         this.node = Objects.requireNonNull(node);
         this.sessionId = sessionId;
         this.action = action;
@@ -175,7 +180,9 @@ public final class Command implements LanguageElement {
             this.note.addAll(notes);
         }
         if (actions != null) {
-            this.actions = new Actions(actions.contains(Action.PREV) ? "" : null, actions.contains(Action.NEXT) ? "" : null, actions.contains(Action.COMPLETE) ? "" : null, defaultAction);
+            this.actions =
+                    new Actions(actions.contains(Action.PREV) ? "" : null, actions.contains(Action.NEXT) ? "" : null,
+                            actions.contains(Action.COMPLETE) ? "" : null, defaultAction);
         } else {
             this.actions = null;
         }
@@ -245,22 +252,26 @@ public final class Command implements LanguageElement {
 
         // 2. If there is no <actions/> element, the user-agent can use a single-stage dialog or view.
         // The action "execute" is equivalent to the action "complete".
-        // 3. If there is an <actions/> element, the user-agent usually uses a multi-stage dialog or view, such as a wizard.
+        // 3. If there is an <actions/> element, the user-agent usually uses a multi-stage dialog or view, such as a
+        // wizard.
         // The action "execute" is always allowed, and is equivalent to the action "next".
         possibleActions.add(Action.EXECUTE);
 
         if (actions == null) {
             possibleActions.add(Action.COMPLETE);
         } else {
-            // The "prev" action is typically the "back" or "previous" button or option in a wizard. If <prev/> is not contained by the <actions/>, it is disabled.
+            // The "prev" action is typically the "back" or "previous" button or option in a wizard. If <prev/> is not
+            // contained by the <actions/>, it is disabled.
             if (actions.prev != null) {
                 possibleActions.add(Action.PREV);
             }
-            // The "next" action is typically the "next" button or option in a wizard. If <next/> is not contained by the <actions/>, it is disabled.
+            // The "next" action is typically the "next" button or option in a wizard. If <next/> is not contained by
+            // the <actions/>, it is disabled.
             if (actions.next != null) {
                 possibleActions.add(Action.NEXT);
             }
-            // The "complete" action is typically the "finish" or "done" button or option in a wizard. If <complete/> is not contained by the <actions/>, it is disabled.
+            // The "complete" action is typically the "finish" or "done" button or option in a wizard. If <complete/> is
+            // not contained by the <actions/>, it is disabled.
             if (actions.complete != null) {
                 possibleActions.add(Action.COMPLETE);
             }
@@ -290,8 +301,9 @@ public final class Command implements LanguageElement {
      * Gets the language.
      *
      * <blockquote>
-     * The "xml:lang" attribute specifies the language/locale this {@code <command/>} is intended for.
-     * This element MAY be specified by the requester to request a specific language/locale, and SHOULD be included by the responder to indicate the language/locale in use.
+     * The "xml:lang" attribute specifies the language/locale this {@code <command/>} is intended for. This element MAY
+     * be specified by the requester to request a specific language/locale, and SHOULD be included by the responder to
+     * indicate the language/locale in use.
      * </blockquote>
      *
      * @return The language.
@@ -353,7 +365,7 @@ public final class Command implements LanguageElement {
          */
         @XmlEnumValue("completed")
         COMPLETED,
-        
+
         /**
          * The command is being executed.
          */
@@ -409,7 +421,8 @@ public final class Command implements LanguageElement {
     }
 
     /**
-     * The responding JID cannot accept the specified payload (e.g. the data form did not provide one or more required fields).
+     * The responding JID cannot accept the specified payload (e.g. the data form did not provide one or more required
+     * fields).
      */
     @XmlRootElement(name = "bad-payload")
     public static final class BadPayload {
@@ -423,7 +436,8 @@ public final class Command implements LanguageElement {
     }
 
     /**
-     * The requesting JID specified a sessionid that is no longer active (either because it was completed, canceled, or timed out).
+     * The requesting JID specified a sessionid that is no longer active (either because it was completed, canceled, or
+     * timed out).
      */
     @XmlRootElement(name = "session-expired")
     public static final class SessionExpired {
@@ -480,7 +494,7 @@ public final class Command implements LanguageElement {
          * Represents the note type.
          */
         public enum Type {
-            
+
             /**
              * The note indicates an error. The text should indicate the reason for the error.
              */

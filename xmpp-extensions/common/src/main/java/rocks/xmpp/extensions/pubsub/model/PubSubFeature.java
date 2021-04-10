@@ -72,7 +72,8 @@ public enum PubSubFeature implements Feature {
     /**
      * The service supports automatic creation of nodes on first publish.
      *
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-publish-autocreate">7.1.4 Automatic Node Creation</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-publish-autocreate">7.1.4 Automatic Node
+     * Creation</a>
      */
     @XmlEnumValue("auto-create")
     AUTO_CREATE,
@@ -100,7 +101,8 @@ public enum PubSubFeature implements Feature {
     /**
      * Simultaneous creation and configuration of nodes is supported.
      *
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-create-and-configure">8.1.3 Create and Configure a Node</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-create-and-configure">8.1.3 Create and Configure a
+     * Node</a>
      */
     @XmlEnumValue("create-and-configure")
     CREATE_AND_CONFIGURE,
@@ -152,8 +154,7 @@ public enum PubSubFeature implements Feature {
     @XmlEnumValue("item-ids")
     ITEM_IDS,
     /**
-     * The service supports sending of the last published item to new
-     * subscribers and to newly available resources.
+     * The service supports sending of the last published item to new subscribers and to newly available resources.
      *
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#events">4.3 Event Types</a>
      */
@@ -207,7 +208,8 @@ public enum PubSubFeature implements Feature {
     /**
      * A single entity may subscribe to a node multiple times.
      *
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-multi">6.1.6 Multiple Subscriptions</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-multi">6.1.6 Multiple
+     * Subscriptions</a>
      */
     @XmlEnumValue("multi-subscribe")
     MULTI_SUBSCRIBE,
@@ -221,9 +223,12 @@ public enum PubSubFeature implements Feature {
     /**
      * Persistent items are supported.
      *
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-persistent">6.5.9.4 Persistent Items Not Supported</a>
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-delete-error-persistent">7.2.3.5 Persistent Items Not Supported</a>
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-purge-error-nopersist">8.5.3.3 Node Does Not Persist Items</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-error-persistent">6.5.9.4 Persistent
+     * Items Not Supported</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-delete-error-persistent">7.2.3.5 Persistent
+     * Items Not Supported</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-purge-error-nopersist">8.5.3.3 Node Does Not
+     * Persist Items</a>
      */
     @XmlEnumValue("persistent-items")
     PERSISTENT_ITEMS,
@@ -291,14 +296,16 @@ public enum PubSubFeature implements Feature {
     /**
      * Retrieval of default node configuration is supported.
      *
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-default">8.3 Request Default Node Configuration Options</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-default">8.3 Request Default Node Configuration
+     * Options</a>
      */
     @XmlEnumValue("retrieve-default")
     RETRIEVE_DEFAULT,
     /**
      * Retrieval of default subscription configuration is supported.
      *
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscribe-default">6.4 Request Default Subscription Configuration Options</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscribe-default">6.4 Request Default Subscription
+     * Configuration Options</a>
      */
     @XmlEnumValue("retrieve-default-sub")
     RETRIEVE_DEFAULT_SUB,
@@ -312,7 +319,8 @@ public enum PubSubFeature implements Feature {
     /**
      * Item retrieval is supported.
      *
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-returnsome">6.5.4 Returning Some Items</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-returnsome">6.5.4 Returning Some
+     * Items</a>
      */
     @XmlEnumValue("rsm")
     RESULT_SET_MANAGEMENT,
@@ -334,14 +342,16 @@ public enum PubSubFeature implements Feature {
     /**
      * Configuration of subscription options is supported.
      *
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure">6.3 Configure Subscription Options</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure">6.3 Configure Subscription
+     * Options</a>
      */
     @XmlEnumValue("subscription-options")
     SUBSCRIPTION_OPTIONS,
     /**
      * Notification of subscription state changes is supported.
      *
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#impl-subchange">12.13 Notification of Subscription State Changes</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#impl-subchange">12.13 Notification of Subscription State
+     * Changes</a>
      */
     @XmlEnumValue("subscription-notifications")
     SUBSCRIPTION_NOTIFICATIONS;

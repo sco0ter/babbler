@@ -30,7 +30,8 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <not-well-formed/>} stream error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-not-well-formed">4.9.3.13.  not-well-formed</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-not-well-formed">4.9.3.13.
+ * not-well-formed</a></cite></p>
  * <p>The initiating entity has sent XML that violates the well-formedness rules of [XML] or [XML-NAMES].</p>
  * </blockquote>
  * This class is a singleton.

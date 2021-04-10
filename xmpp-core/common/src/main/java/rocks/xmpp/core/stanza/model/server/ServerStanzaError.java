@@ -32,8 +32,9 @@ import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
 /**
- * A stanza error explicitly bound to the {@code jabber:server} namespace.
- * This class has a {@code @XmlRootElement} annotation, so that it can be used outside the scope of a stanza, e.g. in <a href="https://xmpp.org/extensions/xep-0220.html">XEP-0220: Server Dialback</a>.
+ * A stanza error explicitly bound to the {@code jabber:server} namespace. This class has a {@code @XmlRootElement}
+ * annotation, so that it can be used outside the scope of a stanza, e.g. in <a href="https://xmpp.org/extensions/xep-0220.html">XEP-0220:
+ * Server Dialback</a>.
  *
  * @author Christian Schudt
  */
@@ -57,6 +58,7 @@ public final class ServerStanzaError extends StanzaError {
         if (e instanceof ServerStanzaError) {
             return (ServerStanzaError) e;
         }
-        return new ServerStanzaError(e.getType(), e.getCondition(), e.getText(), e.getLanguage(), e.getExtension(), e.getBy());
+        return new ServerStanzaError(e.getType(), e.getCondition(), e.getText(), e.getLanguage(), e.getExtension(),
+                e.getBy());
     }
 }

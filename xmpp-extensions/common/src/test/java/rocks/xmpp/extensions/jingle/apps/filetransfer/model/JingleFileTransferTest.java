@@ -80,7 +80,8 @@ public class JingleFileTransferTest extends XmlTest {
 
         Jingle jingle = unmarshal(xml, Jingle.class);
         Assert.assertTrue(jingle.getPayload() instanceof JingleFileTransfer.Checksum);
-        Assert.assertEquals(((JingleFileTransfer.Checksum) jingle.getPayload()).getCreator(), Jingle.Content.Creator.INITIATOR);
+        Assert.assertEquals(((JingleFileTransfer.Checksum) jingle.getPayload()).getCreator(),
+                Jingle.Content.Creator.INITIATOR);
         Assert.assertEquals(((JingleFileTransfer.Checksum) jingle.getPayload()).getName(), "a-file-offer");
         Assert.assertEquals(((JingleFileTransfer.Checksum) jingle.getPayload()).getFile().getHashes().size(), 1);
     }
@@ -98,7 +99,8 @@ public class JingleFileTransferTest extends XmlTest {
 
         Jingle jingle = unmarshal(xml, Jingle.class);
         Assert.assertTrue(jingle.getPayload() instanceof JingleFileTransfer.Received);
-        Assert.assertEquals(((JingleFileTransfer.Received) jingle.getPayload()).getCreator(), Jingle.Content.Creator.RESPONDER);
+        Assert.assertEquals(((JingleFileTransfer.Received) jingle.getPayload()).getCreator(),
+                Jingle.Content.Creator.RESPONDER);
         Assert.assertEquals(((JingleFileTransfer.Received) jingle.getPayload()).getName(), "a-file-offer");
     }
 

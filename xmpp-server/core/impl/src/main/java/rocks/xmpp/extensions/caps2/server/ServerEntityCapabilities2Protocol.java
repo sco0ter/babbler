@@ -34,9 +34,11 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 /**
  * @author Christian Schudt
  */
-public class ServerEntityCapabilities2Protocol extends AbstractEntityCapabilities2Protocol implements StreamFeatureProvider<EntityCapabilities2> {
+public class ServerEntityCapabilities2Protocol extends AbstractEntityCapabilities2Protocol
+        implements StreamFeatureProvider<EntityCapabilities2> {
 
-    public ServerEntityCapabilities2Protocol(ServiceDiscoveryManager serviceDiscoveryManager, EntityCapabilitiesCache entityCapabilitiesCache) {
+    public ServerEntityCapabilities2Protocol(ServiceDiscoveryManager serviceDiscoveryManager,
+                                             EntityCapabilitiesCache entityCapabilitiesCache) {
         super(serviceDiscoveryManager, entityCapabilitiesCache);
     }
 

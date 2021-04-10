@@ -53,7 +53,8 @@ final class BitsOfBinaryManager extends Manager {
             @Override
             protected IQ processRequest(IQ iq) {
                 Data data = iq.getExtension(Data.class);
-                // The recipient then would either return an error (e.g., <item-not-found/> if it does not have data matching the Content-ID) or return the data.
+                // The recipient then would either return an error (e.g., <item-not-found/> if it does not have data
+                // matching the Content-ID) or return the data.
                 Data cachedData = dataCache.get(data.getContentId());
                 if (cachedData != null) {
                     return iq.createResult(cachedData);
@@ -84,8 +85,9 @@ final class BitsOfBinaryManager extends Manager {
     }
 
     /**
-     * Puts data to the data cache, so that requests to this data can be returned.
-     * Whenever you use {@link Data} (i.e. its content id) anywhere, you should make it known to this manager, so that it can return the data to a requesting entity.
+     * Puts data to the data cache, so that requests to this data can be returned. Whenever you use {@link Data} (i.e.
+     * its content id) anywhere, you should make it known to this manager, so that it can return the data to a
+     * requesting entity.
      *
      * @param data The data.
      */

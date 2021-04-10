@@ -33,8 +33,11 @@ import rocks.xmpp.util.Strings;
 /**
  * Represents a feature offered or protocol supported by an XMPP entity.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber Entity</a></cite></p>
- * <p>This information helps requesting entities determine what actions are possible with regard to this entity (registration, search, join, etc.), what protocols the entity supports, and specific feature types of interest, if any (e.g., for the purpose of feature negotiation).</p>
+ * <p><cite><a href="https://xmpp.org/extensions/xep-0030.html#info">3. Discovering Information About a Jabber
+ * Entity</a></cite></p>
+ * <p>This information helps requesting entities determine what actions are possible with regard to this entity
+ * (registration, search, join, etc.), what protocols the entity supports, and specific feature types of interest, if
+ * any (e.g., for the purpose of feature negotiation).</p>
  * </blockquote>
  * This class is immutable.
  *
@@ -43,7 +46,8 @@ import rocks.xmpp.util.Strings;
 final class FeatureElement implements Comparable<FeatureElement>, Feature {
 
     /**
-     * Each {@code <feature/>} element MUST possess a 'var' attribute whose value is a protocol namespace or other feature offered by the entity.
+     * Each {@code <feature/>} element MUST possess a 'var' attribute whose value is a protocol namespace or other
+     * feature offered by the entity.
      */
     @XmlAttribute(name = "var")
     private final String name;
@@ -95,8 +99,8 @@ final class FeatureElement implements Comparable<FeatureElement>, Feature {
     }
 
     /**
-     * Implements a natural ordering of a feature, as suggested and required by <a href="https://xmpp.org/extensions/xep-0115.html">XEP-0115: Entity Capabilities</a>.
-     * (The 'var' attributes are compared to each other).
+     * Implements a natural ordering of a feature, as suggested and required by <a href="https://xmpp.org/extensions/xep-0115.html">XEP-0115:
+     * Entity Capabilities</a>. (The 'var' attributes are compared to each other).
      *
      * @param o The other feature.
      * @return The result of the comparison.

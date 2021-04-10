@@ -68,8 +68,10 @@ public final class JingleEvent extends EventObject {
      * Rejects the Jingle session.
      */
     public void reject() {
-        // Another reason for terminating the session is that the terminating party wishes to formally decline the session; in this case, the recommended condition is <decline/>.
-        xmppSession.send(IQ.set(iq.getFrom(), new Jingle(sessionId, Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.Decline()))));
+        // Another reason for terminating the session is that the terminating party wishes to formally decline the
+        // session; in this case, the recommended condition is <decline/>.
+        xmppSession.send(IQ.set(iq.getFrom(), new Jingle(sessionId, Jingle.Action.SESSION_TERMINATE,
+                new Jingle.Reason(new Jingle.Reason.Decline()))));
     }
 
     public IQ getIQ() {

@@ -23,7 +23,8 @@
  */
 
 /**
- * Provides classes for the <a href="http://tools.ietf.org/html/rfc4505">Anonymous Simple Authentication and Security Layer (SASL) Mechanism</a>.
+ * Provides classes for the <a href="http://tools.ietf.org/html/rfc4505">Anonymous Simple Authentication and Security
+ * Layer (SASL) Mechanism</a>.
  */
 package rocks.xmpp.core.sasl.anonymous;
 

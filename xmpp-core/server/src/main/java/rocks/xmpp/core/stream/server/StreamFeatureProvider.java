@@ -37,7 +37,8 @@ import rocks.xmpp.core.stream.model.StreamFeature;
 public interface StreamFeatureProvider<T extends StreamFeature> extends StreamFeatureNegotiator<T> {
 
     /**
-     * Creates a concrete stream feature for inclusion in the stream features element after sending the response stream header.
+     * Creates a concrete stream feature for inclusion in the stream features element after sending the response stream
+     * header.
      *
      * @return The stream feature.
      */

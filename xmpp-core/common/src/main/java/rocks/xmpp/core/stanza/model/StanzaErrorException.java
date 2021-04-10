@@ -28,8 +28,8 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 
 /**
- * A stanza exception represents a {@linkplain StanzaError stanza error}.
- * It should be thrown, if a request (e.g. an IQ stanza) returned a stanza error.
+ * A stanza exception represents a {@linkplain StanzaError stanza error}. It should be thrown, if a request (e.g. an IQ
+ * stanza) returned a stanza error.
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a>

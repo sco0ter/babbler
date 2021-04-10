@@ -81,7 +81,8 @@ public final class LastActivity {
     }
 
     /**
-     * Gets the status message of the last unavailable presence received from the user, if the last activity request was a <a href="https://xmpp.org/extensions/xep-0012.html#offline">Offline User Query</a>.
+     * Gets the status message of the last unavailable presence received from the user, if the last activity request was
+     * a <a href="https://xmpp.org/extensions/xep-0012.html#offline">Offline User Query</a>.
      *
      * @return The status message of the last unavailable presence received from the user or null.
      */

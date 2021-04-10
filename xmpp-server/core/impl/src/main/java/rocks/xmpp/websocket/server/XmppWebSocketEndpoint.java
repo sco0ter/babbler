@@ -38,8 +38,8 @@ import rocks.xmpp.session.server.InboundClientSession;
 import rocks.xmpp.websocket.net.WebSocketConnection;
 
 /**
- * The WebSocket endpoint for XMPP.
- * It listens for new inbound WebSocket connections, creates XMPP sessions from them and also handles the closing of the sessions.
+ * The WebSocket endpoint for XMPP. It listens for new inbound WebSocket connections, creates XMPP sessions from them
+ * and also handles the closing of the sessions.
  *
  * @author Christian Schudt
  */
@@ -53,7 +53,8 @@ public final class XmppWebSocketEndpoint extends Endpoint {
         // Associate it with a WebSocketConnection.
 
         InboundClientSession xmppSession = CDI.current().select(InboundClientSession.class).get();
-        WebSocketConnection connection = new WebSocketConnection(session, xmppSession::handleElement, null, closeFuture, null);
+        WebSocketConnection connection =
+                new WebSocketConnection(session, xmppSession::handleElement, null, closeFuture, null);
 
         xmppSession.setConnection(connection);
 
@@ -65,7 +66,8 @@ public final class XmppWebSocketEndpoint extends Endpoint {
     @Override
     public final void onClose(final Session session, final CloseReason closeReason) {
         // Retrieve the associated XMPP session from the WebSocket session and close it.
-        InboundClientSession xmppSession = (InboundClientSession) session.getUserProperties().get(InboundClientSession.class.getName());
+        InboundClientSession xmppSession =
+                (InboundClientSession) session.getUserProperties().get(InboundClientSession.class.getName());
         @SuppressWarnings("unchecked")
         CompletableFuture<Void> closeFuture = (CompletableFuture<Void>) session.getUserProperties().get("closeFuture");
         closeFuture.complete(null);
@@ -77,7 +79,8 @@ public final class XmppWebSocketEndpoint extends Endpoint {
         // TODO: use a Logger.
         throwable.printStackTrace();
         // An error occurred, close the XMPP session with an internal server error.
-        InboundClientSession xmppSession = (InboundClientSession) session.getUserProperties().get(InboundClientSession.class.getName());
+        InboundClientSession xmppSession =
+                (InboundClientSession) session.getUserProperties().get(InboundClientSession.class.getName());
         xmppSession.closeAsync(new StreamError(Condition.INTERNAL_SERVER_ERROR));
         // Then close the WebSocket session.
         try {

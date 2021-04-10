@@ -36,8 +36,9 @@ import rocks.xmpp.core.session.XmppSession;
 /**
  * A configuration for a TCP connection using {@link Socket}.
  *
- * <p>It allows you to configure various connection settings for a TCP socket connection, most importantly the host address and port,
- * but also a whitespace keep-alive interval, a custom socket factory, a custom SSL context and compression methods.</p>
+ * <p>It allows you to configure various connection settings for a TCP socket connection, most importantly the host
+ * address and port, but also a whitespace keep-alive interval, a custom socket factory, a custom SSL context and
+ * compression methods.</p>
  *
  * <h3>Usage</h3>
  *
@@ -132,7 +133,8 @@ public final class SocketConnectionConfiguration extends TcpConnectionConfigurat
         } else {
             socket = getSocketFactory().createSocket();
         }
-        // SocketFactory may return an already connected socket, so check the connected state to prevent SocketException.
+        // SocketFactory may return an already connected socket,
+        // so check the connected state to prevent SocketException.
         if (!socket.isConnected()) {
             socket.connect(new InetSocketAddress(hostname, port), getConnectTimeout());
         }
@@ -148,8 +150,8 @@ public final class SocketConnectionConfiguration extends TcpConnectionConfigurat
         private SocketFactory socketFactory;
 
         /**
-         * Sets a socket factory which creates the socket.
-         * This can be useful if you want connect to the legacy SSL port (usually 5223) and the connection is encrypted right from the beginning.
+         * Sets a socket factory which creates the socket. This can be useful if you want connect to the legacy SSL port
+         * (usually 5223) and the connection is encrypted right from the beginning.
          *
          * <p>However, usually, there's no need to set a custom socket factory.</p>
          *

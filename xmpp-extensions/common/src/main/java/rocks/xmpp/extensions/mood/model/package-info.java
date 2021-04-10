@@ -25,7 +25,9 @@
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0107.html">XEP-0107: User Mood</a>.
  *
- * <p>This specification defines a payload format for communicating information about user moods, such as whether a person is currently happy, sad, angy, or annoyed. The payload format is typically transported using the personal eventing protocol, a profile of XMPP publish-subscribe specified in XEP-0163.</p>
+ * <p>This specification defines a payload format for communicating information about user moods, such as whether a
+ * person is currently happy, sad, angy, or annoyed. The payload format is typically transported using the personal
+ * eventing protocol, a profile of XMPP publish-subscribe specified in XEP-0163.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = Mood.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

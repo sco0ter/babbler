@@ -94,7 +94,8 @@ public class Socks5ByteStreamIT extends IntegrationTest {
 
         Socks5ByteStreamManager socks5ByteStreamManager1 = xmppSession1.getManager(Socks5ByteStreamManager.class);
         socks5ByteStreamManager1.setLocalHostEnabled(true);
-        ByteStreamSession s5bSession = socks5ByteStreamManager1.initiateSession(xmppSession2.getConnectedResource(), "sid").get();
+        ByteStreamSession s5bSession =
+                socks5ByteStreamManager1.initiateSession(xmppSession2.getConnectedResource(), "sid").get();
         OutputStream os = s5bSession.getOutputStream();
         os.write(new byte[]{1, 2, 3, 4});
         os.flush();

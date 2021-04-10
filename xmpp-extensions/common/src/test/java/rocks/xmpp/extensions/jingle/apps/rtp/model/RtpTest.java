@@ -79,7 +79,8 @@ public class RtpTest extends XmlTest {
         Assert.assertNotNull(rtp.getEncryption());
         Assert.assertEquals(rtp.getEncryption().getCrypto().size(), 1);
         Assert.assertEquals(rtp.getEncryption().getCrypto().get(0).getCryptoSuite(), "AES_CM_128_HMAC_SHA1_80");
-        Assert.assertEquals(rtp.getEncryption().getCrypto().get(0).getKeyParameters(), "inline:WVNfX19zZW1jdGwgKCkgewkyMjA7fQp9CnVubGVz|2^20|1:32");
+        Assert.assertEquals(rtp.getEncryption().getCrypto().get(0).getKeyParameters(),
+                "inline:WVNfX19zZW1jdGwgKCkgewkyMjA7fQp9CnVubGVz|2^20|1:32");
         Assert.assertEquals(rtp.getEncryption().getCrypto().get(0).getSessionParameters(), "KDR=1 UNENCRYPTED_SRTCP");
         Assert.assertEquals(rtp.getEncryption().getCrypto().get(0).getTag(), "1");
     }

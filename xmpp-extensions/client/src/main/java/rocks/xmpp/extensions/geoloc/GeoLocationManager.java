@@ -63,7 +63,9 @@ public final class GeoLocationManager extends Manager {
                     Object payload = item.getPayload();
                     if (payload instanceof GeoLocation) {
                         // Notify the listeners about the reception.
-                        XmppUtils.notifyEventListeners(geoLocationListeners, new GeoLocationEvent(GeoLocationManager.this, (GeoLocation) payload, message.getFrom()));
+                        XmppUtils.notifyEventListeners(geoLocationListeners,
+                                new GeoLocationEvent(GeoLocationManager.this, (GeoLocation) payload,
+                                        message.getFrom()));
                     }
                 }
             }

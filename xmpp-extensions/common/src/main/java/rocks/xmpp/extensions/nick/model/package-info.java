@@ -23,9 +23,11 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0172.html">XEP-0172: User Nickname</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0172.html">XEP-0172: User
+ * Nickname</a>.
  *
- * <p>It defines a protocol for communicating user nicknames, either in XMPP presence subscription requests or in XMPP messages.</p>
+ * <p>It defines a protocol for communicating user nicknames, either in XMPP presence subscription requests or in XMPP
+ * messages.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = Nickname.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

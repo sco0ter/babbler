@@ -27,8 +27,8 @@ package rocks.xmpp.extensions.filetransfer;
 import rocks.xmpp.core.XmppException;
 
 /**
- * This is generic exception when a file transfer request has been rejected.
- * The reason for it is, that different file transfer protocols use different ways to indicate file transfer rejection:
+ * This is generic exception when a file transfer request has been rejected. The reason for it is, that different file
+ * transfer protocols use different ways to indicate file transfer rejection:
  * <ul>
  * <li><a href="https://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a> uses the {@code <not-acceptable/>} stanza error</li>
  * <li><a href="https://xmpp.org/extensions/xep-0095.html">XEP-0095: Stream Initiation</a> / <a href="https://xmpp.org/extensions/xep-0096.html">XEP-0096: SI File Transfer</a> uses the {@code <forbidden/>} stanza error</li>

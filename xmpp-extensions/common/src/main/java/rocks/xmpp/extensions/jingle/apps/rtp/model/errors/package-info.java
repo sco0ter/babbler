@@ -23,7 +23,8 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0167.html">XEP-0167: Jingle RTP Sessions</a> (errors).
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0167.html">XEP-0167: Jingle RTP
+ * Sessions</a> (errors).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:xmpp:jingle:apps:rtp:errors:1", elementFormDefault = XmlNsForm.QUALIFIED)

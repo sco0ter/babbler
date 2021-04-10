@@ -30,8 +30,11 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <feature-not-implemented/>} stanza error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-feature-not-implemented">8.3.3.3.  feature-not-implemented</a></cite></p>
- * <p>The feature represented in the XML stanza is not implemented by the intended recipient or an intermediate server and therefore the stanza cannot be processed (e.g., the entity understands the namespace but does not recognize the element name); the associated error type SHOULD be "cancel" or "modify".</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-feature-not-implemented">8.3.3.3.
+ * feature-not-implemented</a></cite></p>
+ * <p>The feature represented in the XML stanza is not implemented by the intended recipient or an intermediate server
+ * and therefore the stanza cannot be processed (e.g., the entity understands the namespace but does not recognize the
+ * element name); the associated error type SHOULD be "cancel" or "modify".</p>
  * </blockquote>
  * This class is a singleton.
  *

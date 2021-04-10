@@ -50,11 +50,30 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
 /**
  * The implementation of the {@code <presence/>} element.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#presence-fundamentals">4.1.  Presence Fundamentals</a></cite></p>
- * <p>The concept of presence refers to an entity's availability for communication over a network. At the most basic level, presence is a boolean "on/off" variable that signals whether an entity is available or unavailable for communication (the terms "online" and "offline" are also used). In XMPP, an entity's availability is signaled when its client generates a {@code <presence/>} stanza with no 'type' attribute, and an entity's lack of availability is signaled when its client generates a {@code <presence/>} stanza whose 'type' attribute has a value of "unavailable".</p>
- * <p>XMPP presence typically follows a "publish-subscribe" or "observer" pattern, wherein an entity sends presence to its server, and its server then broadcasts that information to all of the entity's contacts who have a subscription to the entity's presence (in the terminology of [IMP-MODEL], an entity that generates presence is a "presentity" and the entities that receive presence are "subscribers"). A client generates presence for broadcast to all subscribed entities by sending a presence stanza to its server with no 'to' address, where the presence stanza has either no 'type' attribute or a 'type' attribute whose value is "unavailable". This kind of presence is called "broadcast presence".</p>
- * <p>After a client completes the preconditions specified in [XMPP-CORE], it can establish a "presence session" at its server by sending initial presence, where the presence session is terminated by sending unavailable presence. For the duration of its presence session, a connected resource (in the terminology of [XMPP-CORE]) is said to be an "available resource".</p>
- * <p>In XMPP, applications that combine messaging and presence functionality, the default type of communication for which presence signals availability is messaging; however, it is not necessary for XMPP applications to combine messaging and presence functionality, and they can provide standalone presence features without messaging (in addition, XMPP servers do not require information about network availability in order to successfully route message and IQ stanzas).</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#presence-fundamentals">4.1.  Presence
+ * Fundamentals</a></cite></p>
+ * <p>The concept of presence refers to an entity's availability for communication over a network. At the most basic
+ * level, presence is a boolean "on/off" variable that signals whether an entity is available or unavailable for
+ * communication (the terms "online" and "offline" are also used). In XMPP, an entity's availability is signaled when
+ * its client generates a {@code <presence/>} stanza with no 'type' attribute, and an entity's lack of availability is
+ * signaled when its client generates a {@code <presence/>} stanza whose 'type' attribute has a value of
+ * "unavailable".</p>
+ * <p>XMPP presence typically follows a "publish-subscribe" or "observer" pattern, wherein an entity sends presence to
+ * its server, and its server then broadcasts that information to all of the entity's contacts who have a subscription
+ * to the entity's presence (in the terminology of [IMP-MODEL], an entity that generates presence is a "presentity" and
+ * the entities that receive presence are "subscribers"). A client generates presence for broadcast to all subscribed
+ * entities by sending a presence stanza to its server with no 'to' address, where the presence stanza has either no
+ * 'type' attribute or a 'type' attribute whose value is "unavailable". This kind of presence is called "broadcast
+ * presence".</p>
+ * <p>After a client completes the preconditions specified in [XMPP-CORE], it can establish a "presence session" at its
+ * server by sending initial presence, where the presence session is terminated by sending unavailable presence. For the
+ * duration of its presence session, a connected resource (in the terminology of [XMPP-CORE]) is said to be an
+ * "available resource".</p>
+ * <p>In XMPP, applications that combine messaging and presence functionality, the default type of communication for
+ * which presence signals availability is messaging; however, it is not necessary for XMPP applications to combine
+ * messaging and presence functionality, and they can provide standalone presence features without messaging (in
+ * addition, XMPP servers do not require information about network availability in order to successfully route message
+ * and IQ stanzas).</p>
  * </blockquote>
  * This class is thread-safe.
  *
@@ -64,7 +83,8 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
 @XmlTransient
 public class Presence extends ExtensibleStanza implements Comparable<Presence> {
 
-    private static final Set<Type> SUBSCRIPTION_TYPES = EnumSet.of(Type.SUBSCRIBE, Type.SUBSCRIBED, Type.UNSUBSCRIBE, Type.UNSUBSCRIBED);
+    private static final Set<Type> SUBSCRIPTION_TYPES =
+            EnumSet.of(Type.SUBSCRIBE, Type.SUBSCRIBED, Type.UNSUBSCRIBE, Type.UNSUBSCRIBED);
 
     private static final Comparator<Presence> DEFAULT_COMPARATOR = nullsLast(
             comparing(Presence::getPriority, (p1, p2) -> Byte.compare(p2 == null ? 0 : p2, p1 == null ? 0 : p1))
@@ -199,7 +219,8 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      * @param status The status.
      */
     public Presence(Jid to, Show show, String status) {
-        this(to, null, show, status != null ? Collections.singleton(new Text(status)) : null, (byte) 0, null, null, null, null, null);
+        this(to, null, show, status != null ? Collections.singleton(new Text(status)) : null, (byte) 0, null, null,
+                null, null, null);
     }
 
     /**
@@ -222,7 +243,8 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      * @param id     The id.
      */
     public Presence(Jid to, Type type, String status, String id) {
-        this(to, type, null, status != null ? Collections.singleton(new Text(status)) : null, (byte) 0, id, null, null, null, null);
+        this(to, type, null, status != null ? Collections.singleton(new Text(status)) : null, (byte) 0, id, null, null,
+                null, null);
     }
 
     /**
@@ -239,7 +261,8 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      * @param extensions The extensions.
      * @param error      The stanza error.
      */
-    public Presence(Jid to, Type type, Show show, Collection<Text> status, byte priority, String id, Jid from, Locale language, Collection<?> extensions, StanzaError error) {
+    public Presence(Jid to, Type type, Show show, Collection<Text> status, byte priority, String id, Jid from,
+                    Locale language, Collection<?> extensions, StanzaError error) {
         super(to, from, id, language, extensions, error);
         this.show = show;
         this.type = type;
@@ -252,8 +275,11 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
     /**
      * Indicates, whether an entity is available.
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#presence-fundamentals">4.1.  Presence Fundamentals</a></cite></p>
-     * <p>In XMPP, an entity's availability is signaled when its client generates a {@code <presence/>} stanza with no 'type' attribute, and an entity's lack of availability is signaled when its client generates a {@code <presence/>} stanza whose 'type' attribute has a value of "unavailable".</p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#presence-fundamentals">4.1.  Presence
+     * Fundamentals</a></cite></p>
+     * <p>In XMPP, an entity's availability is signaled when its client generates a {@code <presence/>} stanza with no
+     * 'type' attribute, and an entity's lack of availability is signaled when its client generates a {@code
+     * <presence/>} stanza whose 'type' attribute has a value of "unavailable".</p>
      * </blockquote>
      *
      * @return True, if the presence is available.
@@ -285,8 +311,10 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
     /**
      * Gets the priority.
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-priority">4.7.2.3.  Priority Element</a></cite></p>
-     * <p>The OPTIONAL {@code <priority/>} element contains non-human-readable XML character data that specifies the priority level of the resource. The value MUST be an integer between -128 and +127.</p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-priority">4.7.2.3.  Priority
+     * Element</a></cite></p>
+     * <p>The OPTIONAL {@code <priority/>} element contains non-human-readable XML character data that specifies the
+     * priority level of the resource. The value MUST be an integer between -128 and +127.</p>
      * </blockquote>
      *
      * @return The priority.
@@ -328,9 +356,14 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
     /**
      * Gets the statuses.
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-status">4.7.2.2.  Status Element</a></cite></p>
-     * <p>The OPTIONAL {@code <status/>} element contains human-readable XML character data specifying a natural-language description of an entity's availability. It is normally used in conjunction with the show element to provide a detailed description of an availability state (e.g., "In a meeting") when the presence stanza has no 'type' attribute.</p>
-     * <p>Multiple instances of the {@code <status/>} element MAY be included, but only if each instance possesses an 'xml:lang' attribute with a distinct language value.</p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-status">4.7.2.2.  Status
+     * Element</a></cite></p>
+     * <p>The OPTIONAL {@code <status/>} element contains human-readable XML character data specifying a
+     * natural-language description of an entity's availability. It is normally used in conjunction with the show
+     * element to provide a detailed description of an availability state (e.g., "In a meeting") when the presence
+     * stanza has no 'type' attribute.</p>
+     * <p>Multiple instances of the {@code <status/>} element MAY be included, but only if each instance possesses an
+     * 'xml:lang' attribute with a distinct language value.</p>
      * </blockquote>
      *
      * @return The statuses.
@@ -343,8 +376,12 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
     /**
      * Gets the default body (which has no language attribute).
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-status">4.7.2.2.  Status Element</a></cite></p>
-     * <p>The OPTIONAL {@code <status/>} element contains human-readable XML character data specifying a natural-language description of an entity's availability. It is normally used in conjunction with the show element to provide a detailed description of an availability state (e.g., "In a meeting") when the presence stanza has no 'type' attribute.</p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-status">4.7.2.2.  Status
+     * Element</a></cite></p>
+     * <p>The OPTIONAL {@code <status/>} element contains human-readable XML character data specifying a
+     * natural-language description of an entity's availability. It is normally used in conjunction with the show
+     * element to provide a detailed description of an availability state (e.g., "In a meeting") when the presence
+     * stanza has no 'type' attribute.</p>
      * </blockquote>
      * <p>If there's no default status, but only statuses with a language attribute, the first status is returned.</p>
      * <p>If there are no statuses at all, null is returned.</p>
@@ -389,8 +426,8 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
     }
 
     /**
-     * Indicates whether this presence is a subscription presence.
-     * This is the case if it has as type of {@link Type#SUBSCRIBE}, {@link Type#SUBSCRIBED}, {@link Type#UNSUBSCRIBE} or {@link Type#UNSUBSCRIBED}.
+     * Indicates whether this presence is a subscription presence. This is the case if it has as type of {@link
+     * Type#SUBSCRIBE}, {@link Type#SUBSCRIBED}, {@link Type#UNSUBSCRIBE} or {@link Type#UNSUBSCRIBED}.
      *
      * @return True, if this presence is a subscription presence, otherwise false.
      */
@@ -400,7 +437,8 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
 
     @Override
     public final Presence createError(StanzaError error) {
-        return new Presence(getTo(), Presence.Type.ERROR, getShow(), getStatuses(), getPriority(), getId(), getFrom(), getLanguage(), getExtensions(), error);
+        return new Presence(getTo(), Presence.Type.ERROR, getShow(), getStatuses(), getPriority(), getId(), getFrom(),
+                getLanguage(), getExtensions(), error);
     }
 
     @Override
@@ -431,7 +469,8 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
 
     @Override
     public final int hashCode() {
-        return Objects.hash(getType(), getPriority(), getShow(), getTo(), getFrom(), getStatuses(), getError(), getId(), getLanguage(), getExtensions());
+        return Objects.hash(getType(), getPriority(), getShow(), getTo(), getFrom(), getStatuses(), getError(), getId(),
+                getLanguage(), getExtensions());
     }
 
     @Override
@@ -462,8 +501,10 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
     /**
      * Represents a {@code <presence/>} {@code <show/>} element.
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show">4.7.2.1.  Show Element</a></cite></p>
-     * <p>The OPTIONAL {@code <show/>} element specifies the particular availability sub-state of an entity or a specific resource thereof.</p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#presence-syntax-children-show">4.7.2.1.  Show
+     * Element</a></cite></p>
+     * <p>The OPTIONAL {@code <show/>} element specifies the particular availability sub-state of an entity or a
+     * specific resource thereof.</p>
      * <p>If no {@code <show/>} element is provided, the entity is assumed to be online and available.</p>
      * </blockquote>
      */
@@ -495,15 +536,20 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#presence-syntax-type">4.7.1.  Type Attribute</a></cite></p>
      * <p>The absence of a 'type' attribute signals that the relevant entity is available for communication.</p>
-     * <p>A 'type' attribute with a value of "unavailable" signals that the relevant entity is not available for communication.</p>
-     * <p>The XMPP presence stanza is also used to negotiate and manage subscriptions to the presence of other entities. These tasks are completed via presence stanzas of type "subscribe", "unsubscribe", "subscribed", and "unsubscribed".</p>
-     * <p>If a user and contact are associated with different XMPP servers, those servers also use a special presence stanza of type "probe" in order to determine the availability of the entity on the peer server.</p>
+     * <p>A 'type' attribute with a value of "unavailable" signals that the relevant entity is not available for
+     * communication.</p>
+     * <p>The XMPP presence stanza is also used to negotiate and manage subscriptions to the presence of other
+     * entities. These tasks are completed via presence stanzas of type "subscribe", "unsubscribe", "subscribed", and
+     * "unsubscribed".</p>
+     * <p>If a user and contact are associated with different XMPP servers, those servers also use a special presence
+     * stanza of type "probe" in order to determine the availability of the entity on the peer server.</p>
      * </blockquote>
      */
     @XmlType(name = "presenceType")
     public enum Type {
         /**
-         * An error has occurred regarding processing of a previously sent presence stanza; if the presence stanza is of type "error", it MUST include an {@code <error/>} child element.
+         * An error has occurred regarding processing of a previously sent presence stanza; if the presence stanza is of
+         * type "error", it MUST include an {@code <error/>} child element.
          */
         @XmlEnumValue(value = "error")
         ERROR,

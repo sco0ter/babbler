@@ -36,7 +36,8 @@ import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 /**
  * Represents the XEP-0232: Software Information.
  *
- * <p>In order to provide software information to other entities, simply {@linkplain #setSoftwareInfo(SoftwareInformation) set} it.</p>
+ * <p>In order to provide software information to other entities, simply {@linkplain
+ * #setSoftwareInfo(SoftwareInformation) set} it.</p>
  *
  * <p>This class is thread-safe.</p>
  *
@@ -91,7 +92,8 @@ public final class SoftwareInformationProtocol implements InfoProvider, Software
     @Override
     public final synchronized DiscoverableInfo getInfo(Jid to, Jid from, String node, Locale locale) {
         if (softwareInformation != null) {
-            return new InfoDiscovery(Collections.emptyList(), Collections.emptyList(), Collections.singletonList(softwareInformation.getDataForm()));
+            return new InfoDiscovery(Collections.emptyList(), Collections.emptyList(),
+                    Collections.singletonList(softwareInformation.getDataForm()));
         }
         return null;
     }

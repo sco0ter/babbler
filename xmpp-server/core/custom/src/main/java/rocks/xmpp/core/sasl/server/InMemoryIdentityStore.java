@@ -106,7 +106,9 @@ public class InMemoryIdentityStore implements ScramIdentityStore {
                 }
             });
             try {
-                byte[] saltedPassword = scramClient.computeSaltedPassword(usernamePasswordCredential.getPassword().getValue(), credentialInfo.salt, credentialInfo.iterationCount);
+                byte[] saltedPassword = scramClient
+                        .computeSaltedPassword(usernamePasswordCredential.getPassword().getValue(), credentialInfo.salt,
+                                credentialInfo.iterationCount);
                 byte[] clientKey = scramClient.computeClientKey(saltedPassword);
                 byte[] storedKey = scramClient.computeStoredKey(clientKey);
                 if (Arrays.equals(credentialInfo.storedKey, storedKey)) {
@@ -125,7 +127,8 @@ public class InMemoryIdentityStore implements ScramIdentityStore {
     public ScramCredential getScramCredential(String username) {
         CredentialInfo credentialInfo = credentialInfoMap.get(username);
         if (credentialInfo != null) {
-            return new ScramCredential(credentialInfo.username, credentialInfo.iterationCount, credentialInfo.salt, credentialInfo.storedKey, credentialInfo.serverKey);
+            return new ScramCredential(credentialInfo.username, credentialInfo.iterationCount, credentialInfo.salt,
+                    credentialInfo.storedKey, credentialInfo.serverKey);
         }
         return null;
     }

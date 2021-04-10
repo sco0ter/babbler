@@ -25,7 +25,8 @@
 /**
  * Provides classes for <a href="https://xmpp.org/extensions/xep-0080.html">XEP-0080: User Location</a>.
  *
- * <p>It defines an XMPP protocol extension for communicating information about the current geographical or physical location of an entity.</p>
+ * <p>It defines an XMPP protocol extension for communicating information about the current geographical or physical
+ * location of an entity.</p>
  */
 package rocks.xmpp.extensions.geoloc;
 

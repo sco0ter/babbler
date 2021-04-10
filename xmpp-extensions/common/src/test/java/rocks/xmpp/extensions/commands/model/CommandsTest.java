@@ -120,7 +120,8 @@ public class CommandsTest extends XmlTest {
         Command command = iq.getExtension(Command.class);
         Assert.assertNotNull(command);
         Assert.assertEquals(command.getStatus(), Command.Status.EXECUTING);
-        Assert.assertEquals(command.getActions(), Arrays.asList(Command.Action.CANCEL, Command.Action.EXECUTE, Command.Action.NEXT));
+        Assert.assertEquals(command.getActions(),
+                Arrays.asList(Command.Action.CANCEL, Command.Action.EXECUTE, Command.Action.NEXT));
     }
 
     @Test
@@ -239,8 +240,11 @@ public class CommandsTest extends XmlTest {
 
     @Test
     public void marshalCommand() throws XMLStreamException, JAXBException {
-        Command command = new Command("node", "sid", Command.Status.CANCELED, Collections.singleton(Command.Action.PREV), Command.Action.NEXT, Collections.emptyList());
+        Command command =
+                new Command("node", "sid", Command.Status.CANCELED, Collections.singleton(Command.Action.PREV),
+                        Command.Action.NEXT, Collections.emptyList());
         String xml = marshal(command);
-        Assert.assertEquals(xml, "<command xmlns=\"http://jabber.org/protocol/commands\" node=\"node\" sessionid=\"sid\" status=\"canceled\"><actions execute=\"next\"><prev></prev></actions></command>");
+        Assert.assertEquals(xml,
+                "<command xmlns=\"http://jabber.org/protocol/commands\" node=\"node\" sessionid=\"sid\" status=\"canceled\"><actions execute=\"next\"><prev></prev></actions></command>");
     }
 }

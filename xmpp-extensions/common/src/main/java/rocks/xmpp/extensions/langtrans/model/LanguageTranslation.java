@@ -179,7 +179,8 @@ public final class LanguageTranslation {
             this.text = null;
         }
 
-        private Translation(Locale destinationLanguage, Locale sourceLanguage, String engine, String dictionary, Boolean reviewed, String text) {
+        private Translation(Locale destinationLanguage, Locale sourceLanguage, String engine, String dictionary,
+                            Boolean reviewed, String text) {
             this.destinationLanguage = Objects.requireNonNull(destinationLanguage);
             this.sourceLanguage = sourceLanguage;
             this.engine = engine;

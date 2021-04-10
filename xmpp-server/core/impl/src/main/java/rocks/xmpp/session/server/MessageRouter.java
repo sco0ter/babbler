@@ -51,8 +51,8 @@ public class MessageRouter implements InboundMessageHandler {
 
     public boolean process(Message message) {
         // 10.3.1.  Message
-        // If the server receives a message stanza with no 'to' attribute,
-        // it MUST treat the message as if the 'to' address were the bare JID <localpart@domainpart> of the sending entity.
+        // If the server receives a message stanza with no 'to' attribute, it MUST treat the message as if the 'to'
+        // address were the bare JID <localpart@domainpart> of the sending entity.
         if (message.getTo() == null) {
             message.setTo(message.getFrom().asBareJid());
         }
@@ -77,12 +77,14 @@ public class MessageRouter implements InboundMessageHandler {
                     }
                 } else if (message.getType() == Message.Type.GROUPCHAT) {
                     // For a message stanza of type "groupchat", the server MUST NOT deliver the stanza to any
-                    // of the available resources but instead MUST return a stanza error to the sender, which SHOULD be <service-unavailable/>.
+                    // of the available resources but instead MUST return a stanza error to the sender, which SHOULD
+                    // be <service-unavailable/>.
                     Session session = sessionManager.getSession(message.getFrom());
                     session.send(message.createError(Condition.SERVICE_UNAVAILABLE));
                 } else if (message.getType() == Message.Type.HEADLINE) {
                     // For a message stanza of type "headline":
-                    // If there is more than one resource with a non-negative presence priority then the server MUST deliver the message to all of the non-negative resources.
+                    // If there is more than one resource with a non-negative presence priority then the server MUST
+                    // deliver the message to all of the non-negative resources.
                     Iterator<? extends Session> userSessions = getNonNegativeResources(message.getTo());
                     userSessions.forEachRemaining(session -> session.send(message));
                 }

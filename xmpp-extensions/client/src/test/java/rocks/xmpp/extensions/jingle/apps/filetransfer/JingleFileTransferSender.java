@@ -59,7 +59,9 @@ public class JingleFileTransferSender {
                 xmppSession.login("111", "111", "filetransfer");
 
                 JingleFileTransferManager fileTransferManager = xmppSession.getManager(JingleFileTransferManager.class);
-                JingleFileTransferSession fileTransfer = fileTransferManager.initiateFileTransferSession(xmppSession.getDomain().withLocal("222").withResource("filetransfer"), Paths.get(System.getProperty("user.home")).resolve("Magic.png"), "Description", 5000);
+                JingleFileTransferSession fileTransfer = fileTransferManager.initiateFileTransferSession(
+                        xmppSession.getDomain().withLocal("222").withResource("filetransfer"),
+                        Paths.get(System.getProperty("user.home")).resolve("Magic.png"), "Description", 5000);
 
 
             } catch (Exception e) {

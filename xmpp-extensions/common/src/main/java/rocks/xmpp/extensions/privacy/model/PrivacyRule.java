@@ -43,8 +43,10 @@ import rocks.xmpp.im.roster.model.SubscriptionState;
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/extensions/xep-0016.html#protocol-rules">2.2 Business Rules</a></cite></p>
  * <ul>
- * <li>The order in which privacy list items are processed by the server is important. List items MUST be processed in ascending order determined by the integer values of the 'order' attribute for each {@code <item/>}.</li>
- * <li>As soon as a stanza is matched against a privacy list rule, the server MUST appropriately handle the stanza in accordance with the rule and cease processing.</li>
+ * <li>The order in which privacy list items are processed by the server is important. List items MUST be processed in
+ * ascending order determined by the integer values of the 'order' attribute for each {@code <item/>}.</li>
+ * <li>As soon as a stanza is matched against a privacy list rule, the server MUST appropriately handle the stanza in
+ * accordance with the rule and cease processing.</li>
  * <li>If no fall-through item is provided in a list, the fall-through action is assumed to be "allow".</li>
  * </ul>
  * </blockquote>
@@ -52,7 +54,7 @@ import rocks.xmpp.im.roster.model.SubscriptionState;
  * <h3>Usage</h3>
  *
  * <p>In order to create a privacy rule, use one of the many static factory methods, e.g.:</p>
- * 
+ *
  * <pre>{@code
  * // Blocks all messages from juliet@example.net
  * PrivacyRule rule1 = PrivacyRule.blockMessagesFrom(Jid.of("juliet@example.net"), 1);
@@ -115,15 +117,19 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * Creates a privacy list item.
      *
      * @param action The action to perform, i.e. either allow or deny.
-     * @param order  The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
+     * @param order  The order in which the privacy item is processed by the server. A non-negative integer that is
+     *               unique among all items in the list.
      * @param type   The type of the privacy item.
      * @param value  <ul>
      *               <li>If the type is {@link Type#JID}, then the value must be a valid JID.</li>
-     *               <li>If the type is {@link Type#GROUP}, then the value should be the name of a group in the user's roster.</li>
-     *               <li>If the type is {@link Type#SUBSCRIPTION}, then the value must be one of "both", "to", "from", or "none".</li>
+     *               <li>If the type is {@link Type#GROUP}, then the value should be the name of a group in the user's
+     *               roster.</li>
+     *               <li>If the type is {@link Type#SUBSCRIPTION}, then the value must be one of "both", "to", "from",
+     *               or "none".</li>
      *               </ul>
      */
-    private PrivacyRule(Action action, long order, Type type, String value, boolean filterMessage, boolean filterPresenceIn, boolean filterPresenceOut, boolean filterIQ) {
+    private PrivacyRule(Action action, long order, Type type, String value, boolean filterMessage,
+                        boolean filterPresenceIn, boolean filterPresenceOut, boolean filterIQ) {
         if (order < 0) {
             throw new IllegalArgumentException("order must be greater 0.");
         }
@@ -141,7 +147,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * Creates a privacy list item, which allows or blocks everything.
      *
      * @param action The action to perform, i.e. either allow or deny.
-     * @param order  The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
+     * @param order  The order in which the privacy item is processed by the server. A non-negative integer that is
+     *               unique among all items in the list.
      * @return The privacy rule.
      */
     public static PrivacyRule of(Action action, long order) {
@@ -153,7 +160,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      *
      * @param jid    The JID.
      * @param action The action to perform, i.e. either allow or deny.
-     * @param order  The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
+     * @param order  The order in which the privacy item is processed by the server. A non-negative integer that is
+     *               unique among all items in the list.
      * @return The privacy rule.
      */
     public static PrivacyRule of(Jid jid, Action action, long order) {
@@ -165,7 +173,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      *
      * @param group  The roster group.
      * @param action The action to perform, i.e. either allow or deny.
-     * @param order  The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
+     * @param order  The order in which the privacy item is processed by the server. A non-negative integer that is
+     *               unique among all items in the list.
      * @return The privacy rule.
      */
     public static PrivacyRule of(String group, Action action, long order) {
@@ -177,14 +186,16 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      *
      * @param subscription The subscription type.
      * @param action       The action to perform, i.e. either allow or deny.
-     * @param order        The order in which the privacy item is processed by the server. A non-negative integer that is unique among all items in the list.
+     * @param order        The order in which the privacy item is processed by the server. A non-negative integer that
+     *                     is unique among all items in the list.
      * @return The privacy rule.
      */
     public static PrivacyRule of(SubscriptionState.Subscription subscription, Action action, long order) {
         if (SubscriptionState.Subscription.REMOVE.equals(subscription)) {
             throw new IllegalArgumentException("subscription must not be 'remove'");
         }
-        return new PrivacyRule(action, order, Type.SUBSCRIPTION, subscription.name().toLowerCase(), false, false, false, false);
+        return new PrivacyRule(action, order, Type.SUBSCRIPTION, subscription.name().toLowerCase(), false, false, false,
+                false);
     }
 
     /**
@@ -212,7 +223,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-message">2.9 Blocking Messages</a>
      */
     public static PrivacyRule blockMessagesFromRosterGroup(String rosterGroup, long order) {
-        return new PrivacyRule(Action.DENY, order, Type.GROUP, Objects.requireNonNull(rosterGroup), true, false, false, false);
+        return new PrivacyRule(Action.DENY, order, Type.GROUP, Objects.requireNonNull(rosterGroup), true, false, false,
+                false);
     }
 
     /**
@@ -225,8 +237,10 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @return The privacy rule.
      * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-message">2.9 Blocking Messages</a>
      */
-    public static PrivacyRule blockMessagesFromEntitiesWithSubscription(SubscriptionState.Subscription subscription, long order) {
-        return new PrivacyRule(Action.DENY, order, Type.SUBSCRIPTION, checkSubscriptionType(subscription), true, false, false, false);
+    public static PrivacyRule blockMessagesFromEntitiesWithSubscription(SubscriptionState.Subscription subscription,
+                                                                        long order) {
+        return new PrivacyRule(Action.DENY, order, Type.SUBSCRIPTION, checkSubscriptionType(subscription), true, false,
+                false, false);
     }
 
     /**
@@ -237,24 +251,28 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @param entity The entity.
      * @param order  The order, this rule will be applied within the privacy list.
      * @return The privacy rule.
-     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presencein">2.10 Blocking Inbound Presence Notifications</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presencein">2.10 Blocking Inbound Presence
+     * Notifications</a>
      */
     public static PrivacyRule blockPresenceFrom(Jid entity, long order) {
         return new PrivacyRule(Action.DENY, order, Type.JID, entity.toEscapedString(), false, true, false, false);
     }
 
     /**
-     * Creates a rule, which blocks all inbound presence notifications from contacts, which are in the specified roster group.
+     * Creates a rule, which blocks all inbound presence notifications from contacts, which are in the specified roster
+     * group.
      *
      * <p>The user will not receive presence notifications from any entities in the specified roster group.</p>
      *
      * @param rosterGroup The roster group.
      * @param order       The order, this rule will be applied within the privacy list.
      * @return The privacy rule.
-     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presencein">2.10 Blocking Inbound Presence Notifications</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presencein">2.10 Blocking Inbound Presence
+     * Notifications</a>
      */
     public static PrivacyRule blockPresenceFromRosterGroup(String rosterGroup, long order) {
-        return new PrivacyRule(Action.DENY, order, Type.GROUP, Objects.requireNonNull(rosterGroup), false, true, false, false);
+        return new PrivacyRule(Action.DENY, order, Type.GROUP, Objects.requireNonNull(rosterGroup), false, true, false,
+                false);
     }
 
     /**
@@ -265,10 +283,13 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @param subscription The subscription type.
      * @param order        The order, this rule will be applied within the privacy list.
      * @return The privacy rule.
-     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presencein">2.10 Blocking Inbound Presence Notifications</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presencein">2.10 Blocking Inbound Presence
+     * Notifications</a>
      */
-    public static PrivacyRule blockPresenceFromEntitiesWithSubscription(SubscriptionState.Subscription subscription, long order) {
-        return new PrivacyRule(Action.DENY, order, Type.SUBSCRIPTION, checkSubscriptionType(subscription), false, true, false, false);
+    public static PrivacyRule blockPresenceFromEntitiesWithSubscription(SubscriptionState.Subscription subscription,
+                                                                        long order) {
+        return new PrivacyRule(Action.DENY, order, Type.SUBSCRIPTION, checkSubscriptionType(subscription), false, true,
+                false, false);
     }
 
     /**
@@ -278,7 +299,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      *
      * @param order The order, this rule will be applied within the privacy list.
      * @return The privacy rule.
-     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presenceout">2.11 Blocking Outbound Presence Notifications</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presenceout">2.11 Blocking Outbound Presence
+     * Notifications</a>
      */
     public static PrivacyRule blockInboundPresence(long order) {
         return new PrivacyRule(Action.DENY, order, null, null, false, true, false, false);
@@ -292,24 +314,28 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @param entity The entity.
      * @param order  The order, this rule will be applied within the privacy list.
      * @return The privacy rule.
-     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presenceout">2.11 Blocking Outbound Presence Notifications</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presenceout">2.11 Blocking Outbound Presence
+     * Notifications</a>
      */
     public static PrivacyRule blockPresenceTo(Jid entity, long order) {
         return new PrivacyRule(Action.DENY, order, Type.JID, entity.toEscapedString(), false, false, true, false);
     }
 
     /**
-     * Creates a rule, which blocks all outbound presence notifications to contacts, which are in the specified roster group.
+     * Creates a rule, which blocks all outbound presence notifications to contacts, which are in the specified roster
+     * group.
      *
      * <p>The user will not send presence notifications to any entities in the specified roster group.</p>
      *
      * @param rosterGroup The roster group.
      * @param order       The order, this rule will be applied within the privacy list.
      * @return The privacy rule.
-     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presenceout">2.11 Blocking Outbound Presence Notifications</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presenceout">2.11 Blocking Outbound Presence
+     * Notifications</a>
      */
     public static PrivacyRule blockPresenceToRosterGroup(String rosterGroup, long order) {
-        return new PrivacyRule(Action.DENY, order, Type.GROUP, Objects.requireNonNull(rosterGroup), false, false, true, false);
+        return new PrivacyRule(Action.DENY, order, Type.GROUP, Objects.requireNonNull(rosterGroup), false, false, true,
+                false);
     }
 
     /**
@@ -320,10 +346,13 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @param subscription The subscription type.
      * @param order        The order, this rule will be applied within the privacy list.
      * @return The privacy rule.
-     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presenceout">2.11 Blocking Outbound Presence Notifications</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presenceout">2.11 Blocking Outbound Presence
+     * Notifications</a>
      */
-    public static PrivacyRule blockPresenceToEntitiesWithSubscription(SubscriptionState.Subscription subscription, long order) {
-        return new PrivacyRule(Action.DENY, order, Type.SUBSCRIPTION, checkSubscriptionType(subscription), false, false, true, false);
+    public static PrivacyRule blockPresenceToEntitiesWithSubscription(SubscriptionState.Subscription subscription,
+                                                                      long order) {
+        return new PrivacyRule(Action.DENY, order, Type.SUBSCRIPTION, checkSubscriptionType(subscription), false, false,
+                true, false);
     }
 
     /**
@@ -333,7 +362,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      *
      * @param order The order, this rule will be applied within the privacy list.
      * @return The privacy rule.
-     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presenceout">2.11 Blocking Outbound Presence Notifications</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-presenceout">2.11 Blocking Outbound Presence
+     * Notifications</a>
      */
     public static PrivacyRule blockOutboundPresence(long order) {
         return new PrivacyRule(Action.DENY, order, null, null, false, false, true, false);
@@ -364,7 +394,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-iq">2.12 Blocking IQ Stanzas</a>
      */
     public static PrivacyRule blockIQFromRosterGroup(String rosterGroup, long order) {
-        return new PrivacyRule(Action.DENY, order, Type.GROUP, Objects.requireNonNull(rosterGroup), false, false, false, true);
+        return new PrivacyRule(Action.DENY, order, Type.GROUP, Objects.requireNonNull(rosterGroup), false, false, false,
+                true);
     }
 
     /**
@@ -377,14 +408,17 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @return The privacy rule.
      * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-iq">2.12 Blocking IQ Stanzas</a>
      */
-    public static PrivacyRule blockIQFromEntitiesWithSubscription(SubscriptionState.Subscription subscription, long order) {
-        return new PrivacyRule(Action.DENY, order, Type.SUBSCRIPTION, checkSubscriptionType(subscription), false, false, false, true);
+    public static PrivacyRule blockIQFromEntitiesWithSubscription(SubscriptionState.Subscription subscription,
+                                                                  long order) {
+        return new PrivacyRule(Action.DENY, order, Type.SUBSCRIPTION, checkSubscriptionType(subscription), false, false,
+                false, true);
     }
 
     /**
      * Creates a rule, which blocks all communication from and to any entities in the specified roster group.
      *
-     * <p>The user will not receive any communications from, nor send any stanzas to, any entities in the specified roster group.</p>
+     * <p>The user will not receive any communications from, nor send any stanzas to, any entities in the specified
+     * roster group.</p>
      *
      * @param rosterGroup The roster group.
      * @param order       The order, this rule will be applied within the privacy list.
@@ -392,27 +426,32 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-all">2.13 Blocking All Communication</a>
      */
     public static PrivacyRule blockAllCommunicationWithRosterGroup(String rosterGroup, long order) {
-        return new PrivacyRule(Action.DENY, order, Type.GROUP, Objects.requireNonNull(rosterGroup), false, false, false, false);
+        return new PrivacyRule(Action.DENY, order, Type.GROUP, Objects.requireNonNull(rosterGroup), false, false, false,
+                false);
     }
 
     /**
      * Creates a rule, which blocks all communication from and to any entities in the specified roster group.
      *
-     * <p>The user will not receive any communications from, nor send any stanzas to, any entities in the specified roster group.</p>
+     * <p>The user will not receive any communications from, nor send any stanzas to, any entities in the specified
+     * roster group.</p>
      *
      * @param subscription The subscription type.
      * @param order        The order, this rule will be applied within the privacy list.
      * @return The privacy rule.
      * @see <a href="https://xmpp.org/extensions/xep-0016.html#protocol-all">2.13 Blocking All Communication</a>
      */
-    public static PrivacyRule blockAllCommunicationWithEntitiesWithSubscription(SubscriptionState.Subscription subscription, long order) {
-        return new PrivacyRule(Action.DENY, order, Type.SUBSCRIPTION, checkSubscriptionType(subscription), false, false, false, false);
+    public static PrivacyRule blockAllCommunicationWithEntitiesWithSubscription(
+            SubscriptionState.Subscription subscription, long order) {
+        return new PrivacyRule(Action.DENY, order, Type.SUBSCRIPTION, checkSubscriptionType(subscription), false, false,
+                false, false);
     }
 
     /**
      * Creates a rule, which blocks all communication from and to another entity.
      *
-     * <p>The user will not receive any communications from, nor send any stanzas to, the entity with the specified JID.</p>
+     * <p>The user will not receive any communications from, nor send any stanzas to, the entity with the specified
+     * JID.</p>
      *
      * @param entity The entity.
      * @param order  The order, this rule will be applied within the privacy list.
@@ -501,7 +540,8 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * @see #isAppliedToIQs()
      */
     public final PrivacyRule appliedToIQs() {
-        return new PrivacyRule(action, order, type, value, message != null, presenceIn != null, presenceOut != null, true);
+        return new PrivacyRule(action, order, type, value, message != null, presenceIn != null, presenceOut != null,
+                true);
     }
 
     /**
@@ -607,7 +647,7 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
          */
         @XmlEnumValue("group")
         GROUP,
-        
+
         /**
          * Allows or blocks communication based on a JID.
          */
@@ -625,7 +665,7 @@ public final class PrivacyRule implements Comparable<PrivacyRule> {
      * Defines the action to perform with the privacy item: either allow or deny communication.
      */
     public enum Action {
-        
+
         /**
          * Allows communication.
          */

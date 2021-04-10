@@ -29,8 +29,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * This is a custom payload, which can be used to request the sum of two values and returns the sum.
- * It's only for illustrating purposes.
+ * This is a custom payload, which can be used to request the sum of two values and returns the sum. It's only for
+ * illustrating purposes.
  *
  * @author Christian Schudt
  */

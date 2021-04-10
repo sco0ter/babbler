@@ -23,9 +23,14 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band
+ * Registration</a>.
  *
- * <p>It defines an XMPP protocol extension for in-band registration with XMPP-based instant messaging servers and other services hosted on an XMPP network (such as groupchat rooms and gateways to non-XMPP IM services). The protocol is extensible via use of data forms, thus enabling services to gather a wide range of information during the registration process. The protocol also supports in-band password changes and cancellation of an existing registration.</p>
+ * <p>It defines an XMPP protocol extension for in-band registration with XMPP-based instant messaging servers and
+ * other services hosted on an XMPP network (such as groupchat rooms and gateways to non-XMPP IM services). The protocol
+ * is extensible via use of data forms, thus enabling services to gather a wide range of information during the
+ * registration process. The protocol also supports in-band password changes and cancellation of an existing
+ * registration.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = Registration.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

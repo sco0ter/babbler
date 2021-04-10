@@ -47,12 +47,11 @@ import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
  *
  * <p>Reconnection is not performed, if the user got disconnected due to an {@code <conflict/>} stream error.</p>
  *
- * <p>The default reconnection strategy is a so called truncated binary exponential back off (as proposed by the XMPP specification),
- * which means that the first reconnection attempt is performed X seconds after the disconnect, where X is between 0 and 60.<br>
- * The second attempt chooses a random number between 0 and 180.<br>
- * The third attempt chooses a random number between 0 and 420.<br>
- * The forth attempt chooses a random number between 0 and 900.<br>
- * The fifth attempt chooses a random number between 0 and 1860.<br></p>
+ * <p>The default reconnection strategy is a so called truncated binary exponential back off (as proposed by the XMPP
+ * specification), which means that the first reconnection attempt is performed X seconds after the disconnect, where X
+ * is between 0 and 60.<br> The second attempt chooses a random number between 0 and 180.<br> The third attempt chooses
+ * a random number between 0 and 420.<br> The forth attempt chooses a random number between 0 and 900.<br> The fifth
+ * attempt chooses a random number between 0 and 1860.<br></p>
  *
  * <p>Generally speaking it is <code>2^attempt * 60</code> seconds.</p>
  *
@@ -65,7 +64,8 @@ final class ReconnectionManager extends Manager {
 
     private static final System.Logger logger = System.getLogger(ReconnectionManager.class.getName());
 
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Reconnection Thread"));
+    private static final ExecutorService EXECUTOR_SERVICE =
+            Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Reconnection Thread"));
 
     private final ScheduledExecutorService scheduledExecutorService;
 
@@ -105,9 +105,12 @@ final class ReconnectionManager extends Manager {
         xmppSession.addSessionStatusListener(e -> {
             switch (e.getStatus()) {
                 case DISCONNECTED:
-                    // Reconnect if we were connected or logged in and an exception has occurred, that is not a <conflict/> stream error.
+                    // Reconnect if we were connected or logged in and an exception has occurred,
+                    // that is not a <conflict/> stream error.
                     if (e.getOldStatus() == XmppSession.Status.AUTHENTICATED) {
-                        XmppUtils.notifyEventListeners(xmppSession.connectionListeners, new ConnectionEvent(xmppSession, ConnectionEvent.Type.DISCONNECTED, e.getThrowable(), Duration.ZERO));
+                        XmppUtils.notifyEventListeners(xmppSession.connectionListeners,
+                                new ConnectionEvent(xmppSession, ConnectionEvent.Type.DISCONNECTED, e.getThrowable(),
+                                        Duration.ZERO));
                         if (reconnectionStrategy.mayReconnect(0, e.getThrowable())) {
                             scheduleReconnection(0, e.getThrowable());
                         }
@@ -141,9 +144,12 @@ final class ReconnectionManager extends Manager {
         if (isEnabled()) {
             Duration duration = reconnectionStrategy.getNextReconnectionAttempt(attempt, throwable);
             if (attempt == 0) {
-                logger.log(System.Logger.Level.DEBUG, "Disconnect detected. Next reconnection attempt in {0} seconds.", duration.getSeconds());
+                logger.log(System.Logger.Level.DEBUG, "Disconnect detected. Next reconnection attempt in {0} seconds.",
+                        duration.getSeconds());
             } else {
-                logger.log(System.Logger.Level.DEBUG, "Still disconnected after {0} retries. Next reconnection attempt in {1} seconds.", attempt, duration.getSeconds());
+                logger.log(System.Logger.Level.DEBUG,
+                        "Still disconnected after {0} retries. Next reconnection attempt in {1} seconds.", attempt,
+                        duration.getSeconds());
             }
 
             nextReconnectionAttempt = Instant.now().plus(duration);
@@ -154,7 +160,9 @@ final class ReconnectionManager extends Manager {
                     remainingDuration = Duration.between(Instant.now(), nextReconnectionAttempt);
                 }
                 if (!remainingDuration.isNegative()) {
-                    XmppUtils.notifyEventListeners(xmppSession.connectionListeners, new ConnectionEvent(xmppSession, ConnectionEvent.Type.RECONNECTION_PENDING, throwable, remainingDuration));
+                    XmppUtils.notifyEventListeners(xmppSession.connectionListeners,
+                            new ConnectionEvent(xmppSession, ConnectionEvent.Type.RECONNECTION_PENDING, throwable,
+                                    remainingDuration));
                 } else {
                     synchronized (this) {
                         scheduledReconnectingInterval.cancel(false);
@@ -164,7 +172,9 @@ final class ReconnectionManager extends Manager {
                         logger.log(System.Logger.Level.DEBUG, "Reconnection successful.");
                     } catch (XmppException e) {
                         logger.log(System.Logger.Level.DEBUG, "Reconnection failed.", e);
-                        XmppUtils.notifyEventListeners(xmppSession.connectionListeners, new ConnectionEvent(xmppSession, ConnectionEvent.Type.RECONNECTION_FAILED, e, Duration.ZERO));
+                        XmppUtils.notifyEventListeners(xmppSession.connectionListeners,
+                                new ConnectionEvent(xmppSession, ConnectionEvent.Type.RECONNECTION_FAILED, e,
+                                        Duration.ZERO));
                         scheduleReconnection(attempt + 1, e);
                     }
                 }
@@ -187,7 +197,8 @@ final class ReconnectionManager extends Manager {
         @Override
         public final boolean test(Integer attempt, Throwable cause) {
             if (!systemShutdown || attempt == 0) {
-                systemShutdown = cause instanceof StreamErrorException && ((StreamErrorException) cause).getCondition() == Condition.SYSTEM_SHUTDOWN;
+                systemShutdown = cause instanceof StreamErrorException
+                        && ((StreamErrorException) cause).getCondition() == Condition.SYSTEM_SHUTDOWN;
             }
             return systemShutdown;
         }

@@ -40,7 +40,8 @@ import rocks.xmpp.core.server.ServerConfiguration;
 import rocks.xmpp.extensions.httpbind.model.Body;
 
 /**
- * Reads the input stream to BOSH {@link Body} elements. If the was an error reading them, create a BOSH error, which will later be returned to the client.
+ * Reads the input stream to BOSH {@link Body} elements. If the was an error reading them, create a BOSH error, which
+ * will later be returned to the client.
  *
  * @author Christian Schudt
  */
@@ -53,7 +54,9 @@ public class XmppMessageBodyReader implements MessageBodyReader<Body> {
     }
 
     @Override
-    public Body readFrom(Class<Body> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws WebApplicationException {
+    public Body readFrom(Class<Body> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+                         MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+            throws WebApplicationException {
         try {
             Unmarshaller unmarshaller = CDI.current().select(ServerConfiguration.class).get().getUnmarshaller(null);
             Object object = unmarshaller.unmarshal(entityStream);

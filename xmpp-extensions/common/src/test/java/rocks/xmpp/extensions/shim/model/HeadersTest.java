@@ -67,14 +67,19 @@ public class HeadersTest extends XmlTest {
     @Test
     public void marshalDateTimePeriods() throws XMLStreamException, JAXBException {
 
-        String xmlStart = marshal(Headers.of(Header.ofStartDate(OffsetDateTime.of(2015, 3, 22, 1, 2, 3, 0, ZoneOffset.UTC))));
-        Assert.assertEquals(xmlStart, "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Start\">2015-03-22T01:02:03Z</header></headers>");
+        String xmlStart =
+                marshal(Headers.of(Header.ofStartDate(OffsetDateTime.of(2015, 3, 22, 1, 2, 3, 0, ZoneOffset.UTC))));
+        Assert.assertEquals(xmlStart,
+                "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Start\">2015-03-22T01:02:03Z</header></headers>");
 
         String xmlStop = marshal(Headers.of(Header.ofStopDate(OffsetDateTime.now(ZoneId.systemDefault()))));
-        Assert.assertTrue(xmlStop.startsWith("<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Stop\">"));
+        Assert.assertTrue(
+                xmlStop.startsWith("<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Stop\">"));
 
-        String xmlPeriod = marshal(Headers.ofTimePeriod(OffsetDateTime.now(ZoneId.systemDefault()), OffsetDateTime.now(ZoneId.systemDefault())));
-        Assert.assertTrue(xmlPeriod.startsWith("<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Start\">"));
+        String xmlPeriod = marshal(Headers
+                .ofTimePeriod(OffsetDateTime.now(ZoneId.systemDefault()), OffsetDateTime.now(ZoneId.systemDefault())));
+        Assert.assertTrue(
+                xmlPeriod.startsWith("<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Start\">"));
         Assert.assertTrue(xmlPeriod.contains("<header name=\"Stop\">"));
     }
 
@@ -86,10 +91,14 @@ public class HeadersTest extends XmlTest {
         map.put("Header3", "Value3");
         map.put("Header4", "Value4");
         Headers headers = Headers.of(map);
-        Assert.assertEquals(marshal(headers), "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Header1\">Value1</header><header name=\"Header2\">Value2</header><header name=\"Header3\">Value3</header><header name=\"Header4\">Value4</header></headers>");
-        Assert.assertEquals(marshal(headers.withHeader("Header2", "newValue")), "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Header1\">Value1</header><header name=\"Header3\">Value3</header><header name=\"Header4\">Value4</header><header name=\"Header2\">newValue</header></headers>");
-        Assert.assertEquals(marshal(headers.withHeader("Header5", "Value5")), "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Header1\">Value1</header><header name=\"Header2\">Value2</header><header name=\"Header3\">Value3</header><header name=\"Header4\">Value4</header><header name=\"Header5\">Value5</header></headers>");
-        Assert.assertEquals(marshal(headers.withoutHeader("Header3")), "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Header1\">Value1</header><header name=\"Header2\">Value2</header><header name=\"Header4\">Value4</header></headers>");
+        Assert.assertEquals(marshal(headers),
+                "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Header1\">Value1</header><header name=\"Header2\">Value2</header><header name=\"Header3\">Value3</header><header name=\"Header4\">Value4</header></headers>");
+        Assert.assertEquals(marshal(headers.withHeader("Header2", "newValue")),
+                "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Header1\">Value1</header><header name=\"Header3\">Value3</header><header name=\"Header4\">Value4</header><header name=\"Header2\">newValue</header></headers>");
+        Assert.assertEquals(marshal(headers.withHeader("Header5", "Value5")),
+                "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Header1\">Value1</header><header name=\"Header2\">Value2</header><header name=\"Header3\">Value3</header><header name=\"Header4\">Value4</header><header name=\"Header5\">Value5</header></headers>");
+        Assert.assertEquals(marshal(headers.withoutHeader("Header3")),
+                "<headers xmlns=\"http://jabber.org/protocol/shim\"><header name=\"Header1\">Value1</header><header name=\"Header2\">Value2</header><header name=\"Header4\">Value4</header></headers>");
     }
 
     @Test

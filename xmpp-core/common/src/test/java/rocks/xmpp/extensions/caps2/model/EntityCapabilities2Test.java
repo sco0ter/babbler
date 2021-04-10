@@ -46,8 +46,10 @@ public class EntityCapabilities2Test extends XmlTest {
     @Test
     public void unmarshal() throws JAXBException, XMLStreamException {
         String xml = "<c xmlns=\"urn:xmpp:caps\">\n" +
-                "    <hash xmlns=\"urn:xmpp:hashes:2\" algo=\"sha-256\">K1Njy3HZBThlo4moOD5gBGhn0U0oK7/CbfLlIUDi6o4=</hash>\n" +
-                "    <hash xmlns=\"urn:xmpp:hashes:2\" algo=\"sha3-256\">+sDTQqBmX6iG/X3zjt06fjZMBBqL/723knFIyRf0sg8=</hash>\n" +
+                "    <hash xmlns=\"urn:xmpp:hashes:2\" algo=\"sha-256\">K1Njy3HZBThlo4moOD5gBGhn0U0oK7/CbfLlIUDi6o4=</hash>\n"
+                +
+                "    <hash xmlns=\"urn:xmpp:hashes:2\" algo=\"sha3-256\">+sDTQqBmX6iG/X3zjt06fjZMBBqL/723knFIyRf0sg8=</hash>\n"
+                +
                 "  </c>";
         EntityCapabilities entityCapabilities = unmarshal(xml, EntityCapabilities2.class);
 
@@ -80,7 +82,9 @@ public class EntityCapabilities2Test extends XmlTest {
         InfoDiscovery infoDiscovery = unmarshal(xml, InfoDiscovery.class);
         EntityCapabilities caps = new EntityCapabilities2(infoDiscovery, MessageDigest.getInstance("SHA-256"));
         Assert.assertEquals(caps.getCapabilityHashSet().size(), 1);
-        Assert.assertEquals(Base64.getEncoder().encodeToString(caps.getCapabilityHashSet().iterator().next().getHashValue()), "kzBZbkqJ3ADrj7v08reD1qcWUwNGHaidNUgD7nHpiw8=");
+        Assert.assertEquals(
+                Base64.getEncoder().encodeToString(caps.getCapabilityHashSet().iterator().next().getHashValue()),
+                "kzBZbkqJ3ADrj7v08reD1qcWUwNGHaidNUgD7nHpiw8=");
     }
 
     @Test
@@ -151,6 +155,8 @@ public class EntityCapabilities2Test extends XmlTest {
         InfoDiscovery infoDiscovery = unmarshal(xml, InfoDiscovery.class);
         EntityCapabilities caps = new EntityCapabilities2(infoDiscovery, MessageDigest.getInstance("SHA-256"));
         Assert.assertEquals(caps.getCapabilityHashSet().size(), 1);
-        Assert.assertEquals(Base64.getEncoder().encodeToString(caps.getCapabilityHashSet().iterator().next().getHashValue()), "u79ZroNJbdSWhdSp311mddz44oHHPsEBntQ5b1jqBSY=");
+        Assert.assertEquals(
+                Base64.getEncoder().encodeToString(caps.getCapabilityHashSet().iterator().next().getHashValue()),
+                "u79ZroNJbdSWhdSp311mddz44oHHPsEBntQ5b1jqBSY=");
     }
 }

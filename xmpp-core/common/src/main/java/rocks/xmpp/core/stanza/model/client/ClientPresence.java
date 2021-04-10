@@ -61,7 +61,8 @@ public final class ClientPresence extends Presence {
      * @param extensions The extensions.
      * @param error      The stanza error.
      */
-    private ClientPresence(Jid to, Type type, Show show, Collection<Text> status, Byte priority, String id, Jid from, Locale language, Collection<?> extensions, StanzaError error) {
+    private ClientPresence(Jid to, Type type, Show show, Collection<Text> status, Byte priority, String id, Jid from,
+                           Locale language, Collection<?> extensions, StanzaError error) {
         super(to, type, show, status, priority, id, from, language, extensions, error);
     }
 
@@ -75,6 +76,7 @@ public final class ClientPresence extends Presence {
         if (p instanceof ClientPresence) {
             return (ClientPresence) p;
         }
-        return new ClientPresence(p.getTo(), p.getType(), p.getShow(), p.getStatuses(), p.getPriority(), p.getId(), p.getFrom(), p.getLanguage(), p.getExtensions(), p.getError());
+        return new ClientPresence(p.getTo(), p.getType(), p.getShow(), p.getStatuses(), p.getPriority(), p.getId(),
+                p.getFrom(), p.getLanguage(), p.getExtensions(), p.getError());
     }
 }

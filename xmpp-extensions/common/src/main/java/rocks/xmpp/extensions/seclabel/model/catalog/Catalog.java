@@ -74,7 +74,8 @@ public final class Catalog {
         this(null, null, null, null, null, null, null, null);
     }
 
-    public Catalog(Jid to, Jid from, String name, String description, String id, Integer size, Boolean restrict, Collection<Item> items) {
+    public Catalog(Jid to, Jid from, String name, String description, String id, Integer size, Boolean restrict,
+                   Collection<Item> items) {
         this.to = to;
         this.from = from;
         this.name = name;
@@ -133,7 +134,8 @@ public final class Catalog {
     }
 
     /**
-     * If catalog is restrictive, the client SHOULD restrict the user to choosing one of the items from the catalog and use the label of that item (or no label if the selected item is empty).
+     * If catalog is restrictive, the client SHOULD restrict the user to choosing one of the items from the catalog and
+     * use the label of that item (or no label if the selected item is empty).
      *
      * @return True, if restrictive.
      */
@@ -162,7 +164,8 @@ public final class Catalog {
     /**
      * A catalog item.
      *
-     * <p>An item may have no security label. Such an item explicitly offers a choice of sending a stanza without a label. A non-restrictive catalog implicitly offers this choice when it does not contain an empty item.</p>
+     * <p>An item may have no security label. Such an item explicitly offers a choice of sending a stanza without a
+     * label. A non-restrictive catalog implicitly offers this choice when it does not contain an empty item.</p>
      */
     public static final class Item {
 
@@ -199,10 +202,14 @@ public final class Catalog {
         /**
          * Gets the selector.
          * <blockquote>
-         * <p>Items in the catalog may contain a selector= attribute. The value of this attribute represents the item's placement in a hierarchical organization of the items. If one item has a selector= attribute, all items should have a selector= attribute. The value of the selector= attribute conforms to the selector-value ABNF production:</p>
+         * <p>Items in the catalog may contain a selector= attribute. The value of this attribute represents the item's
+         * placement in a hierarchical organization of the items. If one item has a selector= attribute, all items
+         * should have a selector= attribute. The value of the selector= attribute conforms to the selector-value ABNF
+         * production:</p>
          * <p>{@code selector-value = (<item>"|")*<item>}</p>
          * <p>where {@code <item/>} is a sequence of characters not including "|".</p>
-         * <p>A value of "X|Y|Z" indicates that this item is "Z" in the the "Y" subset of the "X" subset of items. This information may be used, for instance, in generating label selection menus in graphical user interfaces.</p>
+         * <p>A value of "X|Y|Z" indicates that this item is "Z" in the the "Y" subset of the "X" subset of items. This
+         * information may be used, for instance, in generating label selection menus in graphical user interfaces.</p>
          * </blockquote>
          *
          * @return The selector.
@@ -214,7 +221,8 @@ public final class Catalog {
         /**
          * Whether this item is the default item.
          * <blockquote>
-         * <p>The client should default the label selection to this item in cases where the user has not selected an item.</p>
+         * <p>The client should default the label selection to this item in cases where the user has not selected an
+         * item.</p>
          * </blockquote>
          *
          * @return If this item is the default.

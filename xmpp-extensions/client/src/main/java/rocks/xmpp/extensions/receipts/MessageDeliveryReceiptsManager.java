@@ -46,28 +46,35 @@ import rocks.xmpp.util.XmppUtils;
  * <p>This manager automatically adds message delivery requests to outbound messages, if enabled.
  * If a message has been received by the recipient, registered listeners will be notified about the receipt.</p>
  *
- * <p>If an inbound message contains a delivery receipt request, a receipt is automatically sent back to the requesting entity.</p>
+ * <p>If an inbound message contains a delivery receipt request, a receipt is automatically sent back to the requesting
+ * entity.</p>
  *
- * <p>Note that messages must contain an id, in order to track receipts. If a message does not contain an id, requests won't be added.</p>
+ * <p>Note that messages must contain an id, in order to track receipts. If a message does not contain an id, requests
+ * won't be added.</p>
  *
  * <h3>Code sample</h3>
  *
  * <pre>{@code
- * MessageDeliveryReceiptsManager messageDeliveryReceiptsManager = xmppSession.getManager(MessageDeliveryReceiptsManager.class);
- * messageDeliveryReceiptsManager.addMessageDeliveredListener(e -> System.out.println("Message delivered: " + e.getMessageId()));
+ * MessageDeliveryReceiptsManager manager =xmppSession.getManager(MessageDeliveryReceiptsManager.class);
+ * manager.addMessageDeliveredListener(e -> System.out.println("Message delivered: " + e.getMessageId()));
  * }</pre>
  */
-public final class MessageDeliveryReceiptsManager extends Manager implements InboundMessageHandler, OutboundMessageHandler {
+public final class MessageDeliveryReceiptsManager extends Manager
+        implements InboundMessageHandler, OutboundMessageHandler {
 
     /**
      * A default filter for automatic receipt request on outbound messages.
      */
     private static final Predicate<Message> DEFAULT_FILTER = message ->
-            // A sender could request receipts on any non-error content message (chat, groupchat, headline, or normal) no matter if the recipient's address is a bare JID <localpart@domain.tld> or a full JID <localpart@domain.tld/resource>.
+            // A sender could request receipts on any non-error content message (chat, groupchat, headline, or normal)
+            // no matter if the recipient's address is a bare JID <localpart@domain.tld> or a full JID
+            // <localpart@domain.tld/resource>.
             message.getType() != Message.Type.ERROR
-                    // To prevent looping, an entity MUST NOT include a receipt request (i.e., the <request/> element) in an ack message (i.e., a message stanza that includes the <received/> element).
+                    // To prevent looping, an entity MUST NOT include a receipt request (i.e., the <request/> element)
+                    // in an ack message (i.e., a message stanza that includes the <received/> element).
                     && !message.hasExtension(MessageDeliveryReceipts.Received.class)
-                    // A sender MUST include an 'id' attribute on every content message that requests a receipt, so that the sender can properly track ack messages.
+                    // A sender MUST include an 'id' attribute on every content message that requests a receipt, so that
+                    // the sender can properly track ack messages.
                     && message.getId() != null
                     // The message must not have a request extension already.
                     && !message.hasExtension(MessageDeliveryReceipts.Request.class);
@@ -161,7 +168,9 @@ public final class MessageDeliveryReceiptsManager extends Manager implements Inb
         MessageDeliveryReceipts.Received received = message.getExtension(MessageDeliveryReceipts.Received.class);
         if (received != null) {
             // Notify the listeners about the reception.
-            XmppUtils.notifyEventListeners(messageDeliveredListeners, new MessageDeliveredEvent(MessageDeliveryReceiptsManager.this, received.getId(), DelayedDelivery.sendDate(message), message.getFrom()));
+            XmppUtils.notifyEventListeners(messageDeliveredListeners,
+                    new MessageDeliveredEvent(MessageDeliveryReceiptsManager.this, received.getId(),
+                            DelayedDelivery.sendDate(message), message.getFrom()));
         }
     }
 

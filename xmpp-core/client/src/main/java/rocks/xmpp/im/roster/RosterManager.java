@@ -70,20 +70,26 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * <h3>Roster Versioning</h3>
  *
  * <p>Because rosters can become quite large, but usually change infrequently, rosters can be cached on client side.
- * Hence before {@linkplain #requestRoster() requesting the roster}, it is checked if there's a cached version of your roster in the {@linkplain rocks.xmpp.core.session.XmppSessionConfiguration#getCacheDirectory() cache directory}.
- * If so, the server is informed about your version and will not send the full roster, but only "diffs" to your version, thus being more efficient.</p>
+ * Hence before {@linkplain #requestRoster() requesting the roster}, it is checked if there's a cached version of your
+ * roster in the {@linkplain rocks.xmpp.core.session.XmppSessionConfiguration#getCacheDirectory() cache directory}. If
+ * so, the server is informed about your version and will not send the full roster, but only "diffs" to your version,
+ * thus being more efficient.</p>
  *
  * <h3>Retrieving the Roster on Login</h3>
  *
- * <p>As per <a href="https://xmpp.org/rfcs/rfc6121.html#roster-login">RFC 6121</a> the roster should be retrieved on login.
- * This behavior can also be {@linkplain #setRetrieveRosterOnLogin(boolean) changed}.</p>
+ * <p>As per <a href="https://xmpp.org/rfcs/rfc6121.html#roster-login">RFC 6121</a> the roster should be retrieved on
+ * login. This behavior can also be {@linkplain #setRetrieveRosterOnLogin(boolean) changed}.</p>
  *
  * <h3>Nested Roster Groups</h3>
  *
- * <p><a href="https://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a> are supported, but are disabled by default, which means the group delimiter is not retrieved before {@linkplain #requestRoster() requesting the roster}.
- * You can {@linkplain #setAskForGroupDelimiter(boolean) change} this behavior or {@linkplain #setGroupDelimiter(String) set a group delimiter} without retrieving it from the server in case you want to use a fix roster group delimiter.</p>
+ * <p><a href="https://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a> are supported, but are
+ * disabled by default, which means the group delimiter is not retrieved before {@linkplain #requestRoster() requesting
+ * the roster}. You can {@linkplain #setAskForGroupDelimiter(boolean) change} this behavior or {@linkplain
+ * #setGroupDelimiter(String) set a group delimiter} without retrieving it from the server in case you want to use a fix
+ * roster group delimiter.</p>
  *
- * <p>You can listen for roster updates (aka roster pushes) and for initial roster retrieval, by {@linkplain #addRosterListener(Consumer) adding} a {@link Consumer}.</p>
+ * <p>You can listen for roster updates (aka roster pushes) and for initial roster retrieval, by {@linkplain
+ * #addRosterListener(Consumer) adding} a {@link Consumer}.</p>
  *
  * <p>This class is unconditionally thread-safe.</p>
  *
@@ -140,7 +146,8 @@ public final class RosterManager extends AbstractIQHandler {
         super(Roster.class, IQ.Type.SET);
         privateDataManager = xmppSession.getManager(PrivateDataManager.class);
         this.xmppSession = xmppSession;
-        this.rosterCacheDirectory = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("rosterver")) : null;
+        this.rosterCacheDirectory = xmppSession.getConfiguration().getCacheDirectory() != null
+                ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("rosterver")) : null;
     }
 
     /**
@@ -248,7 +255,8 @@ public final class RosterManager extends AbstractIQHandler {
                             currentGroupName.append(nestedGroupName);
                             ContactGroup nestedGroup = rosterGroupMap.get(currentGroupName.toString());
                             if (nestedGroup == null) {
-                                nestedGroup = new ContactGroup(nestedGroupName, currentGroupName.toString(), currentGroup);
+                                nestedGroup =
+                                        new ContactGroup(nestedGroupName, currentGroupName.toString(), currentGroup);
                                 rosterGroupMap.put(currentGroupName.toString(), nestedGroup);
                                 // Only add top level groups.
                                 if (i == 0) {
@@ -271,7 +279,8 @@ public final class RosterManager extends AbstractIQHandler {
                     }
                 }
                 removeContactByJid(contact, unaffiliatedContacts);
-                // Add the contact to the list of unaffiliated contacts, if it has no groups and it hasn't been removed from the roster.
+                // Add the contact to the list of unaffiliated contacts, if it has no groups and it hasn't been
+                // removed from the roster.
                 if (contact.getGroups().isEmpty() && contact.getSubscription() != Contact.Subscription.REMOVE) {
                     unaffiliatedContacts.add(contact);
                 }
@@ -279,7 +288,8 @@ public final class RosterManager extends AbstractIQHandler {
             }
             cacheRoster(roster.getVersion());
         }
-        XmppUtils.notifyEventListeners(rosterListeners, new RosterEvent(this, addedContacts, updatedContacts, removedContacts));
+        XmppUtils.notifyEventListeners(rosterListeners,
+                new RosterEvent(this, addedContacts, updatedContacts, removedContacts));
     }
 
     private void cacheRoster(String version) {
@@ -288,7 +298,9 @@ public final class RosterManager extends AbstractIQHandler {
             try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
                 XMLStreamWriter xmppStreamWriter = null;
                 try {
-                    xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmppSession.getConfiguration().getXmlOutputFactory().createXMLStreamWriter(outputStream, StandardCharsets.UTF_8.name()));
+                    xmppStreamWriter = XmppUtils.createXmppStreamWriter(
+                            xmppSession.getConfiguration().getXmlOutputFactory()
+                                    .createXMLStreamWriter(outputStream, StandardCharsets.UTF_8.name()));
                     xmppSession.createMarshaller().marshal(roster, xmppStreamWriter);
                     xmppStreamWriter.flush();
                 } finally {
@@ -296,7 +308,8 @@ public final class RosterManager extends AbstractIQHandler {
                         xmppStreamWriter.close();
                     }
                 }
-                rosterCacheDirectory.put(XmppUtils.hash(xmppSession.getConnectedResource().asBareJid().toString().getBytes(StandardCharsets.UTF_8)) + ".xml", outputStream.toByteArray());
+                rosterCacheDirectory.put(XmppUtils.hash(xmppSession.getConnectedResource().asBareJid().toString()
+                        .getBytes(StandardCharsets.UTF_8)) + ".xml", outputStream.toByteArray());
             } catch (Exception e) {
                 logger.log(System.Logger.Level.WARNING, "Could not write roster to cache.", e);
             }
@@ -306,9 +319,12 @@ public final class RosterManager extends AbstractIQHandler {
     private Roster readRosterFromCache() {
         if (rosterCacheDirectory != null) {
             try {
-                byte[] rosterData = rosterCacheDirectory.get(XmppUtils.hash(xmppSession.getConnectedResource().asBareJid().toString().getBytes(StandardCharsets.UTF_8)) + ".xml");
+                byte[] rosterData = rosterCacheDirectory.get(XmppUtils
+                        .hash(xmppSession.getConnectedResource().asBareJid().toString()
+                                .getBytes(StandardCharsets.UTF_8)) + ".xml");
                 if (rosterData != null) {
-                    try (Reader reader = new InputStreamReader(new ByteArrayInputStream(rosterData), StandardCharsets.UTF_8)) {
+                    try (Reader reader = new InputStreamReader(new ByteArrayInputStream(rosterData),
+                            StandardCharsets.UTF_8)) {
                         return (Roster) xmppSession.createUnmarshaller().unmarshal(reader);
                     }
                 }
@@ -428,8 +444,12 @@ public final class RosterManager extends AbstractIQHandler {
      * Controls, whether the roster is automatically retrieved as soon as the user has logged in.
      *
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#roster-login">2.2.  Retrieving the Roster on Login</a></cite></p>
-     * <p>Upon authenticating with a server and binding a resource (thus becoming a connected resource as defined in [XMPP-CORE]), a client SHOULD request the roster before sending initial presence (however, because receiving the roster is not necessarily desirable for all resources, e.g., a connection with limited bandwidth, the client's request for the roster is not mandatory).</p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#roster-login">2.2.  Retrieving the Roster on
+     * Login</a></cite></p>
+     * <p>Upon authenticating with a server and binding a resource (thus becoming a connected resource as defined in
+     * [XMPP-CORE]), a client SHOULD request the roster before sending initial presence (however, because receiving the
+     * roster is not necessarily desirable for all resources, e.g., a connection with limited bandwidth, the client's
+     * request for the roster is not mandatory).</p>
      * </blockquote>
      *
      * @param retrieveRosterOnLogin True, if the roster is automatically retrieved after login.
@@ -439,12 +459,15 @@ public final class RosterManager extends AbstractIQHandler {
     }
 
     /**
-     * Requests the roster from the server. When the server returns the result, the {@link Consumer} are notified.
-     * That means, you should first {@linkplain #addRosterListener(Consumer) register} a {@link Consumer} prior to calling this method.
+     * Requests the roster from the server. When the server returns the result, the {@link Consumer} are notified. That
+     * means, you should first {@linkplain #addRosterListener(Consumer) register} a {@link Consumer} prior to calling
+     * this method.
      *
-     * <p><a href="https://xmpp.org/rfcs/rfc6121.html#roster-versioning">Roster Versioning</a> is supported, which means that this method checks
-     * if there's a cached version of your roster in the {@linkplain rocks.xmpp.core.session.XmppSessionConfiguration#getCacheDirectory() cache directory}.
-     * If so and if Roster Versioning is supported by the server, the cached version is returned and any missing roster items are sent later by the server via roster pushes.</p>
+     * <p><a href="https://xmpp.org/rfcs/rfc6121.html#roster-versioning">Roster Versioning</a> is supported, which
+     * means that this method checks if there's a cached version of your roster in the {@linkplain
+     * rocks.xmpp.core.session.XmppSessionConfiguration#getCacheDirectory() cache directory}. If so and if Roster
+     * Versioning is supported by the server, the cached version is returned and any missing roster items are sent later
+     * by the server via roster pushes.</p>
      *
      * @return The async roster result.
      */
@@ -456,13 +479,16 @@ public final class RosterManager extends AbstractIQHandler {
             PrivateDataManager privateDataManager = xmppSession.getManager(PrivateDataManager.class);
             AsyncResult<RosterDelimiter> query = privateDataManager.getData(RosterDelimiter.class);
             rosterDelimiterQuery = query.exceptionally(e -> {
-                // Ignore the exception, so that the stage does not complete exceptionally. Log it instead and return a null delimiter.
+                // Ignore the exception, so that the stage does not complete exceptionally. Log it instead and return
+                // a null delimiter.
                 // An exception here should not prevent loading the roster and eventually the login process.
                 if (e != null) {
-                    logger.log(System.Logger.Level.WARNING, "Roster delimiter could not be retrieved from private storage.", e);
+                    logger.log(System.Logger.Level.WARNING,
+                            "Roster delimiter could not be retrieved from private storage.", e);
                 }
                 return null;
-            }).thenAccept(rosterDelimiter -> setGroupDelimiter(rosterDelimiter != null ? rosterDelimiter.getRosterDelimiter() : null));
+            }).thenAccept(rosterDelimiter -> setGroupDelimiter(
+                    rosterDelimiter != null ? rosterDelimiter.getRosterDelimiter() : null));
         } else {
             rosterDelimiterQuery = new AsyncResult<>(CompletableFuture.completedFuture(null));
         }
@@ -471,14 +497,20 @@ public final class RosterManager extends AbstractIQHandler {
             Roster rosterRequest;
             Roster cachedRoster = null;
             if (isRosterVersioningSupported()) {
-                // If a client supports roster versioning and the server to which it has connected advertises support for roster versioning as described in the foregoing section, then the client SHOULD include the 'ver' element in its request for the roster.
-                // If the client includes the 'ver' attribute in its roster get, it sets the attribute's value to the version ID associated with its last cache of the roster.
+                // If a client supports roster versioning and the server to which it has connected advertises support
+                // for roster versioning as described in the foregoing section, then the client SHOULD include the
+                // 'ver' element in its request for the roster.
+                // If the client includes the 'ver' attribute in its roster get, it sets the attribute's value to the
+                // version ID associated with its last cache of the roster.
                 cachedRoster = readRosterFromCache();
-                // If the client has not yet cached the roster or the cache is lost or corrupted, but the client wishes to bootstrap the use of roster versioning, it MUST set the 'ver' attribute to the empty string (i.e., ver="").
+                // If the client has not yet cached the roster or the cache is lost or corrupted, but the client wishes
+                // to bootstrap the use of roster versioning,
+                // it MUST set the 'ver' attribute to the empty string (i.e., ver="").
                 String ver = cachedRoster != null ? cachedRoster.getVersion() : "";
                 rosterRequest = new Roster(ver);
             } else {
-                // If the server does not advertise support for roster versioning, the client MUST NOT include the 'ver' attribute.
+                // If the server does not advertise support for roster versioning, the client MUST NOT include the
+                // 'ver' attribute.
                 rosterRequest = new Roster();
             }
             final Roster tempRoster = cachedRoster;
@@ -486,7 +518,8 @@ public final class RosterManager extends AbstractIQHandler {
             return xmppSession.query(IQ.get(rosterRequest)).thenApply(iq -> {
                 Roster rosterResult = iq.getExtension(Roster.class);
                 Roster currentRoster;
-                // null result means, the requested roster version (from cache) is taken and any updates (if any) are done via roster pushes.
+                // null result means, the requested roster version (from cache) is taken and any updates (if any)
+                // are done via roster pushes.
                 if (rosterResult != null) {
                     currentRoster = rosterResult;
                 } else {
@@ -503,7 +536,8 @@ public final class RosterManager extends AbstractIQHandler {
      *
      * @param contact             The contact.
      * @param requestSubscription If true, the contact is also sent a subscription request.
-     * @param status              The optional status text, which is sent together with a subscription request. May be null.
+     * @param status              The optional status text, which is sent together with a subscription request. May be
+     *                            null.
      * @return The async result.
      */
     public final AsyncResult<Void> addContact(Contact contact, boolean requestSubscription, String status) {
@@ -545,7 +579,8 @@ public final class RosterManager extends AbstractIQHandler {
      * @return The async result.
      */
     public final AsyncResult<Void> renameContactGroup(ContactGroup contactGroup, String name) {
-        // Make this method synchronized so that roster pushes (which will occur during this method) don't mess up with this logic here (because the ContactGroup objects are reused and modified).
+        // Make this method synchronized so that roster pushes (which will occur during this method) don't mess up with
+        // this logic here (because the ContactGroup objects are reused and modified).
         int depth = -1;
         // Determine the depth of this group.
         ContactGroup parentGroup = contactGroup;
@@ -590,15 +625,17 @@ public final class RosterManager extends AbstractIQHandler {
                 completionStages.add(updateContact(contact.withGroups(newGroups)));
             }
         }
-        completionStages.addAll(contactGroup.getGroups().stream().map(subGroup -> replaceGroupName(subGroup, name, index)).collect(Collectors.toList()));
+        completionStages
+                .addAll(contactGroup.getGroups().stream().map(subGroup -> replaceGroupName(subGroup, name, index))
+                        .collect(Collectors.toList()));
         return new AsyncResult<>(CompletableFuture.allOf(completionStages.stream()
                 .map(CompletionStage::toCompletableFuture)
                 .toArray(CompletableFuture<?>[]::new)));
     }
 
     /**
-     * Removes a contact group. If the group has sub groups, all sub groups are removed as well.
-     * All contacts in this group and all sub groups are moved to the parent group (if present) or to no group at all.
+     * Removes a contact group. If the group has sub groups, all sub groups are removed as well. All contacts in this
+     * group and all sub groups are moved to the parent group (if present) or to no group at all.
      *
      * @param contactGroup The contact group.
      * @return The async result.
@@ -608,8 +645,9 @@ public final class RosterManager extends AbstractIQHandler {
         CompletableFuture<?>[] completableFutures;
         if (contactGroup.getParentGroup() != null) {
             completableFutures = allContacts.stream()
-                    .map(contact -> updateContact(contact.withGroups(contactGroup.getParentGroup().getFullName())).thenRun(() -> {
-                    }).toCompletableFuture())
+                    .map(contact -> updateContact(contact.withGroups(contactGroup.getParentGroup().getFullName()))
+                            .thenRun(() -> {
+                            }).toCompletableFuture())
                     .toArray(CompletableFuture<?>[]::new);
         } else {
             completableFutures = allContacts.stream()
@@ -633,7 +671,8 @@ public final class RosterManager extends AbstractIQHandler {
     /**
      * Sets the group delimiter without storing it on the server.
      *
-     * <p>If this is set to a non-null value, contact groups are split by the specified delimiter in order to build a nested hierarchy of groups.</p></p>
+     * <p>If this is set to a non-null value, contact groups are split by the specified delimiter in order to build a
+     * nested hierarchy of groups.</p></p>
      *
      * @param groupDelimiter The group delimiter.
      * @see #storeGroupDelimiter(String)
@@ -689,13 +728,16 @@ public final class RosterManager extends AbstractIQHandler {
     protected IQ processRequest(IQ iq) {
         Roster roster = iq.getExtension(Roster.class);
         // 2.1.6.  Roster Push
-        // A receiving client MUST ignore the stanza unless it has no 'from' attribute (i.e., implicitly from the bare JID of the user's account) or it has a 'from' attribute whose value matches the user's bare JID <user@domainpart>.
+        // A receiving client MUST ignore the stanza unless it has no 'from' attribute (i.e., implicitly from the bare
+        // JID of the user's account) or it has a 'from' attribute whose value matches
+        // the user's bare JID <user@domainpart>.
         if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
             updateRoster(roster, true);
             // Gracefully send an empty result.
             return iq.createResult();
         } else {
-            // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data; in addition, the client can either return a stanza error of <service-unavailable/> error
+            // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data;
+            // in addition, the client can either return a stanza error of <service-unavailable/> error
             return iq.createError(Condition.SERVICE_UNAVAILABLE);
         }
     }

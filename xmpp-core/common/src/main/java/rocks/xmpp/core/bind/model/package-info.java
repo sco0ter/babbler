@@ -23,7 +23,8 @@
  */
 
 /**
- * Provides XML schema implementations of the <a href="https://xmpp.org/rfcs/rfc6120.html#schemas-bind">Resource Binding Namespace</a>.
+ * Provides XML schema implementations of the <a href="https://xmpp.org/rfcs/rfc6120.html#schemas-bind">Resource Binding
+ * Namespace</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-bind", elementFormDefault = XmlNsForm.QUALIFIED)

@@ -45,9 +45,11 @@ import rocks.xmpp.util.XmppStreamEncoder;
 /**
  * Encodes XMPP {@link StreamElement}s to WebSocket text messages.
  *
- * <p>The required {@link Marshaller} for encoding must be supplied via {@link EndpointConfig#getUserProperties()}, see {@link XmppWebSocketEncoder.UserProperties#MARSHALLER}.</p>
+ * <p>The required {@link Marshaller} for encoding must be supplied via {@link EndpointConfig#getUserProperties()}, see
+ * {@link XmppWebSocketEncoder.UserProperties#MARSHALLER}.</p>
  *
- * <p>Optionally you can also provide a callback, which is called after marshalling with the encoded text message (the XML string) and the stream element.
+ * <p>Optionally you can also provide a callback, which is called after marshalling with the encoded text message (the
+ * XML string) and the stream element.
  * This is useful for debugging purposes, see {@link UserProperties#ON_WRITE}.</p>
  *
  * @author Christian Schudt
@@ -73,17 +75,21 @@ public final class XmppWebSocketEncoder implements Encoder.TextStream<StreamElem
     @SuppressWarnings("unchecked")
     @Override
     public final void init(final EndpointConfig config) {
-        XMLOutputFactory xmlOutputFactory = (XMLOutputFactory) config.getUserProperties().get(UserProperties.XML_OUTPUT_FACTORY);
+        XMLOutputFactory xmlOutputFactory =
+                (XMLOutputFactory) config.getUserProperties().get(UserProperties.XML_OUTPUT_FACTORY);
         if (xmlOutputFactory == null) {
             xmlOutputFactory = XMLOutputFactory.newFactory();
         }
-        Supplier<Marshaller> marshaller = (Supplier<Marshaller>) config.getUserProperties().get(UserProperties.MARSHALLER);
+        Supplier<Marshaller> marshaller =
+                (Supplier<Marshaller>) config.getUserProperties().get(UserProperties.MARSHALLER);
         List<WriterInterceptor> writerInterceptors = new ArrayList<>();
-        Iterable<WriterInterceptor> additionalInterceptors = (Iterable<WriterInterceptor>) config.getUserProperties().get(UserProperties.ON_WRITE);
+        Iterable<WriterInterceptor> additionalInterceptors =
+                (Iterable<WriterInterceptor>) config.getUserProperties().get(UserProperties.ON_WRITE);
         if (additionalInterceptors != null) {
             additionalInterceptors.forEach(writerInterceptors::add);
         }
-        writerInterceptors.add(new XmppStreamEncoder(xmlOutputFactory, marshaller, streamElement -> streamElement instanceof StreamFeatures || streamElement instanceof StreamError));
+        writerInterceptors.add(new XmppStreamEncoder(xmlOutputFactory, marshaller,
+                streamElement -> streamElement instanceof StreamFeatures || streamElement instanceof StreamError));
         this.interceptors = writerInterceptors;
     }
 
@@ -97,7 +103,8 @@ public final class XmppWebSocketEncoder implements Encoder.TextStream<StreamElem
      */
     public static final class UserProperties {
         /**
-         * The property key to provide the required {@link Marshaller}. The value must be a {@code java.util.function.Supplier<Marshaller>}.
+         * The property key to provide the required {@link Marshaller}. The value must be a {@code
+         * java.util.function.Supplier<Marshaller>}.
          */
         public static final String MARSHALLER = "marshaller";
 
@@ -107,7 +114,8 @@ public final class XmppWebSocketEncoder implements Encoder.TextStream<StreamElem
         public static final String XML_OUTPUT_FACTORY = "xmlOutputFactory";
 
         /**
-         * The property to set an optional write callback. The value must be a {@code java.util.function.BiConsumer<String, StreamElement>}.
+         * The property to set an optional write callback. The value must be a {@code
+         * java.util.function.BiConsumer<String, StreamElement>}.
          */
         public static final String ON_WRITE = "onWrite";
 

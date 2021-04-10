@@ -70,6 +70,7 @@ public final class ServerIQ extends IQ {
      * @return The client IQ.
      */
     public static ServerIQ from(IQ iq) {
-        return new ServerIQ(iq.getTo(), iq.getType(), iq.getExtension(Object.class), iq.getId(), iq.getFrom(), iq.getLanguage(), iq.getError());
+        return new ServerIQ(iq.getTo(), iq.getType(), iq.getExtension(Object.class), iq.getId(), iq.getFrom(),
+                iq.getLanguage(), iq.getError());
     }
 }

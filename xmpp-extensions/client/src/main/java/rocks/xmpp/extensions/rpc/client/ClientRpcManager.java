@@ -39,7 +39,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 /**
  * This manager allows you to call remote procedures and handle inbound calls, if enabled.
  *
- * <p>By default this manager is disabled. If you want to support RPC (i.e. handle inbound calls) {@linkplain #setRpcHandler(RpcHandler) set a RPC handler}, which allows you to handle inbound calls.</p>
+ * <p>By default this manager is disabled. If you want to support RPC (i.e. handle inbound calls) {@linkplain
+ * #setRpcHandler(RpcHandler) set a RPC handler}, which allows you to handle inbound calls.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
@@ -62,7 +63,8 @@ public final class ClientRpcManager extends AbstractRpcManager {
                     Rpc.MethodResponse methodResponse = rpc.getMethodResponse();
                     if (methodResponse != null) {
                         if (methodResponse.getFault() != null) {
-                            throw new CompletionException(new RpcException(methodResponse.getFault().getFaultCode(), methodResponse.getFault().getFaultString()));
+                            throw new CompletionException(new RpcException(methodResponse.getFault().getFaultCode(),
+                                    methodResponse.getFault().getFaultString()));
                         }
                         return methodResponse.getResponse();
                     }

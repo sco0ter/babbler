@@ -31,8 +31,10 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <restricted-xml/>} stream error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-restricted-xml">4.9.3.18.  restricted-xml</a></cite></p>
- * <p>The entity has attempted to send restricted XML features such as a comment, processing instruction, DTD subset, or XML entity reference (see Section 11.1).</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-restricted-xml">4.9.3.18.
+ * restricted-xml</a></cite></p>
+ * <p>The entity has attempted to send restricted XML features such as a comment, processing instruction, DTD subset,
+ * or XML entity reference (see Section 11.1).</p>
  * </blockquote>
  * This class is a singleton.
  *

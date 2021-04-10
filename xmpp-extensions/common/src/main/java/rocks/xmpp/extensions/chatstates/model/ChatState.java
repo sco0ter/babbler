@@ -37,7 +37,8 @@ import javax.xml.bind.annotation.XmlType;
  * @see <a href="https://xmpp.org/extensions/xep-0085.html#schema">XML Schema</a>
  */
 @XmlTransient
-@XmlSeeAlso({ChatState.Active.class, ChatState.Composing.class, ChatState.Gone.class, ChatState.Inactive.class, ChatState.Paused.class})
+@XmlSeeAlso({ChatState.Active.class, ChatState.Composing.class, ChatState.Gone.class, ChatState.Inactive.class,
+        ChatState.Paused.class})
 public abstract class ChatState {
 
     /**
@@ -79,7 +80,8 @@ public abstract class ChatState {
     }
 
     /**
-     * The implementation of the {@code <active/>} element in the {@code http://jabber.org/protocol/chatstates} namespace, which represents an active chat state.
+     * The implementation of the {@code <active/>} element in the {@code http://jabber.org/protocol/chatstates}
+     * namespace, which represents an active chat state.
      */
     @XmlRootElement
     @XmlType(factoryMethod = "create")
@@ -94,7 +96,8 @@ public abstract class ChatState {
     }
 
     /**
-     * The implementation of the {@code <composing/>} element in the {@code http://jabber.org/protocol/chatstates} namespace, which represents a composing chat state.
+     * The implementation of the {@code <composing/>} element in the {@code http://jabber.org/protocol/chatstates}
+     * namespace, which represents a composing chat state.
      */
     @XmlRootElement
     @XmlType(factoryMethod = "create")
@@ -109,7 +112,8 @@ public abstract class ChatState {
     }
 
     /**
-     * The implementation of the {@code <gone/>} element in the {@code http://jabber.org/protocol/chatstates} namespace, which represents a gone chat state.
+     * The implementation of the {@code <gone/>} element in the {@code http://jabber.org/protocol/chatstates} namespace,
+     * which represents a gone chat state.
      */
     @XmlRootElement
     @XmlType(factoryMethod = "create")
@@ -124,7 +128,8 @@ public abstract class ChatState {
     }
 
     /**
-     * The implementation of the {@code <inactive/>} element in the {@code http://jabber.org/protocol/chatstates} namespace, which represents an inactive chat state.
+     * The implementation of the {@code <inactive/>} element in the {@code http://jabber.org/protocol/chatstates}
+     * namespace, which represents an inactive chat state.
      */
     @XmlRootElement
     @XmlType(factoryMethod = "create")
@@ -139,7 +144,8 @@ public abstract class ChatState {
     }
 
     /**
-     * The implementation of the {@code <paused/>} element in the {@code http://jabber.org/protocol/chatstates} namespace, which represents a paused chat state.
+     * The implementation of the {@code <paused/>} element in the {@code http://jabber.org/protocol/chatstates}
+     * namespace, which represents a paused chat state.
      */
     @XmlRootElement
     @XmlType(factoryMethod = "create")

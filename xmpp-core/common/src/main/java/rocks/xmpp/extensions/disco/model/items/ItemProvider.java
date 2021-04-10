@@ -40,11 +40,11 @@ import rocks.xmpp.extensions.rsm.ResultSetProvider;
 public interface ItemProvider {
 
     /**
-     * Provides the result set of items, in order to manage the result set returned to the requesting entity.
-     * Requesting entities may include result set information in their request, e.g. to limit the returned items.
+     * Provides the result set of items, in order to manage the result set returned to the requesting entity. Requesting
+     * entities may include result set information in their request, e.g. to limit the returned items.
      *
-     * <p>If this method returns null and not other providers are found which return a non-null result for the same parameters,
-     * then {@link Condition#ITEM_NOT_FOUND} is returned to the requesting entity.</p>
+     * <p>If this method returns null and not other providers are found which return a non-null result for the same
+     * parameters, then {@link Condition#ITEM_NOT_FOUND} is returned to the requesting entity.</p>
      *
      * @param to     The receiving entity.
      * @param from   The requesting entity.
@@ -53,5 +53,6 @@ public interface ItemProvider {
      * @return The result set provider or null, if no result set can be returned for the given parameters.
      * @throws StanzaErrorException If an error should be returned to the requesting entity.
      */
-    ResultSetProvider<DiscoverableItem> getItems(Jid to, Jid from, String node, Locale locale) throws StanzaErrorException;
+    ResultSetProvider<DiscoverableItem> getItems(Jid to, Jid from, String node, Locale locale)
+            throws StanzaErrorException;
 }

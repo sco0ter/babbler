@@ -37,7 +37,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#roster-syntax">2.1.  Syntax and Semantics</a></cite></p>
- * <p>Rosters are managed using {@code <iq/>} stanzas (see Section 8.2.3 of [XMPP-CORE]), specifically by means of a {@code <query/>} child element qualified by the 'jabber:iq:roster' namespace. The detailed syntax and semantics are defined in the following sections.</p>
+ * <p>Rosters are managed using {@code <iq/>} stanzas (see Section 8.2.3 of [XMPP-CORE]), specifically by means of a
+ * {@code <query/>} child element qualified by the 'jabber:iq:roster' namespace. The detailed syntax and semantics are
+ * defined in the following sections.</p>
  * </blockquote>
  *
  * <p>This class is immutable.</p>

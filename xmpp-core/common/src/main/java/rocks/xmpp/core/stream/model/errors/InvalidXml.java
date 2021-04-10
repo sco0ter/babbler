@@ -30,7 +30,8 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <invalid-xml/>} stream error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-invalid-xml">4.9.3.11.  invalid-xml</a></cite></p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-invalid-xml">4.9.3.11.
+ * invalid-xml</a></cite></p>
  * <p>The entity has sent invalid XML over the stream to a server that performs validation (see Section 11.4).</p>
  * </blockquote>
  * This class is a singleton.

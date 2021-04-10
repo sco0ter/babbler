@@ -4,15 +4,18 @@ import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
- * Converts a zero-length byte array to a single equals sign ("=") instead to an empty string (as the default Base64 would treat it).
+ * Converts a zero-length byte array to a single equals sign ("=") instead to an empty string (as the default Base64
+ * would treat it).
  *
  * <p>An equals sign is converted to a zero-length byte array.</p>
  *
  * <p>This is a special behavior for SASL authentication as per the XMPP specification:</p>
  *
  * <blockquote>
- * <p>If the initiating entity needs to send a zero-length initial response, it MUST transmit the response as a single equals sign character ("="), which indicates that the response is present but contains no data.</p>
- * <p>If the receiving entity needs to send additional data of zero length, it MUST transmit the data as a single equals sign character ("=").</p>
+ * <p>If the initiating entity needs to send a zero-length initial response, it MUST transmit the response as a single
+ * equals sign character ("="), which indicates that the response is present but contains no data.</p>
+ * <p>If the receiving entity needs to send additional data of zero length, it MUST transmit the data as a single
+ * equals sign character ("=").</p>
  * </blockquote>
  *
  * @author Christian Schudt

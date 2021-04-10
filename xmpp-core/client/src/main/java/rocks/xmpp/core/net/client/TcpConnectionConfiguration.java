@@ -73,14 +73,17 @@ public abstract class TcpConnectionConfiguration<T> extends ClientConnectionConf
      * @return The connection.
      * @throws Exception If any exception occurs when creating and connecting.
      */
-    protected final Connection createConnection(XmppSession xmppSession, Function<T, TcpBinding> creator) throws Exception {
+    protected final Connection createConnection(XmppSession xmppSession, Function<T, TcpBinding> creator)
+            throws Exception {
         T socket;
         final AtomicBoolean useDirectTls = new AtomicBoolean(getChannelEncryption() == ChannelEncryption.DIRECT);
         if (getHostname() != null && !getHostname().isEmpty()) {
             socket = connect(getHostname(), getPort());
         } else if (xmppSession.getDomain() != null) {
-            if ((socket = connectWithXmppServiceDomain(xmppSession.getDomain(), xmppSession.getConfiguration().getNameServer(), useDirectTls::set)) == null) {
-                // 9. If the initiating entity does not receive a response to its SRV query, it SHOULD attempt the fallback process described in the next section.
+            if ((socket = connectWithXmppServiceDomain(xmppSession.getDomain(),
+                    xmppSession.getConfiguration().getNameServer(), useDirectTls::set)) == null) {
+                // 9. If the initiating entity does not receive a response to its SRV query, it SHOULD attempt the
+                // fallback process described in the next section.
                 socket = connect(xmppSession.getDomain().toString(), getPort());
             }
         } else {
@@ -112,31 +115,39 @@ public abstract class TcpConnectionConfiguration<T> extends ClientConnectionConf
      * @return The socket or null, if the connection could not be established.
      * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">3.2.1.  Preferred Process: SRV Lookup</a>
      */
-    private T connectWithXmppServiceDomain(final Jid xmppServiceDomain, final String nameServer, final Consumer<Boolean> isDirectTls) {
+    private T connectWithXmppServiceDomain(final Jid xmppServiceDomain, final String nameServer,
+                                           final Consumer<Boolean> isDirectTls) {
 
         // 1. The initiating entity constructs a DNS SRV query whose inputs are:
         //
-        //   * Service of "xmpp-client" (for client-to-server connections) or "xmpp-server" (for server-to-server connections)
+        //   * Service of "xmpp-client" (for client-to-server connections) or "xmpp-server"
+        //   (for server-to-server connections)
         try {
 
             final List<SrvRecord> srvRecords = new ArrayList<>();
             if (getChannelEncryption() != ChannelEncryption.DIRECT) {
                 // Don't lookup unencrypted end points, if only direct TLS is allowed.
-                srvRecords.addAll(DnsResolver.resolveSRV("xmpp-client", xmppServiceDomain, nameServer, getConnectTimeout()));
+                srvRecords.addAll(DnsResolver
+                        .resolveSRV("xmpp-client", xmppServiceDomain, nameServer, getConnectTimeout()));
             }
             final List<SrvRecord> srvRecordsXmpps = new ArrayList<>();
             if (getChannelEncryption() != ChannelEncryption.DISABLED) {
                 // Only resolve SRV if TLS is not disabled.
-                srvRecordsXmpps.addAll(DnsResolver.resolveSRV("xmpps-client", xmppServiceDomain, nameServer, getConnectTimeout()));
+                srvRecordsXmpps.addAll(DnsResolver
+                        .resolveSRV("xmpps-client", xmppServiceDomain, nameServer, getConnectTimeout()));
             }
             srvRecords.addAll(srvRecordsXmpps);
-            // 3. If a response is received, it will contain one or more combinations of a port and FDQN, each of which is weighted and prioritized as described in [DNS-SRV].
+            // 3. If a response is received, it will contain one or more combinations of a port and FDQN,
+            // each of which is weighted and prioritized as described in [DNS-SRV].
             // Sort the entries, so that the best one is tried first.
             srvRecords.sort(null);
             IOException ex = null;
             for (SrvRecord srvRecord : srvRecords) {
                 if (srvRecord != null) {
-                    // (However, if the result of the SRV lookup is a single resource record with a Target of ".", i.e., the root domain, then the initiating entity MUST abort SRV processing at this point because according to [DNS-SRV] such a Target "means that the service is decidedly not available at this domain".)
+                    // (However, if the result of the SRV lookup is a single resource record with a Target of ".",
+                    // i.e., the root domain, then the initiating entity MUST abort SRV processing at this point
+                    // because according to [DNS-SRV] such a Target "means that the service is decidedly
+                    // not available at this domain".)
                     if (".".equals(srvRecord.getTarget())) {
                         if (srvRecordsXmpps.contains(srvRecord)) {
                             // Direct TLS is not supported, in this case try the non-direct-TLS targets.
@@ -147,22 +158,32 @@ public abstract class TcpConnectionConfiguration<T> extends ClientConnectionConf
                     }
 
                     try {
-                        // 4. The initiating entity chooses at least one of the returned FQDNs to resolve (following the rules in [DNS-SRV]), which it does by performing DNS "A" or "AAAA" lookups on the FDQN; this will result in an IPv4 or IPv6 address.
-                        // 5. The initiating entity uses the IP address(es) from the successfully resolved FDQN (with the corresponding port number returned by the SRV lookup) as the connection address for the receiving entity.
-                        // 6. If the initiating entity fails to connect using that IP address but the "A" or "AAAA" lookups returned more than one IP address, then the initiating entity uses the next resolved IP address for that FDQN as the connection address.
+                        // 4. The initiating entity chooses at least one of the returned FQDNs to resolve
+                        // (following the rules in [DNS-SRV]), which it does by performing DNS "A" or "AAAA" lookups
+                        // on the FDQN; this will result in an IPv4 or IPv6 address.
+                        // 5. The initiating entity uses the IP address(es) from the successfully resolved FDQN
+                        // (with the corresponding port number returned by the SRV lookup) as the connection address
+                        // for the receiving entity.
+                        // 6. If the initiating entity fails to connect using that IP address but the "A" or "AAAA"
+                        // lookups returned more than one IP address, then the initiating entity uses the next resolved
+                        // IP address for that FDQN as the connection address.
                         T socket = connect(srvRecord.getTarget(), srvRecord.getPort());
                         if (srvRecordsXmpps.contains(srvRecord)) {
                             isDirectTls.accept(true);
                         }
                         return socket;
                     } catch (IOException e) {
-                        // 7. If the initiating entity fails to connect using all resolved IP addresses for a given FDQN, then it repeats the process of resolution and connection for the next FQDN returned by the SRV lookup based on the priority and weight as defined in [DNS-SRV].
+                        // 7. If the initiating entity fails to connect using all resolved IP addresses for a given
+                        // FDQN, then it repeats the process of resolution and connection for the next FQDN returned by
+                        // the SRV lookup based on the priority and weight as defined in [DNS-SRV].
                         ex = e;
                     }
                 }
             }
 
-            // 8. If the initiating entity receives a response to its SRV query but it is not able to establish an XMPP connection using the data received in the response, it SHOULD NOT attempt the fallback process described in the next section (this helps to prevent a state mismatch between inbound and outbound connections).
+            // 8. If the initiating entity receives a response to its SRV query but it is not able to establish an XMPP
+            // connection using the data received in the response, it SHOULD NOT attempt the fallback process described
+            // in the next section (this helps to prevent a state mismatch between inbound and outbound connections).
             if (!srvRecords.isEmpty()) {
                 throw new IOException("Could not connect to any host.", ex);
             }
@@ -188,7 +209,8 @@ public abstract class TcpConnectionConfiguration<T> extends ClientConnectionConf
         }
 
         /**
-         * Sets the whitespace keep-alive interval in seconds. If the interval is negative, no whitespace will be sent at all.
+         * Sets the whitespace keep-alive interval in seconds. If the interval is negative, no whitespace will be sent
+         * at all.
          *
          * @param keepAliveInterval The whitespace keep-alive interval.
          * @return The builder.

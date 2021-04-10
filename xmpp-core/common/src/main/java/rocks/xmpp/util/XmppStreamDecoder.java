@@ -76,13 +76,15 @@ public class XmppStreamDecoder implements ReaderInterceptor {
     /**
      * Creates the XMPP encoder.
      *
-     * <p>Because {@link Marshaller} is not thread-safe, it is recommended to pass a {@code ThreadLocal<Marshaller>} to this constructor, which ensures thread-safety during marshalling.</p>
+     * <p>Because {@link Marshaller} is not thread-safe, it is recommended to pass a {@code ThreadLocal<Marshaller>} to
+     * this constructor, which ensures thread-safety during marshalling.</p>
      *
      * @param inputFactory The XML input factory.
      * @param unmarshaller Supplies the marshaller which will convert objects to XML.
      * @param namespace    If the stream namespace should be written in the root element.
      */
-    public XmppStreamDecoder(final XMLInputFactory inputFactory, final Supplier<Unmarshaller> unmarshaller, final String namespace) {
+    public XmppStreamDecoder(final XMLInputFactory inputFactory, final Supplier<Unmarshaller> unmarshaller,
+                             final String namespace) {
         this.unmarshaller = unmarshaller;
         this.inputFactory = inputFactory;
         this.namespace = namespace;
@@ -95,7 +97,8 @@ public class XmppStreamDecoder implements ReaderInterceptor {
      * @param reader                The writer to write to.
      * @throws StreamErrorException If the element could not be marshalled.
      */
-    public final void decode(final Reader reader, Consumer<StreamElement> streamElementConsumer) throws StreamErrorException {
+    public final void decode(final Reader reader, Consumer<StreamElement> streamElementConsumer)
+            throws StreamErrorException {
         XMLEventReader xmlEventReader = null;
         try {
             try {
@@ -108,7 +111,8 @@ public class XmppStreamDecoder implements ReaderInterceptor {
                         case XMLStreamConstants.START_ELEMENT:
 
                             StartElement startElement = xmlEvent.asStartElement();
-                            if (StreamHeader.LOCAL_NAME.equals(startElement.getName().getLocalPart()) && StreamHeader.STREAM_NAMESPACE.equals(startElement.getName().getNamespaceURI())) {
+                            if (StreamHeader.LOCAL_NAME.equals(startElement.getName().getLocalPart())
+                                    && StreamHeader.STREAM_NAMESPACE.equals(startElement.getName().getNamespaceURI())) {
                                 Attribute idAttribute = startElement.getAttributeByName(STREAM_ID);
                                 final Attribute fromAttribute = startElement.getAttributeByName(FROM);
                                 final Attribute toAttribute = startElement.getAttributeByName(TO);
@@ -118,13 +122,15 @@ public class XmppStreamDecoder implements ReaderInterceptor {
                                 final Jid to = toAttribute != null ? Jid.ofEscaped(toAttribute.getValue()) : null;
                                 final String id = idAttribute != null ? idAttribute.getValue() : null;
                                 final String version = versionAttribute != null ? versionAttribute.getValue() : null;
-                                final Locale lang = langAttribute != null ? Locale.forLanguageTag(langAttribute.getValue()) : null;
+                                final Locale lang =
+                                        langAttribute != null ? Locale.forLanguageTag(langAttribute.getValue()) : null;
                                 streamHeader = StreamHeader.create(from, to, id, version, lang, namespace);
                                 streamElementConsumer.accept(streamHeader);
                                 xmlEventReader.nextEvent();
                             } else {
                                 if (streamHeader != null) {
-                                    unmarshaller.get().setListener(new LanguageUnmarshallerListener(streamHeader.getLanguage()));
+                                    unmarshaller.get()
+                                            .setListener(new LanguageUnmarshallerListener(streamHeader.getLanguage()));
                                 }
                                 StreamElement object = (StreamElement) unmarshaller.get().unmarshal(xmlEventReader);
                                 streamElementConsumer.accept(object);
@@ -164,7 +170,8 @@ public class XmppStreamDecoder implements ReaderInterceptor {
     }
 
     @Override
-    public void process(Reader reader, Consumer<StreamElement> streamElement, ReaderInterceptorChain chain) throws Exception {
+    public void process(Reader reader, Consumer<StreamElement> streamElement, ReaderInterceptorChain chain)
+            throws Exception {
         decode(reader, streamElement);
         chain.proceed(reader, streamElement);
     }

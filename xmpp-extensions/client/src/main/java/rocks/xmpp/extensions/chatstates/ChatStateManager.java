@@ -43,10 +43,12 @@ import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
- * This class manages Chat State Notifications, which are used to communicate the status of a user in a chat session, thus indicating whether a chat partner is actively engaged in the chat, composing a message, temporarily paused, inactive, or gone.
- * Chat states can be used in the context of a one-to-one chat session or a multi-user chat room.
+ * This class manages Chat State Notifications, which are used to communicate the status of a user in a chat session,
+ * thus indicating whether a chat partner is actively engaged in the chat, composing a message, temporarily paused,
+ * inactive, or gone. Chat states can be used in the context of a one-to-one chat session or a multi-user chat room.
  *
- * <p>Because the Chat State protocol is relatively simple, the primary purpose of this manager is to enable or disable the Chat State protocol for Service Discovery purposes.</p>
+ * <p>Because the Chat State protocol is relatively simple, the primary purpose of this manager is to enable or disable
+ * the Chat State protocol for Service Discovery purposes.</p>
  *
  * <p>Furthermore it ensures that every sent message has a chat state notification as required by XEP-0085.</p>
  *
@@ -61,7 +63,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  *
  * <h3>Receiving Chat States</h3>
  *
- * <p>If you want to react to chat states of your chat partner(s), just check for chat state extension and deal with it accordingly.</p>
+ * <p>If you want to react to chat states of your chat partner(s), just check for chat state extension and deal with it
+ * accordingly.</p>
  *
  * <pre>{@code
  * ChatState chatState = message.getExtension(ChatState.class);
@@ -104,8 +107,8 @@ public final class ChatStateManager extends Manager implements InboundMessageHan
     }
 
     /**
-     * Sets the chat state for a chat. If this manager is disabled this method has no effect.
-     * Before sending chat states in a one-to-one chat, you should check, if the peer supports it, e.g. like that:
+     * Sets the chat state for a chat. If this manager is disabled this method has no effect. Before sending chat states
+     * in a one-to-one chat, you should check, if the peer supports it, e.g. like that:
      * <pre>{@code
      * chatStateManager.isSupported(chat.getChatPartner()).thenAccept(result -> {
      * if (result) {
@@ -116,11 +119,13 @@ public final class ChatStateManager extends Manager implements InboundMessageHan
      *
      * @param chatState The chat state.
      * @param chat      The chat.
-     * @return True, if the chat state has been sent; false, if it has not been sent (e.g. because it is known that the chat partner does not support chat states).
+     * @return True, if the chat state has been sent; false, if it has not been sent (e.g. because it is known that the
+     * chat partner does not support chat states).
      */
     public final boolean setChatState(ChatState chatState, Chat chat) {
         if (!isEnabled()) {
-            throw new IllegalStateException("Chat States aren't enabled. Please enable them before sending chat states.");
+            throw new IllegalStateException(
+                    "Chat States aren't enabled. Please enable them before sending chat states.");
         }
 
         // Avoid repetition.
@@ -168,9 +173,12 @@ public final class ChatStateManager extends Manager implements InboundMessageHan
         // This protocol SHOULD NOT be used with message types other than "chat" or "groupchat".
         if (message.getType() == Message.Type.CHAT || message.getType() == Message.Type.GROUPCHAT) {
             if (message.getType() != Message.Type.GROUPCHAT) {
-                // Check if the contact supports chat states and update the map. If it does, it must include a chat state extension:
-                // 2. If the Contact replies but does not include a chat state notification extension, the User MUST NOT send subsequent chat state notifications to the Contact.
-                // 3. If the Contact replies and includes an <active/> notification (or sends a standalone notification to the User), the User and Contact SHOULD send subsequent notifications
+                // Check if the contact supports chat states and update the map. If it does, it must include a chat
+                // state extension:
+                // 2. If the Contact replies but does not include a chat state notification extension, the User MUST NOT
+                // send subsequent chat state notifications to the Contact.
+                // 3. If the Contact replies and includes an <active/> notification (or sends a standalone notification
+                // to the User), the User and Contact SHOULD send subsequent notifications
                 contactSupportsChatStateNotifications.put(message.getFrom(), message.hasExtension(ChatState.class));
             }
         }
@@ -182,11 +190,17 @@ public final class ChatStateManager extends Manager implements InboundMessageHan
         // This protocol SHOULD NOT be used with message types other than "chat" or "groupchat".
         if (message.getType() == Message.Type.CHAT || message.getType() == Message.Type.GROUPCHAT) {
             if (!e.isInbound()) {
-                // Append an <active/> chat state to every outbound content message (with <body> or <html> extension), if it doesn't contain a chat state yet
+                // Append an <active/> chat state to every outbound content message (with <body> or <html> extension),
+                // if it doesn't contain a chat state yet
                 // and the recipient supports chat states or it is unknown if he supports them.
-                if (!message.hasExtension(ChatState.class) && ((message.getBody() != null && !message.getBody().trim().equals("")) || message.hasExtension(Html.class))) {
-                    // If either support of chat states is unknown (== null) or it's known to be supported (== true), include an active chat state.
-                    // (1. If the User desires chat state notifications, the message(s) that it sends to the Contact before receiving a reply MUST contain a chat state notification extension, which SHOULD be <active/>.)
+                if (!message.hasExtension(ChatState.class) && (
+                        (message.getBody() != null && !message.getBody().trim().equals("")) || message
+                                .hasExtension(Html.class))) {
+                    // If either support of chat states is unknown (== null) or it's known to be supported (== true),
+                    // include an active chat state.
+                    // (1. If the User desires chat state notifications, the message(s) that it sends to the Contact
+                    // before receiving a reply MUST contain a chat state notification extension,
+                    // which SHOULD be <active/>.)
                     Boolean isSupportedByPeer = contactSupportsChatStateNotifications.get(message.getTo());
                     if (isSupportedByPeer == null || isSupportedByPeer) {
                         message.putExtension(ChatState.ACTIVE);

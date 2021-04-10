@@ -38,19 +38,26 @@ public enum AccessModel {
      */
     AUTHORIZE,
     /**
-     * Any entity may subscribe to the node (i.e., without the necessity for subscription approval) and any entity may retrieve items from the node (i.e., without being subscribed); this SHOULD be the default access model for generic pubsub services.
+     * Any entity may subscribe to the node (i.e., without the necessity for subscription approval) and any entity may
+     * retrieve items from the node (i.e., without being subscribed); this SHOULD be the default access model for
+     * generic pubsub services.
      */
     OPEN,
     /**
-     * Any entity in the specified roster group(s) may subscribe to the node and retrieve items from the node; this access model applies mainly to instant messaging systems.
+     * Any entity in the specified roster group(s) may subscribe to the node and retrieve items from the node; this
+     * access model applies mainly to instant messaging systems.
      */
     PRESENCE,
     /**
-     * Any entity in the specified roster group(s) may subscribe to the node and retrieve items from the node; this access model applies mainly to instant messaging systems.
+     * Any entity in the specified roster group(s) may subscribe to the node and retrieve items from the node; this
+     * access model applies mainly to instant messaging systems.
      */
     ROSTER,
     /**
-     * An entity may subscribe or retrieve items only if on a whitelist managed by the node owner. The node owner MUST automatically be on the whitelist. In order to add entities to the whitelist, the node owner SHOULD use the protocol specified in the Manage Affiliated Entities section of this document, specifically by setting the affiliation to "member".
+     * An entity may subscribe or retrieve items only if on a whitelist managed by the node owner. The node owner MUST
+     * automatically be on the whitelist. In order to add entities to the whitelist, the node owner SHOULD use the
+     * protocol specified in the Manage Affiliated Entities section of this document, specifically by setting the
+     * affiliation to "member".
      */
     WHITELIST
 }

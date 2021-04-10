@@ -35,11 +35,16 @@ import rocks.xmpp.core.stanza.model.Presence;
 /**
  * Handles inbound presence information.
  *
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-initial-inbound">4.2.3.  Server Processing of Inbound Initial Presence</a>
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-probe-inbound">4.3.2.  Server Processing of Inbound Presence Probe</a>
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-broadcast-inbound">4.4.3.  Server Processing of Subsequent Inbound Presence</a>
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-unavailable-inbound">4.5.3.  Server Processing of Inbound Unavailable Presence</a>
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-directed-inbound">4.6.4.  Server Processing of Inbound Directed Presence</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-initial-inbound">4.2.3.  Server Processing of Inbound
+ * Initial Presence</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-probe-inbound">4.3.2.  Server Processing of Inbound
+ * Presence Probe</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-broadcast-inbound">4.4.3.  Server Processing of Subsequent
+ * Inbound Presence</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-unavailable-inbound">4.5.3.  Server Processing of Inbound
+ * Unavailable Presence</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-directed-inbound">4.6.4.  Server Processing of Inbound
+ * Directed Presence</a>
  */
 @ApplicationScoped
 public class InboundPresenceInformationHandler implements InboundPresenceHandler {
@@ -53,24 +58,29 @@ public class InboundPresenceInformationHandler implements InboundPresenceHandler
             // Actually all presences which are processed here should have a 'to' attribute.
             if (presence.getTo().isBareJid()) {
                 // RFC 6121 § 8.5.2.1.2.  Presence
-                // For a presence stanza with no type or of type "unavailable", the server MUST deliver it to all available resources.
+                // For a presence stanza with no type or of type "unavailable", the server MUST deliver it to all
+                // available resources.
                 if (presence.isAvailable()) {
                     sessionManager.getUserSessions(presence.getTo()).forEach(session -> session.send(presence));
                 } else if (presence.getType() == Presence.Type.UNAVAILABLE) {
                     sessionManager.getUserSessions(presence.getTo()).forEach(session -> session.send(presence));
-                    // TODO If the contact's server does not broadcast subsequent presence notifications to users who are offline (as described under Section 4.4.2), it MUST also update its internal representation of which entities are online by noting that the user is unavailable.
+                    // TODO If the contact's server does not broadcast subsequent presence notifications to users who
+                    //  are offline (as described under Section 4.4.2), it MUST also update its internal representation
+                    //  of which entities are online by noting that the user is unavailable.
                 }
             } else if (presence.isAvailable() || presence.getType() == Presence.Type.UNAVAILABLE) {
                 // RFC 6121 8.5.3.  localpart@domainpart/resourcepart
                 Session session = sessionManager.getSession(presence.getTo());
                 if (session != null) {
                     // RFC 6121 § 8.5.3.1.  Resource Matches
-                    // For a presence stanza with no 'type' attribute or a 'type' attribute of "unavailable", the server MUST deliver the stanza to the resource.
+                    // For a presence stanza with no 'type' attribute or a 'type' attribute of "unavailable", the server
+                    // MUST deliver the stanza to the resource.
                     session.send(presence);
                 }
                 // else:
                 // RFC 6121 § 8.5.3.2.2.  Presence
-                // For a presence stanza with no 'type' attribute or a 'type' attribute of "unavailable", the server MUST silently ignore the stanza.
+                // For a presence stanza with no 'type' attribute or a 'type' attribute of "unavailable", the server
+                // MUST silently ignore the stanza.
             }
         }
     }

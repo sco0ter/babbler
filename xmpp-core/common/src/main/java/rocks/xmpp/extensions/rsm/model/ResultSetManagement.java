@@ -59,7 +59,8 @@ public final class ResultSetManagement {
         this(null, null, null, null, null, null, null);
     }
 
-    private ResultSetManagement(Integer max, String after, String before, Integer count, First first, Integer index, String last) {
+    private ResultSetManagement(Integer max, String after, String before, Integer count, First first, Integer index,
+                                String last) {
         this.max = max;
         this.after = after;
         this.before = before;
@@ -70,7 +71,8 @@ public final class ResultSetManagement {
     }
 
     /**
-     * Creates the result set request for the next page. It requires that this result set management has a "last item" set, otherwise the last page is requested.
+     * Creates the result set request for the next page. It requires that this result set management has a "last item"
+     * set, otherwise the last page is requested.
      *
      * @param max The number of items in the page.
      * @return The result set management for requesting the next page.
@@ -83,7 +85,8 @@ public final class ResultSetManagement {
     }
 
     /**
-     * Creates the result set request for the previous page. It requires that this result set management has a "first item" set, otherwise the first page is requested.
+     * Creates the result set request for the previous page. It requires that this result set management has a "first
+     * item" set, otherwise the first page is requested.
      *
      * @param max The number of items in the page.
      * @return The result set management for requesting the previous page.
@@ -110,7 +113,8 @@ public final class ResultSetManagement {
      * Gets a result set, which requests the next page after a specified item.
      *
      * @param max The item count per page.
-     * @param id  The id of the last item of the previous page. This should be the {@link #getLastItem()} ()} of the previous page.
+     * @param id  The id of the last item of the previous page. This should be the {@link #getLastItem()} ()} of the
+     *            previous page.
      * @return The result set.
      * @see <a href="https://xmpp.org/extensions/xep-0059.html#forwards">2.2 Paging Forwards Through a Result Set</a>
      */
@@ -122,7 +126,8 @@ public final class ResultSetManagement {
      * Gets a result set, which requests the previous page before a specified item.
      *
      * @param max The item count per page.
-     * @param id  The id of the first item of the next page. This should be the {@link #getFirstItem()} of the next page.
+     * @param id  The id of the first item of the next page. This should be the {@link #getFirstItem()} of the next
+     *            page.
      * @return The result set.
      * @see <a href="https://xmpp.org/extensions/xep-0059.html#backwards">2.3 Paging Backwards Through a Result Set</a>
      */
@@ -165,7 +170,8 @@ public final class ResultSetManagement {
     }
 
     /**
-     * Gets a result set, which has a count information, including first and last item. The result set is intended for the response.
+     * Gets a result set, which has a count information, including first and last item. The result set is intended for
+     * the response.
      *
      * @param count The item count per page.
      * @param index The index of the first item.

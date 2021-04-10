@@ -43,7 +43,8 @@ public class MultiUserChatOwnerTest extends XmlTest {
     public void marshalCreateInstantRoom() throws JAXBException, XMLStreamException {
         MucOwner mucOwner = MucOwner.withConfiguration(new DataForm(DataForm.Type.SUBMIT));
         String xml = marshal(mucOwner);
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#owner\"><x xmlns=\"jabber:x:data\" type=\"submit\"></x></query>");
+        Assert.assertEquals(xml,
+                "<query xmlns=\"http://jabber.org/protocol/muc#owner\"><x xmlns=\"jabber:x:data\" type=\"submit\"></x></query>");
     }
 
     @Test
@@ -75,6 +76,7 @@ public class MultiUserChatOwnerTest extends XmlTest {
     public void marshalDestroyRoom() throws JAXBException, XMLStreamException {
         MucOwner mucOwner = MucOwner.withDestroy(Jid.of("coven@chat.shakespeare.lit"), "Macbeth doth come.");
         String xml = marshal(mucOwner);
-        Assert.assertEquals(xml, "<query xmlns=\"http://jabber.org/protocol/muc#owner\"><destroy jid=\"coven@chat.shakespeare.lit\"><reason>Macbeth doth come.</reason></destroy></query>");
+        Assert.assertEquals(xml,
+                "<query xmlns=\"http://jabber.org/protocol/muc#owner\"><destroy jid=\"coven@chat.shakespeare.lit\"><reason>Macbeth doth come.</reason></destroy></query>");
     }
 }

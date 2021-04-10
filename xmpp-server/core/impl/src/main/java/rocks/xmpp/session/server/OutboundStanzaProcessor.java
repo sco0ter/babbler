@@ -60,11 +60,13 @@ public class OutboundStanzaProcessor {
     public boolean process(Stanza stanza) {
         if (stanza instanceof Message) {
             MessageEvent messageEvent = new MessageEvent(this, (Message) stanza, false);
-            outboundMessageHandlers.forEach(outboundMessageHandler -> outboundMessageHandler.handleOutboundMessage(messageEvent));
+            outboundMessageHandlers
+                    .forEach(outboundMessageHandler -> outboundMessageHandler.handleOutboundMessage(messageEvent));
             stanzaRouter.route(stanza);
         } else if (stanza instanceof Presence) {
             PresenceEvent presenceEvent = new PresenceEvent(this, (Presence) stanza, false);
-            outboundPresenceHandlers.forEach(outboundPresenceHandler -> outboundPresenceHandler.handleOutboundPresence(presenceEvent));
+            outboundPresenceHandlers
+                    .forEach(outboundPresenceHandler -> outboundPresenceHandler.handleOutboundPresence(presenceEvent));
         } else if (stanza instanceof IQ) {
             IQEvent iqEvent = new IQEvent(this, (IQ) stanza, false);
             outboundIQHandlers.forEach(outboundIQHandler -> outboundIQHandler.handleOutboundIQ(iqEvent));

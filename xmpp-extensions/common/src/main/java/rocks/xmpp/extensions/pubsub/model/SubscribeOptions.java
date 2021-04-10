@@ -35,7 +35,8 @@ import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 /**
- * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/pubsub#subscribe_options}, which can be used to configure a node subscription.
+ * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code
+ * http://jabber.org/protocol/pubsub#subscribe_options}, which can be used to configure a node subscription.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
  * <pre>{@code
@@ -56,47 +57,40 @@ import rocks.xmpp.extensions.data.model.DataForm;
  * }</pre>
  *
  * @author Christian Schudt
- * @see <a href="https://xmpp.org/extensions/xep-0060.html#registrar-formtypes-subscribe">16.4.2 pubsub#subscribe_options FORM_TYPE</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#registrar-formtypes-subscribe">16.4.2
+ * pubsub#subscribe_options FORM_TYPE</a>
  */
 public final class SubscribeOptions implements StandardizedDataForm {
 
     private static final String FORM_TYPE = "http://jabber.org/protocol/pubsub#subscribe_options";
 
     /**
-     * Whether an entity wants to receive
-     * or disable notifications
+     * Whether an entity wants to receive or disable notifications
      */
     private static final String DELIVER = "pubsub#deliver";
 
     /**
-     * Whether an entity wants to receive digests
-     * (aggregations) of notifications or all
-     * notifications individually
+     * Whether an entity wants to receive digests (aggregations) of notifications or all notifications individually
      */
     private static final String DIGEST = "pubsub#digest";
 
     /**
-     * The minimum number of milliseconds between
-     * sending any two notification digests
+     * The minimum number of milliseconds between sending any two notification digests
      */
     private static final String DIGEST_FREQUENCY = "pubsub#digest_frequency";
 
     /**
-     * The DateTime at which a leased subscription
-     * will end or has ended
+     * The DateTime at which a leased subscription will end or has ended
      */
     private static final String EXPIRE = "pubsub#expire";
 
     /**
-     * Whether an entity wants to receive an XMPP
-     * message body in addition to the payload
-     * format
+     * Whether an entity wants to receive an XMPP message body in addition to the payload format
      */
     private static final String INCLUDE_BODY = "pubsub#include_body";
 
     /**
-     * The presence states for which an entity
-     * wants to receive notifications
+     * The presence states for which an entity wants to receive notifications
      */
     private static final String SHOW_VALUES = "pubsub#show-values";
 
@@ -144,9 +138,7 @@ public final class SubscribeOptions implements StandardizedDataForm {
     }
 
     /**
-     * Whether an entity wants to receive digests
-     * (aggregations) of notifications or all
-     * notifications individually.
+     * Whether an entity wants to receive digests (aggregations) of notifications or all notifications individually.
      *
      * @return True, if digests are sent.
      */
@@ -155,8 +147,7 @@ public final class SubscribeOptions implements StandardizedDataForm {
     }
 
     /**
-     * The minimum number of milliseconds between
-     * sending any two notification digests
+     * The minimum number of milliseconds between sending any two notification digests
      *
      * @return The digest frequency.
      */
@@ -165,23 +156,21 @@ public final class SubscribeOptions implements StandardizedDataForm {
     }
 
     /**
-     * The DateTime at which a leased subscription
-     * will end or has ended.
+     * The DateTime at which a leased subscription will end or has ended.
      *
      * @return The expiration date.
      */
     public final Instant getExpire() {
         DataForm.Field field = dataForm.findField(EXPIRE);
-        if (!field.getValues().isEmpty() && field.getValues().get(0) != null && !field.getValues().get(0).equals("presence")) {
+        if (!field.getValues().isEmpty() && field.getValues().get(0) != null && !field.getValues().get(0)
+                .equals("presence")) {
             return field.getValueAsInstant();
         }
         return null;
     }
 
     /**
-     * Whether an entity wants to receive an XMPP
-     * message body in addition to the payload
-     * format.
+     * Whether an entity wants to receive an XMPP message body in addition to the payload format.
      *
      * @return True, if the body is included.
      */
@@ -241,7 +230,8 @@ public final class SubscribeOptions implements StandardizedDataForm {
      */
     public final boolean isTemporary() {
         DataForm.Field field = dataForm.findField(EXPIRE);
-        return !field.getValues().isEmpty() && field.getValues().get(0) != null && field.getValues().get(0).equals("presence");
+        return !field.getValues().isEmpty() && field.getValues().get(0) != null && field.getValues().get(0)
+                .equals("presence");
     }
 
     /**
@@ -302,7 +292,8 @@ public final class SubscribeOptions implements StandardizedDataForm {
         /**
          * Sets whether you want to receive digests (aggregations) of notifications or all notifications individually.
          *
-         * @param digest Whether you want to receive digests (aggregations) of notifications or all notifications individually.
+         * @param digest Whether you want to receive digests (aggregations) of notifications or all notifications
+         *               individually.
          * @return The builder.
          */
         public final Builder digest(boolean digest) {
@@ -334,7 +325,8 @@ public final class SubscribeOptions implements StandardizedDataForm {
         }
 
         /**
-         * Sets the presence states for which an entity wants to receive notifications. A null value corresponds to "available" presence.
+         * Sets the presence states for which an entity wants to receive notifications. A null value corresponds to
+         * "available" presence.
          *
          * @param showValues The presence states for which an entity wants to receive notifications.
          * @return The builder.
@@ -349,7 +341,8 @@ public final class SubscribeOptions implements StandardizedDataForm {
          *
          * @param expireAt The expiration date.
          * @return The builder.
-         * @see <a href="https://xmpp.org/extensions/xep-0060.html#impl-leases">12.18 Time-Based Subscriptions (Leases)</a>
+         * @see <a href="https://xmpp.org/extensions/xep-0060.html#impl-leases">12.18 Time-Based Subscriptions
+         * (Leases)</a>
          */
         public final Builder expireAt(Instant expireAt) {
             this.expireAt = expireAt;
@@ -415,7 +408,8 @@ public final class SubscribeOptions implements StandardizedDataForm {
                 fields.add(DataForm.Field.builder().name(DIGEST_FREQUENCY).value(digestFrequency).build());
             }
             if (temporary != null && temporary) {
-                // To subscribe temporarily, the subscriber MUST set the "pubsub#expire" subscription configuration option to a literal value of "presence".
+                // To subscribe temporarily, the subscriber MUST set the "pubsub#expire" subscription configuration
+                // option to a literal value of "presence".
                 fields.add(DataForm.Field.builder().name(EXPIRE).value("presence").build());
             } else if (expireAt != null) {
                 fields.add(DataForm.Field.builder().name(EXPIRE).value(expireAt).build());
@@ -437,7 +431,8 @@ public final class SubscribeOptions implements StandardizedDataForm {
                 fields.add(fieldBuilder.build());
             }
             if (subscriptionType != null) {
-                fields.add(DataForm.Field.builder().name(SUBSCRIPTION_TYPE).value(subscriptionType.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(SUBSCRIPTION_TYPE).value(subscriptionType.name().toLowerCase())
+                        .type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (subscriptionDepth != null) {
                 DataForm.Field.Builder fieldBuilder = DataForm.Field.builder().name(SUBSCRIPTION_DEPTH);

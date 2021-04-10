@@ -33,8 +33,11 @@ import rocks.xmpp.core.stream.model.StreamElement;
  * The implementation of the {@code <response/>} element, which is sent during the SASL negotiation.
  *
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#sasl-process-neg-challengeresponse">6.4.3.  Challenge-Response Sequence</a></cite></p>
- * <p>The initiating entity responds to the challenge by sending a {@code <response/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-sasl' namespace; this element MAY contain XML character data (which MUST be generated in accordance with the definition of the SASL mechanism chosen by the initiating entity).</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#sasl-process-neg-challengeresponse">6.4.3.  Challenge-Response
+ * Sequence</a></cite></p>
+ * <p>The initiating entity responds to the challenge by sending a {@code <response/>} element qualified by the
+ * 'urn:ietf:params:xml:ns:xmpp-sasl' namespace; this element MAY contain XML character data (which MUST be generated in
+ * accordance with the definition of the SASL mechanism chosen by the initiating entity).</p>
  * </blockquote>
  *
  * <p>This class is immutable.</p>

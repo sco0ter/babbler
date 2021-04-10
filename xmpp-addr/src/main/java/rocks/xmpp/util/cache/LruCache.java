@@ -36,7 +36,8 @@ import java.util.function.Function;
 /**
  * A simple concurrent implementation of a least-recently-used cache.
  *
- * <p>This cache is keeps a maximal number of items in memory and removes the least-recently-used item, when new items are added.</p>
+ * <p>This cache is keeps a maximal number of items in memory and removes the least-recently-used item, when new items
+ * are added.</p>
  *
  * @param <K> The key.
  * @param <V> The value.
@@ -45,7 +46,7 @@ import java.util.function.Function;
  * @see <a href="http://stackoverflow.com/a/22891780">http://stackoverflow.com/a/22891780</a>
  */
 public final class LruCache<K, V> implements Map<K, V> {
-    
+
     final Queue<K> queue;
 
     private final int maxEntries;
@@ -199,7 +200,8 @@ public final class LruCache<K, V> implements Map<K, V> {
     }
 
     @Override
-    public final V computeIfPresent(final K key, final BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+    public final V computeIfPresent(final K key,
+                                    final BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
         return map.computeIfPresent(key, remappingFunction.<V>andThen(v -> {
             keyUsed(key);
             limit();

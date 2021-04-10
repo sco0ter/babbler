@@ -121,9 +121,12 @@ public class FileTransferSender extends Application {
                 final Task<Void> fileTransferTask = new Task<Void>() {
                     @Override
                     protected Void call() throws Exception {
-                        FileTransferManager fileTransferManager = xmppSession.get().getManager(FileTransferManager.class);
+                        FileTransferManager fileTransferManager =
+                                xmppSession.get().getManager(FileTransferManager.class);
                         updateMessage("Offering file... waiting for acceptance");
-                        FileTransfer fileTransfer = fileTransferManager.offerFile(file, "Hello", Jid.of("111", xmppSession.get().getDomain().toString(), "filetransfer"), Duration.ofSeconds(10)).get();
+                        FileTransfer fileTransfer = fileTransferManager.offerFile(file, "Hello",
+                                Jid.of("111", xmppSession.get().getDomain().toString(), "filetransfer"),
+                                Duration.ofSeconds(10)).get();
                         fileTransfer.addFileTransferStatusListener(e -> {
                             System.out.println(e);
                             try {
@@ -162,40 +165,4 @@ public class FileTransferSender extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-
-//    private class FileTransferService extends Service<Void> {
-//        @Override
-//        protected Task<Void> createTask() {
-//            return new Task<Void>() {
-//                @Override
-//                protected Void call() throws Exception {
-//                    FileTransferManager fileTransferManager = xmppSession.get().getManager(FileTransferManager.class);
-//                    try {
-//                        updateMessage("Offering file... waiting for acceptance");
-//                        FileTransfer fileTransfer = fileTransferManager.offerFile(file, "Hello", new Jid("222", xmppSession.get().getDomain(), "filetransfer"), 10000);
-//                        fileTransfer.addFileTransferStatusListener(new FileTransferStatusListener() {
-//                            @Override
-//                            public void fileTransferStatusChanged(FileTransferStatusEvent e) {
-//                                System.out.println(e);
-//                                try {
-//                                    Thread.sleep(100);
-//                                } catch (InterruptedException e1) {
-//                                    e1.printStackTrace();
-//                                }
-//                                updateMessage(e.toString());
-//                                updateProgress(e.getBytesTransferred(), file.length());
-//                            }
-//                        });
-//                        fileTransfer.transfer();
-//                    } catch (FileTransferRejectedException e) {
-//                        updateMessage("File transfer offer has been rejected.");
-//                    } catch (IOException | XmppException e) {
-//                        updateMessage(e.getMessage());
-//                    }
-//
-//                    return null;
-//                }
-//            };
-//        }
-//    }
 }

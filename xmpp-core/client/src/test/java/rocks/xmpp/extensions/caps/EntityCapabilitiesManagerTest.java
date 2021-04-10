@@ -53,7 +53,8 @@ public class EntityCapabilitiesManagerTest extends BaseTest {
             final XmppSession xmppSession1 = new TestXmppSession(BaseTest.ROMEO, mockServer);
             XmppSession xmppSession2 = new TestXmppSession(BaseTest.JULIET, mockServer);
 
-            final EntityCapabilitiesManager entityCapabilitiesManager = xmppSession1.getManager(EntityCapabilitiesManager.class);
+            final EntityCapabilitiesManager entityCapabilitiesManager =
+                    xmppSession1.getManager(EntityCapabilitiesManager.class);
 
             ExecutorService executorService = Executors.newCachedThreadPool();
             for (int i = 0; i < 100; i++) {

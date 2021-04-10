@@ -36,12 +36,14 @@ import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 /**
  * Abstract base class for the original Entity Capabilities protocol (XEP-0115: Entity Capabilities).
  *
- * <p>It provides the Service Discovery feature <code>{@value EntityCapabilities1#NAMESPACE}</code> and creates the entity capabilities extension
- * for either inclusion in presence (applicable for client entities) or inclusion as stream feature (for server entities).</p>
+ * <p>It provides the Service Discovery feature <code>{@value EntityCapabilities1#NAMESPACE}</code> and creates the
+ * entity capabilities extension for either inclusion in presence (applicable for client entities) or inclusion as
+ * stream feature (for server entities).</p>
  *
  * @author Christian Schudt
  */
-public abstract class AbstractEntityCapabilities1Protocol extends AbstractEntityCapabilitiesProtocol<EntityCapabilities1> {
+public abstract class AbstractEntityCapabilities1Protocol
+        extends AbstractEntityCapabilitiesProtocol<EntityCapabilities1> {
 
     private static final Set<String> FEATURES = Collections.singleton(EntityCapabilities1.NAMESPACE);
 
@@ -52,7 +54,8 @@ public abstract class AbstractEntityCapabilities1Protocol extends AbstractEntity
      */
     private String node;
 
-    protected AbstractEntityCapabilities1Protocol(ServiceDiscoveryManager serviceDiscoveryManager, EntityCapabilitiesCache entityCapabilitiesCache) {
+    protected AbstractEntityCapabilities1Protocol(ServiceDiscoveryManager serviceDiscoveryManager,
+                                                  EntityCapabilitiesCache entityCapabilitiesCache) {
         super(EntityCapabilities1.class, serviceDiscoveryManager, entityCapabilitiesCache);
     }
 
@@ -80,7 +83,8 @@ public abstract class AbstractEntityCapabilities1Protocol extends AbstractEntity
      *
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/extensions/xep-0115.html#protocol">4. Protocol</a></cite></p>
-     * <p>It is RECOMMENDED for the value of the 'node' attribute to be an HTTP URL at which a user could find further information about the software product, such as "http://psi-im.org" for the Psi client;</p>
+     * <p>It is RECOMMENDED for the value of the 'node' attribute to be an HTTP URL at which a user could find further
+     * information about the software product, such as "http://psi-im.org" for the Psi client;</p>
      * </blockquote>
      *
      * @param node The node.

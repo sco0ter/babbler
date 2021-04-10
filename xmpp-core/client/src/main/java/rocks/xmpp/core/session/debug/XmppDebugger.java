@@ -57,7 +57,8 @@ public interface XmppDebugger extends ReaderInterceptor, WriterInterceptor {
      * This method is called, whenever a stream element is written.
      *
      * @param xml           The xml representation of the stream element.
-     * @param streamElement The stream element. Maybe null, if no stream element, but an opening or closing stream element is written.
+     * @param streamElement The stream element. Maybe null, if no stream element, but an opening or closing stream
+     *                      element is written.
      */
     void writeStanza(String xml, Object streamElement);
 
@@ -65,13 +66,14 @@ public interface XmppDebugger extends ReaderInterceptor, WriterInterceptor {
      * This method is called, whenever a stream element is read.
      *
      * @param xml           The xml representation of the stream element.
-     * @param streamElement The stream element. Maybe null, if no stream element, but an opening or closing stream element is read.
+     * @param streamElement The stream element. Maybe null, if no stream element, but an opening or closing stream
+     *                      element is read.
      */
     void readStanza(String xml, Object streamElement);
 
     /**
-     * Creates a new output stream from the actual output stream. This is useful is you want to log the actually written bytes.
-     * In this case you could fork the output stream and return the new forked stream.
+     * Creates a new output stream from the actual output stream. This is useful is you want to log the actually written
+     * bytes. In this case you could fork the output stream and return the new forked stream.
      *
      * @param outputStream The actual output stream.
      * @return The (forked) output stream.
@@ -79,8 +81,8 @@ public interface XmppDebugger extends ReaderInterceptor, WriterInterceptor {
     OutputStream createOutputStream(OutputStream outputStream);
 
     /**
-     * Creates a new input stream from the actual input stream. This is useful is you want to log the actually read bytes.
-     * In this case you could fork the input stream and return the new forked stream.
+     * Creates a new input stream from the actual input stream. This is useful is you want to log the actually read
+     * bytes. In this case you could fork the input stream and return the new forked stream.
      *
      * @param inputStream The actual input stream.
      * @return The (forked) input stream.
@@ -96,7 +98,8 @@ public interface XmppDebugger extends ReaderInterceptor, WriterInterceptor {
     }
 
     @Override
-    default void process(Reader reader, Consumer<StreamElement> streamElement, ReaderInterceptorChain chain) throws Exception {
+    default void process(Reader reader, Consumer<StreamElement> streamElement, ReaderInterceptorChain chain)
+            throws Exception {
         try (StringWriter logger = new StringWriter()) {
             chain.proceed(XmppUtils.newBranchedReader(reader, logger), element -> {
                 String s = logger.toString();

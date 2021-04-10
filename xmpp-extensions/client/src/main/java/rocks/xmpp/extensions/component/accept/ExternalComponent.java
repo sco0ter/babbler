@@ -61,13 +61,15 @@ public final class ExternalComponent extends XmppSession {
 
     private final String sharedSecret;
 
-    private ExternalComponent(String componentName, String sharedSecret, XmppSessionConfiguration configuration, ClientConnectionConfiguration connectionConfiguration) {
+    private ExternalComponent(String componentName, String sharedSecret, XmppSessionConfiguration configuration,
+                              ClientConnectionConfiguration connectionConfiguration) {
         super(componentName, configuration, connectionConfiguration);
         this.sharedSecret = sharedSecret;
     }
 
     /**
-     * Creates a new external component using a default configuration. Any registered {@link #addCreationListener(Consumer) creation listeners} are triggered.
+     * Creates a new external component using a default configuration. Any registered {@link
+     * #addCreationListener(Consumer) creation listeners} are triggered.
      *
      * @param componentName The component name.
      * @param sharedSecret  The shared secret (password).
@@ -80,7 +82,8 @@ public final class ExternalComponent extends XmppSession {
     }
 
     /**
-     * Creates a new external component. Any registered {@link #addCreationListener(Consumer) creation listeners} are triggered.
+     * Creates a new external component. Any registered {@link #addCreationListener(Consumer) creation listeners} are
+     * triggered.
      *
      * @param componentName The component name.
      * @param sharedSecret  The shared secret (password).
@@ -89,12 +92,15 @@ public final class ExternalComponent extends XmppSession {
      * @param port          The port to connect to.
      * @return The external component.
      */
-    public static ExternalComponent create(String componentName, String sharedSecret, XmppSessionConfiguration configuration, String hostname, int port) {
-        return create(componentName, sharedSecret, configuration, SocketConnectionConfiguration.builder().hostname(hostname).port(port).build());
+    public static ExternalComponent create(String componentName, String sharedSecret,
+                                           XmppSessionConfiguration configuration, String hostname, int port) {
+        return create(componentName, sharedSecret, configuration,
+                SocketConnectionConfiguration.builder().hostname(hostname).port(port).build());
     }
 
     /**
-     * Creates a new external component using a default configuration. Any registered {@link #addCreationListener(Consumer) creation listeners} are triggered.
+     * Creates a new external component using a default configuration. Any registered {@link
+     * #addCreationListener(Consumer) creation listeners} are triggered.
      *
      * @param componentName            The component name.
      * @param sharedSecret             The shared secret (password).
@@ -102,8 +108,11 @@ public final class ExternalComponent extends XmppSession {
      * @param connectionConfiguration  The connection configuration.
      * @return The external component.
      */
-    public static ExternalComponent create(String componentName, String sharedSecret, XmppSessionConfiguration xmppSessionConfiguration, ClientConnectionConfiguration connectionConfiguration) {
-        ExternalComponent component = new ExternalComponent(componentName, sharedSecret, xmppSessionConfiguration, connectionConfiguration);
+    public static ExternalComponent create(String componentName, String sharedSecret,
+                                           XmppSessionConfiguration xmppSessionConfiguration,
+                                           ClientConnectionConfiguration connectionConfiguration) {
+        ExternalComponent component =
+                new ExternalComponent(componentName, sharedSecret, xmppSessionConfiguration, connectionConfiguration);
         notifyCreationListeners(component);
         return component;
     }
@@ -119,22 +128,28 @@ public final class ExternalComponent extends XmppSession {
                 updateStatus(Status.CONNECTING);
                 synchronized (this) {
                     streamOpened = new CompletableFuture<>();
-                    // Double-checked locking: Recheck connected status. In a multi-threaded environment multiple threads could have passed the first check.
+                    // Double-checked locking: Recheck connected status. In a multi-threaded environment multiple
+                    // threads could have passed the first check.
                     if (!checkConnected()) {
                         // Reset
                         exception = null;
 
                         tryConnect(from, "jabber:component:accept", "1.0");
-                        logger.log(System.Logger.Level.DEBUG, "Negotiating stream, waiting until handshake is ready to be negotiated.");
-                        SessionOpen sessionOpen = streamOpened.get(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                        logger.log(System.Logger.Level.DEBUG,
+                                "Negotiating stream, waiting until handshake is ready to be negotiated.");
+                        SessionOpen sessionOpen = streamOpened
+                                .get(configuration.getDefaultResponseTimeout().toMillis(), TimeUnit.MILLISECONDS);
 
                         // Check if the server returned a stream error, e.g. conflict.
                         throwAsXmppExceptionIfNotNull(exception);
 
                         if (sessionOpen != null && sessionOpen.getVersion() != null) {
-                            streamFeaturesManager.completeNegotiation().get(configuration.getDefaultResponseTimeout().toMillis() * 2, TimeUnit.MILLISECONDS);
+                            streamFeaturesManager.completeNegotiation()
+                                    .get(configuration.getDefaultResponseTimeout().toMillis() * 2,
+                                            TimeUnit.MILLISECONDS);
                         } else {
-                            // Wait shortly to see if the server will respond with a <conflict/>, <host-unknown/> or other stream error.
+                            // Wait shortly to see if the server will respond with a <conflict/>, <host-unknown/> or
+                            // other stream error.
                             Thread.sleep(50);
                         }
 

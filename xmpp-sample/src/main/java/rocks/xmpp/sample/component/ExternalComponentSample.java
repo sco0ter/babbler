@@ -64,14 +64,18 @@ public final class ExternalComponentSample {
                         .hostname("localhost")
                         .port(5275)
                         .build();
-                ExternalComponent myComponent = ExternalComponent.create("translation", "test", configuration, connectionConfiguration);
+                ExternalComponent myComponent =
+                        ExternalComponent.create("translation", "test", configuration, connectionConfiguration);
 
                 ServiceDiscoveryManager serviceDiscoveryManager = myComponent.getManager(ServiceDiscoveryManager.class);
 
-                // Add an identity for the component. This will be used by clients who want to discover the translation service.
-                serviceDiscoveryManager.addIdentity(Identity.automationTranslation().withName("Translation Provider Service"));
-                // Our component supports the XEP-0171 protocol, let's advertise it by including the protocol name in the feature list,
-                // so that clients can discover our component as language translation service and can send queries to it.
+                // Add an identity for the component.
+                // This will be used by clients who want to discover the translation service.
+                serviceDiscoveryManager
+                        .addIdentity(Identity.automationTranslation().withName("Translation Provider Service"));
+                // Our component supports the XEP-0171 protocol, let's advertise it by including the protocol name in
+                // the feature list, so that clients can discover our component as language translation service and can
+                // send queries to it.
                 serviceDiscoveryManager.addFeature(LanguageTranslation.NAMESPACE);
                 // Don't advertise the MUC feature. We are no chat service.
                 serviceDiscoveryManager.removeFeature(Muc.NAMESPACE);
@@ -82,7 +86,8 @@ public final class ExternalComponentSample {
                     @Override
                     protected IQ processRequest(IQ iq) {
                         Collection<LanguageSupport.Item> items = new ArrayDeque<>();
-                        items.add(new LanguageSupport.Item(Locale.ENGLISH, myComponent.getDomain(), Locale.GERMAN, "testEngine", true, null));
+                        items.add(new LanguageSupport.Item(Locale.ENGLISH, myComponent.getDomain(), Locale.GERMAN,
+                                "testEngine", true, null));
                         return iq.createResult(new LanguageSupport(items));
                     }
                 });
@@ -93,10 +98,13 @@ public final class ExternalComponentSample {
 
                         LanguageTranslation translation = iq.getExtension(LanguageTranslation.class);
 
-                        Collection<LanguageTranslation.Translation> translations = translation.getTranslations().stream()
-                                .map(t -> LanguageTranslation.Translation.forDestinationLanguage(t.getDestinationLanguage())
-                                        .withSourceLanguage(translation.getSourceLanguage())
-                                        .withTranslatedText("HALLO")).collect(Collectors.toCollection(ArrayDeque::new));
+                        Collection<LanguageTranslation.Translation> translations =
+                                translation.getTranslations().stream()
+                                        .map(t -> LanguageTranslation.Translation
+                                                .forDestinationLanguage(t.getDestinationLanguage())
+                                                .withSourceLanguage(translation.getSourceLanguage())
+                                                .withTranslatedText("HALLO"))
+                                        .collect(Collectors.toCollection(ArrayDeque::new));
                         LanguageTranslation languageTranslation = new LanguageTranslation(translations);
                         return iq.createResult(languageTranslation);
                     }

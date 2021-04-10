@@ -23,7 +23,8 @@
  */
 
 /**
- * Provides connection-related classes for the <a href="https://tools.ietf.org/html/rfc7395">XMPP Subprotocol for WebSocket</a>.
+ * Provides connection-related classes for the <a href="https://tools.ietf.org/html/rfc7395">XMPP Subprotocol for
+ * WebSocket</a>.
  *
  * @see rocks.xmpp.websocket.model
  * @since 0.7.0

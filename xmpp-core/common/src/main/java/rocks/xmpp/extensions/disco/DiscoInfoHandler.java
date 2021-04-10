@@ -61,7 +61,8 @@ final class DiscoInfoHandler extends AbstractIQHandler {
         Set<DiscoverableInfo> discoverableInfos = new HashSet<>();
         for (InfoProvider infoNodeProvider : infoProviders) {
             try {
-                DiscoverableInfo info = infoNodeProvider.getInfo(iq.getTo(), iq.getFrom(), infoDiscovery.getNode(), iq.getLanguage());
+                DiscoverableInfo info =
+                        infoNodeProvider.getInfo(iq.getTo(), iq.getFrom(), infoDiscovery.getNode(), iq.getLanguage());
                 if (info != null) {
                     discoverableInfos.add(info);
                 }

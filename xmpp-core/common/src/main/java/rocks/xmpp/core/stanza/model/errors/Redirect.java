@@ -30,8 +30,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * The implementation of the {@code <redirect/>} stanza error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-redirect">8.3.3.14.  redirect</a></cite></p>
- * <p>The recipient or server is redirecting requests for this information to another entity, typically in a temporary fashion (as opposed to the {@code <gone/>} error condition, which is used for permanent addressing failures); the associated error type SHOULD be "modify" and the error stanza SHOULD contain the alternate address in the XML character data of the {@code <redirect/>} element (which MUST be a URI or IRI with which the sender can communicate, typically an XMPP IRI as specified in [XMPP-URI]).</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-redirect">8.3.3.14.
+ * redirect</a></cite></p>
+ * <p>The recipient or server is redirecting requests for this information to another entity, typically in a temporary
+ * fashion (as opposed to the {@code <gone/>} error condition, which is used for permanent addressing failures); the
+ * associated error type SHOULD be "modify" and the error stanza SHOULD contain the alternate address in the XML
+ * character data of the {@code <redirect/>} element (which MUST be a URI or IRI with which the sender can communicate,
+ * typically an XMPP IRI as specified in [XMPP-URI]).</p>
  * </blockquote>
  *
  * @see #redirect(String)

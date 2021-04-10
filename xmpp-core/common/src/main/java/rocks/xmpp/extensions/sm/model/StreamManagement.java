@@ -44,7 +44,9 @@ import rocks.xmpp.core.stream.model.StreamFeature;
  * @see <a href="https://xmpp.org/extensions/xep-0198.html#schemas">XML Schema</a>
  */
 @XmlRootElement(name = "sm")
-@XmlSeeAlso({StreamManagement.Answer.class, StreamManagement.Enable.class, StreamManagement.Enabled.class, StreamManagement.Failed.class, StreamManagement.Request.class, StreamManagement.Resume.class, StreamManagement.Resumed.class, StreamManagement.HandledCountTooHigh.class})
+@XmlSeeAlso({StreamManagement.Answer.class, StreamManagement.Enable.class, StreamManagement.Enabled.class,
+        StreamManagement.Failed.class, StreamManagement.Request.class, StreamManagement.Resume.class,
+        StreamManagement.Resumed.class, StreamManagement.HandledCountTooHigh.class})
 public final class StreamManagement extends StreamFeature {
 
     /**
@@ -94,7 +96,8 @@ public final class StreamManagement extends StreamFeature {
         }
 
         /**
-         * @param lastHandledStanza Identifies the sequence number of the last handled stanza sent over the former stream from the server to the client.
+         * @param lastHandledStanza Identifies the sequence number of the last handled stanza sent over the former
+         *                          stream from the server to the client.
          * @param prevId            The stream id of the former stream.
          */
         public Resumed(long lastHandledStanza, String prevId) {
@@ -113,7 +116,8 @@ public final class StreamManagement extends StreamFeature {
         }
 
         /**
-         * @param lastHandledStanza Identifies the sequence number of the last handled stanza sent over the former stream from the server to the client.
+         * @param lastHandledStanza Identifies the sequence number of the last handled stanza sent over the former
+         *                          stream from the server to the client.
          * @param prevId            The stream id of the former stream.
          */
         public Resume(long lastHandledStanza, String prevId) {
@@ -323,9 +327,8 @@ public final class StreamManagement extends StreamFeature {
      * Indicates that an entity has acknowledged more stanzas than it was sent.
      *
      * <p>When a remote entity acknowledges that it has handled a number of stanzas that is higher
-     * than the amount of stanzas that it was sent (by sending an 'h' value that is too high),
-     * the local entity SHOULD generate an undefined-condition stream error that includes
-     * a {@code <handled-count-too-high/>} element.</p>
+     * than the amount of stanzas that it was sent (by sending an 'h' value that is too high), the local entity SHOULD
+     * generate an undefined-condition stream error that includes a {@code <handled-count-too-high/>} element.</p>
      */
     @XmlRootElement(name = "handled-count-too-high")
     public static final class HandledCountTooHigh extends LastHandledStanza {

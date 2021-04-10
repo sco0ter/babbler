@@ -135,7 +135,8 @@ public class MoodMarshalTest extends XmlTest {
     @Test
     public void marshalContemplative() throws XMLStreamException, JAXBException {
         String xml = marshal(new Mood(new Mood.Contemplative()));
-        Assert.assertEquals(xml, "<mood xmlns=\"http://jabber.org/protocol/mood\"><contemplative></contemplative></mood>");
+        Assert.assertEquals(xml,
+                "<mood xmlns=\"http://jabber.org/protocol/mood\"><contemplative></contemplative></mood>");
     }
 
     @Test
@@ -183,7 +184,8 @@ public class MoodMarshalTest extends XmlTest {
     @Test
     public void marshalDisappointed() throws XMLStreamException, JAXBException {
         String xml = marshal(new Mood(new Mood.Disappointed()));
-        Assert.assertEquals(xml, "<mood xmlns=\"http://jabber.org/protocol/mood\"><disappointed></disappointed></mood>");
+        Assert.assertEquals(xml,
+                "<mood xmlns=\"http://jabber.org/protocol/mood\"><disappointed></disappointed></mood>");
     }
 
     @Test

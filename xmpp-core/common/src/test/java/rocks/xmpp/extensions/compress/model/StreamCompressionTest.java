@@ -65,7 +65,8 @@ public class StreamCompressionTest extends XmlTest {
     public void marshalCompress() throws JAXBException, XMLStreamException {
         StreamCompression.Compress compress = new StreamCompression.Compress("zlib");
         String xml = marshal(compress);
-        Assert.assertEquals(xml, "<compress xmlns=\"http://jabber.org/protocol/compress\"><method>zlib</method></compress>");
+        Assert.assertEquals(xml,
+                "<compress xmlns=\"http://jabber.org/protocol/compress\"><method>zlib</method></compress>");
     }
 
     @Test
@@ -103,18 +104,21 @@ public class StreamCompressionTest extends XmlTest {
     @Test
     public void marshalFailureProcessingFailed() throws XMLStreamException, JAXBException {
         String xml = marshal(new StreamCompression.Failure(StreamCompression.Failure.Condition.PROCESSING_FAILED));
-        Assert.assertEquals(xml, "<failure xmlns=\"http://jabber.org/protocol/compress\"><processing-failed></processing-failed></failure>");
+        Assert.assertEquals(xml,
+                "<failure xmlns=\"http://jabber.org/protocol/compress\"><processing-failed></processing-failed></failure>");
     }
 
     @Test
     public void marshalFailureSetupFailed() throws XMLStreamException, JAXBException {
         String xml = marshal(new StreamCompression.Failure(StreamCompression.Failure.Condition.UNSUPPORTED_METHOD));
-        Assert.assertEquals(xml, "<failure xmlns=\"http://jabber.org/protocol/compress\"><unsupported-method></unsupported-method></failure>");
+        Assert.assertEquals(xml,
+                "<failure xmlns=\"http://jabber.org/protocol/compress\"><unsupported-method></unsupported-method></failure>");
     }
 
     @Test
     public void marshalFailureUnsupportedMethod() throws XMLStreamException, JAXBException {
         String xml = marshal(new StreamCompression.Failure(StreamCompression.Failure.Condition.SETUP_FAILED));
-        Assert.assertEquals(xml, "<failure xmlns=\"http://jabber.org/protocol/compress\"><setup-failed></setup-failed></failure>");
+        Assert.assertEquals(xml,
+                "<failure xmlns=\"http://jabber.org/protocol/compress\"><setup-failed></setup-failed></failure>");
     }
 }

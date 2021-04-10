@@ -180,9 +180,11 @@ public class JingleTest extends XmlTest {
 
     @Test
     public void marshalJingleSessionTerminate() throws XMLStreamException, JAXBException {
-        Jingle jingle = new Jingle("a73sjjvkla37jfea", Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.Decline()));
+        Jingle jingle = new Jingle("a73sjjvkla37jfea", Jingle.Action.SESSION_TERMINATE,
+                new Jingle.Reason(new Jingle.Reason.Decline()));
         String xml = marshal(jingle);
-        Assert.assertEquals(xml, "<jingle xmlns=\"urn:xmpp:jingle:1\" action=\"session-terminate\" sid=\"a73sjjvkla37jfea\"><reason><decline></decline></reason></jingle>");
+        Assert.assertEquals(xml,
+                "<jingle xmlns=\"urn:xmpp:jingle:1\" action=\"session-terminate\" sid=\"a73sjjvkla37jfea\"><reason><decline></decline></reason></jingle>");
     }
 
     @Test

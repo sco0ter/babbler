@@ -41,7 +41,7 @@ import javax.xml.bind.annotation.XmlType;
  * }</pre>
  *
  * <h3>Sending an Receipt to a Message Delivery Request</h3>
- * 
+ *
  * <pre>{@code
  * message.addExtension(new MessageDeliveryReceipts.Received(id));
  * }</pre>
@@ -107,8 +107,8 @@ public abstract class MessageDeliveryReceipts {
     }
 
     /**
-     * The implementation of the {@code <request/>} element in the {@code urn:xmpp:receipts} namespace.
-     * This class is a singleton.
+     * The implementation of the {@code <request/>} element in the {@code urn:xmpp:receipts} namespace. This class is a
+     * singleton.
      *
      * @see #REQUEST
      */

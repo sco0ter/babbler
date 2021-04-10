@@ -28,12 +28,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * The implementation of the {@code <payload-required/>} pubsub error.
- * This class is a singleton.
+ * The implementation of the {@code <payload-required/>} pubsub error. This class is a singleton.
  *
  * @author Christian Schudt
  * @see #PAYLOAD_REQUIRED
- * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-publish-error-badrequest">7.1.3.6 Request Does Not Match Configuration</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-publish-error-badrequest">7.1.3.6 Request Does Not
+ * Match Configuration</a>
  */
 @XmlRootElement(name = "payload-required")
 @XmlType(factoryMethod = "create")

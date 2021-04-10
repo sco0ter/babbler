@@ -77,10 +77,17 @@ public class OutboundPresenceInformationHandlerTest {
         Mockito.when(resource1.getRemoteXmppAddress()).thenReturn(Jid.of("user@server/resource1"));
         Mockito.when(resource2.getRemoteXmppAddress()).thenReturn(Jid.of("user@server/resource2"));
         List<Contact> contacts = new ArrayList<>();
-        contacts.add(new Contact(Jid.of("contact1@server"), "contact1", false, false, SubscriptionState.Subscription.FROM, Collections.emptyList()));
-        contacts.add(new Contact(Jid.of("contact2@server"), "contact2", false, false, SubscriptionState.Subscription.TO, Collections.emptyList()));
-        contacts.add(new Contact(Jid.of("contact3@server"), "contact3", false, false, SubscriptionState.Subscription.BOTH, Collections.emptyList()));
-        contacts.add(new Contact(Jid.of("contact4@server"), "contact4", false, false, SubscriptionState.Subscription.NONE, Collections.emptyList()));
+        contacts.add(
+                new Contact(Jid.of("contact1@server"), "contact1", false, false, SubscriptionState.Subscription.FROM,
+                        Collections.emptyList()));
+        contacts.add(new Contact(Jid.of("contact2@server"), "contact2", false, false, SubscriptionState.Subscription.TO,
+                Collections.emptyList()));
+        contacts.add(
+                new Contact(Jid.of("contact3@server"), "contact3", false, false, SubscriptionState.Subscription.BOTH,
+                        Collections.emptyList()));
+        contacts.add(
+                new Contact(Jid.of("contact4@server"), "contact4", false, false, SubscriptionState.Subscription.NONE,
+                        Collections.emptyList()));
         Mockito.doReturn(contacts).when(rosterManager).getRosterItems("user");
         Mockito.when(rosterManager.getRosterItem("user", Jid.of("contact1@server"))).thenReturn(contacts.get(0));
         Mockito.when(rosterManager.getRosterItem("user", Jid.of("contact2@server"))).thenReturn(contacts.get(1));
@@ -91,7 +98,8 @@ public class OutboundPresenceInformationHandlerTest {
     @BeforeMethod
     public void reset() {
         Mockito.clearInvocations(rosterManager, outboundStanzaProcessor);
-        Mockito.when(sessionManager.getUserSessions(Mockito.eq(Jid.of("user@server")))).thenReturn(Stream.of(resource1, resource2));
+        Mockito.when(sessionManager.getUserSessions(Mockito.eq(Jid.of("user@server"))))
+                .thenReturn(Stream.of(resource1, resource2));
     }
 
     @Test

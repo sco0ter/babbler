@@ -57,7 +57,8 @@ public class ResultSetManagementTest extends XmlTest {
     @Test
     public void marshalForNextPage() throws JAXBException, XMLStreamException {
         String xml = marshal(ResultSetManagement.forNextPage(10, "next"));
-        Assert.assertEquals(xml, "<set xmlns=\"http://jabber.org/protocol/rsm\"><max>10</max><after>next</after></set>");
+        Assert.assertEquals(xml,
+                "<set xmlns=\"http://jabber.org/protocol/rsm\"><max>10</max><after>next</after></set>");
     }
 
     @Test
@@ -69,7 +70,8 @@ public class ResultSetManagementTest extends XmlTest {
     @Test
     public void marshalForPreviousPage() throws JAXBException, XMLStreamException {
         String xml = marshal(ResultSetManagement.forPreviousPage(10, "previous"));
-        Assert.assertEquals(xml, "<set xmlns=\"http://jabber.org/protocol/rsm\"><max>10</max><before>previous</before></set>");
+        Assert.assertEquals(xml,
+                "<set xmlns=\"http://jabber.org/protocol/rsm\"><max>10</max><before>previous</before></set>");
     }
 
     @Test
@@ -84,16 +86,19 @@ public class ResultSetManagementTest extends XmlTest {
         Assert.assertEquals(xml, "<set xmlns=\"http://jabber.org/protocol/rsm\"><count>10</count></set>");
 
         String xml2 = marshal(ResultSetManagement.forResponse(10, 1, "first", "last"));
-        Assert.assertEquals(xml2, "<set xmlns=\"http://jabber.org/protocol/rsm\"><count>10</count><first index=\"1\">first</first><last>last</last></set>");
+        Assert.assertEquals(xml2,
+                "<set xmlns=\"http://jabber.org/protocol/rsm\"><count>10</count><first index=\"1\">first</first><last>last</last></set>");
     }
 
     @Test
     public void testPaging() throws JAXBException, XMLStreamException {
         ResultSetManagement rsm = ResultSetManagement.forResponse(10, 1, "first", "last");
         ResultSetManagement next = rsm.nextPage(5);
-        Assert.assertEquals(marshal(next), "<set xmlns=\"http://jabber.org/protocol/rsm\"><max>5</max><after>last</after></set>");
+        Assert.assertEquals(marshal(next),
+                "<set xmlns=\"http://jabber.org/protocol/rsm\"><max>5</max><after>last</after></set>");
         ResultSetManagement prev = rsm.previousPage(5);
-        Assert.assertEquals(marshal(prev), "<set xmlns=\"http://jabber.org/protocol/rsm\"><max>5</max><before>first</before></set>");
+        Assert.assertEquals(marshal(prev),
+                "<set xmlns=\"http://jabber.org/protocol/rsm\"><max>5</max><before>first</before></set>");
     }
 
     @Test

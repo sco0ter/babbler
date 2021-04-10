@@ -30,7 +30,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlEnumValue;
 
 /**
- * The implementation of the {@code <rule/>} element, used both in the {@code http://jabber.org/protocol/amp} namespace as well as in the {@code http://jabber.org/protocol/amp#errors} namespace.
+ * The implementation of the {@code <rule/>} element, used both in the {@code http://jabber.org/protocol/amp} namespace
+ * as well as in the {@code http://jabber.org/protocol/amp#errors} namespace.
  *
  * <p>This class is immutable.</p>
  *
@@ -39,7 +40,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
  * @see <a href="https://xmpp.org/extensions/xep-0079.html#schemas-amp">XML Schema</a>
  */
 public final class Rule {
-    
+
     @XmlAttribute
     private final Action action;
 
@@ -141,7 +142,8 @@ public final class Rule {
     }
 
     /**
-     * The action defines what occurs when a particular rule is triggered. The value of the action attribute determines the behavior if the rule's condition is met.
+     * The action defines what occurs when a particular rule is triggered. The value of the action attribute determines
+     * the behavior if the rule's condition is met.
      *
      * @see <a href="https://xmpp.org/extensions/xep-0079.html#actions-def">3.4 Defined Actions</a>
      */
@@ -154,7 +156,8 @@ public final class Rule {
         @XmlEnumValue("alert")
         ALERT,
         /**
-         * The "drop" action silently discards the message from any further delivery attempts and ensures that it is not placed into offline storage.
+         * The "drop" action silently discards the message from any further delivery attempts and ensures that it is not
+         * placed into offline storage.
          *
          * @see <a href="https://xmpp.org/extensions/xep-0079.html#actions-def-drop">3.4.2 drop</a>
          */
@@ -177,7 +180,8 @@ public final class Rule {
     }
 
     /**
-     * The condition defines how or when a particular rule is triggered. The value of the condition attribute determines what the contents of the {@code <rule/>} mean.
+     * The condition defines how or when a particular rule is triggered. The value of the condition attribute determines
+     * what the contents of the {@code <rule/>} mean.
      *
      * @see <a href="https://xmpp.org/extensions/xep-0079.html#conditions-def">3.3 Defined Conditions</a>
      */
@@ -197,7 +201,8 @@ public final class Rule {
         @XmlEnumValue("expire-at")
         EXPIRE_AT,
         /**
-         * The "match-resource" condition is used to restrict delivery based on the resource identifier of the recipient JID.
+         * The "match-resource" condition is used to restrict delivery based on the resource identifier of the recipient
+         * JID.
          *
          * @see <a href="https://xmpp.org/extensions/xep-0079.html#conditions-def-match">3.3.3 match-resource</a>
          */
@@ -211,7 +216,7 @@ public final class Rule {
      * @see <a href="https://xmpp.org/extensions/xep-0079.html#conditions-def-deliver">3.3.1 deliver</a>
      */
     public enum DeliveryMode {
-        
+
         /**
          * The message would be immediately delivered to the intended recipient or routed to the next hop.
          */
@@ -225,7 +230,8 @@ public final class Rule {
          */
         GATEWAY,
         /**
-         * The message would not be delivered at all (e.g., because the intended recipient is offline and message storage is not enabled).
+         * The message would not be delivered at all (e.g., because the intended recipient is offline and message
+         * storage is not enabled).
          */
         NONE,
         /**

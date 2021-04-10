@@ -205,16 +205,20 @@ public class AdvancedMessageProcessingTest extends XmlTest {
 
     @Test
     public void marshalDeliver() throws XMLStreamException, JAXBException {
-        AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.deliver(Rule.Action.ALERT, Rule.DeliveryMode.FORWARD));
+        AdvancedMessageProcessing amp =
+                new AdvancedMessageProcessing(Rule.deliver(Rule.Action.ALERT, Rule.DeliveryMode.FORWARD));
         String xml = marshal(amp);
-        Assert.assertEquals(xml, "<amp xmlns=\"http://jabber.org/protocol/amp\"><rule action=\"alert\" condition=\"deliver\" value=\"forward\"></rule></amp>");
+        Assert.assertEquals(xml,
+                "<amp xmlns=\"http://jabber.org/protocol/amp\"><rule action=\"alert\" condition=\"deliver\" value=\"forward\"></rule></amp>");
     }
 
     @Test
     public void marshalMatchResource() throws XMLStreamException, JAXBException {
-        AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.matchResource(Rule.Action.ALERT, Rule.MatchResource.EXACT));
+        AdvancedMessageProcessing amp =
+                new AdvancedMessageProcessing(Rule.matchResource(Rule.Action.ALERT, Rule.MatchResource.EXACT));
         String xml = marshal(amp);
-        Assert.assertEquals(xml, "<amp xmlns=\"http://jabber.org/protocol/amp\"><rule action=\"alert\" condition=\"match-resource\" value=\"exact\"></rule></amp>");
+        Assert.assertEquals(xml,
+                "<amp xmlns=\"http://jabber.org/protocol/amp\"><rule action=\"alert\" condition=\"match-resource\" value=\"exact\"></rule></amp>");
     }
 
     @Test
@@ -222,6 +226,8 @@ public class AdvancedMessageProcessingTest extends XmlTest {
         Instant now = Instant.now();
         AdvancedMessageProcessing amp = new AdvancedMessageProcessing(Rule.expireAt(Rule.Action.ALERT, now));
         String xml = marshal(amp);
-        Assert.assertEquals(xml, "<amp xmlns=\"http://jabber.org/protocol/amp\"><rule action=\"alert\" condition=\"expire-at\" value=\"" + now.toString() + "\"></rule></amp>");
+        Assert.assertEquals(xml,
+                "<amp xmlns=\"http://jabber.org/protocol/amp\"><rule action=\"alert\" condition=\"expire-at\" value=\""
+                        + now.toString() + "\"></rule></amp>");
     }
 }

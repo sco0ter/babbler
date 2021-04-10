@@ -147,7 +147,9 @@ public class ScramSaslServer extends ScramBase implements SaslServer {
             // In response, the server sends a "server-first-message" containing the
             // user's iteration count i and the user's salt, and appends its own
             // nonce to the client-specified one.
-            serverFirstMessage = "r=" + nonce + ",s=" + DatatypeConverter.printBase64Binary(scramCredential.getSalt()) + ",i=" + scramCredential.getIterationCount();
+            serverFirstMessage =
+                    "r=" + nonce + ",s=" + DatatypeConverter.printBase64Binary(scramCredential.getSalt()) + ",i="
+                            + scramCredential.getIterationCount();
             return serverFirstMessage.getBytes(StandardCharsets.UTF_8);
 
         } else {
@@ -175,13 +177,15 @@ public class ScramSaslServer extends ScramBase implements SaslServer {
             // password.
             try {
                 String authMessage = computeAuthMessage();
-                byte[] clientSignature = hmac(scramCredential.getStoredKey(), authMessage.getBytes(StandardCharsets.UTF_8));
+                byte[] clientSignature =
+                        hmac(scramCredential.getStoredKey(), authMessage.getBytes(StandardCharsets.UTF_8));
                 byte[] clientProof = DatatypeConverter.parseBase64Binary(clientProofBase64);
                 byte[] recoveredClientKey = xor(clientSignature, clientProof);
                 if (Arrays.equals(h(recoveredClientKey), scramCredential.getStoredKey())) {
                     complete = true;
                     // return ServerSignature
-                    String serverFinalMessage = "v=" + DatatypeConverter.printBase64Binary(hmac(scramCredential.getServerKey(), authMessage.getBytes(StandardCharsets.UTF_8)));
+                    String serverFinalMessage = "v=" + DatatypeConverter.printBase64Binary(
+                            hmac(scramCredential.getServerKey(), authMessage.getBytes(StandardCharsets.UTF_8)));
                     return serverFinalMessage.getBytes(StandardCharsets.UTF_8);
                 } else {
                     // On failed authentication, the entire server-

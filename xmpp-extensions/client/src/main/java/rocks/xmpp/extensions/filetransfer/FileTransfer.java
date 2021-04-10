@@ -40,14 +40,15 @@ import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.QueuedExecutorService;
 
 /**
- * A class for managing a single file transfer.
- * It allows to monitor the progress and status of a file transfer by {@linkplain #addFileTransferStatusListener(Consumer) adding a listener}.
+ * A class for managing a single file transfer. It allows to monitor the progress and status of a file transfer by
+ * {@linkplain #addFileTransferStatusListener(Consumer) adding a listener}.
  *
  * @author Christian Schudt
  */
 public final class FileTransfer {
 
-    private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("File Transfer Thread"));
+    private static final ExecutorService EXECUTOR_SERVICE =
+            Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("File Transfer Thread"));
 
     private final long length;
 
@@ -96,7 +97,8 @@ public final class FileTransfer {
     }
 
     private void notifyFileTransferStatusListeners() {
-        XmppUtils.notifyEventListeners(fileTransferStatusListeners, new FileTransferStatusEvent(this, status.get(), bytesTransferred));
+        XmppUtils.notifyEventListeners(fileTransferStatusListeners,
+                new FileTransferStatusEvent(this, status.get(), bytesTransferred));
     }
 
     /**

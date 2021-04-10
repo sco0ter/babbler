@@ -76,7 +76,8 @@ public final class PrivateDataManager extends Manager {
     /**
      * Stores private data.
      *
-     * @param privateData The private data. The class of this object must be annotated with JAXB annotations and must known to the XMPP context in order to marshal und unmarshal it.
+     * @param privateData The private data. The class of this object must be annotated with JAXB annotations and must
+     *                    known to the XMPP context in order to marshal und unmarshal it.
      * @return The async result.
      */
     public final AsyncResult<Void> storeData(Object privateData) {

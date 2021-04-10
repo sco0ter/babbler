@@ -69,8 +69,8 @@ public final class Html {
     }
 
     /**
-     * Creates an empty HTML document with an empty body.
-     * Use this constructor if you want to create your body element manually with DOM operations.
+     * Creates an empty HTML document with an empty body. Use this constructor if you want to create your body element
+     * manually with DOM operations.
      *
      * @param document The document.
      * @see #getBody()
@@ -90,7 +90,8 @@ public final class Html {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = dbf.newDocumentBuilder();
-            Document document = builder.parse(new InputSource(new StringReader("<body>" + Objects.requireNonNull(xhtmlContent) + "</body>")));
+            Document document = builder.parse(
+                    new InputSource(new StringReader("<body>" + Objects.requireNonNull(xhtmlContent) + "</body>")));
             this.body = document.getDocumentElement();
         } catch (ParserConfigurationException | IOException e) {
             // Should never occur with this setup, so don't let the API user deal with it.

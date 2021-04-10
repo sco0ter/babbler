@@ -32,7 +32,8 @@ import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 /**
- * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/pubsub#publish-options}, which can be used to retrieve node meta data.
+ * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code
+ * http://jabber.org/protocol/pubsub#publish-options}, which can be used to retrieve node meta data.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
  * <pre>{@code
@@ -57,7 +58,8 @@ import rocks.xmpp.extensions.data.model.DataForm;
  * }</pre>
  *
  * @author Christian Schudt
- * @see <a href="https://xmpp.org/extensions/xep-0060.html#registrar-formtypes-publish">16.4.5 pubsub#publish-options FORM_TYPE</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#registrar-formtypes-publish">16.4.5 pubsub#publish-options
+ * FORM_TYPE</a>
  * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-publish-options">7.1.5 Publishing Options</a>
  * @see <a href="https://xmpp.org/extensions/xep-0222.html">XEP-0222: Persistent Storage of Public Data via PubSub</a>
  * @see <a href="https://xmpp.org/extensions/xep-0223.html">XEP-0223: Persistent Storage of Private Data via PubSub</a>
@@ -94,17 +96,20 @@ public final class PublishOptions implements StandardizedDataForm {
      *
      * @param accessModel The access model.
      * @return The publish options.
-     * @see <a href="https://xmpp.org/extensions/xep-0222.html">XEP-0222: Persistent Storage of Public Data via PubSub</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0222.html">XEP-0222: Persistent Storage of Public Data via
+     * PubSub</a>
      */
     public static PublishOptions forStorageOfPublicData(AccessModel accessModel) {
-        return builder().persistItems(true).sendLastPublishedItem(SendLastPublishedItem.NEVER).accessModel(accessModel).build();
+        return builder().persistItems(true).sendLastPublishedItem(SendLastPublishedItem.NEVER).accessModel(accessModel)
+                .build();
     }
 
     /**
      * Creates publish options for use of persistent storage of private data via pubsub.
      *
      * @return The publish options.
-     * @see <a href="https://xmpp.org/extensions/xep-0223.html">XEP-0223: Persistent Storage of Private Data via PubSub</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0223.html">XEP-0223: Persistent Storage of Private Data via
+     * PubSub</a>
      */
     public static PublishOptions forStorageOfPrivateData() {
         return builder().persistItems(true).accessModel(AccessModel.WHITELIST).build();
@@ -170,7 +175,8 @@ public final class PublishOptions implements StandardizedDataForm {
     }
 
     /**
-     * A builder class to build the publish options form. If not provided the default data form type is {@link rocks.xmpp.extensions.data.model.DataForm.Type#SUBMIT}.
+     * A builder class to build the publish options form. If not provided the default data form type is {@link
+     * rocks.xmpp.extensions.data.model.DataForm.Type#SUBMIT}.
      */
     public static final class Builder extends DataForm.Builder<Builder> {
 
@@ -216,16 +222,20 @@ public final class PublishOptions implements StandardizedDataForm {
             Collection<DataForm.Field> fields = new ArrayDeque<>();
 
             if (accessModel != null) {
-                fields.add(DataForm.Field.builder().name(ACCESS_MODEL).value(accessModel.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(ACCESS_MODEL).value(accessModel.name().toLowerCase())
+                        .type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (persistItems != null) {
                 fields.add(DataForm.Field.builder().name(PERSIST_ITEMS).value(persistItems).build());
             }
             if (sendLastPublishedItem != null) {
-                fields.add(DataForm.Field.builder().name(SEND_LAST_PUBLISHED_ITEM).value(sendLastPublishedItem.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE).build());
+                fields.add(DataForm.Field.builder().name(SEND_LAST_PUBLISHED_ITEM)
+                        .value(sendLastPublishedItem.name().toLowerCase()).type(DataForm.Field.Type.LIST_SINGLE)
+                        .build());
             }
             if (rosterGroupsAllowed != null && !rosterGroupsAllowed.isEmpty()) {
-                fields.add(DataForm.Field.builder().name(ROSTER_GROUPS_ALLOWED).values(rosterGroupsAllowed).type(DataForm.Field.Type.LIST_MULTI).build());
+                fields.add(DataForm.Field.builder().name(ROSTER_GROUPS_ALLOWED).values(rosterGroupsAllowed)
+                        .type(DataForm.Field.Type.LIST_MULTI).build());
             }
 
             fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);

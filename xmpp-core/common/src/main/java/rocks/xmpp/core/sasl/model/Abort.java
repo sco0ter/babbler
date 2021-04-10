@@ -34,8 +34,11 @@ import rocks.xmpp.core.stream.model.StreamElement;
  *
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#sasl-process-neg-abort">6.4.4.  Abort</a></cite></p>
- * <p>The initiating entity aborts the handshake for this authentication mechanism by sending an {@code <abort/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-sasl' namespace.</p>
- * <p>Upon receiving an {@code <abort/>} element, the receiving entity MUST return a {@code <failure/>} element qualified by the 'urn:ietf:params:xml:ns:xmpp-sasl' namespace and containing an {@code <aborted/>} child element.</p>
+ * <p>The initiating entity aborts the handshake for this authentication mechanism by sending an {@code <abort/>}
+ * element qualified by the 'urn:ietf:params:xml:ns:xmpp-sasl' namespace.</p>
+ * <p>Upon receiving an {@code <abort/>} element, the receiving entity MUST return a {@code <failure/>} element
+ * qualified by the 'urn:ietf:params:xml:ns:xmpp-sasl' namespace and containing an {@code <aborted/>} child
+ * element.</p>
  * </blockquote>
  *
  * <p>This class is immutable.</p>

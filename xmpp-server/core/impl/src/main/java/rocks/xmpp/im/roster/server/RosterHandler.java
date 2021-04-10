@@ -74,7 +74,8 @@ public class RosterHandler extends AbstractIQHandler {
                         return iq.createResult();
                     } else {
                         // RFC 6121 2.5.3.  Error Cases
-                        // If the value of the 'jid' attribute specifies an item that is not in the roster, then the server MUST return an <item-not-found/> stanza error.
+                        // If the value of the 'jid' attribute specifies an item that is not in the roster, then the
+                        // server MUST return an <item-not-found/> stanza error.
                         return iq.createError(Condition.ITEM_NOT_FOUND);
                     }
                 } else {
@@ -113,7 +114,8 @@ public class RosterHandler extends AbstractIQHandler {
                 return new StanzaError(Condition.BAD_REQUEST, "Item contains duplicate groups");
             }
             if (group.isEmpty()) {
-                // The server MUST return a <not-acceptable/> stanza error to the client if the roster set contains any of the following violations:
+                // The server MUST return a <not-acceptable/> stanza error to the client if the roster set contains any
+                // of the following violations:
                 // 2. The XML character data of the <group/> element is of zero length.
                 return new StanzaError(Condition.NOT_ACCEPTABLE, "Group is of zero length");
             }

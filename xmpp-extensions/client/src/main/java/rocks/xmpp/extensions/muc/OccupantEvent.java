@@ -31,8 +31,8 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.muc.model.Actor;
 
 /**
- * An event which is triggered by an occupant in a chat room.
- * Typical events are "joins" and "leaves", as well as "bans" or "kicks".
+ * An event which is triggered by an occupant in a chat room. Typical events are "joins" and "leaves", as well as "bans"
+ * or "kicks".
  *
  * @author Christian Schudt
  * @see ChatRoom#addOccupantListener(Consumer)

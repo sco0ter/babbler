@@ -42,8 +42,10 @@ import java.util.stream.Collectors;
  * A minimalistic DNS resolver, which can resolve SRV and TXT records in the context of XMPP.
  *
  * @author Christian Schudt
- * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">RFC 6120 3.2.1.  Preferred Process: SRV Lookup</a>
- * @see <a href="https://xmpp.org/extensions/xep-0156.html">XEP-0156: Discovering Alternative XMPP Connection Methods</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">RFC 6120 3.2.1.  Preferred Process: SRV
+ * Lookup</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0156.html">XEP-0156: Discovering Alternative XMPP Connection
+ * Methods</a>
  */
 public final class DnsResolver {
 
@@ -55,7 +57,8 @@ public final class DnsResolver {
     /**
      * Resolves DNS SRV records for the given domain.
      *
-     * <p>The service is "xmpp-client", the protocol is "tcp", resulting in a query of {@code _xmpp-client._tcp.domain}.</p>
+     * <p>The service is "xmpp-client", the protocol is "tcp", resulting in a query of {@code
+     * _xmpp-client._tcp.domain}.</p>
      *
      * @param service    The service, usually "xmpp-client" or "xmpps-client".
      * @param domain     The domain.
@@ -63,10 +66,13 @@ public final class DnsResolver {
      * @param timeout    The timeout.
      * @return The DNS SRV records.
      * @throws IOException If a timeout occurs or no connection to the DNS server can be established.
-     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">RFC 6120 3.2.1.  Preferred Process: SRV Lookup</a>
+     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">RFC 6120 3.2.1.  Preferred Process: SRV
+     * Lookup</a>
      */
-    public static List<SrvRecord> resolveSRV(CharSequence service, CharSequence domain, String nameServer, long timeout) throws IOException {
-        return resolve("_" + service + "._tcp.", domain, ResourceRecord.Type.SRV, nameServer, timeout, resourceRecord -> (SrvRecord) resourceRecord.data);
+    public static List<SrvRecord> resolveSRV(CharSequence service, CharSequence domain, String nameServer, long timeout)
+            throws IOException {
+        return resolve("_" + service + "._tcp.", domain, ResourceRecord.Type.SRV, nameServer, timeout,
+                resourceRecord -> (SrvRecord) resourceRecord.data);
     }
 
     /**
@@ -77,13 +83,16 @@ public final class DnsResolver {
      * @param timeout    The timeout.
      * @return The DNS SRV records.
      * @throws IOException If a timeout occurs or no connection to the DNS server can be established.
-     * @see <a href="https://xmpp.org/extensions/xep-0156.html">XEP-0156: Discovering Alternative XMPP Connection Methods</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0156.html">XEP-0156: Discovering Alternative XMPP Connection
+     * Methods</a>
      */
     public static List<TxtRecord> resolveTXT(CharSequence domain, String nameServer, long timeout) throws IOException {
-        return resolve("_xmppconnect.", domain, ResourceRecord.Type.TXT, nameServer, timeout, resourceRecord -> (TxtRecord) resourceRecord.data);
+        return resolve("_xmppconnect.", domain, ResourceRecord.Type.TXT, nameServer, timeout,
+                resourceRecord -> (TxtRecord) resourceRecord.data);
     }
 
-    private static <T> List<T> resolve(String prefix, CharSequence domain, ResourceRecord.Type type, String nameServer, long timeout, Function<ResourceRecord, T> mapper) throws IOException {
+    private static <T> List<T> resolve(String prefix, CharSequence domain, ResourceRecord.Type type, String nameServer,
+                                       long timeout, Function<ResourceRecord, T> mapper) throws IOException {
         try {
             // Ensure a timeout > 0 in order to not block infinitely.
             long t = timeout <= 0 ? 1000 : timeout;
@@ -91,7 +100,7 @@ public final class DnsResolver {
             return CACHE.computeIfAbsent(question, key -> {
                 final Message message = new Message(question);
                 try (DatagramChannel channel = DatagramChannel.open();
-                     Selector selector = Selector.open()) {
+                        Selector selector = Selector.open()) {
                     channel.configureBlocking(false);
                     // 8.8.8.8 = Google DNS service
                     channel.connect(new InetSocketAddress(nameServer == null ? "8.8.8.8" : nameServer, 53));

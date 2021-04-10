@@ -33,7 +33,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
 
 /**
- * This class is a container for the three different In-Band ByteStream elements and provides the namespace for IBB, so that it can be used by other protocols such as XEP-0095.
+ * This class is a container for the three different In-Band ByteStream elements and provides the namespace for IBB, so
+ * that it can be used by other protocols such as XEP-0095.
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>

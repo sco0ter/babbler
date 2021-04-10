@@ -77,8 +77,8 @@ public final class MessageDeliveredEvent extends EventObject {
 
     /**
      * Gets the sender of the receipt. Usually this is the receiver of the original message, which requested the receipt
-     * and which can be referenced via the id.
-     * But in the context of Multi-User Chat (XEP-0045) or Multi Cast (XEP-0033) this is not the case.s
+     * and which can be referenced via the id. But in the context of Multi-User Chat (XEP-0045) or Multi Cast (XEP-0033)
+     * this is not the case.s
      *
      * @return The sender.
      */

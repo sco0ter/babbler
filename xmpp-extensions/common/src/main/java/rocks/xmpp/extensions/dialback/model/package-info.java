@@ -27,7 +27,8 @@
  */
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = Dialback.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED, xmlns = {@XmlNs(prefix = "db", namespaceURI = Dialback.NAMESPACE)})
+@XmlSchema(namespace = Dialback.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED,
+        xmlns = {@XmlNs(prefix = "db", namespaceURI = Dialback.NAMESPACE)})
 
 package rocks.xmpp.extensions.dialback.model;
 

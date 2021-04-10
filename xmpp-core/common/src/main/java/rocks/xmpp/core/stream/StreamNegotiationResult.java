@@ -44,7 +44,8 @@ public enum StreamNegotiationResult {
      */
     INCOMPLETE,
     /**
-     * The feature will be ignored. Feature negotiation of the feature is either not initiated or aborted if it has already been started.
+     * The feature will be ignored. Feature negotiation of the feature is either not initiated or aborted if it has
+     * already been started.
      */
     IGNORE
 }

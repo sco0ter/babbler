@@ -23,12 +23,17 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms Validation</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0122.html">XEP-0122: Data Forms
+ * Validation</a>.
  *
- * <p>It defines a backwards-compatible extension to the XMPP Data Forms protocol that enables applications to specify additional validation guidelines related to a form, such as validation of standard XML datatypes, application-specific datatypes, value ranges, and regular expressions.</p>
+ * <p>It defines a backwards-compatible extension to the XMPP Data Forms protocol that enables applications to specify
+ * additional validation guidelines related to a form, such as validation of standard XML datatypes,
+ * application-specific datatypes, value ranges, and regular expressions.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSchema(namespace = Validation.NAMESPACE, xmlns = {@XmlNs(prefix = "xdv", namespaceURI = "http://jabber.org/protocol/xdata-validate")}, elementFormDefault = XmlNsForm.QUALIFIED)
+@XmlSchema(namespace = Validation.NAMESPACE,
+        xmlns = {@XmlNs(prefix = "xdv", namespaceURI = "http://jabber.org/protocol/xdata-validate")},
+        elementFormDefault = XmlNsForm.QUALIFIED)
 package rocks.xmpp.extensions.data.validate.model;
 
 import javax.xml.bind.annotation.XmlAccessType;

@@ -61,7 +61,8 @@ public class WebSocketConnection extends AbstractConnection {
 
     protected SessionOpen sessionOpen;
 
-    public WebSocketConnection(Session session, StreamHandler streamHandler, Consumer<Throwable> onException, CompletableFuture<Void> closeFuture, ConnectionConfiguration connectionConfiguration) {
+    public WebSocketConnection(Session session, StreamHandler streamHandler, Consumer<Throwable> onException,
+                               CompletableFuture<Void> closeFuture, ConnectionConfiguration connectionConfiguration) {
         super(connectionConfiguration);
         this.closeFuture = closeFuture;
         this.session = session;
@@ -148,7 +149,8 @@ public class WebSocketConnection extends AbstractConnection {
     public final CompletionStage<Void> open(final SessionOpen sessionOpen) {
         this.sessionOpen = sessionOpen;
         // Opens the stream
-        return send(new Open(sessionOpen.getTo(), sessionOpen.getFrom(), sessionOpen.getId(), sessionOpen.getLanguage()));
+        return send(
+                new Open(sessionOpen.getTo(), sessionOpen.getFrom(), sessionOpen.getId(), sessionOpen.getLanguage()));
     }
 
     @Override

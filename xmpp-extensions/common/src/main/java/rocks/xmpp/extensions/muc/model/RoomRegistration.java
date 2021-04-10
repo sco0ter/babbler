@@ -33,7 +33,8 @@ import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 /**
- * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#register}, which can be used to register with a MUC room.
+ * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code
+ * http://jabber.org/protocol/muc#register}, which can be used to register with a MUC room.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
  * <pre>{@code
@@ -54,7 +55,8 @@ import rocks.xmpp.extensions.data.model.DataForm;
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#register">7.10 Registering with a Room</a>
- * @see <a href="https://xmpp.org/extensions/xep-0045.html#registrar-formtype-register">15.5.1 muc#register FORM_TYPE</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#registrar-formtype-register">15.5.1 muc#register
+ * FORM_TYPE</a>
  */
 public final class RoomRegistration implements StandardizedDataForm {
 
@@ -192,7 +194,7 @@ public final class RoomRegistration implements StandardizedDataForm {
     }
 
     /**
-     * A builder to build MUC registration forms. The form is of type {@link rocks.xmpp.extensions.data.model.DataForm.Type#SUBMIT} by default.
+     * A builder to build MUC registration forms. The form is of type {@link DataForm.Type#SUBMIT} by default.
      */
     public static final class Builder extends DataForm.Builder<Builder> {
         private Boolean allowRegister;
@@ -308,7 +310,8 @@ public final class RoomRegistration implements StandardizedDataForm {
                 fields.add(DataForm.Field.builder().name(EMAIL).value(email).build());
             }
             if (faqEntry != null) {
-                fields.add(DataForm.Field.builder().name(FAQ_ENTRY).value(faqEntry).type(DataForm.Field.Type.TEXT_MULTI).build());
+                fields.add(DataForm.Field.builder().name(FAQ_ENTRY).value(faqEntry).type(DataForm.Field.Type.TEXT_MULTI)
+                        .build());
             }
             if (givenName != null) {
                 fields.add(DataForm.Field.builder().name(GIVEN_NAME).value(givenName).build());

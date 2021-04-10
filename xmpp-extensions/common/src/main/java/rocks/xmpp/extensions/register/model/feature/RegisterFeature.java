@@ -29,7 +29,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
- * The implementation of the {@code <register/>} element in the {@code http://jabber.org/features/iq-register} namespace.
+ * The implementation of the {@code <register/>} element in the {@code http://jabber.org/features/iq-register}
+ * namespace.
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0077.html">XEP-0077: In-Band Registration</a>

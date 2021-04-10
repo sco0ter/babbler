@@ -40,7 +40,8 @@ import rocks.xmpp.extensions.shim.model.Headers;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
- * Implementation of <a href="https://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>.
+ * Implementation of <a href="https://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet
+ * Metadata</a>.
  *
  * @author Christian Schudt
  */
@@ -110,7 +111,8 @@ public class StanzaHeadersAndInternetMetadataProtocol implements HeaderManager {
         @Override
         public final Set<String> getFeatures() {
             // https://xmpp.org/extensions/xep-0131.html#disco-header
-            return supportedHeaders.stream().map(supportedHeader -> Headers.NAMESPACE + '#' + supportedHeader).collect(Collectors.toSet());
+            return supportedHeaders.stream().map(supportedHeader -> Headers.NAMESPACE + '#' + supportedHeader)
+                    .collect(Collectors.toSet());
         }
 
         @Override

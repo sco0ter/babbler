@@ -34,7 +34,7 @@ import rocks.xmpp.core.stanza.model.Presence;
  * @author Christian Schudt
  */
 public final class PresenceEvent extends StanzaEvent<Presence> {
-    
+
     /**
      * Constructs a presence event.
      *

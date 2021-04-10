@@ -33,7 +33,8 @@ import rocks.xmpp.extensions.rsm.model.ResultSetItem;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 /**
- * A result set usually consists of a list of items and additional result set information (e.g. to mark first and last items).
+ * A result set usually consists of a list of items and additional result set information (e.g. to mark first and last
+ * items).
  *
  * <p>This class is immutable.</p>
  *
@@ -73,18 +74,20 @@ public final class ResultSet<T extends ResultSetItem> {
     /**
      * Creates a result set from a result set provider and a result set management.
      *
-     * <p>If the result set management asks for a limited result set (e.g. starting at a specific index and a maximum size),
-     * this method takes care, that the result set provider returns the appropriate results.</p>
+     * <p>If the result set management asks for a limited result set (e.g. starting at a specific index and a maximum
+     * size), this method takes care, that the result set provider returns the appropriate results.</p>
      *
      * <p>The returned result set contains the limited result set as well as a result set management,
-     * which contains the total item count and which can be used by the requester to navigate through the results, e.g. by asking for the previous or next page.</p>
+     * which contains the total item count and which can be used by the requester to navigate through the results, e.g.
+     * by asking for the previous or next page.</p>
      *
      * @param resultSetProvider   The result set provider.
      * @param resultSetManagement The result set management.
      * @param <T>                 The type of the result set.
      * @return The result set.
      */
-    public static <T extends ResultSetItem> ResultSet<T> create(ResultSetProvider<T> resultSetProvider, ResultSetManagement resultSetManagement) {
+    public static <T extends ResultSetItem> ResultSet<T> create(ResultSetProvider<T> resultSetProvider,
+                                                                ResultSetManagement resultSetManagement) {
 
         // If the query has a RSM extension, use it and return a limited result set.
         if (resultSetManagement != null && resultSetManagement.getMaxSize() != null) {
@@ -92,23 +95,31 @@ public final class ResultSet<T extends ResultSetItem> {
             if (resultSetManagement.getMaxSize() != 0) {
                 if (resultSetManagement.getAfter() != null) {
                     // 2.2 Paging Forwards Through a Result Set
-                    return createResponse(resultSetProvider.getItemsAfter(resultSetManagement.getAfter(), resultSetManagement.getMaxSize()), resultSetProvider);
+                    return createResponse(resultSetProvider
+                                    .getItemsAfter(resultSetManagement.getAfter(), resultSetManagement.getMaxSize()),
+                            resultSetProvider);
                 } else if (resultSetManagement.getBefore() != null) {
                     if (!resultSetManagement.getBefore().isEmpty()) {
                         // 2.3 Paging Backwards Through a Result Set
-                        return createResponse(resultSetProvider.getItemsBefore(resultSetManagement.getBefore(), resultSetManagement.getMaxSize()), resultSetProvider);
+                        return createResponse(resultSetProvider
+                                .getItemsBefore(resultSetManagement.getBefore(),
+                                        resultSetManagement.getMaxSize()), resultSetProvider);
                     } else {
                         // 2.5 Requesting the Last Page in a Result Set
-                        return createResponse(resultSetProvider.getItems(resultSetProvider.getItemCount() - resultSetManagement.getItemCount(), resultSetManagement.getMaxSize()), resultSetProvider);
+                        return createResponse(resultSetProvider
+                                .getItems(resultSetProvider.getItemCount() - resultSetManagement.getItemCount(),
+                                        resultSetManagement.getMaxSize()), resultSetProvider);
                     }
                 } else {
                     // 2.6 Retrieving a Page Out of Order
                     int fromIndex = resultSetManagement.getIndex() != null ? resultSetManagement.getIndex() : 0;
-                    return createResponse(resultSetProvider.getItems(fromIndex, resultSetManagement.getMaxSize()), resultSetProvider);
+                    return createResponse(resultSetProvider.getItems(fromIndex, resultSetManagement.getMaxSize()),
+                            resultSetProvider);
                 }
             } else {
                 // 2.7 Getting the Item Count
-                return new ResultSet<>(null, ResultSetManagement.forCountResponse(resultSetProvider.getItemCount()));
+                return new ResultSet<>(null,
+                        ResultSetManagement.forCountResponse(resultSetProvider.getItemCount()));
             }
         } else {
             // If there's no RSM in the query, return all items, without any result set info.
@@ -116,11 +127,15 @@ public final class ResultSet<T extends ResultSetItem> {
         }
     }
 
-    private static <T extends ResultSetItem> ResultSet<T> createResponse(List<T> result, final ResultSetProvider<T> resultSetProvider) {
+    private static <T extends ResultSetItem> ResultSet<T> createResponse(List<T> result,
+                                                                         final ResultSetProvider<T> resultSetProvider) {
         ResultSetManagement resultSetManagement;
         if (!result.isEmpty()) {
-            //  the responding entity MUST include <first/> and <last/> elements that specify the unique ID (UID) for the first and last items in the page.
-            resultSetManagement = ResultSetManagement.forResponse(resultSetProvider.getItemCount(), resultSetProvider.indexOf(result.get(0).getId()), result.get(0).getId(), result.get(result.size() - 1).getId());
+            //  the responding entity MUST include <first/> and <last/> elements that specify the unique ID (UID) for
+            //  the first and last items in the page.
+            resultSetManagement = ResultSetManagement
+                    .forResponse(resultSetProvider.getItemCount(), resultSetProvider.indexOf(result.get(0).getId()),
+                            result.get(0).getId(), result.get(result.size() - 1).getId());
         } else {
             // If there are no items in the page, then the <first/> and <last/> elements MUST NOT be included.
             // Only return the <count/> in this case.

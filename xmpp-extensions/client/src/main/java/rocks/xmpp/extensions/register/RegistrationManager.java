@@ -37,7 +37,8 @@ import rocks.xmpp.extensions.register.model.feature.RegisterFeature;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
- * This manager allows to register, cancel an existing registration (i.e. remove an account) or change the password with a host.
+ * This manager allows to register, cancel an existing registration (i.e. remove an account) or change the password with
+ * a host.
  *
  * @author Christian Schudt
  */
@@ -53,12 +54,15 @@ public final class RegistrationManager extends Manager {
      * @return The async result with true, if registration is supported by the server; otherwise false.
      */
     public final AsyncResult<Boolean> isRegistrationSupported() {
-        // server returns a stream header to the client and MAY announce support for in-band registration by including the relevant stream feature.
-        boolean isSupported = xmppSession.getManager(StreamFeaturesManager.class).getFeatures().containsKey(RegisterFeature.class);
+        // server returns a stream header to the client and MAY announce support for in-band registration by including
+        // the relevant stream feature.
+        boolean isSupported =
+                xmppSession.getManager(StreamFeaturesManager.class).getFeatures().containsKey(RegisterFeature.class);
 
         // Since the stream feature is only optional, discover the server features, too.
         if (!isSupported) {
-            EntityCapabilitiesManager entityCapabilitiesManager = xmppSession.getManager(EntityCapabilitiesManager.class);
+            EntityCapabilitiesManager entityCapabilitiesManager =
+                    xmppSession.getManager(EntityCapabilitiesManager.class);
             return entityCapabilitiesManager.discoverCapabilities(xmppSession.getDomain())
                     .thenApply(infoNode -> infoNode.getFeatures().contains(Registration.NAMESPACE));
         }
@@ -70,7 +74,8 @@ public final class RegistrationManager extends Manager {
      *
      * <p>In order to check if a field is required, you should check if a field is not null.</p>
      *
-     * <p>If you are already registered to the server, this method returns your registration data and {@link rocks.xmpp.extensions.register.model.Registration#isRegistered()} returns true.</p>
+     * <p>If you are already registered to the server, this method returns your registration data and {@link
+     * rocks.xmpp.extensions.register.model.Registration#isRegistered()} returns true.</p>
      *
      * @return The async result with the registration data.
      * @see <a href="https://xmpp.org/extensions/xep-0077.html#usecases-register">3.1 Entity Registers with a Host</a>
@@ -95,7 +100,8 @@ public final class RegistrationManager extends Manager {
      * Cancels a registration. This method must be called after having authenticated to the server.
      *
      * @return The async result.
-     * @see <a href="https://xmpp.org/extensions/xep-0077.html#usecases-cancel">3.2 Entity Cancels an Existing Registration</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0077.html#usecases-cancel">3.2 Entity Cancels an Existing
+     * Registration</a>
      */
     public final AsyncResult<Void> cancelRegistration() {
         return xmppSession.query(IQ.set(Registration.remove()), Void.class);
@@ -111,6 +117,7 @@ public final class RegistrationManager extends Manager {
      */
 
     public final AsyncResult<Void> changePassword(String username, String password) {
-        return xmppSession.query(IQ.set(Registration.builder().username(username).password(password).build()), Void.class);
+        return xmppSession
+                .query(IQ.set(Registration.builder().username(username).password(password).build()), Void.class);
     }
 }

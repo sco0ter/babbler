@@ -176,7 +176,8 @@ public abstract class AbstractServiceDiscoveryManager implements ServiceDiscover
                         return Collections.<Item>emptyList();
                     }).handle((items, throwable) -> {
                         // If one disco#info fails, don't let the whole discoverServices() method fail.
-                        // Instead of failing, return an empty list, other services can hopefully be discovered successfully.
+                        // Instead of failing, return an empty list, other services can hopefully
+                        // be discovered successfully.
                         if (throwable != null) {
                             return Collections.<Item>emptyList();
                         } else {

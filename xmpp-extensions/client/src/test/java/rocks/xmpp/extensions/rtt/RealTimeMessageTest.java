@@ -36,7 +36,8 @@ import rocks.xmpp.extensions.rtt.model.RealTimeText;
  */
 public class RealTimeMessageTest {
 
-    private static void applyActionElements(InboundRealTimeMessage realTimeMessage, List<? extends RealTimeText.Action> actions) {
+    private static void applyActionElements(InboundRealTimeMessage realTimeMessage,
+                                            List<? extends RealTimeText.Action> actions) {
         actions.forEach(realTimeMessage::applyActionElement);
     }
 
@@ -73,7 +74,8 @@ public class RealTimeMessageTest {
 
     @Test
     public void shouldComputeInsertionElements2() {
-        List<RealTimeText.Action> actionList2 = OutboundRealTimeMessage.computeActionElements("Hello Bob, this is Alice!", "Hello, this is Alice!");
+        List<RealTimeText.Action> actionList2 =
+                OutboundRealTimeMessage.computeActionElements("Hello Bob, this is Alice!", "Hello, this is Alice!");
         Assert.assertEquals(actionList2.size(), 1);
         Assert.assertTrue(actionList2.get(0) instanceof RealTimeText.EraseText);
         Assert.assertEquals((int) ((RealTimeText.EraseText) actionList2.get(0)).getPosition(), 9);
@@ -115,7 +117,8 @@ public class RealTimeMessageTest {
 
     @Test
     public void shouldComputeInsertionElements5() {
-        List<RealTimeText.Action> actionList2 = OutboundRealTimeMessage.computeActionElements("Hello, this is Alice!", "Hello Bob, this is Alice!");
+        List<RealTimeText.Action> actionList2 =
+                OutboundRealTimeMessage.computeActionElements("Hello, this is Alice!", "Hello Bob, this is Alice!");
         Assert.assertEquals(actionList2.size(), 1);
         Assert.assertTrue(actionList2.get(0) instanceof RealTimeText.InsertText);
         Assert.assertEquals((int) ((RealTimeText.InsertText) actionList2.get(0)).getPosition(), 5);
@@ -129,7 +132,8 @@ public class RealTimeMessageTest {
 
     @Test
     public void shouldComputeInsertionElements6() {
-        List<RealTimeText.Action> actionList2 = OutboundRealTimeMessage.computeActionElements("abbbbbbbaaaaaaaaaaaa", "abbbbbbaaaaaaaaaaaa");
+        List<RealTimeText.Action> actionList2 =
+                OutboundRealTimeMessage.computeActionElements("abbbbbbbaaaaaaaaaaaa", "abbbbbbaaaaaaaaaaaa");
         Assert.assertEquals(actionList2.size(), 1);
         Assert.assertTrue(actionList2.get(0) instanceof RealTimeText.EraseText);
         Assert.assertEquals((int) ((RealTimeText.EraseText) actionList2.get(0)).getPosition(), 8);
@@ -143,7 +147,8 @@ public class RealTimeMessageTest {
 
     @Test
     public void shouldComputeInsertionHighSurrogate() {
-        List<RealTimeText.Action> actionList = OutboundRealTimeMessage.computeActionElements("1\uDBFF\uDFFC23\uDBFF\uDFFCa", "1\uDBFF\uDFFC23\uDBFF\uDFFCba");
+        List<RealTimeText.Action> actionList = OutboundRealTimeMessage
+                .computeActionElements("1\uDBFF\uDFFC23\uDBFF\uDFFCa", "1\uDBFF\uDFFC23\uDBFF\uDFFCba");
         Assert.assertEquals(actionList.size(), 1);
         Assert.assertTrue(actionList.get(0) instanceof RealTimeText.InsertText);
         Assert.assertEquals((int) ((RealTimeText.InsertText) actionList.get(0)).getPosition(), 5);
@@ -157,7 +162,8 @@ public class RealTimeMessageTest {
 
     @Test
     public void shouldComputeErasureHighSurrogate() {
-        List<RealTimeText.Action> actionList = OutboundRealTimeMessage.computeActionElements("a\uDBFF\uDFFCb\uDBFF\uDFFCc\uDBFF\uDFFCd", "ad");
+        List<RealTimeText.Action> actionList =
+                OutboundRealTimeMessage.computeActionElements("a\uDBFF\uDFFCb\uDBFF\uDFFCc\uDBFF\uDFFCd", "ad");
         Assert.assertEquals(actionList.size(), 1);
         Assert.assertTrue(actionList.get(0) instanceof RealTimeText.EraseText);
         Assert.assertEquals((int) ((RealTimeText.EraseText) actionList.get(0)).getPosition(), 6);
@@ -196,7 +202,8 @@ public class RealTimeMessageTest {
         Assert.assertEquals(boundaries6[0], 3);
         Assert.assertEquals(boundaries6[1], 3);
 
-        int[] boundaries7 = OutboundRealTimeMessage.determineBounds("Hello, this is Alice!", "Hello Bob, this is Alice!");
+        int[] boundaries7 =
+                OutboundRealTimeMessage.determineBounds("Hello, this is Alice!", "Hello Bob, this is Alice!");
         Assert.assertEquals(boundaries7[0], 5);
         Assert.assertEquals(boundaries7[1], 5);
 
@@ -251,7 +258,8 @@ public class RealTimeMessageTest {
         RealTimeText.EraseText eraseText3 = new RealTimeText.EraseText(3, 8);
         RealTimeText.InsertText insertText4 = new RealTimeText.InsertText(" there,", 5);
         InboundRealTimeMessage realTimeMessage = new InboundRealTimeMessage(null, null, 0, null);
-        applyActionElements(realTimeMessage, Arrays.asList(insertText1, eraseText1, insertText2, eraseText2, insertText3, eraseText3, insertText4));
+        applyActionElements(realTimeMessage,
+                Arrays.asList(insertText1, eraseText1, insertText2, eraseText2, insertText3, eraseText3, insertText4));
         Assert.assertEquals(realTimeMessage.getText(), "Hello there, World");
     }
 }

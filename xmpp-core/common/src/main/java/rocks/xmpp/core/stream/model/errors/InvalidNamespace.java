@@ -30,8 +30,11 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <invalid-namespace/>} stream error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-invalid-namespace">4.9.3.10.  invalid-namespace</a></cite></p>
- * <p>The stream namespace name is something other than "http://etherx.jabber.org/streams" (see Section 11.2) or the content namespace declared as the default namespace is not supported (e.g., something other than "jabber:client" or "jabber:server").</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-invalid-namespace">4.9.3.10.
+ * invalid-namespace</a></cite></p>
+ * <p>The stream namespace name is something other than "http://etherx.jabber.org/streams" (see Section 11.2) or the
+ * content namespace declared as the default namespace is not supported (e.g., something other than "jabber:client" or
+ * "jabber:server").</p>
  * </blockquote>
  * This class is a singleton.
  *

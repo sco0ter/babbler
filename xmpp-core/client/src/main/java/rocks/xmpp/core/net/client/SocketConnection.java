@@ -62,7 +62,8 @@ import rocks.xmpp.extensions.sm.client.ClientStreamManager;
 /**
  * The default TCP socket connection as described in <a href="https://xmpp.org/rfcs/rfc6120.html#tcp">TCP Binding</a>.
  *
- * <p>If no hostname is set (null or empty) the connection tries to resolve the hostname via an <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">SRV DNS lookup</a>.</p>
+ * <p>If no hostname is set (null or empty) the connection tries to resolve the hostname via an <a
+ * href="https://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">SRV DNS lookup</a>.</p>
  *
  * <p>This class is unconditionally thread-safe.</p>
  *
@@ -114,7 +115,8 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
 
     private SessionOpen sessionOpen;
 
-    public SocketConnection(final Socket socket, final XmppSession xmppSession, final TcpConnectionConfiguration<Socket> configuration) {
+    public SocketConnection(final Socket socket, final XmppSession xmppSession,
+                            final TcpConnectionConfiguration<Socket> configuration) {
         super(configuration);
         this.socket = socket;
         try {
@@ -124,10 +126,12 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
             this.tcpConnectionConfiguration = configuration;
             this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
             this.streamManager = xmppSession.getManager(ClientStreamManager.class);
-            this.securityManager = new StartTlsManager(xmppSession, this, tcpConnectionConfiguration.getChannelEncryption());
+            this.securityManager =
+                    new StartTlsManager(xmppSession, this, tcpConnectionConfiguration.getChannelEncryption());
             this.compressionManager = new CompressionManager(xmppSession, this);
             compressionManager.getConfiguredCompressionMethods().clear();
-            compressionManager.getConfiguredCompressionMethods().addAll(tcpConnectionConfiguration.getCompressionMethods());
+            compressionManager.getConfiguredCompressionMethods()
+                    .addAll(tcpConnectionConfiguration.getCompressionMethods());
             streamFeaturesManager.addFeatureNegotiator(securityManager);
             streamFeaturesManager.addFeatureNegotiator(compressionManager);
             streamFeaturesManager.addFeatureNegotiator(streamManager);
@@ -168,7 +172,8 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
     }
 
     /**
-     * This method is called from the reader thread. Because it accesses shared data (socket, outputStream, inputStream) it should be synchronized.
+     * This method is called from the reader thread. Because it accesses shared data (socket, outputStream, inputStream)
+     * it should be synchronized.
      */
     @Override
     public void secureConnection() throws IOException, CertificateException, NoSuchAlgorithmException {
@@ -222,8 +227,10 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
     @Override
     public void compressConnection(final String method, final Runnable onSuccess) throws Exception {
         CompressionMethod compressionMethod = compressionManager.getNegotiatedCompressionMethod();
-        // We are in the reader thread here. Make sure it sees the streams assigned by the application thread in the connect() method by using synchronized.
-        // The following might look overly verbose, but it follows the rule to "never call an alien method from within a synchronized region".
+        // We are in the reader thread here. Make sure it sees the streams assigned by the application
+        // thread in the connect() method by using synchronized.
+        // The following might look overly verbose,
+        // but it follows the rule to "never call an alien method from within a synchronized region".
         InputStream iStream;
         OutputStream oStream;
         synchronized (SocketConnection.this) {
@@ -238,8 +245,10 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
                 outputStream = oStream;
             }
         } catch (IOException e) {
-            // If compression processing fails after the new (compressed) stream has been established, the entity that detects the error SHOULD generate a stream error and close the stream
-            xmppSession.send(new StreamError(Condition.UNDEFINED_CONDITION, new StreamCompression.Failure(StreamCompression.Failure.Condition.PROCESSING_FAILED)));
+            // If compression processing fails after the new (compressed) stream has been established,
+            // the entity that detects the error SHOULD generate a stream error and close the stream
+            xmppSession.send(new StreamError(Condition.UNDEFINED_CONDITION,
+                    new StreamCompression.Failure(StreamCompression.Failure.Condition.PROCESSING_FAILED)));
             try {
                 xmppSession.close();
             } catch (XmppException e1) {
@@ -287,7 +296,8 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
         }
         // This call closes the stream and waits until everything has been sent to the server.
         return writeFuture.whenCompleteAsync((aVoid, throwable) -> {
-            // This call shuts down the reader and waits for a </stream> response from the server, if it hasn't already shut down before by the server.
+            // This call shuts down the reader and waits for a </stream> response from the server,
+            // if it hasn't already shut down before by the server.
             if (reader != null) {
                 reader.shutdown();
             }
@@ -305,7 +315,8 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
                 inputStream = null;
                 outputStream = null;
 
-                // We have sent a </stream:stream> to close the stream and waited for a server response, which also closes the stream by sending </stream:stream>.
+                // We have sent a </stream:stream> to close the stream and waited for a server response,
+                // which also closes the stream by sending </stream:stream>.
                 // Now close the socket.
                 if (socket != null) {
                     try {

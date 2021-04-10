@@ -61,26 +61,29 @@ public class ScramClientTest {
         });
 
         scramSaslClient.evaluateChallenge(new byte[0]);
-        Assert.assertEquals(DatatypeConverter.printBase64Binary(scramSaslClient.hi("test".getBytes(StandardCharsets.UTF_8), "salt".getBytes(StandardCharsets.UTF_8), 4096)), "suIjHg0e14CDoom6wmHKz3naWOc=");
+        Assert.assertEquals(DatatypeConverter.printBase64Binary(scramSaslClient
+                        .hi("test".getBytes(StandardCharsets.UTF_8), "salt".getBytes(StandardCharsets.UTF_8), 4096)),
+                "suIjHg0e14CDoom6wmHKz3naWOc=");
     }
 
     @Test
     public void testSasl() throws SaslException {
         List<String> saslMechs = XmppSessionConfiguration.getDefault().getAuthenticationMechanisms();
         String[] preferredMechanisms = saslMechs.toArray(new String[0]);
-        SaslClient sc = Sasl.createSaslClient(preferredMechanisms, "authorizationId", "xmpp", "localhost", null, callbacks -> {
-            for (Callback callback : callbacks) {
-                if (callback instanceof NameCallback) {
-                    ((NameCallback) callback).setName("admin");
-                }
-                if (callback instanceof PasswordCallback) {
-                    ((PasswordCallback) callback).setPassword("admin".toCharArray());
-                }
-                if (callback instanceof RealmCallback) {
-                    ((RealmCallback) callback).setText("realm");
-                }
-            }
-        });
+        SaslClient sc =
+                Sasl.createSaslClient(preferredMechanisms, "authorizationId", "xmpp", "localhost", null, callbacks -> {
+                    for (Callback callback : callbacks) {
+                        if (callback instanceof NameCallback) {
+                            ((NameCallback) callback).setName("admin");
+                        }
+                        if (callback instanceof PasswordCallback) {
+                            ((PasswordCallback) callback).setPassword("admin".toCharArray());
+                        }
+                        if (callback instanceof RealmCallback) {
+                            ((RealmCallback) callback).setText("realm");
+                        }
+                    }
+                });
 
         Assert.assertNotNull(sc);
     }
@@ -103,7 +106,8 @@ public class ScramClientTest {
         scramSha1SaslClient.evaluateChallenge(new byte[0]);
         byte[] result = scramSha1SaslClient.evaluateChallenge(serverResponse.getBytes(StandardCharsets.UTF_8));
         Assert.assertNotNull(result);
-        Assert.assertTrue(new String(result, StandardCharsets.UTF_8).startsWith("c=biws,r=fyko+d2lbbFgONRv9qkxdawL3rfcNHYJY1ZVvWVs7j,p="));
+        Assert.assertTrue(new String(result, StandardCharsets.UTF_8)
+                .startsWith("c=biws,r=fyko+d2lbbFgONRv9qkxdawL3rfcNHYJY1ZVvWVs7j,p="));
     }
 
     @Test
@@ -117,16 +121,17 @@ public class ScramClientTest {
     public void testClientServer() throws SaslException {
         XmppClient.create("test");
 
-        SaslClient saslClient = Sasl.createSaslClient(new String[]{"SCRAM-SHA-1"}, "authzid", "xmpp", "servername", null, callbacks -> {
-            for (Callback callback : callbacks) {
-                if (callback instanceof NameCallback) {
-                    ((NameCallback) callback).setName("Test");
-                }
-                if (callback instanceof PasswordCallback) {
-                    ((PasswordCallback) callback).setPassword("==".toCharArray());
-                }
-            }
-        });
+        SaslClient saslClient =
+                Sasl.createSaslClient(new String[]{"SCRAM-SHA-1"}, "authzid", "xmpp", "servername", null, callbacks -> {
+                    for (Callback callback : callbacks) {
+                        if (callback instanceof NameCallback) {
+                            ((NameCallback) callback).setName("Test");
+                        }
+                        if (callback instanceof PasswordCallback) {
+                            ((PasswordCallback) callback).setPassword("==".toCharArray());
+                        }
+                    }
+                });
 
         byte[] initialResponse = saslClient.evaluateChallenge(new byte[0]);
 

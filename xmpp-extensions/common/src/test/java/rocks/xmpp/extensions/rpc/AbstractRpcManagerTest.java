@@ -98,7 +98,8 @@ public class AbstractRpcManagerTest {
         Assert.assertFalse(rpcManager.isEnabled());
 
         RpcHandler rpcHandler = Mockito.mock(RpcHandler.class);
-        Mockito.when(rpcHandler.process(Mockito.any(), Mockito.any(), Mockito.any())).thenThrow(new RpcException(400, "Bad Request"));
+        Mockito.when(rpcHandler.process(Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenThrow(new RpcException(400, "Bad Request"));
         rpcManager.setRpcHandler(rpcHandler);
 
         Assert.assertTrue(rpcManager.isEnabled());

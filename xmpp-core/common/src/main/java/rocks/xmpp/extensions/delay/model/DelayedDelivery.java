@@ -39,7 +39,8 @@ import rocks.xmpp.util.adapters.InstantAdapter;
  * The implementation of the {@code <delay/>} element in the {@code urn:xmpp:delay} namespace.
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/extensions/xep-0203.html#protocol">2. Protocol Definition</a></cite></p>
- * <p>The XML namespace defined herein is used to provide timestamp information about data stored for later delivery. The most common uses of this namespace are to stamp:</p>
+ * <p>The XML namespace defined herein is used to provide timestamp information about data stored for later delivery.
+ * The most common uses of this namespace are to stamp:</p>
  * <ul>
  * <li>A message that is sent to an offline entity and stored for later delivery (see <a href="https://xmpp.org/extensions/xep-0160.html">Best Practices for Handling Offline Messages</a>).</li>
  * <li>The last available presence stanza sent by a connected client to a server.</li>
@@ -102,7 +103,8 @@ public final class DelayedDelivery {
     }
 
     /**
-     * Gets the original send date of a stanza, i.e. <code>Instant.now()</code>, if no delayed deliver information is available or the timestamp of delayed delivery.
+     * Gets the original send date of a stanza, i.e. <code>Instant.now()</code>, if no delayed deliver information is
+     * available or the timestamp of delayed delivery.
      *
      * @param stanza The stanza.
      * @return The original send date of a stanza or <code>Instant.now()</code>.
@@ -117,7 +119,8 @@ public final class DelayedDelivery {
     }
 
     /**
-     * Gets the Jabber ID of the entity that originally sent the XML stanza or that delayed the delivery of the stanza (e.g., the address of a multi-user chat room).
+     * Gets the Jabber ID of the entity that originally sent the XML stanza or that delayed the delivery of the stanza
+     * (e.g., the address of a multi-user chat room).
      *
      * @return The entity who originally sent the XML stanza.
      */

@@ -55,7 +55,8 @@ public final class Value {
             @XmlElement(name = "double", type = Double.class),
             @XmlElement(name = "base64", type = byte[].class),
             @XmlElement(name = "boolean", type = NumericBoolean.class),
-            @XmlElement(name = "dateTime.iso8601", type = XMLGregorianCalendar.class), // Using OffsetDateTime here does not work, not even with the Adapter
+            @XmlElement(name = "dateTime.iso8601", type = XMLGregorianCalendar.class),
+            // Using OffsetDateTime here does not work, not even with the Adapter
             @XmlElement(name = "array", type = ArrayType.class),
             @XmlElement(name = "struct", type = StructType.class)
     })
@@ -95,7 +96,8 @@ public final class Value {
             xmlGregorianCalendar.setYear(date.getYear());
             xmlGregorianCalendar.setMonth(date.getMonth().getValue());
             xmlGregorianCalendar.setDay(date.getDayOfMonth());
-            xmlGregorianCalendar.setTime(date.getHour(), date.getMinute(), date.getSecond()); // date.get(ChronoField.MILLI_OF_SECOND)
+            xmlGregorianCalendar.setTime(date.getHour(), date.getMinute(),
+                    date.getSecond()); // date.get(ChronoField.MILLI_OF_SECOND)
             xmlGregorianCalendar.setTimezone(date.getOffset().getTotalSeconds() / 60);
         } catch (DatatypeConfigurationException e) {
             xmlGregorianCalendar = null;
@@ -126,7 +128,9 @@ public final class Value {
     Value(Map<String, Value> map) {
         if (map != null) {
             StructType structType = new StructType();
-            structType.member.addAll(map.entrySet().stream().map(entry -> new StructType.MemberType(entry.getKey(), entry.getValue())).collect(Collectors.toList()));
+            structType.member.addAll(map.entrySet().stream()
+                    .map(entry -> new StructType.MemberType(entry.getKey(), entry.getValue()))
+                    .collect(Collectors.toList()));
             this.value = structType;
         } else {
             this.value = null;
@@ -266,7 +270,9 @@ public final class Value {
     public final OffsetDateTime getAsInstant() {
         if (value instanceof XMLGregorianCalendar) {
             XMLGregorianCalendar calendar = (XMLGregorianCalendar) value;
-            return OffsetDateTime.of(calendar.getYear(), calendar.getMonth(), calendar.getDay(), calendar.getHour(), calendar.getMinute(), calendar.getSecond(), 0, ZoneOffset.ofTotalSeconds(calendar.getTimezone() * 60));
+            return OffsetDateTime.of(calendar.getYear(), calendar.getMonth(), calendar.getDay(), calendar.getHour(),
+                    calendar.getMinute(), calendar.getSecond(), 0,
+                    ZoneOffset.ofTotalSeconds(calendar.getTimezone() * 60));
         }
         return null;
     }

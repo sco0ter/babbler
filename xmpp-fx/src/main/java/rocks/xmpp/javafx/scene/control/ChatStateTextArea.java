@@ -37,15 +37,19 @@ import rocks.xmpp.extensions.chatstates.model.ChatState;
  *
  * <h3>How it works</h3>
  *
- * <p>Initially the text area is in {@linkplain ChatState#INACTIVE inactive} state. When receiving focus, the chat state transitions to {@linkplain ChatState#ACTIVE active}.
- * As soon as you start typing, it transitions to {@linkplain ChatState#COMPOSING composing}
- * and will automatically transition to {@linkplain ChatState#PAUSED paused} after a specified {@linkplain #delayProperty() delay} (which is 3 seconds by default), if you pause typing.</p>
+ * <p>Initially the text area is in {@linkplain ChatState#INACTIVE inactive} state. When receiving focus, the chat
+ * state transitions to {@linkplain ChatState#ACTIVE active}. As soon as you start typing, it transitions to {@linkplain
+ * ChatState#COMPOSING composing} and will automatically transition to {@linkplain ChatState#PAUSED paused} after a
+ * specified {@linkplain #delayProperty() delay} (which is 3 seconds by default), if you pause typing.</p>
  *
- * <p>If you clear the text area, the state becomes {@linkplain ChatState#ACTIVE active} again, after the specified delay.</p>
+ * <p>If you clear the text area, the state becomes {@linkplain ChatState#ACTIVE active} again, after the specified
+ * delay.</p>
  *
- * <p>When losing focus, the state will become {@linkplain ChatState#INACTIVE inactive} after the delay (which means, if you refocus before the delay time is up, it will stay active).</p>
+ * <p>When losing focus, the state will become {@linkplain ChatState#INACTIVE inactive} after the delay (which means,
+ * if you refocus before the delay time is up, it will stay active).</p>
  *
- * <p>Clearing the text area immediately sets the state to {@linkplain ChatState#INACTIVE active} (if focused) or {@linkplain ChatState#INACTIVE inactive} (if not focused).</p>
+ * <p>Clearing the text area immediately sets the state to {@linkplain ChatState#INACTIVE active} (if focused) or
+ * {@linkplain ChatState#INACTIVE inactive} (if not focused).</p>
  *
  * @author Christian Schudt
  * @see ChatState
@@ -126,7 +130,8 @@ public class ChatStateTextArea extends TextArea {
     }
 
     /**
-     * Gets the delay property. It specifies the delay for transitioning from {@linkplain ChatState#COMPOSING composing} to {@linkplain ChatState#PAUSED paused} or {@linkplain ChatState#ACTIVE active} after having stopped composing.
+     * Gets the delay property. It specifies the delay for transitioning from {@linkplain ChatState#COMPOSING composing}
+     * to {@linkplain ChatState#PAUSED paused} or {@linkplain ChatState#ACTIVE active} after having stopped composing.
      *
      * @return The delay property.
      */
@@ -135,7 +140,8 @@ public class ChatStateTextArea extends TextArea {
     }
 
     /**
-     * Gets the delay for transitioning from {@linkplain ChatState#COMPOSING composing} to {@linkplain ChatState#PAUSED paused} or {@linkplain ChatState#ACTIVE active} after having stopped composing.
+     * Gets the delay for transitioning from {@linkplain ChatState#COMPOSING composing} to {@linkplain ChatState#PAUSED
+     * paused} or {@linkplain ChatState#ACTIVE active} after having stopped composing.
      *
      * @return The delay.
      */
@@ -144,7 +150,8 @@ public class ChatStateTextArea extends TextArea {
     }
 
     /**
-     * Sets the delay for transitioning from {@link ChatState#COMPOSING} to {@link ChatState#PAUSED} or {@link ChatState#ACTIVE} after having stopped composing.
+     * Sets the delay for transitioning from {@link ChatState#COMPOSING} to {@link ChatState#PAUSED} or {@link
+     * ChatState#ACTIVE} after having stopped composing.
      *
      * @param duration The pause duration.
      * @see #delayProperty()

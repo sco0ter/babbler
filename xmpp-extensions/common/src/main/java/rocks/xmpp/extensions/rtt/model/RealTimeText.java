@@ -92,7 +92,8 @@ public final class RealTimeText {
      * Gets the event.
      *
      * <blockquote>
-     * <p>This attribute signals events for real-time text. If the 'event' attribute is omitted, event="edit" is assumed as the default.</p>
+     * <p>This attribute signals events for real-time text. If the 'event' attribute is omitted, event="edit" is
+     * assumed as the default.</p>
      * </blockquote>
      *
      * @return The event.
@@ -176,7 +177,8 @@ public final class RealTimeText {
     /**
      * The implementation of the {@code <t/>} element.
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/extensions/xep-0301.html#element_t_insert_text">4.6.3.1 Element {@code <t/>} - Insert Text</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/extensions/xep-0301.html#element_t_insert_text">4.6.3.1 Element {@code <t/>}
+     * - Insert Text</a></cite></p>
      * <p>Supports the transmission of text, including key presses, and text block inserts.</p>
      * </blockquote>
      */
@@ -240,8 +242,11 @@ public final class RealTimeText {
     /**
      * The implementation of the {@code <e/>} element.
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/extensions/xep-0301.html#element_e_erase_text">4.6.3.2 Element {@code <e/>} - Erase Text</a></cite></p>
-     * <p>Supports the behavior of backspace key presses. Text is removed towards beginning of the message. This element is also used for all delete operations, including the backspace key, the delete key, and text block deletes.</p>
+     * <p><cite><a href="https://xmpp.org/extensions/xep-0301.html#element_e_erase_text">4.6.3.2 Element {@code <e/>} -
+     * Erase Text</a></cite></p>
+     * <p>Supports the behavior of backspace key presses. Text is removed towards beginning of the message. This
+     * element is also used for all delete operations, including the backspace key, the delete key, and text block
+     * deletes.</p>
      * </blockquote>
      */
     public static final class EraseText extends Action {
@@ -306,15 +311,18 @@ public final class RealTimeText {
 
         @Override
         public final String toString() {
-            return "Erase " + (numberOfCharacters != null ? numberOfCharacters : 1) + " character(s) at " + (position != null ? "position " + position : "last position");
+            return "Erase " + (numberOfCharacters != null ? numberOfCharacters : 1) + " character(s) at " + (
+                    position != null ? "position " + position : "last position");
         }
     }
 
     /**
      * The implementation of the {@code <w/>} element.
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/extensions/xep-0301.html#element_w_wait_interval">4.6.3.3 Element {@code <w/>} - Wait Interval</a></cite></p>
-     * <p>Allow for the transmission of intervals, between real-time text actions, to recreate the pauses between key presses.</p>
+     * <p><cite><a href="https://xmpp.org/extensions/xep-0301.html#element_w_wait_interval">4.6.3.3 Element {@code
+     * <w/>} - Wait Interval</a></cite></p>
+     * <p>Allow for the transmission of intervals, between real-time text actions, to recreate the pauses between key
+     * presses.</p>
      * </blockquote>
      */
     public static final class WaitInterval extends Action {

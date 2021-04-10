@@ -34,7 +34,7 @@ import rocks.xmpp.core.stanza.model.Message;
  * A predicate which checks for valid message responses.
  *
  * <p>An message response must meet the following criteria:</p>
- * 
+ *
  * <ol>
  * <li>both stanza IDs of request and response are equal</li>
  * <li>the request's 'to' bare JID matches the response's 'from' bare JID, unless</li>
@@ -66,11 +66,14 @@ final class MessageResponsePredicate implements Predicate<Message> {
     @Override
     public final boolean test(final Message responseMessage) {
         return (id == null || Objects.equals(id, responseMessage.getId()))
-                       && (
+                && (
                 (to != null
-                         && ((responseMessage.getFrom() != null && Objects.equals(to.asBareJid(), responseMessage.getFrom().asBareJid()))
-                                     || (responseMessage.getFrom() == null && connectedResource != null && to.equals(connectedResource.asBareJid()))))
-                        || (to == null && (responseMessage.getFrom() == null || (connectedResource != null && responseMessage.getFrom().asBareJid().equals(connectedResource.asBareJid()))))
+                        && ((responseMessage.getFrom() != null
+                        && Objects.equals(to.asBareJid(), responseMessage.getFrom().asBareJid()))
+                        || (responseMessage.getFrom() == null && connectedResource != null
+                        && to.equals(connectedResource.asBareJid()))))
+                        || (to == null && (responseMessage.getFrom() == null || (connectedResource != null
+                        && responseMessage.getFrom().asBareJid().equals(connectedResource.asBareJid()))))
         );
     }
 }

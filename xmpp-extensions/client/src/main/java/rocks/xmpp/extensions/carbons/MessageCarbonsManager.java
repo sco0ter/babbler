@@ -31,14 +31,17 @@ import rocks.xmpp.extensions.carbons.model.MessageCarbons;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
- * Manages message carbons. It allows you to {@linkplain #enableCarbons()} ()} enable} or {@linkplain #disableCarbons()} disable} message carbons on the server.
+ * Manages message carbons. It allows you to {@linkplain #enableCarbons()} ()} enable} or {@linkplain #disableCarbons()}
+ * disable} message carbons on the server.
  *
  * <p>If successfully enabled, you should have the following behavior:</p>
  *
  * <ul>
  * <li>Chat messages sent to your bare jid, will be "forked" to your carbons-enabled session.</li>
- * <li>Chat messages sent to another of your available resources (i.e. to another full JID), will be copied to you with a {@link rocks.xmpp.extensions.carbons.model.MessageCarbons.Received} extension.</li>
- * <li>Chat messages you sent from another resource, will be copied to you with a {@link rocks.xmpp.extensions.carbons.model.MessageCarbons.Sent} extension.</li>
+ * <li>Chat messages sent to another of your available resources (i.e. to another full JID), will be copied to you with
+ * a {@link rocks.xmpp.extensions.carbons.model.MessageCarbons.Received} extension.</li>
+ * <li>Chat messages you sent from another resource, will be copied to you with a
+ * {@link rocks.xmpp.extensions.carbons.model.MessageCarbons.Sent} extension.</li>
  * </ul>
  *
  * <p>This class is thread-safe.</p>

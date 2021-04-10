@@ -64,7 +64,8 @@ public final class ChatSessionEvent extends EventObject {
     /**
      * Indicates, whether the chat session has been created by an inbound message or programmatically.
      *
-     * @return True, if the chat session has been created by an inbound message; false if it was created programmatically.
+     * @return True, if the chat session has been created by an inbound message; false if it was created
+     * programmatically.
      */
     public final boolean isInbound() {
         return inbound;

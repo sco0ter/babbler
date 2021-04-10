@@ -173,10 +173,14 @@ public final class Media {
 
         /**
          * Gets the MIME type of the media.
-         * 
+         *
          * <blockquote>
          * <p><cite><a href="https://xmpp.org/extensions/xep-0221.html#media">2. Media Element</a></cite></p>
-         * <p>The value of the 'type' attribute MUST match the syntax specified in RFC 2045 [5]. That is, the value MUST include a top-level media type, the "/" character, and a subtype; in addition, it MAY include one or more optional parameters (e.g., the "audio/ogg" MIME type in the example shown below includes a "codecs" parameter as specified in RFC 4281 [6]). The "type/subtype" string SHOULD be registered in the IANA MIME Media Types Registry [7], but MAY be an unregistered or yet-to-be-registered value.</p>
+         * <p>The value of the 'type' attribute MUST match the syntax specified in RFC 2045 [5]. That is, the value
+         * MUST include a top-level media type, the "/" character, and a subtype; in addition, it MAY include one or
+         * more optional parameters (e.g., the "audio/ogg" MIME type in the example shown below includes a "codecs"
+         * parameter as specified in RFC 4281 [6]). The "type/subtype" string SHOULD be registered in the IANA MIME
+         * Media Types Registry [7], but MAY be an unregistered or yet-to-be-registered value.</p>
          * </blockquote>
          *
          * @return The type.

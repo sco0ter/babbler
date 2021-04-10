@@ -33,9 +33,11 @@ import rocks.xmpp.extensions.vcard.temp.VCardManager;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
- * This class manages avatar updates as described in <a href="https://xmpp.org/extensions/xep-0153.html">XEP-0153: vCard-Based Avatars</a> and <a href="https://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>.
+ * This class manages avatar updates as described in <a href="https://xmpp.org/extensions/xep-0153.html">XEP-0153:
+ * vCard-Based Avatars</a> and <a href="https://xmpp.org/extensions/xep-0084.html">XEP-0084: User Avatar</a>.
  *
- * <p>Whenever an avatar update is received by a contact, either via the presence based avatar extension (XEP-0153) or the PEP-based notification (XEP-0084), the registered listeners are triggered.</p>
+ * <p>Whenever an avatar update is received by a contact, either via the presence based avatar extension (XEP-0153) or
+ * the PEP-based notification (XEP-0084), the registered listeners are triggered.</p>
  *
  * <p>By default this manager is not enabled.</p>
  *

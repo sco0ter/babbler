@@ -44,5 +44,6 @@ public interface ReaderInterceptor {
      * @param chain                 The reader chain, which allows to proceed to the next interceptor.
      * @throws Exception Any exception happening during interception.
      */
-    void process(Reader reader, Consumer<StreamElement> streamElementListener, ReaderInterceptorChain chain) throws Exception;
+    void process(Reader reader, Consumer<StreamElement> streamElementListener, ReaderInterceptorChain chain)
+            throws Exception;
 }

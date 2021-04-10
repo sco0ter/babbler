@@ -116,27 +116,24 @@ public final class Status {
     public static final Status KICKED = new Status(307);
 
     /**
-     * Inform user that he or she is being removed from the room
-     * because of an affiliation change (321).
+     * Inform user that he or she is being removed from the room because of an affiliation change (321).
      */
     public static final Status MEMBERSHIP_REVOKED = new Status(321);
 
     /**
-     * Inform user that he or she is being removed from the room
-     * because the room has been changed to members-only and the
-     * user is not a member (322).
+     * Inform user that he or she is being removed from the room because the room has been changed to members-only and
+     * the user is not a member (322).
      */
     public static final Status ROOM_CHANGED_TO_MEMBERS_ONLY = new Status(322);
 
     /**
-     * Inform user that he or she is being removed from the room
-     * because the MUC service is being shut down (332).
+     * Inform user that he or she is being removed from the room because the MUC service is being shut down (332).
      */
     public static final Status SERVICE_SHUT_DOWN = new Status(332);
 
     /**
-     * Inform users that a user was removed because of an error reply (for example
-     * when an s2s link fails between the MUC and the removed users server).
+     * Inform users that a user was removed because of an error reply (for example when an s2s link fails between the
+     * MUC and the removed users server).
      */
     public static final Status REMOVED_DUE_TO_ERROR = new Status(333);
 

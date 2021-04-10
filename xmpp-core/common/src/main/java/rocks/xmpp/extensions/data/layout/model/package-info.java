@@ -23,9 +23,12 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0141.html">XEP-0141: Data Forms Layout</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0141.html">XEP-0141: Data Forms
+ * Layout</a>.
  *
- * <p>It defines a backwards-compatible extension to the XMPP Data Forms protocol that enables an application to specify form layouts, including the layout of form fields, sections within pages, and subsections within sections.</p>
+ * <p>It defines a backwards-compatible extension to the XMPP Data Forms protocol that enables an application to
+ * specify form layouts, including the layout of form fields, sections within pages, and subsections within
+ * sections.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = Page.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

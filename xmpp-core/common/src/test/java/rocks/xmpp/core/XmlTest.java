@@ -100,7 +100,9 @@ public abstract class XmlTest {
     }
 
     private XMLEventReader getStream(String stanza, QName... additionalNamespaces) throws XMLStreamException {
-        String stream = StreamHeader.create(FROM, null, "1", "1.0", Locale.ENGLISH, namespace, additionalNamespaces) + stanza + StreamHeader.CLOSING_STREAM_TAG;
+        String stream =
+                StreamHeader.create(FROM, null, "1", "1.0", Locale.ENGLISH, namespace, additionalNamespaces) + stanza +
+                        StreamHeader.CLOSING_STREAM_TAG;
         Reader reader = new StringReader(stream);
         XMLEventReader xmlEventReader = INPUT_FACTORY.createXMLEventReader(reader);
         xmlEventReader.nextEvent();
@@ -109,7 +111,8 @@ public abstract class XmlTest {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T unmarshal(String xml, Class<T> type, QName... additionalNamespaces) throws XMLStreamException, JAXBException {
+    protected <T> T unmarshal(String xml, Class<T> type, QName... additionalNamespaces)
+            throws XMLStreamException, JAXBException {
         Class<?> clazz = type;
         if (type == Message.class) {
             clazz = ClientMessage.class;

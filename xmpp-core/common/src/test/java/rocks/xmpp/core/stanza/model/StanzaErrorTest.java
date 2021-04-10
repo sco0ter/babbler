@@ -130,7 +130,8 @@ public class StanzaErrorTest extends XmlTest {
         Assert.assertNotNull(message.getError());
         Assert.assertEquals(message.getError().getType(), StanzaError.Type.CANCEL);
         Assert.assertTrue(message.getError().getCondition() instanceof Gone);
-        Assert.assertEquals(((Gone) message.getError().getCondition()).getNewAddress(), "xmpp:romeo@afterlife.example.net");
+        Assert.assertEquals(((Gone) message.getError().getCondition()).getNewAddress(),
+                "xmpp:romeo@afterlife.example.net");
     }
 
     @Test
@@ -278,7 +279,8 @@ public class StanzaErrorTest extends XmlTest {
                 "       to='juliet@im.example.com/balcony'\n" +
                 "       type='error'>\n" +
                 "     <error type='modify'>\n" +
-                "       <redirect xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'>xmpp:characters@conference.example.org</redirect>\n" +
+                "       <redirect xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'>xmpp:characters@conference.example.org</redirect>\n"
+                +
                 "     </error>\n" +
                 "   </presence>";
         Presence presence = unmarshal(xml, Presence.class);
@@ -286,7 +288,8 @@ public class StanzaErrorTest extends XmlTest {
         Assert.assertEquals(presence.getType(), Presence.Type.ERROR);
         Assert.assertEquals(presence.getError().getType(), StanzaError.Type.MODIFY);
         Assert.assertTrue(presence.getError().getCondition() instanceof Redirect);
-        Assert.assertEquals(((Redirect) presence.getError().getCondition()).getAlternateAddress(), "xmpp:characters@conference.example.org");
+        Assert.assertEquals(((Redirect) presence.getError().getCondition()).getAlternateAddress(),
+                "xmpp:characters@conference.example.org");
     }
 
     @Test
@@ -452,7 +455,8 @@ public class StanzaErrorTest extends XmlTest {
                 "    <undefined-condition\n" +
                 "          xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'/>\n" +
                 "    <text xml:lang='en'\n" +
-                "          xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'>[ ... application-specific information ... ]</text>\n" +
+                "          xmlns='urn:ietf:params:xml:ns:xmpp-stanzas'>[ ... application-specific information ... ]</text>\n"
+                +
                 "    <too-many-parameters xmlns='http://example.org/ns'/>\n" +
                 "  </error>\n" +
                 "</message>";
@@ -485,7 +489,8 @@ public class StanzaErrorTest extends XmlTest {
 
     @Test
     public void marshalCondition() throws JAXBException, XMLStreamException {
-        String xml = "<iq id=\"1\" type=\"error\"><error type=\"wait\"><unexpected-request xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></unexpected-request></error></iq>";
+        String xml =
+                "<iq id=\"1\" type=\"error\"><error type=\"wait\"><unexpected-request xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></unexpected-request></error></iq>";
         StanzaError error = new StanzaError(Condition.UNEXPECTED_REQUEST);
         IQ iq = new IQ(null, IQ.Type.ERROR, null, "1", null, null, error);
         Assert.assertEquals(marshal(iq), xml);

@@ -27,7 +27,10 @@ package rocks.xmpp.extensions.jingle.apps.model;
 /**
  * An abstract base class for Jingle application formats. It is defined as:
  * <blockquote>
- * <p>The data format of the content type being established, which formally declares one purpose of the session (e.g., "audio" or "video"). This is the 'what' of the session (i.e., the bits to be transferred), such as the acceptable codecs when establishing a voice conversation. In Jingle XML syntax the application format is the namespace of the {@code <description/>} element.</p>
+ * <p>The data format of the content type being established, which formally declares one purpose of the session (e.g.,
+ * "audio" or "video"). This is the 'what' of the session (i.e., the bits to be transferred), such as the acceptable
+ * codecs when establishing a voice conversation. In Jingle XML syntax the application format is the namespace of the
+ * {@code <description/>} element.</p>
  * </blockquote>
  *
  * @author Christian Schudt

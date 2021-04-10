@@ -54,7 +54,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 /**
  * This class represents a single pubsub node.
  *
- * <p>It allows you to create the node on the pubsub service, subscribe or unsubscribe from the node, retrieve items from it, publish items to it, etc.</p>
+ * <p>It allows you to create the node on the pubsub service, subscribe or unsubscribe from the node, retrieve items
+ * from it, publish items to it, etc.</p>
  *
  * @author Christian Schudt
  */
@@ -71,7 +72,10 @@ public final class PubSubNode {
     private volatile String nodeId;
 
     PubSubNode(String nodeId, Jid pubSubServiceAddress, XmppSession xmppSession) {
-        // If a node is a leaf node rather than a collection node and items have been published to the node, the service MAY return one <item/> element for each published item as described in the Discover Items for a Node section of this document, however such items MUST NOT include a 'node' attribute (since they are published items, not nodes).
+        // If a node is a leaf node rather than a collection node and items have been published to the node, the
+        // service MAY return one <item/> element for each published item as described in the Discover Items for a Node
+        // section of this document, however such items MUST NOT include a 'node' attribute (since they are published
+        // items, not nodes).
         this(nodeId, nodeId == null ? NodeType.LEAF : NodeType.COLLECTION, pubSubServiceAddress, xmppSession);
     }
 
@@ -113,7 +117,8 @@ public final class PubSubNode {
                 }
             }
             // Assign the node type.
-            type = identity != null ? "collection".equals(identity.getType()) ? NodeType.COLLECTION : NodeType.LEAF : NodeType.LEAF;
+            type = identity != null ? "collection".equals(identity.getType()) ? NodeType.COLLECTION : NodeType.LEAF
+                    : NodeType.LEAF;
             return metaDataForm;
         });
     }
@@ -166,7 +171,8 @@ public final class PubSubNode {
      *
      * @param subscribeOptions The configuration form.
      * @return The async result with the subscription.
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-subandconfig">6.3.7 Subscribe and Configure</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-subandconfig">6.3.7 Subscribe and
+     * Configure</a>
      */
     public AsyncResult<Subscription> subscribe(SubscribeOptions subscribeOptions) {
         return subscribe(xmppSession.getConnectedResource().asBareJid(), subscribeOptions);
@@ -189,11 +195,15 @@ public final class PubSubNode {
      * @param jid              The JID which is subscribed.
      * @param subscribeOptions The configuration form.
      * @return The async result with the subscription.
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-subandconfig">6.3.7 Subscribe and Configure</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-subandconfig">6.3.7 Subscribe and
+     * Configure</a>
      */
     public final AsyncResult<Subscription> subscribe(final Jid jid, final SubscribeOptions subscribeOptions) {
-        return xmppSession.query(IQ.set(pubSubServiceAddress, PubSub.withSubscribe(Objects.requireNonNull(nodeId, "nodeId must not be null"), Objects.requireNonNull(jid), subscribeOptions != null ? subscribeOptions.getDataForm() : null))).thenApply(result ->
-                result.getExtension(PubSub.class).getSubscription());
+        return xmppSession.query(IQ.set(pubSubServiceAddress,
+                PubSub.withSubscribe(Objects.requireNonNull(nodeId, "nodeId must not be null"),
+                        Objects.requireNonNull(jid), subscribeOptions != null ? subscribeOptions.getDataForm() : null)))
+                .thenApply(result ->
+                        result.getExtension(PubSub.class).getSubscription());
     }
 
     /**
@@ -213,7 +223,8 @@ public final class PubSubNode {
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe">6.2 Unsubscribe from a Node</a>
      */
     public AsyncResult<IQ> unsubscribe(String subscriptionId) {
-        return xmppSession.query(IQ.set(pubSubServiceAddress, PubSub.withUnsubscribe(nodeId, xmppSession.getConnectedResource().asBareJid(), subscriptionId)));
+        return xmppSession.query(IQ.set(pubSubServiceAddress,
+                PubSub.withUnsubscribe(nodeId, xmppSession.getConnectedResource().asBareJid(), subscriptionId)));
     }
 
     /**
@@ -222,7 +233,8 @@ public final class PubSubNode {
      * @param defaultOptions Whether to get the default options or not.
      * @return The async result with the data form.
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-request">6.3.2 Request</a>
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default Subscription Configuration Options</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default
+     * Subscription Configuration Options</a>
      * @see #configureSubscription(rocks.xmpp.extensions.pubsub.model.SubscribeOptions)
      */
     public AsyncResult<SubscribeOptions> getSubscriptionOptions(boolean defaultOptions) {
@@ -254,8 +266,10 @@ public final class PubSubNode {
      * @see #configureSubscription(rocks.xmpp.extensions.pubsub.model.SubscribeOptions)
      */
     public AsyncResult<SubscribeOptions> getSubscriptionOptions(String subId) {
-        return xmppSession.query(IQ.get(pubSubServiceAddress, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), subId, null))).thenApply(result ->
-                new SubscribeOptions(result.getExtension(PubSub.class).getOptions().getDataForm()));
+        return xmppSession.query(IQ.get(pubSubServiceAddress,
+                PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), subId, null)))
+                .thenApply(result ->
+                        new SubscribeOptions(result.getExtension(PubSub.class).getOptions().getDataForm()));
     }
 
     /**
@@ -266,14 +280,17 @@ public final class PubSubNode {
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.3.5 Form Submission</a>
      */
     public AsyncResult<IQ> configureSubscription(SubscribeOptions subscribeOptions) {
-        return xmppSession.query(IQ.set(pubSubServiceAddress, PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), null, subscribeOptions != null ? subscribeOptions.getDataForm() : null)));
+        return xmppSession.query(IQ.set(pubSubServiceAddress,
+                PubSub.withOptions(nodeId, xmppSession.getConnectedResource().asBareJid(), null,
+                        subscribeOptions != null ? subscribeOptions.getDataForm() : null)));
     }
 
     /**
      * Gets all items for this node.
      *
      * @return The async result with the items.
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestall">6.5.2 Requesting All Items</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestall">6.5.2 Requesting All
+     * Items</a>
      */
     public AsyncResult<List<Item>> getItems() {
         return xmppSession.query(IQ.get(pubSubServiceAddress, PubSub.withItems(nodeId))).thenApply(result ->
@@ -285,8 +302,10 @@ public final class PubSubNode {
      *
      * @param ids The item ids.
      * @return The async result with the items.
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-returnnotify">6.5.6 Returning Notifications Only</a>
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestone">6.5.8 Requesting a Particular Item</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-returnnotify">6.5.6 Returning
+     * Notifications Only</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestone">6.5.8 Requesting a
+     * Particular Item</a>
      */
     public AsyncResult<List<Item>> getItems(String... ids) {
         return xmppSession.query(IQ.get(pubSubServiceAddress, PubSub.withItems(nodeId, ids))).thenApply(result ->
@@ -298,7 +317,8 @@ public final class PubSubNode {
      *
      * @param maxItems The maximal number of items.
      * @return The async result with the items.
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestrecent">6.5.7 Requesting the Most Recent Items</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-retrieve-requestrecent">6.5.7 Requesting the
+     * Most Recent Items</a>
      */
     public AsyncResult<List<Item>> getItems(int maxItems) {
         return xmppSession.query(IQ.get(pubSubServiceAddress, PubSub.withItems(nodeId, maxItems))).thenApply(result ->
@@ -308,7 +328,8 @@ public final class PubSubNode {
     /**
      * Publishes an item to this node.
      *
-     * @param item The item to be published. Note that this item must be known to the session, so that it can be marshalled into XML.
+     * @param item The item to be published. Note that this item must be known to the session, so that it can be
+     *             marshalled into XML.
      * @return The async result with the item id, generated by the pubsub service.
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-publish">7.1 Publish an Item to a Node</a>
      * @see rocks.xmpp.core.session.XmppSessionConfiguration.Builder#extensions(Extension...)
@@ -320,7 +341,8 @@ public final class PubSubNode {
     /**
      * Publishes an item to this node.
      *
-     * @param item           The item to be published. Note that this item must be known to the session, so that it can be marshalled into XML.
+     * @param item           The item to be published. Note that this item must be known to the session, so that it can
+     *                       be marshalled into XML.
      * @param publishOptions The optional publish options.
      * @return The async result with the item id, generated by the pubsub service.
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-publish">7.1 Publish an Item to a Node</a>
@@ -335,7 +357,8 @@ public final class PubSubNode {
      * Publishes an item to this node.
      *
      * @param id   The item's id.
-     * @param item The item to be published. Note that this item must be known to the session, so that it can be marshalled into XML.
+     * @param item The item to be published. Note that this item must be known to the session, so that it can be
+     *             marshalled into XML.
      * @return The async result with the item id.
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-publish">7.1 Publish an Item to a Node</a>
      * @see rocks.xmpp.core.session.XmppSessionConfiguration.Builder#extensions(Extension...)
@@ -348,20 +371,23 @@ public final class PubSubNode {
      * Publishes an item to this node.
      *
      * @param id             The item's id.
-     * @param item           The item to be published. Note that this item must be known to the session, so that it can be marshalled into XML.
+     * @param item           The item to be published. Note that this item must be known to the session, so that it can
+     *                       be marshalled into XML.
      * @param publishOptions The optional publish options.
      * @return The async result with the item id.
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#publisher-publish-options">7.1.5 Publishing Options</a>
      * @see rocks.xmpp.core.session.XmppSessionConfiguration.Builder#extensions(Extension...)
      */
     public AsyncResult<String> publish(String id, Object item, PublishOptions publishOptions) {
-        return xmppSession.query(IQ.set(pubSubServiceAddress, PubSub.withPublish(nodeId, id, item, publishOptions != null ? publishOptions.getDataForm() : null))).thenApply(result -> {
-            PubSub pubSub = result.getExtension(PubSub.class);
-            if (pubSub != null && pubSub.getPublish() != null && pubSub.getPublish().getItem() != null) {
-                return pubSub.getPublish().getItem().getId();
-            }
-            return id;
-        });
+        return xmppSession.query(IQ.set(pubSubServiceAddress,
+                PubSub.withPublish(nodeId, id, item, publishOptions != null ? publishOptions.getDataForm() : null)))
+                .thenApply(result -> {
+                    PubSub pubSub = result.getExtension(PubSub.class);
+                    if (pubSub != null && pubSub.getPublish() != null && pubSub.getPublish().getItem() != null) {
+                        return pubSub.getPublish().getItem().getId();
+                    }
+                    return id;
+                });
     }
 
     /**
@@ -391,22 +417,25 @@ public final class PubSubNode {
      *
      * @param nodeConfiguration The configuration form.
      * @return The async result with the node id.
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-create-and-configure">8.1.3 Create and Configure a Node</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-create-and-configure">8.1.3 Create and Configure a
+     * Node</a>
      */
     public AsyncResult<String> create(NodeConfiguration nodeConfiguration) {
-        return xmppSession.query(IQ.set(pubSubServiceAddress, PubSub.withCreate(nodeId, nodeConfiguration != null ? nodeConfiguration.getDataForm() : null))).thenApply(result -> {
-            if (nodeId != null) {
-                return nodeId;
-            }
-            PubSub pubSub = result.getExtension(PubSub.class);
-            if (pubSub != null) {
-                String generatedNodeId = pubSub.getNode();
-                if (generatedNodeId != null) {
-                    this.nodeId = generatedNodeId;
-                }
-            }
-            return nodeId;
-        });
+        return xmppSession.query(IQ.set(pubSubServiceAddress,
+                PubSub.withCreate(nodeId, nodeConfiguration != null ? nodeConfiguration.getDataForm() : null)))
+                .thenApply(result -> {
+                    if (nodeId != null) {
+                        return nodeId;
+                    }
+                    PubSub pubSub = result.getExtension(PubSub.class);
+                    if (pubSub != null) {
+                        String generatedNodeId = pubSub.getNode();
+                        if (generatedNodeId != null) {
+                            this.nodeId = generatedNodeId;
+                        }
+                    }
+                    return nodeId;
+                });
     }
 
     /**
@@ -430,7 +459,8 @@ public final class PubSubNode {
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-configure-submit">8.2.4 Form Submission</a>
      */
     public AsyncResult<IQ> configureNode(NodeConfiguration nodeConfiguration) {
-        return xmppSession.query(IQ.set(pubSubServiceAddress, PubSubOwner.withConfigure(nodeId, nodeConfiguration.getDataForm())));
+        return xmppSession.query(IQ
+                .set(pubSubServiceAddress, PubSubOwner.withConfigure(nodeId, nodeConfiguration.getDataForm())));
     }
 
     /**

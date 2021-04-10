@@ -42,7 +42,8 @@ import rocks.xmpp.dns.TxtRecord;
 /**
  * A configuration for a BOSH connection.
  *
- * <p>It allows you to configure basic connection settings like hostname and port, but also BOSH specific settings like the wait interval, a route or the use of a key sequencing mechanism.</p>
+ * <p>It allows you to configure basic connection settings like hostname and port, but also BOSH specific settings like
+ * the wait interval, a route or the use of a key sequencing mechanism.</p>
  *
  * <h3>Usage</h3>
  *
@@ -57,7 +58,7 @@ import rocks.xmpp.dns.TxtRecord;
  * }</pre>
  *
  * <p>The above sample configuration will connect to <code>http://localhost:5280/http-bind/</code>.
- * 
+ *
  * <p>This class is immutable.</p>
  *
  * @see SocketConnectionConfiguration
@@ -131,8 +132,11 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
         if (getHostname() != null) {
             url = new URL(protocol, getHostname(), targetPort, getPath());
         } else if (xmppSession.getDomain() != null) {
-            // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
-            String resolvedUrl = findBoshUrl(xmppSession.getDomain().toString(), xmppSession.getConfiguration().getNameServer(), getConnectTimeout());
+            // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup
+            // as described in XEP-0156.
+            String resolvedUrl =
+                    findBoshUrl(xmppSession.getDomain().toString(), xmppSession.getConfiguration().getNameServer(),
+                            getConnectTimeout());
             if (resolvedUrl != null) {
                 url = new URL(resolvedUrl);
             } else {
@@ -175,7 +179,8 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
     }
 
     /**
-     * Gets the longest time (in seconds) that the connection manager is allowed to wait before responding to any request during the session.
+     * Gets the longest time (in seconds) that the connection manager is allowed to wait before responding to any
+     * request during the session.
      *
      * @return The wait time.
      */
@@ -212,7 +217,9 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
 
     @Override
     public final String toString() {
-        return "BOSH connection configuration: " + (getChannelEncryption() == ChannelEncryption.DIRECT ? "https" : "http") + "://" + super.toString() + path;
+        return "BOSH connection configuration: "
+                + (getChannelEncryption() == ChannelEncryption.DIRECT ? "https" : "http") + "://" + super.toString()
+                + path;
     }
 
     /**
@@ -247,7 +254,8 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
         }
 
         /**
-         * Sets the longest time that the connection manager is allowed to wait before responding to any request during the session.
+         * Sets the longest time that the connection manager is allowed to wait before responding to any request during
+         * the session.
          *
          * @param wait The time in seconds.
          * @return The builder.
@@ -271,8 +279,8 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
         }
 
         /**
-         * Indicates whether a key sequencing mechanism is used to secure a connection.
-         * Note that if the connection is already secured via HTTPS, it is not necessary to use this mechanism.
+         * Indicates whether a key sequencing mechanism is used to secure a connection. Note that if the connection is
+         * already secured via HTTPS, it is not necessary to use this mechanism.
          *
          * @param useKeySequence If a key sequence should be used.
          * @return The builder.
@@ -294,7 +302,9 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
                 throw new UnsupportedOperationException("Non-HTTP proxies are not supported by BOSH connections.");
             }
             if (channelEncryption != ChannelEncryption.DISABLED && channelEncryption != ChannelEncryption.DIRECT) {
-                throw new IllegalArgumentException("BOSH connections only support ChannelEncryption.DIRECT (https) or ChannelEncryption.DISABLED (http).");
+                throw new IllegalArgumentException(
+                        "BOSH connections only support ChannelEncryption.DIRECT (https) or"
+                                + "ChannelEncryption.DISABLED (http).");
             }
             return new BoshConnectionConfiguration(this);
         }

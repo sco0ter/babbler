@@ -324,7 +324,8 @@ public class JidTest {
     }
 
     /**
-     * The domainpart for every XMPP service MUST be a fully qualified domain name (FQDN; see [DNS]), IPv4 address, IPv6 address, or unqualified hostname (i.e., a text label that is resolvable on a local network).
+     * The domainpart for every XMPP service MUST be a fully qualified domain name (FQDN; see [DNS]), IPv4 address, IPv6
+     * address, or unqualified hostname (i.e., a text label that is resolvable on a local network).
      */
     @Test
     public void testHostname() {
@@ -410,7 +411,9 @@ public class JidTest {
 
     @Test
     public void testProhibitedChars() {
-        String[] str = new String[]{"\u200E", "\u200F", "\u202A", "\u202B", "\u202C", "\u202D", "\u202E", "\u206A", "\u206B", "\u206C", "\u206D", "\u206E", "\u206F"};
+        String[] str =
+                new String[]{"\u200E", "\u200F", "\u202A", "\u202B", "\u202C", "\u202D", "\u202E", "\u206A", "\u206B",
+                        "\u206C", "\u206D", "\u206E", "\u206F"};
 
         int fails = 0;
         for (String s : str) {
@@ -502,7 +505,8 @@ public class JidTest {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try (ObjectOutputStream out = new ObjectOutputStream(byteArrayOutputStream)) {
             out.writeObject(jid);
-            try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray())) {
+            try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
+                    byteArrayOutputStream.toByteArray())) {
                 ObjectInputStream in = new ObjectInputStream(byteArrayInputStream);
                 Jid readJid = (Jid) in.readObject();
                 Assert.assertNotNull(readJid);

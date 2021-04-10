@@ -23,9 +23,11 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0319.html">XEP-0319: Last User Interaction in Presence</a>.
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0319.html">XEP-0319: Last User
+ * Interaction in Presence</a>.
  *
- * <p>It defines a way to communicate time of last user interaction with her system using XMPP presence notifications.</p>
+ * <p>It defines a way to communicate time of last user interaction with her system using XMPP presence
+ * notifications.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = Idle.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

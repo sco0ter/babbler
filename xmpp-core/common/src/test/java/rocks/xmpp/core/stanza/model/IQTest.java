@@ -83,21 +83,26 @@ public class IQTest extends XmlTest {
 
     @Test
     public void marshalIQ() throws JAXBException, XMLStreamException {
-        IQ iq = new IQ(Jid.ofLocalAndDomain("to", "domain"), IQ.Type.GET, null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null);
+        IQ iq = new IQ(Jid.ofLocalAndDomain("to", "domain"), IQ.Type.GET, null, "id",
+                Jid.ofLocalAndDomain("from", "domain"), null, null);
         String xml = marshal(iq);
         Assert.assertEquals(xml, "<iq from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"get\"></iq>");
     }
 
     @Test
     public void marshalIQWithError() throws JAXBException, XMLStreamException {
-        IQ iq = new IQ(Jid.ofLocalAndDomain("to", "domain"), IQ.Type.GET, null, "id", Jid.ofLocalAndDomain("from", "domain"), null, new StanzaError(StanzaError.Type.MODIFY, Condition.SERVICE_UNAVAILABLE));
+        IQ iq = new IQ(Jid.ofLocalAndDomain("to", "domain"), IQ.Type.GET, null, "id",
+                Jid.ofLocalAndDomain("from", "domain"), null,
+                new StanzaError(StanzaError.Type.MODIFY, Condition.SERVICE_UNAVAILABLE));
         String xml = marshal(iq);
-        Assert.assertEquals(xml, "<iq from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"get\"><error type=\"modify\"><service-unavailable xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></service-unavailable></error></iq>");
+        Assert.assertEquals(xml,
+                "<iq from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"get\"><error type=\"modify\"><service-unavailable xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></service-unavailable></error></iq>");
     }
 
     @Test
     public void testErrorIQ() throws JAXBException, XMLStreamException {
-        IQ iq = new IQ(Jid.ofLocalAndDomain("to", "domain"), IQ.Type.GET, new Bind(), "id", Jid.ofLocalAndDomain("from", "domain"), null, null);
+        IQ iq = new IQ(Jid.ofLocalAndDomain("to", "domain"), IQ.Type.GET, new Bind(), "id",
+                Jid.ofLocalAndDomain("from", "domain"), null, null);
         IQ error = iq.createError(new StanzaError(Condition.UNDEFINED_CONDITION));
         IQ error2 = iq.createError(Condition.UNDEFINED_CONDITION);
         Assert.assertEquals(error.getType(), IQ.Type.ERROR);
@@ -108,24 +113,28 @@ public class IQTest extends XmlTest {
         Assert.assertEquals(error2.getId(), iq.getId());
         Assert.assertEquals(error2.getTo(), iq.getFrom());
         Assert.assertEquals(error2.getFrom(), iq.getTo());
-        Assert.assertEquals(marshal(error2), "<iq from=\"to@domain\" id=\"id\" to=\"from@domain\" type=\"error\"><error type=\"cancel\"><undefined-condition xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></undefined-condition></error></iq>");
+        Assert.assertEquals(marshal(error2),
+                "<iq from=\"to@domain\" id=\"id\" to=\"from@domain\" type=\"error\"><error type=\"cancel\"><undefined-condition xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></undefined-condition></error></iq>");
         Assert.assertEquals(marshal(error), marshal(error2));
     }
 
     @Test
     public void testErrorIQWithOriginal() throws JAXBException, XMLStreamException {
-        IQ iq = new IQ(Jid.ofLocalAndDomain("to", "domain"), IQ.Type.GET, new Bind(), "id", Jid.ofLocalAndDomain("from", "domain"), null, null);
+        IQ iq = new IQ(Jid.ofLocalAndDomain("to", "domain"), IQ.Type.GET, new Bind(), "id",
+                Jid.ofLocalAndDomain("from", "domain"), null, null);
         IQ error = iq.createError(new StanzaError(Condition.UNDEFINED_CONDITION), true);
         Assert.assertEquals(error.getType(), IQ.Type.ERROR);
         Assert.assertEquals(error.getId(), iq.getId());
         Assert.assertEquals(error.getTo(), iq.getFrom());
         Assert.assertEquals(error.getFrom(), iq.getTo());
-        Assert.assertEquals(marshal(error), "<iq from=\"to@domain\" id=\"id\" to=\"from@domain\" type=\"error\"><bind xmlns=\"urn:ietf:params:xml:ns:xmpp-bind\"></bind><error type=\"cancel\"><undefined-condition xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></undefined-condition></error></iq>");
+        Assert.assertEquals(marshal(error),
+                "<iq from=\"to@domain\" id=\"id\" to=\"from@domain\" type=\"error\"><bind xmlns=\"urn:ietf:params:xml:ns:xmpp-bind\"></bind><error type=\"cancel\"><undefined-condition xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></undefined-condition></error></iq>");
     }
 
     @Test
     public void testResultIQ() {
-        IQ iq = new IQ(Jid.ofLocalAndDomain("to", "domain"), IQ.Type.GET, null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null);
+        IQ iq = new IQ(Jid.ofLocalAndDomain("to", "domain"), IQ.Type.GET, null, "id",
+                Jid.ofLocalAndDomain("from", "domain"), null, null);
         IQ result = iq.createResult();
         Assert.assertEquals(result.getType(), IQ.Type.RESULT);
         Assert.assertEquals(result.getId(), iq.getId());

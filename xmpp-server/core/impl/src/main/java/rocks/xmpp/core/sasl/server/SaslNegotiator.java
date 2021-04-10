@@ -87,24 +87,31 @@ public final class SaslNegotiator implements StreamFeatureProvider<Mechanisms> {
             if (element instanceof Auth) {
                 final Auth auth = (Auth) element;
                 synchronized (this) {
-                    saslServer = Sasl.createSaslServer(auth.getMechanism(), "xmpp", null, Collections.emptyMap(), callbacks -> {
-                        String username = null;
-                        for (Callback callback : callbacks) {
-                            if (callback instanceof NameCallback) {
-                                username = ((NameCallback) callback).getName();
-                            }
-                            if (callback instanceof ScramCredentialCallback) {
-                                ScramIdentityStore scramIdentityStore = CDI.current().select(ScramIdentityStore.class).get();
-                                ((ScramCredentialCallback) callback).setScramCredential(scramIdentityStore.getScramCredential(username));
-                            }
-                            if (callback instanceof CredentialValidationCallback) {
-                                CredentialValidationCallback credentialValidationCallback = (CredentialValidationCallback) callback;
-                                IdentityStoreHandler identityStoreHandler = CDI.current().select(IdentityStoreHandler.class).get();
-                                CredentialValidationResult credentialValidationResult = identityStoreHandler.validate(credentialValidationCallback.getCredential());
-                                credentialValidationCallback.setCredentialValidationResult(credentialValidationResult);
-                            }
-                        }
-                    });
+                    saslServer = Sasl.createSaslServer(auth.getMechanism(), "xmpp", null, Collections.emptyMap(),
+                            callbacks -> {
+                                String username = null;
+                                for (Callback callback : callbacks) {
+                                    if (callback instanceof NameCallback) {
+                                        username = ((NameCallback) callback).getName();
+                                    }
+                                    if (callback instanceof ScramCredentialCallback) {
+                                        ScramIdentityStore scramIdentityStore =
+                                                CDI.current().select(ScramIdentityStore.class).get();
+                                        ((ScramCredentialCallback) callback)
+                                                .setScramCredential(scramIdentityStore.getScramCredential(username));
+                                    }
+                                    if (callback instanceof CredentialValidationCallback) {
+                                        CredentialValidationCallback credentialValidationCallback =
+                                                (CredentialValidationCallback) callback;
+                                        IdentityStoreHandler identityStoreHandler =
+                                                CDI.current().select(IdentityStoreHandler.class).get();
+                                        CredentialValidationResult credentialValidationResult = identityStoreHandler
+                                                .validate(credentialValidationCallback.getCredential());
+                                        credentialValidationCallback
+                                                .setCredentialValidationResult(credentialValidationResult);
+                                    }
+                                }
+                            });
 
                     if (saslServer == null) {
                         throw new SaslFailureException(new Failure(Failure.Condition.INVALID_MECHANISM));

@@ -32,7 +32,8 @@ import rocks.xmpp.extensions.muc.model.owner.MucOwner;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
 
 /**
- * The implementation of the {@code <x/>} element in the {@code http://jabber.org/protocol/muc} namespace, which allows to enter a room.
+ * The implementation of the {@code <x/>} element in the {@code http://jabber.org/protocol/muc} namespace, which allows
+ * to enter a room.
  * <h3>Usage</h3>
  * <pre>{@code
  * // To create an empty element, e.g to indicate support in a presence

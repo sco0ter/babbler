@@ -25,7 +25,9 @@
 /**
  * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0118.html">XEP-0118: User Tune</a>.
  *
- * <p>It defines a payload format for communicating information about music to which a user is listening, including the title, track number, collection, performer, composer, length, and user rating. The payload format is typically transported using the personal eventing protocol, a profile of XMPP publish-subscribe specified in XEP-0163.</p>
+ * <p>It defines a payload format for communicating information about music to which a user is listening, including the
+ * title, track number, collection, performer, composer, length, and user rating. The payload format is typically
+ * transported using the personal eventing protocol, a profile of XMPP publish-subscribe specified in XEP-0163.</p>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = Tune.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

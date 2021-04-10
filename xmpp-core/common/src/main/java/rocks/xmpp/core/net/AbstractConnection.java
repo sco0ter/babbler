@@ -68,7 +68,8 @@ public abstract class AbstractConnection implements Connection {
      * Restarts the stream.
      *
      * @see <a href="https://tools.ietf.org/html/rfc6120#section-4.3.3">RFC 6120 § 4.3.3.  Restarts</a>
-     * @see <a href="https://xmpp.org/extensions/xep-0206.html#preconditions-sasl">XEP-0206 Authentication and Resource Binding</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0206.html#preconditions-sasl">XEP-0206 Authentication and Resource
+     * Binding</a>
      * @see <a href="https://tools.ietf.org/html/rfc7395#section-3.7">RFC 7395 § 3.7.  Stream Restarts</a>
      */
     protected abstract void restartStream();
@@ -110,7 +111,9 @@ public abstract class AbstractConnection implements Connection {
             // First close XMPP layer stream
             return closeStream()
                     // Then wait for the reception of the peer's closing element or timeout.
-                    .thenCompose(v -> closedByPeer.applyToEither(CompletionStages.timeoutAfter(500, TimeUnit.MILLISECONDS), Function.identity()))
+                    .thenCompose(v -> closedByPeer
+                            .applyToEither(CompletionStages.timeoutAfter(500, TimeUnit.MILLISECONDS),
+                                    Function.identity()))
                     .handle((aVoid, exc) -> closeConnection())
                     // Then compose this future with the returned channel future, kind of flat mapping it.
                     .thenCompose(Function.identity());
@@ -141,7 +144,8 @@ public abstract class AbstractConnection implements Connection {
                 throw e;
             }
         } catch (InterruptedException e) {
-            // Implementers of AutoCloseable are strongly advised to not have the close method throw InterruptedException.
+            // Implementers of AutoCloseable are strongly advised to
+            // not have the close method throw InterruptedException.
             Thread.currentThread().interrupt();
         }
     }

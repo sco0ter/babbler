@@ -115,7 +115,20 @@ public final class Jingle {
     /**
      * Gets the initiator.
      * <blockquote>
-     * <p>The full JID of the entity that has initiated the session flow. When the Jingle action is "session-initiate", the {@code <jingle/>} element SHOULD possess an 'initiator' attribute that explicitly specifies the full JID of the initiating entity; for all other actions, the {@code <jingle/>} element SHOULD NOT possess an 'initiator' attribute and the recipient of the message SHOULD ignore the value if provided. The value of the 'initiator' attribute MAY be different from the 'from' address on the IQ-set of the session-initiate message (e.g., to handle certain interactions involving call managers, soft switches, and media relays). This usage shall be defined in other specifications, for example, in <a href="https://xmpp.org/extensions/xep-0251.html">Jingle Session Transfer (XEP-0251)</a>. However, in all cases if the 'initiator' and 'from' values differ then the responder MUST NOT interact with the 'initiator' JID unless it trusts the 'initiator' JID or trusts that the 'from' JID is allowed to authorize the 'initiator' JID to act on the 'from' JID's behalf. In the absence of explicit rules for handling this case, the responder SHOULD simply ignore the 'initiator' attribute and treat the 'from' JID as the initiating entity. After sending acknowledgement of the session-initiate message, the responder MUST send all future commmunications about the Jingle session to the initiator (whether the initiator is considered the 'from' JID or the 'initiator' JID).</p>
+     * <p>The full JID of the entity that has initiated the session flow. When the Jingle action is "session-initiate",
+     * the {@code <jingle/>} element SHOULD possess an 'initiator' attribute that explicitly specifies the full JID of
+     * the initiating entity; for all other actions, the {@code <jingle/>} element SHOULD NOT possess an 'initiator'
+     * attribute and the recipient of the message SHOULD ignore the value if provided. The value of the 'initiator'
+     * attribute MAY be different from the 'from' address on the IQ-set of the session-initiate message (e.g., to handle
+     * certain interactions involving call managers, soft switches, and media relays). This usage shall be defined in
+     * other specifications, for example, in <a href="https://xmpp.org/extensions/xep-0251.html">Jingle Session Transfer
+     * (XEP-0251)</a>. However, in all cases if the 'initiator' and 'from' values differ then the responder MUST NOT
+     * interact with the 'initiator' JID unless it trusts the 'initiator' JID or trusts that the 'from' JID is allowed
+     * to authorize the 'initiator' JID to act on the 'from' JID's behalf. In the absence of explicit rules for handling
+     * this case, the responder SHOULD simply ignore the 'initiator' attribute and treat the 'from' JID as the
+     * initiating entity. After sending acknowledgement of the session-initiate message, the responder MUST send all
+     * future commmunications about the Jingle session to the initiator (whether the initiator is considered the 'from'
+     * JID or the 'initiator' JID).</p>
      * </blockquote>
      *
      * @return The initiator.
@@ -127,7 +140,15 @@ public final class Jingle {
     /**
      * Gets the responder.
      * <blockquote>
-     * <p>The full JID of the entity that has replied to the initiation, which can be different from the 'to' address on the IQ-set. When the Jingle action is "session-accept", the {@code <jingle/>} element SHOULD possess a 'responder' attribute that explicitly specifies the full JID of the responding entity; for all other actions, the {@code <jingle/>} element SHOULD NOT possess a 'responder' attribute and the recipient of the message SHOULD ignore the value if provided. The value of the 'responder' attribute MAY be different from the 'from' address on the IQ-set of the session-accept message, where the logic for handling any difference between the 'responder' JID and the 'from' JID follows the same logic as for session-initiate messages (see above). After sending acknowledgement of the session-accept message, the initiator MUST send all future commmunications about this Jingle session to the responder (whether the responder is considered the 'from' JID or the 'responder' JID).</p>
+     * <p>The full JID of the entity that has replied to the initiation, which can be different from the 'to' address
+     * on the IQ-set. When the Jingle action is "session-accept", the {@code <jingle/>} element SHOULD possess a
+     * 'responder' attribute that explicitly specifies the full JID of the responding entity; for all other actions, the
+     * {@code <jingle/>} element SHOULD NOT possess a 'responder' attribute and the recipient of the message SHOULD
+     * ignore the value if provided. The value of the 'responder' attribute MAY be different from the 'from' address on
+     * the IQ-set of the session-accept message, where the logic for handling any difference between the 'responder' JID
+     * and the 'from' JID follows the same logic as for session-initiate messages (see above). After sending
+     * acknowledgement of the session-accept message, the initiator MUST send all future commmunications about this
+     * Jingle session to the responder (whether the responder is considered the 'from' JID or the 'responder' JID).</p>
      * </blockquote>
      *
      * @return The responder.
@@ -139,7 +160,11 @@ public final class Jingle {
     /**
      * Gets the session id.
      * <blockquote>
-     * <p>A random session identifier generated by the initiator, which effectively maps to the local-part of a SIP "Call-ID" parameter; this SHOULD match the XML Nmtoken production so that XML character escaping is not needed for characters such as '&amp;'. In some situations the Jingle session identifier might have security implications. See <a href="http://tools.ietf.org/html/rfc4086">RFC 4086</a> regarding requirements for randomness.</p>
+     * <p>A random session identifier generated by the initiator, which effectively maps to the local-part of a SIP
+     * "Call-ID" parameter; this SHOULD match the XML Nmtoken production so that XML character escaping is not needed
+     * for characters such as '&amp;'. In some situations the Jingle session identifier might have security
+     * implications. See <a href="http://tools.ietf.org/html/rfc4086">RFC 4086</a> regarding requirements for
+     * randomness.</p>
      * </blockquote>
      *
      * @return The session id.
@@ -298,7 +323,8 @@ public final class Jingle {
          * @param applicationFormat The application type.
          * @param transportMethod   The transport method.
          */
-        public Content(String name, Creator creator, ApplicationFormat applicationFormat, TransportMethod transportMethod) {
+        public Content(String name, Creator creator, ApplicationFormat applicationFormat,
+                       TransportMethod transportMethod) {
             this(name, creator, applicationFormat, transportMethod, null, null);
         }
 
@@ -312,7 +338,8 @@ public final class Jingle {
          * @param disposition       The content disposition.
          * @param senders           The senders.
          */
-        public Content(String name, Creator creator, ApplicationFormat applicationFormat, TransportMethod transportMethod, String disposition, Senders senders) {
+        public Content(String name, Creator creator, ApplicationFormat applicationFormat,
+                       TransportMethod transportMethod, String disposition, Senders senders) {
             this.name = name;
             this.creator = creator;
             this.applicationFormat = applicationFormat;
@@ -324,7 +351,12 @@ public final class Jingle {
         /**
          * Gets the creator of the content.
          * <blockquote>
-         * <p>Which party originally generated the content type (used to prevent race conditions regarding modifications); the defined values are "initiator" and "responder" (where the default is "initiator"). The value of the 'creator' attribute for a given content type MUST always match the party that originally generated the content type, even for Jingle actions that are sent by the other party in relation to that content type (e.g., subsequent content-modify or transport-info messages). The combination of the 'creator' attribute and the 'name' attribute is unique among both parties to a Jingle session.</p>
+         * <p>Which party originally generated the content type (used to prevent race conditions regarding
+         * modifications); the defined values are "initiator" and "responder" (where the default is "initiator"). The
+         * value of the 'creator' attribute for a given content type MUST always match the party that originally
+         * generated the content type, even for Jingle actions that are sent by the other party in relation to that
+         * content type (e.g., subsequent content-modify or transport-info messages). The combination of the 'creator'
+         * attribute and the 'name' attribute is unique among both parties to a Jingle session.</p>
          * </blockquote>
          *
          * @return The creator.
@@ -336,7 +368,12 @@ public final class Jingle {
         /**
          * Gets the content disposition.
          * <blockquote>
-         * <p>How the content definition is to be interpreted by the recipient. The meaning of this attribute matches the "Content-Disposition" header as defined in <a href="http://tools.ietf.org/html/rfc2183">RFC 2183</a> and applied to SIP by <a href="http://tools.ietf.org/html/rfc3261">RFC 3261</a>. The value of this attribute SHOULD be one of the values registered in the <a href="http://www.iana.org/assignments/mail-cont-disp">IANA Mail Content Disposition Values and Parameters Registry</a>. The default value of this attribute is "session".</p>
+         * <p>How the content definition is to be interpreted by the recipient. The meaning of this attribute matches
+         * the "Content-Disposition" header as defined in <a href="http://tools.ietf.org/html/rfc2183">RFC 2183</a> and
+         * applied to SIP by <a href="http://tools.ietf.org/html/rfc3261">RFC 3261</a>. The value of this attribute
+         * SHOULD be one of the values registered in the <a href="http://www.iana.org/assignments/mail-cont-disp">IANA
+         * Mail Content Disposition Values and Parameters Registry</a>. The default value of this attribute is
+         * "session".</p>
          * </blockquote>
          *
          * @return The disposition.
@@ -348,7 +385,12 @@ public final class Jingle {
         /**
          * Gets the name of the content.
          * <blockquote>
-         * <p>A unique name or identifier for the content type according to the creator, which MAY have meaning to a human user in order to differentiate this content type from other content types (e.g., two content types containing video media could differentiate between "room-pan" and "slides"). If there are two content types with the same value for the 'name' attribute, they shall understood as alternative definitions for the same purpose (e.g., a legacy method and a standards-based method for establishing a voice call), typically to smooth the transition from an older technology to Jingle.</p>
+         * <p>A unique name or identifier for the content type according to the creator, which MAY have meaning to a
+         * human user in order to differentiate this content type from other content types (e.g., two content types
+         * containing video media could differentiate between "room-pan" and "slides"). If there are two content types
+         * with the same value for the 'name' attribute, they shall understood as alternative definitions for the same
+         * purpose (e.g., a legacy method and a standards-based method for establishing a voice call), typically to
+         * smooth the transition from an older technology to Jingle.</p>
          * </blockquote>
          *
          * @return The name.
@@ -360,7 +402,11 @@ public final class Jingle {
         /**
          * Gets the senders.
          * <blockquote>
-         * <p>Which parties in the session will be generating content (i.e., the direction in which a Jingle session is active); the allowable values are "both", "initiator", "none", and "responder" (where the default is "both"). Note that the defined values of the 'senders' attribute in Jingle correspond to the SDP attributes of "sendrecv", "sendonly", "inactive", and "recvonly" defined in RFC <a href="http://tools.ietf.org/html/rfc4566">4566</a> and used in the offer-answer model <a href="http://tools.ietf.org/html/rfc3264">RFC 3264</a>.</p>
+         * <p>Which parties in the session will be generating content (i.e., the direction in which a Jingle session is
+         * active); the allowable values are "both", "initiator", "none", and "responder" (where the default is "both").
+         * Note that the defined values of the 'senders' attribute in Jingle correspond to the SDP attributes of
+         * "sendrecv", "sendonly", "inactive", and "recvonly" defined in RFC <a href="http://tools.ietf.org/html/rfc4566">4566</a>
+         * and used in the offer-answer model <a href="http://tools.ietf.org/html/rfc3264">RFC 3264</a>.</p>
          * </blockquote>
          *
          * @return The senders.
@@ -522,7 +568,9 @@ public final class Jingle {
         }
 
         /**
-         * The party prefers to use an existing session with the peer rather than initiate a new session; the Jingle session ID of the alternative session SHOULD be provided as the XML character data of the {@code <sid/>} child.
+         * The party prefers to use an existing session with the peer rather than initiate a new session; the Jingle
+         * session ID of the alternative session SHOULD be provided as the XML character data of the {@code <sid/>}
+         * child.
          */
         public static final class AlternativeSession extends Condition {
 

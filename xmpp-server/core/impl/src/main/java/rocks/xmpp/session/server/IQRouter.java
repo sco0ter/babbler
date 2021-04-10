@@ -88,7 +88,8 @@ public class IQRouter implements InboundIQHandler {
                 // 10.5.3.  localpart@domainpart
                 // 10.5.3.1.  No Such User
                 if (iq.getTo().getLocal() != null && !userManager.userExists(iq.getTo().getLocal())) {
-                    // For an IQ stanza, the server MUST return a <service-unavailable/> stanza error (Section 8.3.3.19) to the sender.
+                    // For an IQ stanza, the server MUST return a <service-unavailable/> stanza error (Section 8.3.3.19)
+                    // to the sender.
                     sessionSender.send(iq.createError(Condition.SERVICE_UNAVAILABLE));
                     return true;
                 }
@@ -97,17 +98,21 @@ public class IQRouter implements InboundIQHandler {
                 if (iq.getTo().isFullJid() && iq.getTo().getLocal() != null) {
                     Session sessionRecipient = sessionManager.getSession(iq.getTo());
                     if (sessionRecipient == null) {
-                        // If there is no connected resource that exactly matches the full JID, the stanza SHOULD be processed as if the JID were of the form <localpart@domainpart>
+                        // If there is no connected resource that exactly matches the full JID, the stanza SHOULD be
+                        // processed as if the JID were of the form <localpart@domainpart>
                         iq.setTo(iq.getTo().asBareJid());
                     } else {
-                        // If the JID contained in the 'to' attribute is of the form <localpart@domainpart/resourcepart>, the user exists, and there is a connected resource that exactly matches the full JID, the server MUST deliver the stanza to that connected resource.
+                        // If the JID contained in the 'to' attribute is of the form
+                        // <localpart@domainpart/resourcepart>, the user exists, and there is a connected resource that
+                        // exactly matches the full JID, the server MUST deliver the stanza to that connected resource.
                         sessionRecipient.send(iq);
                         return true;
                     }
                 }
 
                 final Optional<IQHandler> iqHandler = iqHandlers.stream()
-                        .filter(handler -> handler.getPayloadClass() != null && handler.getPayloadClass().isAssignableFrom(payload.getClass()))
+                        .filter(handler -> handler.getPayloadClass() != null && handler.getPayloadClass()
+                                .isAssignableFrom(payload.getClass()))
                         .findFirst();
 
                 if (iqHandler.isPresent()) {
@@ -138,7 +143,8 @@ public class IQRouter implements InboundIQHandler {
     CompletableFuture<IQ> waitForResult(IQ iq, Duration duration) {
         CompletableFuture<IQ> resultFuture = new CompletableFuture<>();
         pendingResults.put(iq.getId(), resultFuture);
-        return resultFuture.applyToEither(CompletionStages.timeoutAfter(duration.toMillis(), TimeUnit.MILLISECONDS), Function.identity());
+        return resultFuture.applyToEither(CompletionStages.timeoutAfter(duration.toMillis(), TimeUnit.MILLISECONDS),
+                Function.identity());
     }
 
     @Override

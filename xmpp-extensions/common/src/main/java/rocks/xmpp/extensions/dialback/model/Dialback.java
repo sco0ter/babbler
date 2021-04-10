@@ -50,7 +50,8 @@ import rocks.xmpp.core.stanza.model.server.ServerStanzaError;
 import rocks.xmpp.extensions.dialback.model.feature.DialbackFeature;
 
 /**
- * The implementation of the dialback elements {@code <result/>} and {@code <verify/>} in the {@code jabber:server:dialback} namespace.
+ * The implementation of the dialback elements {@code <result/>} and {@code <verify/>} in the {@code
+ * jabber:server:dialback} namespace.
  *
  * <p>To generate a dialback key use {@link #generateKey(String, String, String, String)}.</p>
  *
@@ -103,7 +104,7 @@ public abstract class Dialback {
 
     /**
      * Generates a key using the following recommended algorithm.
-     * 
+     *
      * <pre>
      *     HMAC-SHA256
      *       (
@@ -123,14 +124,17 @@ public abstract class Dialback {
      * @return The dialback key.
      * @see <a href="https://xmpp.org/extensions/xep-0185.html">XEP-0185: Dialback Key Generation and Validation</a>
      */
-    public static String generateKey(final String secret, final String receivingServer, final String originatingServer, final String streamId) {
+    public static String generateKey(final String secret, final String receivingServer, final String originatingServer,
+                                     final String streamId) {
         try {
             final Mac mac = Mac.getInstance("HmacSHA256");
 
             final MessageDigest digest = MessageDigest.getInstance("SHA-256");
             final byte[] sha = digest.digest(secret.getBytes(StandardCharsets.UTF_8));
 
-            final Key key = new SecretKeySpec(DatatypeConverter.printHexBinary(sha).toLowerCase(Locale.ENGLISH).getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+            final Key key = new SecretKeySpec(
+                    DatatypeConverter.printHexBinary(sha).toLowerCase(Locale.ENGLISH).getBytes(StandardCharsets.UTF_8),
+                    "HmacSHA256");
             mac.init(key);
             mac.update((receivingServer + ' ' + originatingServer + ' ' + streamId).getBytes(StandardCharsets.UTF_8));
 
@@ -154,18 +158,18 @@ public abstract class Dialback {
 
     public final String getKey() {
         return mixedContent.stream()
-                       .filter(o -> o instanceof String)
-                       .map(o -> (String) o)
-                       .findAny()
-                       .orElse(null);
+                .filter(o -> o instanceof String)
+                .map(o -> (String) o)
+                .findAny()
+                .orElse(null);
     }
 
     public final StanzaError getError() {
         return mixedContent.stream()
-                       .filter(o -> o instanceof StanzaError)
-                       .map(o -> (StanzaError) o)
-                       .findAny()
-                       .orElse(null);
+                .filter(o -> o instanceof StanzaError)
+                .map(o -> (StanzaError) o)
+                .findAny()
+                .orElse(null);
     }
 
     private enum Type {
@@ -222,7 +226,8 @@ public abstract class Dialback {
     }
 
     /**
-     * A verification request sent from the receiving server to the authoritative server or a verification result sent in the opposite direction.
+     * A verification request sent from the receiving server to the authoritative server or a verification result sent
+     * in the opposite direction.
      */
     @XmlRootElement(name = "verify")
     public static final class Verify extends Dialback {
@@ -239,7 +244,8 @@ public abstract class Dialback {
          *
          * @param from The target domain.
          * @param to   The sender domain.
-         * @param id   The stream ID of the response stream header sent from the Receiving Server to the Initiating Server.
+         * @param id   The stream ID of the response stream header sent from the Receiving Server to the Initiating
+         *             Server.
          * @param key  The dialback key.
          */
         public Verify(final Jid from, final Jid to, final String id, final String key) {

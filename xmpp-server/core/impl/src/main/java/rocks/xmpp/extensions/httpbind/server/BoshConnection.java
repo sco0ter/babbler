@@ -66,7 +66,8 @@ import rocks.xmpp.util.XmppUtils;
 public final class BoshConnection extends AbstractConnection {
 
     /**
-     * This is the longest time (in seconds) that the connection manager will wait before responding to any request during the session.
+     * This is the longest time (in seconds) that the connection manager will wait before responding to any request
+     * during the session.
      */
     private static final Duration DEFAULT_WAIT = Duration.ofMinutes(1);
 
@@ -114,8 +115,8 @@ public final class BoshConnection extends AbstractConnection {
     });
 
     /**
-     * The scheduled future, which will timeout after the inactivity period, which starts with the last response and
-     * if there are no other requests. It is cancelled on each new request.
+     * The scheduled future, which will timeout after the inactivity period, which starts with the last response and if
+     * there are no other requests. It is cancelled on each new request.
      *
      * <p>Guarded by "inboundQueue".</p>
      */
@@ -144,7 +145,8 @@ public final class BoshConnection extends AbstractConnection {
 
     private boolean secure;
 
-    BoshConnection(final StreamHandler streamHandler, final Body sessionRequest, final AsyncResponse asyncResponse, final SecurityContext securityContext, final BoshConnectionManager connectionManager) {
+    BoshConnection(final StreamHandler streamHandler, final Body sessionRequest, final AsyncResponse asyncResponse,
+                   final SecurityContext securityContext, final BoshConnectionManager connectionManager) {
         super(null);
         this.connectionManager = connectionManager;
         this.streamHandler = streamHandler;
@@ -162,12 +164,13 @@ public final class BoshConnection extends AbstractConnection {
     private static boolean verifyKey(final Body body, final Body previousRequest) {
         if (previousRequest != null && (previousRequest.getNewKey() != null || previousRequest.getKey() != null)) {
             if (body.getKey() == null) {
-                // If it receives a request without a 'key' attribute and the 'newkey' or 'key' attribute of the previous request was set
-                // then the connection manager MUST NOT process the element
+                // If it receives a request without a 'key' attribute and the 'newkey' or 'key' attribute of the
+                // previous request was set then the connection manager MUST NOT process the element
                 return false;
             } else {
                 final String hashedKey = XmppUtils.hash(body.getKey().getBytes(StandardCharsets.UTF_8));
-                final String previousKey = previousRequest.getNewKey() != null ? previousRequest.getNewKey() : previousRequest.getKey();
+                final String previousKey =
+                        previousRequest.getNewKey() != null ? previousRequest.getNewKey() : previousRequest.getKey();
                 return hashedKey.equalsIgnoreCase(previousKey);
             }
         }
@@ -175,13 +178,15 @@ public final class BoshConnection extends AbstractConnection {
         return true;
     }
 
-    final void requestReceived(final Body body, final AsyncResponse asyncResponse, final SecurityContext securityContext) {
+    final void requestReceived(final Body body, final AsyncResponse asyncResponse,
+                               final SecurityContext securityContext) {
 
         final BodyRequest request = new BodyRequest(body, asyncResponse);
 
         // 14.3 Broken Connections
         // Whenever the connection manager receives a request with a 'rid' that it has already received,
-        // it SHOULD return an HTTP 200 (OK) response that includes the buffered copy of the original XML response to the client.
+        // it SHOULD return an HTTP 200 (OK) response that includes the buffered copy of the original XML response to
+        // the client.
         final Body bufferedBody = responseBuffer.get(body.getRid());
         if (bufferedBody != null) {
             request.asyncResponse.resume(bufferedBody);
@@ -205,7 +210,8 @@ public final class BoshConnection extends AbstractConnection {
             // but to which it has not yet responded then it SHOULD respond immediately to the existing request
             // with a recoverable binding condition (see Recoverable Binding Conditions)
             // and send any future response to the latest request.
-            final Optional<BodyRequest> pendingRequest = Stream.concat(requests.stream(), inboundQueue.stream()).filter(r -> r.body.getRid().equals(body.getRid())).findAny();
+            final Optional<BodyRequest> pendingRequest = Stream.concat(requests.stream(), inboundQueue.stream())
+                    .filter(r -> r.body.getRid().equals(body.getRid())).findAny();
             pendingRequest.ifPresent(bodyRequest -> bodyRequest.resume(Body.builder().type(Body.Type.ERROR), true));
 
             // This queue will sort the requests by their RID.
@@ -232,7 +238,8 @@ public final class BoshConnection extends AbstractConnection {
                         // We received a RID which is out of order.
                         // Do nothing with the request and wait if the next request contains the missing RID,
                         // unless the RID is larger than the upper limit of the expected window
-                        if (queuedRequest.body.getRid() < lastRequest.getRid() || queuedRequest.body.getRid() - lastRequest.getRid() > simultaneousRequests) {
+                        if (queuedRequest.body.getRid() < lastRequest.getRid()
+                                || queuedRequest.body.getRid() - lastRequest.getRid() > simultaneousRequests) {
                             condition = Body.Condition.ITEM_NOT_FOUND;
                             break;
                         }
@@ -272,7 +279,8 @@ public final class BoshConnection extends AbstractConnection {
             // Respond to all requests.
             hold = 0;
         } else {
-            // The connection manager SHOULD set the maximum inactivity period back to normal upon reception of the next request from the client
+            // The connection manager SHOULD set the maximum inactivity period back to normal upon reception of the next
+            // request from the client
             maxPause = DEFAULT_INACTIVITY;
             requests.add(request);
         }
@@ -342,9 +350,12 @@ public final class BoshConnection extends AbstractConnection {
     public final CompletableFuture<Void> open(final SessionOpen sessionOpen) {
         final BodyRequest bodyRequest = requests.peek();
         final Body sessionRequest = bodyRequest.body;
-        this.hold = (short) (sessionRequest.getHold() != null ? Math.min(sessionRequest.getHold(), MAX_HOLD) : MAX_HOLD);
-        this.wait = sessionRequest.getWait() != null ? Duration.ofSeconds(Math.min(sessionRequest.getWait().getSeconds(), DEFAULT_WAIT.getSeconds())) : DEFAULT_WAIT;
-        this.simultaneousRequests = (short) ((sessionRequest.getHold() != null ? sessionRequest.getHold() : MAX_HOLD) + 1);
+        this.hold =
+                (short) (sessionRequest.getHold() != null ? Math.min(sessionRequest.getHold(), MAX_HOLD) : MAX_HOLD);
+        this.wait = sessionRequest.getWait() != null ? Duration
+                .ofSeconds(Math.min(sessionRequest.getWait().getSeconds(), DEFAULT_WAIT.getSeconds())) : DEFAULT_WAIT;
+        this.simultaneousRequests =
+                (short) ((sessionRequest.getHold() != null ? sessionRequest.getHold() : MAX_HOLD) + 1);
         // Send the Session Creation Response
         bodyRequest.response = Body.builder()
                 .accept("gzip,deflate")
@@ -429,7 +440,8 @@ public final class BoshConnection extends AbstractConnection {
         BodyRequest bodyRequest;
         // The connection manager SHOULD acknowledge the session termination on the oldest connection
         // with a HTTP 200 OK containing a <body/> element of the type 'terminate'.
-        // On all other open connections, the connection manager SHOULD respond with an HTTP 200 OK containing an empty <body/> element.
+        // On all other open connections, the connection manager SHOULD respond with an HTTP 200 OK containing an empty
+        // <body/> element.
         while ((bodyRequest = requests.poll()) != null) {
             Body.Builder bodyBuilder = Body.builder();
             // Only send a type="terminate" once.
@@ -485,14 +497,15 @@ public final class BoshConnection extends AbstractConnection {
 
             // 10. Inactivity
             // If the connection manager has responded to all the requests it has received within a session
-            // and the time since its last response is longer than the maximum inactivity period,
-            // then it SHOULD assume the client has been disconnected and terminate the session without informing the client.
+            // and the time since its last response is longer than the maximum inactivity period, then it SHOULD assume
+            // the client has been disconnected and terminate the session without informing the client.
             if (requests.isEmpty()) {
                 synchronized (inboundQueue) {
-                    BoshConnection.this.inactivityFuture = BoshConnection.this.connectionManager.scheduledExecutorService.schedule(() -> {
-                        System.out.println("Closing inactive BOSH session.");
-                        closeAsync();
-                    }, maxPause.getSeconds(), TimeUnit.SECONDS);
+                    BoshConnection.this.inactivityFuture =
+                            BoshConnection.this.connectionManager.scheduledExecutorService.schedule(() -> {
+                                System.out.println("Closing inactive BOSH session.");
+                                closeAsync();
+                            }, maxPause.getSeconds(), TimeUnit.SECONDS);
                 }
             }
 

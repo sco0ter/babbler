@@ -43,7 +43,13 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
  * The implementation of the {@code <message/>} element.
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#message">5.  Exchanging Messages</a></cite></p>
- * <p>Once a client has authenticated with a server and bound a resource to an XML stream as described in [XMPP-CORE], an XMPP server will route XML stanzas to and from that client. One kind of stanza that can be exchanged is {@code <message/>} (if, that is, messaging functionality is enabled on the server). Exchanging messages is a basic use of XMPP and occurs when a user generates a message stanza that is addressed to another entity. As defined under Section 8, the sender's server is responsible for delivering the message to the intended recipient (if the recipient is on the same local server) or for routing the message to the recipient's server (if the recipient is on a remote server). Thus a message stanza is used to "push" information to another entity.</p>
+ * <p>Once a client has authenticated with a server and bound a resource to an XML stream as described in [XMPP-CORE],
+ * an XMPP server will route XML stanzas to and from that client. One kind of stanza that can be exchanged is {@code
+ * <message/>} (if, that is, messaging functionality is enabled on the server). Exchanging messages is a basic use of
+ * XMPP and occurs when a user generates a message stanza that is addressed to another entity. As defined under Section
+ * 8, the sender's server is responsible for delivering the message to the intended recipient (if the recipient is on
+ * the same local server) or for routing the message to the recipient's server (if the recipient is on a remote server).
+ * Thus a message stanza is used to "push" information to another entity.</p>
  * </blockquote>
  * This class is thread-safe.
  *
@@ -118,7 +124,9 @@ public class Message extends ExtensibleStanza {
      * @param thread  The thread.
      */
     public Message(Jid to, Type type, String body, String subject, String thread) {
-        this(to, type, body != null ? Collections.singleton(new Text(body)) : Collections.emptyList(), subject != null ? Collections.singleton(new Text(subject)) : Collections.emptyList(), thread, null, null, null, null, null, null);
+        this(to, type, body != null ? Collections.singleton(new Text(body)) : Collections.emptyList(),
+                subject != null ? Collections.singleton(new Text(subject)) : Collections.emptyList(), thread, null,
+                null, null, null, null, null);
     }
 
     /**
@@ -136,8 +144,11 @@ public class Message extends ExtensibleStanza {
      * @param extensions   The extensions.
      * @param error        The error.
      */
-    public Message(Jid to, Type type, String body, String subject, String thread, String parentThread, String id, Jid from, Locale language, Collection<?> extensions, StanzaError error) {
-        this(to, type, body != null ? Collections.singleton(new Text(body)) : Collections.emptyList(), subject != null ? Collections.singleton(new Text(subject)) : Collections.emptyList(), thread, parentThread, id, from, language, extensions, error);
+    public Message(Jid to, Type type, String body, String subject, String thread, String parentThread, String id,
+                   Jid from, Locale language, Collection<?> extensions, StanzaError error) {
+        this(to, type, body != null ? Collections.singleton(new Text(body)) : Collections.emptyList(),
+                subject != null ? Collections.singleton(new Text(subject)) : Collections.emptyList(), thread,
+                parentThread, id, from, language, extensions, error);
     }
 
     /**
@@ -155,7 +166,9 @@ public class Message extends ExtensibleStanza {
      * @param extensions   The extensions.
      * @param error        The error.
      */
-    public Message(Jid to, Type type, Collection<Text> bodies, Collection<Text> subjects, String thread, String parentThread, String id, Jid from, Locale language, Collection<?> extensions, StanzaError error) {
+    public Message(Jid to, Type type, Collection<Text> bodies, Collection<Text> subjects, String thread,
+                   String parentThread, String id, Jid from, Locale language, Collection<?> extensions,
+                   StanzaError error) {
         super(to, from, id, language, extensions, error);
         this.type = type;
         if (bodies != null) {
@@ -175,8 +188,12 @@ public class Message extends ExtensibleStanza {
      * Gets the bodies.
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#message-syntax-body">5.2.3.  Body Element</a></cite></p>
-     * <p>The {@code <body/>} element contains human-readable XML character data that specifies the textual contents of the message; this child element is normally included but is OPTIONAL.</p>
-     * <p>There are no attributes defined for the {@code <body/>} element, with the exception of the 'xml:lang' attribute. Multiple instances of the {@code <body/>} element MAY be included in a message stanza for the purpose of providing alternate versions of the same body, but only if each instance possesses an 'xml:lang' attribute with a distinct language value.</p>
+     * <p>The {@code <body/>} element contains human-readable XML character data that specifies the textual contents of
+     * the message; this child element is normally included but is OPTIONAL.</p>
+     * <p>There are no attributes defined for the {@code <body/>} element, with the exception of the 'xml:lang'
+     * attribute. Multiple instances of the {@code <body/>} element MAY be included in a message stanza for the purpose
+     * of providing alternate versions of the same body, but only if each instance possesses an 'xml:lang' attribute
+     * with a distinct language value.</p>
      * </blockquote>
      *
      * @return The list of bodies.
@@ -190,7 +207,8 @@ public class Message extends ExtensibleStanza {
      * Gets the default body (which has no language attribute).
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#message-syntax-body">5.2.3.  Body Element</a></cite></p>
-     * <p>The {@code <body/>} element contains human-readable XML character data that specifies the textual contents of the message; this child element is normally included but is OPTIONAL.</p>
+     * <p>The {@code <body/>} element contains human-readable XML character data that specifies the textual contents of
+     * the message; this child element is normally included but is OPTIONAL.</p>
      * </blockquote>
      * If there's no default body, but only bodies with a language attribute, the first body is returned.
      *
@@ -238,9 +256,14 @@ public class Message extends ExtensibleStanza {
     /**
      * Gets the subjects.
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#message-syntax-subject">5.2.4.  Subject Element</a></cite></p>
-     * <p>The {@code <subject/>} element contains human-readable XML character data that specifies the topic of the message.</p>
-     * <p>There are no attributes defined for the {@code <subject/>} element, with the exception of the 'xml:lang' attribute inherited from [XML]. Multiple instances of the {@code <subject/>} element MAY be included for the purpose of providing alternate versions of the same subject, but only if each instance possesses an 'xml:lang' attribute with a distinct language value.</p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#message-syntax-subject">5.2.4.  Subject
+     * Element</a></cite></p>
+     * <p>The {@code <subject/>} element contains human-readable XML character data that specifies the topic of the
+     * message.</p>
+     * <p>There are no attributes defined for the {@code <subject/>} element, with the exception of the 'xml:lang'
+     * attribute inherited from [XML]. Multiple instances of the {@code <subject/>} element MAY be included for the
+     * purpose of providing alternate versions of the same subject, but only if each instance possesses an 'xml:lang'
+     * attribute with a distinct language value.</p>
      * </blockquote>
      *
      * @return The list of subjects.
@@ -253,10 +276,13 @@ public class Message extends ExtensibleStanza {
     /**
      * Gets the default subject (which has no language attribute).
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#message-syntax-subject">5.2.4.  Subject Element</a></cite></p>
-     * <p>The {@code <subject/>} element contains human-readable XML character data that specifies the topic of the message.</p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#message-syntax-subject">5.2.4.  Subject
+     * Element</a></cite></p>
+     * <p>The {@code <subject/>} element contains human-readable XML character data that specifies the topic of the
+     * message.</p>
      * </blockquote>
-     * <p>If there's no default subject, but only subjects with a language attribute, the first subject is returned.</p>
+     * <p>If there's no default subject, but only subjects with a language attribute, the first subject is
+     * returned.</p>
      * <p>If there are no subjects at all, null is returned.</p>
      *
      * @return The subject or null.
@@ -299,10 +325,14 @@ public class Message extends ExtensibleStanza {
     }
 
     /**
-     * Gets the message type. This may also return null. If you want to check for a 'normal' message, you should prefer {@link #isNormal()}.
+     * Gets the message type. This may also return null. If you want to check for a 'normal' message, you should prefer
+     * {@link #isNormal()}.
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#message-syntax-type">5.2.2.  Type Attribute</a></cite></p>
-     * <p>Common uses of the message stanza in instant messaging applications include: single messages; messages sent in the context of a one-to-one chat session; messages sent in the context of a multi-user chat room; alerts, notifications, or other information to which no reply is expected; and errors. These uses are differentiated via the 'type' attribute.</p>
+     * <p>Common uses of the message stanza in instant messaging applications include: single messages; messages sent
+     * in the context of a one-to-one chat session; messages sent in the context of a multi-user chat room; alerts,
+     * notifications, or other information to which no reply is expected; and errors. These uses are differentiated via
+     * the 'type' attribute.</p>
      * </blockquote>
      *
      * @return The message type.
@@ -323,10 +353,13 @@ public class Message extends ExtensibleStanza {
     }
 
     /**
-     * Indicates, whether this message is a normal message, i.e. if the type or the message is either {@link Type#NORMAL}, null or otherwise unknown, this method returns true.
+     * Indicates, whether this message is a normal message, i.e. if the type or the message is either {@link
+     * Type#NORMAL}, null or otherwise unknown, this method returns true.
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#message-syntax-type">5.2.2.  Type Attribute</a></cite></p>
-     * <p>If an application receives a message with no 'type' attribute or the application does not understand the value of the 'type' attribute provided, it MUST consider the message to be of type "normal" (i.e., "normal" is the default).</p>
+     * <p>If an application receives a message with no 'type' attribute or the application does not understand the
+     * value of the 'type' attribute provided, it MUST consider the message to be of type "normal" (i.e., "normal" is
+     * the default).</p>
      * </blockquote>
      *
      * @return True, if this message's type is normal or unspecified.
@@ -339,8 +372,16 @@ public class Message extends ExtensibleStanza {
     /**
      * Gets the thread.
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#message-syntax-thread">5.2.5.  Thread Element</a></cite></p>
-     * <p>The primary use of the XMPP {@code <thread/>} element is to uniquely identify a conversation thread or "chat session" between two entities instantiated by {@code <message/>} stanzas of type 'chat'. However, the XMPP {@code <thread/>} element MAY also be used to uniquely identify an analogous thread between two entities instantiated by {@code <message/>} stanzas of type 'headline' or 'normal', or among multiple entities in the context of a multi-user chat room instantiated by {@code <message/>} stanzas of type 'groupchat'. It MAY also be used for {@code <message/>} stanzas not related to a human conversation, such as a game session or an interaction between plugins. The {@code <thread/>} element is not used to identify individual messages, only conversations or messaging sessions.</p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#message-syntax-thread">5.2.5.  Thread
+     * Element</a></cite></p>
+     * <p>The primary use of the XMPP {@code <thread/>} element is to uniquely identify a conversation thread or "chat
+     * session" between two entities instantiated by {@code <message/>} stanzas of type 'chat'. However, the XMPP {@code
+     * <thread/>} element MAY also be used to uniquely identify an analogous thread between two entities instantiated by
+     * {@code <message/>} stanzas of type 'headline' or 'normal', or among multiple entities in the context of a
+     * multi-user chat room instantiated by {@code <message/>} stanzas of type 'groupchat'. It MAY also be used for
+     * {@code <message/>} stanzas not related to a human conversation, such as a game session or an interaction between
+     * plugins. The {@code <thread/>} element is not used to identify individual messages, only conversations or
+     * messaging sessions.</p>
      * </blockquote>
      *
      * @return The thread.
@@ -365,8 +406,12 @@ public class Message extends ExtensibleStanza {
     /**
      * Gets the parent thread.
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#message-syntax-thread">5.2.5.  Thread Element</a></cite></p>
-     * <p>The {@code <thread/>} element MAY possess a 'parent' attribute that identifies another thread of which the current thread is an offshoot or child. The 'parent' attribute MUST conform to the syntax of the {@code <thread/>} element itself and its value MUST be different from the XML character data of the {@code <thread/>} element on which the 'parent' attribute is included.</p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#message-syntax-thread">5.2.5.  Thread
+     * Element</a></cite></p>
+     * <p>The {@code <thread/>} element MAY possess a 'parent' attribute that identifies another thread of which the
+     * current thread is an offshoot or child. The 'parent' attribute MUST conform to the syntax of the {@code
+     * <thread/>} element itself and its value MUST be different from the XML character data of the {@code <thread/>}
+     * element on which the 'parent' attribute is included.</p>
      * </blockquote>
      *
      * @return The parent thread.
@@ -390,7 +435,8 @@ public class Message extends ExtensibleStanza {
 
     @Override
     public final Message createError(StanzaError error) {
-        return new Message(getFrom(), Type.ERROR, getBodies(), getSubjects(), getThread(), getParentThread(), getId(), getTo(), getLanguage(), getExtensions(), error);
+        return new Message(getFrom(), Type.ERROR, getBodies(), getSubjects(), getThread(), getParentThread(), getId(),
+                getTo(), getLanguage(), getExtensions(), error);
     }
 
     @Override
@@ -417,33 +463,54 @@ public class Message extends ExtensibleStanza {
      * Represents a {@code <message/>} 'type' attribute.
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#message-syntax-type">5.2.2.  Type Attribute</a></cite></p>
-     * <p>Common uses of the message stanza in instant messaging applications include: single messages; messages sent in the context of a one-to-one chat session; messages sent in the context of a multi-user chat room; alerts, notifications, or other information to which no reply is expected; and errors. These uses are differentiated via the 'type' attribute.</p>
+     * <p>Common uses of the message stanza in instant messaging applications include: single messages; messages sent
+     * in the context of a one-to-one chat session; messages sent in the context of a multi-user chat room; alerts,
+     * notifications, or other information to which no reply is expected; and errors. These uses are differentiated via
+     * the 'type' attribute.</p>
      * </blockquote>
      */
     @XmlType(name = "messageType")
     public enum Type {
         /**
-         * The message is a standalone message that is sent outside the context of a one-to-one conversation or groupchat, and to which it is expected that the recipient will reply. Typically a receiving client will present a message of type "normal" in an interface that enables the recipient to reply, but without a conversation history. The default value of the 'type' attribute is "normal".
+         * The message is a standalone message that is sent outside the context of a one-to-one conversation or
+         * groupchat, and to which it is expected that the recipient will reply. Typically a receiving client will
+         * present a message of type "normal" in an interface that enables the recipient to reply, but without a
+         * conversation history. The default value of the 'type' attribute is "normal".
          */
         @XmlEnumValue(value = "normal")
         NORMAL,
         /**
-         * The message is sent in the context of a one-to-one chat session. Typically an interactive client will present a message of type "chat" in an interface that enables one-to-one chat between the two parties, including an appropriate conversation history.
+         * The message is sent in the context of a one-to-one chat session. Typically an interactive client will present
+         * a message of type "chat" in an interface that enables one-to-one chat between the two parties, including an
+         * appropriate conversation history.
          */
         @XmlEnumValue(value = "chat")
         CHAT,
         /**
-         * The message provides an alert, a notification, or other transient information to which no reply is expected (e.g., news headlines, sports updates, near-real-time market data, or syndicated content). Because no reply to the message is expected, typically a receiving client will present a message of type "headline" in an interface that appropriately differentiates the message from standalone messages, chat messages, and groupchat messages (e.g., by not providing the recipient with the ability to reply). If the 'to' address is the bare JID, the receiving server SHOULD deliver the message to all of the recipient's available resources with non-negative presence priority and MUST deliver the message to at least one of those resources; if the 'to' address is a full JID and there is a matching resource, the server MUST deliver the message to that resource; otherwise the server MUST either silently ignore the message or return an error.
+         * The message provides an alert, a notification, or other transient information to which no reply is expected
+         * (e.g., news headlines, sports updates, near-real-time market data, or syndicated content). Because no reply
+         * to the message is expected, typically a receiving client will present a message of type "headline" in an
+         * interface that appropriately differentiates the message from standalone messages, chat messages, and
+         * groupchat messages (e.g., by not providing the recipient with the ability to reply). If the 'to' address is
+         * the bare JID, the receiving server SHOULD deliver the message to all of the recipient's available resources
+         * with non-negative presence priority and MUST deliver the message to at least one of those resources; if the
+         * 'to' address is a full JID and there is a matching resource, the server MUST deliver the message to that
+         * resource; otherwise the server MUST either silently ignore the message or return an error.
          */
         @XmlEnumValue(value = "headline")
         HEADLINE,
         /**
-         * The message is sent in the context of a multi-user chat environment (similar to that of [IRC]). Typically a receiving client will present a message of type "groupchat" in an interface that enables many-to-many chat between the parties, including a roster of parties in the chatroom and an appropriate conversation history. For detailed information about XMPP-based groupchat, refer to [XEP-0045].
+         * The message is sent in the context of a multi-user chat environment (similar to that of [IRC]). Typically a
+         * receiving client will present a message of type "groupchat" in an interface that enables many-to-many chat
+         * between the parties, including a roster of parties in the chatroom and an appropriate conversation history.
+         * For detailed information about XMPP-based groupchat, refer to [XEP-0045].
          */
         @XmlEnumValue(value = "groupchat")
         GROUPCHAT,
         /**
-         * The message is generated by an entity that experiences an error when processing a message received from another entity. A client that receives a message of type "error" SHOULD present an appropriate interface informing the original sender regarding the nature of the error.
+         * The message is generated by an entity that experiences an error when processing a message received from
+         * another entity. A client that receives a message of type "error" SHOULD present an appropriate interface
+         * informing the original sender regarding the nature of the error.
          */
         @XmlEnumValue(value = "error")
         ERROR
@@ -452,8 +519,16 @@ public class Message extends ExtensibleStanza {
     /**
      * The implementation of the message's {@code <thread/>} element.
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#message-syntax-thread">5.2.5.  Thread Element</a></cite></p>
-     * <p>The primary use of the XMPP {@code <thread/>} element is to uniquely identify a conversation thread or "chat session" between two entities instantiated by {@code <message/>} stanzas of type 'chat'. However, the XMPP {@code <thread/>} element MAY also be used to uniquely identify an analogous thread between two entities instantiated by {@code <message/>} stanzas of type 'headline' or 'normal', or among multiple entities in the context of a multi-user chat room instantiated by {@code <message/>} stanzas of type 'groupchat'. It MAY also be used for {@code <message/>} stanzas not related to a human conversation, such as a game session or an interaction between plugins. The {@code <thread/>} element is not used to identify individual messages, only conversations or messaging sessions.</p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6121.html#message-syntax-thread">5.2.5.  Thread
+     * Element</a></cite></p>
+     * <p>The primary use of the XMPP {@code <thread/>} element is to uniquely identify a conversation thread or "chat
+     * session" between two entities instantiated by {@code <message/>} stanzas of type 'chat'. However, the XMPP {@code
+     * <thread/>} element MAY also be used to uniquely identify an analogous thread between two entities instantiated by
+     * {@code <message/>} stanzas of type 'headline' or 'normal', or among multiple entities in the context of a
+     * multi-user chat room instantiated by {@code <message/>} stanzas of type 'groupchat'. It MAY also be used for
+     * {@code <message/>} stanzas not related to a human conversation, such as a game session or an interaction between
+     * plugins. The {@code <thread/>} element is not used to identify individual messages, only conversations or
+     * messaging sessions.</p>
      * </blockquote>
      */
     private static final class ThreadElement {

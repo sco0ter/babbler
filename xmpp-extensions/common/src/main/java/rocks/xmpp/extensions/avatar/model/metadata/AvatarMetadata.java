@@ -153,7 +153,8 @@ public final class AvatarMetadata {
         }
 
         /**
-         * Gets a hash of the image data for the specified content-type, where the hash is produced in accordance with the SHA-1 algorithm as specified in RFC 3174 [11] (with binary output).
+         * Gets a hash of the image data for the specified content-type, where the hash is produced in accordance with
+         * the SHA-1 algorithm as specified in RFC 3174 [11] (with binary output).
          *
          * @return The id.
          */
@@ -171,7 +172,8 @@ public final class AvatarMetadata {
         }
 
         /**
-         * Gets the http: or https: URL at which the image data file is hosted; this attribute MUST NOT be included unless the image data file can be retrieved via HTTP.
+         * Gets the http: or https: URL at which the image data file is hosted; this attribute MUST NOT be included
+         * unless the image data file can be retrieved via HTTP.
          *
          * @return The URL.
          */

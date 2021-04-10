@@ -40,7 +40,8 @@ public class LogFormatter extends SimpleFormatter {
     public synchronized String format(LogRecord logRecord) {
         StringBuilder sb = new StringBuilder();
         DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
-        LocalDateTime resultDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(logRecord.getMillis()), ZoneId.systemDefault());
+        LocalDateTime resultDate =
+                LocalDateTime.ofInstant(Instant.ofEpochMilli(logRecord.getMillis()), ZoneId.systemDefault());
         sb.append(dateFormat.format(resultDate))
                 .append(' ')
                 .append(logRecord.getLevel())

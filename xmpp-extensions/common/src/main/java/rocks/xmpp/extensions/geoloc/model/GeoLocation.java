@@ -44,8 +44,12 @@ import rocks.xmpp.util.adapters.ZoneOffsetAdapter;
  *
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/extensions/xep-0080.html#transport">4. Recommended Transport</a></cite></p>
- * <p>Location information about human users SHOULD be communicated and transported by means of Publish-Subscribe (XEP-0060) [5] or the subset thereof specified in Personal Eventing Protocol (XEP-0163) [6].</p>
- * <p>Although the XMPP publish-subscribe extension is the preferred means for transporting location information about human users, applications that do not involve human users (e.g., device tracking) MAY use other transport methods; however, because location information is not pure presence information and can change independently of network availability, it SHOULD NOT be provided as an extension to {@code <presence/>}.</p>
+ * <p>Location information about human users SHOULD be communicated and transported by means of Publish-Subscribe
+ * (XEP-0060) [5] or the subset thereof specified in Personal Eventing Protocol (XEP-0163) [6].</p>
+ * <p>Although the XMPP publish-subscribe extension is the preferred means for transporting location information about
+ * human users, applications that do not involve human users (e.g., device tracking) MAY use other transport methods;
+ * however, because location information is not pure presence information and can change independently of network
+ * availability, it SHOULD NOT be provided as an extension to {@code <presence/>}.</p>
  * </blockquote>
  *
  * <h3>Usage</h3>
@@ -228,7 +232,8 @@ public final class GeoLocation implements LanguageElement {
     }
 
     /**
-     * Gets the GPS bearing (direction in which the entity is heading to reach its next waypoint), measured in decimal degrees relative to true north.
+     * Gets the GPS bearing (direction in which the entity is heading to reach its next waypoint), measured in decimal
+     * degrees relative to true north.
      *
      * @return The bearing.
      */
@@ -595,7 +600,8 @@ public final class GeoLocation implements LanguageElement {
         }
 
         /**
-         * Sets the GPS bearing (direction in which the entity is heading to reach its next waypoint), measured in decimal degrees relative to true north.
+         * Sets the GPS bearing (direction in which the entity is heading to reach its next waypoint), measured in
+         * decimal degrees relative to true north.
          *
          * @param bearing The bearing.
          * @return The builder.

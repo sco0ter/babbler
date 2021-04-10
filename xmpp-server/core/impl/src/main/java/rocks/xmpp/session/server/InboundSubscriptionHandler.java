@@ -38,11 +38,16 @@ import rocks.xmpp.im.roster.model.RosterItem;
 /**
  * Handles inbound presence subscription requests, approvals, cancellations and unsubscriptions.
  *
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-request-inbound">3.1.3.  Server Processing of Inbound Subscription Request</a>
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-request-approvalin">3.1.6.  Server Processing of Inbound Subscription Approval</a>
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-cancel-inbound">3.2.3.  Server Processing of Inbound Subscription Cancellation</a>
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-unsub-inbound">3.3.3.  Server Processing of Inbound Unsubscribe</a>
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#substates-in">A.3.  Server Processing of Inbound Presence Subscription Stanzas</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-request-inbound">3.1.3.  Server Processing of Inbound
+ * Subscription Request</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-request-approvalin">3.1.6.  Server Processing of Inbound
+ * Subscription Approval</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-cancel-inbound">3.2.3.  Server Processing of Inbound
+ * Subscription Cancellation</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#sub-unsub-inbound">3.3.3.  Server Processing of Inbound
+ * Unsubscribe</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#substates-in">A.3.  Server Processing of Inbound Presence
+ * Subscription Stanzas</a>
  */
 @ApplicationScoped
 public class InboundSubscriptionHandler extends AbstractSubscriptionHandler implements InboundPresenceHandler {
@@ -62,7 +67,8 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler impl
 
             // RFC 6121 3.1.3.  Server Processing of Inbound Subscription Request
             // If the JID is of the form <contact@domainpart/resourcepart> instead of <contact@domainpart>,
-            // the user's server SHOULD treat it as if the request had been directed to the contact's bare JID and modify the 'to' address accordingly.
+            // the user's server SHOULD treat it as if the request had been directed to the contact's bare JID and
+            // modify the 'to' address accordingly.
             if (presence.getTo().isFullJid()) {
                 presence.setTo(presence.getTo().asBareJid());
             }
@@ -72,15 +78,18 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler impl
                 case SUBSCRIBE:
                     if (rosterItem != null && rosterItem.getSubscription().contactHasSubscriptionToUser()) {
                         // If the contact exists and the user already has a subscription to the contact's presence,
-                        // then the contact's server MUST auto-reply on behalf of the contact by sending a presence stanza of type "subscribed" from the contact's bare JID to the user's bare JID.
-                        Presence subscribed = new Presence(presence.getFrom(), Presence.Type.SUBSCRIBED, null, presence.getId());
+                        // then the contact's server MUST auto-reply on behalf of the contact by sending a presence
+                        // stanza of type "subscribed" from the contact's bare JID to the user's bare JID.
+                        Presence subscribed =
+                                new Presence(presence.getFrom(), Presence.Type.SUBSCRIBED, null, presence.getId());
                         subscribed.setFrom(presence.getTo());
                         outboundStanzaProcessor.process(subscribed);
                     } else {
                         updateRosterAndPush(username, presence, () -> {
-                            Stream<Session> userSessions = sessionManager.getUserSessions(presence.getTo());
-                            userSessions.forEach(session -> session.send(presence));
-                        }, rosterItem, DefinedState::onInboundSubscriptionChange, rosterItem != null && rosterItem.isApproved());
+                                    Stream<Session> userSessions = sessionManager.getUserSessions(presence.getTo());
+                                    userSessions.forEach(session -> session.send(presence));
+                                }, rosterItem, DefinedState::onInboundSubscriptionChange,
+                                rosterItem != null && rosterItem.isApproved());
                     }
                     break;
                 case SUBSCRIBED:
@@ -92,10 +101,13 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler impl
                             userSessions.forEach(session -> session.send(presence));
 
                             // Initiate a roster push to all of the user's interested resources
-                            updateRosterAndPush(username, presence, null, rosterItem, DefinedState::onInboundSubscriptionChange, rosterItem.isApproved());
+                            updateRosterAndPush(username, presence, null, rosterItem,
+                                    DefinedState::onInboundSubscriptionChange, rosterItem.isApproved());
 
-                            // The user's server MUST also deliver the available presence stanza received from each of the contact's available resources to each of the user's available resources.
-                            Stream<Session> contactSessions = sessionManager.getUserSessions(presence.getFrom().asBareJid());
+                            // The user's server MUST also deliver the available presence stanza received from each of
+                            // the contact's available resources to each of the user's available resources.
+                            Stream<Session> contactSessions =
+                                    sessionManager.getUserSessions(presence.getFrom().asBareJid());
                             contactSessions.forEach(session -> {
                                 Presence availablePresence = new Presence(presence.getTo());
                                 availablePresence.setFrom(session.getRemoteXmppAddress());
@@ -112,12 +124,14 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler impl
                         userSessions.forEach(session -> session.send(presence));
 
                         // Initiate a roster push to all of the user's interested resources
-                        updateRosterAndPush(username, presence, null, rosterItem, DefinedState::onInboundSubscriptionChange, rosterItem.isApproved());
+                        updateRosterAndPush(username, presence, null, rosterItem,
+                                DefinedState::onInboundSubscriptionChange, rosterItem.isApproved());
 
                         // The user's server MUST also deliver the inbound presence stanzas of type "unavailable".
                         Stream<Session> contactSessions = sessionManager.getUserSessions(presence.getFrom());
                         contactSessions.forEach(session -> {
-                            Presence unavailablePresence = new Presence(presence.getTo(), Presence.Type.UNAVAILABLE, null);
+                            Presence unavailablePresence =
+                                    new Presence(presence.getTo(), Presence.Type.UNAVAILABLE, null);
                             unavailablePresence.setFrom(session.getRemoteXmppAddress());
                             inboundStanzaProcessor.process(unavailablePresence);
                         });
@@ -132,15 +146,18 @@ public class InboundSubscriptionHandler extends AbstractSubscriptionHandler impl
                             userSessions.forEach(session -> {
                                         session.send(presence);
 
-                                        // Generate an outbound presence stanza of type "unavailable" from each of the contact's available resources to the user.
-                                        Presence unavailablePresence = new Presence(presence.getFrom(), Presence.Type.UNAVAILABLE, null);
+                                        // Generate an outbound presence stanza of type "unavailable" from each of the
+                                        // contact's available resources to the user.
+                                        Presence unavailablePresence =
+                                                new Presence(presence.getFrom(), Presence.Type.UNAVAILABLE, null);
                                         unavailablePresence.setFrom(session.getRemoteXmppAddress());
                                         outboundStanzaProcessor.process(unavailablePresence);
                                     }
                             );
                         }
                         // Initiate a roster push to all of the user's interested resources
-                        updateRosterAndPush(username, presence, null, rosterItem, DefinedState::onInboundSubscriptionChange, rosterItem.isApproved());
+                        updateRosterAndPush(username, presence, null, rosterItem,
+                                DefinedState::onInboundSubscriptionChange, rosterItem.isApproved());
                     }
                     break;
                 default:

@@ -94,14 +94,18 @@ public class InboundSubscriptionHandlerTest {
 
     @BeforeMethod
     public void reset() {
-        Mockito.clearInvocations(rosterManager, inboundStanzaProcessor, outboundStanzaProcessor, resource1, resource2, contactResource1, contactResource2);
-        Mockito.when(sessionManager.getUserSessions(Mockito.eq(Jid.of("user@server")))).thenReturn(Stream.of(resource1, resource2));
-        Mockito.when(sessionManager.getUserSessions(Mockito.eq(Jid.of("contact@server")))).thenReturn(Stream.of(contactResource1, contactResource2));
+        Mockito.clearInvocations(rosterManager, inboundStanzaProcessor, outboundStanzaProcessor, resource1, resource2,
+                contactResource1, contactResource2);
+        Mockito.when(sessionManager.getUserSessions(Mockito.eq(Jid.of("user@server"))))
+                .thenReturn(Stream.of(resource1, resource2));
+        Mockito.when(sessionManager.getUserSessions(Mockito.eq(Jid.of("contact@server"))))
+                .thenReturn(Stream.of(contactResource1, contactResource2));
     }
 
     /**
-     * If the JID is of the form {@code <contact@domainpart/resourcepart>} instead of {@code <contact@domainpart>},
-     * the user's server SHOULD treat it as if the request had been directed to the contact's bare JID and modify the 'to' address accordingly.
+     * If the JID is of the form {@code <contact@domainpart/resourcepart>} instead of {@code <contact@domainpart>}, the
+     * user's server SHOULD treat it as if the request had been directed to the contact's bare JID and modify the 'to'
+     * address accordingly.
      */
     @Test
     public void shouldStampToAttributeWithBareJid() {
@@ -117,7 +121,9 @@ public class InboundSubscriptionHandlerTest {
         Presence presence = new Presence(Presence.Type.SUBSCRIBE);
         presence.setFrom(Jid.of("contact@server"));
         presence.setTo(Jid.of("user@server"));
-        Mockito.when(rosterManager.getRosterItem(Mockito.eq("user"), Mockito.eq(presence.getFrom()))).thenReturn(new Contact(presence.getTo(), "contact", false, false, SubscriptionState.Subscription.BOTH, Collections.emptyList()));
+        Mockito.when(rosterManager.getRosterItem(Mockito.eq("user"), Mockito.eq(presence.getFrom()))).thenReturn(
+                new Contact(presence.getTo(), "contact", false, false, SubscriptionState.Subscription.BOTH,
+                        Collections.emptyList()));
 
         subscriptionHandler.process(presence);
 
@@ -134,42 +140,43 @@ public class InboundSubscriptionHandlerTest {
         Presence presence = new Presence(Presence.Type.SUBSCRIBED);
         presence.setFrom(Jid.of("contact@server"));
         presence.setTo(Jid.of("user@server"));
-        Mockito.when(rosterManager.getRosterItem(Mockito.eq("user"), Mockito.eq(presence.getFrom()))).thenReturn(new RosterItem() {
-            @Override
-            public Jid getJid() {
-                return presence.getFrom();
-            }
+        Mockito.when(rosterManager.getRosterItem(Mockito.eq("user"), Mockito.eq(presence.getFrom())))
+                .thenReturn(new RosterItem() {
+                    @Override
+                    public Jid getJid() {
+                        return presence.getFrom();
+                    }
 
-            @Override
-            public String getName() {
-                return "contact";
-            }
+                    @Override
+                    public String getName() {
+                        return "contact";
+                    }
 
-            @Override
-            public boolean isApproved() {
-                return false;
-            }
+                    @Override
+                    public boolean isApproved() {
+                        return false;
+                    }
 
-            @Override
-            public List<String> getGroups() {
-                return Collections.emptyList();
-            }
+                    @Override
+                    public List<String> getGroups() {
+                        return Collections.emptyList();
+                    }
 
-            @Override
-            public Subscription getSubscription() {
-                return Subscription.TO;
-            }
+                    @Override
+                    public Subscription getSubscription() {
+                        return Subscription.TO;
+                    }
 
-            @Override
-            public boolean isPendingOut() {
-                return false;
-            }
+                    @Override
+                    public boolean isPendingOut() {
+                        return false;
+                    }
 
-            @Override
-            public boolean isPendingIn() {
-                return false;
-            }
-        });
+                    @Override
+                    public boolean isPendingIn() {
+                        return false;
+                    }
+                });
 
         subscriptionHandler.process(presence);
 
@@ -181,42 +188,43 @@ public class InboundSubscriptionHandlerTest {
         Presence presence = new Presence(Presence.Type.SUBSCRIBED);
         presence.setFrom(Jid.of("contact@server"));
         presence.setTo(Jid.of("user@server"));
-        Mockito.when(rosterManager.getRosterItem(Mockito.eq("user"), Mockito.eq(presence.getFrom()))).thenReturn(new RosterItem() {
-            @Override
-            public Jid getJid() {
-                return presence.getFrom();
-            }
+        Mockito.when(rosterManager.getRosterItem(Mockito.eq("user"), Mockito.eq(presence.getFrom())))
+                .thenReturn(new RosterItem() {
+                    @Override
+                    public Jid getJid() {
+                        return presence.getFrom();
+                    }
 
-            @Override
-            public String getName() {
-                return "contact";
-            }
+                    @Override
+                    public String getName() {
+                        return "contact";
+                    }
 
-            @Override
-            public boolean isApproved() {
-                return false;
-            }
+                    @Override
+                    public boolean isApproved() {
+                        return false;
+                    }
 
-            @Override
-            public List<String> getGroups() {
-                return Collections.emptyList();
-            }
+                    @Override
+                    public List<String> getGroups() {
+                        return Collections.emptyList();
+                    }
 
-            @Override
-            public Subscription getSubscription() {
-                return Subscription.NONE;
-            }
+                    @Override
+                    public Subscription getSubscription() {
+                        return Subscription.NONE;
+                    }
 
-            @Override
-            public boolean isPendingOut() {
-                return true;
-            }
+                    @Override
+                    public boolean isPendingOut() {
+                        return true;
+                    }
 
-            @Override
-            public boolean isPendingIn() {
-                return false;
-            }
-        });
+                    @Override
+                    public boolean isPendingIn() {
+                        return false;
+                    }
+                });
 
         subscriptionHandler.process(presence);
 
@@ -251,42 +259,43 @@ public class InboundSubscriptionHandlerTest {
         Presence presence = new Presence(Presence.Type.SUBSCRIBED);
         presence.setFrom(Jid.of("contact@server"));
         presence.setTo(Jid.of("user@server"));
-        Mockito.when(rosterManager.getRosterItem(Mockito.eq("user"), Mockito.eq(presence.getFrom()))).thenReturn(new RosterItem() {
-            @Override
-            public Jid getJid() {
-                return presence.getFrom();
-            }
+        Mockito.when(rosterManager.getRosterItem(Mockito.eq("user"), Mockito.eq(presence.getFrom())))
+                .thenReturn(new RosterItem() {
+                    @Override
+                    public Jid getJid() {
+                        return presence.getFrom();
+                    }
 
-            @Override
-            public String getName() {
-                return "contact";
-            }
+                    @Override
+                    public String getName() {
+                        return "contact";
+                    }
 
-            @Override
-            public boolean isApproved() {
-                return false;
-            }
+                    @Override
+                    public boolean isApproved() {
+                        return false;
+                    }
 
-            @Override
-            public List<String> getGroups() {
-                return Collections.emptyList();
-            }
+                    @Override
+                    public List<String> getGroups() {
+                        return Collections.emptyList();
+                    }
 
-            @Override
-            public Subscription getSubscription() {
-                return Subscription.FROM;
-            }
+                    @Override
+                    public Subscription getSubscription() {
+                        return Subscription.FROM;
+                    }
 
-            @Override
-            public boolean isPendingOut() {
-                return true;
-            }
+                    @Override
+                    public boolean isPendingOut() {
+                        return true;
+                    }
 
-            @Override
-            public boolean isPendingIn() {
-                return false;
-            }
-        });
+                    @Override
+                    public boolean isPendingIn() {
+                        return false;
+                    }
+                });
 
         subscriptionHandler.process(presence);
 
@@ -333,42 +342,43 @@ public class InboundSubscriptionHandlerTest {
         Presence presence = new Presence(Presence.Type.UNSUBSCRIBED);
         presence.setFrom(Jid.of("contact@server"));
         presence.setTo(Jid.of("user@server"));
-        Mockito.when(rosterManager.getRosterItem(Mockito.eq("user"), Mockito.eq(presence.getFrom()))).thenReturn(new RosterItem() {
-            @Override
-            public Jid getJid() {
-                return presence.getFrom();
-            }
+        Mockito.when(rosterManager.getRosterItem(Mockito.eq("user"), Mockito.eq(presence.getFrom())))
+                .thenReturn(new RosterItem() {
+                    @Override
+                    public Jid getJid() {
+                        return presence.getFrom();
+                    }
 
-            @Override
-            public String getName() {
-                return "contact";
-            }
+                    @Override
+                    public String getName() {
+                        return "contact";
+                    }
 
-            @Override
-            public boolean isApproved() {
-                return false;
-            }
+                    @Override
+                    public boolean isApproved() {
+                        return false;
+                    }
 
-            @Override
-            public List<String> getGroups() {
-                return Collections.emptyList();
-            }
+                    @Override
+                    public List<String> getGroups() {
+                        return Collections.emptyList();
+                    }
 
-            @Override
-            public Subscription getSubscription() {
-                return Subscription.NONE;
-            }
+                    @Override
+                    public Subscription getSubscription() {
+                        return Subscription.NONE;
+                    }
 
-            @Override
-            public boolean isPendingOut() {
-                return true;
-            }
+                    @Override
+                    public boolean isPendingOut() {
+                        return true;
+                    }
 
-            @Override
-            public boolean isPendingIn() {
-                return false;
-            }
-        });
+                    @Override
+                    public boolean isPendingIn() {
+                        return false;
+                    }
+                });
 
         subscriptionHandler.process(presence);
 
@@ -380,42 +390,43 @@ public class InboundSubscriptionHandlerTest {
         Presence presence = new Presence(Presence.Type.UNSUBSCRIBED);
         presence.setFrom(Jid.of("contact@server"));
         presence.setTo(Jid.of("user@server"));
-        Mockito.when(rosterManager.getRosterItem(Mockito.eq("user"), Mockito.eq(presence.getFrom()))).thenReturn(new RosterItem() {
-            @Override
-            public Jid getJid() {
-                return presence.getFrom();
-            }
+        Mockito.when(rosterManager.getRosterItem(Mockito.eq("user"), Mockito.eq(presence.getFrom())))
+                .thenReturn(new RosterItem() {
+                    @Override
+                    public Jid getJid() {
+                        return presence.getFrom();
+                    }
 
-            @Override
-            public String getName() {
-                return "contact";
-            }
+                    @Override
+                    public String getName() {
+                        return "contact";
+                    }
 
-            @Override
-            public boolean isApproved() {
-                return false;
-            }
+                    @Override
+                    public boolean isApproved() {
+                        return false;
+                    }
 
-            @Override
-            public List<String> getGroups() {
-                return Collections.emptyList();
-            }
+                    @Override
+                    public List<String> getGroups() {
+                        return Collections.emptyList();
+                    }
 
-            @Override
-            public Subscription getSubscription() {
-                return Subscription.BOTH;
-            }
+                    @Override
+                    public Subscription getSubscription() {
+                        return Subscription.BOTH;
+                    }
 
-            @Override
-            public boolean isPendingOut() {
-                return true;
-            }
+                    @Override
+                    public boolean isPendingOut() {
+                        return true;
+                    }
 
-            @Override
-            public boolean isPendingIn() {
-                return false;
-            }
-        });
+                    @Override
+                    public boolean isPendingIn() {
+                        return false;
+                    }
+                });
 
         subscriptionHandler.process(presence);
 
@@ -451,42 +462,43 @@ public class InboundSubscriptionHandlerTest {
         Presence presence = new Presence(Presence.Type.UNSUBSCRIBE);
         presence.setFrom(Jid.of("contact@server"));
         presence.setTo(Jid.of("user@server"));
-        Mockito.when(rosterManager.getRosterItem(Mockito.eq("user"), Mockito.eq(presence.getFrom()))).thenReturn(new RosterItem() {
-            @Override
-            public Jid getJid() {
-                return presence.getFrom();
-            }
+        Mockito.when(rosterManager.getRosterItem(Mockito.eq("user"), Mockito.eq(presence.getFrom())))
+                .thenReturn(new RosterItem() {
+                    @Override
+                    public Jid getJid() {
+                        return presence.getFrom();
+                    }
 
-            @Override
-            public String getName() {
-                return "contact";
-            }
+                    @Override
+                    public String getName() {
+                        return "contact";
+                    }
 
-            @Override
-            public boolean isApproved() {
-                return false;
-            }
+                    @Override
+                    public boolean isApproved() {
+                        return false;
+                    }
 
-            @Override
-            public List<String> getGroups() {
-                return Collections.emptyList();
-            }
+                    @Override
+                    public List<String> getGroups() {
+                        return Collections.emptyList();
+                    }
 
-            @Override
-            public Subscription getSubscription() {
-                return Subscription.BOTH;
-            }
+                    @Override
+                    public Subscription getSubscription() {
+                        return Subscription.BOTH;
+                    }
 
-            @Override
-            public boolean isPendingOut() {
-                return false;
-            }
+                    @Override
+                    public boolean isPendingOut() {
+                        return false;
+                    }
 
-            @Override
-            public boolean isPendingIn() {
-                return false;
-            }
-        });
+                    @Override
+                    public boolean isPendingIn() {
+                        return false;
+                    }
+                });
 
         subscriptionHandler.process(presence);
 
@@ -504,42 +516,43 @@ public class InboundSubscriptionHandlerTest {
         Presence presence = new Presence(Presence.Type.UNSUBSCRIBE);
         presence.setFrom(Jid.of("contact@server"));
         presence.setTo(Jid.of("user@server"));
-        Mockito.when(rosterManager.getRosterItem(Mockito.eq("user"), Mockito.eq(presence.getFrom()))).thenReturn(new RosterItem() {
-            @Override
-            public Jid getJid() {
-                return presence.getFrom();
-            }
+        Mockito.when(rosterManager.getRosterItem(Mockito.eq("user"), Mockito.eq(presence.getFrom())))
+                .thenReturn(new RosterItem() {
+                    @Override
+                    public Jid getJid() {
+                        return presence.getFrom();
+                    }
 
-            @Override
-            public String getName() {
-                return "contact";
-            }
+                    @Override
+                    public String getName() {
+                        return "contact";
+                    }
 
-            @Override
-            public boolean isApproved() {
-                return false;
-            }
+                    @Override
+                    public boolean isApproved() {
+                        return false;
+                    }
 
-            @Override
-            public List<String> getGroups() {
-                return Collections.emptyList();
-            }
+                    @Override
+                    public List<String> getGroups() {
+                        return Collections.emptyList();
+                    }
 
-            @Override
-            public Subscription getSubscription() {
-                return Subscription.FROM;
-            }
+                    @Override
+                    public Subscription getSubscription() {
+                        return Subscription.FROM;
+                    }
 
-            @Override
-            public boolean isPendingOut() {
-                return true;
-            }
+                    @Override
+                    public boolean isPendingOut() {
+                        return true;
+                    }
 
-            @Override
-            public boolean isPendingIn() {
-                return false;
-            }
-        });
+                    @Override
+                    public boolean isPendingIn() {
+                        return false;
+                    }
+                });
 
         subscriptionHandler.process(presence);
 

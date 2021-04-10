@@ -43,12 +43,15 @@ public class LanguageTranslationTest extends XmlTest {
 
     @Test
     public void marshalLanguageTranslation() throws JAXBException, XMLStreamException {
-        LanguageTranslation.Translation translation = LanguageTranslation.Translation.forDestinationLanguage(Locale.ENGLISH).withSourceLanguage(Locale.FRENCH).withEngine("engine").withTranslatedText("text");
+        LanguageTranslation.Translation translation =
+                LanguageTranslation.Translation.forDestinationLanguage(Locale.ENGLISH).withSourceLanguage(Locale.FRENCH)
+                        .withEngine("engine").withTranslatedText("text");
         LanguageTranslation translations = new LanguageTranslation(translation);
 
         String xml = marshal(translations);
 
-        Assert.assertEquals(xml, "<x xmlns=\"urn:xmpp:langtrans\"><translation destination_lang=\"en\" source_lang=\"fr\" engine=\"engine\">text</translation></x>");
+        Assert.assertEquals(xml,
+                "<x xmlns=\"urn:xmpp:langtrans\"><translation destination_lang=\"en\" source_lang=\"fr\" engine=\"engine\">text</translation></x>");
     }
 
     @Test
@@ -109,13 +112,17 @@ public class LanguageTranslationTest extends XmlTest {
 
     @Test
     public void unmarshalLanguageResponse() throws XMLStreamException, JAXBException {
-        String xml = "<iq type='result' id='translationReq_4' from='translation.shakespeare.lit' to='bard@shakespeare.lt/globe'>\n" +
-                "  <x xmlns='urn:xmpp:langtrans'>\n" +
-                "    <source xml:lang='en'>How are you?</source>\n" +
-                "    <translation destination_lang='it' source_lang='en' engine='default' dictionary='medical'>Come siete?</translation>\n" +
-                "    <translation destination_lang='de' source_lang='en' engine='default'>Wie geht es Ihnen?</translation>\n" +
-                "  </x>\n" +
-                "</iq>";
+        String xml =
+                "<iq type='result' id='translationReq_4' from='translation.shakespeare.lit' to='bard@shakespeare.lt/globe'>\n"
+                        +
+                        "  <x xmlns='urn:xmpp:langtrans'>\n" +
+                        "    <source xml:lang='en'>How are you?</source>\n" +
+                        "    <translation destination_lang='it' source_lang='en' engine='default' dictionary='medical'>Come siete?</translation>\n"
+                        +
+                        "    <translation destination_lang='de' source_lang='en' engine='default'>Wie geht es Ihnen?</translation>\n"
+                        +
+                        "  </x>\n" +
+                        "</iq>";
         IQ iq = unmarshal(xml, IQ.class);
         LanguageTranslation languageTranslation = iq.getExtension(LanguageTranslation.class);
         Assert.assertNotNull(languageTranslation);

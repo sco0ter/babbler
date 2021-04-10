@@ -105,8 +105,10 @@ public class DataFormsValidateTest extends XmlTest {
         Assert.assertNotNull(validation);
         Assert.assertEquals(validation.getDataType(), "xs:dateTime");
         Assert.assertTrue(validation.getValidationMethod() instanceof Validation.ValidationMethod.Range);
-        Assert.assertEquals(((Validation.ValidationMethod.Range) validation.getValidationMethod()).getMin(), "2003-10-05T00:00:00-07:00");
-        Assert.assertEquals(((Validation.ValidationMethod.Range) validation.getValidationMethod()).getMax(), "2003-10-24T23:59:59-07:00");
+        Assert.assertEquals(((Validation.ValidationMethod.Range) validation.getValidationMethod()).getMin(),
+                "2003-10-05T00:00:00-07:00");
+        Assert.assertEquals(((Validation.ValidationMethod.Range) validation.getValidationMethod()).getMax(),
+                "2003-10-24T23:59:59-07:00");
     }
 
     @Test
@@ -128,7 +130,8 @@ public class DataFormsValidateTest extends XmlTest {
         Assert.assertNotNull(validation);
         Assert.assertEquals(validation.getDataType(), "xs:string");
         Assert.assertTrue(validation.getValidationMethod() instanceof Validation.ValidationMethod.Regex);
-        Assert.assertEquals(((Validation.ValidationMethod.Regex) validation.getValidationMethod()).getRegex(), "([0-9]{3})-([0-9]{2})-([0-9]{4})");
+        Assert.assertEquals(((Validation.ValidationMethod.Regex) validation.getValidationMethod()).getRegex(),
+                "([0-9]{3})-([0-9]{2})-([0-9]{4})");
     }
 
     @Test

@@ -202,7 +202,8 @@ public class BoshTest extends XmlTest {
         Body body = Body.builder()
                 .wrappedObjects(Arrays.asList(iq, ClientPresence.from(new Presence()))).build();
 
-        Assert.assertEquals(marshal(body), "<body xmlns=\"http://jabber.org/protocol/httpbind\"><iq xmlns=\"jabber:client\" id=\"1\" type=\"get\"><query xmlns=\"jabber:iq:roster\"></query></iq><presence xmlns=\"jabber:client\"></presence></body>");
+        Assert.assertEquals(marshal(body),
+                "<body xmlns=\"http://jabber.org/protocol/httpbind\"><iq xmlns=\"jabber:client\" id=\"1\" type=\"get\"><query xmlns=\"jabber:iq:roster\"></query></iq><presence xmlns=\"jabber:client\"></presence></body>");
     }
 
     @Test
@@ -217,7 +218,8 @@ public class BoshTest extends XmlTest {
                 .wait(Duration.ofMinutes(2))
                 .build();
 
-        Assert.assertEquals(marshal(body), "<body xmlns=\"http://jabber.org/protocol/httpbind\" charsets=\"ISO-8859-1 ISO-2022-JP\" inactivity=\"86400\" maxpause=\"3600\" pause=\"2\" polling=\"60\" time=\"1000\" wait=\"120\"></body>");
+        Assert.assertEquals(marshal(body),
+                "<body xmlns=\"http://jabber.org/protocol/httpbind\" charsets=\"ISO-8859-1 ISO-2022-JP\" inactivity=\"86400\" maxpause=\"3600\" pause=\"2\" polling=\"60\" time=\"1000\" wait=\"120\"></body>");
     }
 
     @Test

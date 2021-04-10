@@ -32,8 +32,8 @@ import javax.websocket.server.ServerEndpointConfig;
 /**
  * The server endpoint configurator for the XMPP WebSocket sub-protocol.
  *
- * <p>This configurator only allows WebSocket connections if the client included "xmpp" in the "Sec-WebSocket-Protocol" header field.
- * Otherwises it won't accept the connection.</p>
+ * <p>This configurator only allows WebSocket connections if the client included "xmpp" in the "Sec-WebSocket-Protocol"
+ * header field. Otherwises it won't accept the connection.</p>
  *
  * @author Christian Schudt
  */
@@ -46,13 +46,15 @@ public class XmppWebSocketConfigurator extends ServerEndpointConfig.Configurator
     }
 
     @Override
-    public final void modifyHandshake(final ServerEndpointConfig sec, final HandshakeRequest request, final HandshakeResponse response) {
+    public final void modifyHandshake(final ServerEndpointConfig sec, final HandshakeRequest request,
+                                      final HandshakeResponse response) {
         super.modifyHandshake(sec, request, response);
         // Don't accept any non-XMPP connections.
         if (!"xmpp".equals(negotiatedSubprotocol)) {
             // The |Sec-WebSocket-Accept| header field indicates whether the server is willing to accept the connection.
             // If present, this header field must include a hash of the client's nonce sent in |Sec-WebSocket-Key|
-            // along with a predefined GUID. Any other value must not be interpreted as an acceptance of the connection by the server.
+            // along with a predefined GUID. Any other value must not be interpreted as an acceptance of the connection
+            // by the server.
             response.getHeaders().remove(HandshakeResponse.SEC_WEBSOCKET_ACCEPT);
         }
     }

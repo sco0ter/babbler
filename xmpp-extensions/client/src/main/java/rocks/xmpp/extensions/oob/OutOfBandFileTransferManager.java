@@ -158,7 +158,7 @@ public final class OutOfBandFileTransferManager extends Manager implements FileT
                             xmppSession.send(iq.createResult());
                             fileTransfer.removeFileTransferStatusListener(this);
                         } else if (e.getStatus() == FileTransfer.Status.CANCELED
-                                           || e.getStatus() == FileTransfer.Status.FAILED) {
+                                || e.getStatus() == FileTransfer.Status.FAILED) {
                             xmppSession.send(iq.createError(Condition.ITEM_NOT_FOUND));
                             fileTransfer.removeFileTransferStatusListener(this);
                         }

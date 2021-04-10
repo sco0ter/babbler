@@ -31,9 +31,12 @@ import java.io.OutputStream;
 import rocks.xmpp.addr.Jid;
 
 /**
- * An abstract byte stream session, which either represents a <a href="https://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a> or <a href="https://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a> session.
+ * An abstract byte stream session, which either represents a <a href="https://xmpp.org/extensions/xep-0047.html">XEP-0047:
+ * In-Band Bytestreams</a> or <a href="https://xmpp.org/extensions/xep-0065.html">XEP-0065: SOCKS5 Bytestreams</a>
+ * session.
  *
- * <p>Both kind of sessions have a session id and are bidirectional, that's why this class has an {@linkplain #getInputStream() input} and {@linkplain #getOutputStream() output stream}.</p>
+ * <p>Both kind of sessions have a session id and are bidirectional, that's why this class has an {@linkplain
+ * #getInputStream() input} and {@linkplain #getOutputStream() output stream}.</p>
  *
  * @author Christian Schudt
  * @see rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager#initiateSession(Jid, String, int)

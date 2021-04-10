@@ -36,7 +36,9 @@ public enum NodeType {
      */
     LEAF,
     /**
-     * A type of node that contains nodes and/or other collections but no published items. Collections make it possible to represent more sophisticated relationships among nodes. Collection nodes are defined in <a href="https://xmpp.org/extensions/xep-0248.html">PubSub Collection Nodes (XEP-0248)</a>.
+     * A type of node that contains nodes and/or other collections but no published items. Collections make it possible
+     * to represent more sophisticated relationships among nodes. Collection nodes are defined in <a
+     * href="https://xmpp.org/extensions/xep-0248.html">PubSub Collection Nodes (XEP-0248)</a>.
      */
     COLLECTION
 }

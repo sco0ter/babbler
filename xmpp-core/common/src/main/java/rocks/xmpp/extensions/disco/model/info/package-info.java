@@ -23,7 +23,8 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a> (#info).
+ * Provides XML schema implementations of <a href="https://xmpp.org/extensions/xep-0030.html">XEP-0030: Service
+ * Discovery</a> (#info).
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = InfoDiscovery.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)

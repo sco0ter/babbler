@@ -58,7 +58,8 @@ public final class GeolocationReceiver {
 
                 GeoLocationManager geoLocationManager = xmppSession.getManager(GeoLocationManager.class);
                 geoLocationManager.setEnabled(true);
-                geoLocationManager.addGeoLocationListener(e -> System.out.println(e.getPublisher() + " updated his location: " + e.getGeoLocation()));
+                geoLocationManager.addGeoLocationListener(
+                        e -> System.out.println(e.getPublisher() + " updated his location: " + e.getGeoLocation()));
 
                 // Send initial presence
 

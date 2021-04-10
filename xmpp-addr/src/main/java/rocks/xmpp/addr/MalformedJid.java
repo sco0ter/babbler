@@ -29,10 +29,12 @@ import java.util.Objects;
 /**
  * Represents a malformed JID in order to handle the <code>jid-malformed</code> error.
  *
- * <p>This class is not intended to be publicly instantiable, but is used for malformed JIDs during parsing automatically.</p>
+ * <p>This class is not intended to be publicly instantiable, but is used for malformed JIDs during parsing
+ * automatically.</p>
  *
  * @author Christian Schudt
- * @see <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-jid-malformed">RFC 6120, 8.3.3.8.  jid-malformed</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-jid-malformed">RFC 6120, 8.3.3.8.
+ * jid-malformed</a>
  */
 public final class MalformedJid extends AbstractJid {
 
@@ -72,7 +74,8 @@ public final class MalformedJid extends AbstractJid {
         return new MalformedJid(localPart, sb.toString(), resourcePart, cause);
     }
 
-    private MalformedJid(final String localPart, final String domainPart, final String resourcePart, final Throwable cause) {
+    private MalformedJid(final String localPart, final String domainPart, final String resourcePart,
+                         final Throwable cause) {
         this.localPart = localPart;
         this.domainPart = domainPart;
         this.resourcePart = resourcePart;

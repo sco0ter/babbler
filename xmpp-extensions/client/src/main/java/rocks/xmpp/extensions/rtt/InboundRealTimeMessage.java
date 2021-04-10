@@ -92,7 +92,8 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
     }
 
     /**
-     * Processes a list of incoming action elements by adding them to a queue. Later, they will be taken from the queue and applied to the current text.
+     * Processes a list of incoming action elements by adding them to a queue. Later, they will be taken from the queue
+     * and applied to the current text.
      *
      * @param actions           The actions.
      * @param incrementSequence Whether to increment the current sequence.
@@ -108,7 +109,8 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
         this.actions.addAll(actions);
         synchronized (this.actions) {
             // Wake up the waiting thread, which processes the queue.
-            // This is to ensure that new actions are processed immediately, in case if there's still a wait from a previous waiting element.
+            // This is to ensure that new actions are processed immediately, in case if there's still a wait from a
+            // previous waiting element.
             this.actions.notifyAll();
         }
     }
@@ -168,11 +170,13 @@ public final class InboundRealTimeMessage extends RealTimeMessage {
     }
 
     private int normalizePosition(Integer pos) {
-        // If 'p' is omitted, the default value of 'p' MUST point to the end of the message (i.e., 'p' is set to the current length of the real-time message).
+        // If 'p' is omitted, the default value of 'p' MUST point to the end of the message (i.e., 'p' is set to the
+        // current length of the real-time message).
         if (pos == null) {
             pos = sb.length();
         }
-        // However, recipients receiving such values MUST clip negative values to “0”, and clip excessively high 'p' values to the current length of the real-time message.
+        // However, recipients receiving such values MUST clip negative values to “0”, and clip excessively high 'p'
+        // values to the current length of the real-time message.
         if (pos < 0) {
             pos = 0;
         }

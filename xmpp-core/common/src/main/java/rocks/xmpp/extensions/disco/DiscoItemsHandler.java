@@ -59,7 +59,8 @@ final class DiscoItemsHandler extends AbstractIQHandler {
         List<ResultSetProvider<DiscoverableItem>> providers = new ArrayList<>();
         for (ItemProvider itemProvider : itemProviders) {
             try {
-                ResultSetProvider<DiscoverableItem> itemResultSetProvider = itemProvider.getItems(iq.getTo(), iq.getFrom(), itemDiscovery.getNode(), iq.getLanguage());
+                ResultSetProvider<DiscoverableItem> itemResultSetProvider =
+                        itemProvider.getItems(iq.getTo(), iq.getFrom(), itemDiscovery.getNode(), iq.getLanguage());
                 if (itemResultSetProvider != null) {
                     providers.add(itemResultSetProvider);
                 }
@@ -70,8 +71,10 @@ final class DiscoItemsHandler extends AbstractIQHandler {
 
         if (!providers.isEmpty()) {
             ResultSetProvider<DiscoverableItem> combinedResultSetProvider = ResultSetProvider.combine(providers);
-            ResultSet<DiscoverableItem> resultSet = ResultSet.create(combinedResultSetProvider, itemDiscovery.getResultSetManagement());
-            return iq.createResult(new ItemDiscovery(itemDiscovery.getNode(), resultSet.getItems(), resultSet.getResultSetManagement()));
+            ResultSet<DiscoverableItem> resultSet =
+                    ResultSet.create(combinedResultSetProvider, itemDiscovery.getResultSetManagement());
+            return iq.createResult(new ItemDiscovery(itemDiscovery.getNode(), resultSet.getItems(),
+                    resultSet.getResultSetManagement()));
         } else {
             // No providers have been found to handle JID or JID+NodeID
             // <item-not-found/>: The JID or JID+NodeID of the specified target entity does not exist.

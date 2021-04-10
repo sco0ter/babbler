@@ -76,7 +76,10 @@ public final class CoreContext implements XmppContext {
         return Arrays.asList(
 
                 // Core
-                StreamFeatures.class, StreamError.class, ClientMessage.class, ClientPresence.class, ClientIQ.class, ServerMessage.class, ServerIQ.class, ServerPresence.class, ServerStanzaError.class, Session.class, Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class, Roster.class,
+                StreamFeatures.class, StreamError.class, ClientMessage.class, ClientPresence.class, ClientIQ.class,
+                ServerMessage.class, ServerIQ.class, ServerPresence.class, ServerStanzaError.class, Session.class,
+                Bind.class, Mechanisms.class, StartTls.class, SubscriptionPreApproval.class, RosterVersioning.class,
+                Roster.class,
 
                 // XEP-0004: Data Forms
                 DataForm.class,

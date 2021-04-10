@@ -38,7 +38,9 @@ import rocks.xmpp.util.Strings;
  * The implementation of the {@code <mood/>} element in the {@code http://jabber.org/protocol/mood} namespace.
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/extensions/xep-0107.html">XEP-0107: User Mood</a></cite></p>
- * <p>This specification defines a payload format for communicating information about user moods, such as whether a person is currently happy, sad, angy, or annoyed. The payload format is typically transported using the personal eventing protocol, a profile of XMPP publish-subscribe specified in XEP-0163.</p>
+ * <p>This specification defines a payload format for communicating information about user moods, such as whether a
+ * person is currently happy, sad, angy, or annoyed. The payload format is typically transported using the personal
+ * eventing protocol, a profile of XMPP publish-subscribe specified in XEP-0163.</p>
  * </blockquote>
  * This class is immutable.
  *
@@ -343,7 +345,8 @@ public final class Mood {
     }
 
     /**
-     * Inclined to love; having a propensity to love, or to sexual enjoyment; loving, fond, affectionate, passionate, lustful, sexual, etc.
+     * Inclined to love; having a propensity to love, or to sexual enjoyment; loving, fond, affectionate, passionate,
+     * lustful, sexual, etc.
      */
     public static final class Amorous extends Value {
         public Amorous() {
@@ -355,7 +358,8 @@ public final class Mood {
     }
 
     /**
-     * Displaying or feeling anger, i.e., a strong feeling of displeasure, hostility or antagonism towards someone or something, usually combined with an urge to harm.
+     * Displaying or feeling anger, i.e., a strong feeling of displeasure, hostility or antagonism towards someone or
+     * something, usually combined with an urge to harm.
      */
     public static final class Angry extends Value {
         public Angry() {
@@ -379,7 +383,8 @@ public final class Mood {
     }
 
     /**
-     * Full of anxiety or disquietude; greatly concerned or solicitous, esp. respecting something future or unknown; being in painful suspense.
+     * Full of anxiety or disquietude; greatly concerned or solicitous, esp. respecting something future or unknown;
+     * being in painful suspense.
      */
     public static final class Anxious extends Value {
         public Anxious() {
@@ -691,7 +696,8 @@ public final class Mood {
     }
 
     /**
-     * Suffering from frustration; dissatisfied, agitated, or discontented because one is unable to perform an action or fulfill a desire.
+     * Suffering from frustration; dissatisfied, agitated, or discontented because one is unable to perform an action or
+     * fulfill a desire.
      */
     public static final class Frustrated extends Value {
         public Frustrated() {
@@ -751,7 +757,8 @@ public final class Mood {
     }
 
     /**
-     * Experiencing the effect of favourable fortune; having the feeling arising from the consciousness of well-being or of enjoyment; enjoying good of any kind, as peace, tranquillity, comfort; contented; joyous.
+     * Experiencing the effect of favourable fortune; having the feeling arising from the consciousness of well-being or
+     * of enjoyment; enjoying good of any kind, as peace, tranquillity, comfort; contented; joyous.
      */
     public static final class Happy extends Value {
         public Happy() {
@@ -1027,7 +1034,8 @@ public final class Mood {
     }
 
     /**
-     * Feeling resentful anger caused by an extremely violent or vicious attack, or by an offensive, immoral, or indecent act.
+     * Feeling resentful anger caused by an extremely violent or vicious attack, or by an offensive, immoral, or
+     * indecent act.
      */
     public static final class Outraged extends Value {
         public Outraged() {

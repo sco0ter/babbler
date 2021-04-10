@@ -56,7 +56,8 @@ public final class InvitationEvent extends EventObject {
 
     private final XmppSession xmppSession;
 
-    InvitationEvent(Object source, XmppSession xmppSession, Jid inviter, Jid room, String reason, String password, boolean aContinue, String thread, boolean mediated) {
+    InvitationEvent(Object source, XmppSession xmppSession, Jid inviter, Jid room, String reason, String password,
+                    boolean aContinue, String thread, boolean mediated) {
         super(source);
         this.inviter = inviter;
         this.room = room;
@@ -86,7 +87,8 @@ public final class InvitationEvent extends EventObject {
     }
 
     /**
-     * Gets the inviter. If the invitation was mediated by the chat room, the inviter can either be a bare or full JID or the in-room JID of an occupant.
+     * Gets the inviter. If the invitation was mediated by the chat room, the inviter can either be a bare or full JID
+     * or the in-room JID of an occupant.
      *
      * @return The inviter.
      */

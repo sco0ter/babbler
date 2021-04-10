@@ -27,7 +27,11 @@ package rocks.xmpp.extensions.jingle.transports.model;
 /**
  * An abstract base class for a Jingle transport method. It is defined as:
  * <blockquote>
- * <p>The method for establishing data stream(s) between entities. Possible transports might include ICE-UDP, ICE-TCP, Raw UDP, In-Band Bytestreams, SOCKS5 Bytestreams, etc. This is the 'how' of the session. In Jingle XML syntax this is the namespace of the {@code <transport/>} element. The transport method defines how to transfer bits from one host to another. Each transport method MUST specify whether it is "datagram" or "streaming" as described in the Transport Types section of this document.</p>
+ * <p>The method for establishing data stream(s) between entities. Possible transports might include ICE-UDP, ICE-TCP,
+ * Raw UDP, In-Band Bytestreams, SOCKS5 Bytestreams, etc. This is the 'how' of the session. In Jingle XML syntax this is
+ * the namespace of the {@code <transport/>} element. The transport method defines how to transfer bits from one host to
+ * another. Each transport method MUST specify whether it is "datagram" or "streaming" as described in the Transport
+ * Types section of this document.</p>
  * </blockquote>
  *
  * @author Christian Schudt

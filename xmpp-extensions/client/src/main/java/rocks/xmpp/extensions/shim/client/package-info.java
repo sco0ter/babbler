@@ -23,7 +23,8 @@
  */
 
 /**
- * Provides client specific classes for <a href="https://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet Metadata</a>.
+ * Provides client specific classes for <a href="https://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and
+ * Internet Metadata</a>.
  */
 package rocks.xmpp.extensions.shim.client;
 

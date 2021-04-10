@@ -43,7 +43,8 @@ public class TestEntityManagerProducer {
 
     private final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("XmppDSTest");
 
-    private final ThreadLocal<EntityManager> entityManagerThreadLocal = ThreadLocal.withInitial(entityManagerFactory::createEntityManager);
+    private final ThreadLocal<EntityManager> entityManagerThreadLocal =
+            ThreadLocal.withInitial(entityManagerFactory::createEntityManager);
 
     @Produces
     public EntityManager createEntityManager() {

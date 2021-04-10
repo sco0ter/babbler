@@ -66,9 +66,11 @@ final class NettyXmppDecoder extends ByteToMessageDecoder {
      *
      * @param readerInterceptors   The reader interceptors.
      * @param unmarshallerSupplier Supplies the unmarshaller, e.g. via a {@code ThreadLocal<Unmarshaller>}
-     * @param onFailure            Called when an exception in the pipeline has occurred. If null, the exception is propagated to next handler. If non-null this callback is called instead.
+     * @param onFailure            Called when an exception in the pipeline has occurred. If null, the exception is
+     *                             propagated to next handler. If non-null this callback is called instead.
      */
-    NettyXmppDecoder(final Consumer<StreamElement> streamElement, final List<ReaderInterceptor> readerInterceptors, final Function<Locale, Unmarshaller> unmarshallerSupplier, final Consumer<Throwable> onFailure) {
+    NettyXmppDecoder(final Consumer<StreamElement> streamElement, final List<ReaderInterceptor> readerInterceptors,
+                     final Function<Locale, Unmarshaller> unmarshallerSupplier, final Consumer<Throwable> onFailure) {
         this.readerInterceptors = readerInterceptors;
         this.xmppStreamDecoder = new XmppStreamDecoder(unmarshallerSupplier);
         this.onFailure = onFailure;
@@ -76,22 +78,24 @@ final class NettyXmppDecoder extends ByteToMessageDecoder {
     }
 
     @Override
-    protected final void decode(final ChannelHandlerContext ctx, final ByteBuf byteBuf, final List<Object> list) throws Exception {
+    protected final void decode(final ChannelHandlerContext ctx, final ByteBuf byteBuf, final List<Object> list)
+            throws Exception {
         final ByteBuffer byteBuffer = byteBuf.nioBuffer();
         SettableStringReader stringReader = new SettableStringReader();
-        ReaderInterceptor readerInterceptor = (reader, streamElementListener, chain) -> xmppStreamDecoder.decode(byteBuffer, (s, streamElement) -> {
-            stringReader.setString(s);
-            char[] chars = new char[s.length()];
-            try {
-                int n = reader.read(chars, 0, s.length());
-                if (n > -1) {
-                    streamElementListener.accept(streamElement);
-                }
-                list.add(streamElement);
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        });
+        ReaderInterceptor readerInterceptor =
+                (reader, streamElementListener, chain) -> xmppStreamDecoder.decode(byteBuffer, (s, streamElement) -> {
+                    stringReader.setString(s);
+                    char[] chars = new char[s.length()];
+                    try {
+                        int n = reader.read(chars, 0, s.length());
+                        if (n > -1) {
+                            streamElementListener.accept(streamElement);
+                        }
+                        list.add(streamElement);
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                });
         List<ReaderInterceptor> interceptors = new ArrayList<>(readerInterceptors);
         interceptors.add(readerInterceptor);
         ReaderInterceptorChain readerInterceptorChain = new ReaderInterceptorChain(interceptors);

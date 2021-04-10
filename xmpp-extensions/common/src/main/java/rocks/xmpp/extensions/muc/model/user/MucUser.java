@@ -246,7 +246,8 @@ public final class MucUser {
      * @param status      The status.
      * @return The {@link MucUser} instance.
      */
-    public static MucUser withItem(Affiliation affiliation, Role role, Jid jid, String nick, Actor actor, String reason, Status... status) {
+    public static MucUser withItem(Affiliation affiliation, Role role, Jid jid, String nick, Actor actor, String reason,
+                                   Status... status) {
         return new MucUser(new MucUserItem(affiliation, role, jid, nick, actor, reason), status);
     }
 

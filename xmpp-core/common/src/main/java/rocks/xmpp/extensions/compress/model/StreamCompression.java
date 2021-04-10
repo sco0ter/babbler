@@ -36,12 +36,14 @@ import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.extensions.compress.model.feature.CompressionFeature;
 
 /**
- * An abstract base class for all stream compression classes in the {@code http://jabber.org/protocol/compress} namespace.
+ * An abstract base class for all stream compression classes in the {@code http://jabber.org/protocol/compress}
+ * namespace.
  *
  * @author Christian Schudt
  */
 @XmlTransient
-@XmlSeeAlso({CompressionFeature.class, StreamCompression.Compress.class, StreamCompression.Compressed.class, StreamCompression.Failure.class})
+@XmlSeeAlso({CompressionFeature.class, StreamCompression.Compress.class, StreamCompression.Compressed.class,
+        StreamCompression.Failure.class})
 public abstract class StreamCompression implements StreamElement {
 
     /**
@@ -58,7 +60,8 @@ public abstract class StreamCompression implements StreamElement {
     }
 
     /**
-     * The implementation of the {@code <failure/>} element in the {@code http://jabber.org/protocol/compress} namespace, which indicates failure during compression negotiation.
+     * The implementation of the {@code <failure/>} element in the {@code http://jabber.org/protocol/compress}
+     * namespace, which indicates failure during compression negotiation.
      *
      * <p>This class is immutable.</p>
      *
@@ -110,7 +113,8 @@ public abstract class StreamCompression implements StreamElement {
             public static final Condition PROCESSING_FAILED = new ProcessingFailed();
 
             /**
-             * If the initiating entity requests a stream compression method that is not supported by the receiving entity.
+             * If the initiating entity requests a stream compression method that is not supported by the receiving
+             * entity.
              */
             public static final Condition UNSUPPORTED_METHOD = new UnsupportedMethod();
 
@@ -167,7 +171,8 @@ public abstract class StreamCompression implements StreamElement {
     }
 
     /**
-     * The implementation of the {@code <compress/>} element in the {@code http://jabber.org/protocol/compress} namespace.
+     * The implementation of the {@code <compress/>} element in the {@code http://jabber.org/protocol/compress}
+     * namespace.
      *
      * <p>This class is immutable.</p>
      *
@@ -199,7 +204,8 @@ public abstract class StreamCompression implements StreamElement {
     }
 
     /**
-     * The implementation of the {@code <compressed/>} element in the {@code http://jabber.org/protocol/compress} namespace, which indicates that the stream is now compressed.
+     * The implementation of the {@code <compressed/>} element in the {@code http://jabber.org/protocol/compress}
+     * namespace, which indicates that the stream is now compressed.
      *
      * @author Christian Schudt
      * @see <a href="https://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>

@@ -63,7 +63,8 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
      * @param source The object on which the Event initially occurred.
      * @throws IllegalArgumentException if source is null.
      */
-    FileTransferOfferEvent(Object source, IQ iq, String sessionId, String mimeType, FileTransferOffer fileTransferOffer, Object protocol, FileTransferNegotiator fileTransferNegotiator) {
+    FileTransferOfferEvent(Object source, IQ iq, String sessionId, String mimeType, FileTransferOffer fileTransferOffer,
+                           Object protocol, FileTransferNegotiator fileTransferNegotiator) {
         super(source);
         this.sessionId = sessionId;
         this.iq = iq;
@@ -92,8 +93,8 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
     }
 
     /**
-     * Accepts the inbound file transfer request.
-     * After accepting the file transfer you should call {@link FileTransfer#transfer()} in order to start the transfer.
+     * Accepts the inbound file transfer request. After accepting the file transfer you should call {@link
+     * FileTransfer#transfer()} in order to start the transfer.
      *
      * @param outputStream The output stream, to which the file will be written.
      * @return The file transfer object.
@@ -103,8 +104,8 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
     }
 
     /**
-     * Accepts the inbound file transfer request.
-     * After accepting the file transfer you should call {@link FileTransfer#transfer()} in order to start the transfer.
+     * Accepts the inbound file transfer request. After accepting the file transfer you should call {@link
+     * FileTransfer#transfer()} in order to start the transfer.
      *
      * @param destination The path of the file to be written.
      * @return The file transfer object.
@@ -115,8 +116,8 @@ public final class FileTransferOfferEvent extends EventObject implements FileTra
     }
 
     /**
-     * Accepts the inbound file transfer request.
-     * After accepting the file transfer you should call {@link FileTransfer#transfer()} in order to start the transfer.
+     * Accepts the inbound file transfer request. After accepting the file transfer you should call {@link
+     * FileTransfer#transfer()} in order to start the transfer.
      *
      * @param target The file to be written.
      * @return The file transfer object.

@@ -57,16 +57,19 @@ public final class JingleSession {
     private final boolean createdLocally;
 
     // See 7.2.2 content-add:
-    // Therefore it is the responsibility of the recipient to maintain a local copy of the current content definition(s).
+    // Therefore it is the responsibility of the recipient to maintain a local copy of the current content
+    // definition(s).
     private final List<Jingle.Content> contents;
 
     private State state = State.PENDING;
 
-    JingleSession(String sessionId, Jid peer, boolean createdLocally, XmppSession xmppSession, JingleManager jingleManager, Jingle.Content... contents) {
+    JingleSession(String sessionId, Jid peer, boolean createdLocally, XmppSession xmppSession,
+                  JingleManager jingleManager, Jingle.Content... contents) {
         this(sessionId, peer, createdLocally, xmppSession, jingleManager, Arrays.asList(contents));
     }
 
-    JingleSession(String sessionId, Jid peer, boolean createdLocally, XmppSession xmppSession, JingleManager jingleManager, List<Jingle.Content> contents) {
+    JingleSession(String sessionId, Jid peer, boolean createdLocally, XmppSession xmppSession,
+                  JingleManager jingleManager, List<Jingle.Content> contents) {
         this.sessionId = sessionId;
         this.xmppSession = xmppSession;
         this.peer = peer;
@@ -95,7 +98,9 @@ public final class JingleSession {
         if (!createdLocally) {
             throw new UnsupportedOperationException("You are not the initiator.");
         }
-        return xmppSession.query(IQ.set(peer, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.SESSION_INITIATE, contents))).thenAccept(result ->
+        return xmppSession.query(IQ.set(peer,
+                Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.SESSION_INITIATE,
+                        contents))).thenAccept(result ->
                 state = State.PENDING);
     }
 
@@ -114,7 +119,8 @@ public final class JingleSession {
         if (createdLocally) {
             throw new UnsupportedOperationException("You are the initiator and cannot accept the session.");
         }
-        // In the session-accept stanza, the <jingle/> element MUST contain one or more <content/> elements, each of which MUST contain one <description/> element and one <transport/> element.
+        // In the session-accept stanza, the <jingle/> element MUST contain one or more <content/> elements, each of
+        // which MUST contain one <description/> element and one <transport/> element.
         if (contents.length == 0) {
             throw new IllegalArgumentException("No content element provided.");
         }
@@ -127,7 +133,9 @@ public final class JingleSession {
             }
         }
 
-        return xmppSession.query(IQ.set(peer, Jingle.responder(xmppSession.getConnectedResource(), sessionId, Jingle.Action.SESSION_ACCEPT, Arrays.asList(contents)))).thenAccept(result -> {
+        return xmppSession.query(IQ.set(peer,
+                Jingle.responder(xmppSession.getConnectedResource(), sessionId, Jingle.Action.SESSION_ACCEPT,
+                        Arrays.asList(contents)))).thenAccept(result -> {
             // The session is now in the ACTIVE state.
             state = State.ACTIVE;
         });
@@ -155,21 +163,31 @@ public final class JingleSession {
      * @param contentName     The content name.
      * @param transportMethod The replaced transport method.
      * @return The async result.
-     * @see <a href="https://xmpp.org/extensions/xep-0166.html#def-action-transport-replace">7.2.15 transport-replace</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0166.html#def-action-transport-replace">7.2.15
+     * transport-replace</a>
      */
     public AsyncResult<IQ> replaceTransport(String contentName, TransportMethod transportMethod) {
-        Jingle.Content content = new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
-        return xmppSession.query(IQ.set(peer, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REPLACE, Collections.singletonList(content))));
+        Jingle.Content content =
+                new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
+        return xmppSession.query(IQ.set(peer,
+                Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REPLACE,
+                        Collections.singletonList(content))));
     }
 
     public AsyncResult<IQ> acceptTransport(String contentName, TransportMethod transportMethod) {
-        Jingle.Content content = new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
-        return xmppSession.query(IQ.set(peer, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_ACCEPT, Collections.singletonList(content))));
+        Jingle.Content content =
+                new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
+        return xmppSession.query(IQ.set(peer,
+                Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_ACCEPT,
+                        Collections.singletonList(content))));
     }
 
     public AsyncResult<IQ> rejectTransport(String contentName, TransportMethod transportMethod) {
-        Jingle.Content content = new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
-        return xmppSession.query(IQ.set(peer, Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REJECT, Collections.singletonList(content))));
+        Jingle.Content content =
+                new Jingle.Content(contentName, Jingle.Content.Creator.INITIATOR, null, transportMethod);
+        return xmppSession.query(IQ.set(peer,
+                Jingle.initiator(xmppSession.getConnectedResource(), sessionId, Jingle.Action.TRANSPORT_REJECT,
+                        Collections.singletonList(content))));
     }
 
     public List<Jingle.Content> getContents() {

@@ -23,7 +23,8 @@
  */
 
 /**
- * Provides XML schema implementations of the  <a href="https://xmpp.org/rfcs/rfc6120.html#schemas-starttls">STARTTLS Namespace</a>.
+ * Provides XML schema implementations of the  <a href="https://xmpp.org/rfcs/rfc6120.html#schemas-starttls">STARTTLS
+ * Namespace</a>.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-tls", elementFormDefault = XmlNsForm.QUALIFIED)

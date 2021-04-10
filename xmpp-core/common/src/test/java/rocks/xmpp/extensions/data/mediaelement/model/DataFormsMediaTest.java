@@ -93,9 +93,11 @@ public class DataFormsMediaTest extends XmlTest {
         Assert.assertEquals(media.getWidth(), 290);
         Assert.assertEquals(media.getLocations().size(), 2);
         Assert.assertEquals(media.getLocations().get(0).getType(), "image/jpeg");
-        Assert.assertEquals(media.getLocations().get(0).getUri(), URI.create("http://www.victim.com/challenges/ocr.jpeg?F3A6292C"));
+        Assert.assertEquals(media.getLocations().get(0).getUri(),
+                URI.create("http://www.victim.com/challenges/ocr.jpeg?F3A6292C"));
         Assert.assertEquals(media.getLocations().get(1).getType(), "image/jpeg");
-        Assert.assertEquals(media.getLocations().get(1).getUri(), URI.create("cid:sha1+f24030b8d91d233bac14777be5ab531ca3b9f102@bob.xmpp.org"));
+        Assert.assertEquals(media.getLocations().get(1).getUri(),
+                URI.create("cid:sha1+f24030b8d91d233bac14777be5ab531ca3b9f102@bob.xmpp.org"));
     }
 
     @Test

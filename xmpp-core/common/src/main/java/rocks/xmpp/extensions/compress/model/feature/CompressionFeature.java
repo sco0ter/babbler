@@ -33,7 +33,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import rocks.xmpp.core.stream.model.StreamFeature;
 
 /**
- * The implementation of the {@code <compression/>} element in the {@code http://jabber.org/features/compress} namespace.
+ * The implementation of the {@code <compression/>} element in the {@code http://jabber.org/features/compress}
+ * namespace.
  *
  * <p>This class is immutable.</p>
  *

@@ -79,13 +79,20 @@ public final class MultiUserChatManager extends Manager implements ItemProvider 
             MucUser mucUser = message.getExtension(MucUser.class);
             if (mucUser != null) {
                 for (Invite invite : mucUser.getInvites()) {
-                    XmppUtils.notifyEventListeners(invitationListeners, new InvitationEvent(MultiUserChatManager.this, xmppSession, invite.getFrom(), message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(), invite.getThread(), true));
+                    XmppUtils.notifyEventListeners(invitationListeners,
+                            new InvitationEvent(MultiUserChatManager.this, xmppSession, invite.getFrom(),
+                                    message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(),
+                                    invite.getThread(), true));
                 }
             } else {
                 // Check, if the message contains a direct invitation.
                 DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);
                 if (directInvitation != null) {
-                    XmppUtils.notifyEventListeners(invitationListeners, new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(), directInvitation.getRoomAddress(), directInvitation.getReason(), directInvitation.getPassword(), directInvitation.isContinue(), directInvitation.getThread(), false));
+                    XmppUtils.notifyEventListeners(invitationListeners,
+                            new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(),
+                                    directInvitation.getRoomAddress(), directInvitation.getReason(),
+                                    directInvitation.getPassword(), directInvitation.isContinue(),
+                                    directInvitation.getThread(), false));
                 }
             }
         };
@@ -131,17 +138,20 @@ public final class MultiUserChatManager extends Manager implements ItemProvider 
      * @see <a href="https://xmpp.org/extensions/xep-0045.html#disco-service">6.1 Discovering a MUC Service</a>
      */
     public AsyncResult<List<ChatService>> discoverChatServices() {
-        return serviceDiscoveryManager.discoverServices(xmppSession.getRemoteXmppAddress(), Identity.conferenceText()).thenApply(services ->
-                services.stream()
-                        .map(service -> new ChatService(service.getJid(), service.getName(), xmppSession, serviceDiscoveryManager, this))
-                        .collect(Collectors.toList()));
+        return serviceDiscoveryManager.discoverServices(xmppSession.getRemoteXmppAddress(), Identity.conferenceText())
+                .thenApply(services ->
+                        services.stream()
+                                .map(service -> new ChatService(service.getJid(), service.getName(), xmppSession,
+                                        serviceDiscoveryManager, this))
+                                .collect(Collectors.toList()));
     }
 
     /**
      * Discovers the rooms, where a contact is in.
      *
      * @param contact The contact, which must be a full JID.
-     * @return The async result with the items, {@link Item#getJid()} has the room address, and {@link Item#getName()}} has the nickname.
+     * @return The async result with the items, {@link Item#getJid()} has the room address, and {@link Item#getName()}}
+     * has the nickname.
      * @see <a href="https://xmpp.org/extensions/xep-0045.html#disco-client">6.7 Discovering Client Support for MUC</a>
      */
     public AsyncResult<List<Item>> discoverEnteredRooms(Jid contact) {
@@ -202,7 +212,8 @@ public final class MultiUserChatManager extends Manager implements ItemProvider 
     }
 
     @Override
-    public ResultSetProvider<DiscoverableItem> getItems(Jid to, Jid from, String node, Locale locale) throws StanzaErrorException {
+    public ResultSetProvider<DiscoverableItem> getItems(Jid to, Jid from, String node, Locale locale)
+            throws StanzaErrorException {
         if (isEnabled() && ROOMS_NODE.equals(node)) {
             return ResultSetProvider.forItems(enteredRoomsMap.values());
         }

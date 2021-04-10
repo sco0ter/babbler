@@ -61,7 +61,8 @@ public final class Header {
     /**
      * Creates a header.
      *
-     * @param name  The name of the header. See <a href="https://xmpp.org/extensions/xep-0131.html#registrar-shim">9.3 SHIM Headers Registry</a> for registered headers.
+     * @param name  The name of the header. See <a href="https://xmpp.org/extensions/xep-0131.html#registrar-shim">9.3
+     *              SHIM Headers Registry</a> for registered headers.
      * @param value The header value.
      * @return The header.
      * @see <a href="https://xmpp.org/extensions/xep-0131.html#registrar-shim">9.3 SHIM Headers Registry</a>
@@ -73,7 +74,8 @@ public final class Header {
     /**
      * Creates a 'Classification' header.
      *
-     * <p>The Classification header enables a sender or other entity to classify a stanza according to some classification scheme.</p>
+     * <p>The Classification header enables a sender or other entity to classify a stanza according to some
+     * classification scheme.</p>
      *
      * @param value The value.
      * @return The 'Classification' header.
@@ -95,7 +97,12 @@ public final class Header {
     }
 
     /**
-     * The Distribute header enables a sender to specify whether the stanza may be further distributed by the recipient to other entities on the network. The allowable values for this header are "true" and "false". If the sender specifies a value of "false", the recipient MUST NOT further distribute the stanza or any information contained therein; if the sender specifies a value of "true", the recipient MAY further distribute the stanza or any information contained therein; if the value is anything other than "true" or "false" and the recipient does not understand the value, the recipient MUST assume the default value of "false".
+     * The Distribute header enables a sender to specify whether the stanza may be further distributed by the recipient
+     * to other entities on the network. The allowable values for this header are "true" and "false". If the sender
+     * specifies a value of "false", the recipient MUST NOT further distribute the stanza or any information contained
+     * therein; if the sender specifies a value of "true", the recipient MAY further distribute the stanza or any
+     * information contained therein; if the value is anything other than "true" or "false" and the recipient does not
+     * understand the value, the recipient MUST assume the default value of "false".
      *
      * @param distribute If the stanza may be further distributed by the recipient.
      * @return The header.

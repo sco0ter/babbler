@@ -76,11 +76,21 @@ public class XmppStreamDecoderTest {
 
         XmppStreamDecoder decoder = new XmppStreamDecoder(locale -> UNMARSHALLER.get());
 
-        ByteBuffer buf1 = ByteBuffer.wrap("<?xml version='1.0' encoding='UTF-8'?><stream:stream to=\"localhost\" version=\"1.0\" xml:lang=\"de-DE\" xml".getBytes(StandardCharsets.UTF_8));
-        ByteBuffer buf2 = ByteBuffer.wrap("ns=\"jabber:client\" test=\"\ud83d\ude0d\" xmlns:stream=\"http://etherx.jabber.org/stream".getBytes(StandardCharsets.UTF_8));
-        ByteBuffer buf3 = ByteBuffer.wrap("s\" xmlns:foo=\"bar\">  <auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"\ud83d\ude0dSCRA\ud83d\ude0d".getBytes(StandardCharsets.UTF_8));
-        ByteBuffer buf4 = ByteBuffer.wrap("M-SHA-1\">biwsbj1hZG1pbixyPTUyZm1vUjMybmFhOUlGd0dtYWloWVE9PQ==</auth>  <response".getBytes(StandardCharsets.UTF_8));
-        ByteBuffer buf5 = ByteBuffer.wrap("   xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\">biwsbj1hZG1pbixyPWRBMEUyTjhmQ0QycUVxNjZ5V0VHemc9PQ==</response> <".getBytes(StandardCharsets.UTF_8));
+        ByteBuffer buf1 = ByteBuffer
+                .wrap("<?xml version='1.0' encoding='UTF-8'?><stream:stream to=\"localhost\" version=\"1.0\" xml:lang=\"de-DE\" xml"
+                        .getBytes(StandardCharsets.UTF_8));
+        ByteBuffer buf2 = ByteBuffer
+                .wrap("ns=\"jabber:client\" test=\"\ud83d\ude0d\" xmlns:stream=\"http://etherx.jabber.org/stream"
+                        .getBytes(StandardCharsets.UTF_8));
+        ByteBuffer buf3 = ByteBuffer
+                .wrap("s\" xmlns:foo=\"bar\">  <auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"\ud83d\ude0dSCRA\ud83d\ude0d"
+                        .getBytes(StandardCharsets.UTF_8));
+        ByteBuffer buf4 = ByteBuffer
+                .wrap("M-SHA-1\">biwsbj1hZG1pbixyPTUyZm1vUjMybmFhOUlGd0dtYWloWVE9PQ==</auth>  <response"
+                        .getBytes(StandardCharsets.UTF_8));
+        ByteBuffer buf5 = ByteBuffer
+                .wrap("   xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\">biwsbj1hZG1pbixyPWRBMEUyTjhmQ0QycUVxNjZ5V0VHemc9PQ==</response> <"
+                        .getBytes(StandardCharsets.UTF_8));
         ByteBuffer buf6 = ByteBuffer.wrap("iq></iq> ".getBytes(StandardCharsets.UTF_8));
 
         List<Object> out = new ArrayList<>();
@@ -117,11 +127,20 @@ public class XmppStreamDecoderTest {
     public void testPerformance() throws StreamErrorException {
         XmppStreamDecoder decoder = new XmppStreamDecoder(locale -> UNMARSHALLER.get());
 
-        ByteBuffer buf1 = ByteBuffer.wrap("<?xml version='1.0' encoding='UTF-8'?><stream:stream to=\"localhost\" version=\"1.0\" xml:lang=\"de-DE\" xml".getBytes(StandardCharsets.UTF_8));
-        ByteBuffer buf2 = ByteBuffer.wrap("ns=\"jabber:client\" xmlns:stream=\"http://etherx.jabber.org/stream".getBytes(StandardCharsets.UTF_8));
-        ByteBuffer buf3 = ByteBuffer.wrap("s\" xmlns:foo=\"bar\">  <auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"SCRA".getBytes(StandardCharsets.UTF_8));
-        ByteBuffer buf4 = ByteBuffer.wrap("M-SHA-1\">biwsbj1hZG1pbixyPTUyZm1vUjMybmFhOUlGd0dtYWloWVE9PQ==</auth>  <response".getBytes(StandardCharsets.UTF_8));
-        ByteBuffer buf5 = ByteBuffer.wrap("   xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\">biwsbj1hZG1pbixyPWRBMEUyTjhmQ0QycUVxNjZ5V0VHemc9PQ==</response> <".getBytes(StandardCharsets.UTF_8));
+        ByteBuffer buf1 = ByteBuffer
+                .wrap("<?xml version='1.0' encoding='UTF-8'?><stream:stream to=\"localhost\" version=\"1.0\" xml:lang=\"de-DE\" xml"
+                        .getBytes(StandardCharsets.UTF_8));
+        ByteBuffer buf2 = ByteBuffer.wrap("ns=\"jabber:client\" xmlns:stream=\"http://etherx.jabber.org/stream"
+                .getBytes(StandardCharsets.UTF_8));
+        ByteBuffer buf3 = ByteBuffer
+                .wrap("s\" xmlns:foo=\"bar\">  <auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"SCRA"
+                        .getBytes(StandardCharsets.UTF_8));
+        ByteBuffer buf4 = ByteBuffer
+                .wrap("M-SHA-1\">biwsbj1hZG1pbixyPTUyZm1vUjMybmFhOUlGd0dtYWloWVE9PQ==</auth>  <response"
+                        .getBytes(StandardCharsets.UTF_8));
+        ByteBuffer buf5 = ByteBuffer
+                .wrap("   xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\">biwsbj1hZG1pbixyPWRBMEUyTjhmQ0QycUVxNjZ5V0VHemc9PQ==</response> <"
+                        .getBytes(StandardCharsets.UTF_8));
         ByteBuffer buf6 = ByteBuffer.wrap("iq></iq> ".getBytes(StandardCharsets.UTF_8));
 
         List<Object> out = new ArrayList<>();
@@ -140,7 +159,8 @@ public class XmppStreamDecoderTest {
         long now = System.currentTimeMillis();
         for (int i = 0; i < 100000; i++) {
             out.clear();
-            ByteBuffer byteBuffer = ByteBuffer.wrap(("<message>" + randomString + "</message>").getBytes(StandardCharsets.UTF_8));
+            ByteBuffer byteBuffer =
+                    ByteBuffer.wrap(("<message>" + randomString + "</message>").getBytes(StandardCharsets.UTF_8));
             decoder.decode(byteBuffer, consumer);
         }
         System.out.println(System.currentTimeMillis() - now);
@@ -150,7 +170,9 @@ public class XmppStreamDecoderTest {
     public void testNotWellFormed() throws Exception {
         XmppStreamDecoder decoder = new XmppStreamDecoder(locale -> UNMARSHALLER.get());
 
-        ByteBuffer buf1 = ByteBuffer.wrap("<?xml version='1.0' encoding='UTF-8'?><stream:stream to=\"localhost version=\"1.0\" xml:lang=\"de-DE\" xml".getBytes(StandardCharsets.UTF_8));
+        ByteBuffer buf1 = ByteBuffer
+                .wrap("<?xml version='1.0' encoding='UTF-8'?><stream:stream to=\"localhost version=\"1.0\" xml:lang=\"de-DE\" xml"
+                        .getBytes(StandardCharsets.UTF_8));
 
         BiConsumer<String, StreamElement> consumer = (s, streamElement) -> {
         };

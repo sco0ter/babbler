@@ -21,7 +21,9 @@ public final class ClientEntityCapabilitiesSupport implements OutboundPresenceHa
 
     private final AbstractEntityCapabilitiesProtocol<? extends EntityCapabilities> entityCapabilitiesProtocol;
 
-    public ClientEntityCapabilitiesSupport(XmppSession xmppSession, AbstractEntityCapabilitiesProtocol<? extends EntityCapabilities> entityCapabilitiesProtocol) {
+    public ClientEntityCapabilitiesSupport(XmppSession xmppSession,
+                                           AbstractEntityCapabilitiesProtocol<? extends EntityCapabilities>
+                                                   entityCapabilitiesProtocol) {
         this.entityCapabilitiesProtocol = entityCapabilitiesProtocol;
 
         xmppSession.getManager(ClientServiceDiscoveryManager.class).addCapabilitiesChangeListener(evt -> {
@@ -29,7 +31,9 @@ public final class ClientEntityCapabilitiesSupport implements OutboundPresenceHa
             // If we change features during a presence session, update the verification string and resend presence.
 
             // https://xmpp.org/extensions/xep-0115.html#advertise:
-            // "If the supported features change during a generating entity's presence session (e.g., a user installs an updated version of a client plugin), the application MUST recompute the verification string and SHOULD send a new presence broadcast."
+            // "If the supported features change during a generating entity's presence session (e.g., a user installs
+            // an updated version of a client plugin), the application MUST recompute the verification string and
+            // SHOULD send a new presence broadcast."
 
             // Resend presence. This manager will add the caps extension later.
             PresenceManager presenceManager = xmppSession.getManager(PresenceManager.class);
@@ -38,15 +42,22 @@ public final class ClientEntityCapabilitiesSupport implements OutboundPresenceHa
             if (lastPresence != null) {
                 // Whenever the verification string has changed, publish the info node.
                 entityCapabilitiesProtocol.publishCapsNode();
-                xmppSession.send(new Presence(null, lastPresence.getType(), lastPresence.getShow(), lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(), null, null));
+                xmppSession.send(new Presence(null, lastPresence.getType(), lastPresence.getShow(),
+                        lastPresence.getStatuses(), lastPresence.getPriority(), null, null, lastPresence.getLanguage(),
+                        null, null));
             }
         });
         xmppSession.addSessionStatusListener(e -> {
-            if (e.getStatus() == XmppSession.Status.AUTHENTICATED) { // As soon as we are authenticated, check if the server has advertised Entity Capabilities in its stream features.
-                List<? extends EntityCapabilities> serverCapabilities = xmppSession.getManager(StreamFeaturesManager.class).getFeatures(entityCapabilitiesProtocol.getEntityCapabilitiesClass());
+            if (e.getStatus() == XmppSession.Status.AUTHENTICATED) {
+                // As soon as we are authenticated, check if the server has
+                // advertised Entity Capabilities in its stream features.
+                List<? extends EntityCapabilities> serverCapabilities =
+                        xmppSession.getManager(StreamFeaturesManager.class)
+                                .getFeatures(entityCapabilitiesProtocol.getEntityCapabilitiesClass());
                 // If yes, treat it as other caps.
                 if (!serverCapabilities.isEmpty()) {
-                    entityCapabilitiesProtocol.handleEntityCapabilities(serverCapabilities.get(0), xmppSession.getDomain());
+                    entityCapabilitiesProtocol
+                            .handleEntityCapabilities(serverCapabilities.get(0), xmppSession.getDomain());
                 }
             }
         });
@@ -61,7 +72,8 @@ public final class ClientEntityCapabilitiesSupport implements OutboundPresenceHa
             }
             // a client SHOULD include entity capabilities with every presence notification it sends.
             // Get the last generated verification string here.
-            Deque<EntityCapabilities> publishedEntityCaps = new ArrayDeque<>(entityCapabilitiesProtocol.getPublishedNodes().values());
+            Deque<EntityCapabilities> publishedEntityCaps =
+                    new ArrayDeque<>(entityCapabilitiesProtocol.getPublishedNodes().values());
             EntityCapabilities lastPublishedEntityCaps = publishedEntityCaps.getLast();
             presence.putExtension(lastPublishedEntityCaps);
         }

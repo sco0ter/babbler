@@ -68,7 +68,8 @@ final class LocalSocks5Server {
                                 Socket socket = null;
                                 try {
                                     socket = serverSocket.accept();
-                                    socketMap.put(Socks5Protocol.establishServerConnection(socket, allowedAddresses), socket);
+                                    socketMap.put(Socks5Protocol.establishServerConnection(socket, allowedAddresses),
+                                            socket);
                                 } catch (IOException e) {
                                     if (socket != null) {
                                         try {

@@ -123,7 +123,8 @@ public final class Event {
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#example-2">Example 2</a>
      */
     public static Event withItem(String node, Object payload, String id, Jid publisher) {
-        return new Event(new Items(node, Collections.singletonList(new ItemElement(Objects.requireNonNull(payload), id, publisher)), null));
+        return new Event(new Items(node,
+                Collections.singletonList(new ItemElement(Objects.requireNonNull(payload), id, publisher)), null));
     }
 
     /**
@@ -189,7 +190,8 @@ public final class Event {
      * @see #withSubscription(String, Jid, SubscriptionState)
      * @see <a href="https://xmpp.org/extensions/xep-0060.html#example-172">Example 172</a>
      */
-    public static Event withSubscription(String node, Jid jid, SubscriptionState subscription, Instant expiry, String subid) {
+    public static Event withSubscription(String node, Jid jid, SubscriptionState subscription, Instant expiry,
+                                         String subid) {
         return new Event(new SubscriptionInfo(node, expiry, jid, subid, subscription));
     }
 
@@ -282,7 +284,8 @@ public final class Event {
      */
     public final List<String> getRetractedItems() {
         if (type instanceof Items && ((Items) type).retract != null) {
-            return Collections.unmodifiableList(((Items) type).retract.stream().map(retract -> retract.id).collect(Collectors.toList()));
+            return Collections.unmodifiableList(
+                    ((Items) type).retract.stream().map(retract -> retract.id).collect(Collectors.toList()));
         }
         return Collections.emptyList();
     }
@@ -375,7 +378,8 @@ public final class Event {
         private Items(String node, Collection<Item> items, Collection<String> retractedItems) {
             super(Objects.requireNonNull(node));
             if (items != null) {
-                this.item = items.stream().map(i -> new ItemElement(i.getPayload(), i.getId(), i.getPublisher())).collect(Collectors.toList());
+                this.item = items.stream().map(i -> new ItemElement(i.getPayload(), i.getId(), i.getPublisher()))
+                        .collect(Collectors.toList());
             } else {
                 this.item = null;
             }

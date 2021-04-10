@@ -108,7 +108,8 @@ public final class LanguageSupport {
             this(sourceLanguage, jid, null, null, null, null);
         }
 
-        public Item(Locale sourceLanguage, Jid jid, Locale destinationLanguage, String engine, Boolean pivotable, String dictionary) {
+        public Item(Locale sourceLanguage, Jid jid, Locale destinationLanguage, String engine, Boolean pivotable,
+                    String dictionary) {
             this.sourceLanguage = Objects.requireNonNull(sourceLanguage);
             this.jid = Objects.requireNonNull(jid);
             this.destinationLanguage = destinationLanguage;
@@ -155,7 +156,8 @@ public final class LanguageSupport {
         }
 
         /**
-         * Pivoting is the process of using one or more intermediate languages to translate from a given source language to a specific destination language.
+         * Pivoting is the process of using one or more intermediate languages to translate from a given source language
+         * to a specific destination language.
          *
          * @return If a text is pivotable.
          */
@@ -164,7 +166,8 @@ public final class LanguageSupport {
         }
 
         /**
-         * In order to enhance the accuracy of translation engines most support the concept of mission specific dictionaries.
+         * In order to enhance the accuracy of translation engines most support the concept of mission specific
+         * dictionaries.
          *
          * @return The dictionary.
          */

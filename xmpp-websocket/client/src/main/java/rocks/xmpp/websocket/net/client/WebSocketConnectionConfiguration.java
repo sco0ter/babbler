@@ -65,7 +65,8 @@ import rocks.xmpp.websocket.net.WebSocketConnection;
 /**
  * A configuration for a WebSocket connection.
  *
- * <p>It allows you to configure basic connection settings like hostname and port, as well as the path in the WebSocket URI.</p>
+ * <p>It allows you to configure basic connection settings like hostname and port, as well as the path in the WebSocket
+ * URI.</p>
  *
  * <h3>Usage</h3>
  *
@@ -81,7 +82,8 @@ import rocks.xmpp.websocket.net.WebSocketConnection;
  *    .build();
  * }</pre>
  *
- * <p>The above sample configuration will connect to <code>wss://localhost:7443/ws/</code> using SSL with a custom {@link SSLContext}.</p>
+ * <p>The above sample configuration will connect to <code>wss://localhost:7443/ws/</code> using SSL with a custom
+ * {@link SSLContext}.</p>
  *
  * <p>This class is immutable.</p>
  *
@@ -162,10 +164,12 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
     @Override
     public final Connection createConnection(final XmppSession xmppSession) throws Exception {
         final CompletableFuture<Void> closeFuture = new CompletableFuture<>();
-        return new WebSocketClientConnection(createWebSocketSession(xmppSession, closeFuture), closeFuture, xmppSession, this);
+        return new WebSocketClientConnection(createWebSocketSession(xmppSession, closeFuture), closeFuture, xmppSession,
+                this);
     }
 
-    private Session createWebSocketSession(XmppSession xmppSession, CompletableFuture<Void> closeFuture) throws Exception {
+    private Session createWebSocketSession(XmppSession xmppSession, CompletableFuture<Void> closeFuture)
+            throws Exception {
 
         final URI path;
         synchronized (this) {
@@ -173,19 +177,23 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
             URI uri;
             String protocol = getChannelEncryption() == ChannelEncryption.DIRECT ? "wss" : "ws";
             // If no port has been configured, use the default ports.
-            int targetPort = getPort() > 0 ? getPort() : (getChannelEncryption() == ChannelEncryption.DIRECT ? 5281 : 5280);
+            int targetPort =
+                    getPort() > 0 ? getPort() : (getChannelEncryption() == ChannelEncryption.DIRECT ? 5281 : 5280);
             // If a hostname has been configured, use it to connect.
             if (getHostname() != null) {
                 uri = new URI(protocol, null, getHostname(), targetPort, getPath(), null, null);
             } else if (xmppSession.getDomain() != null) {
-                // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup as described in XEP-0156.
-                String resolvedUrl = findWebSocketEndpoint(xmppSession.getDomain().toString(), xmppSession.getConfiguration().getNameServer(), getConnectTimeout());
+                // If a URL has not been set, try to find the URL by the domain
+                // via a DNS-TXT lookup as described in XEP-0156.
+                String resolvedUrl = findWebSocketEndpoint(xmppSession.getDomain().toString(),
+                        xmppSession.getConfiguration().getNameServer(), getConnectTimeout());
                 if (resolvedUrl != null) {
                     uri = new URI(resolvedUrl);
                 } else {
                     // Fallback mechanism:
                     // If the URL could not be resolved, use the domain name and port 5280 as default.
-                    uri = new URI(protocol, null, xmppSession.getDomain().toString(), targetPort, getPath(), null, null);
+                    uri = new URI(protocol, null, xmppSession.getDomain().toString(), targetPort, getPath(), null,
+                            null);
                 }
             } else {
                 throw new IllegalStateException("Neither an URL nor a domain given for a WebSocket connection.");
@@ -205,20 +213,27 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
                         // 'xmpp' in the 'Sec-WebSocket-Protocol' header, then an XMPP
                         // subprotocol WebSocket connection was not established and the client
                         // MUST close the WebSocket connection.
-                        List<String> responseHeader = response.getHeaders().get(HandshakeRequest.SEC_WEBSOCKET_PROTOCOL);
+                        List<String> responseHeader =
+                                response.getHeaders().get(HandshakeRequest.SEC_WEBSOCKET_PROTOCOL);
                         if (responseHeader != null && responseHeader.contains("xmpp")) {
                             handshakeSucceeded.set(true);
                         }
                     }
                 }).build();
-        clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.MARSHALLER, (Supplier<Marshaller>) xmppSession::createMarshaller);
-        clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.UNMARSHALLER, (Supplier<Unmarshaller>) xmppSession::createUnmarshaller);
+        clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.MARSHALLER,
+                (Supplier<Marshaller>) xmppSession::createMarshaller);
+        clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.UNMARSHALLER,
+                (Supplier<Unmarshaller>) xmppSession::createUnmarshaller);
         if (xmppSession.getDebugger() != null) {
-            clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.ON_WRITE, xmppSession.getWriterInterceptors());
-            clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.ON_READ, Collections.singleton(xmppSession.getDebugger()));
+            clientEndpointConfig.getUserProperties()
+                    .put(XmppWebSocketEncoder.UserProperties.ON_WRITE, xmppSession.getWriterInterceptors());
+            clientEndpointConfig.getUserProperties()
+                    .put(XmppWebSocketDecoder.UserProperties.ON_READ, Collections.singleton(xmppSession.getDebugger()));
         }
-        clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.XML_OUTPUT_FACTORY, xmppSession.getConfiguration().getXmlOutputFactory());
-        clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.XML_INPUT_FACTORY, xmppSession.getConfiguration().getXmlInputFactory());
+        clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.XML_OUTPUT_FACTORY,
+                xmppSession.getConfiguration().getXmlOutputFactory());
+        clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.XML_INPUT_FACTORY,
+                xmppSession.getConfiguration().getXmlInputFactory());
 
         final ClientManager client = ClientManager.createClient(JdkClientContainer.class.getName());
         if (getSSLContext() != null) {
@@ -238,7 +253,8 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
         final Proxy proxy = getProxy();
         if (proxy != null && proxy.type() == Proxy.Type.HTTP) {
             InetSocketAddress inetSocketAddress = (InetSocketAddress) proxy.address();
-            client.getProperties().put(ClientProperties.PROXY_URI, "http://" + inetSocketAddress.getHostName() + ':' + inetSocketAddress.getPort());
+            client.getProperties().put(ClientProperties.PROXY_URI,
+                    "http://" + inetSocketAddress.getHostName() + ':' + inetSocketAddress.getPort());
         }
 
         final Session session = client.connectToServer(new Endpoint() {
@@ -246,7 +262,8 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
             public void onOpen(Session session, EndpointConfig config) {
                 if (!handshakeSucceeded.get()) {
                     try {
-                        String msg = "Server response did not include 'Sec-WebSocket-Protocol' header with value 'xmpp'.";
+                        String msg =
+                                "Server response did not include 'Sec-WebSocket-Protocol' header with value 'xmpp'.";
                         session.close(new CloseReason(CloseReason.CloseCodes.PROTOCOL_ERROR, msg));
                     } catch (IOException e) {
                         xmppSession.notifyException(e);
@@ -293,7 +310,8 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
 
     @Override
     public final String toString() {
-        return "WebSocket connection configuration: " + (getChannelEncryption() == ChannelEncryption.DIRECT ? "wss" : "ws") + "://" + super.toString() + path;
+        return "WebSocket connection configuration: " + (getChannelEncryption() == ChannelEncryption.DIRECT ? "wss"
+                : "ws") + "://" + super.toString() + path;
     }
 
     /**
@@ -322,8 +340,10 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
         }
 
         /**
-         * Sets the ping interval. If not null and non-negative, a WebSocket ping is sent periodically to the server.
-         * If no pong is received within the configured response timeout ({@link rocks.xmpp.core.session.XmppSessionConfiguration.Builder#defaultResponseTimeout(Duration)}) the XMPP session is closed with an exception.
+         * Sets the ping interval. If not null and non-negative, a WebSocket ping is sent periodically to the server. If
+         * no pong is received within the configured response timeout
+         * ({@link rocks.xmpp.core.session.XmppSessionConfiguration.Builder#defaultResponseTimeout(Duration)})
+         * the XMPP session is closed with an exception.
          *
          * @param pingInterval The ping interval.
          * @return The builder.
@@ -344,8 +364,11 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
             if (proxy != null && proxy.type() != Proxy.Type.HTTP && proxy.type() != Proxy.Type.DIRECT) {
                 throw new UnsupportedOperationException("Non-HTTP proxies are not supported by WebSockets.");
             }
-            if (channelEncryption != null && channelEncryption != ChannelEncryption.DISABLED && channelEncryption != ChannelEncryption.DIRECT) {
-                throw new IllegalArgumentException("WebSocket connections only support ChannelEncryption.DIRECT (wss) or ChannelEncryption.DISABLED (ws).");
+            if (channelEncryption != null && channelEncryption != ChannelEncryption.DISABLED
+                    && channelEncryption != ChannelEncryption.DIRECT) {
+                throw new IllegalArgumentException(
+                        "WebSocket connections only support ChannelEncryption.DIRECT (wss)"
+                                + "or ChannelEncryption.DISABLED (ws).");
             }
             return new WebSocketConnectionConfiguration(this);
         }

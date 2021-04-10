@@ -42,11 +42,16 @@ import rocks.xmpp.im.roster.server.ServerRosterManager;
 /**
  * Handles outbound presence information.
  *
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-initial-outbound">4.2.2.  Server Processing of Outbound Initial Presence</a>
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-probe-outbound">4.3.1.  Server Generation of Outbound Presence Probe</a>
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-broadcast-outbound">4.4.2.  Server Processing of Subsequent Outbound Presence</a>
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-unavailable-outbound">4.5.2.  Server Processing of Outbound Unavailable Presence</a>
- * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-directed-outbound">4.6.3.  Server Processing of Outbound Directed Presence</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-initial-outbound">4.2.2.  Server Processing of Outbound
+ * Initial Presence</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-probe-outbound">4.3.1.  Server Generation of Outbound
+ * Presence Probe</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-broadcast-outbound">4.4.2.  Server Processing of Subsequent
+ * Outbound Presence</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-unavailable-outbound">4.5.2.  Server Processing of Outbound
+ * Unavailable Presence</a>
+ * @see <a href="https://xmpp.org/rfcs/rfc6121.html#presence-directed-outbound">4.6.3.  Server Processing of Outbound
+ * Directed Presence</a>
  */
 @ApplicationScoped
 public class OutboundPresenceInformationHandler implements OutboundPresenceHandler {
@@ -75,8 +80,14 @@ public class OutboundPresenceInformationHandler implements OutboundPresenceHandl
 
                     broadcastToContacts(presence);
 
-                    // The user's server MUST also broadcast initial presence from the user's newly available resource to all of the user's available resources, including the resource that generated the presence notification in the first place (i.e., an entity is implicitly subscribed to its own presence).
-                    Presence selfPresence = new Presence(presence.getFrom().asBareJid(), presence.getType(), presence.getShow(), presence.getStatuses(), presence.getPriority(), presence.getId(), presence.getFrom(), presence.getLanguage(), presence.getExtensions(), presence.getError());
+                    // The user's server MUST also broadcast initial presence from the user's newly available resource
+                    // to all of the user's available resources, including the resource that generated the presence
+                    // notification in the first place (i.e., an entity is implicitly subscribed to its own presence).
+                    Presence selfPresence =
+                            new Presence(presence.getFrom().asBareJid(), presence.getType(), presence.getShow(),
+                                    presence.getStatuses(), presence.getPriority(), presence.getId(),
+                                    presence.getFrom(), presence.getLanguage(), presence.getExtensions(),
+                                    presence.getError());
                     outboundStanzaProcessor.process(selfPresence);
 
                 } else if (presence.getType() == Presence.Type.UNAVAILABLE) {
@@ -89,18 +100,24 @@ public class OutboundPresenceInformationHandler implements OutboundPresenceHandl
 
                     // Get the direct available presences sent by the user
                     Set<Jid> directAvailablePresences = directPresences.remove(presence.getFrom());
-                    // In case a direct presence receive became a contact in the meanwhile, don't send an unavailable presence again.
+                    // In case a direct presence receive became a contact in the meanwhile, don't send an unavailable
+                    // presence again.
                     directAvailablePresences.removeAll(contacts);
                     broadcast(presence, directAvailablePresences);
 
-                    Presence selfPresence = new Presence(presence.getFrom().asBareJid(), presence.getType(), presence.getShow(), presence.getStatuses(), presence.getPriority(), presence.getId(), presence.getFrom(), presence.getLanguage(), presence.getExtensions(), presence.getError());
+                    Presence selfPresence =
+                            new Presence(presence.getFrom().asBareJid(), presence.getType(), presence.getShow(),
+                                    presence.getStatuses(), presence.getPriority(), presence.getId(),
+                                    presence.getFrom(), presence.getLanguage(), presence.getExtensions(),
+                                    presence.getError());
                     outboundStanzaProcessor.process(selfPresence);
                 }
             } else {
                 // Handle direct presence sessions with unsubscribed recipients.
                 RosterItem rosterItem = rosterManager.getRosterItem(username, presence.getTo().asBareJid());
 
-                if (rosterItem == null || rosterItem.getSubscription() == null || !rosterItem.getSubscription().contactHasSubscriptionToUser()) {
+                if (rosterItem == null || rosterItem.getSubscription() == null || !rosterItem.getSubscription()
+                        .contactHasSubscriptionToUser()) {
                     // TODO or user has no presence session
 
                     if (presence.isAvailable()) {
@@ -136,7 +153,8 @@ public class OutboundPresenceInformationHandler implements OutboundPresenceHandl
     private Set<Jid> broadcastToContacts(Presence presence) {
         Set<Jid> contacts = rosterManager.getRosterItems(presence.getFrom().getLocal())
                 .stream()
-                .filter(rosterItem -> rosterItem.getSubscription() != null && rosterItem.getSubscription().contactHasSubscriptionToUser())
+                .filter(rosterItem -> rosterItem.getSubscription() != null && rosterItem.getSubscription()
+                        .contactHasSubscriptionToUser())
                 .map(RosterItem::getJid)
                 .collect(Collectors.toSet());
         broadcast(presence, contacts);
@@ -145,7 +163,9 @@ public class OutboundPresenceInformationHandler implements OutboundPresenceHandl
 
     private void broadcast(Presence presence, Iterable<Jid> recipients) {
         recipients.forEach(contact -> {
-            Presence p = new Presence(contact, presence.getType(), presence.getShow(), presence.getStatuses(), presence.getPriority(), presence.getId(), presence.getFrom(), presence.getLanguage(), presence.getExtensions(), presence.getError());
+            Presence p = new Presence(contact, presence.getType(), presence.getShow(), presence.getStatuses(),
+                    presence.getPriority(), presence.getId(), presence.getFrom(), presence.getLanguage(),
+                    presence.getExtensions(), presence.getError());
             outboundStanzaProcessor.process(p);
         });
     }

@@ -53,7 +53,8 @@ public final class JingleManager extends Manager {
 
     private final Map<String, JingleSession> jingleSessionMap = new ConcurrentHashMap<>();
 
-    private final Map<Class<? extends ApplicationFormat>, Consumer<JingleSession>> registeredApplicationFormats = new ConcurrentHashMap<>();
+    private final Map<Class<? extends ApplicationFormat>, Consumer<JingleSession>> registeredApplicationFormats =
+            new ConcurrentHashMap<>();
 
     private JingleManager(final XmppSession xmppSession) {
         super(xmppSession, true);
@@ -68,7 +69,8 @@ public final class JingleManager extends Manager {
                 final JingleSession jingleSession;
 
                 // The value of the 'action' attribute MUST be one of the following.
-                // If an entity receives a value not defined here, it MUST ignore the attribute and MUST return a <bad-request/> error to the sender.
+                // If an entity receives a value not defined here, it MUST ignore the attribute and MUST return a
+                // <bad-request/> error to the sender.
                 // There is no default value for the 'action' attribute.
                 if (jingle.getAction() == null) {
                     return iq.createError(new StanzaError(Condition.BAD_REQUEST, "No valid action attribute set."));
@@ -85,10 +87,12 @@ public final class JingleManager extends Manager {
                         boolean hasContentWithDispositionSession = false;
                         boolean hasSupportedApplications = false;
                         boolean hasSupportedTransports = false;
-                        // Check if we support the application format and transport method and at least one content element has a disposition of "session".
+                        // Check if we support the application format and transport method and at least one content
+                        // element has a disposition of "session".
                         for (Jingle.Content content : jingle.getContents()) {
                             // Check if the content disposition is "session" (default value is "session").
-                            if (!hasContentWithDispositionSession && ("session".equals(content.getDisposition()) || content.getDisposition() == null)) {
+                            if (!hasContentWithDispositionSession && ("session".equals(content.getDisposition())
+                                    || content.getDisposition() == null)) {
                                 hasContentWithDispositionSession = true;
                             }
 
@@ -102,31 +106,42 @@ public final class JingleManager extends Manager {
                         }
 
                         if (!hasContentWithDispositionSession) {
-                            // When sending a session-initiate with one <content/> element,
-                            // the value of the <content/> element's 'disposition' attribute MUST be "session"
-                            // (if there are multiple <content/> elements then at least one MUST have a disposition of "session");
-                            // if this rule is violated, the responder MUST return a <bad-request/> error to the initiator.
-                            return iq.createError(new StanzaError(Condition.BAD_REQUEST, "No content with disposition 'session' found."));
+                            // When sending a session-initiate with one <content/> element, the value of the <content/>
+                            // element's 'disposition' attribute MUST be "session" (if there are multiple <content/>
+                            // elements then at least one MUST have a disposition of "session");
+                            // if this rule is violated, the responder MUST return a <bad-request/> error to the
+                            // initiator.
+                            return iq.createError(new StanzaError(Condition.BAD_REQUEST,
+                                    "No content with disposition 'session' found."));
                         } else {
 
-                            // However, after acknowledging the session initiation request,
-                            // the responder might subsequently determine that it cannot proceed with negotiation of the session
-                            // (e.g., because it does not support any of the offered application formats or transport methods,
-                            // because a human user is busy or unable to accept the session, because a human user wishes to formally decline
-                            // the session, etc.). In these cases, the responder SHOULD immediately acknowledge the session initiation request
-                            // but then terminate the session with an appropriate reason as described in the Termination section of this document.
+                            // However, after acknowledging the session initiation request, the responder might
+                            // subsequently determine that it cannot proceed with negotiation of the session (e.g.,
+                            // because it does not support any of the offered application formats or transport methods,
+                            // because a human user is busy or unable to accept the session, because a human user wishes
+                            // to formally decline the session, etc.).
+                            // In these cases, the responder SHOULD immediately acknowledge the session initiation
+                            // request but then terminate the session with an appropriate reason as described in the
+                            // Termination section of this document.
 
                             if (!hasSupportedApplications) {
                                 // Terminate the session with <unsupported-applications/>.
-                                return IQ.set(iq.getFrom(), new Jingle(jingle.getSessionId(), Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.UnsupportedApplications())));
+                                return IQ.set(iq.getFrom(),
+                                        new Jingle(jingle.getSessionId(), Jingle.Action.SESSION_TERMINATE,
+                                                new Jingle.Reason(new Jingle.Reason.UnsupportedApplications())));
                             } else if (!hasSupportedTransports) {
                                 // Terminate the session with <unsupported-transports/>.
-                                return IQ.set(iq.getFrom(), new Jingle(jingle.getSessionId(), Jingle.Action.SESSION_TERMINATE, new Jingle.Reason(new Jingle.Reason.UnsupportedTransports())));
+                                return IQ.set(iq.getFrom(),
+                                        new Jingle(jingle.getSessionId(), Jingle.Action.SESSION_TERMINATE,
+                                                new Jingle.Reason(new Jingle.Reason.UnsupportedTransports())));
                             } else {
                                 // Everything is fine, create the session and notify the listeners.
-                                jingleSession = new JingleSession(jingle.getSessionId(), iq.getFrom(), false, xmppSession, JingleManager.this, jingle.getContents());
+                                jingleSession =
+                                        new JingleSession(jingle.getSessionId(), iq.getFrom(), false, xmppSession,
+                                                JingleManager.this, jingle.getContents());
                                 jingleSessionMap.put(jingle.getSessionId(), jingleSession);
-                                Consumer<JingleSession> consumer = registeredApplicationFormats.get(jingle.getContents().get(0).getApplicationFormat().getClass());
+                                Consumer<JingleSession> consumer = registeredApplicationFormats
+                                        .get(jingle.getContents().get(0).getApplicationFormat().getClass());
                                 if (consumer != null) {
                                     consumer.accept(jingleSession);
                                 }
@@ -147,7 +162,9 @@ public final class JingleManager extends Manager {
                     // return <item-not-found/> and <unknown-session/>
                     return iq.createError(new StanzaError(Condition.ITEM_NOT_FOUND, new UnknownSession()));
                 } else {
-                    ForkJoinPool.commonPool().execute(() -> XmppUtils.notifyEventListeners(jingleSession.jingleListeners, new JingleEvent(JingleManager.this, xmppSession, iq, jingle)));
+                    ForkJoinPool.commonPool().execute(() -> XmppUtils
+                            .notifyEventListeners(jingleSession.jingleListeners,
+                                    new JingleEvent(JingleManager.this, xmppSession, iq, jingle)));
                     // Immediately return a result, before sending a session-accept.
                     return iq.createResult();
                 }
@@ -192,7 +209,8 @@ public final class JingleManager extends Manager {
         jingleListeners.remove(jingleListener);
     }
 
-    public final void registerApplicationFormat(Class<? extends ApplicationFormat> applicationFormat, Consumer<JingleSession> consumer) {
+    public final void registerApplicationFormat(Class<? extends ApplicationFormat> applicationFormat,
+                                                Consumer<JingleSession> consumer) {
         registeredApplicationFormats.put(applicationFormat, consumer);
     }
 

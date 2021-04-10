@@ -42,14 +42,17 @@ public class PubSubPublisherUseCasesTest extends XmlTest {
     public void marshalPublish() throws JAXBException, XMLStreamException {
         PubSub pubSub = PubSub.withPublish("princely_musings", "bnd81g37d61f49fgn581", null, null);
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"princely_musings\"><item id=\"bnd81g37d61f49fgn581\"></item></publish></pubsub>");
+        Assert.assertEquals(xml,
+                "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"princely_musings\"><item id=\"bnd81g37d61f49fgn581\"></item></publish></pubsub>");
     }
 
     @Test
     public void marshalPublishWithOptions() throws JAXBException, XMLStreamException {
-        PubSub pubSub = PubSub.withPublish("princely_musings", "bnd81g37d61f49fgn581", null, new DataForm(DataForm.Type.SUBMIT));
+        PubSub pubSub = PubSub.withPublish("princely_musings", "bnd81g37d61f49fgn581", null,
+                new DataForm(DataForm.Type.SUBMIT));
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"princely_musings\"><item id=\"bnd81g37d61f49fgn581\"></item></publish><publish-options><x xmlns=\"jabber:x:data\" type=\"submit\"></x></publish-options></pubsub>");
+        Assert.assertEquals(xml,
+                "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><publish node=\"princely_musings\"><item id=\"bnd81g37d61f49fgn581\"></item></publish><publish-options><x xmlns=\"jabber:x:data\" type=\"submit\"></x></publish-options></pubsub>");
     }
 
     @Test
@@ -77,6 +80,7 @@ public class PubSubPublisherUseCasesTest extends XmlTest {
     public void marshalDeleteItem() throws JAXBException, XMLStreamException {
         PubSub pubSub = PubSub.withRetract("princely_musings", "ae890ac52d0df67ed7cfdf51b644e901", false);
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><retract node=\"princely_musings\" notify=\"false\"><item id=\"ae890ac52d0df67ed7cfdf51b644e901\"></item></retract></pubsub>");
+        Assert.assertEquals(xml,
+                "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><retract node=\"princely_musings\" notify=\"false\"><item id=\"ae890ac52d0df67ed7cfdf51b644e901\"></item></retract></pubsub>");
     }
 }

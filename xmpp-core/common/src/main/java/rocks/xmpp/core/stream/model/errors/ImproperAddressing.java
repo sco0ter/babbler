@@ -30,8 +30,10 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <improper-addressing/>} stream error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-improper-addressing">4.9.3.7.  improper-addressing</a></cite></p>
- * <p>A stanza sent between two servers lacks a 'to' or 'from' attribute, the 'from' or 'to' attribute has no value, or the value violates the rules for XMPP addresses.</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-improper-addressing">4.9.3.7.
+ * improper-addressing</a></cite></p>
+ * <p>A stanza sent between two servers lacks a 'to' or 'from' attribute, the 'from' or 'to' attribute has no value, or
+ * the value violates the rules for XMPP addresses.</p>
  * </blockquote>
  * This class is a singleton.
  *

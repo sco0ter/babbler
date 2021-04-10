@@ -70,7 +70,8 @@ public class ServerServiceDiscoveryManager extends AbstractServiceDiscoveryManag
     @Override
     public AsyncResult<DiscoverableInfo> discoverInformation(Jid jid, String node) {
         InboundClientSession session = (InboundClientSession) sessionManager.getSession(jid);
-        return session.query(IQ.get(new InfoDiscovery(node))).thenApply(result -> result.getExtension(DiscoverableInfo.class));
+        return session.query(IQ.get(new InfoDiscovery(node)))
+                .thenApply(result -> result.getExtension(DiscoverableInfo.class));
     }
 
     @Override

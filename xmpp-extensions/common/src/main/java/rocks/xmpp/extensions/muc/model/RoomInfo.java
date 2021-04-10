@@ -36,7 +36,8 @@ import rocks.xmpp.extensions.data.StandardizedDataForm;
 import rocks.xmpp.extensions.data.model.DataForm;
 
 /**
- * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code http://jabber.org/protocol/muc#roominfo}, which can be used to retrieve MUC room info.
+ * Represents a standardized {@link rocks.xmpp.extensions.data.model.DataForm} with form type {@code
+ * http://jabber.org/protocol/muc#roominfo}, which can be used to retrieve MUC room info.
  * <h3>Usage</h3>
  * To wrap an existing {@link rocks.xmpp.extensions.data.model.DataForm} to retrieve standard data from it, use:
  * <pre>{@code
@@ -59,7 +60,8 @@ import rocks.xmpp.extensions.data.model.DataForm;
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#disco-roominfo">6.4 Querying for Room Information</a>
- * @see <a href="https://xmpp.org/extensions/xep-0045.html#registrar-formtype-roominfo">15.5.4 muc#roominfo FORM_TYPE</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0045.html#registrar-formtype-roominfo">15.5.4 muc#roominfo
+ * FORM_TYPE</a>
  */
 public final class RoomInfo implements StandardizedDataForm {
 
@@ -86,12 +88,8 @@ public final class RoomInfo implements StandardizedDataForm {
     private static final String LANGUAGE = "muc#roominfo_lang";
 
     /**
-     * An associated LDAP group that defines
-     * room membership; this should be an LDAP
-     * Distinguished Name according to an
-     * implementation-specific or
-     * deployment-specific definition of a
-     * group.
+     * An associated LDAP group that defines room membership; this should be an LDAP Distinguished Name according to an
+     * implementation-specific or deployment-specific definition of a group.
      */
     private static final String LDAP_GROUP = "muc#roominfo_ldapgroup";
 
@@ -163,12 +161,8 @@ public final class RoomInfo implements StandardizedDataForm {
     }
 
     /**
-     * Gets an associated LDAP group that defines
-     * room membership; this should be an LDAP
-     * Distinguished Name according to an
-     * implementation-specific or
-     * deployment-specific definition of a
-     * group.
+     * Gets an associated LDAP group that defines room membership; this should be an LDAP Distinguished Name according
+     * to an implementation-specific or deployment-specific definition of a group.
      *
      * @return The LDAP group.
      */
@@ -236,7 +230,7 @@ public final class RoomInfo implements StandardizedDataForm {
     }
 
     /**
-     * A builder to build a room info form. The form is of type {@link rocks.xmpp.extensions.data.model.DataForm.Type#RESULT} by default.
+     * A builder to build a room info form. The form is of type {@link DataForm.Type#RESULT} by default.
      */
     public static final class Builder extends DataForm.Builder<Builder> {
         private Integer maxHistoryMessages;
@@ -305,12 +299,8 @@ public final class RoomInfo implements StandardizedDataForm {
         }
 
         /**
-         * Sets an associated LDAP group that defines
-         * room membership; this should be an LDAP
-         * Distinguished Name according to an
-         * implementation-specific or
-         * deployment-specific definition of a
-         * group.
+         * Sets an associated LDAP group that defines room membership; this should be an LDAP Distinguished Name
+         * according to an implementation-specific or deployment-specific definition of a group.
          *
          * @param ldapGroup LDAP group.
          * @return The builder.

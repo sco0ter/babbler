@@ -192,8 +192,10 @@ public class SaslTest extends XmlTest {
 
     @Test
     public void unmarshalEmptyAuth() throws XMLStreamException, JAXBException {
-        Auth auth = unmarshal("<auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\"></auth>", Auth.class);
-        Auth authEmpty = unmarshal("<auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\">=</auth>", Auth.class);
+        Auth auth =
+                unmarshal("<auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\"></auth>", Auth.class);
+        Auth authEmpty =
+                unmarshal("<auth xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\" mechanism=\"PLAIN\">=</auth>", Auth.class);
         Assert.assertEquals(auth.getInitialResponse(), null);
         Assert.assertEquals(authEmpty.getInitialResponse(), new byte[0]);
     }

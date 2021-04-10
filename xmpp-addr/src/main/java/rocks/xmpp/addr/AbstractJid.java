@@ -48,8 +48,11 @@ abstract class AbstractJid implements Jid {
 
     /**
      * Checks if the JID is a full JID.
+     *
      * <blockquote>
-     * <p>The term "full JID" refers to an XMPP address of the form &lt;localpart@domainpart/resourcepart&gt; (for a particular authorized client or device associated with an account) or of the form &lt;domainpart/resourcepart&gt; (for a particular resource or script associated with a server).</p>
+     * <p>The term "full JID" refers to an XMPP address of the form &lt;localpart@domainpart/resourcepart&gt; (for a
+     * particular authorized client or device associated with an account) or of the form &lt;domainpart/resourcepart&gt;
+     * (for a particular resource or script associated with a server).</p>
      * </blockquote>
      *
      * @return True, if the JID is a full JID; otherwise false.
@@ -61,8 +64,10 @@ abstract class AbstractJid implements Jid {
 
     /**
      * Checks if the JID is a bare JID.
+     *
      * <blockquote>
-     * <p>The term "bare JID" refers to an XMPP address of the form &lt;localpart@domainpart&gt; (for an account at a server) or of the form &lt;domainpart&gt; (for a server).</p>
+     * <p>The term "bare JID" refers to an XMPP address of the form &lt;localpart@domainpart&gt; (for an account at a
+     * server) or of the form &lt;domainpart&gt; (for a server).</p>
      * </blockquote>
      *
      * @return True, if the JID is a bare JID; otherwise false.

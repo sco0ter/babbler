@@ -59,12 +59,16 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * Manages <a href="https://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>.
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/extensions/xep-0030.html#intro">1. Introduction</a></cite></p>
- * <p>The ability to discover information about entities on the Jabber network is extremely valuable. Such information might include features offered or protocols supported by the entity, the entity's type or identity, and additional entities that are associated with the original entity in some way (often thought of as "children" of the "parent" entity).</p>
+ * <p>The ability to discover information about entities on the Jabber network is extremely valuable. Such information
+ * might include features offered or protocols supported by the entity, the entity's type or identity, and additional
+ * entities that are associated with the original entity in some way (often thought of as "children" of the "parent"
+ * entity).</p>
  * </blockquote>
  * <p>Enabled extensions are automatically added to the list of features by their respective manager class.
  * Disabled extensions are removed.</p>
  *
- * <p>This class automatically manages inbound service discovery requests by responding with a list of enabled extensions (features).</p>
+ * <p>This class automatically manages inbound service discovery requests by responding with a list of enabled
+ * extensions (features).</p>
  *
  * @author Christian Schudt
  */
@@ -95,7 +99,8 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
     }
 
     /**
-     * Adds a property change listener, which listens for changes in the {@linkplain #getIdentities() identities}, {@linkplain #getFeatures() features} and {@linkplain #getExtensions() extensions} collections.
+     * Adds a property change listener, which listens for changes in the {@linkplain #getIdentities() identities},
+     * {@linkplain #getFeatures() features} and {@linkplain #getExtensions() extensions} collections.
      *
      * @param listener The listener.
      * @see #removeCapabilitiesChangeListener(Consumer)
@@ -166,8 +171,9 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
     }
 
     /**
-     * Adds a feature. Features should not be added or removed directly. Instead enable or disable the respective extension manager, which will then add or remove the feature.
-     * That way, supported features are consistent with enabled extension managers and service discovery won't reveal features, that are in fact not supported.
+     * Adds a feature. Features should not be added or removed directly. Instead enable or disable the respective
+     * extension manager, which will then add or remove the feature. That way, supported features are consistent with
+     * enabled extension managers and service discovery won't reveal features, that are in fact not supported.
      *
      * @param feature The feature.
      * @see #removeFeature(String)
@@ -296,7 +302,8 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
                 Class<?> managerClass = extension.getManager();
                 if (managerClass != null) {
                     Object manager = xmppSession.getManager(managerClass);
-                    // A manager can manage multiple features (e.g. ServiceDiscoveryManager manages disco#items and disco#info feature)
+                    // A manager can manage multiple features
+                    // (e.g. ServiceDiscoveryManager manages disco#items and disco#info feature)
                     // If we disable one feature, but not the other one, the manager should still be enabled.
                     boolean mayDisable = true;
                     if (feature != null && !enabled) {
@@ -346,7 +353,8 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
             featureToExtension.put(extension.getNamespace(), extension);
         }
         if (extension.getManager() != null) {
-            Set<Extension> extensions = managersToExtensions.computeIfAbsent(extension.getManager(), key -> new HashSet<>());
+            Set<Extension> extensions =
+                    managersToExtensions.computeIfAbsent(extension.getManager(), key -> new HashSet<>());
             extensions.add(extension);
         }
         if (extension.isEnabled()) {
@@ -381,8 +389,10 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
             return Stream.concat(features.stream(),
                     ClientServiceDiscoveryManager.this.extensions
                             .stream()
-                            // Extensions with manager currently get excluded, because they are manually added to the feature set.
+                            // Extensions with manager currently get excluded, because they are manually added to
+                            // the feature set.
                             // This shall change in the future
+                            // TODO
                             .filter(ExtensionProtocol::isEnabled)
                             .flatMap(extension -> extension.getFeatures().stream()))
                     .collect(Collectors.toSet());

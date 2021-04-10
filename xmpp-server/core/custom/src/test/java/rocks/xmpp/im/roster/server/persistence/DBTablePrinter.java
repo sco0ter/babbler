@@ -40,25 +40,20 @@ import java.util.StringJoiner;
  * like a table with rows and columns with borders.
  * <p>
  * <p>Stack Overflow website
- * (<a target="_blank" href="http://stackoverflow.com">stackoverflow.com</a>)
- * was the primary source of inspiration and help to put this
- * code together. Especially the questions and answers of
- * the following people were very useful:</p>
+ * (<a target="_blank" href="http://stackoverflow.com">stackoverflow.com</a>) was the primary source of inspiration and
+ * help to put this code together. Especially the questions and answers of the following people were very useful:</p>
  * <p>
  * <p>Question:
  * <a target="_blank" href="http://tinyurl.com/q7lbqeh">How to display or
- * print the contents of a database table as is</a><br>
- * People: sky scraper</p>
+ * print the contents of a database table as is</a><br> People: sky scraper</p>
  * <p>
  * <p>Question:
  * <a target="_blank" href="http://tinyurl.com/pbwgess">System.out.println()
- * from database into a table</a><br>
- * People: Simon Cottrill, Tony Toews, Costis Aivali, Riggy, corsiKa</p>
+ * from database into a table</a><br> People: Simon Cottrill, Tony Toews, Costis Aivali, Riggy, corsiKa</p>
  * <p>
  * <p>Question:
  * <a target="_blank" href="http://tinyurl.com/7x9qtyg">Simple way to repeat
- * a string in java</a><br>
- * People: Everybody who contributed but especially user102008</p>
+ * a string in java</a><br> People: Everybody who contributed but especially user102008</p>
  */
 public class DBTablePrinter {
 
@@ -68,14 +63,12 @@ public class DBTablePrinter {
     private static final int DEFAULT_MAX_ROWS = 10;
 
     /**
-     * Default maximum width for text columns
-     * (like a <code>VARCHAR</code>) column.
+     * Default maximum width for text columns (like a <code>VARCHAR</code>) column.
      */
     private static final int DEFAULT_MAX_TEXT_COL_WIDTH = 150;
 
     /**
-     * Column type category for <code>CHAR</code>, <code>VARCHAR</code>
-     * and similar text columns.
+     * Column type category for <code>CHAR</code>, <code>VARCHAR</code> and similar text columns.
      */
     public static final int CATEGORY_STRING = 1;
 
@@ -86,8 +79,7 @@ public class DBTablePrinter {
     public static final int CATEGORY_INTEGER = 2;
 
     /**
-     * Column type category for <code>REAL</code>, <code>DOUBLE</code>,
-     * and <code>DECIMAL</code> columns.
+     * Column type category for <code>REAL</code>, <code>DOUBLE</code>, and <code>DECIMAL</code> columns.
      */
     public static final int CATEGORY_DOUBLE = 3;
 
@@ -103,8 +95,8 @@ public class DBTablePrinter {
     public static final int CATEGORY_BOOLEAN = 5;
 
     /**
-     * Column type category for types for which the type name
-     * will be printed instead of the content, like <code>BLOB</code>,
+     * Column type category for types for which the type name will be printed instead of the content, like
+     * <code>BLOB</code>,
      * <code>BINARY</code>, <code>ARRAY</code> etc.
      */
     public static final int CATEGORY_OTHER = 0;
@@ -120,26 +112,21 @@ public class DBTablePrinter {
         private String label;
 
         /**
-         * Generic SQL type of the column as defined in
-         * <a target="_blank"
-         * href="http://docs.oracle.com/javase/8/docs/api/java/sql/Types.html">
+         * Generic SQL type of the column as defined in <a target="_blank" href="http://docs.oracle.com/javase/8/docs/api/java/sql/Types.html">
          * java.sql.Types
          * </a>.
          */
         private int type;
 
         /**
-         * Generic SQL type name of the column as defined in
-         * <a target="_blank"
-         * href="http://docs.oracle.com/javase/8/docs/api/java/sql/Types.html">
+         * Generic SQL type name of the column as defined in <a target="_blank" href="http://docs.oracle.com/javase/8/docs/api/java/sql/Types.html">
          * java.sql.Types
          * </a>.
          */
         private String typeName;
 
         /**
-         * Width of the column that will be adjusted according to column label
-         * and values to be printed.
+         * Width of the column that will be adjusted according to column label and values to be printed.
          */
         private int width = 0;
 
@@ -149,26 +136,22 @@ public class DBTablePrinter {
         private List<String> values = new ArrayList<>();
 
         /**
-         * Flag for text justification using <code>String.format</code>.
-         * Empty string (<code>""</code>) to justify right,
-         * dash (<code>-</code>) to justify left.
+         * Flag for text justification using <code>String.format</code>. Empty string (<code>""</code>) to justify
+         * right, dash (<code>-</code>) to justify left.
          *
          * @see #justifyLeft()
          */
         private String justifyFlag = "";
 
         /**
-         * Column type category. The columns will be categorised according
-         * to their column types and specific needs to print them correctly.
+         * Column type category. The columns will be categorised according to their column types and specific needs to
+         * print them correctly.
          */
         private int typeCategory = 0;
 
         /**
-         * Constructs a new <code>Column</code> with a column label,
-         * generic SQL type and type name (as defined in
-         * <a target="_blank"
-         * href="http://docs.oracle.com/javase/8/docs/api/java/sql/Types.html">
-         * java.sql.Types
+         * Constructs a new <code>Column</code> with a column label, generic SQL type and type name (as defined in <a
+         * target="_blank" href="http://docs.oracle.com/javase/8/docs/api/java/sql/Types.html"> java.sql.Types
          * </a>)
          *
          * @param label    Column label or name
@@ -227,12 +210,9 @@ public class DBTablePrinter {
         }
 
         /**
-         * Adds a <code>String</code> representation (<code>value</code>)
-         * of a value to this column object's {@link #values} list.
-         * These values will come from each row of a
-         * <a target="_blank"
-         * href="http://docs.oracle.com/javase/8/docs/api/java/sql/ResultSet.html">
-         * ResultSet
+         * Adds a <code>String</code> representation (<code>value</code>) of a value to this column object's {@link
+         * #values} list. These values will come from each row of a <a target="_blank"
+         * href="http://docs.oracle.com/javase/8/docs/api/java/sql/ResultSet.html"> ResultSet
          * </a> of a database query.
          *
          * @param value The column value to add to {@link #values}
@@ -242,12 +222,9 @@ public class DBTablePrinter {
         }
 
         /**
-         * Returns the column value at row index <code>i</code>.
-         * Note that the index starts at 0 so that <code>getValue(0)</code>
-         * will get the value for this column from the first row
-         * of a <a target="_blank"
-         * href="http://docs.oracle.com/javase/8/docs/api/java/sql/ResultSet.html">
-         * ResultSet</a>.
+         * Returns the column value at row index <code>i</code>. Note that the index starts at 0 so that
+         * <code>getValue(0)</code> will get the value for this column from the first row of a <a target="_blank"
+         * href="http://docs.oracle.com/javase/8/docs/api/java/sql/ResultSet.html"> ResultSet</a>.
          *
          * @param i The index of the column value to get
          * @return The String representation of the value
@@ -257,9 +234,8 @@ public class DBTablePrinter {
         }
 
         /**
-         * Returns the value of the {@link #justifyFlag}. The column
-         * values will be printed using <code>String.format</code> and
-         * this flag will be used to right or left justify the text.
+         * Returns the value of the {@link #justifyFlag}. The column values will be printed using
+         * <code>String.format</code> and this flag will be used to right or left justify the text.
          *
          * @return The {@link #justifyFlag} of this column
          * @see #justifyLeft()
@@ -269,8 +245,8 @@ public class DBTablePrinter {
         }
 
         /**
-         * Sets {@link #justifyFlag} to <code>"-"</code> so that
-         * the column value will be left justified when printed with
+         * Sets {@link #justifyFlag} to <code>"-"</code> so that the column value will be left justified when printed
+         * with
          * <code>String.format</code>. Typically numbers will be right
          * justified and text will be left justified.
          */
@@ -298,12 +274,11 @@ public class DBTablePrinter {
     }
 
     /**
-     * Overloaded method that prints rows from table <code>tableName</code>
-     * to standard out using the given database connection
+     * Overloaded method that prints rows from table <code>tableName</code> to standard out using the given database
+     * connection
      * <code>conn</code>. Total number of rows will be limited to
-     * {@link #DEFAULT_MAX_ROWS} and
-     * {@link #DEFAULT_MAX_TEXT_COL_WIDTH} will be used to limit
-     * the width of text columns (like a <code>VARCHAR</code> column).
+     * {@link #DEFAULT_MAX_ROWS} and {@link #DEFAULT_MAX_TEXT_COL_WIDTH} will be used to limit the width of text columns
+     * (like a <code>VARCHAR</code> column).
      *
      * @param conn      Database connection object (java.sql.Connection)
      * @param tableName Name of the database table
@@ -313,12 +288,12 @@ public class DBTablePrinter {
     }
 
     /**
-     * Overloaded method that prints rows from table <code>tableName</code>
-     * to standard out using the given database connection
+     * Overloaded method that prints rows from table <code>tableName</code> to standard out using the given database
+     * connection
      * <code>conn</code>. Total number of rows will be limited to
      * <code>maxRows</code> and
-     * {@link #DEFAULT_MAX_TEXT_COL_WIDTH} will be used to limit
-     * the width of text columns (like a <code>VARCHAR</code> column).
+     * {@link #DEFAULT_MAX_TEXT_COL_WIDTH} will be used to limit the width of text columns (like a <code>VARCHAR</code>
+     * column).
      *
      * @param conn      Database connection object (java.sql.Connection)
      * @param tableName Name of the database table
@@ -329,8 +304,8 @@ public class DBTablePrinter {
     }
 
     /**
-     * Overloaded method that prints rows from table <code>tableName</code>
-     * to standard out using the given database connection
+     * Overloaded method that prints rows from table <code>tableName</code> to standard out using the given database
+     * connection
      * <code>conn</code>. Total number of rows will be limited to
      * <code>maxRows</code> and
      * <code>maxStringColWidth</code> will be used to limit
@@ -391,10 +366,8 @@ public class DBTablePrinter {
     }
 
     /**
-     * Overloaded method to print rows of a <a target="_blank"
-     * href="http://docs.oracle.com/javase/8/docs/api/java/sql/ResultSet.html">
-     * ResultSet</a> to standard out using {@link #DEFAULT_MAX_TEXT_COL_WIDTH}
-     * to limit the width of text columns.
+     * Overloaded method to print rows of a <a target="_blank" href="http://docs.oracle.com/javase/8/docs/api/java/sql/ResultSet.html">
+     * ResultSet</a> to standard out using {@link #DEFAULT_MAX_TEXT_COL_WIDTH} to limit the width of text columns.
      *
      * @param rs The <code>ResultSet</code> to print
      */
@@ -403,10 +376,8 @@ public class DBTablePrinter {
     }
 
     /**
-     * Overloaded method to print rows of a <a target="_blank"
-     * href="http://docs.oracle.com/javase/8/docs/api/java/sql/ResultSet.html">
-     * ResultSet</a> to standard out using <code>maxStringColWidth</code>
-     * to limit the width of text columns.
+     * Overloaded method to print rows of a <a target="_blank" href="http://docs.oracle.com/javase/8/docs/api/java/sql/ResultSet.html">
+     * ResultSet</a> to standard out using <code>maxStringColWidth</code> to limit the width of text columns.
      *
      * @param rs                The <code>ResultSet</code> to print
      * @param maxStringColWidth Max. width of text columns
@@ -624,16 +595,13 @@ public class DBTablePrinter {
     }
 
     /**
-     * Takes a generic SQL type and returns the category this type
-     * belongs to. Types are categorized according to print formatting
-     * needs:
+     * Takes a generic SQL type and returns the category this type belongs to. Types are categorized according to print
+     * formatting needs:
      * <p>
-     * Integers should not be truncated so column widths should
-     * be adjusted without a column width limit. Text columns should be
-     * left justified and can be truncated to a max. column width etc...</p>
+     * Integers should not be truncated so column widths should be adjusted without a column width limit. Text columns
+     * should be left justified and can be truncated to a max. column width etc...</p>
      * <p>
-     * See also: <a target="_blank"
-     * href="http://docs.oracle.com/javase/8/docs/api/java/sql/Types.html">
+     * See also: <a target="_blank" href="http://docs.oracle.com/javase/8/docs/api/java/sql/Types.html">
      * java.sql.Types</a>
      *
      * @param type Generic SQL type

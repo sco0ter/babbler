@@ -30,7 +30,8 @@ import java.util.function.Consumer;
 import rocks.xmpp.addr.Jid;
 
 /**
- * The multi-user chat invitation decline event, which is triggered when an invitee declines a multi-user chat invitation.
+ * The multi-user chat invitation decline event, which is triggered when an invitee declines a multi-user chat
+ * invitation.
  *
  * @author Christian Schudt
  * @see ChatRoom#addInvitationDeclineListener(Consumer)

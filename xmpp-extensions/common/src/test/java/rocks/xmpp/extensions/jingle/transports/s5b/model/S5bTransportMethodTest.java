@@ -97,14 +97,18 @@ public class S5bTransportMethodTest extends XmlTest {
         Assert.assertEquals(s5bTransportMethod.getCandidates().get(0).getJid(), Jid.of("juliet@capulet.lit/balcony"));
         Assert.assertEquals(s5bTransportMethod.getCandidates().get(0).getPort(), 6539);
         Assert.assertEquals(s5bTransportMethod.getCandidates().get(0).getPriority(), 8257636);
-        Assert.assertEquals(s5bTransportMethod.getCandidates().get(0).getType(), S5bTransportMethod.Candidate.Type.DIRECT);
+        Assert.assertEquals(s5bTransportMethod.getCandidates().get(0).getType(),
+                S5bTransportMethod.Candidate.Type.DIRECT);
 
-        Assert.assertEquals(s5bTransportMethod.getCandidates().get(1).getType(), S5bTransportMethod.Candidate.Type.TUNNEL);
+        Assert.assertEquals(s5bTransportMethod.getCandidates().get(1).getType(),
+                S5bTransportMethod.Candidate.Type.TUNNEL);
 
-        Assert.assertEquals(s5bTransportMethod.getCandidates().get(2).getType(), S5bTransportMethod.Candidate.Type.ASSISTED);
+        Assert.assertEquals(s5bTransportMethod.getCandidates().get(2).getType(),
+                S5bTransportMethod.Candidate.Type.ASSISTED);
 
         Assert.assertEquals(s5bTransportMethod.getCandidates().get(3).getJid(), Jid.of("proxy.marlowe.lit"));
-        Assert.assertEquals(s5bTransportMethod.getCandidates().get(3).getType(), S5bTransportMethod.Candidate.Type.PROXY);
+        Assert.assertEquals(s5bTransportMethod.getCandidates().get(3).getType(),
+                S5bTransportMethod.Candidate.Type.PROXY);
     }
 
     @Test
@@ -120,7 +124,8 @@ public class S5bTransportMethodTest extends XmlTest {
 
     @Test
     public void testMarshalCandidateUsed() throws JAXBException, XMLStreamException {
-        String xml = "<transport xmlns=\"urn:xmpp:jingle:transports:s5b:1\" sid=\"1234\"><candidate-used cid=\"789\"></candidate-used></transport>";
+        String xml =
+                "<transport xmlns=\"urn:xmpp:jingle:transports:s5b:1\" sid=\"1234\"><candidate-used cid=\"789\"></candidate-used></transport>";
         S5bTransportMethod transportMethod = S5bTransportMethod.candidateUsed("1234", "789");
         Assert.assertEquals(marshal(transportMethod), xml);
     }
@@ -139,7 +144,8 @@ public class S5bTransportMethodTest extends XmlTest {
 
     @Test
     public void testMarshalCandidateError() throws JAXBException, XMLStreamException {
-        String xml = "<transport xmlns=\"urn:xmpp:jingle:transports:s5b:1\" sid=\"1234\"><candidate-error></candidate-error></transport>";
+        String xml =
+                "<transport xmlns=\"urn:xmpp:jingle:transports:s5b:1\" sid=\"1234\"><candidate-error></candidate-error></transport>";
         S5bTransportMethod transportMethod = S5bTransportMethod.candidateError("1234");
         Assert.assertEquals(marshal(transportMethod), xml);
     }
@@ -158,7 +164,8 @@ public class S5bTransportMethodTest extends XmlTest {
 
     @Test
     public void testMarshalProxyError() throws JAXBException, XMLStreamException {
-        String xml = "<transport xmlns=\"urn:xmpp:jingle:transports:s5b:1\" sid=\"1234\"><proxy-error></proxy-error></transport>";
+        String xml =
+                "<transport xmlns=\"urn:xmpp:jingle:transports:s5b:1\" sid=\"1234\"><proxy-error></proxy-error></transport>";
         S5bTransportMethod transportMethod = S5bTransportMethod.proxyError("1234");
         Assert.assertEquals(marshal(transportMethod), xml);
     }
@@ -178,7 +185,8 @@ public class S5bTransportMethodTest extends XmlTest {
 
     @Test
     public void testMarshalCandidateActivated() throws JAXBException, XMLStreamException {
-        String xml = "<transport xmlns=\"urn:xmpp:jingle:transports:s5b:1\" sid=\"1234\"><activated cid=\"555\"></activated></transport>";
+        String xml =
+                "<transport xmlns=\"urn:xmpp:jingle:transports:s5b:1\" sid=\"1234\"><activated cid=\"555\"></activated></transport>";
         S5bTransportMethod transportMethod = S5bTransportMethod.activated("1234", "555");
         Assert.assertEquals(marshal(transportMethod), xml);
     }
@@ -186,10 +194,18 @@ public class S5bTransportMethodTest extends XmlTest {
     @Test
     public void testCandidatePriority() {
         List<S5bTransportMethod.Candidate> candidateList = new ArrayList<>();
-        S5bTransportMethod.Candidate candidate1 = new S5bTransportMethod.Candidate("123", "host1", 0, Jid.of("test"), S5bTransportMethod.Candidate.Type.DIRECT, S5bTransportMethod.calculatePriority(S5bTransportMethod.Candidate.Type.DIRECT, 1));
-        S5bTransportMethod.Candidate candidate2 = new S5bTransportMethod.Candidate("123", "host1", 0, Jid.of("test"), S5bTransportMethod.Candidate.Type.ASSISTED, S5bTransportMethod.calculatePriority(S5bTransportMethod.Candidate.Type.ASSISTED, 65538));
-        S5bTransportMethod.Candidate candidate3 = new S5bTransportMethod.Candidate("123", "host1", 0, Jid.of("test"), S5bTransportMethod.Candidate.Type.TUNNEL, S5bTransportMethod.calculatePriority(S5bTransportMethod.Candidate.Type.TUNNEL, 3));
-        S5bTransportMethod.Candidate candidate4 = new S5bTransportMethod.Candidate("123", "host1", 0, Jid.of("test"), S5bTransportMethod.Candidate.Type.PROXY, S5bTransportMethod.calculatePriority(S5bTransportMethod.Candidate.Type.PROXY, 65536));
+        S5bTransportMethod.Candidate candidate1 = new S5bTransportMethod.Candidate("123", "host1", 0, Jid.of("test"),
+                S5bTransportMethod.Candidate.Type.DIRECT,
+                S5bTransportMethod.calculatePriority(S5bTransportMethod.Candidate.Type.DIRECT, 1));
+        S5bTransportMethod.Candidate candidate2 = new S5bTransportMethod.Candidate("123", "host1", 0, Jid.of("test"),
+                S5bTransportMethod.Candidate.Type.ASSISTED,
+                S5bTransportMethod.calculatePriority(S5bTransportMethod.Candidate.Type.ASSISTED, 65538));
+        S5bTransportMethod.Candidate candidate3 = new S5bTransportMethod.Candidate("123", "host1", 0, Jid.of("test"),
+                S5bTransportMethod.Candidate.Type.TUNNEL,
+                S5bTransportMethod.calculatePriority(S5bTransportMethod.Candidate.Type.TUNNEL, 3));
+        S5bTransportMethod.Candidate candidate4 = new S5bTransportMethod.Candidate("123", "host1", 0, Jid.of("test"),
+                S5bTransportMethod.Candidate.Type.PROXY,
+                S5bTransportMethod.calculatePriority(S5bTransportMethod.Candidate.Type.PROXY, 65536));
         candidateList.add(candidate1);
         candidateList.add(candidate2);
         candidateList.add(candidate3);
@@ -206,9 +222,13 @@ public class S5bTransportMethodTest extends XmlTest {
 
     @Test
     public void testPriority() {
-        Assert.assertEquals(S5bTransportMethod.calculatePriority(S5bTransportMethod.Candidate.Type.DIRECT, 226), 8257636);
-        Assert.assertEquals(S5bTransportMethod.calculatePriority(S5bTransportMethod.Candidate.Type.DIRECT, 196), 8257606);
-        Assert.assertEquals(S5bTransportMethod.calculatePriority(S5bTransportMethod.Candidate.Type.ASSISTED, 65656), 7929856);
-        Assert.assertEquals(S5bTransportMethod.calculatePriority(S5bTransportMethod.Candidate.Type.PROXY, 7133527), 7788877);
+        Assert.assertEquals(S5bTransportMethod.calculatePriority(S5bTransportMethod.Candidate.Type.DIRECT, 226),
+                8257636);
+        Assert.assertEquals(S5bTransportMethod.calculatePriority(S5bTransportMethod.Candidate.Type.DIRECT, 196),
+                8257606);
+        Assert.assertEquals(S5bTransportMethod.calculatePriority(S5bTransportMethod.Candidate.Type.ASSISTED, 65656),
+                7929856);
+        Assert.assertEquals(S5bTransportMethod.calculatePriority(S5bTransportMethod.Candidate.Type.PROXY, 7133527),
+                7788877);
     }
 }

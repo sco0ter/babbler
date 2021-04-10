@@ -74,6 +74,7 @@ public final class FileTransferStatusEvent extends EventObject {
      */
     @Override
     public final String toString() {
-        return FileTransferStatusEvent.class.getName() + "[source=" + source + ", status=" + status + ", bytesTransferred=" + bytesTransferred + "]";
+        return FileTransferStatusEvent.class.getName() + "[source=" + source + ", status=" + status
+                + ", bytesTransferred=" + bytesTransferred + "]";
     }
 }

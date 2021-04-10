@@ -30,8 +30,12 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <bad-request/>} stanza error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-bad-request">8.3.3.1.  bad-request</a></cite></p>
- * <p>The sender has sent a stanza containing XML that does not conform to the appropriate schema or that cannot be processed (e.g., an IQ stanza that includes an unrecognized value of the 'type' attribute, or an element that is qualified by a recognized namespace but that violates the defined syntax for the element); the associated error type SHOULD be "modify".</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error-conditions-bad-request">8.3.3.1.
+ * bad-request</a></cite></p>
+ * <p>The sender has sent a stanza containing XML that does not conform to the appropriate schema or that cannot be
+ * processed (e.g., an IQ stanza that includes an unrecognized value of the 'type' attribute, or an element that is
+ * qualified by a recognized namespace but that violates the defined syntax for the element); the associated error type
+ * SHOULD be "modify".</p>
  * </blockquote>
  * This class is a singleton.
  *

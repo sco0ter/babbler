@@ -36,9 +36,12 @@ import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
- * A chat service hosts chat rooms. It allows you to discover public chat rooms or create new (instant) rooms, if allowed by the service.
+ * A chat service hosts chat rooms. It allows you to discover public chat rooms or create new (instant) rooms, if
+ * allowed by the service.
  *
- * <p>You get an instance of this class by either using the {@link MultiUserChatManager#createChatService(Jid)} method or by {@linkplain rocks.xmpp.extensions.muc.MultiUserChatManager#discoverChatServices() discovering} the chat services at your connected domain.</p>
+ * <p>You get an instance of this class by either using the {@link MultiUserChatManager#createChatService(Jid)} method
+ * or by {@linkplain rocks.xmpp.extensions.muc.MultiUserChatManager#discoverChatServices() discovering} the chat
+ * services at your connected domain.</p>
  *
  * @author Christian Schudt
  * @see MultiUserChatManager#createChatService(Jid)
@@ -55,7 +58,8 @@ public final class ChatService implements Addressable, Comparable<ChatService> {
 
     private final MultiUserChatManager multiUserChatManager;
 
-    ChatService(Jid serviceAddress, String name, XmppSession xmppSession, ServiceDiscoveryManager serviceDiscoveryManager, MultiUserChatManager multiUserChatManager) {
+    ChatService(Jid serviceAddress, String name, XmppSession xmppSession,
+                ServiceDiscoveryManager serviceDiscoveryManager, MultiUserChatManager multiUserChatManager) {
         this.xmppSession = xmppSession;
         this.serviceAddress = serviceAddress;
         this.name = name;
@@ -74,7 +78,9 @@ public final class ChatService implements Addressable, Comparable<ChatService> {
             List<ChatRoom> chatRooms = new ArrayList<>();
             for (Item item : itemNode.getItems()) {
                 if (item.getJid() != null && item.getJid().getLocal() != null) {
-                    ChatRoom chatRoom = new ChatRoom(item.getJid(), item.getName(), xmppSession, serviceDiscoveryManager, multiUserChatManager);
+                    ChatRoom chatRoom =
+                            new ChatRoom(item.getJid(), item.getName(), xmppSession, serviceDiscoveryManager,
+                                    multiUserChatManager);
                     chatRooms.add(chatRoom);
                 }
             }
@@ -89,7 +95,8 @@ public final class ChatService implements Addressable, Comparable<ChatService> {
      * @return The chat room.
      */
     public ChatRoom createRoom(String room) {
-        return new ChatRoom(serviceAddress.withLocal(room), null, xmppSession, serviceDiscoveryManager, multiUserChatManager);
+        return new ChatRoom(serviceAddress.withLocal(room), null, xmppSession, serviceDiscoveryManager,
+                multiUserChatManager);
     }
 
     /**

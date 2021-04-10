@@ -34,17 +34,20 @@ import rocks.xmpp.precis.PrecisProfiles;
 import rocks.xmpp.util.cache.LruCache;
 
 /**
- * The implementation of the JID as described in <a href="https://tools.ietf.org/html/rfc7622">Extensible Messaging and Presence Protocol (XMPP): Address Format</a>.
+ * The implementation of the JID as described in <a href="https://tools.ietf.org/html/rfc7622">Extensible Messaging and
+ * Presence Protocol (XMPP): Address Format</a>.
  *
  * <p>This class is thread-safe and immutable.</p>
  *
  * @author Christian Schudt
- * @see <a href="https://tools.ietf.org/html/rfc7622">RFC 7622 - Extensible Messaging and Presence Protocol (XMPP): Address Format</a>
+ * @see <a href="https://tools.ietf.org/html/rfc7622">RFC 7622 - Extensible Messaging and Presence Protocol (XMPP):
+ * Address Format</a>
  */
 final class FullJid extends AbstractJid {
 
     /**
-     * Escapes all disallowed characters and also backslash, when followed by a defined hex code for escaping. See 4. Business Rules.
+     * Escapes all disallowed characters and also backslash, when followed by a defined hex code for escaping. See 4.
+     * Business Rules.
      */
     private static final Pattern ESCAPE_PATTERN = Pattern.compile("[ \"&'/:<>@]|\\\\(?=20|22|26|27|2f|3a|3c|3e|40|5c)");
 
@@ -53,12 +56,14 @@ final class FullJid extends AbstractJid {
     private static final Pattern JID = Pattern.compile("^((.*?)@)?([^/@]+)(/(.*))?$");
 
     /**
-     * Whenever dots are used as label separators, the following characters MUST be recognized as dots: U+002E (full stop), U+3002 (ideographic full stop), U+FF0E (fullwidth full stop), U+FF61 (halfwidth ideographic full stop).
+     * Whenever dots are used as label separators, the following characters MUST be recognized as dots: U+002E (full
+     * stop), U+3002 (ideographic full stop), U+FF0E (fullwidth full stop), U+FF61 (halfwidth ideographic full stop).
      */
     private static final String DOTS = "[.\u3002\uFF0E\uFF61]";
 
     /**
-     * Label separators for domain labels, which should be mapped to "." (dot): IDEOGRAPHIC FULL STOP character (U+3002)
+     * Label separators for domain labels, which should be mapped to "." (dot): IDEOGRAPHIC FULL STOP character
+     * (U+3002)
      */
     private static final Pattern LABEL_SEPARATOR = Pattern.compile(DOTS);
 
@@ -97,7 +102,8 @@ final class FullJid extends AbstractJid {
         this(local, domain, resource, false, null);
     }
 
-    private FullJid(final CharSequence local, final CharSequence domain, final CharSequence resource, final boolean doUnescape, Jid bareJid) {
+    private FullJid(final CharSequence local, final CharSequence domain, final CharSequence resource,
+                    final boolean doUnescape, Jid bareJid) {
         final String enforcedLocalPart;
         final String enforcedDomainPart;
         final String enforcedResource;
@@ -110,7 +116,8 @@ final class FullJid extends AbstractJid {
             unescapedLocalPart = local != null ? local.toString() : null;
         }
 
-        // Escape the local part, so that disallowed characters like the space characters pass the UsernameCaseMapped profile.
+        // Escape the local part, so that disallowed characters
+        // like the space characters pass the UsernameCaseMapped profile.
         final String escapedLocalPart = escape(unescapedLocalPart);
 
         // If the domainpart includes a final character considered to be a label
@@ -120,8 +127,10 @@ final class FullJid extends AbstractJid {
         // constructing an XMPP URI or IRI [RFC5122].  In particular, such a
         // character MUST be stripped before any other canonicalization steps
         // are taken.
-        enforcedDomainPart = PrecisProfiles.IDN.enforce(LABEL_SEPARATOR_FINAL.matcher(Objects.requireNonNull(domain)).replaceAll(""));
-        enforcedLocalPart = escapedLocalPart != null ? PrecisProfiles.USERNAME_CASE_MAPPED.enforce(escapedLocalPart) : null;
+        enforcedDomainPart = PrecisProfiles.IDN
+                .enforce(LABEL_SEPARATOR_FINAL.matcher(Objects.requireNonNull(domain)).replaceAll(""));
+        enforcedLocalPart =
+                escapedLocalPart != null ? PrecisProfiles.USERNAME_CASE_MAPPED.enforce(escapedLocalPart) : null;
         enforcedResource = resource != null ? PrecisProfiles.OPAQUE_STRING.enforce(resource) : null;
 
         validateLength(enforcedLocalPart, "local");
@@ -144,7 +153,8 @@ final class FullJid extends AbstractJid {
 
                 @Override
                 public Jid withLocal(CharSequence local) {
-                    if ((local == null && this.getLocal() == null) || (local != null && this.getLocal() != null && local.toString().contentEquals(this.getLocal()))) {
+                    if ((local == null && this.getLocal() == null) || (local != null && this.getLocal() != null
+                            && local.toString().contentEquals(this.getLocal()))) {
                         return this;
                     }
                     return new FullJid(local, getDomain(), getResource(), false, null);
@@ -160,7 +170,8 @@ final class FullJid extends AbstractJid {
 
                 @Override
                 public Jid atSubdomain(CharSequence subdomain) {
-                    return new FullJid(getLocal(), Objects.requireNonNull(subdomain) + "." + getDomain(), getResource(), false, null);
+                    return new FullJid(getLocal(), Objects.requireNonNull(subdomain) + "." + getDomain(), getResource(),
+                            false, null);
                 }
 
                 @Override
@@ -232,7 +243,8 @@ final class FullJid extends AbstractJid {
     }
 
     /**
-     * Escapes a local part. The characters {@code "&'/:<>@} (+ whitespace) are replaced with their respective escape characters.
+     * Escapes a local part. The characters {@code "&'/:<>@} (+ whitespace) are replaced with their respective escape
+     * characters.
      *
      * @param localPart The local part.
      * @return The escaped local part or null.
@@ -298,7 +310,8 @@ final class FullJid extends AbstractJid {
     /**
      * Converts this JID into a bare JID, i.e. removes the resource part.
      * <blockquote>
-     * <p>The term "bare JID" refers to an XMPP address of the form &lt;localpart@domainpart&gt; (for an account at a server) or of the form &lt;domainpart&gt; (for a server).</p>
+     * <p>The term "bare JID" refers to an XMPP address of the form &lt;localpart@domainpart&gt; (for an account at a
+     * server) or of the form &lt;domainpart&gt; (for a server).</p>
      * </blockquote>
      *
      * @return The bare JID.
@@ -314,13 +327,11 @@ final class FullJid extends AbstractJid {
      * <blockquote>
      * <p><cite><a href="https://tools.ietf.org/html/rfc7622#section-3.3">3.3.  Localpart</a></cite></p>
      * <p>The localpart of a JID is an optional identifier placed before the
-     * domainpart and separated from the latter by the '@' character.
-     * Typically, a localpart uniquely identifies the entity requesting and
-     * using network access provided by a server (i.e., a local account),
-     * although it can also represent other kinds of entities (e.g., a
-     * chatroom associated with a multi-user chat service [XEP-0045]).  The
-     * entity represented by an XMPP localpart is addressed within the
-     * context of a specific domain (i.e., &lt;localpart@domainpart&gt;).</p>
+     * domainpart and separated from the latter by the '@' character. Typically, a localpart uniquely identifies the
+     * entity requesting and using network access provided by a server (i.e., a local account), although it can also
+     * represent other kinds of entities (e.g., a chatroom associated with a multi-user chat service [XEP-0045]).  The
+     * entity represented by an XMPP localpart is addressed within the context of a specific domain (i.e.,
+     * &lt;localpart@domainpart&gt;).</p>
      * </blockquote>
      *
      * @return The local part or null.
@@ -340,9 +351,8 @@ final class FullJid extends AbstractJid {
      * <blockquote>
      * <p><cite><a href="https://tools.ietf.org/html/rfc7622#section-3.2">3.2.  Domainpart</a></cite></p>
      * <p>The domainpart is the primary identifier and is the only REQUIRED
-     * element of a JID (a mere domainpart is a valid JID).  Typically,
-     * a domainpart identifies the "home" server to which clients connect
-     * for XML routing and data management functionality.</p>
+     * element of a JID (a mere domainpart is a valid JID).  Typically, a domainpart identifies the "home" server to
+     * which clients connect for XML routing and data management functionality.</p>
      * </blockquote>
      *
      * @return The domain part.
@@ -357,13 +367,11 @@ final class FullJid extends AbstractJid {
      * <blockquote>
      * <p><cite><a href="https://tools.ietf.org/html/rfc7622#section-3.4">3.4.  Resourcepart</a></cite></p>
      * <p>The resourcepart of a JID is an optional identifier placed after the
-     * domainpart and separated from the latter by the '/' character.  A
-     * resourcepart can modify either a &lt;localpart@domainpart&gt; address or a
-     * mere &lt;domainpart&gt; address.  Typically, a resourcepart uniquely
-     * identifies a specific connection (e.g., a device or location) or
-     * object (e.g., an occupant in a multi-user chatroom [XEP-0045])
-     * belonging to the entity associated with an XMPP localpart at a domain
-     * (i.e., &lt;localpart@domainpart/resourcepart&gt;).</p>
+     * domainpart and separated from the latter by the '/' character.  A resourcepart can modify either a
+     * &lt;localpart@domainpart&gt; address or a mere &lt;domainpart&gt; address.  Typically, a resourcepart uniquely
+     * identifies a specific connection (e.g., a device or location) or object (e.g., an occupant in a multi-user
+     * chatroom [XEP-0045]) belonging to the entity associated with an XMPP localpart at a domain (i.e.,
+     * &lt;localpart@domainpart/resourcepart&gt;).</p>
      * </blockquote>
      *
      * @return The resource part or null.
@@ -383,7 +391,8 @@ final class FullJid extends AbstractJid {
      */
     @Override
     public final Jid withLocal(CharSequence local) {
-        if ((local == null && this.getLocal() == null) || (local != null && this.getLocal() != null && local.toString().contentEquals(this.getLocal()))) {
+        if ((local == null && this.getLocal() == null)
+                || (local != null && this.getLocal() != null && local.toString().contentEquals(this.getLocal()))) {
             return this;
         }
         return new FullJid(local, getDomain(), getResource(), false, null);
@@ -400,7 +409,8 @@ final class FullJid extends AbstractJid {
      */
     @Override
     public final Jid withResource(CharSequence resource) {
-        if ((resource == null && this.getResource() == null) || (resource != null && this.getResource() != null && resource.toString().contentEquals(this.getResource()))) {
+        if ((resource == null && this.getResource() == null) || (resource != null && this.getResource() != null
+                && resource.toString().contentEquals(this.getResource()))) {
             return this;
         }
         return new FullJid(getLocal(), getDomain(), resource, false, asBareJid());
@@ -416,6 +426,7 @@ final class FullJid extends AbstractJid {
      */
     @Override
     public final Jid atSubdomain(CharSequence subdomain) {
-        return new FullJid(getLocal(), Objects.requireNonNull(subdomain) + "." + getDomain(), getResource(), false, null);
+        return new FullJid(getLocal(), Objects.requireNonNull(subdomain) + "." + getDomain(), getResource(), false,
+                null);
     }
 }

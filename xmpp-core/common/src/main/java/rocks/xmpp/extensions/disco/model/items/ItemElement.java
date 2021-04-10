@@ -30,7 +30,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import rocks.xmpp.addr.Jid;
 
 /**
- * The implementation of the {@code <item/>} element in the {@code http://jabber.org/protocol/disco#item} namespace, used for item discovery.
+ * The implementation of the {@code <item/>} element in the {@code http://jabber.org/protocol/disco#item} namespace,
+ * used for item discovery.
  *
  * <p>This class is immutable.</p>
  *

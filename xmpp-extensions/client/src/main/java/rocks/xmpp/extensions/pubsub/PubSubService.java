@@ -51,7 +51,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * <p>E.g. it lets you get all your subscriptions on the service, let's you work with nodes (e.g. subscribe to nodes)
  * or let's you discover the features provided by the remote service.</p>
  *
- * <p>To work with pubsub nodes, {@linkplain #node(String) create a local node instance}, which can be used to work the remote node (e.g. subscribe to the node).</p>
+ * <p>To work with pubsub nodes, {@linkplain #node(String) create a local node instance}, which can be used to work the
+ * remote node (e.g. subscribe to the node).</p>
  *
  * @author Christian Schudt
  */
@@ -86,17 +87,18 @@ public final class PubSubService implements Addressable {
 
     Collection<PubSubFeature> getFeatures(DiscoverableInfo discoverableInfo) {
         Collection<PubSubFeature> features = EnumSet.noneOf(PubSubFeature.class);
-        discoverableInfo.getFeatures().stream().filter(feature -> feature.startsWith(PubSub.NAMESPACE + '#')).forEach(feature -> {
-            String f = feature.substring(feature.indexOf('#') + 1);
-            try {
-                PubSubFeature pubSubFeature = PubSubFeature.valueOf(f.toUpperCase().replace('-', '_'));
-                if (pubSubFeature != null) {
-                    features.add(pubSubFeature);
-                }
-            } catch (Exception e) {
-                logger.log(System.Logger.Level.WARNING, "Server advertised unknown pubsub feature: {0}", f);
-            }
-        });
+        discoverableInfo.getFeatures().stream().filter(feature -> feature.startsWith(PubSub.NAMESPACE + '#'))
+                .forEach(feature -> {
+                    String f = feature.substring(feature.indexOf('#') + 1);
+                    try {
+                        PubSubFeature pubSubFeature = PubSubFeature.valueOf(f.toUpperCase().replace('-', '_'));
+                        if (pubSubFeature != null) {
+                            features.add(pubSubFeature);
+                        }
+                    } catch (Exception e) {
+                        logger.log(System.Logger.Level.WARNING, "Server advertised unknown pubsub feature: {0}", f);
+                    }
+                });
         return features;
     }
 
@@ -155,7 +157,8 @@ public final class PubSubService implements Addressable {
      * Gets the default subscription options for this pubsub service.
      *
      * @return The async result with the default subscription options.
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default Subscription Configuration Options</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-configure-submit">6.4 Request Default
+     * Subscription Configuration Options</a>
      */
     public AsyncResult<DataForm> getDefaultSubscriptionOptions() {
         return xmppSession.query(IQ.get(service, PubSub.withDefault())).thenApply(result -> {
@@ -168,7 +171,8 @@ public final class PubSubService implements Addressable {
      * Gets the default node configuration form for this pubsub service.
      *
      * @return The async result with the configuration form.
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-default">8.3 Request Default Node Configuration Options</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-default">8.3 Request Default Node Configuration
+     * Options</a>
      */
     public AsyncResult<DataForm> getDefaultNodeConfiguration() {
         return xmppSession.query(IQ.get(service, PubSubOwner.withDefault())).thenApply(result -> {

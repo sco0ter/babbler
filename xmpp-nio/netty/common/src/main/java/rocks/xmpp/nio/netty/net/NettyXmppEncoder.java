@@ -52,7 +52,8 @@ final class NettyXmppEncoder extends MessageToByteEncoder<StreamElement> {
 
     /**
      * @param writerInterceptors The writer interceptors.
-     * @param onFailure          Called when an exception in the pipeline has occurred. If null, the exception is propagated to next handler. If non-null this callback is called instead.
+     * @param onFailure          Called when an exception in the pipeline has occurred. If null, the exception is
+     *                           propagated to next handler. If non-null this callback is called instead.
      */
     NettyXmppEncoder(final Iterable<WriterInterceptor> writerInterceptors, final Consumer<Throwable> onFailure) {
         this.writerInterceptors = writerInterceptors;
@@ -60,7 +61,8 @@ final class NettyXmppEncoder extends MessageToByteEncoder<StreamElement> {
     }
 
     @Override
-    protected final void encode(final ChannelHandlerContext ctx, final StreamElement streamElement, final ByteBuf byteBuf) throws Exception {
+    protected final void encode(final ChannelHandlerContext ctx, final StreamElement streamElement,
+                                final ByteBuf byteBuf) throws Exception {
         try (Writer writer = new OutputStreamWriter(new ByteBufOutputStream(byteBuf), StandardCharsets.UTF_8)) {
             WriterInterceptorChain chain = new WriterInterceptorChain(writerInterceptors);
             chain.proceed(streamElement, writer);

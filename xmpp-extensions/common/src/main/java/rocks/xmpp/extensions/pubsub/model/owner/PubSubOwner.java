@@ -46,7 +46,8 @@ import rocks.xmpp.extensions.pubsub.model.SubscriptionState;
 import rocks.xmpp.util.adapters.InstantAdapter;
 
 /**
- * The implementation of the {@code <pubsub/>} element in the {@code http://jabber.org/protocol/pubsub#owner} namespace.
+ * The implementation of the {@code <pubsub/>} element in the {@code http://jabber.org/protocol/pubsub#owner}
+ * namespace.
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a>
@@ -91,7 +92,8 @@ public final class PubSubOwner {
     }
 
     /**
-     * Creates a pubsub element with an {@code <configure/>} child element and a 'node' attribute and a configuration form.
+     * Creates a pubsub element with an {@code <configure/>} child element and a 'node' attribute and a configuration
+     * form.
      * <p><b>Sample:</b></p>
      * <pre>{@code
      * <pubsub xmlns='http://jabber.org/protocol/pubsub#owner'>
@@ -121,7 +123,8 @@ public final class PubSubOwner {
      * }</pre>
      *
      * @return The pubsub instance.
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-default">8.3 Request Default Node Configuration Options</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-default">8.3 Request Default Node Configuration
+     * Options</a>
      */
     public static PubSubOwner withDefault() {
         return new PubSubOwner(new Default());
@@ -195,7 +198,8 @@ public final class PubSubOwner {
      * @param node          The node.
      * @param subscriptions The subscriptions.
      * @return The pubsub instance.
-     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-subscriptions-modify">8.8.2 Modify Subscriptions</a>
+     * @see <a href="https://xmpp.org/extensions/xep-0060.html#owner-subscriptions-modify">8.8.2 Modify
+     * Subscriptions</a>
      */
     public static PubSubOwner withSubscriptions(String node, Subscription... subscriptions) {
         return new PubSubOwner(new Subscriptions(node, subscriptions));
@@ -222,7 +226,8 @@ public final class PubSubOwner {
     }
 
     /**
-     * Gets the configuration form if the pubsub element contains either a {@code <configure/>} or a {@code <default/>} element.
+     * Gets the configuration form if the pubsub element contains either a {@code <configure/>} or a {@code <default/>}
+     * element.
      *
      * @return The configuration form or null.
      * @see #isConfigure()
@@ -307,7 +312,8 @@ public final class PubSubOwner {
     /**
      * Gets the subscriptions, if this pubsub element contains 'subscriptions' element.
      *
-     * @return The subscriptions, if the pubsub element contains a 'subscriptions' child element; otherwise an empty list.
+     * @return The subscriptions, if the pubsub element contains a 'subscriptions' child element; otherwise an empty
+     * list.
      */
     public final List<Subscription> getSubscriptions() {
         if (type instanceof Subscriptions) {
@@ -351,7 +357,8 @@ public final class PubSubOwner {
         private Affiliations(String node, Affiliation... affiliations) {
             super(node);
             for (Affiliation affiliation : affiliations) {
-                this.affiliation.add(new AffiliationNodeOwner(affiliation.getNode(), affiliation.getAffiliationState(), affiliation.getJid()));
+                this.affiliation.add(new AffiliationNodeOwner(affiliation.getNode(), affiliation.getAffiliationState(),
+                        affiliation.getJid()));
             }
         }
 
@@ -481,7 +488,10 @@ public final class PubSubOwner {
         private Subscriptions(String node, Subscription... subscriptions) {
             super(node);
             for (Subscription subscription : subscriptions) {
-                this.subscription.add(new SubscriptionOwner(subscription.getNode(), subscription.getJid(), subscription.getSubId(), subscription.getSubscriptionState(), subscription.getExpiry(), subscription.isConfigurationSupported() ? new SubscriptionOwner.Options(subscription.isConfigurationRequired()) : null));
+                this.subscription.add(new SubscriptionOwner(subscription.getNode(), subscription.getJid(),
+                        subscription.getSubId(), subscription.getSubscriptionState(), subscription.getExpiry(),
+                        subscription.isConfigurationSupported() ? new SubscriptionOwner.Options(
+                                subscription.isConfigurationRequired()) : null));
             }
         }
 
@@ -506,7 +516,8 @@ public final class PubSubOwner {
                 this(null, null, null, null, null, null);
             }
 
-            private SubscriptionOwner(String node, Jid jid, String subid, SubscriptionState subscription, Instant expiry, Options options) {
+            private SubscriptionOwner(String node, Jid jid, String subid, SubscriptionState subscription,
+                                      Instant expiry, Options options) {
                 super(node);
                 this.jid = jid;
                 this.subid = subid;

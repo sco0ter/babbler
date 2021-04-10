@@ -70,7 +70,8 @@ public final class EntityCapabilities1 extends StreamFeature implements EntityCa
     private final String node;
 
     /**
-     * The 'ver' attribute is a specially-constructed string (called a "verification string") that represents the entity's service discovery identity.
+     * The 'ver' attribute is a specially-constructed string (called a "verification string") that represents the
+     * entity's service discovery identity.
      */
     @XmlAttribute
     private final byte[] ver;
@@ -88,7 +89,8 @@ public final class EntityCapabilities1 extends StreamFeature implements EntityCa
      * @param discoverableInfo The discoverable info.
      * @param messageDigest    The hash function.
      */
-    public EntityCapabilities1(final String node, final DiscoverableInfo discoverableInfo, final MessageDigest messageDigest) {
+    public EntityCapabilities1(final String node, final DiscoverableInfo discoverableInfo,
+                               final MessageDigest messageDigest) {
         this.node = Objects.requireNonNull(node);
         this.hash = messageDigest.getAlgorithm();
         this.ver = messageDigest.digest(createVerificationString(discoverableInfo));
@@ -106,10 +108,15 @@ public final class EntityCapabilities1 extends StreamFeature implements EntityCa
 
     /**
      * Gets the node.
-     * 
+     *
      * <blockquote>
-     * <p>A URI that uniquely identifies a software application, typically a URL at the website of the project or company that produces the software.</p>
-     * <p>It is RECOMMENDED for the value of the 'node' attribute to be an HTTP URL at which a user could find further information about the software product, such as "http://psi-im.org" for the Psi client; this enables a processing application to also determine a unique string for the generating application, which it could maintain in a list of known software implementations (e.g., associating the name received via the disco#info reply with the URL found in the caps data).</p>
+     * <p>A URI that uniquely identifies a software application, typically a URL at the website of the project or
+     * company that produces the software.</p>
+     * <p>It is RECOMMENDED for the value of the 'node' attribute to be an HTTP URL at which a user could find further
+     * information about the software product, such as "http://psi-im.org" for the Psi client; this enables a processing
+     * application to also determine a unique string for the generating application, which it could maintain in a list
+     * of known software implementations (e.g., associating the name received via the disco#info reply with the URL
+     * found in the caps data).</p>
      * </blockquote>
      *
      * @return The node.
@@ -142,7 +149,10 @@ public final class EntityCapabilities1 extends StreamFeature implements EntityCa
         // 1. Initialize an empty string S.
         final StringBuilder sb = new StringBuilder();
 
-        // 2. Sort the service discovery identities [15] by category and then by type and then by xml:lang (if it exists), formatted as CATEGORY '/' [TYPE] '/' [LANG] '/' [NAME]. [16] Note that each slash is included even if the LANG or NAME is not included (in accordance with XEP-0030, the category and type MUST be included.
+        // 2. Sort the service discovery identities [15] by category and then by type and then by xml:lang
+        // (if it exists), formatted as CATEGORY '/' [TYPE] '/' [LANG] '/' [NAME]. [16] Note that each slash is
+        // included even if the LANG or NAME is not included (in accordance with XEP-0030, the category and
+        // type MUST be included.
         // This is done by TreeSet.
 
         // 3. For each identity, append the 'category/type/lang/name' to S, followed by the '<' character.
@@ -176,7 +186,8 @@ public final class EntityCapabilities1 extends StreamFeature implements EntityCa
             sb.append('<');
         }
 
-        // 6. If the service discovery information response includes XEP-0128 data forms, sort the forms by the FORM_TYPE (i.e., by the XML character data of the <value/> element).
+        // 6. If the service discovery information response includes XEP-0128 data forms, sort the forms by the
+        // FORM_TYPE (i.e., by the XML character data of the <value/> element).
         dataForms.sort(null);
 
         // 7. For each extended service discovery information form:
@@ -189,8 +200,11 @@ public final class EntityCapabilities1 extends StreamFeature implements EntityCa
             if (!fields.isEmpty()) {
 
                 // Also make sure, that we don't send an ill-formed verification string.
-                // 3.6 If the response includes an extended service discovery information form where the FORM_TYPE field is not of type "hidden" or the form does not include a FORM_TYPE field, ignore the form but continue processing.
-                if (!DataForm.FORM_TYPE.equals(fields.get(0).getName()) || fields.get(0).getType() != DataForm.Field.Type.HIDDEN) {
+                // 3.6 If the response includes an extended service discovery information form where the FORM_TYPE
+                // field is not of type "hidden" or the form does not include a FORM_TYPE field, ignore the form
+                // but continue processing.
+                if (!DataForm.FORM_TYPE.equals(fields.get(0).getName())
+                        || fields.get(0).getType() != DataForm.Field.Type.HIDDEN) {
                     // => Don't include this form in the verification string.
                     continue;
                 }
@@ -205,7 +219,8 @@ public final class EntityCapabilities1 extends StreamFeature implements EntityCa
                         // 7.3.2. Sort values by the XML character data of the <value/> element.
                         values.sort((s, t1) -> Strings.compareUnsignedBytes(s, t1, StandardCharsets.UTF_8));
                     }
-                    // 7.1. Append the XML character data of the FORM_TYPE field's <value/> element, followed by the '<' character.
+                    // 7.1. Append the XML character data of the FORM_TYPE field's <value/> element, followed by the
+                    // '<' character.
                     // 7.3.3. For each <value/> element, append the XML character data, followed by the '<' character.
                     for (String value : values) {
                         sb.append(value).append('<');
@@ -220,7 +235,8 @@ public final class EntityCapabilities1 extends StreamFeature implements EntityCa
     @Override
     public final String createCapabilityHashNode(final Hashed hashed) {
         // The value of the 'node' attribute SHOULD be generated by concatenating the value of the caps 'node' attribute
-        // (e.g., "http://code.google.com/p/exodus") as provided by the generating entity, the "#" character, and the value of the caps 'ver' attribute (e.g., "QgayPKawpkPSDYmwT/WM94uAlu0=") as provided by the generating entity.
+        // (e.g., "http://code.google.com/p/exodus") as provided by the generating entity, the "#" character, and the
+        // value of the caps 'ver' attribute (e.g., "QgayPKawpkPSDYmwT/WM94uAlu0=") as provided by the generating entity
         return node + '#' + Base64.getEncoder().encodeToString(hashed.getHashValue());
     }
 

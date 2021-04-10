@@ -62,13 +62,17 @@ public class XmppMessageBodyWriter implements MessageBodyWriter<Body> {
     }
 
     @Override
-    public void writeTo(Body body, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws WebApplicationException {
+    public void writeTo(Body body, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+                        MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            throws WebApplicationException {
         Marshaller marshaller = CDI.current().select(ServerConfiguration.class).get().getMarshaller();
         try {
             XMLStreamWriter xmlStreamWriter = null;
             try {
                 xmlStreamWriter = XML_OUTPUT_FACTORY.createXMLStreamWriter(entityStream);
-                marshaller.marshal(body, XmppUtils.createXmppStreamWriter(xmlStreamWriter, body.getWrappedObjects().stream().map(Object::getClass).anyMatch(clazz -> clazz == StreamFeatures.class || clazz == StreamError.class)));
+                marshaller.marshal(body, XmppUtils.createXmppStreamWriter(xmlStreamWriter,
+                        body.getWrappedObjects().stream().map(Object::getClass)
+                                .anyMatch(clazz -> clazz == StreamFeatures.class || clazz == StreamError.class)));
                 xmlStreamWriter.flush();
             } finally {
                 if (xmlStreamWriter != null) {
@@ -78,7 +82,9 @@ public class XmppMessageBodyWriter implements MessageBodyWriter<Body> {
         } catch (XMLStreamException | JAXBException e) {
             // Try to respond with BOSH error.
             try {
-                marshaller.marshal(Body.builder().type(Body.Type.TERMINATE).condition(Body.Condition.INTERNAL_SERVER_ERROR).build(), entityStream);
+                marshaller.marshal(
+                        Body.builder().type(Body.Type.TERMINATE).condition(Body.Condition.INTERNAL_SERVER_ERROR)
+                                .build(), entityStream);
             } catch (JAXBException e1) {
                 // Otherwise respond with a HTTP error.
                 throw new WebApplicationException(e.getMessage(), e, Response.Status.INTERNAL_SERVER_ERROR);

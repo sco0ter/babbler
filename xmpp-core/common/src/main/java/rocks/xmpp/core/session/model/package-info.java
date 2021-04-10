@@ -23,7 +23,8 @@
  */
 
 /**
- * Provides XML schema implementations of the <a href="https://xmpp.org/rfcs/rfc3921.html#session">Session Establishment</a> namespace.
+ * Provides XML schema implementations of the <a href="https://xmpp.org/rfcs/rfc3921.html#session">Session
+ * Establishment</a> namespace.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-session", elementFormDefault = XmlNsForm.QUALIFIED)

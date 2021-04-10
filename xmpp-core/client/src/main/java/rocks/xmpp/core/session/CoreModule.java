@@ -39,8 +39,9 @@ import rocks.xmpp.im.roster.model.Roster;
 import rocks.xmpp.im.subscription.PresenceManager;
 
 /**
- * The core module provides XMPP classes as well as manager classes which are associated with an XMPP session.
- * These are combined in an {@link Extension}. Although core classes are not extensions, they use the same concept as real extensions.
+ * The core module provides XMPP classes as well as manager classes which are associated with an XMPP session. These are
+ * combined in an {@link Extension}. Although core classes are not extensions, they use the same concept as real
+ * extensions.
  *
  * @author Christian Schudt
  */

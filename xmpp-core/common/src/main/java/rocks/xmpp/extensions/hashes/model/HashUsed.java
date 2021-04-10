@@ -29,7 +29,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * In certain scenarios it makes sense to communicate the hash algorithm that is used prior to the calculation of the hash value.
+ * In certain scenarios it makes sense to communicate the hash algorithm that is used prior to the calculation of the
+ * hash value.
  *
  * @author Christian Schudt
  */

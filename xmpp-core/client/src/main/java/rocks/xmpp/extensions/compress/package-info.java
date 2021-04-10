@@ -25,7 +25,10 @@
 /**
  * Provides classes for <a href="https://xmpp.org/extensions/xep-0138.html">XEP-0138: Stream Compression</a>.
  *
- * <p>It defines an XMPP protocol extension for negotiating compression of XML streams, especially in situations where standard TLS compression cannot be negotiated. The protocol provides a modular framework that can accommodate a wide range of compression algorithms; the ZLIB compression algorithm is mandatory-to-implement, but implementations may support other algorithms in addition.</p>
+ * <p>It defines an XMPP protocol extension for negotiating compression of XML streams, especially in situations where
+ * standard TLS compression cannot be negotiated. The protocol provides a modular framework that can accommodate a wide
+ * range of compression algorithms; the ZLIB compression algorithm is mandatory-to-implement, but implementations may
+ * support other algorithms in addition.</p>
  */
 package rocks.xmpp.extensions.compress;
 

@@ -27,7 +27,8 @@ package rocks.xmpp.extensions.jingle.apps.rtp.model.errors;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The implementation of the {@code <crypto-required/>} element in the {@code urn:xmpp:jingle:apps:rtp:errors:1} namespace.
+ * The implementation of the {@code <crypto-required/>} element in the {@code urn:xmpp:jingle:apps:rtp:errors:1}
+ * namespace.
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0167.html#srtp">7. Negotiation of SRTP</a>

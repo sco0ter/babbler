@@ -25,7 +25,9 @@
 /**
  * Provides classes for <a href="https://xmpp.org/extensions/xep-0066.html">XEP-0066: Out of Band Data</a>.
  *
- * <p>It defines two XMPP protocol extensions for communicating URIs, one for use in XMPP message stanzas and the other for use in a structured request-response interaction via XMPP IQ stanzas. Among other things, this enables one entity to inform another entity about a file that is available at an HTTP URL.</p>
+ * <p>It defines two XMPP protocol extensions for communicating URIs, one for use in XMPP message stanzas and the other
+ * for use in a structured request-response interaction via XMPP IQ stanzas. Among other things, this enables one entity
+ * to inform another entity about a file that is available at an HTTP URL.</p>
  */
 package rocks.xmpp.extensions.oob;
 

@@ -70,7 +70,8 @@ public class ServerRosterManager {
             item.getGroups().addAll(rosterItem.getGroups());
             rosterItemProvider.update(username, item);
         } else {
-            item = new Contact(rosterItem.getJid(), rosterItem.getName(), false, false, SubscriptionState.Subscription.NONE, rosterItem.getGroups());
+            item = new Contact(rosterItem.getJid(), rosterItem.getName(), false, false,
+                    SubscriptionState.Subscription.NONE, rosterItem.getGroups());
             rosterItemProvider.create(username, item);
         }
         rosterPush(username, rosterItem, item.isPendingOut(), item.getSubscription());
@@ -109,10 +110,11 @@ public class ServerRosterManager {
         if (rosterItem != null) {
             rosterPush(username, rosterItem, false, SubscriptionState.Subscription.REMOVE);
 
-            // In addition, the user's server might need to generate one or more subscription-related presence stanzas, as follows:
+            // In addition, the user's server might need to generate one or more subscription-related presence stanzas,
+            // as follows:
             if (rosterItem.getSubscription().userHasSubscriptionToContact()) {
-                // If the user has a presence subscription to the contact, then the user's server MUST send a presence stanza
-                // of type "unsubscribe" to the contact (in order to unsubscribe from the contact's presence).
+                // If the user has a presence subscription to the contact, then the user's server MUST send a presence
+                // stanza of type "unsubscribe" to the contact (in order to unsubscribe from the contact's presence).
                 Presence presence = new Presence();
                 presence.setFrom(serverConfiguration.getDomain().withLocal(username));
                 presence.setTo(jid);
@@ -120,8 +122,9 @@ public class ServerRosterManager {
                 // TODO send
             }
             if (rosterItem.getSubscription().contactHasSubscriptionToUser()) {
-                // If the contact has a presence subscription to the user, then the user's server MUST send a presence stanza
-                // of type "unsubscribed"to the contact (in order to cancel the contact's subscription to the user).
+                // If the contact has a presence subscription to the user, then the user's server MUST send a presence
+                // stanza of type "unsubscribed"to the contact (in order to cancel the contact's subscription to the
+                // user).
                 Presence presence = new Presence();
                 presence.setFrom(serverConfiguration.getDomain().withLocal(username));
                 presence.setTo(jid);
@@ -132,8 +135,11 @@ public class ServerRosterManager {
         return rosterItem;
     }
 
-    private void rosterPush(String username, RosterItem rosterItem, boolean isPendingOut, SubscriptionState.Subscription subscriptionState) {
-        Contact contact = new Contact(rosterItem.getJid(), rosterItem.getName(), isPendingOut, false, subscriptionState, rosterItem.getGroups());
-        sessionManager.getUserSessions(serverConfiguration.getDomain().withLocal(username)).forEach(session -> session.send(IQ.set(session.getRemoteXmppAddress(), new Roster(contact))));
+    private void rosterPush(String username, RosterItem rosterItem, boolean isPendingOut,
+                            SubscriptionState.Subscription subscriptionState) {
+        Contact contact = new Contact(rosterItem.getJid(), rosterItem.getName(), isPendingOut, false, subscriptionState,
+                rosterItem.getGroups());
+        sessionManager.getUserSessions(serverConfiguration.getDomain().withLocal(username))
+                .forEach(session -> session.send(IQ.set(session.getRemoteXmppAddress(), new Roster(contact))));
     }
 }

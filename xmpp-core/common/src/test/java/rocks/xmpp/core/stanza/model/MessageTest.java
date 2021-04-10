@@ -148,7 +148,8 @@ public class MessageTest extends XmlTest {
                 "    to='romeo@example.net'\n" +
                 "    type='chat'\n" +
                 "    xml:lang='de'>\n" +
-                "  <thread parent='e0ffe42b28561960c6b12b944a092794b9683a38'>0e3141cd80894871a68e6fe6b1ec56fa</thread>\n" +
+                "  <thread parent='e0ffe42b28561960c6b12b944a092794b9683a38'>0e3141cd80894871a68e6fe6b1ec56fa</thread>\n"
+                +
                 "</message>";
         Message message = unmarshal(xml, Message.class);
         Assert.assertEquals(message.getFrom().toString(), "juliet@example.com/balcony");
@@ -190,51 +191,71 @@ public class MessageTest extends XmlTest {
 
     @Test
     public void marshalErrorMessage() throws JAXBException, XMLStreamException {
-        Message message = new Message(Jid.of("juliet@example.com"), Message.Type.ERROR, "test", null, null, null, null, null, null, null, new StanzaError(Condition.CONFLICT));
+        Message message =
+                new Message(Jid.of("juliet@example.com"), Message.Type.ERROR, "test", null, null, null, null, null,
+                        null, null, new StanzaError(Condition.CONFLICT));
         String xml = marshal(message);
-        Assert.assertEquals(xml, "<message to=\"juliet@example.com\" type=\"error\"><body>test</body><error type=\"cancel\"><conflict xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></conflict></error></message>");
+        Assert.assertEquals(xml,
+                "<message to=\"juliet@example.com\" type=\"error\"><body>test</body><error type=\"cancel\"><conflict xmlns=\"urn:ietf:params:xml:ns:xmpp-stanzas\"></conflict></error></message>");
     }
 
     @Test
     public void marshalMessage() throws JAXBException, XMLStreamException {
-        Message message = new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT, Collections.emptyList(), null, null, null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
+        Message message =
+                new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT, Collections.emptyList(), null,
+                        null, null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
         String xml = marshal(message);
         Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"></message>");
     }
 
     @Test
     public void marshalMessageThread() throws JAXBException, XMLStreamException {
-        Message message = new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT, Collections.emptyList(), null, "thread", null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
+        Message message =
+                new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT, Collections.emptyList(), null,
+                        "thread", null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
         String xml = marshal(message);
-        Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><thread>thread</thread></message>");
+        Assert.assertEquals(xml,
+                "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><thread>thread</thread></message>");
     }
 
     @Test
     public void marshalMessageParentThread() throws JAXBException, XMLStreamException {
-        Message message = new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT, Collections.emptyList(), null, "thread", "parentThread", "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
+        Message message =
+                new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT, Collections.emptyList(), null,
+                        "thread", "parentThread", "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
         String xml = marshal(message);
-        Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><thread parent=\"parentThread\">thread</thread></message>");
+        Assert.assertEquals(xml,
+                "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><thread parent=\"parentThread\">thread</thread></message>");
     }
 
     @Test
     public void marshalMessageParentThreadWithoutThread() throws JAXBException, XMLStreamException {
-        Message message = new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT, Collections.emptyList(), null, null, "parentThread", "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
+        Message message =
+                new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT, Collections.emptyList(), null,
+                        null, "parentThread", "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
         String xml = marshal(message);
-        Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><thread parent=\"parentThread\"></thread></message>");
+        Assert.assertEquals(xml,
+                "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><thread parent=\"parentThread\"></thread></message>");
     }
 
     @Test
     public void marshalMessageBody() throws JAXBException, XMLStreamException {
-        Message message = new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT, Arrays.asList(new Text("body", Locale.GERMAN), new Text("body2", Locale.FRENCH)), null, null, null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
+        Message message = new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT,
+                Arrays.asList(new Text("body", Locale.GERMAN), new Text("body2", Locale.FRENCH)), null, null, null,
+                "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
         String xml = marshal(message);
-        Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><body xml:lang=\"de\">body</body><body xml:lang=\"fr\">body2</body></message>");
+        Assert.assertEquals(xml,
+                "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><body xml:lang=\"de\">body</body><body xml:lang=\"fr\">body2</body></message>");
     }
 
     @Test
     public void marshalMessageSubject() throws JAXBException, XMLStreamException {
-        Message message = new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT, null, Arrays.asList(new Text("subject1", Locale.GERMAN), new Text("subject2", Locale.FRENCH)), null, null, "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
+        Message message = new Message(Jid.ofLocalAndDomain("to", "domain"), Message.Type.CHAT, null,
+                Arrays.asList(new Text("subject1", Locale.GERMAN), new Text("subject2", Locale.FRENCH)), null, null,
+                "id", Jid.ofLocalAndDomain("from", "domain"), null, null, null);
         String xml = marshal(message);
-        Assert.assertEquals(xml, "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><subject xml:lang=\"de\">subject1</subject><subject xml:lang=\"fr\">subject2</subject></message>");
+        Assert.assertEquals(xml,
+                "<message from=\"from@domain\" id=\"id\" to=\"to@domain\" type=\"chat\"><subject xml:lang=\"de\">subject1</subject><subject xml:lang=\"fr\">subject2</subject></message>");
     }
 
     @Test
@@ -279,7 +300,8 @@ public class MessageTest extends XmlTest {
                 "        type='chatroom'\n" +
                 "        name='Play-Specific Chatrooms'/>\n" +
                 "    <feature/>\n" +
-                "    <feature xmlns=\"urn:xmpp:archive\"><optional xmlns=\"urn:xmpp:archive\"><default xmlns=\"urn:xmpp:archive\"/></optional></feature>\n" +
+                "    <feature xmlns=\"urn:xmpp:archive\"><optional xmlns=\"urn:xmpp:archive\"><default xmlns=\"urn:xmpp:archive\"/></optional></feature>\n"
+                +
                 "    <feature var='http://jabber.org/protocol/disco#info'/>\n" +
                 "    <feature var='http://jabber.org/protocol/disco#items'/>\n" +
                 "    <feature var='http://jabber.org/protocol/muc'/>\n" +

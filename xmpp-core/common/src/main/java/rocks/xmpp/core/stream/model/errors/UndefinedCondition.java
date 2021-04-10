@@ -30,8 +30,10 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <undefined-condition/>} stream error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-undefined-condition">4.9.3.21.  undefined-condition</a></cite></p>
- * <p>The error condition is not one of those defined by the other conditions in this list; this error condition SHOULD NOT be used except in conjunction with an application-specific condition.</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-undefined-condition">4.9.3.21.
+ * undefined-condition</a></cite></p>
+ * <p>The error condition is not one of those defined by the other conditions in this list; this error condition SHOULD
+ * NOT be used except in conjunction with an application-specific condition.</p>
  * </blockquote>
  * This class is a singleton.
  *

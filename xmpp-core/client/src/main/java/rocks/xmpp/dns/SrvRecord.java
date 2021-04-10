@@ -36,24 +36,18 @@ import java.util.Objects;
 public final class SrvRecord implements Comparable<SrvRecord> {
 
     /**
-     * The priority of this target host.  A client MUST attempt to
-     * contact the target host with the lowest-numbered priority it can
-     * reach; target hosts with the same priority SHOULD be tried in an
-     * order defined by the weight field.  The range is 0-65535.  This
-     * is a 16 bit unsigned integer in network byte order.
+     * The priority of this target host.  A client MUST attempt to contact the target host with the lowest-numbered
+     * priority it can reach; target hosts with the same priority SHOULD be tried in an order defined by the weight
+     * field.  The range is 0-65535.  This is a 16 bit unsigned integer in network byte order.
      */
     private final int priority;
 
     /**
-     * A server selection mechanism.  The weight field specifies a
-     * relative weight for entries with the same priority. Larger
-     * weights SHOULD be given a proportionately higher probability of
-     * being selected. The range of this number is 0-65535.  This is a
-     * 16 bit unsigned integer in network byte order.  Domain
-     * administrators SHOULD use Weight 0 when there isn't any server
-     * selection to do, to make the RR easier to read for humans (less
-     * noisy).  In the presence of records containing weights greater
-     * than 0, records with weight 0 should have a very small chance of
+     * A server selection mechanism.  The weight field specifies a relative weight for entries with the same priority.
+     * Larger weights SHOULD be given a proportionately higher probability of being selected. The range of this number
+     * is 0-65535.  This is a 16 bit unsigned integer in network byte order.  Domain administrators SHOULD use Weight 0
+     * when there isn't any server selection to do, to make the RR easier to read for humans (less noisy).  In the
+     * presence of records containing weights greater than 0, records with weight 0 should have a very small chance of
      * being selected.
      */
     private final int weight;
@@ -89,8 +83,8 @@ public final class SrvRecord implements Comparable<SrvRecord> {
     }
 
     /**
-     * Gets the weight of this target host. The weight field specifies a
-     * relative weight for entries with the same priority.
+     * Gets the weight of this target host. The weight field specifies a relative weight for entries with the same
+     * priority.
      *
      * @return The weight of this target host.
      */

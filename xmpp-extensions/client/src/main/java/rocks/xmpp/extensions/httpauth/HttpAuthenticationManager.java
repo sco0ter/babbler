@@ -40,9 +40,12 @@ import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
 import rocks.xmpp.util.XmppUtils;
 
 /**
- * This manager allows to listen for inbound requests (by an XMPP server) to confirm that the current XMPP user made an HTTP request, i.e. to verify that the HTTP request was in fact made by the XMPP user.
+ * This manager allows to listen for inbound requests (by an XMPP server) to confirm that the current XMPP user made an
+ * HTTP request, i.e. to verify that the HTTP request was in fact made by the XMPP user.
  *
- * <p>If you want to confirm or deny HTTP requests, {@linkplain #addHttpAuthenticationListener(Consumer) add a listener} and call {@link HttpAuthenticationEvent#confirm()} or {@link HttpAuthenticationEvent#deny()} on the event object.</p>
+ * <p>If you want to confirm or deny HTTP requests, {@linkplain #addHttpAuthenticationListener(Consumer) add a
+ * listener} and call {@link HttpAuthenticationEvent#confirm()} or {@link HttpAuthenticationEvent#deny()} on the event
+ * object.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0070.html">XEP-0070: Verifying HTTP Requests via XMPP</a>
@@ -63,7 +66,9 @@ public final class HttpAuthenticationManager extends Manager {
             @Override
             protected IQ processRequest(IQ iq) {
                 ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
-                XmppUtils.notifyEventListeners(httpAuthenticationListeners, new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, iq, confirmationRequest));
+                XmppUtils.notifyEventListeners(httpAuthenticationListeners,
+                        new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, iq,
+                                confirmationRequest));
                 return httpAuthenticationListeners.isEmpty() ? iq.createError(Condition.SERVICE_UNAVAILABLE) : null;
             }
         };
@@ -73,7 +78,9 @@ public final class HttpAuthenticationManager extends Manager {
             if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
                 ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
                 if (confirmationRequest != null) {
-                    XmppUtils.notifyEventListeners(httpAuthenticationListeners, new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, message, confirmationRequest));
+                    XmppUtils.notifyEventListeners(httpAuthenticationListeners,
+                            new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, message,
+                                    confirmationRequest));
                 }
             }
         };

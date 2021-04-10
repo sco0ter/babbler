@@ -30,8 +30,12 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * The implementation of the {@code <unsupported-stanza-type/>} stream error.
  * <blockquote>
- * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-unsupported-stanza-type">4.9.3.24.  unsupported-stanza-type</a></cite></p>
- * <p>The initiating entity has sent a first-level child of the stream that is not supported by the server, either because the receiving entity does not understand the namespace or because the receiving entity does not understand the element name for the applicable namespace (which might be the content namespace declared as the default namespace).</p>
+ * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-error-conditions-unsupported-stanza-type">4.9.3.24.
+ * unsupported-stanza-type</a></cite></p>
+ * <p>The initiating entity has sent a first-level child of the stream that is not supported by the server, either
+ * because the receiving entity does not understand the namespace or because the receiving entity does not understand
+ * the element name for the applicable namespace (which might be the content namespace declared as the default
+ * namespace).</p>
  * </blockquote>
  * This class is a singleton.
  *

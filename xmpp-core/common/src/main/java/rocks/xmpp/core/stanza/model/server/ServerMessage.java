@@ -62,7 +62,9 @@ public final class ServerMessage extends Message {
      * @param extensions   The extensions.
      * @param error        The error.
      */
-    private ServerMessage(Jid to, Type type, Collection<Text> bodies, Collection<Text> subjects, String thread, String parentThread, String id, Jid from, Locale language, Collection<?> extensions, StanzaError error) {
+    private ServerMessage(Jid to, Type type, Collection<Text> bodies, Collection<Text> subjects, String thread,
+                          String parentThread, String id, Jid from, Locale language, Collection<?> extensions,
+                          StanzaError error) {
         super(to, type, bodies, subjects, thread, parentThread, id, from, language, extensions, error);
     }
 
@@ -73,6 +75,7 @@ public final class ServerMessage extends Message {
      * @return The client message.
      */
     public static ServerMessage from(Message m) {
-        return new ServerMessage(m.getTo(), m.getType(), m.getBodies(), m.getSubjects(), m.getThread(), m.getParentThread(), m.getId(), m.getFrom(), m.getLanguage(), m.getExtensions(), m.getError());
+        return new ServerMessage(m.getTo(), m.getType(), m.getBodies(), m.getSubjects(), m.getThread(),
+                m.getParentThread(), m.getId(), m.getFrom(), m.getLanguage(), m.getExtensions(), m.getError());
     }
 }

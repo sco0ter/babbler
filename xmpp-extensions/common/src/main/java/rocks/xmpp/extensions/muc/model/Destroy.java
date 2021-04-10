@@ -28,7 +28,8 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Addressable;
 
 /**
- * The {@code <destroy/>} element, which is used in both <code>#owner</code> and <code>#user</code> namespace and indicates a room destruction.
+ * The {@code <destroy/>} element, which is used in both <code>#owner</code> and <code>#user</code> namespace and
+ * indicates a room destruction.
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html#destroyroom">10.9 Destroying a Room</a>

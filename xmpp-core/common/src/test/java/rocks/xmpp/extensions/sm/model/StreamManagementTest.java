@@ -133,7 +133,8 @@ public class StreamManagementTest extends XmlTest {
 
         StreamError error = unmarshal(xml, StreamError.class);
         Assert.assertNotNull(error);
-        StreamManagement.HandledCountTooHigh handledCountTooHigh = (StreamManagement.HandledCountTooHigh) error.getExtension();
+        StreamManagement.HandledCountTooHigh handledCountTooHigh =
+                (StreamManagement.HandledCountTooHigh) error.getExtension();
         Assert.assertNotNull(handledCountTooHigh);
         Assert.assertEquals(handledCountTooHigh.getLastHandledStanza(), Long.valueOf(10));
         Assert.assertEquals(handledCountTooHigh.getSendCount(), Long.valueOf(8));

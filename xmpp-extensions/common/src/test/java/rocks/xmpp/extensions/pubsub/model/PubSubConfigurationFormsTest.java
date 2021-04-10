@@ -64,7 +64,8 @@ public class PubSubConfigurationFormsTest extends XmlTest {
 
         String xml = marshal(pubSubMetaDataForm.getDataForm());
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"result\">" +
-                "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/pubsub#meta-data</value></field>" +
+                "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/pubsub#meta-data</value></field>"
+                +
                 "<field type=\"jid-multi\" var=\"pubsub#contact\"><value>contact</value></field>" +
                 "<field type=\"text-single\" var=\"pubsub#creation_date\"><value>" + now + "</value></field>" +
                 "<field type=\"jid-single\" var=\"pubsub#creator\"><value>creator</value></field>" +
@@ -100,7 +101,8 @@ public class PubSubConfigurationFormsTest extends XmlTest {
 
         String xml = marshal(publishOptions.getDataForm());
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\">" +
-                "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/pubsub#publish-options</value></field>" +
+                "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/pubsub#publish-options</value></field>"
+                +
                 "<field type=\"list-single\" var=\"pubsub#access_model\"><value>authorize</value></field>" +
                 "<field type=\"boolean\" var=\"pubsub#persist_items\"><value>1</value></field>" +
                 "<field type=\"list-single\" var=\"pubsub#send_last_published_item\"><value>on_sub</value></field>" +
@@ -154,11 +156,13 @@ public class PubSubConfigurationFormsTest extends XmlTest {
 
         String xml = marshal(nodeConfiguration.getDataForm());
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\">" +
-                "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/pubsub#node_config</value></field>" +
+                "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/pubsub#node_config</value></field>"
+                +
                 "<field type=\"list-single\" var=\"pubsub#access_model\"><value>authorize</value></field>" +
                 "<field type=\"text-single\" var=\"pubsub#body_xslt\"><value>https://xmpp.org</value></field>" +
                 "<field type=\"list-single\" var=\"pubsub#children_association_policy\"><value>owners</value></field>" +
-                "<field type=\"jid-multi\" var=\"pubsub#children_association_whitelist\"><value>domain</value></field>" +
+                "<field type=\"jid-multi\" var=\"pubsub#children_association_whitelist\"><value>domain</value></field>"
+                +
                 "<field type=\"text-multi\" var=\"pubsub#children\"><value>collection1</value></field>" +
                 "<field type=\"text-single\" var=\"pubsub#children_max\"><value>23</value></field>" +
                 "<field type=\"text-multi\" var=\"pubsub#collection\"><value>collections</value></field>" +
@@ -182,8 +186,10 @@ public class PubSubConfigurationFormsTest extends XmlTest {
                 "<field type=\"boolean\" var=\"pubsub#presence_based_delivery\"><value>1</value></field>" +
                 "<field type=\"list-single\" var=\"pubsub#publish_model\"><value>open</value></field>" +
                 "<field type=\"boolean\" var=\"pubsub#purge_offline\"><value>0</value></field>" +
-                "<field type=\"list-multi\" var=\"pubsub#roster_groups_allowed\"><value>group1</value><value>group2</value></field>" +
-                "<field type=\"list-single\" var=\"pubsub#send_last_published_item\"><value>on_sub_and_presence</value></field>" +
+                "<field type=\"list-multi\" var=\"pubsub#roster_groups_allowed\"><value>group1</value><value>group2</value></field>"
+                +
+                "<field type=\"list-single\" var=\"pubsub#send_last_published_item\"><value>on_sub_and_presence</value></field>"
+                +
                 "<field type=\"boolean\" var=\"pubsub#tempsub\"><value>1</value></field>" +
                 "<field type=\"boolean\" var=\"pubsub#subscribe\"><value>1</value></field>" +
                 "<field type=\"text-single\" var=\"pubsub#title\"><value>Title</value></field>" +
@@ -196,7 +202,8 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertNotNull(nodeConfiguration1.getBodyXslt());
         Assert.assertEquals(nodeConfiguration1.getBodyXslt().toString(), "https://xmpp.org");
         Assert.assertEquals(nodeConfiguration1.getChildrenAssociationPolicy(), ChildrenAssociationPolicy.OWNERS);
-        Assert.assertEquals(nodeConfiguration1.getChildrenAssociationWhitelist(), Collections.singleton(Jid.of("domain")));
+        Assert.assertEquals(nodeConfiguration1.getChildrenAssociationWhitelist(),
+                Collections.singleton(Jid.of("domain")));
         Assert.assertEquals(nodeConfiguration1.getChildren(), Collections.singleton("collection1"));
         Assert.assertEquals(nodeConfiguration1.getChildrenMax(), Integer.valueOf(23));
         Assert.assertEquals(nodeConfiguration1.getContacts(), Collections.singleton(Jid.of("contact")));
@@ -244,13 +251,15 @@ public class PubSubConfigurationFormsTest extends XmlTest {
 
         String xml = marshal(subscribeOptions1.getDataForm());
         Assert.assertEquals(xml, "<x xmlns=\"jabber:x:data\" type=\"submit\">" +
-                "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/pubsub#subscribe_options</value></field>" +
+                "<field type=\"hidden\" var=\"FORM_TYPE\"><value>http://jabber.org/protocol/pubsub#subscribe_options</value></field>"
+                +
                 "<field type=\"boolean\" var=\"pubsub#deliver\"><value>1</value></field>" +
                 "<field type=\"boolean\" var=\"pubsub#digest\"><value>1</value></field>" +
                 "<field type=\"text-single\" var=\"pubsub#digest_frequency\"><value>3</value></field>" +
                 "<field type=\"text-single\" var=\"pubsub#expire\"><value>presence</value></field>" +
                 "<field type=\"boolean\" var=\"pubsub#include_body\"><value>1</value></field>" +
-                "<field type=\"list-multi\" var=\"pubsub#show-values\"><value>away</value><value>chat</value><value>online</value></field>" +
+                "<field type=\"list-multi\" var=\"pubsub#show-values\"><value>away</value><value>chat</value><value>online</value></field>"
+                +
                 "<field type=\"list-single\" var=\"pubsub#subscription_type\"><value>nodes</value></field>" +
                 "<field type=\"list-single\" var=\"pubsub#subscription_depth\"><value>all</value></field>" +
                 "</x>");
@@ -263,7 +272,8 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertNull(subscribeOptions.getExpire());
         Assert.assertTrue(subscribeOptions.isTemporary());
         Assert.assertTrue(subscribeOptions.isIncludeBody());
-        Assert.assertEquals(subscribeOptions.getShowValues(), Arrays.asList(Presence.Show.AWAY, Presence.Show.CHAT, null));
+        Assert.assertEquals(subscribeOptions.getShowValues(),
+                Arrays.asList(Presence.Show.AWAY, Presence.Show.CHAT, null));
         Assert.assertEquals(subscribeOptions.getSubscriptionType(), SubscribeOptions.SubscriptionType.NODES);
         Assert.assertEquals(subscribeOptions.getSubscriptionDepth(), Integer.valueOf(-1));
 

@@ -51,7 +51,8 @@ final class Socks5Protocol {
      * @param destinationAddress The destination address.
      * @throws java.io.IOException If the SOCKS5 connection could not be established.
      */
-    static void establishClientConnection(Socket socket, String destinationAddress, int destinationPort) throws IOException {
+    static void establishClientConnection(Socket socket, String destinationAddress, int destinationPort)
+            throws IOException {
 
         DataInputStream inputStream = new DataInputStream(socket.getInputStream());
         OutputStream outputStream = socket.getOutputStream();
@@ -104,7 +105,8 @@ final class Socks5Protocol {
                     (byte) 0x01, // CMD: CONNECT X'01'
                     (byte) 0x00, // RESERVED
                     (byte) 0x03, // ATYP, Hardcoded to 3 (DOMAINNAME) in this usage
-                    (byte) dstAddr.length // The first octet of the address field contains the number of octets of name that follow
+                    (byte) dstAddr.length
+                    // The first octet of the address field contains the number of octets of name that follow
             };
             byte[] request = new byte[7 + dstAddr.length];
             System.arraycopy(requestDetails, 0, request, 0, requestDetails.length);
@@ -129,7 +131,8 @@ final class Socks5Protocol {
 
             if (reply[1] == 0) {  // X'00' succeeded
                 request[1] = 0;
-                // When replying to the Target in accordance with Section 6 of RFC 1928, the Proxy MUST set the BND.ADDR and BND.PORT to the DST.ADDR and DST.PORT values provided by the client in the connection request.
+                // When replying to the Target in accordance with Section 6 of RFC 1928, the Proxy MUST set the BND.ADDR
+                // and BND.PORT to the DST.ADDR and DST.PORT values provided by the client in the connection request.
                 if (!Arrays.equals(reply, request)) {
                     throw new IOException("Verification failed.");
                 }
@@ -219,7 +222,8 @@ final class Socks5Protocol {
          */
 
         byte[] request = readRequestOrReply(inputStream);
-        String dstAddr = new String(request, 5, request[4], StandardCharsets.UTF_8);  // request[4] has the length of the address.
+        String dstAddr = new String(request, 5, request[4],
+                StandardCharsets.UTF_8);  // request[4] has the length of the address.
 
         /*
             The server evaluates the request, and

@@ -42,7 +42,8 @@ import rocks.xmpp.session.server.SessionManager;
  * Returns a user's available resources as disco#items response if allowed.
  *
  * <blockquote>
- * <p>In response to a disco#items request sent to a bare JID with no node, if access is not denied the server SHOULD return the associated items including connected or available resources as appropriate</p>
+ * <p>In response to a disco#items request sent to a bare JID with no node, if access is not denied the server SHOULD
+ * return the associated items including connected or available resources as appropriate</p>
  * <cite><a href="https://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a></cite>
  * </blockquote>
  *
@@ -65,7 +66,8 @@ public class AvailableResourcesItemProvider implements ItemProvider {
             // 2a. The target entity does not exist (no matter if the request specifies a node or not).
             // 2b. The request did not specify a node, the only items are available resources
             //     and the requesting entity is not authorized to receive presence from the target entity
-            //     (i.e., via the target having a presence subscription to the requesting entity of type "both" or "from")
+            //     (i.e., via the target having a presence subscription to the requesting entity of type
+            //     "both" or "from")
 
             if (to.asBareJid().equals(from.asBareJid())) {
                 // A user is always subscribed to its own presence.

@@ -52,7 +52,8 @@ public class RosterItemDao implements RosterItemProvider {
 
     @Override
     public void create(String username, RosterItem rosterItem) {
-        RosterItemEntity rosterItemEntity = new RosterItemEntity(username, rosterItem.getJid(), rosterItem.getName(), rosterItem.getSubscription());
+        RosterItemEntity rosterItemEntity =
+                new RosterItemEntity(username, rosterItem.getJid(), rosterItem.getName(), rosterItem.getSubscription());
         entityManager.persist(rosterItemEntity);
     }
 
@@ -78,7 +79,8 @@ public class RosterItemDao implements RosterItemProvider {
 
     @Override
     public RosterItemEntity get(String username, Jid jid) {
-        TypedQuery<RosterItemEntity> query = entityManager.createNamedQuery(RosterItemEntity.NamedQueries.GET_BY_USERNAME_AND_JID, RosterItemEntity.class);
+        TypedQuery<RosterItemEntity> query = entityManager
+                .createNamedQuery(RosterItemEntity.NamedQueries.GET_BY_USERNAME_AND_JID, RosterItemEntity.class);
         query.setParameter("username", username);
         query.setParameter("jid", jid);
         List<RosterItemEntity> result = query.getResultList();
@@ -90,14 +92,16 @@ public class RosterItemDao implements RosterItemProvider {
 
     @Override
     public List<RosterItemEntity> getRosterItems(String username) {
-        TypedQuery<RosterItemEntity> query = entityManager.createNamedQuery(RosterItemEntity.NamedQueries.GET_ROSTER_ITEMS, RosterItemEntity.class);
+        TypedQuery<RosterItemEntity> query =
+                entityManager.createNamedQuery(RosterItemEntity.NamedQueries.GET_ROSTER_ITEMS, RosterItemEntity.class);
         query.setParameter("username", username);
         return query.getResultList();
     }
 
     @Override
     public long getItemCount(String username) {
-        TypedQuery<Number> query = entityManager.createNamedQuery(RosterItemEntity.NamedQueries.GET_ITEM_COUNT, Number.class);
+        TypedQuery<Number> query =
+                entityManager.createNamedQuery(RosterItemEntity.NamedQueries.GET_ITEM_COUNT, Number.class);
         query.setParameter("username", username);
         return query.getSingleResult().longValue();
     }

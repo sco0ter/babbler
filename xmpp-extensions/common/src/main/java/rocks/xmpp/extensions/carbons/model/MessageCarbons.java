@@ -42,7 +42,8 @@ import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
  * @see <a href="https://xmpp.org/extensions/xep-0280.html#schema">XML Schema</a>
  */
 @XmlTransient
-@XmlSeeAlso({MessageCarbons.Enable.class, MessageCarbons.Disable.class, MessageCarbons.Private.class, MessageDeliveryReceipts.Received.class, MessageCarbons.Sent.class})
+@XmlSeeAlso({MessageCarbons.Enable.class, MessageCarbons.Disable.class, MessageCarbons.Private.class,
+        MessageDeliveryReceipts.Received.class, MessageCarbons.Sent.class})
 public final class MessageCarbons {
 
     /**
@@ -69,7 +70,8 @@ public final class MessageCarbons {
     }
 
     /**
-     * The implementation of the {@code <disable/>} element in the {@code urn:xmpp:carbons:2} namespace, used to disable message carbons.
+     * The implementation of the {@code <disable/>} element in the {@code urn:xmpp:carbons:2} namespace, used to disable
+     * message carbons.
      *
      * <p>This class is a singleton.</p>
      *
@@ -88,7 +90,8 @@ public final class MessageCarbons {
     }
 
     /**
-     * The implementation of the {@code <enable/>} element in the {@code urn:xmpp:carbons:2} namespace, used to enable message carbons.
+     * The implementation of the {@code <enable/>} element in the {@code urn:xmpp:carbons:2} namespace, used to enable
+     * message carbons.
      *
      * <p>This class is a singleton.</p>
      *
@@ -107,7 +110,8 @@ public final class MessageCarbons {
     }
 
     /**
-     * The implementation of the {@code <private/>} element in the {@code urn:xmpp:carbons:2} namespace, used to send private messages, which are not copied.
+     * The implementation of the {@code <private/>} element in the {@code urn:xmpp:carbons:2} namespace, used to send
+     * private messages, which are not copied.
      *
      * <p>This class is a singleton.</p>
      *
@@ -126,7 +130,8 @@ public final class MessageCarbons {
     }
 
     /**
-     * The implementation of the {@code <received/>} element in the {@code urn:xmpp:carbons:2} namespace, used to mark a carbon copied message as received.
+     * The implementation of the {@code <received/>} element in the {@code urn:xmpp:carbons:2} namespace, used to mark a
+     * carbon copied message as received.
      *
      * <p>This class is immutable.</p>
      */
@@ -158,7 +163,8 @@ public final class MessageCarbons {
     }
 
     /**
-     * The implementation of the {@code <sent/>} element in the {@code urn:xmpp:carbons:2} namespace, used to mark a carbon copied message as sent.
+     * The implementation of the {@code <sent/>} element in the {@code urn:xmpp:carbons:2} namespace, used to mark a
+     * carbon copied message as sent.
      *
      * <p>This class is immutable.</p>
      */

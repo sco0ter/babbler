@@ -28,7 +28,8 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- * Represents the JID as described in <a href="https://tools.ietf.org/html/rfc7622">Extensible Messaging and Presence Protocol (XMPP): Address Format</a>.
+ * Represents the JID as described in <a href="https://tools.ietf.org/html/rfc7622">Extensible Messaging and Presence
+ * Protocol (XMPP): Address Format</a>.
  *
  * <p>A JID consists of three parts:</p>
  *
@@ -48,13 +49,15 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * String resource = jid.getResource(); // balcony
  * }</pre>
  *
- * <p>Implementations of this interface should override <code>equals()</code> and <code>hashCode()</code>, so that different instances with the same value are equal:</p>
+ * <p>Implementations of this interface should override <code>equals()</code> and <code>hashCode()</code>, so that
+ * different instances with the same value are equal:</p>
  *
  * <pre>{@code
  * Jid.of("romeo@capulet.lit/balcony").equals(Jid.of("romeo@capulet.lit/balcony")); // true
  * }</pre>
  *
- * <p>The default implementation of this class also supports <a href="https://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>, i.e.</p>
+ * <p>The default implementation of this class also supports
+ * <a href="https://xmpp.org/extensions/xep-0106.html">XEP-0106:JID Escaping</a>, i.e.</p>
  *
  * <pre>{@code
  * Jid.of("d'artagnan@musketeers.lit")
@@ -65,18 +68,20 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <p>Implementations of this interface should be thread-safe and immutable.</p>
  *
  * @author Christian Schudt
- * @see <a href="https://tools.ietf.org/html/rfc7622">RFC 7622 - Extensible Messaging and Presence Protocol (XMPP): Address Format</a>
+ * @see <a href="https://tools.ietf.org/html/rfc7622">RFC 7622 - Extensible Messaging and Presence Protocol (XMPP):
+ * Address Format</a>
  */
 @XmlJavaTypeAdapter(JidAdapter.class)
 public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
 
     /**
      * The maximal length of a full JID, which is 3071.
+     *
      * <blockquote>
      * <p><cite><a href="https://tools.ietf.org/html/rfc7622#section-3.1">3.1.  Fundamentals</a></cite></p>
      * <p>Each allowable portion of a JID (localpart, domainpart, and
-     * resourcepart) is 1 to 1023 octets in length, resulting in a maximum
-     * total size (including the '@' and '/' separators) of 3071 octets.</p>
+     * resourcepart) is 1 to 1023 octets in length, resulting in a maximum total size (including the '@' and '/'
+     * separators) of 3071 octets.</p>
      * </blockquote>
      *
      * <p>Note that the length is based on bytes, not characters.</p>
@@ -86,8 +91,8 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
     int MAX_FULL_JID_LENGTH = 3071;
 
     /**
-     * The maximal length of a bare JID, which is 2047 (1023 + 1 + 1023).
-     * Note that the length is based on bytes, not characters.
+     * The maximal length of a bare JID, which is 2047 (1023 + 1 + 1023). Note that the length is based on bytes, not
+     * characters.
      *
      * @see #MAX_FULL_JID_LENGTH
      */
@@ -101,7 +106,8 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
     /**
      * Creates a JID from an unescaped string. The format must be
      * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>
-     * The input string will be escaped.
+     *
+     * <p>The input string will be escaped.</p>
      *
      * @param jid The JID.
      * @return The JID.
@@ -171,7 +177,8 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
     /**
      * Creates a JID from a escaped JID string. The format must be
      * <blockquote><p>[ localpart "@" ] domainpart [ "/" resourcepart ]</p></blockquote>
-     * This method should be used, when parsing JIDs from the XMPP stream.
+     *
+     * <p>This method should be used, when parsing JIDs from the XMPP stream.</p>
      *
      * @param jid The JID.
      * @return The JID.
@@ -185,8 +192,11 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
 
     /**
      * Checks if the JID is a full JID.
+     *
      * <blockquote>
-     * <p>The term "full JID" refers to an XMPP address of the form &lt;localpart@domainpart/resourcepart&gt; (for a particular authorized client or device associated with an account) or of the form &lt;domainpart/resourcepart&gt; (for a particular resource or script associated with a server).</p>
+     * <p>The term "full JID" refers to an XMPP address of the form &lt;localpart@domainpart/resourcepart&gt; (for a
+     * particular authorized client or device associated with an account) or of the form &lt;domainpart/resourcepart&gt;
+     * (for a particular resource or script associated with a server).</p>
      * </blockquote>
      *
      * @return True, if the JID is a full JID; otherwise false.
@@ -195,8 +205,10 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
 
     /**
      * Checks if the JID is a bare JID.
+     *
      * <blockquote>
-     * <p>The term "bare JID" refers to an XMPP address of the form &lt;localpart@domainpart&gt; (for an account at a server) or of the form &lt;domainpart&gt; (for a server).</p>
+     * <p>The term "bare JID" refers to an XMPP address of the form &lt;localpart@domainpart&gt; (for an account at a
+     * server) or of the form &lt;domainpart&gt; (for a server).</p>
      * </blockquote>
      *
      * @return True, if the JID is a bare JID; otherwise false.
@@ -212,8 +224,10 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
 
     /**
      * Gets the bare JID representation of this JID, i.e. removes the resource part.
+     *
      * <blockquote>
-     * <p>The term "bare JID" refers to an XMPP address of the form &lt;localpart@domainpart&gt; (for an account at a server) or of the form &lt;domainpart&gt; (for a server).</p>
+     * <p>The term "bare JID" refers to an XMPP address of the form &lt;localpart@domainpart&gt; (for an account at a
+     * server) or of the form &lt;domainpart&gt; (for a server).</p>
      * </blockquote>
      *
      * @return The bare JID.
@@ -254,16 +268,15 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
 
     /**
      * Gets the local part of the JID, also known as the name or node.
+     *
      * <blockquote>
      * <p><cite><a href="https://tools.ietf.org/html/rfc7622#section-3.3">3.3.  Localpart</a></cite></p>
      * <p>The localpart of a JID is an optional identifier placed before the
-     * domainpart and separated from the latter by the '@' character.
-     * Typically, a localpart uniquely identifies the entity requesting and
-     * using network access provided by a server (i.e., a local account),
-     * although it can also represent other kinds of entities (e.g., a
-     * chatroom associated with a multi-user chat service [XEP-0045]).  The
-     * entity represented by an XMPP localpart is addressed within the
-     * context of a specific domain (i.e., &lt;localpart@domainpart&gt;).</p>
+     * domainpart and separated from the latter by the '@' character. Typically, a localpart uniquely identifies the
+     * entity requesting and using network access provided by a server (i.e., a local account), although it can also
+     * represent other kinds of entities (e.g., a chatroom associated with a multi-user chat service [XEP-0045]).  The
+     * entity represented by an XMPP localpart is addressed within the context of a specific domain (i.e.,
+     * &lt;localpart@domainpart&gt;).</p>
      * </blockquote>
      *
      * @return The local part or null.
@@ -282,12 +295,12 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
 
     /**
      * Gets the domain part.
+     *
      * <blockquote>
      * <p><cite><a href="https://tools.ietf.org/html/rfc7622#section-3.2">3.2.  Domainpart</a></cite></p>
      * <p>The domainpart is the primary identifier and is the only REQUIRED
-     * element of a JID (a mere domainpart is a valid JID).  Typically,
-     * a domainpart identifies the "home" server to which clients connect
-     * for XML routing and data management functionality.</p>
+     * element of a JID (a mere domainpart is a valid JID).  Typically, a domainpart identifies the "home" server to
+     * which clients connect for XML routing and data management functionality.</p>
      * </blockquote>
      *
      * @return The domain part.
@@ -296,16 +309,15 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
 
     /**
      * Gets the resource part.
+     *
      * <blockquote>
      * <p><cite><a href="https://tools.ietf.org/html/rfc7622#section-3.4">3.4.  Resourcepart</a></cite></p>
      * <p>The resourcepart of a JID is an optional identifier placed after the
-     * domainpart and separated from the latter by the '/' character.  A
-     * resourcepart can modify either a &lt;localpart@domainpart&gt; address or a
-     * mere &lt;domainpart&gt; address.  Typically, a resourcepart uniquely
-     * identifies a specific connection (e.g., a device or location) or
-     * object (e.g., an occupant in a multi-user chatroom [XEP-0045])
-     * belonging to the entity associated with an XMPP localpart at a domain
-     * (i.e., &lt;localpart@domainpart/resourcepart&gt;).</p>
+     * domainpart and separated from the latter by the '/' character.  A resourcepart can modify either a
+     * &lt;localpart@domainpart&gt; address or a mere &lt;domainpart&gt; address.  Typically, a resourcepart uniquely
+     * identifies a specific connection (e.g., a device or location) or object (e.g., an occupant in a multi-user
+     * chatroom [XEP-0045]) belonging to the entity associated with an XMPP localpart at a domain (i.e.,
+     * &lt;localpart@domainpart/resourcepart&gt;).</p>
      * </blockquote>
      *
      * @return The resource part or null.
@@ -313,7 +325,8 @@ public interface Jid extends Comparable<Jid>, Serializable, CharSequence {
     String getResource();
 
     /**
-     * Returns the JID in escaped form as described in <a href="https://xmpp.org/extensions/xep-0106.html">XEP-0106: JID Escaping</a>.
+     * Returns the JID in escaped form as described in <a href="https://xmpp.org/extensions/xep-0106.html">XEP-0106: JID
+     * Escaping</a>.
      *
      * @return The escaped JID.
      * @see #toString()

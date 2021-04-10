@@ -39,29 +39,50 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
 
 /**
  * The implementation of the {@code <iq/>} stanza.
+ *
  * <blockquote>
+ *
  * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-semantics-iq">8.2.3.  IQ Semantics</a></cite></p>
- * <p>Info/Query, or IQ, is a "request-response" mechanism, similar in some ways to the Hypertext Transfer Protocol [HTTP]. The semantics of IQ enable an entity to make a request of, and receive a response from, another entity. The data content of the request and response is defined by the schema or other structural definition associated with the XML namespace that qualifies the direct child element of the IQ element (see Section 8.4), and the interaction is tracked by the requesting entity through use of the 'id' attribute. Thus, IQ interactions follow a common pattern of structured data exchange such as get/result or set/result (although an error can be returned in reply to a request if appropriate)</p>
+ *
+ * <p>Info/Query, or IQ, is a "request-response" mechanism, similar in some ways to the Hypertext Transfer Protocol
+ * [HTTP]. The semantics of IQ enable an entity to make a request of, and receive a response from, another entity. The
+ * data content of the request and response is defined by the schema or other structural definition associated with the
+ * XML namespace that qualifies the direct child element of the IQ element (see Section 8.4), and the interaction is
+ * tracked by the requesting entity through use of the 'id' attribute. Thus, IQ interactions follow a common pattern of
+ * structured data exchange such as get/result or set/result (although an error can be returned in reply to a request if
+ * appropriate)</p>
+ *
  * <div>To enforce these semantics, the following rules apply:
  * <ol>
  * <li>The 'id' attribute is REQUIRED for IQ stanzas.</li>
- * <li>The 'type' attribute is REQUIRED for IQ stanzas. The value MUST be one of the following; if not, the recipient or an intermediate router MUST return a {@code <bad-request/>} stanza error (Section 8.3.3.1).
+ * <li>The 'type' attribute is REQUIRED for IQ stanzas. The value MUST be one of the following; if not, the recipient or
+ * an intermediate router MUST return a {@code <bad-request/>} stanza error (Section 8.3.3.1).
  * <ul>
- * <li>get -- The stanza requests information, inquires about what data is needed in order to complete further operations, etc.</li>
- * <li>set -- The stanza provides data that is needed for an operation to be completed, sets new values, replaces existing values, etc.</li>
- * <li>result -- The stanza is a response to a successful get or set request. </li>
- * <li>error -- The stanza reports an error that has occurred regarding processing or delivery of a get or set request (see Section 8.3).</li>
+ * <li>get -- The stanza requests information, inquires about what data is needed in order to complete further
+ * operations, etc.</li>
+ * <li>set -- The stanza provides data that is needed for an operation to be completed, sets new values, replaces
+ * existing values, etc.</li>
+ * <li>result -- The stanza is a response to a successful get or set request.</li>
+ * <li>error -- The stanza reports an error that has occurred regarding processing or delivery of a get or set request
+ * (see Section 8.3).</li>
  * </ul>
  * </li>
- * <li>An entity that receives an IQ request of type "get" or "set" MUST reply with an IQ response of type "result" or "error". The response MUST preserve the 'id' attribute of the request (or be empty if the generated stanza did not include an 'id' attribute).</li>
- * <li>An entity that receives a stanza of type "result" or "error" MUST NOT respond to the stanza by sending a further IQ response of type "result" or "error"; however, the requesting entity MAY send another request (e.g., an IQ of type "set" to provide obligatory information discovered through a get/result pair).</li>
- * <li>An IQ stanza of type "get" or "set" MUST contain exactly one child element, which specifies the semantics of the particular request.</li>
+ * <li>An entity that receives an IQ request of type "get" or "set" MUST reply with an IQ response of type "result" or
+ * "error". The response MUST preserve the 'id' attribute of the request (or be empty if the generated stanza did not
+ * include an 'id' attribute).</li>
+ * <li>An entity that receives a stanza of type "result" or "error" MUST NOT respond to the stanza by sending a further
+ * IQ response of type "result" or "error"; however, the requesting entity MAY send another request
+ * (e.g., an IQ of type "set" to provide obligatory information discovered through a get/result pair).</li>
+ * <li>An IQ stanza of type "get" or "set" MUST contain exactly one child element,
+ * which specifies the semantics of the particular request.</li>
  * <li>An IQ stanza of type "result" MUST include zero or one child elements.</li>
- * <li>An IQ stanza of type "error" MAY include the child element contained in the associated "get" or "set" and MUST include an {@code <error/>} child.</li>
+ * <li>An IQ stanza of type "error" MAY include the child element contained in the associated "get" or "set" and MUST
+ * include an {@code <error/>} child.</li>
  * </ol>
  * </div>
  * </blockquote>
- * This class is thread-safe.
+ *
+ * <p>This class is thread-safe.</p>
  *
  * @author Christian Schudt
  */
@@ -139,7 +160,8 @@ public class IQ extends Stanza {
      * @param error     The error.
      */
     public IQ(Jid to, Type type, Object extension, String id, Jid from, Locale language, StanzaError error) {
-        super(to, from, id == null ? UUID.randomUUID().toString() : id, language, extension != null ? Collections.singleton(extension) : Collections.emptyList(), error);
+        super(to, from, id == null ? UUID.randomUUID().toString() : id, language,
+                extension != null ? Collections.singleton(extension) : Collections.emptyList(), error);
         this.type = Objects.requireNonNull(type, "type must not be null.");
     }
 
@@ -231,7 +253,8 @@ public class IQ extends Stanza {
     }
 
     /**
-     * Creates a result IQ stanza, i.e. it uses the same id as this IQ, sets the type to 'result' and switches the 'to' and 'from' attribute.
+     * Creates a result IQ stanza, i.e. it uses the same id as this IQ, sets the type to 'result' and switches the 'to'
+     * and 'from' attribute.
      *
      * @return The result IQ stanza.
      */
@@ -240,7 +263,8 @@ public class IQ extends Stanza {
     }
 
     /**
-     * Creates a result IQ stanza with a payload, i.e. it uses the same id as this IQ, sets the type to 'result' and switches the 'to' and 'from' attribute.
+     * Creates a result IQ stanza with a payload, i.e. it uses the same id as this IQ, sets the type to 'result' and
+     * switches the 'to' and 'from' attribute.
      *
      * @param extension The extension.
      * @return The result IQ stanza.
@@ -262,9 +286,11 @@ public class IQ extends Stanza {
      */
     public final IQ createError(StanzaError error, boolean includeOriginal) {
         if (isResponse()) {
-            throw new IllegalStateException("Cannot create an error response from an IQ, which is already a response IQ.");
+            throw new IllegalStateException(
+                    "Cannot create an error response from an IQ, which is already a response IQ.");
         }
-        return new IQ(getFrom(), Type.ERROR, includeOriginal ? getExtension(Object.class) : null, getId(), getTo(), getLanguage(), Objects.requireNonNull(error, "error must not be null"));
+        return new IQ(getFrom(), Type.ERROR, includeOriginal ? getExtension(Object.class) : null, getId(), getTo(),
+                getLanguage(), Objects.requireNonNull(error, "error must not be null"));
     }
 
     @Override
@@ -288,7 +314,8 @@ public class IQ extends Stanza {
         @XmlEnumValue(value = "error")
         ERROR,
         /**
-         * The stanza requests information, inquires about what data is needed in order to complete further operations, etc.
+         * The stanza requests information, inquires about what data is needed in order to complete further operations,
+         * etc.
          */
         @XmlEnumValue(value = "get")
         GET,
@@ -298,7 +325,8 @@ public class IQ extends Stanza {
         @XmlEnumValue(value = "result")
         RESULT,
         /**
-         * The stanza provides data that is needed for an operation to be completed, sets new values, replaces existing values, etc.
+         * The stanza provides data that is needed for an operation to be completed, sets new values, replaces existing
+         * values, etc.
          */
         @XmlEnumValue(value = "set")
         SET

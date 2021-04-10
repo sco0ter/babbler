@@ -63,13 +63,17 @@ final class S5bEvent extends ByteStreamEvent {
             try {
                 // 5.3.2 Target Establishes SOCKS5 Connection with StreamHost/Requester
                 // 6.3.2 Target Establishes SOCKS5 Connection with Proxy
-                S5bSession s5bSession = Socks5ByteStreamManager.createS5bSession(iq.getFrom(), iq.getTo(), getSessionId(), streamHosts, xmppSession.getConfiguration().getDefaultResponseTimeout());
+                S5bSession s5bSession = Socks5ByteStreamManager
+                        .createS5bSession(iq.getFrom(), iq.getTo(), getSessionId(), streamHosts,
+                                xmppSession.getConfiguration().getDefaultResponseTimeout());
                 // 5.3.3 Target Acknowledges Bytestream
                 // 6.3.3 Target Acknowledges Bytestream
-                xmppSession.send(iq.createResult(Socks5ByteStream.streamHostUsed(s5bSession.getSessionId(), s5bSession.getStreamHost())));
+                xmppSession.send(iq.createResult(
+                        Socks5ByteStream.streamHostUsed(s5bSession.getSessionId(), s5bSession.getStreamHost())));
                 return s5bSession;
             } catch (IOException e) {
-                // If the Target tries but is unable to connect to any of the StreamHosts and it does not wish to attempt a connection from its side, it MUST return an <item-not-found/> error to the Requester.
+                // If the Target tries but is unable to connect to any of the StreamHosts and it does not wish to
+                // attempt a connection from its side, it MUST return an <item-not-found/> error to the Requester.
                 xmppSession.send(iq.createError(Condition.ITEM_NOT_FOUND));
                 throw new CompletionException(e);
             }
@@ -80,7 +84,8 @@ final class S5bEvent extends ByteStreamEvent {
 
     @Override
     public final void reject() {
-        // Else if the Target is unwilling to accept the bytestream, it MUST return an error of <not-acceptable/> to the Requester.
+        // Else if the Target is unwilling to accept the bytestream, it MUST return an error of <not-acceptable/>
+        // to the Requester.
         xmppSession.send(iq.createError(Condition.NOT_ACCEPTABLE));
     }
 }

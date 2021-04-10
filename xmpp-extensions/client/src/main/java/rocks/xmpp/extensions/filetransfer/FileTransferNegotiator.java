@@ -35,7 +35,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  */
 public interface FileTransferNegotiator {
 
-    AsyncResult<FileTransfer> accept(IQ iq, String sessionId, FileTransferOffer fileTransferOffer, Object protocol, OutputStream outputStream);
+    AsyncResult<FileTransfer> accept(IQ iq, String sessionId, FileTransferOffer fileTransferOffer, Object protocol,
+                                     OutputStream outputStream);
 
     void reject(IQ iq);
 }

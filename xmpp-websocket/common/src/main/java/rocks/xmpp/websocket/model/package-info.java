@@ -23,7 +23,8 @@
  */
 
 /**
- * Provides XML schema implementations of <a href="https://tools.ietf.org/html/rfc7395">XMPP Subprotocol for WebSocket</a>.
+ * Provides XML schema implementations of <a href="https://tools.ietf.org/html/rfc7395">XMPP Subprotocol for
+ * WebSocket</a>.
  *
  * @since 0.7.0
  */

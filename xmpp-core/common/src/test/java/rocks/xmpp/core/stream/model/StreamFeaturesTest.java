@@ -60,9 +60,11 @@ public class StreamFeaturesTest extends XmlTest {
 
     @Test
     public void marshalStreamFeatures() throws JAXBException, XMLStreamException {
-        StreamFeatures streamFeatures = new StreamFeatures(Collections.singleton(new Mechanisms(Collections.singleton("PLAIN"))));
+        StreamFeatures streamFeatures =
+                new StreamFeatures(Collections.singleton(new Mechanisms(Collections.singleton("PLAIN"))));
         String xml = marshal(streamFeatures);
-        Assert.assertEquals(xml, "<stream:features><mechanisms xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\"><mechanism>PLAIN</mechanism></mechanisms></stream:features>");
+        Assert.assertEquals(xml,
+                "<stream:features><mechanisms xmlns=\"urn:ietf:params:xml:ns:xmpp-sasl\"><mechanism>PLAIN</mechanism></mechanisms></stream:features>");
     }
 
     @Test

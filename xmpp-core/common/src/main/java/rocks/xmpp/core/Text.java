@@ -41,7 +41,9 @@ import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.util.adapters.LocaleAdapter;
 
 /**
- * A common text element which is used by multiple elements and namespaces in XMPP. This list of elements it is used by includes:
+ * A common text element which is used by multiple elements and namespaces in XMPP. This list of elements it is used by
+ * includes:
+ *
  * <ul>
  * <li>A message's body or subject</li>
  * <li>A presence's status</li>
@@ -49,7 +51,9 @@ import rocks.xmpp.util.adapters.LocaleAdapter;
  * <li>A stream error's text</li>
  * <li>A SASL failure's text</li>
  * </ul>
- * This class is immutable and has a natural ordering which orders its text using a {@link Collator} instance of the locale (if any) and is consistent with {@code equals}.
+ *
+ * <p>This class is immutable and has a natural ordering which orders its text using a {@link Collator} instance of
+ * the locale (if any) and is consistent with {@code equals}.</p>
  *
  * @author Christian Schudt
  * @see Message#getBodies()

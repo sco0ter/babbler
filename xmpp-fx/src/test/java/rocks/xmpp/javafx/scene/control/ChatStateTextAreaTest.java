@@ -59,7 +59,8 @@ public class ChatStateTextAreaTest extends Application {
                 return chatStateTextArea.chatStateProperty().get().toString();
             }
         });
-        chatStateTextArea.chatStateProperty().addListener((observable, oldValue, newValue) -> System.out.println(newValue));
+        chatStateTextArea.chatStateProperty()
+                .addListener((observable, oldValue, newValue) -> System.out.println(newValue));
 
         Button button = new Button("Send");
         button.setOnAction(event -> {

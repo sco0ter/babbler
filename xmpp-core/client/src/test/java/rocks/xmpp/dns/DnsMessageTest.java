@@ -50,11 +50,13 @@ public class DnsMessageTest {
     public void testQuestion() {
         Question question = new Question("test.domain.de", ResourceRecord.Type.SRV, ResourceRecord.Classification.IN);
         byte[] byteBuffer = question.toByteArray();
-        Assert.assertEquals(byteBuffer, new byte[]{4, 't', 'e', 's', 't', 6, 'd', 'o', 'm', 'a', 'i', 'n', 2, 'd', 'e', 0, 0, 33, 0, 1});
+        Assert.assertEquals(byteBuffer,
+                new byte[]{4, 't', 'e', 's', 't', 6, 'd', 'o', 'm', 'a', 'i', 'n', 2, 'd', 'e', 0, 0, 33, 0, 1});
 
         Question question2 = new Question("öäü.com", ResourceRecord.Type.SRV, ResourceRecord.Classification.IN);
         byte[] byteBuffer2 = question2.toByteArray();
-        Assert.assertEquals(byteBuffer2, new byte[]{10, 'x', 'n', '-', '-', '4', 'c', 'a', '9', 'a', 't', 3, 'c', 'o', 'm', 0, 0, 33, 0, 1});
+        Assert.assertEquals(byteBuffer2,
+                new byte[]{10, 'x', 'n', '-', '-', '4', 'c', 'a', '9', 'a', 't', 3, 'c', 'o', 'm', 0, 0, 33, 0, 1});
     }
 
     @Test

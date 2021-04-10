@@ -144,7 +144,8 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
         return write(streamElement, channel::write);
     }
 
-    private CompletionStage<Void> write(final StreamElement streamElement, final Function<StreamElement, ChannelFuture> writeFunction) {
+    private CompletionStage<Void> write(final StreamElement streamElement,
+                                        final Function<StreamElement, ChannelFuture> writeFunction) {
         if (!isClosed() || streamElement == StreamHeader.CLOSING_STREAM_TAG) {
             return completableFutureFromNettyFuture(writeFunction.apply(streamElement));
         } else {

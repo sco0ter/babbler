@@ -41,8 +41,11 @@ import rocks.xmpp.core.Addressable;
  * The implementation of the {@code <storage/>} element in the {@code storage:rosternotes} namespace.
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/extensions/xep-0145.html">XEP-0145: Annotations</a></cite></p>
- * <p>Many modern IM clients offer functionality that enables users to make notes about items in their roster. This comes in handy if users don't have meaningful information in their vCard or if you need to remember additional things related to a roster item.</p>
- * <p>This specification defines a protocol for storing annotations about a given set of entities. Its primary goal is to enable users to store some personal piece of information with their roster items.</p>
+ * <p>Many modern IM clients offer functionality that enables users to make notes about items in their roster. This
+ * comes in handy if users don't have meaningful information in their vCard or if you need to remember additional things
+ * related to a roster item.</p>
+ * <p>This specification defines a protocol for storing annotations about a given set of entities. Its primary goal is
+ * to enable users to store some personal piece of information with their roster items.</p>
  * <p>Annotations are stored using server-side private XML storage (the 'jabber:iq:private' namespace).</p>
  * </blockquote>
  * This class is immutable.

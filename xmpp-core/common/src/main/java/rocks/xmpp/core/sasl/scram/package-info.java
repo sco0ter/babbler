@@ -23,7 +23,8 @@
  */
 
 /**
- * Provides classes for the <a href="http://tools.ietf.org/html/rfc5802">Salted Challenge Response Authentication Mechanism (SCRAM)</a>.
+ * Provides classes for the <a href="http://tools.ietf.org/html/rfc5802">Salted Challenge Response Authentication
+ * Mechanism (SCRAM)</a>.
  */
 package rocks.xmpp.core.sasl.scram;
 

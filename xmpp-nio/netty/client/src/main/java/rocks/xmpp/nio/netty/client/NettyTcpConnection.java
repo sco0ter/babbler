@@ -79,8 +79,11 @@ public final class NettyTcpConnection extends NettyChannelConnection {
      * @param xmppSession             The XMPP session.
      * @param connectionConfiguration The connection configuration.
      */
-    NettyTcpConnection(final Channel channel, final XmppSession xmppSession, final NettyTcpConnectionConfiguration connectionConfiguration) {
-        super(channel, xmppSession, xmppSession.getDebugger() != null ? Collections.singletonList(xmppSession.getDebugger()) : Collections.emptyList(),
+    NettyTcpConnection(final Channel channel, final XmppSession xmppSession,
+                       final NettyTcpConnectionConfiguration connectionConfiguration) {
+        super(channel, xmppSession,
+                xmppSession.getDebugger() != null ? Collections.singletonList(xmppSession.getDebugger())
+                        : Collections.emptyList(),
                 xmppSession::createUnmarshaller,
                 xmppSession.getWriterInterceptors(),
                 xmppSession::createMarshaller,
@@ -108,7 +111,9 @@ public final class NettyTcpConnection extends NettyChannelConnection {
                 xmppSession.notifyException(throwable);
             } else if (!isClosed()) {
                 // If the server closed the connection, initiate a reconnection.
-                xmppSession.notifyException(new StreamErrorException(new StreamError(Condition.UNDEFINED_CONDITION, "Stream closed by server", Locale.ENGLISH, null)));
+                xmppSession.notifyException(new StreamErrorException(
+                        new StreamError(Condition.UNDEFINED_CONDITION, "Stream closed by server", Locale.ENGLISH,
+                                null)));
             }
         });
 
@@ -119,7 +124,8 @@ public final class NettyTcpConnection extends NettyChannelConnection {
 
         this.compressionManager = new CompressionManager(xmppSession, this);
         this.compressionManager.getConfiguredCompressionMethods().clear();
-        this.compressionManager.getConfiguredCompressionMethods().addAll(connectionConfiguration.getCompressionMethods());
+        this.compressionManager.getConfiguredCompressionMethods()
+                .addAll(connectionConfiguration.getCompressionMethods());
 
         this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         this.streamFeaturesManager.addFeatureNegotiator(streamManager);
@@ -135,9 +141,11 @@ public final class NettyTcpConnection extends NettyChannelConnection {
 
     @Override
     public final void secureConnection() throws NoSuchAlgorithmException {
-        final SSLContext sslContext = getConfiguration().getSSLContext() != null ? getConfiguration().getSSLContext() : SSLContext.getDefault();
+        final SSLContext sslContext = getConfiguration().getSSLContext() != null ? getConfiguration().getSSLContext()
+                : SSLContext.getDefault();
         final SslContext sslCtx = new JdkSslContext(sslContext, true, ClientAuth.OPTIONAL);
-        final SslHandler handler = sslCtx.newHandler(channel.alloc(), String.valueOf(xmppSession.getDomain()), connectionConfiguration.getPort());
+        final SslHandler handler = sslCtx.newHandler(channel.alloc(), String.valueOf(xmppSession.getDomain()),
+                connectionConfiguration.getPort());
         final HostnameVerifier verifier = connectionConfiguration.getHostnameVerifier();
         final SSLEngine sslEngine = handler.engine();
 
@@ -151,7 +159,8 @@ public final class NettyTcpConnection extends NettyChannelConnection {
         handshakeFuture.addListener(future -> {
             if (future.isSuccess()) {
                 if (verifier != null && !verifier.verify(xmppSession.getDomain().toString(), sslEngine.getSession())) {
-                    xmppSession.notifyException(new CertificateException("Server failed to authenticate as " + xmppSession.getDomain()));
+                    xmppSession.notifyException(
+                            new CertificateException("Server failed to authenticate as " + xmppSession.getDomain()));
                 } else {
                     logger.log(System.Logger.Level.DEBUG, "Connection has been secured via TLS.");
                 }

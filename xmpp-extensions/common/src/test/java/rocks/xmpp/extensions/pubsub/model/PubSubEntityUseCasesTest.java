@@ -79,14 +79,16 @@ public class PubSubEntityUseCasesTest extends XmlTest {
     public void marshalSubscriptionsRequest() throws JAXBException, XMLStreamException {
         PubSub pubSub = PubSub.withSubscriptions();
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><subscriptions></subscriptions></pubsub>");
+        Assert.assertEquals(xml,
+                "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><subscriptions></subscriptions></pubsub>");
     }
 
     @Test
     public void marshalSubscriptionsRequestWithNode() throws JAXBException, XMLStreamException {
         PubSub pubSub = PubSub.withSubscriptions("princely_musings");
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><subscriptions node=\"princely_musings\"></subscriptions></pubsub>");
+        Assert.assertEquals(xml,
+                "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><subscriptions node=\"princely_musings\"></subscriptions></pubsub>");
     }
 
     @Test
@@ -100,8 +102,10 @@ public class PubSubEntityUseCasesTest extends XmlTest {
                 "      <subscription node='node1' jid='francisco@denmark.lit' subscription='subscribed'/>\n" +
                 "      <subscription node='node2' jid='francisco@denmark.lit' subscription='subscribed'/>\n" +
                 "      <subscription node='node5' jid='francisco@denmark.lit' subscription='unconfigured'/>\n" +
-                "      <subscription node='node6' jid='francisco@denmark.lit' subscription='subscribed' subid='123-abc'/>\n" +
-                "      <subscription node='node6' jid='francisco@denmark.lit' subscription='subscribed' subid='004-yyy'/>\n" +
+                "      <subscription node='node6' jid='francisco@denmark.lit' subscription='subscribed' subid='123-abc'/>\n"
+                +
+                "      <subscription node='node6' jid='francisco@denmark.lit' subscription='subscribed' subid='004-yyy'/>\n"
+                +
                 "    </subscriptions>\n" +
                 "  </pubsub>\n" +
                 "</iq>\n";
@@ -139,14 +143,16 @@ public class PubSubEntityUseCasesTest extends XmlTest {
     public void marshalAffiliations() throws JAXBException, XMLStreamException {
         PubSub pubSub = PubSub.withAffiliations();
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><affiliations></affiliations></pubsub>");
+        Assert.assertEquals(xml,
+                "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><affiliations></affiliations></pubsub>");
     }
 
     @Test
     public void marshalAffiliationsWithNode() throws JAXBException, XMLStreamException {
         PubSub pubSub = PubSub.withAffiliations("node6");
         String xml = marshal(pubSub);
-        Assert.assertEquals(xml, "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><affiliations node=\"node6\"></affiliations></pubsub>");
+        Assert.assertEquals(xml,
+                "<pubsub xmlns=\"http://jabber.org/protocol/pubsub\"><affiliations node=\"node6\"></affiliations></pubsub>");
     }
 
     @Test

@@ -45,7 +45,9 @@ import rocks.xmpp.util.adapters.LocaleAdapter;
  *
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas">8.  XML Stanzas</a></cite></p>
- * <p>After a client and a server (or two servers) have completed stream negotiation, either party can send XML stanzas. Three kinds of XML stanza are defined for the 'jabber:client' and 'jabber:server' namespaces: {@code <message/>}, {@code <presence/>}, and {@code <iq/>}.</p>
+ * <p>After a client and a server (or two servers) have completed stream negotiation, either party can send XML
+ * stanzas. Three kinds of XML stanza are defined for the 'jabber:client' and 'jabber:server' namespaces: {@code
+ * <message/>}, {@code <presence/>}, and {@code <iq/>}.</p>
  * </blockquote>
  *
  * @author Christian Schudt
@@ -119,10 +121,16 @@ public abstract class Stanza implements LanguageElement, StreamElement {
      *
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-attributes-id">8.1.3.  id</a></cite></p>
-     * <p>The 'id' attribute is used by the originating entity to track any response or error stanza that it might receive in relation to the generated stanza from another entity (such as an intermediate server or the intended recipient).</p>
-     * <p>It is up to the originating entity whether the value of the 'id' attribute is unique only within its current stream or unique globally.</p>
-     * <p>For {@code <message/>} and {@code <presence/>} stanzas, it is RECOMMENDED for the originating entity to include an 'id' attribute; for {@code <iq/>} stanzas, it is REQUIRED.</p>
-     * <p>If the generated stanza includes an 'id' attribute then it is REQUIRED for the response or error stanza to also include an 'id' attribute, where the value of the 'id' attribute MUST match that of the generated stanza.</p>
+     * <p>The 'id' attribute is used by the originating entity to track any response or error stanza that it might
+     * receive in relation to the generated stanza from another entity (such as an intermediate server or the intended
+     * recipient).</p>
+     * <p>It is up to the originating entity whether the value of the 'id' attribute is unique only within its current
+     * stream or unique globally.</p>
+     * <p>For {@code <message/>} and {@code <presence/>} stanzas, it is RECOMMENDED for the originating entity to
+     * include an 'id' attribute; for {@code <iq/>} stanzas, it is REQUIRED.</p>
+     * <p>If the generated stanza includes an 'id' attribute then it is REQUIRED for the response or error stanza to
+     * also include an 'id' attribute, where the value of the 'id' attribute MUST match that of the generated
+     * stanza.</p>
      * </blockquote>
      *
      * @return The id.
@@ -170,7 +178,10 @@ public abstract class Stanza implements LanguageElement, StreamElement {
      *
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-attributes-lang">8.1.5.  xml:lang</a></cite></p>
-     * <p>A stanza SHOULD possess an 'xml:lang' attribute (as defined in Section 2.12 of [XML]) if the stanza contains XML character data that is intended to be presented to a human user (as explained in [CHARSETS], "internationalization is for humans"). The value of the 'xml:lang' attribute specifies the default language of any such human-readable XML character data.</p>
+     * <p>A stanza SHOULD possess an 'xml:lang' attribute (as defined in Section 2.12 of [XML]) if the stanza contains
+     * XML character data that is intended to be presented to a human user (as explained in [CHARSETS],
+     * "internationalization is for humans"). The value of the 'xml:lang' attribute specifies the default language of
+     * any such human-readable XML character data.</p>
      * </blockquote>
      *
      * @return The language.
@@ -223,13 +234,17 @@ public abstract class Stanza implements LanguageElement, StreamElement {
      * <blockquote>
      * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#stanzas-error">8.3.  Stanza Errors</a></cite></p>
      * <div>
-     * Stanza-related errors are handled in a manner similar to stream errors. Unlike stream errors, stanza errors are recoverable; therefore, they do not result in termination of the XML stream and underlying TCP connection. Instead, the entity that discovers the error condition returns an error stanza, which is a stanza that:
+     * Stanza-related errors are handled in a manner similar to stream errors. Unlike stream errors, stanza errors are
+     * recoverable; therefore, they do not result in termination of the XML stream and underlying TCP connection.
+     * Instead, the entity that discovers the error condition returns an error stanza, which is a stanza that:
      * <ul>
      * <li>is of the same kind (message, presence, or IQ) as the generated stanza that triggered the error</li>
      * <li>has a 'type' attribute set to a value of "error"</li>
      * <li>typically swaps the 'from' and 'to' addresses of the generated stanza</li>
      * <li>mirrors the 'id' attribute (if any) of the generated stanza that triggered the error</li>
-     * <li>contains an {@code <error/>} child element that specifies the error condition and therefore provides a hint regarding actions that the sender might be able to take in an effort to remedy the error (however, it is not always possible to remedy the error)</li>
+     * <li>contains an {@code <error/>} child element that specifies the error condition and therefore provides a hint
+     * regarding actions that the sender might be able to take in an effort to remedy the error
+     * (however, it is not always possible to remedy the error)</li>
      * </ul>
      * </div>
      * </blockquote>
@@ -269,12 +284,16 @@ public abstract class Stanza implements LanguageElement, StreamElement {
     public abstract Stanza createError(Condition condition);
 
     /**
-     * Checks if a stanza is addressed either to itself or to the server. This is useful to check, if it's allowed to send a stanza before stream negotiation has completed.
-     * 
+     * Checks if a stanza is addressed either to itself or to the server. This is useful to check, if it's allowed to
+     * send a stanza before stream negotiation has completed.
+     *
      * <blockquote>
-     * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-negotiation-complete">4.3.5.  Completion of Stream Negotiation</a></cite></p>
+     * <p><cite><a href="https://xmpp.org/rfcs/rfc6120.html#streams-negotiation-complete">4.3.5.  Completion of Stream
+     * Negotiation</a></cite></p>
      * <div>
-     * The initiating entity MUST NOT attempt to send XML stanzas to entities other than itself (i.e., the client's connected resource or any other authenticated resource of the client's account) or the server to which it is connected until stream negotiation has been completed.
+     * The initiating entity MUST NOT attempt to send XML stanzas to entities other than itself (i.e., the client's
+     * connected resource or any other authenticated resource of the client's account) or the server
+     * to which it is connected until stream negotiation has been completed.
      * </div>
      * </blockquote>
      *
@@ -283,7 +302,8 @@ public abstract class Stanza implements LanguageElement, StreamElement {
      * @param connectedResource The connected resource.
      * @return True, if the stanza is addressed to itself or to the server.
      */
-    public static boolean isToItselfOrServer(final Stanza stanza, final CharSequence domain, final Jid connectedResource) {
+    public static boolean isToItselfOrServer(final Stanza stanza, final CharSequence domain,
+                                             final Jid connectedResource) {
         if (stanza instanceof Presence && stanza.getTo() == null) {
             return false;
         }
@@ -292,7 +312,8 @@ public abstract class Stanza implements LanguageElement, StreamElement {
         }
         final Jid toBare = stanza.getTo().asBareJid();
         return (connectedResource != null && toBare.equals(connectedResource.asBareJid()))
-                || (domain != null && (toBare.equals(Jid.ofDomain(domain)) || toBare.toString().endsWith("." + domain)));
+                ||
+                (domain != null && (toBare.equals(Jid.ofDomain(domain)) || toBare.toString().endsWith("." + domain)));
     }
 
     @Override

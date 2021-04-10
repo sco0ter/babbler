@@ -45,12 +45,14 @@ import rocks.xmpp.extensions.rpc.model.Value;
 /**
  * This manager allows you to call remote procedures and handle inbound calls, if enabled.
  *
- * <p>By default this manager is disabled. If you want to support RPC (i.e. handle inbound calls) {@linkplain #setRpcHandler(RpcHandler) set a RPC handler}, which allows you to handle inbound calls.</p>
+ * <p>By default this manager is disabled. If you want to support RPC (i.e. handle inbound calls) {@linkplain
+ * #setRpcHandler(RpcHandler) set a RPC handler}, which allows you to handle inbound calls.</p>
  *
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
  */
-public abstract class AbstractRpcManager extends AbstractIQHandler implements InfoProvider, RpcManager, ExtensionProtocol {
+public abstract class AbstractRpcManager extends AbstractIQHandler
+        implements InfoProvider, RpcManager, ExtensionProtocol {
 
     private static final Set<String> FEATURES = Collections.singleton(Rpc.NAMESPACE);
 
@@ -115,7 +117,8 @@ public abstract class AbstractRpcManager extends AbstractIQHandler implements In
     @Override
     public final DiscoverableInfo getInfo(Jid to, Jid from, String node, Locale locale) {
         if (isEnabled()) {
-            return new InfoDiscovery(Collections.singleton(Identity.automationRpc()), FEATURES, Collections.emptyList());
+            return new InfoDiscovery(Collections.singleton(Identity.automationRpc()), FEATURES,
+                    Collections.emptyList());
         }
         return null;
     }

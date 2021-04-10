@@ -96,7 +96,9 @@ public final class StreamInitiationManager extends Manager implements FileTransf
         // Currently, there's only one profile in XMPP, namely XEP-0096 SI File Transfer.
         profileManagers.put(SIFileTransferOffer.NAMESPACE, (iq, streamInitiation) -> {
             FileTransferManager fileTransferManager = xmppSession.getManager(FileTransferManager.class);
-            fileTransferManager.fileTransferOffered(iq, streamInitiation.getId(), streamInitiation.getMimeType(), (FileTransferOffer) streamInitiation.getProfileElement(), streamInitiation, StreamInitiationManager.this);
+            fileTransferManager.fileTransferOffered(iq, streamInitiation.getId(), streamInitiation.getMimeType(),
+                    (FileTransferOffer) streamInitiation.getProfileElement(), streamInitiation,
+                    StreamInitiationManager.this);
         });
 
         iqHandler = new AbstractIQHandler(StreamInitiation.class, IQ.Type.SET) {
@@ -112,7 +114,8 @@ public final class StreamInitiationManager extends Manager implements FileTransf
                     if (dataForm != null) {
                         DataForm.Field field = dataForm.findField(STREAM_METHOD);
                         if (field != null) {
-                            List<String> streamMethods = field.getOptions().stream().map(DataForm.Option::getValue).collect(Collectors.toList());
+                            List<String> streamMethods = field.getOptions().stream().map(DataForm.Option::getValue)
+                                    .collect(Collectors.toList());
                             if (!Collections.disjoint(streamMethods, getSupportedStreamMethods())) {
                                 // Request contains valid streams
                                 noValidStreams = false;
@@ -121,12 +124,14 @@ public final class StreamInitiationManager extends Manager implements FileTransf
                     }
                 }
                 if (noValidStreams) {
-                    return iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST, StreamInitiation.NO_VALID_STREAMS));
+                    return iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST,
+                            StreamInitiation.NO_VALID_STREAMS));
                 } else {
                     ProfileManager profileManager = profileManagers.get(streamInitiation.getProfile());
 
                     if (profileManager == null) {
-                        return iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST, StreamInitiation.BAD_PROFILE));
+                        return iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST,
+                                StreamInitiation.BAD_PROFILE));
                     } else {
                         profileManager.handle(iq, streamInitiation);
                         return null;
@@ -152,12 +157,13 @@ public final class StreamInitiationManager extends Manager implements FileTransf
      * Initiates a stream with another entity.
      *
      * @param receiver The receiver, i.e. the XMPP entity you want to negotiate a stream.
-     * @param profile  The profile. Currently there's only the {@link rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer} profile.
+     * @param profile  The profile. Currently there's only the {@link SIFileTransferOffer} profile.
      * @param mimeType The mime type of the stream.
      * @param timeout  The timeout, which wait until the stream has been negotiated.
      * @return The async result with the output stream which has been negotiated.
      */
-    public AsyncResult<ByteStreamSession> initiateStream(Jid receiver, SIFileTransferOffer profile, String mimeType, Duration timeout) {
+    public AsyncResult<ByteStreamSession> initiateStream(Jid receiver, SIFileTransferOffer profile, String mimeType,
+                                                         Duration timeout) {
         return this.initiateStream(receiver, profile, mimeType, timeout, UUID.randomUUID().toString());
     }
 
@@ -165,20 +171,26 @@ public final class StreamInitiationManager extends Manager implements FileTransf
      * Initiates a stream with another entity.
      *
      * @param receiver  The receiver, i.e. the XMPP entity you want to negotiate a stream.
-     * @param profile   The profile. Currently there's only the {@link rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer} profile.
+     * @param profile   The profile. Currently there's only the {@link SIFileTransferOffer} profile.
      * @param mimeType  The mime type of the stream.
      * @param timeout   The timeout, which wait until the stream has been negotiated.
      * @param sessionId The session id.
      * @return The async result with the output stream which has been negotiated.
      */
-    public AsyncResult<ByteStreamSession> initiateStream(Jid receiver, SIFileTransferOffer profile, String mimeType, Duration timeout, String sessionId) {
+    public AsyncResult<ByteStreamSession> initiateStream(Jid receiver, SIFileTransferOffer profile, String mimeType,
+                                                         Duration timeout, String sessionId) {
 
         // Offer stream methods.
-        List<DataForm.Option> options = getSupportedStreamMethods().stream().map(DataForm.Option::new).collect(Collectors.toList());
-        DataForm.Field field = DataForm.Field.builder().name(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).options(options).build();
+        List<DataForm.Option> options =
+                getSupportedStreamMethods().stream().map(DataForm.Option::new).collect(Collectors.toList());
+        DataForm.Field field =
+                DataForm.Field.builder().name(STREAM_METHOD).type(DataForm.Field.Type.LIST_SINGLE).options(options)
+                        .build();
         DataForm dataForm = new DataForm(DataForm.Type.FORM, Collections.singleton(field));
         // Offer the file to the recipient and wait until it's accepted.
-        return xmppSession.query(IQ.set(receiver, new StreamInitiation(Objects.requireNonNull(sessionId), SIFileTransferOffer.NAMESPACE, mimeType, profile, new FeatureNegotiation(dataForm))), timeout).thenCompose(result -> {
+        return xmppSession.query(IQ.set(receiver,
+                new StreamInitiation(Objects.requireNonNull(sessionId), SIFileTransferOffer.NAMESPACE, mimeType,
+                        profile, new FeatureNegotiation(dataForm))), timeout).thenCompose(result -> {
 
             // The recipient must response with a stream initiation.
             StreamInitiation streamInitiation = result.getExtension(StreamInitiation.class);
@@ -191,12 +203,15 @@ public final class StreamInitiationManager extends Manager implements FileTransf
             // Choose the stream method to be used based on the recipient's choice.
             switch (streamMethod) {
                 case Socks5ByteStream.NAMESPACE:
-                    byteStreamSessionStage = CompletionStages.withFallback(socks5ByteStreamManager.initiateSession(receiver, sessionId), (future, throwable) -> {
-                                // As fallback, if SOCKS5 negotiation failed, try IBB.
-                                logger.log(System.Logger.Level.DEBUG, "SOCKS5 file transfer failed, falling back to IBB", throwable);
-                                return inBandByteStreamManager.initiateSession(receiver, sessionId);
-                            }
-                    );
+                    byteStreamSessionStage = CompletionStages
+                            .withFallback(socks5ByteStreamManager.initiateSession(receiver, sessionId),
+                                    (future, throwable) -> {
+                                        // As fallback, if SOCKS5 negotiation failed, try IBB.
+                                        logger.log(System.Logger.Level.DEBUG,
+                                                "SOCKS5 file transfer failed, falling back to IBB", throwable);
+                                        return inBandByteStreamManager.initiateSession(receiver, sessionId);
+                                    }
+                            );
                     break;
                 case InBandByteStream.NAMESPACE:
                     byteStreamSessionStage = inBandByteStreamManager.initiateSession(receiver, sessionId);
@@ -214,11 +229,13 @@ public final class StreamInitiationManager extends Manager implements FileTransf
         StreamInitiation streamInitiation = (StreamInitiation) protocol;
         DataForm.Field field = streamInitiation.getFeatureNegotiation().getDataForm().findField(STREAM_METHOD);
         // These are the offered stream methods by the initiator of the file transfer.
-        final List<String> offeredStreamMethods = field.getOptions().stream().map(DataForm.Option::getValue).collect(Collectors.toList());
+        final List<String> offeredStreamMethods =
+                field.getOptions().stream().map(DataForm.Option::getValue).collect(Collectors.toList());
         // In the SI response, only include stream methods, which we actually support.
         offeredStreamMethods.retainAll(getSupportedStreamMethods());
 
-        DataForm.Field fieldReply = DataForm.Field.builder().name(STREAM_METHOD).value(offeredStreamMethods.get(0)).type(DataForm.Field.Type.LIST_SINGLE).build();
+        DataForm.Field fieldReply = DataForm.Field.builder().name(STREAM_METHOD).value(offeredStreamMethods.get(0))
+                .type(DataForm.Field.Type.LIST_SINGLE).build();
         DataForm dataForm = new DataForm(DataForm.Type.SUBMIT, Collections.singleton(fieldReply));
         StreamInitiation siResponse = new StreamInitiation(new FeatureNegotiation(dataForm));
 
@@ -237,14 +254,19 @@ public final class StreamInitiationManager extends Manager implements FileTransf
         xmppSession.send(iq.createResult(siResponse));
 
         // Create a stage, which completes when either S5B or IBB negotiation finished, whichever comes first.
-        CompletionStage<ByteStreamSession> eitherS5bOrIbb = completableFutureS5b.applyToEither(completableFutureIbb, Function.identity());
+        CompletionStage<ByteStreamSession> eitherS5bOrIbb =
+                completableFutureS5b.applyToEither(completableFutureIbb, Function.identity());
         // If any of the previous negotiation failed, always try IBB as fallback.
-        CompletionStage<ByteStreamSession> withFallbackStage = CompletionStages.withFallback(eitherS5bOrIbb, (f, t) -> completableFutureIbb);
+        CompletionStage<ByteStreamSession> withFallbackStage =
+                CompletionStages.withFallback(eitherS5bOrIbb, (f, t) -> completableFutureIbb);
 
         // And then wait until the peer opens the stream.
-        return new AsyncResult<>(withFallbackStage.applyToEither(CompletionStages.timeoutAfter(xmppSession.getConfiguration().getDefaultResponseTimeout().toMillis() * 5, TimeUnit.MILLISECONDS), byteStreamSession -> {
+        return new AsyncResult<>(withFallbackStage.applyToEither(CompletionStages
+                        .timeoutAfter(xmppSession.getConfiguration().getDefaultResponseTimeout().toMillis() * 5,
+                                TimeUnit.MILLISECONDS), byteStreamSession -> {
                     try {
-                        return new FileTransfer(byteStreamSession.getSessionId(), byteStreamSession.getInputStream(), outputStream, fileTransferOffer.getSize());
+                        return new FileTransfer(byteStreamSession.getSessionId(), byteStreamSession.getInputStream(),
+                                outputStream, fileTransferOffer.getSize());
                     } catch (IOException e) {
                         throw new CompletionException(e);
                     }
@@ -256,7 +278,9 @@ public final class StreamInitiationManager extends Manager implements FileTransf
         });
     }
 
-    private static Consumer<ByteStreamEvent> createSessionListener(final String sessionId, final CompletableFuture<ByteStreamSession> completableFuture) {
+    private static Consumer<ByteStreamEvent> createSessionListener(final String sessionId,
+                                                                   final CompletableFuture<ByteStreamSession>
+                                                                           completableFuture) {
         return e -> {
             if (sessionId.equals(e.getSessionId())) {
                 // Auto-accept the inbound stream
@@ -277,7 +301,8 @@ public final class StreamInitiationManager extends Manager implements FileTransf
     }
 
     Collection<String> getSupportedStreamMethods() {
-        Collection<String> allStreamMethods = new ArrayDeque<>(Arrays.asList(Socks5ByteStream.NAMESPACE, InBandByteStream.NAMESPACE));
+        Collection<String> allStreamMethods =
+                new ArrayDeque<>(Arrays.asList(Socks5ByteStream.NAMESPACE, InBandByteStream.NAMESPACE));
         allStreamMethods.retainAll(xmppSession.getEnabledFeatures());
         return allStreamMethods;
     }

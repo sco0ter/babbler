@@ -62,8 +62,7 @@ public interface AvatarManager {
     /**
      * Publishes an avatar.
      *
-     * @param imageData The avatar image data, which must be in PNG format. {@code null}
-     *                  resets the avatar.
+     * @param imageData The avatar image data, which must be in PNG format. {@code null} resets the avatar.
      * @return The async result.
      */
     AsyncResult<Void> publishAvatar(byte[] imageData);
@@ -71,8 +70,7 @@ public interface AvatarManager {
     /**
      * Publishes an avatar.
      *
-     * @param bufferedImage The avatar image, which must be in PNG format. {@code null}
-     *                      resets the avatar.
+     * @param bufferedImage The avatar image, which must be in PNG format. {@code null} resets the avatar.
      * @return The async result.
      * @throws XmppException If the image could not be converted to PNG.
      */

@@ -28,12 +28,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * The implementation of the {@code <too-many-subscriptions/>} pubsub error.
- * This class is a singleton.
+ * The implementation of the {@code <too-many-subscriptions/>} pubsub error. This class is a singleton.
  *
  * @author Christian Schudt
  * @see #TOO_MANY_SUBSCRIPTIONS
- * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-toomany">6.1.3.9 Too Many Subscriptions</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0060.html#subscriber-subscribe-error-toomany">6.1.3.9 Too Many
+ * Subscriptions</a>
  */
 @XmlRootElement(name = "too-many-subscriptions")
 @XmlType(factoryMethod = "create")

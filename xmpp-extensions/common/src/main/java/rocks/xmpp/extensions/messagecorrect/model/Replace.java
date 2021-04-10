@@ -48,7 +48,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * }</pre>
  *
  * <h3>Correcting a Message</h3>
- * 
+ *
  * <pre>{@code
  * Message correctedMessage = new Message(jid, Message.Type.CHAT, "This is the corrected text");
  * correctedMessage.addExtension(new Replace(id));

@@ -29,7 +29,8 @@ import rocks.xmpp.core.XmppException;
 /**
  * This exception is thrown, when no response has been received from an XMPP entity.
  *
- * <p>Usually it is thrown when querying an entity for information with IQ-get or IQ-set and expecting an IQ-result.</p>
+ * <p>Usually it is thrown when querying an entity for information with IQ-get or IQ-set and expecting an
+ * IQ-result.</p>
  *
  * @author Christian Schudt
  */

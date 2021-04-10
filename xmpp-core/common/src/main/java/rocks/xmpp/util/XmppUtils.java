@@ -93,7 +93,9 @@ public final class XmppUtils {
      * }</pre>
      *
      * @param xmlStreamWriter     The underlying XML stream writer.
-     * @param writeStreamNamepace If the stream namespace ('http://etherx.jabber.org/streams') should be written to the root element. This is usually only the case when writing the initial BOSH response with stream features.
+     * @param writeStreamNamepace If the stream namespace ('http://etherx.jabber.org/streams') should be written to the
+     *                            root element. This is usually only the case when writing the initial BOSH response
+     *                            with stream features.
      * @return The prefix-free canonicalization writer.
      */
     public static XMLStreamWriter createXmppStreamWriter(XMLStreamWriter xmlStreamWriter, boolean writeStreamNamepace) {
@@ -112,8 +114,10 @@ public final class XmppUtils {
     }
 
     /**
-     * Creates an branched {@link java.io.InputStream}, which means that everything read by the source stream is written to the target {@link java.io.OutputStream}.
-     * <p>This is useful for reading the XMPP stream and writing the inbound XMPP traffic to an {@link java.io.OutputStream}.</p>
+     * Creates an branched {@link java.io.InputStream}, which means that everything read by the source stream is written
+     * to the target {@link java.io.OutputStream}.
+     * <p>This is useful for reading the XMPP stream and writing the inbound XMPP traffic to an {@link
+     * java.io.OutputStream}.</p>
      *
      * @param source The source stream.
      * @param target The target stream.
@@ -124,7 +128,8 @@ public final class XmppUtils {
     }
 
     /**
-     * Creates a branched {@link java.io.OutputStream}, which means that everything written to the original stream is also written to the branched stream.
+     * Creates a branched {@link java.io.OutputStream}, which means that everything written to the original stream is
+     * also written to the branched stream.
      * <p>This is useful for writing the outbound XMPP traffic to another stream.</p>
      *
      * @param out    The original stream.
@@ -147,7 +152,8 @@ public final class XmppUtils {
     }
 
     /**
-     * Creates a new branched {@link Writer}, which writes every character written to the first writer to the second writer.
+     * Creates a new branched {@link Writer}, which writes every character written to the first writer to the second
+     * writer.
      *
      * @param writer The original writer.
      * @param branch The branched writer.
@@ -201,8 +207,8 @@ public final class XmppUtils {
     }
 
     /**
-     * Creates a {@link JAXBContext} by loading all {@link XmppContext} implementations on the classpath.
-     * {@link XmppContext}s are found by using {@link ServiceLoader}.
+     * Creates a {@link JAXBContext} by loading all {@link XmppContext} implementations on the classpath. {@link
+     * XmppContext}s are found by using {@link ServiceLoader}.
      *
      * @param additionalClasses The additional classes to be bound to the context.
      * @return The JAXBContext

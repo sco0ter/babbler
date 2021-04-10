@@ -27,7 +27,8 @@ package rocks.xmpp.core.stream;
 import rocks.xmpp.core.XmppException;
 
 /**
- * An exception which indicates a failure during stream negotiation, e.g. if TLS or SASL negotiation or compression or resource binding fails.
+ * An exception which indicates a failure during stream negotiation, e.g. if TLS or SASL negotiation or compression or
+ * resource binding fails.
  *
  * @author Christian Schudt
  */

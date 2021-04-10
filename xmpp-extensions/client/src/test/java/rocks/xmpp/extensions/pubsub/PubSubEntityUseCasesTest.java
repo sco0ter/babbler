@@ -42,9 +42,10 @@ public class PubSubEntityUseCasesTest extends BaseTest {
     @Test
     public void testFeatures() {
         TestXmppSession xmppSession = new TestXmppSession();
-        InfoDiscovery infoDiscovery = new InfoDiscovery(null, Arrays.asList("http://jabber.org/protocol/pubsub#collections",
-                "http://jabber.org/protocol/pubsub#config-node",
-                "http://jabber.org/protocol/disco#info"));
+        InfoDiscovery infoDiscovery =
+                new InfoDiscovery(null, Arrays.asList("http://jabber.org/protocol/pubsub#collections",
+                        "http://jabber.org/protocol/pubsub#config-node",
+                        "http://jabber.org/protocol/disco#info"));
         PubSubManager pubSubManager = xmppSession.getManager(PubSubManager.class);
         Collection<PubSubFeature> pubSubFeatures = pubSubManager.createPubSubService(null).getFeatures(infoDiscovery);
 

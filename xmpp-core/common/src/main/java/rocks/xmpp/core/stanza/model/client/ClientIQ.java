@@ -73,6 +73,7 @@ public final class ClientIQ extends IQ {
         if (iq instanceof ClientIQ) {
             return (ClientIQ) iq;
         }
-        return new ClientIQ(iq.getTo(), iq.getType(), iq.getExtension(Object.class), iq.getId(), iq.getFrom(), iq.getLanguage(), iq.getError());
+        return new ClientIQ(iq.getTo(), iq.getType(), iq.getExtension(Object.class), iq.getId(), iq.getFrom(),
+                iq.getLanguage(), iq.getError());
     }
 }

@@ -79,7 +79,8 @@ public final class SIFileTransferOffer implements FileTransferOffer {
         this(name, size, null, null, null, null);
     }
 
-    public SIFileTransferOffer(String name, long size, Instant lastModified, String hash, String description, SIRange range) {
+    public SIFileTransferOffer(String name, long size, Instant lastModified, String hash, String description,
+                               SIRange range) {
         this.name = name;
         this.size = size;
         this.date = lastModified;
@@ -127,7 +128,8 @@ public final class SIFileTransferOffer implements FileTransferOffer {
     public final List<Hash> getHashes() {
         if (hash != null) {
             // XEP-0096 seem to be hex encoded, while XEP-300 are base64 encoded. Convert from hex to byte array.
-            return Collections.unmodifiableList(Collections.singletonList(new Hash(new BigInteger(hash, 16).toByteArray(), "md5")));
+            return Collections.unmodifiableList(
+                    Collections.singletonList(new Hash(new BigInteger(hash, 16).toByteArray(), "md5")));
         } else {
             return Collections.emptyList();
         }
@@ -168,8 +170,10 @@ public final class SIFileTransferOffer implements FileTransferOffer {
         }
 
         /**
-         * @param offset Specifies the position, in bytes, to start transferring the file data from. This defaults to zero (0) if not specified.
-         * @param length Specifies the number of bytes to retrieve starting at offset. This defaults to the length of the file from offset to the end.
+         * @param offset Specifies the position, in bytes, to start transferring the file data from. This defaults to
+         *               zero (0) if not specified.
+         * @param length Specifies the number of bytes to retrieve starting at offset. This defaults to the length of
+         *               the file from offset to the end.
          */
         public SIRange(long offset, long length) {
             this.offset = offset;
@@ -177,7 +181,8 @@ public final class SIFileTransferOffer implements FileTransferOffer {
         }
 
         /**
-         * Gets the position, in bytes, to start transferring the file data from. This defaults to zero (0) if not specified.
+         * Gets the position, in bytes, to start transferring the file data from. This defaults to zero (0) if not
+         * specified.
          *
          * @return The offset.
          */
@@ -187,7 +192,8 @@ public final class SIFileTransferOffer implements FileTransferOffer {
         }
 
         /**
-         * Gets the number of bytes to retrieve starting at offset. This defaults to the length of the file from offset to the end.
+         * Gets the number of bytes to retrieve starting at offset. This defaults to the length of the file from offset
+         * to the end.
          *
          * @return The length.
          */

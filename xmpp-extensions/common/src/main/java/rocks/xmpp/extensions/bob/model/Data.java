@@ -80,8 +80,7 @@ public final class Data {
     }
 
     /**
-     * Constructs the data element.
-     * The content id (cid) is generated automatically (with SHA-1 algorithm).
+     * Constructs the data element. The content id (cid) is generated automatically (with SHA-1 algorithm).
      *
      * @param bytes The bytes.
      * @param type  The type.
@@ -91,8 +90,7 @@ public final class Data {
     }
 
     /**
-     * Constructs the data element.
-     * The content id (cid) is generated automatically (with SHA-1 algorithm).
+     * Constructs the data element. The content id (cid) is generated automatically (with SHA-1 algorithm).
      *
      * @param bytes  The bytes.
      * @param type   The type.
@@ -108,7 +106,9 @@ public final class Data {
     /**
      * Creates the content id.
      *
-     * <p>The 'cid' value SHOULD be of the form algo+hash@bob.xmpp.org, where the "algo" is the hashing algorithm used (e.g., "sha1" for the SHA-1 algorithm as specified in RFC 3174 [11]) and the "hash" is the hex output of the algorithm applied to the binary data itself.</p>
+     * <p>The 'cid' value SHOULD be of the form algo+hash@bob.xmpp.org, where the "algo" is the hashing algorithm used
+     * (e.g., "sha1" for the SHA-1 algorithm as specified in RFC 3174 [11]) and the "hash" is the hex output of the
+     * algorithm applied to the binary data itself.</p>
      *
      * @param data The data.
      * @return The content id.
@@ -118,7 +118,10 @@ public final class Data {
     }
 
     /**
-     * A Content-ID that can be mapped to a cid: URL as specified in <a href="http://tools.ietf.org/html/rfc2111">RFC 2111</a>. The 'cid' value SHOULD be of the form algo+hash@bob.xmpp.org, where the "algo" is the hashing algorithm used (e.g., "sha1" for the SHA-1 algorithm as specified in <a href="http://tools.ietf.org/html/rfc3174">RFC 3174</a>) and the "hash" is the hex output of the algorithm applied to the binary data itself.
+     * A Content-ID that can be mapped to a cid: URL as specified in <a href="http://tools.ietf.org/html/rfc2111">RFC
+     * 2111</a>. The 'cid' value SHOULD be of the form algo+hash@bob.xmpp.org, where the "algo" is the hashing algorithm
+     * used (e.g., "sha1" for the SHA-1 algorithm as specified in <a href="http://tools.ietf.org/html/rfc3174">RFC
+     * 3174</a>) and the "hash" is the hex output of the algorithm applied to the binary data itself.
      *
      * @return The content id.
      */
@@ -127,7 +130,8 @@ public final class Data {
     }
 
     /**
-     * A suggestion regarding how long (in seconds) to cache the data; the meaning matches the Max-Age attribute from <a href="http://tools.ietf.org/html/rfc2965">RFC 2965</a>.
+     * A suggestion regarding how long (in seconds) to cache the data; the meaning matches the Max-Age attribute from <a
+     * href="http://tools.ietf.org/html/rfc2965">RFC 2965</a>.
      *
      * @return The max age.
      */
@@ -136,7 +140,12 @@ public final class Data {
     }
 
     /**
-     * The value of the 'type' attribute MUST match the syntax specified in <a href="http://tools.ietf.org/html/rfc2045">RFC 2045</a>. That is, the value MUST include a top-level media type, the "/" character, and a subtype; in addition, it MAY include one or more optional parameters (e.g., the "audio/ogg" MIME type in the example shown below includes a "codecs" parameter as specified in <a href="http://tools.ietf.org/html/rfc4281">RFC 4281</a>). The "type/subtype" string SHOULD be registered in the <a href="http://www.iana.org/assignments/media-types/media-types.xhtml">IANA MIME Media Types Registry</a>, but MAY be an unregistered or yet-to-be-registered value.
+     * The value of the 'type' attribute MUST match the syntax specified in <a href="http://tools.ietf.org/html/rfc2045">RFC
+     * 2045</a>. That is, the value MUST include a top-level media type, the "/" character, and a subtype; in addition,
+     * it MAY include one or more optional parameters (e.g., the "audio/ogg" MIME type in the example shown below
+     * includes a "codecs" parameter as specified in <a href="http://tools.ietf.org/html/rfc4281">RFC 4281</a>). The
+     * "type/subtype" string SHOULD be registered in the <a href="http://www.iana.org/assignments/media-types/media-types.xhtml">IANA
+     * MIME Media Types Registry</a>, but MAY be an unregistered or yet-to-be-registered value.
      *
      * @return The type.
      */

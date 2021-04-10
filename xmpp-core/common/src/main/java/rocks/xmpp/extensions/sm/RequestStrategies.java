@@ -43,7 +43,8 @@ public final class RequestStrategies {
     }
 
     /**
-     * Requests an ack for every X stanzas. In other words, if X stanzas have been sent and acknowledgement is requested for them.
+     * Requests an ack for every X stanzas. In other words, if X stanzas have been sent and acknowledgement is requested
+     * for them.
      *
      * @param x The stanza count.
      * @return The request strategy.
@@ -62,9 +63,9 @@ public final class RequestStrategies {
     }
 
     /**
-     * Requests an acknowledgement for each message and at the latest after X non-message stanzas (presence or IQ).
-     * E.g. if x = 5 and five presences are sent, a request is sent afterwards.
-     * If a message is sent in between, no request is sent after the fifth presence, because the counter will be reset to 0 after each message.
+     * Requests an acknowledgement for each message and at the latest after X non-message stanzas (presence or IQ). E.g.
+     * if x = 5 and five presences are sent, a request is sent afterwards. If a message is sent in between, no request
+     * is sent after the fifth presence, because the counter will be reset to 0 after each message.
      *
      * @param x The stanza count.
      * @return The request strategy.

@@ -232,9 +232,12 @@
 * Likewise the Roster and Chat classes have been moved from the 'core' to 'im' package to better resemble the separation
   of RFC 6120 and 6121.
 *
+
 Use [Java 8's Functional Interfaces](https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html):
-    * All event listeners have been replaced by `java.util.function.Consumer<T extends EventObject>` (if you used lambda
-      expressions, nothing has changed for you)
+
+* All event listeners have been replaced by `java.util.function.Consumer<T extends EventObject>` (if you used lambda
+  expressions, nothing has changed for you)
+
 * Use [Java 8's Date-Time API](https://docs.oracle.com/javase/8/docs/api/java/time/package-summary.html):
     * `java.util.TimeZone` has been replaced with `java.time.ZoneOffset`
     * `java.util.Date` has been replaced with `java.time.OffsetDateTime` or `java.time.Instant`

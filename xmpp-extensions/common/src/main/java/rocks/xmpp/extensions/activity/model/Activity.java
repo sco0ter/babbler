@@ -203,6 +203,7 @@ public final class Activity {
          * The "doing_chores" activity.
          */
         static final class DoingChores extends AbstractCategory {
+
             DoingChores() {
                 super(Category.DOING_CHORES);
             }
@@ -216,6 +217,7 @@ public final class Activity {
          * The "drinking" activity.
          */
         static final class Drinking extends AbstractCategory {
+
             Drinking() {
                 super(Category.DRINKING);
             }
@@ -229,6 +231,7 @@ public final class Activity {
          * The "eating" activity.
          */
         static final class Eating extends AbstractCategory {
+
             Eating() {
                 super(Category.EATING);
             }
@@ -242,6 +245,7 @@ public final class Activity {
          * The "exercising" activity.
          */
         static final class Exercising extends AbstractCategory {
+
             Exercising() {
                 super(Category.EXERCISING);
             }
@@ -255,6 +259,7 @@ public final class Activity {
          * The "grooming" activity.
          */
         static final class Grooming extends AbstractCategory {
+
             Grooming() {
                 super(Category.GROOMING);
             }
@@ -268,6 +273,7 @@ public final class Activity {
          * The "having_appointment" activity.
          */
         static final class HavingAppointment extends AbstractCategory {
+
             HavingAppointment() {
                 super(Category.HAVING_APPOINTMENT);
             }
@@ -281,6 +287,7 @@ public final class Activity {
          * The "inactive" activity.
          */
         static final class Inactive extends AbstractCategory {
+
             Inactive() {
                 super(Category.INACTIVE);
             }
@@ -294,6 +301,7 @@ public final class Activity {
          * The "relaxing" activity.
          */
         static final class Relaxing extends AbstractCategory {
+
             Relaxing() {
                 super(Category.RELAXING);
             }
@@ -307,6 +315,7 @@ public final class Activity {
          * The "talking" activity.
          */
         static final class Talking extends AbstractCategory {
+
             Talking() {
                 super(Category.TALKING);
             }
@@ -320,6 +329,7 @@ public final class Activity {
          * The "traveling" activity.
          */
         static final class Traveling extends AbstractCategory {
+
             Traveling() {
                 super(Category.TRAVELING);
             }
@@ -333,6 +343,7 @@ public final class Activity {
          * The "doing_chores" activity.
          */
         static final class Undefined extends AbstractCategory {
+
             Undefined() {
                 super(Category.UNDEFINED);
             }
@@ -346,6 +357,7 @@ public final class Activity {
          * The "working" activity.
          */
         static final class Working extends AbstractCategory {
+
             Working() {
                 super(Category.WORKING);
             }

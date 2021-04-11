@@ -308,7 +308,6 @@ public final class BoshConnection extends AbstractConnection {
         // This will still allow for at least 4503599627370495 requests (2^53-1-2^52), which should be sufficient.
         rid.set(new BigInteger(52, new Random()).longValue());
 
-
         // Try if we can connect in order to fail fast if we can't.
         HttpURLConnection connection = null;
         try {

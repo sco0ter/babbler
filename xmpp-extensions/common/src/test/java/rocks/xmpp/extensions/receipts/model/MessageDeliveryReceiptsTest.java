@@ -32,7 +32,6 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.XmlTest;
 import rocks.xmpp.core.stanza.model.Message;
 
-
 /**
  * @author Christian Schudt
  */

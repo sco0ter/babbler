@@ -308,6 +308,7 @@ final class PrefixFreeCanonicalizationWriter implements XMLStreamWriter, Namespa
     }
 
     private interface ElementWriter {
+
         void writeElement(final String prefix, final String localName, final String namespaceURI)
                 throws XMLStreamException;
     }

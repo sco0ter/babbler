@@ -159,6 +159,7 @@ public final class SIFileTransferOffer implements FileTransferOffer {
      * Allows to do ranged transfers.
      */
     public static final class SIRange implements Range {
+
         @XmlAttribute
         private final long offset;
 

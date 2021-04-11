@@ -133,7 +133,6 @@ public class MultiUserChatFormsTest extends XmlTest {
                 "<field type=\"list-single\" var=\"muc#roomconfig_whois\"><value>moderators</value></field>" +
                 "</x>");
 
-
         DataForm dataForm = unmarshal(xml, DataForm.class);
 
         RoomConfiguration roomConfiguration1 = new RoomConfiguration(dataForm);

@@ -51,6 +51,7 @@ import javax.xml.bind.annotation.XmlValue;
  */
 @XmlRootElement(name = "roster")
 public final class RosterDelimiter {
+
     /**
      * roster:delimiter
      */

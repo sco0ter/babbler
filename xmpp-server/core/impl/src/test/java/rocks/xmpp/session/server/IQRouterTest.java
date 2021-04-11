@@ -297,6 +297,7 @@ public class IQRouterTest extends XmlTest {
     }
 
     private static class DummyIQ {
+
     }
 
     private static class DummyIQHandler implements IQHandler {
@@ -313,6 +314,7 @@ public class IQRouterTest extends XmlTest {
     }
 
     private static class NullIQ {
+
     }
 
     private static class NullIQHandler implements IQHandler {
@@ -329,6 +331,7 @@ public class IQRouterTest extends XmlTest {
     }
 
     private static class ExceptionIQ {
+
     }
 
     private static class ExceptionIQHandler implements IQHandler {

@@ -41,4 +41,5 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "unsupported-conditions")
 public final class UnsupportedConditions extends AdvancedMessageProcessingError {
+
 }

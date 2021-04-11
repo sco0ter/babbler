@@ -175,7 +175,6 @@ public final class RoomInformation {
         return roomInfo != null && roomInfo.isChangeSubjectAllowed();
     }
 
-
     // https://xmpp.org/extensions/xep-0045.html#registrar-features
 
     /**

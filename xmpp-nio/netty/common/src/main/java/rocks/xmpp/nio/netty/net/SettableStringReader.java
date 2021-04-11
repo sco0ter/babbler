@@ -30,7 +30,9 @@ import java.io.Reader;
 final class SettableStringReader extends Reader {
 
     String str;
+
     private int length;
+
     private int next = 0;
 
     public void setString(String s) {

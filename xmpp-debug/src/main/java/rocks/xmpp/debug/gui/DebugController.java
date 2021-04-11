@@ -162,7 +162,6 @@ public final class DebugController implements Initializable {
     @FXML
     private TableColumn<StanzaEntry, Jid> columnTo;
 
-
     public DebugController() {
 
         viewModel = new DebugViewModel();
@@ -592,7 +591,6 @@ public final class DebugController implements Initializable {
                 || (stanzaEntry.getXml().contains(searchField.getText()) && !cbIgnoreCase.isSelected())
                 || (containsIgnoreCase(stanzaEntry.getXml(), searchField.getText()) && cbIgnoreCase.isSelected()));
     }
-
 
     void appendTextInbound(final String s) {
         txtInbound.appendText(s);

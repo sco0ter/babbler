@@ -54,6 +54,7 @@ import javax.xml.bind.annotation.XmlValue;
  */
 @XmlRootElement(name = "nick")
 public final class Nickname {
+
     /**
      * http://jabber.org/protocol/nick
      */

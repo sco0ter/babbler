@@ -57,12 +57,10 @@ public class JingleFileTransferReceiver {
                 JingleFileTransferManager jingleFileTransferManager =
                         xmppSession.getManager(JingleFileTransferManager.class);
 
-
                 // Connect
                 xmppSession.connect();
                 // Login
                 xmppSession.login("222", "222", "filetransfer");
-
 
             } catch (Exception e) {
                 throw new RuntimeException(e);

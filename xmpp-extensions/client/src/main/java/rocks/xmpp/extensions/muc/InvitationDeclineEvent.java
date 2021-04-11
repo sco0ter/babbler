@@ -69,7 +69,6 @@ public final class InvitationDeclineEvent extends EventObject {
         return roomAddress;
     }
 
-
     /**
      * Gets the reason for the decline.
      *

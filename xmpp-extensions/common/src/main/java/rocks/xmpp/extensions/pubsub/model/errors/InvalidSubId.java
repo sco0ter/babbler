@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "invalid-subid")
 @XmlType(factoryMethod = "create")
 public final class InvalidSubId extends PubSubError {
+
     InvalidSubId() {
     }
 

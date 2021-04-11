@@ -56,7 +56,6 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  */
 public final class ClientStreamManager extends AbstractStreamManager implements WriterInterceptor {
 
-
     private final XmppSession xmppSession;
 
     /**
@@ -157,7 +156,6 @@ public final class ClientStreamManager extends AbstractStreamManager implements 
     protected final void onAcknowledged(Stanza stanza) {
         xmppSession.markAcknowledged(stanza);
     }
-
 
     /**
      * Returns true, as soon as the server has enabled stream management, i.e. if both client and server are using

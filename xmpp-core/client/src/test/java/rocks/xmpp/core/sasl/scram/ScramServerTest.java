@@ -33,6 +33,7 @@ import org.testng.annotations.Test;
  * @author Christian Schudt
  */
 public class ScramServerTest {
+
     @Test(expectedExceptions = SaslException.class)
     public void testScramServerInvalidUsername() throws SaslException {
         ScramServer.validateAndGetUsername("=dw");

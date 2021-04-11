@@ -34,7 +34,6 @@
 @XmlSchema(namespace = "urn:xmpp:errors", elementFormDefault = XmlNsForm.QUALIFIED)
 package rocks.xmpp.extensions.errors.model;
 
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlNsForm;

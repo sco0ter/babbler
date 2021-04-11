@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "no-valid-streams")
 @XmlType(factoryMethod = "create")
 final class NoValidStreams {
+
     NoValidStreams() {
     }
 

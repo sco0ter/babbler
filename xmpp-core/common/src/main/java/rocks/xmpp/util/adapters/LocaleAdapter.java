@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
  * @author Christian Schudt
  */
 public final class LocaleAdapter extends XmlAdapter<String, Locale> {
+
     @Override
     public final Locale unmarshal(String v) {
         return v != null ? Locale.forLanguageTag(v) : null;

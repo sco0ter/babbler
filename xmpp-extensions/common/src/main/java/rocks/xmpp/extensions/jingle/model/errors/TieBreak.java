@@ -36,4 +36,5 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "tie-break")
 public final class TieBreak extends JingleError {
+
 }

@@ -78,7 +78,6 @@ public final class SampleApplication {
             try {
                 NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup(1);
 
-
                 XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                         .debugger(ConsoleDebugger.class)
                         .authenticationMechanisms("PLAIN")
@@ -128,10 +127,8 @@ public final class SampleApplication {
                                     .eventLoopGroup(eventLoopGroup)
                                     .build();
 
-
                     XmppClient xmppClient =
                             XmppClient.create("localhost", configuration, socketConnectionConfiguration);
-
 
                     // Listen for inbound messages.
                     xmppClient.addInboundMessageListener(
@@ -169,7 +166,6 @@ public final class SampleApplication {
                     System.out.println(System.currentTimeMillis() - now);
                     //logger.info(xmppClient.getActiveConnection().toString());
                 }
-
 
             } catch (XmppException | GeneralSecurityException e) {
                 throw new RuntimeException(e);

@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlTransient
 @XmlSeeAlso({InvisibleCommand.Invisible.class, InvisibleCommand.Visible.class})
 public abstract class InvisibleCommand {
+
     /**
      * urn:xmpp:invisible:0
      */
@@ -58,13 +59,13 @@ public abstract class InvisibleCommand {
     private InvisibleCommand() {
     }
 
-
     /**
      * The implementation of the {@code <invisible/>} element in the {@code urn:xmpp:invisible:0} namespace.
      */
     @XmlRootElement
     @XmlType(factoryMethod = "create")
     static final class Invisible extends InvisibleCommand {
+
         private Invisible() {
         }
 
@@ -80,6 +81,7 @@ public abstract class InvisibleCommand {
     @XmlRootElement
     @XmlType(factoryMethod = "create")
     static final class Visible extends InvisibleCommand {
+
         private Visible() {
         }
 

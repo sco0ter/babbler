@@ -199,6 +199,7 @@ public final class Rpc {
      * The implementation of a method response.
      */
     public static final class MethodResponse {
+
         @XmlElementWrapper(name = "params")
         @XmlElement(name = "param")
         private final List<Parameter> parameters = new ArrayList<>();

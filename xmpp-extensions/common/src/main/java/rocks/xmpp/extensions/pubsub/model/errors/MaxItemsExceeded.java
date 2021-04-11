@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "max-items-exceeded")
 @XmlType(factoryMethod = "create")
 public final class MaxItemsExceeded extends PubSubError {
+
     MaxItemsExceeded() {
     }
 

@@ -123,6 +123,7 @@ public final class OfflineMessage {
     }
 
     public static final class Item {
+
         @XmlAttribute
         private final String node;
 

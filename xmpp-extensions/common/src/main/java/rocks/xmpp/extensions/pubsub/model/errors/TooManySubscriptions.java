@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "too-many-subscriptions")
 @XmlType(factoryMethod = "create")
 public final class TooManySubscriptions extends PubSubError {
+
     TooManySubscriptions() {
     }
 

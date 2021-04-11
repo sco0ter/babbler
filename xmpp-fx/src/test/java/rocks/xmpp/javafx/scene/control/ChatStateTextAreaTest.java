@@ -39,6 +39,7 @@ import javafx.stage.Stage;
  * @author Christian Schudt
  */
 public class ChatStateTextAreaTest extends Application {
+
     @Override
     public void start(Stage primaryStage) {
 

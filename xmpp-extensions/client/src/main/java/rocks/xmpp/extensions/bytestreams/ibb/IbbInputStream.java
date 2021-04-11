@@ -42,6 +42,7 @@ import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
  * @author Christian Schudt
  */
 final class IbbInputStream extends InputStream {
+
     final BlockingQueue<InBandByteStream.Data> queue = new LinkedBlockingQueue<>();
 
     private final IbbSession ibbSession;

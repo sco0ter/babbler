@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "closed-node")
 @XmlType(factoryMethod = "create")
 public final class ClosedNode extends PubSubError {
+
     ClosedNode() {
     }
 

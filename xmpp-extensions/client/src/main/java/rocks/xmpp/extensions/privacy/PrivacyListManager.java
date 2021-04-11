@@ -65,6 +65,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * @author Christian Schudt
  */
 public final class PrivacyListManager extends Manager {
+
     private final Set<Consumer<PrivacyListEvent>> privacyListListeners = new CopyOnWriteArraySet<>();
 
     private final IQHandler iqHandler;
@@ -91,7 +92,6 @@ public final class PrivacyListManager extends Manager {
             }
         };
     }
-
 
     @Override
     protected void onEnable() {

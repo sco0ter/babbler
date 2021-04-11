@@ -182,6 +182,7 @@ public final class Validation {
          * Indicates, that the value(s) should simply match the field type and datatype constraints.
          */
         public static final class Basic extends ValidationMethod {
+
             @Override
             public final boolean equals(Object o) {
                 return o == this || o instanceof Basic;
@@ -330,6 +331,7 @@ public final class Validation {
      * @see <a href="https://xmpp.org/extensions/xep-0122.html#usecases-ranges">3.3 Selection Ranges in "list-multi"</a>
      */
     public static final class ListRange {
+
         @XmlAttribute
         private final Integer min;
 

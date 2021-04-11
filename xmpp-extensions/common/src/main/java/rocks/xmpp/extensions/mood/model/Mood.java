@@ -324,6 +324,7 @@ public final class Mood {
      * Impressed with fear or apprehension; in fear; apprehensive.
      */
     public static final class Afraid extends Value {
+
         public Afraid() {
         }
 
@@ -336,6 +337,7 @@ public final class Mood {
      * Astonished; confounded with fear, surprise or wonder.
      */
     public static final class Amazed extends Value {
+
         public Amazed() {
         }
 
@@ -349,6 +351,7 @@ public final class Mood {
      * lustful, sexual, etc.
      */
     public static final class Amorous extends Value {
+
         public Amorous() {
         }
 
@@ -362,6 +365,7 @@ public final class Mood {
      * something, usually combined with an urge to harm.
      */
     public static final class Angry extends Value {
+
         public Angry() {
         }
 
@@ -374,6 +378,7 @@ public final class Mood {
      * To be disturbed or irritated, especially by continued or repeated acts.
      */
     public static final class Annoyed extends Value {
+
         public Annoyed() {
         }
 
@@ -387,6 +392,7 @@ public final class Mood {
      * being in painful suspense.
      */
     public static final class Anxious extends Value {
+
         public Anxious() {
         }
 
@@ -399,6 +405,7 @@ public final class Mood {
      * To be stimulated in one's feelings, especially to be sexually stimulated.
      */
     public static final class Aroused extends Value {
+
         public Aroused() {
         }
 
@@ -411,6 +418,7 @@ public final class Mood {
      * To be stimulated in one's feelings, especially to be sexually stimulated.
      */
     public static final class Ashamed extends Value {
+
         public Ashamed() {
         }
 
@@ -423,6 +431,7 @@ public final class Mood {
      * Suffering from boredom; uninterested, without attention.
      */
     public static final class Bored extends Value {
+
         public Bored() {
         }
 
@@ -435,6 +444,7 @@ public final class Mood {
      * Strong in the face of fear; courageous.
      */
     public static final class Brave extends Value {
+
         public Brave() {
         }
 
@@ -447,6 +457,7 @@ public final class Mood {
      * Peaceful, quiet.
      */
     public static final class Calm extends Value {
+
         public Calm() {
         }
 
@@ -459,6 +470,7 @@ public final class Mood {
      * Taking care or caution; tentative.
      */
     public static final class Cautious extends Value {
+
         public Cautious() {
         }
 
@@ -471,6 +483,7 @@ public final class Mood {
      * Feeling the sensation of coldness, especially to the point of discomfort.
      */
     public static final class Cold extends Value {
+
         public Cold() {
         }
 
@@ -483,6 +496,7 @@ public final class Mood {
      * Feeling very sure of or positive about something, especially about one's own capabilities.
      */
     public static final class Confident extends Value {
+
         public Confident() {
         }
 
@@ -495,6 +509,7 @@ public final class Mood {
      * Chaotic, jumbled or muddled.
      */
     public static final class Confused extends Value {
+
         public Confused() {
         }
 
@@ -507,6 +522,7 @@ public final class Mood {
      * Feeling introspective or thoughtful.
      */
     public static final class Contemplative extends Value {
+
         public Contemplative() {
         }
 
@@ -519,6 +535,7 @@ public final class Mood {
      * Pleased at the satisfaction of a want or desire; satisfied.
      */
     public static final class Contented extends Value {
+
         public Contented() {
         }
 
@@ -531,6 +548,7 @@ public final class Mood {
      * Grouchy, irritable; easily upset.
      */
     public static final class Cranky extends Value {
+
         public Cranky() {
         }
 
@@ -543,6 +561,7 @@ public final class Mood {
      * Feeling out of control; feeling overly excited or enthusiastic.
      */
     public static final class Crazy extends Value {
+
         public Crazy() {
         }
 
@@ -555,6 +574,7 @@ public final class Mood {
      * Feeling original, expressive, or imaginative.
      */
     public static final class Creative extends Value {
+
         public Creative() {
         }
 
@@ -567,6 +587,7 @@ public final class Mood {
      * Inquisitive; tending to ask questions, investigate, or explore.
      */
     public static final class Curious extends Value {
+
         public Curious() {
         }
 
@@ -579,6 +600,7 @@ public final class Mood {
      * Feeling sad and dispirited.
      */
     public static final class Dejected extends Value {
+
         public Dejected() {
         }
 
@@ -591,6 +613,7 @@ public final class Mood {
      * Severely despondent and unhappy.
      */
     public static final class Depressed extends Value {
+
         public Depressed() {
         }
 
@@ -603,6 +626,7 @@ public final class Mood {
      * Defeated of expectation or hope; let down.
      */
     public static final class Disappointed extends Value {
+
         public Disappointed() {
         }
 
@@ -615,6 +639,7 @@ public final class Mood {
      * Filled with disgust; irritated and out of patience.
      */
     public static final class Disgusted extends Value {
+
         public Disgusted() {
         }
 
@@ -627,6 +652,7 @@ public final class Mood {
      * Feeling a sudden or complete loss of courage in the face of trouble or danger.
      */
     public static final class Dismayed extends Value {
+
         public Dismayed() {
         }
 
@@ -639,6 +665,7 @@ public final class Mood {
      * Having one's attention diverted; preoccupied.
      */
     public static final class Distracted extends Value {
+
         public Distracted() {
         }
 
@@ -651,6 +678,7 @@ public final class Mood {
      * Having a feeling of shameful discomfort.
      */
     public static final class Embarrassed extends Value {
+
         public Embarrassed() {
         }
 
@@ -663,6 +691,7 @@ public final class Mood {
      * Feeling pain by the excellence or good fortune of another.
      */
     public static final class Envious extends Value {
+
         public Envious() {
         }
 
@@ -675,6 +704,7 @@ public final class Mood {
      * Having great enthusiasm.
      */
     public static final class Excited extends Value {
+
         public Excited() {
         }
 
@@ -687,6 +717,7 @@ public final class Mood {
      * In the mood for flirting.
      */
     public static final class Flirtatious extends Value {
+
         public Flirtatious() {
         }
 
@@ -700,6 +731,7 @@ public final class Mood {
      * fulfill a desire.
      */
     public static final class Frustrated extends Value {
+
         public Frustrated() {
         }
 
@@ -712,6 +744,7 @@ public final class Mood {
      * Feeling appreciation or thanks.
      */
     public static final class Grateful extends Value {
+
         public Grateful() {
         }
 
@@ -724,6 +757,7 @@ public final class Mood {
      * Feeling very sad about something, especially something lost; mournful; sorrowful.
      */
     public static final class Grieving extends Value {
+
         public Grieving() {
         }
 
@@ -736,6 +770,7 @@ public final class Mood {
      * Unhappy and irritable.
      */
     public static final class Grumpy extends Value {
+
         public Grumpy() {
         }
 
@@ -748,6 +783,7 @@ public final class Mood {
      * Feeling responsible for wrongdoing; feeling blameworthy.
      */
     public static final class Guilty extends Value {
+
         public Guilty() {
         }
 
@@ -761,6 +797,7 @@ public final class Mood {
      * of enjoyment; enjoying good of any kind, as peace, tranquillity, comfort; contented; joyous.
      */
     public static final class Happy extends Value {
+
         public Happy() {
         }
 
@@ -773,6 +810,7 @@ public final class Mood {
      * Having a positive feeling, belief, or expectation that something wished for can or will happen.
      */
     public static final class Hopeful extends Value {
+
         public Hopeful() {
         }
 
@@ -785,6 +823,7 @@ public final class Mood {
      * Feeling the sensation of heat, especially to the point of discomfort.
      */
     public static final class Hot extends Value {
+
         public Hot() {
         }
 
@@ -797,6 +836,7 @@ public final class Mood {
      * Having or showing a modest or low estimate of one's own importance; feeling lowered in dignity or importance.
      */
     public static final class Humbled extends Value {
+
         public Humbled() {
         }
 
@@ -809,6 +849,7 @@ public final class Mood {
      * Feeling deprived of dignity or self-respect.
      */
     public static final class Humiliated extends Value {
+
         public Humiliated() {
         }
 
@@ -821,6 +862,7 @@ public final class Mood {
      * Having a physical need for food.
      */
     public static final class Hungry extends Value {
+
         public Hungry() {
         }
 
@@ -833,6 +875,7 @@ public final class Mood {
      * Wounded, injured, or pained, whether physically or emotionally.
      */
     public static final class Hurt extends Value {
+
         public Hurt() {
         }
 
@@ -845,6 +888,7 @@ public final class Mood {
      * Favourably affected by something or someone.
      */
     public static final class Impressed extends Value {
+
         public Impressed() {
         }
 
@@ -857,6 +901,7 @@ public final class Mood {
      * Feeling amazement at something or someone; or feeling a combination of fear and reverence.
      */
     public static final class InAwe extends Value {
+
         public InAwe() {
         }
 
@@ -869,6 +914,7 @@ public final class Mood {
      * Feeling strong affection, care, liking, or attraction..
      */
     public static final class InLove extends Value {
+
         public InLove() {
         }
 
@@ -881,6 +927,7 @@ public final class Mood {
      * Showing anger or indignation, especially at something unjust or wrong.
      */
     public static final class Indignant extends Value {
+
         public Indignant() {
         }
 
@@ -893,6 +940,7 @@ public final class Mood {
      * Showing great attention to something or someone; having or showing interest.
      */
     public static final class Interested extends Value {
+
         public Interested() {
         }
 
@@ -905,6 +953,7 @@ public final class Mood {
      * Under the influence of alcohol; drunk.
      */
     public static final class Intoxicated extends Value {
+
         public Intoxicated() {
         }
 
@@ -917,6 +966,7 @@ public final class Mood {
      * Feeling as if one cannot be defeated, overcome or denied.
      */
     public static final class Invincible extends Value {
+
         public Invincible() {
         }
 
@@ -929,6 +979,7 @@ public final class Mood {
      * Fearful of being replaced in position or affection.
      */
     public static final class Jealous extends Value {
+
         public Jealous() {
         }
 
@@ -941,6 +992,7 @@ public final class Mood {
      * Feeling isolated, empty, or abandoned.
      */
     public static final class Lonely extends Value {
+
         public Lonely() {
         }
 
@@ -953,6 +1005,7 @@ public final class Mood {
      * Unable to find one's way, either physically or emotionally.
      */
     public static final class Lost extends Value {
+
         public Lost() {
         }
 
@@ -965,6 +1018,7 @@ public final class Mood {
      * Feeling as if one will be favored by luck.
      */
     public static final class Lucky extends Value {
+
         public Lucky() {
         }
 
@@ -977,6 +1031,7 @@ public final class Mood {
      * Causing or intending to cause intentional harm; bearing ill will towards another; cruel; malicious.
      */
     public static final class Mean extends Value {
+
         public Mean() {
         }
 
@@ -989,6 +1044,7 @@ public final class Mood {
      * Given to sudden or frequent changes of mind or feeling; temperamental.
      */
     public static final class Moody extends Value {
+
         public Moody() {
         }
 
@@ -1001,6 +1057,7 @@ public final class Mood {
      * Easily agitated or alarmed; apprehensive or anxious.
      */
     public static final class Nervous extends Value {
+
         public Nervous() {
         }
 
@@ -1013,6 +1070,7 @@ public final class Mood {
      * Not having a strong mood or emotional state.
      */
     public static final class Neutral extends Value {
+
         public Neutral() {
         }
 
@@ -1025,6 +1083,7 @@ public final class Mood {
      * Feeling emotionally hurt, displeased, or insulted.
      */
     public static final class Offended extends Value {
+
         public Offended() {
         }
 
@@ -1038,6 +1097,7 @@ public final class Mood {
      * indecent act.
      */
     public static final class Outraged extends Value {
+
         public Outraged() {
         }
 
@@ -1050,6 +1110,7 @@ public final class Mood {
      * Interested in play; fun, recreational, unserious, lighthearted; joking, silly.
      */
     public static final class Playful extends Value {
+
         public Playful() {
         }
 
@@ -1062,6 +1123,7 @@ public final class Mood {
      * Feeling a sense of one's own worth or accomplishment.
      */
     public static final class Proud extends Value {
+
         public Proud() {
         }
 
@@ -1074,6 +1136,7 @@ public final class Mood {
      * Having an easy-going mood; not stressed; calm.
      */
     public static final class Relaxed extends Value {
+
         public Relaxed() {
         }
 
@@ -1086,6 +1149,7 @@ public final class Mood {
      * Feeling uplifted because of the removal of stress or discomfort.
      */
     public static final class Relieved extends Value {
+
         public Relieved() {
         }
 
@@ -1098,6 +1162,7 @@ public final class Mood {
      * Feeling regret or sadness for doing something wrong.
      */
     public static final class Remorseful extends Value {
+
         public Remorseful() {
         }
 
@@ -1110,6 +1175,7 @@ public final class Mood {
      * Without rest; unable to be still or quiet; uneasy; continually moving.
      */
     public static final class Restless extends Value {
+
         public Restless() {
         }
 
@@ -1122,6 +1188,7 @@ public final class Mood {
      * Feeling sorrow; sorrowful, mournful.
      */
     public static final class Sad extends Value {
+
         public Sad() {
         }
 
@@ -1134,6 +1201,7 @@ public final class Mood {
      * Mocking and ironical.
      */
     public static final class Sarcastic extends Value {
+
         public Sarcastic() {
         }
 
@@ -1146,6 +1214,7 @@ public final class Mood {
      * Pleased at the fulfillment of a need or desire.
      */
     public static final class Satisfied extends Value {
+
         public Satisfied() {
         }
 
@@ -1158,6 +1227,7 @@ public final class Mood {
      * Without humor or expression of happiness; grave in manner or disposition; earnest; thoughtful; solemn.
      */
     public static final class Serious extends Value {
+
         public Serious() {
         }
 
@@ -1170,6 +1240,7 @@ public final class Mood {
      * Surprised, startled, confused, or taken aback.
      */
     public static final class Shocked extends Value {
+
         public Shocked() {
         }
 
@@ -1182,6 +1253,7 @@ public final class Mood {
      * Feeling easily frightened or scared; timid; reserved or coy.
      */
     public static final class Shy extends Value {
+
         public Shy() {
         }
 
@@ -1194,6 +1266,7 @@ public final class Mood {
      * Feeling in poor health; ill.
      */
     public static final class Sick extends Value {
+
         public Sick() {
         }
 
@@ -1206,6 +1279,7 @@ public final class Mood {
      * Feeling the need for sleep.
      */
     public static final class Sleepy extends Value {
+
         public Sleepy() {
         }
 
@@ -1218,6 +1292,7 @@ public final class Mood {
      * Acting without planning; natural; impulsive.
      */
     public static final class Spontaneous extends Value {
+
         public Spontaneous() {
         }
 
@@ -1230,6 +1305,7 @@ public final class Mood {
      * Suffering emotional pressure.
      */
     public static final class Stressed extends Value {
+
         public Stressed() {
         }
 
@@ -1242,6 +1318,7 @@ public final class Mood {
      * Capable of producing great physical force; or, emotionally forceful, able, determined, unyielding.
      */
     public static final class Strong extends Value {
+
         public Strong() {
         }
 
@@ -1254,6 +1331,7 @@ public final class Mood {
      * Experiencing a feeling caused by something unexpected.
      */
     public static final class Surprised extends Value {
+
         public Surprised() {
         }
 
@@ -1266,6 +1344,7 @@ public final class Mood {
      * Showing appreciation or gratitude.
      */
     public static final class Thankful extends Value {
+
         public Thankful() {
         }
 
@@ -1278,6 +1357,7 @@ public final class Mood {
      * Feeling the need to drink.
      */
     public static final class Thirsty extends Value {
+
         public Thirsty() {
         }
 
@@ -1290,6 +1370,7 @@ public final class Mood {
      * In need of rest or sleep.
      */
     public static final class Tired extends Value {
+
         public Tired() {
         }
 
@@ -1302,6 +1383,7 @@ public final class Mood {
      * Feeling any emotion.
      */
     public static final class Undefined extends Value {
+
         public Undefined() {
         }
 
@@ -1314,6 +1396,7 @@ public final class Mood {
      * Lacking in force or ability, either physical or emotional.
      */
     public static final class Weak extends Value {
+
         public Weak() {
         }
 
@@ -1326,6 +1409,7 @@ public final class Mood {
      * Thinking about unpleasant things that have happened or that might happen; feeling afraid and unhappy.
      */
     public static final class Worried extends Value {
+
         public Worried() {
         }
 

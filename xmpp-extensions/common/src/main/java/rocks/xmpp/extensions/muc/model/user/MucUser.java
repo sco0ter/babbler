@@ -486,6 +486,7 @@ public final class MucUser {
     }
 
     private static final class MucUserActor implements Actor {
+
         @XmlAttribute
         private Jid jid;
 

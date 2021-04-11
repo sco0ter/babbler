@@ -38,6 +38,7 @@ import rocks.xmpp.extensions.reach.model.Address;
  * @see ReachabilityManager#addReachabilityListener(Consumer)
  */
 public final class ReachabilityEvent extends EventObject {
+
     private final Jid contact;
 
     private final transient List<Address> reachabilityAddresses;

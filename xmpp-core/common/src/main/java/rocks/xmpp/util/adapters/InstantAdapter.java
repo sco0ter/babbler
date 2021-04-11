@@ -29,7 +29,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-
 /**
  * Converts an {@link java.time.Instant} to a string representation according to <a
  * href="https://xmpp.org/extensions/xep-0082.html">XEP-0082: XMPP Date and Time Profiles</a> and vice versa.

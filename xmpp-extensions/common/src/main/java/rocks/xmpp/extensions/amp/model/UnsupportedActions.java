@@ -41,4 +41,5 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "unsupported-actions")
 public final class UnsupportedActions extends AdvancedMessageProcessingError {
+
 }

@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.register;
 
-
 import java.util.concurrent.CompletableFuture;
 
 import rocks.xmpp.core.session.Manager;

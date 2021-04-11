@@ -42,6 +42,7 @@ import rocks.xmpp.core.sasl.scram.ScramClient;
  * @author Christian Schudt
  */
 public final class XmppSaslClientFactory implements SaslClientFactory {
+
     @Override
     public final SaslClient createSaslClient(String[] mechanisms, String authorizationId, String protocol,
                                              String serverName, Map<String, ?> props, CallbackHandler cbh) {

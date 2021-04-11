@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.invisible;
 
-
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;

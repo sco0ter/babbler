@@ -44,7 +44,6 @@ import rocks.xmpp.extensions.pubsub.model.Subscription;
 import rocks.xmpp.extensions.pubsub.model.owner.PubSubOwner;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
-
 /**
  * This class acts a facade to deal with a remote pubsub service.
  *

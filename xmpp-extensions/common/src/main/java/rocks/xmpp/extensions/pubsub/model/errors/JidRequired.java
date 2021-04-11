@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "jid-required")
 @XmlType(factoryMethod = "create")
 public final class JidRequired extends PubSubError {
+
     JidRequired() {
     }
 

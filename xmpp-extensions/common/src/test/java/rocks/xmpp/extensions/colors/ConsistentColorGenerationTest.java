@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.colors;
 
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 

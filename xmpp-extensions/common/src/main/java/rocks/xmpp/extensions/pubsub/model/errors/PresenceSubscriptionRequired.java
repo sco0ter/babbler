@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "presence-subscription-required")
 @XmlType(factoryMethod = "create")
 public final class PresenceSubscriptionRequired extends PubSubError {
+
     PresenceSubscriptionRequired() {
     }
 

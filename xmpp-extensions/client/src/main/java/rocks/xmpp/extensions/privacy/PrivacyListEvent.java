@@ -34,6 +34,7 @@ import java.util.function.Consumer;
  * @see PrivacyListManager#addPrivacyListListener(Consumer)
  */
 public final class PrivacyListEvent extends EventObject {
+
     private final String listName;
 
     /**

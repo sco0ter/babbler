@@ -166,12 +166,12 @@ public final class RealTimeText {
         CANCEL
     }
 
-
     /**
      * An abstract base class for all three RTT actions.
      */
     @XmlTransient
     public abstract static class Action {
+
     }
 
     /**
@@ -250,6 +250,7 @@ public final class RealTimeText {
      * </blockquote>
      */
     public static final class EraseText extends Action {
+
         @XmlAttribute(name = "p")
         private final Integer position;
 
@@ -326,6 +327,7 @@ public final class RealTimeText {
      * </blockquote>
      */
     public static final class WaitInterval extends Action {
+
         @XmlAttribute(name = "n")
         private final Long milliSeconds;
 

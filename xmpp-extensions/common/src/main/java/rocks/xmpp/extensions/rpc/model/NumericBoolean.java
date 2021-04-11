@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlValue;
  * @author Christian Schudt
  */
 final class NumericBoolean {
+
     @XmlValue
     private final Integer value;
 

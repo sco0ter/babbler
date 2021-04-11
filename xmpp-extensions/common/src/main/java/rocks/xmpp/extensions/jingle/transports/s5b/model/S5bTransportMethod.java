@@ -386,6 +386,7 @@ public final class S5bTransportMethod extends TransportMethod {
     }
 
     private static final class CandidateUsed {
+
         @XmlAttribute
         private final String cid;
 
@@ -399,6 +400,7 @@ public final class S5bTransportMethod extends TransportMethod {
     }
 
     private static final class Activated {
+
         @XmlAttribute
         private final String cid;
 

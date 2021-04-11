@@ -112,7 +112,6 @@ public final class ReachabilityManager extends Manager {
         };
     }
 
-
     @Override
     protected void onEnable() {
         super.onEnable();

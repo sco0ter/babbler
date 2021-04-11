@@ -396,6 +396,7 @@ public final class RoomConfiguration implements StandardizedDataForm {
      * A builder to build a room configuration. The form is of type {@link DataForm.Type#SUBMIT} by default.
      */
     public static final class Builder extends DataForm.Builder<Builder> {
+
         private Integer maxHistoryFetch;
 
         private Collection<Role> rolesThatMaySendPrivateMessages;

@@ -75,7 +75,6 @@ public final class Text implements LanguageElement, CharSequence, Comparable<Tex
         return collator.compare(o1.getText(), o2.getText());
     }).thenComparing(Text::getLanguage, Comparator.nullsFirst(Comparator.comparing(Locale::toLanguageTag)));
 
-
     @XmlJavaTypeAdapter(LocaleAdapter.class)
     @XmlAttribute(namespace = XMLConstants.XML_NS_URI)
     private final Locale lang;

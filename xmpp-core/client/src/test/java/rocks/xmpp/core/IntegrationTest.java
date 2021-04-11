@@ -32,6 +32,7 @@ import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
  * @author Christian Schudt
  */
 public abstract class IntegrationTest {
+
     public static final String DOMAIN = "localhost";
 
     public static final String HOSTNAME = "localhost";
@@ -57,6 +58,5 @@ public abstract class IntegrationTest {
                 .channelEncryption(ChannelEncryption.DISABLED)
                 .build();
     }
-
 
 }

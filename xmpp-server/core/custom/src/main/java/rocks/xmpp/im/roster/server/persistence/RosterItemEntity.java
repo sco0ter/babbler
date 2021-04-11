@@ -187,6 +187,7 @@ public class RosterItemEntity implements RosterItem {
     }
 
     static final class NamedQueries {
+
         static final String GET_BY_USERNAME_AND_JID = "RosterItem.getByUsernameAndJid";
 
         static final String GET_ROSTER_ITEMS = "RosterItem.getRosterItems";

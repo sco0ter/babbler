@@ -49,8 +49,7 @@ import rocks.xmpp.util.XmppStreamEncoder;
  * {@link XmppWebSocketEncoder.UserProperties#MARSHALLER}.</p>
  *
  * <p>Optionally you can also provide a callback, which is called after marshalling with the encoded text message (the
- * XML string) and the stream element.
- * This is useful for debugging purposes, see {@link UserProperties#ON_WRITE}.</p>
+ * XML string) and the stream element. This is useful for debugging purposes, see {@link UserProperties#ON_WRITE}.</p>
  *
  * @author Christian Schudt
  * @see XmppWebSocketDecoder
@@ -102,6 +101,7 @@ public final class XmppWebSocketEncoder implements Encoder.TextStream<StreamElem
      * User properties for usage in {@link EndpointConfig#getUserProperties()}.
      */
     public static final class UserProperties {
+
         /**
          * The property key to provide the required {@link Marshaller}. The value must be a {@code
          * java.util.function.Supplier<Marshaller>}.

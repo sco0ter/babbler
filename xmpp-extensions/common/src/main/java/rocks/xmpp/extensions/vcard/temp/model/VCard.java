@@ -1205,6 +1205,7 @@ public final class VCard implements Addressable {
      */
     @XmlTransient
     private abstract static class ContactData extends Preferable {
+
         @XmlElement(name = "HOME")
         private Boolean home;
 
@@ -1267,6 +1268,7 @@ public final class VCard implements Addressable {
      */
     @XmlTransient
     private abstract static class Preferable {
+
         @XmlElement(name = "PREF")
         private Boolean pref;
 
@@ -1801,6 +1803,7 @@ public final class VCard implements Addressable {
      * Represents a name.
      */
     public static final class Name {
+
         @XmlElement(name = "FAMILY")
         private final String familyName;
 
@@ -2115,6 +2118,7 @@ public final class VCard implements Addressable {
     }
 
     private static final class ClassElement {
+
         @XmlElement(name = "PUBLIC")
         private String publicClass;
 

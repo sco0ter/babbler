@@ -144,7 +144,6 @@ public final class PubSubNode {
                 result.getExtension(PubSub.class).getSubscriptions());
     }
 
-
     /**
      * Gets the affiliations for this node.
      *
@@ -351,7 +350,6 @@ public final class PubSubNode {
     public AsyncResult<String> publish(Object item, PublishOptions publishOptions) {
         return publish(null, item, publishOptions);
     }
-
 
     /**
      * Publishes an item to this node.

@@ -36,6 +36,7 @@ import rocks.xmpp.util.Strings;
  */
 @XmlTransient
 public abstract class PubSubError {
+
     /**
      * The {@code <closed-node/>} pubsub error.
      */

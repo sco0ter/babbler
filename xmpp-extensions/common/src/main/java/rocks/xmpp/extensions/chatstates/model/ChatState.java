@@ -86,6 +86,7 @@ public abstract class ChatState {
     @XmlRootElement
     @XmlType(factoryMethod = "create")
     static final class Active extends ChatState {
+
         private Active() {
         }
 
@@ -102,6 +103,7 @@ public abstract class ChatState {
     @XmlRootElement
     @XmlType(factoryMethod = "create")
     static final class Composing extends ChatState {
+
         private Composing() {
         }
 
@@ -118,6 +120,7 @@ public abstract class ChatState {
     @XmlRootElement
     @XmlType(factoryMethod = "create")
     static final class Gone extends ChatState {
+
         private Gone() {
         }
 
@@ -134,6 +137,7 @@ public abstract class ChatState {
     @XmlRootElement
     @XmlType(factoryMethod = "create")
     static final class Inactive extends ChatState {
+
         private Inactive() {
         }
 
@@ -150,6 +154,7 @@ public abstract class ChatState {
     @XmlRootElement
     @XmlType(factoryMethod = "create")
     static final class Paused extends ChatState {
+
         private Paused() {
         }
 

@@ -59,20 +59,24 @@ public abstract class AbstractStreamManager implements StreamFeatureNegotiator<S
      * the value of 'h' SHALL be reset from 232-1 back to zero (rather than being incremented to 232).</p>
      */
     private static final long MAX_H = 0xFFFFFFFFL;
+
     /**
      * Keep a private queue of unacknowledged stanzas.
      */
     protected final Queue<Stanza> unacknowledgedStanzas = new ConcurrentLinkedDeque<>();
+
     /**
      * Guarded by "this".
      */
     protected final AtomicBoolean enabledByClient = new AtomicBoolean();
 
     private final Session session;
+
     /**
      * Tracks the count of inbound stanzas, we have received from the server.
      */
     protected long inboundCount = 0;
+
     /**
      * Guarded by "this".
      */
@@ -84,6 +88,7 @@ public abstract class AbstractStreamManager implements StreamFeatureNegotiator<S
      * Guarded by "this".
      */
     private boolean enabled = true;
+
     /**
      * Guarded by "this".
      */

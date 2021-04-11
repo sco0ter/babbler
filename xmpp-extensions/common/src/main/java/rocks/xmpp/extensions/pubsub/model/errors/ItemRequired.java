@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "item-required")
 @XmlType(factoryMethod = "create")
 public final class ItemRequired extends PubSubError {
+
     ItemRequired() {
     }
 

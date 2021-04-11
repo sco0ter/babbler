@@ -62,7 +62,6 @@ public class ExternalComponentIT extends IntegrationTest {
             }
         });
 
-
         Executor executor = Executors.newCachedThreadPool();
         int n = 100;
         final CountDownLatch countDownLatch = new CountDownLatch(n);

@@ -31,6 +31,7 @@ import rocks.xmpp.extensions.jingle.transports.model.TransportMethod;
  * @author Christian Schudt
  */
 public abstract class TransportNegotiator<T extends TransportMethod> {
+
     protected final JingleSession jingleSession;
 
     protected TransportNegotiator(JingleSession jingleSession) {

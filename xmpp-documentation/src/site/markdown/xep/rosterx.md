@@ -11,8 +11,8 @@ allowed to suggest contacts to be added.
 This will suggest the contact "Juliet" to be added to "Romeo's" roster:
 
 ```java
-ContactExchangeManager contactExchangeManager = xmppClient.getManager(ContactExchangeManager.class);
-contactExchangeManager.suggestContactAddition(Jid.of("romeo@example.net"), new Contact(Jid.of("juliet@example.net"), "Juliet"));
+ContactExchangeManager contactExchangeManager=xmppClient.getManager(ContactExchangeManager.class);
+        contactExchangeManager.suggestContactAddition(Jid.of("romeo@example.net"),new Contact(Jid.of("juliet@example.net"),"Juliet"));
 ```
 
 ## Listening for Contact Exchange Suggestions

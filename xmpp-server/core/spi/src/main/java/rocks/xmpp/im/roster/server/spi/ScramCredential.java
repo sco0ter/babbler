@@ -30,6 +30,7 @@ import javax.security.enterprise.credential.Credential;
  * @author Christian Schudt
  */
 public final class ScramCredential implements Credential {
+
     private final String caller;
 
     private final int iterationCount;

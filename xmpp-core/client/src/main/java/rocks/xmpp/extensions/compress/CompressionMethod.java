@@ -40,6 +40,7 @@ import java.util.zip.InflaterInputStream;
  * @author Christian Schudt
  */
 public interface CompressionMethod {
+
     /**
      * The "zlib" compression method.
      */

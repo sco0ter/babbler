@@ -39,7 +39,6 @@ import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.last.model.LastActivity;
 
-
 /**
  * @author Christian Schudt
  */

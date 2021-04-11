@@ -149,11 +149,13 @@ public final class Privacy {
     }
 
     private static final class Active {
+
         @XmlAttribute
         private String name;
     }
 
     private static final class Default {
+
         @XmlAttribute
         private String name;
     }

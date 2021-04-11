@@ -86,7 +86,6 @@ public final class CustomIQHandlerResponder {
                 // Login
                 xmppSession.login("111", "111", "iq");
 
-
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

@@ -404,6 +404,7 @@ public final class Command implements LanguageElement {
      */
     @XmlRootElement(name = "malformed-action")
     public static final class MalformedAction {
+
     }
 
     /**
@@ -411,6 +412,7 @@ public final class Command implements LanguageElement {
      */
     @XmlRootElement(name = "bad-action")
     public static final class BadAction {
+
     }
 
     /**
@@ -418,6 +420,7 @@ public final class Command implements LanguageElement {
      */
     @XmlRootElement(name = "bad-locale")
     public static final class BadLocale {
+
     }
 
     /**
@@ -426,6 +429,7 @@ public final class Command implements LanguageElement {
      */
     @XmlRootElement(name = "bad-payload")
     public static final class BadPayload {
+
     }
 
     /**
@@ -433,6 +437,7 @@ public final class Command implements LanguageElement {
      */
     @XmlRootElement(name = "bad-sessionid")
     public static final class BadSessionId {
+
     }
 
     /**
@@ -441,6 +446,7 @@ public final class Command implements LanguageElement {
      */
     @XmlRootElement(name = "session-expired")
     public static final class SessionExpired {
+
     }
 
     /**

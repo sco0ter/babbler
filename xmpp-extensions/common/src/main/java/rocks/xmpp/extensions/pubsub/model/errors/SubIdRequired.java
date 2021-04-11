@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "subid-required")
 @XmlType(factoryMethod = "create")
 public final class SubIdRequired extends PubSubError {
+
     SubIdRequired() {
     }
 

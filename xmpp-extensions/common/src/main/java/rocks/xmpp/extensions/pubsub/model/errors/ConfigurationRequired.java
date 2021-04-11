@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "configuration-required")
 @XmlType(factoryMethod = "create")
 public final class ConfigurationRequired extends PubSubError {
+
     ConfigurationRequired() {
     }
 

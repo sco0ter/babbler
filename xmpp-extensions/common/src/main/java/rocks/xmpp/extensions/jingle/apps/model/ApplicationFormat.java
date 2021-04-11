@@ -37,6 +37,7 @@ package rocks.xmpp.extensions.jingle.apps.model;
  * @see rocks.xmpp.extensions.jingle.model.Jingle.Content#getApplicationFormat()
  */
 public abstract class ApplicationFormat {
+
     protected ApplicationFormat() {
     }
 }

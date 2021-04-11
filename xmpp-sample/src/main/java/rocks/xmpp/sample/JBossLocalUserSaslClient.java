@@ -7,6 +7,7 @@ import javax.security.sasl.SaslException;
  * @author Christian Schudt
  */
 public class JBossLocalUserSaslClient implements SaslClient {
+
     @Override
     public String getMechanismName() {
         return "JBOSS-LOCAL-USER";

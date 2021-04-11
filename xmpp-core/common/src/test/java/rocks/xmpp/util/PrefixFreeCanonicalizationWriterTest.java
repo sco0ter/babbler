@@ -81,7 +81,6 @@ public class PrefixFreeCanonicalizationWriterTest {
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
 
-
         Collection<Contact> contacts = new ArrayDeque<>();
         contacts.add(new Contact(Jid.ofDomain("domain")));
         Roster roster = new Roster(contacts);

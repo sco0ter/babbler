@@ -34,6 +34,7 @@ import rocks.xmpp.addr.Jid;
  */
 @Converter
 public final class JidConverter implements AttributeConverter<Jid, String> {
+
     @Override
     public final String convertToDatabaseColumn(final Jid jid) {
         return jid.toString();

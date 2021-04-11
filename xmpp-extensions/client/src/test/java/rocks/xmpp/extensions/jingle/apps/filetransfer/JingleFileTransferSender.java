@@ -63,7 +63,6 @@ public class JingleFileTransferSender {
                         xmppSession.getDomain().withLocal("222").withResource("filetransfer"),
                         Paths.get(System.getProperty("user.home")).resolve("Magic.png"), "Description", 5000);
 
-
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

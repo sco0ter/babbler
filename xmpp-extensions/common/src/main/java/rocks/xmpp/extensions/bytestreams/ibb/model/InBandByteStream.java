@@ -78,6 +78,7 @@ public abstract class InBandByteStream {
      */
     @XmlRootElement
     public static final class Open extends InBandByteStream {
+
         @XmlAttribute(name = "block-size")
         private final int blockSize;
 

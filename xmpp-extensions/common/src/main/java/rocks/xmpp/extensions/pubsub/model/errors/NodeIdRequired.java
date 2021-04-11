@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "nodeid-required")
 @XmlType(factoryMethod = "create")
 public final class NodeIdRequired extends PubSubError {
+
     NodeIdRequired() {
     }
 

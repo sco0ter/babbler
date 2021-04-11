@@ -170,7 +170,6 @@ public class S5bTransportMethodTest extends XmlTest {
         Assert.assertEquals(marshal(transportMethod), xml);
     }
 
-
     @Test
     public void testUnmarshalCandidateActivated() throws JAXBException, XMLStreamException {
         String xml = "<transport xmlns='urn:xmpp:jingle:transports:s5b:1'\n" +

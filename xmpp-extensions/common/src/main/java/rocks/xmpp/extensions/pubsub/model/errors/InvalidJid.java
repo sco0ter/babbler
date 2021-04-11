@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "invalid-jid")
 @XmlType(factoryMethod = "create")
 public final class InvalidJid extends PubSubError {
+
     InvalidJid() {
     }
 

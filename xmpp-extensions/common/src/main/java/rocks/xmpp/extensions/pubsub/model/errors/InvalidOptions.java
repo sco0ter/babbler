@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "invalid-options")
 @XmlType(factoryMethod = "create")
 public final class InvalidOptions extends PubSubError {
+
     InvalidOptions() {
     }
 

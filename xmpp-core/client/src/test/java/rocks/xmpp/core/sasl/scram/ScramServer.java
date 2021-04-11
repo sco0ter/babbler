@@ -119,7 +119,6 @@ final class ScramServer extends ScramBase implements SaslServer {
             // with respect to quoting of '=' and ','.
             authorizationId = validateAndGetUsername(attributes.get('a'));
 
-
             // Retrieve the password for the user.
             NameCallback ncb = new NameCallback("SCRAM username: ", user);
             ncb.setName(user);

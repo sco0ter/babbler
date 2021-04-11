@@ -99,7 +99,6 @@ public class IbbTest extends BaseTest {
                 xmppSession1.getManager(InBandByteStreamManager.class), InBandByteStream.Open.StanzaType.IQ);
         IbbInputStream ibbInputStream2 = (IbbInputStream) ibbSession2.getInputStream();
 
-
         Random random = new Random();
 
         for (int i = 0; i < 1000; i++) {
@@ -118,7 +117,6 @@ public class IbbTest extends BaseTest {
                 ibbInputStream.close();
             }
         }
-
 
         byte[] buffer = new byte[8048];
         ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream();

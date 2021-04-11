@@ -42,4 +42,5 @@ import rocks.xmpp.extensions.amp.model.AdvancedMessageProcessingError;
  */
 @XmlRootElement(name = "failed-rules")
 public final class FailedRules extends AdvancedMessageProcessingError {
+
 }

@@ -56,6 +56,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * @author Christian Schudt
  */
 public final class OutOfBandFileTransferManager extends Manager implements FileTransferNegotiator {
+
     private final FileTransferManager fileTransferManager;
 
     private OutOfBandFileTransferManager(final XmppSession xmppSession) {

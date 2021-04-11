@@ -78,7 +78,6 @@ public final class JingleManager extends Manager {
                     return iq.createError(new StanzaError(Condition.BAD_REQUEST, "No session id set."));
                 } else if (jingle.getAction() == Jingle.Action.SESSION_INITIATE) {
 
-
                     // Check if the Jingle request is not mal-formed, otherwise return a bad-request error.
                     // See 6.3.2 Errors
                     if (jingle.getContents().isEmpty()) {

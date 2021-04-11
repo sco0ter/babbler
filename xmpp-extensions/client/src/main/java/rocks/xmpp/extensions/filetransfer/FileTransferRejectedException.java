@@ -38,4 +38,5 @@ import rocks.xmpp.core.XmppException;
  * @author Christian Schudt
  */
 public final class FileTransferRejectedException extends XmppException {
+
 }

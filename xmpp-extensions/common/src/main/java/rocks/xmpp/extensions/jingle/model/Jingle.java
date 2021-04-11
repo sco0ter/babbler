@@ -563,6 +563,7 @@ public final class Jingle {
          */
         @XmlTransient
         public abstract static class Condition {
+
             private Condition() {
             }
         }
@@ -597,96 +598,112 @@ public final class Jingle {
          * The party is busy and cannot accept a session.
          */
         public static final class Busy extends Condition {
+
         }
 
         /**
          * The initiator wishes to formally cancel the session initiation request.
          */
         public static final class Cancel extends Condition {
+
         }
 
         /**
          * The action is related to connectivity problems.
          */
         public static final class ConnectivityError extends Condition {
+
         }
 
         /**
          * The party wishes to formally decline the session.
          */
         public static final class Decline extends Condition {
+
         }
 
         /**
          * The session length has exceeded a pre-defined time limit (e.g., a meeting hosted at a conference service).
          */
         public static final class Expired extends Condition {
+
         }
 
         /**
          * The party has been unable to initialize processing related to the application type.
          */
         public static final class FailedApplication extends Condition {
+
         }
 
         /**
          * The party has been unable to establish connectivity for the transport method.
          */
         public static final class FailedTransport extends Condition {
+
         }
 
         /**
          * The action is related to a non-specific application error.
          */
         public static final class GeneralError extends Condition {
+
         }
 
         /**
          * The entity is going offline or is no longer available.
          */
         public static final class Gone extends Condition {
+
         }
 
         /**
          * The party supports the offered application type but does not support the offered or negotiated parameters.
          */
         public static final class IncompatibleParameters extends Condition {
+
         }
 
         /**
          * The action is related to media processing problems.
          */
         public static final class MediaError extends Condition {
+
         }
 
         /**
          * The action is related to a violation of local security policies.
          */
         public static final class SecurityError extends Condition {
+
         }
 
         /**
          * The action is generated during the normal course of state management and does not reflect any error.
          */
         public static final class Success extends Condition {
+
         }
 
         /**
          * A request has not been answered so the sender is timing out the request.
          */
         public static final class Timeout extends Condition {
+
         }
 
         /**
          * The party supports none of the offered application types.
          */
         public static final class UnsupportedApplications extends Condition {
+
         }
 
         /**
          * The party supports none of the offered transport methods.
          */
         public static final class UnsupportedTransports extends Condition {
+
         }
     }
 }

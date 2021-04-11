@@ -33,6 +33,7 @@ import rocks.xmpp.core.Addressable;
  * @author Christian Schudt
  */
 public interface Item extends Addressable {
+
     /**
      * Gets the nick name.
      *

@@ -116,7 +116,6 @@ final class Socks5Protocol {
             outputStream.write(request);
             outputStream.flush();
 
-
             /*
                 The server evaluates the request, and returns a reply formed as follows:
 

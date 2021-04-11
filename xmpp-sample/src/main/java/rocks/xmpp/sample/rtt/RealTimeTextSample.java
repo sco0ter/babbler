@@ -68,7 +68,6 @@ public class RealTimeTextSample extends Application {
                 .debugger(ConsoleDebugger.class)
                 .build();
 
-
         final XmppClient xmppClient =
                 XmppClient.create("localhost", xmppSessionConfiguration, socketConnectionConfiguration);
 
@@ -102,7 +101,6 @@ public class RealTimeTextSample extends Application {
             realTimeMessage = realTimeTextManager.createRealTimeMessage(chat);
             textArea.clear();
         });
-
 
         Scene scene = new Scene(new VBox(label, textArea, button));
         primaryStage.setScene(scene);

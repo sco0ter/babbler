@@ -56,6 +56,7 @@ import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.TxtRecord;
 import rocks.xmpp.websocket.codec.XmppWebSocketDecoder;
@@ -342,7 +343,7 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
         /**
          * Sets the ping interval. If not null and non-negative, a WebSocket ping is sent periodically to the server. If
          * no pong is received within the configured response timeout
-         * ({@link rocks.xmpp.core.session.XmppSessionConfiguration.Builder#defaultResponseTimeout(Duration)})
+         * ({@link XmppSessionConfiguration.Builder#defaultResponseTimeout(Duration)})
          * the XMPP session is closed with an exception.
          *
          * @param pingInterval The ping interval.

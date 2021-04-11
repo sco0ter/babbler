@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "item-forbidden")
 @XmlType(factoryMethod = "create")
 public final class ItemForbidden extends PubSubError {
+
     ItemForbidden() {
     }
 

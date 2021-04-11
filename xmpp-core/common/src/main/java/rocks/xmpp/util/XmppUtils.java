@@ -231,6 +231,7 @@ public final class XmppUtils {
     }
 
     private static final class DefaultThreadFactory implements ThreadFactory {
+
         private final AtomicInteger threadNumber = new AtomicInteger(1);
 
         private final String name;

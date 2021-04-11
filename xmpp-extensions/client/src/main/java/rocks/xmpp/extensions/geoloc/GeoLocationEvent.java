@@ -37,6 +37,7 @@ import rocks.xmpp.extensions.geoloc.model.GeoLocation;
  * @see GeoLocationManager#addGeoLocationListener(Consumer)
  */
 public final class GeoLocationEvent extends EventObject {
+
     private final transient GeoLocation geoLocation;
 
     private final Jid publisher;

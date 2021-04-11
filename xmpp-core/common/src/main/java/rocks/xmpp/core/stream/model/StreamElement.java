@@ -34,4 +34,5 @@ package rocks.xmpp.core.stream.model;
  * @author Christian Schudt
  */
 public interface StreamElement {
+
 }

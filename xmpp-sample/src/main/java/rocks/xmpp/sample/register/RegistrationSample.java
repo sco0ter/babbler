@@ -77,7 +77,6 @@ public final class RegistrationSample {
                     }
                 });
 
-
             } catch (XmppException e) {
                 throw new RuntimeException(e);
             }

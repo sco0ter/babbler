@@ -197,6 +197,7 @@ public final class RoomRegistration implements StandardizedDataForm {
      * A builder to build MUC registration forms. The form is of type {@link DataForm.Type#SUBMIT} by default.
      */
     public static final class Builder extends DataForm.Builder<Builder> {
+
         private Boolean allowRegister;
 
         private String email;

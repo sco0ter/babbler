@@ -35,4 +35,5 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "crypto-required")
 public final class CryptoRequired {
+
 }

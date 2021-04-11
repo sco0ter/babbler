@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "payload-required")
 @XmlType(factoryMethod = "create")
 public final class PayloadRequired extends PubSubError {
+
     PayloadRequired() {
     }
 

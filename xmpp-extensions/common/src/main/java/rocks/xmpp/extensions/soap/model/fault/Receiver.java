@@ -34,4 +34,5 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "Receiver")
 public final class Receiver extends SoapFault {
+
 }

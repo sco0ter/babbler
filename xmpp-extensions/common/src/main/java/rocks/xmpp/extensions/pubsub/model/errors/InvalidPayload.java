@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "invalid-payload")
 @XmlType(factoryMethod = "create")
 public final class InvalidPayload extends PubSubError {
+
     InvalidPayload() {
     }
 

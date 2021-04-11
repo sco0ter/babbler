@@ -80,6 +80,7 @@ public final class MessageCarbons {
     @XmlRootElement
     @XmlType(factoryMethod = "create")
     public static final class Disable {
+
         private Disable() {
         }
 
@@ -100,6 +101,7 @@ public final class MessageCarbons {
     @XmlRootElement
     @XmlType(factoryMethod = "create")
     public static final class Enable {
+
         private Enable() {
         }
 
@@ -120,6 +122,7 @@ public final class MessageCarbons {
     @XmlRootElement
     @XmlType(factoryMethod = "create")
     public static final class Private {
+
         private Private() {
         }
 

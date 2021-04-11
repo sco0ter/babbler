@@ -102,6 +102,7 @@ public abstract class StreamCompression implements StreamElement {
          */
         @XmlTransient
         public abstract static class Condition {
+
             /**
              * If the receiving entity finds the requested method unacceptable or unworkable for any other reason.
              */
@@ -132,6 +133,7 @@ public abstract class StreamCompression implements StreamElement {
          */
         @XmlType(factoryMethod = "create")
         private static final class SetupFailed extends Condition {
+
             private SetupFailed() {
             }
 
@@ -146,6 +148,7 @@ public abstract class StreamCompression implements StreamElement {
          */
         @XmlType(factoryMethod = "create")
         private static final class ProcessingFailed extends Condition {
+
             private ProcessingFailed() {
             }
 
@@ -160,6 +163,7 @@ public abstract class StreamCompression implements StreamElement {
          */
         @XmlType(factoryMethod = "create")
         private static final class UnsupportedMethod extends Condition {
+
             private UnsupportedMethod() {
             }
 
@@ -214,6 +218,7 @@ public abstract class StreamCompression implements StreamElement {
     @XmlRootElement
     @XmlType(factoryMethod = "create")
     static final class Compressed extends StreamCompression {
+
         private Compressed() {
         }
 

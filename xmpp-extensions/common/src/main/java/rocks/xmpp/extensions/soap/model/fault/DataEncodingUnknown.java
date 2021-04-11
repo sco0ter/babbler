@@ -34,4 +34,5 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "DataEncodingUnknown")
 public final class DataEncodingUnknown extends SoapFault {
+
 }

@@ -32,7 +32,6 @@ import javax.xml.bind.annotation.XmlEnumValue;
  */
 public final class Candidate extends RemoteCandidate {
 
-
     @XmlAttribute
     private Short foundation;
 

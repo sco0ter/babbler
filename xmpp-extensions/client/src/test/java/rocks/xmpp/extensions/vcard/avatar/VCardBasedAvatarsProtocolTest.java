@@ -153,7 +153,6 @@ public class VCardBasedAvatarsProtocolTest {
         VCardBasedAvatarsProtocol vCardBasedAvatarsProtocol =
                 Mockito.spy(new VCardBasedAvatarsProtocol(xmppSession, vCardManager, new HashMap<>()));
 
-
         Mockito.when(vCardManager.getVCard(Mockito.any()))
                 .thenReturn(new AsyncResult<>(CompletableFuture.completedFuture(new VCard())));
         Mockito.when(vCardBasedAvatarsProtocol.loadFromCache(Mockito.anyString())).thenReturn(null);

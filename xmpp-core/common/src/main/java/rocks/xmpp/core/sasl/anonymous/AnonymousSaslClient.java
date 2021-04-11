@@ -34,6 +34,7 @@ import javax.security.sasl.SaslClient;
  * Mechanism</a>
  */
 public final class AnonymousSaslClient implements SaslClient {
+
     @Override
     public final String getMechanismName() {
         return "ANONYMOUS";

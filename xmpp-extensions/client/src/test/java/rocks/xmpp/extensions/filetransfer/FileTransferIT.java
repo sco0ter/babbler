@@ -98,7 +98,6 @@ public class FileTransferIT extends IntegrationTest {
         testFileTransfer();
     }
 
-
     private void testFileTransfer() throws InterruptedException, TimeoutException, ExecutionException {
         // The data we want to send (representing a file).
         byte[] data = new byte[40960]; // 40 KB, should be splitted into 10 chunks.

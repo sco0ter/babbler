@@ -37,6 +37,7 @@ import rocks.xmpp.addr.Jid;
  * @see BlockingManager#addBlockingListener(Consumer)
  */
 public final class BlockingEvent extends EventObject {
+
     private final List<Jid> blockedContacts;
 
     private final List<Jid> unblockedContacts;

@@ -35,6 +35,7 @@ import java.util.function.Consumer;
  * @see ChatRoom#addSubjectChangeListener(Consumer)
  */
 public final class SubjectChangeEvent extends EventObject {
+
     private final String subject;
 
     private final Instant date;

@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "max-nodes-exceeded")
 @XmlType(factoryMethod = "create")
 public final class MaxNodesExceeded extends PubSubError {
+
     MaxNodesExceeded() {
     }
 

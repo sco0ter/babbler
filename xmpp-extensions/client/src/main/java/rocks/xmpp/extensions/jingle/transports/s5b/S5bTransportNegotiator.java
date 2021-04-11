@@ -53,7 +53,6 @@ public final class S5bTransportNegotiator extends TransportNegotiator<S5bTranspo
         this.socks5ByteStreamManager = xmppSession.getManager(Socks5ByteStreamManager.class);
     }
 
-
     @SuppressWarnings("unused")
     private AsyncResult<S5bTransportMethod> createTransport(Jid requester, Jid target) {
 
@@ -75,6 +74,5 @@ public final class S5bTransportNegotiator extends TransportNegotiator<S5bTranspo
             return new S5bTransportMethod(sessionId, hash, Socks5ByteStream.Mode.TCP, candidateList);
         });
     }
-
 
 }

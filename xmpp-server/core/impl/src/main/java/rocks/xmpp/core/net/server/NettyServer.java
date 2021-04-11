@@ -101,7 +101,6 @@ public class NettyServer {
         }
     }
 
-
     public void start(@Observes @Initialized(ApplicationScoped.class) Object context) {
         this.startTime = Instant.now();
 

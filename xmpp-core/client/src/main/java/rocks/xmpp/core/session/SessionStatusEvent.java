@@ -35,6 +35,7 @@ import java.util.function.Consumer;
  * @see XmppSession#addSessionStatusListener(Consumer)
  */
 public final class SessionStatusEvent extends EventObject {
+
     private final Throwable throwable;
 
     private final XmppSession.Status status;

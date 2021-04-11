@@ -34,4 +34,5 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "MustUnderstand")
 public final class MustUnderstand extends SoapFault {
+
 }

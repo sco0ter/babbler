@@ -383,7 +383,6 @@ public class JidTest {
         Jid.of("test\u001Ftest@domain");
     }
 
-
     @Test
     public void testLocalPart() {
 
@@ -430,7 +429,6 @@ public class JidTest {
 
     //@Test
     public void testPerformance() {
-
 
         long start = System.currentTimeMillis();
 

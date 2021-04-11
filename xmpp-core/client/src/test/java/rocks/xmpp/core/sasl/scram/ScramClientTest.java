@@ -116,7 +116,6 @@ public class ScramClientTest {
         Assert.assertEquals("=2C=3D=2C=3D=3D", ScramClient.replaceUsername(username));
     }
 
-
     @Test
     public void testClientServer() throws SaslException {
         XmppClient.create("test");

@@ -332,7 +332,6 @@ public class PresenceTest extends XmlTest {
                 Collections.singleton(new Text("text")), (byte) 1, "id", Jid.of("from"), Locale.ENGLISH,
                 Collections.singleton(new Bind()), null);
 
-
         List<Presence> list = new ArrayList<>();
         list.add(presenceAway);
         list.add(presenceDnd);

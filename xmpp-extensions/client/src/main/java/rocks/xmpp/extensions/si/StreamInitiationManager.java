@@ -308,6 +308,7 @@ public final class StreamInitiationManager extends Manager implements FileTransf
     }
 
     private interface ProfileManager {
+
         void handle(IQ iq, StreamInitiation streamInitiation);
     }
 }

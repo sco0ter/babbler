@@ -38,4 +38,5 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "invalid-rules")
 public final class InvalidRules extends AdvancedMessageProcessingError {
+
 }

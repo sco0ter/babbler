@@ -192,6 +192,7 @@ final class ReconnectionManager extends Manager {
      * A predicate which returns true as soon a system-shutdown stream error has occurred.
      */
     static final class SystemShutdownPredicate implements BiPredicate<Integer, Throwable> {
+
         private boolean systemShutdown;
 
         @Override

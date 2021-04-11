@@ -38,6 +38,7 @@ import java.util.logging.SimpleFormatter;
  * @author Christian Schudt
  */
 final class LogFormatter extends SimpleFormatter {
+
     @Override
     public synchronized String format(LogRecord logRecord) {
         StringBuilder sb = new StringBuilder();

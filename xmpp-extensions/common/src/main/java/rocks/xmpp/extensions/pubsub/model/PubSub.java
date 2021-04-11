@@ -641,6 +641,7 @@ public final class PubSub {
      * @see #withOptions(String, Jid, String, rocks.xmpp.extensions.data.model.DataForm)
      */
     public static final class Options extends PubSubChildElement {
+
         @XmlAttribute
         private final Jid jid;
 
@@ -833,7 +834,6 @@ public final class PubSub {
         }
     }
 
-
     private static final class Retract extends PubSubChildElement {
 
         @XmlAttribute
@@ -968,6 +968,7 @@ public final class PubSub {
     }
 
     private static final class Configure extends PubSubChildElement {
+
         @XmlElementRef
         private final DataForm dataForm;
 

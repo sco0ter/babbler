@@ -370,7 +370,6 @@ public final class DataForm implements Comparable<DataForm> {
         return null;
     }
 
-
     /**
      * Compares this data form with another data form. Data forms which have a "FORM_TYPE" field are are listed first in
      * a collection.
@@ -853,6 +852,7 @@ public final class DataForm implements Comparable<DataForm> {
          */
         @SuppressWarnings("PreferJavaTimeOverload")
         public static final class Builder {
+
             private final List<String> values = new ArrayList<>();
 
             private final List<Option> options = new ArrayList<>();
@@ -1095,6 +1095,7 @@ public final class DataForm implements Comparable<DataForm> {
      * An item which can be understood as a table row. The fields can be understood as table cells.
      */
     public static final class Item {
+
         private final List<Field> field = new ArrayList<>();
 
         /**
@@ -1203,6 +1204,7 @@ public final class DataForm implements Comparable<DataForm> {
      * @param <T> The sub builder.
      */
     public abstract static class Builder<T extends Builder<T>> {
+
         private Collection<Field> fields;
 
         private Collection<Item> items;

@@ -175,7 +175,6 @@ public class RealTimeMessageTest {
         Assert.assertEquals(realTimeMessage.getText(), "ad");
     }
 
-
     @Test
     public void testBoundaries() {
         int[] boundaries1 = OutboundRealTimeMessage.determineBounds("fefefe", "fefe");

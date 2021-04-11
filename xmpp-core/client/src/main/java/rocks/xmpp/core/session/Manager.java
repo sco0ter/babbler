@@ -30,6 +30,7 @@ package rocks.xmpp.core.session;
  * @author Christian Schudt
  */
 public class Manager {
+
     protected final XmppSession xmppSession;
 
     public Manager(XmppSession xmppSession) {

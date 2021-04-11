@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "not-in-roster-group")
 @XmlType(factoryMethod = "create")
 public final class NotInRosterGroup extends PubSubError {
+
     NotInRosterGroup() {
     }
 

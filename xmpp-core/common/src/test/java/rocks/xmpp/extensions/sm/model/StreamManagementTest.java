@@ -47,7 +47,6 @@ public class StreamManagementTest extends XmlTest {
         Assert.assertNotNull(feature);
     }
 
-
     @Test
     public void marshalEnable() throws JAXBException, XMLStreamException {
         StreamManagement.Enable enable = new StreamManagement.Enable();

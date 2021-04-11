@@ -37,6 +37,7 @@ import rocks.xmpp.extensions.httpbind.model.Body;
  * @see rocks.xmpp.extensions.httpbind.model.Body.Condition
  */
 public final class BoshException extends XmppException {
+
     private final Body.Condition condition;
 
     private final URI uri;

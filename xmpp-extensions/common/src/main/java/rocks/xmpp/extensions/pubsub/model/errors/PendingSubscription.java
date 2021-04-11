@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "pending-subscription")
 @XmlType(factoryMethod = "create")
 public final class PendingSubscription extends PubSubError {
+
     PendingSubscription() {
     }
 

@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "not-subscribed")
 @XmlType(factoryMethod = "create")
 public final class NotSubscribed extends PubSubError {
+
     NotSubscribed() {
     }
 

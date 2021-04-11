@@ -115,6 +115,7 @@ public abstract class MessageDeliveryReceipts {
     @XmlRootElement
     @XmlType(factoryMethod = "create")
     public static final class Request extends MessageDeliveryReceipts {
+
         private Request() {
         }
 

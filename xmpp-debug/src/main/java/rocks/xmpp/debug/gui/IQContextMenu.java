@@ -33,6 +33,7 @@ import rocks.xmpp.core.stanza.model.IQ;
  * @author Christian Schudt
  */
 final class IQContextMenu extends ContextMenu {
+
     private StanzaEntry stanzaEntry;
 
     public IQContextMenu(final TableView<StanzaEntry> stanzaTableView) {

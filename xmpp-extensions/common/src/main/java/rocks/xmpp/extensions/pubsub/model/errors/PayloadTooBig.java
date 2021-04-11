@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "payload-too-big")
 @XmlType(factoryMethod = "create")
 public final class PayloadTooBig extends PubSubError {
+
     PayloadTooBig() {
     }
 

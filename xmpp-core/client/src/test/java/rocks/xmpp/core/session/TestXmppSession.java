@@ -36,7 +36,6 @@ import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
 
-
 /**
  * @author Christian Schudt
  */

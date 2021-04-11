@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlAttribute;
  * @author Christian Schudt
  */
 public final class WebPageBookmark extends AbstractBookmark {
+
     @XmlAttribute
     private final URL url;
 

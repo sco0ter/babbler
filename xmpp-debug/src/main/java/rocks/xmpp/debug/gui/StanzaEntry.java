@@ -38,6 +38,7 @@ import rocks.xmpp.core.stream.model.StreamError;
  * @author Christian Schudt
  */
 final class StanzaEntry {
+
     private final boolean inbound;
 
     private final String xml;

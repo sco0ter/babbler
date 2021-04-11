@@ -113,7 +113,6 @@ public final class TxtRecord implements Comparable<TxtRecord> {
         return Objects.hash(txt);
     }
 
-
     @Override
     public final String toString() {
         return "TXT \"" + txt + '"';

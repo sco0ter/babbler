@@ -35,6 +35,7 @@ import rocks.xmpp.core.XmlTest;
  * @author Christian Schudt
  */
 public class ComponentTest extends XmlTest {
+
     protected ComponentTest() {
         super("jabber:component:accept");
     }

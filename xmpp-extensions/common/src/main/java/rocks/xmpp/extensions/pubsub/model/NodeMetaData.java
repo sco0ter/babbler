@@ -248,6 +248,7 @@ public final class NodeMetaData implements StandardizedDataForm {
      * rocks.xmpp.extensions.data.model.DataForm.Type#RESULT}.
      */
     public static final class Builder extends DataForm.Builder<Builder> {
+
         private Collection<Jid> contacts;
 
         private Instant creationDate;

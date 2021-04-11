@@ -455,6 +455,7 @@ public final class PubSubOwner {
         }
 
         private static final class Redirect {
+
             @XmlAttribute
             private final URI uri;
 
@@ -496,6 +497,7 @@ public final class PubSubOwner {
         }
 
         private static final class SubscriptionOwner extends PubSubOwnerChildElement implements Subscription {
+
             @XmlAttribute
             private final Jid jid;
 

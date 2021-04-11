@@ -69,7 +69,6 @@ public class ActivityTest extends XmlTest {
         Assert.assertNull(activity.getSpecificActivity().getSpecificActivity());
     }
 
-
     @Test
     public void marshalDoingChores() throws JAXBException, XMLStreamException {
         String xml = marshal(new Activity(Category.DOING_CHORES));

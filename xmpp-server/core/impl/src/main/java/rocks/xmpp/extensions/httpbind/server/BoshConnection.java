@@ -460,6 +460,7 @@ public final class BoshConnection extends AbstractConnection {
     }
 
     private final class BodyRequest implements Comparable<BodyRequest> {
+
         private final Body body;
 
         private final AsyncResponse asyncResponse;

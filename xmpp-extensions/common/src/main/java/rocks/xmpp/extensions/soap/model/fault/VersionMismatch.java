@@ -34,4 +34,5 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "VersionMismatch")
 public final class VersionMismatch extends SoapFault {
+
 }

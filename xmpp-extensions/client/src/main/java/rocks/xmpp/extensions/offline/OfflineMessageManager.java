@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.offline;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,7 +51,6 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * @author Christian Schudt
  */
 public final class OfflineMessageManager extends Manager {
-
 
     private OfflineMessageManager(XmppSession xmppSession) {
         super(xmppSession);

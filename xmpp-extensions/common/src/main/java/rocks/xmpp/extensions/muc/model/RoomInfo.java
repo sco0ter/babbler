@@ -233,6 +233,7 @@ public final class RoomInfo implements StandardizedDataForm {
      * A builder to build a room info form. The form is of type {@link DataForm.Type#RESULT} by default.
      */
     public static final class Builder extends DataForm.Builder<Builder> {
+
         private Integer maxHistoryMessages;
 
         private Collection<Jid> contacts;

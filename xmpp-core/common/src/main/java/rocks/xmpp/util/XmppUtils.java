@@ -59,36 +59,40 @@ public final class XmppUtils {
 
     /**
      * Creates a {@link XMLStreamWriter} instance, which writes XML without namespace prefixes.
+     *
      * <h2>Usage</h2>
+     *
      * <pre>{@code
      * Writer writer = new StringWriter();
-     * <p>
+     *
      * XMLStreamWriter xmlStreamWriter = XMLOutputFactory.newFactory().createXMLStreamWriter(writer);
      * XMLStreamWriter xmppStreamWriter = XmppUtils.createXmppStreamWriter(xmlStreamWriter, true);
-     * <p>
+     *
      * JAXBContext jaxbContext = JAXBContext.newInstance(Message.class, Sent.class);
      * Marshaller marshaller = jaxbContext.createMarshaller();
      * marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-     * <p>
+     *
      * Message forwardedMessage = new Message(Jid.of("romeo@example.net"), Message.Type.CHAT, "Hi!!");
-     * <p>
+     *
      * Message message = new Message(Jid.of("juliet@example.net"));
      * message.addExtension(new Sent(new Forwarded(forwardedMessage)));
-     * <p>
+     *
      * marshaller.marshal(message, xmppStreamWriter);
      * xmppStreamWriter.flush();
      * System.out.println(writer.toString());
      * }</pre>
-     * The output of this is:
+     *
+     * <p>The output of this is:</p>
+     *
      * <pre>{@code
      * <message to="juliet@example.net">
-     * <sent xmlns="urn:xmpp:carbons:2">
-     * <forwarded xmlns="urn:xmpp:forward:0">
-     * <message xmlns="jabber:client" to="romeo@example.net" type="chat">
-     * <body>Hi!!</body>
-     * </message>
-     * </forwarded>
-     * </sent>
+     *     <sent xmlns="urn:xmpp:carbons:2">
+     *         <forwarded xmlns="urn:xmpp:forward:0">
+     *             <message xmlns="jabber:client" to="romeo@example.net" type="chat">
+     *                 <body>Hi!!</body>
+     *             </message>
+     *         </forwarded>
+     *     </sent>
      * </message>
      * }</pre>
      *
@@ -116,6 +120,7 @@ public final class XmppUtils {
     /**
      * Creates an branched {@link java.io.InputStream}, which means that everything read by the source stream is written
      * to the target {@link java.io.OutputStream}.
+     *
      * <p>This is useful for reading the XMPP stream and writing the inbound XMPP traffic to an {@link
      * java.io.OutputStream}.</p>
      *
@@ -130,6 +135,7 @@ public final class XmppUtils {
     /**
      * Creates a branched {@link java.io.OutputStream}, which means that everything written to the original stream is
      * also written to the branched stream.
+     *
      * <p>This is useful for writing the outbound XMPP traffic to another stream.</p>
      *
      * @param out    The original stream.

@@ -24,8 +24,7 @@
 
 package rocks.xmpp.nio.netty.net;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
+import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +36,7 @@ import javax.xml.bind.Unmarshaller;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.handler.codec.DecoderException;
 import rocks.xmpp.core.net.ReaderInterceptor;
 import rocks.xmpp.core.net.ReaderInterceptorChain;
 import rocks.xmpp.core.stream.model.StreamElement;
@@ -71,8 +71,10 @@ final class NettyXmppDecoder extends ByteToMessageDecoder {
      */
     NettyXmppDecoder(final Consumer<StreamElement> streamElement, final List<ReaderInterceptor> readerInterceptors,
                      final Function<Locale, Unmarshaller> unmarshallerSupplier, final Consumer<Throwable> onFailure) {
-        this.readerInterceptors = readerInterceptors;
         this.xmppStreamDecoder = new XmppStreamDecoder(unmarshallerSupplier);
+        List<ReaderInterceptor> interceptors = new ArrayList<>(readerInterceptors);
+        interceptors.add(xmppStreamDecoder);
+        this.readerInterceptors = interceptors;
         this.onFailure = onFailure;
         this.streamElementConsumer = streamElement;
     }
@@ -81,25 +83,16 @@ final class NettyXmppDecoder extends ByteToMessageDecoder {
     protected final void decode(final ChannelHandlerContext ctx, final ByteBuf byteBuf, final List<Object> list)
             throws Exception {
         final ByteBuffer byteBuffer = byteBuf.nioBuffer();
-        SettableStringReader stringReader = new SettableStringReader();
-        ReaderInterceptor readerInterceptor =
-                (reader, streamElementListener, chain) -> xmppStreamDecoder.decode(byteBuffer, (s, streamElement) -> {
-                    stringReader.setString(s);
-                    char[] chars = new char[s.length()];
-                    try {
-                        int n = reader.read(chars, 0, s.length());
-                        if (n > -1) {
-                            streamElementListener.accept(streamElement);
-                        }
-                        list.add(streamElement);
-                    } catch (IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
-                });
-        List<ReaderInterceptor> interceptors = new ArrayList<>(readerInterceptors);
-        interceptors.add(readerInterceptor);
-        ReaderInterceptorChain readerInterceptorChain = new ReaderInterceptorChain(interceptors);
-        readerInterceptorChain.proceed(stringReader, streamElementConsumer);
+
+        xmppStreamDecoder.decode(byteBuffer, (s, streamElement) -> {
+            try (StringReader stringReader = new StringReader(s)) {
+                ReaderInterceptorChain readerInterceptorChain = new ReaderInterceptorChain(readerInterceptors);
+                // Start the reader chain
+                readerInterceptorChain.proceed(stringReader, streamElementConsumer);
+            } catch (Exception e) {
+                throw new DecoderException(e);
+            }
+        });
 
         byteBuf.readerIndex(byteBuffer.position());
     }

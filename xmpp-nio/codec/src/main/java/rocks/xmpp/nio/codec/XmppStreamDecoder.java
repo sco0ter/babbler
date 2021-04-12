@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.xml.XMLConstants;
 import javax.xml.bind.Unmarshaller;
@@ -47,6 +48,8 @@ import com.fasterxml.aalto.AsyncXMLInputFactory;
 import com.fasterxml.aalto.AsyncXMLStreamReader;
 import com.fasterxml.aalto.stax.InputFactoryImpl;
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.net.ReaderInterceptor;
+import rocks.xmpp.core.net.ReaderInterceptorChain;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamErrorException;
@@ -64,7 +67,7 @@ import rocks.xmpp.core.stream.model.errors.Condition;
  *
  * @author Christian Schudt
  */
-public final class XmppStreamDecoder {
+public final class XmppStreamDecoder implements ReaderInterceptor {
 
     private static final AsyncXMLInputFactory XML_INPUT_FACTORY = new InputFactoryImpl();
 
@@ -77,6 +80,10 @@ public final class XmppStreamDecoder {
     private StreamHeader streamHeader;
 
     private long elementEnd;
+
+    private String element = "";
+
+    private StreamElement streamElement;
 
     /**
      * Creates the XMPP decoder.
@@ -176,7 +183,6 @@ public final class XmppStreamDecoder {
 
                             // Copy the rest of the stream.
                             // From now on, only store the XML stream without the stream header.
-                            //xmlStream.delete(0, streamHeaderStr.length());
                             byteStream = Arrays.copyOfRange(byteStream, (int) elementEnd, byteStream.length);
 
                             streamHeader = StreamHeader.create(
@@ -187,6 +193,9 @@ public final class XmppStreamDecoder {
                                     lang != null ? Locale.forLanguageTag(lang) : null,
                                     contentNamespace,
                                     additionalNamespaces.toArray(new QName[0]));
+
+                            element = streamHeaderStr;
+                            streamElement = streamHeader;
 
                             out.accept(streamHeaderStr, streamHeader);
                         }
@@ -205,11 +214,12 @@ public final class XmppStreamDecoder {
                             elementEnd = end;
 
                             // Get the element from the stream.
-                            final String element = new String(byteStream, 0, elementLength, StandardCharsets.UTF_8);
+                            element = new String(byteStream, 0, elementLength, StandardCharsets.UTF_8);
 
                             if (xmlStreamReader.getDepth() == 1) {
                                 // The client has sent the closing </stream:stream> element.
-                                out.accept(element.trim(), StreamHeader.CLOSING_STREAM_TAG);
+                                streamElement = StreamHeader.CLOSING_STREAM_TAG;
+                                out.accept(element, StreamHeader.CLOSING_STREAM_TAG);
                             } else {
 
                                 //xmlStream.delete(0, element.length());
@@ -233,8 +243,9 @@ public final class XmppStreamDecoder {
                                     while (reader.hasNext() && t != XMLStreamConstants.START_ELEMENT) {
                                         t = reader.next();
                                     }
-                                    out.accept(element, (StreamElement) unmarshaller.apply(streamHeader.getLanguage())
-                                            .unmarshal(reader));
+                                    streamElement = (StreamElement) unmarshaller.apply(streamHeader.getLanguage())
+                                            .unmarshal(reader);
+                                    out.accept(element, streamElement);
                                 } finally {
                                     if (reader != null) {
                                         reader.close();
@@ -273,5 +284,17 @@ public final class XmppStreamDecoder {
         byteStream = new byte[0];
         xmlStreamReader = XML_INPUT_FACTORY.createAsyncForByteBuffer();
         elementEnd = 0;
+    }
+
+    @Override
+    public final synchronized void process(final Reader reader, final Consumer<StreamElement> streamElementListener,
+                              final ReaderInterceptorChain chain) throws Exception {
+        char[] chars = new char[element.length()];
+        int n = reader.read(chars, 0, element.length());
+        if (n > -1) {
+            element = "";
+            streamElementListener.accept(streamElement);
+            chain.proceed(reader, streamElementListener);
+        }
     }
 }

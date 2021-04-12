@@ -26,7 +26,11 @@ package rocks.xmpp.util;
 
 import java.io.Reader;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.xml.XMLConstants;
@@ -38,6 +42,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
@@ -51,9 +56,13 @@ import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.core.stream.model.errors.Condition;
 
 /**
+ * Decodes an XMPP stream from a synchronous source (reader).
  *
+ * <p>Stream restarts can be achieved by using the {@link #restart()} methods.</p>
+ *
+ * @author Christian Schudt
  */
-public class XmppStreamDecoder implements ReaderInterceptor {
+public final class XmppStreamDecoder implements ReaderInterceptor {
 
     private static final QName STREAM_ID = new QName("id");
 
@@ -69,7 +78,7 @@ public class XmppStreamDecoder implements ReaderInterceptor {
 
     private final Supplier<Unmarshaller> unmarshaller;
 
-    private final String namespace;
+    private final String contentNamespace;
 
     private boolean doRestart;
 
@@ -79,15 +88,15 @@ public class XmppStreamDecoder implements ReaderInterceptor {
      * <p>Because {@link Marshaller} is not thread-safe, it is recommended to pass a {@code ThreadLocal<Marshaller>} to
      * this constructor, which ensures thread-safety during marshalling.</p>
      *
-     * @param inputFactory The XML input factory.
-     * @param unmarshaller Supplies the marshaller which will convert objects to XML.
-     * @param namespace    If the stream namespace should be written in the root element.
+     * @param inputFactory     The XML input factory.
+     * @param unmarshaller     Supplies the marshaller which will convert objects to XML.
+     * @param contentNamespace The stream namespace.
      */
     public XmppStreamDecoder(final XMLInputFactory inputFactory, final Supplier<Unmarshaller> unmarshaller,
-                             final String namespace) {
+                             final String contentNamespace) {
         this.unmarshaller = unmarshaller;
         this.inputFactory = inputFactory;
-        this.namespace = namespace;
+        this.contentNamespace = contentNamespace;
     }
 
     /**
@@ -97,7 +106,7 @@ public class XmppStreamDecoder implements ReaderInterceptor {
      * @param reader                The writer to write to.
      * @throws StreamErrorException If the element could not be marshalled.
      */
-    public final void decode(final Reader reader, Consumer<StreamElement> streamElementConsumer)
+    final void decode(final Reader reader, Consumer<StreamElement> streamElementConsumer)
             throws StreamErrorException {
         XMLEventReader xmlEventReader = null;
         try {
@@ -124,7 +133,19 @@ public class XmppStreamDecoder implements ReaderInterceptor {
                                 final String version = versionAttribute != null ? versionAttribute.getValue() : null;
                                 final Locale lang =
                                         langAttribute != null ? Locale.forLanguageTag(langAttribute.getValue()) : null;
-                                streamHeader = StreamHeader.create(from, to, id, version, lang, namespace);
+                                final List<QName> additionalNamespaces = new ArrayList<>();
+                                Iterator<Namespace> namespaces = startElement.getNamespaces();
+                                while (namespaces.hasNext()) {
+                                    Namespace namespace = namespaces.next();
+                                    String namespaceUri = namespace.getNamespaceURI();
+                                    if (!StreamHeader.STREAM_NAMESPACE.equals(namespaceUri)
+                                            && !Objects.equals(namespaceUri, contentNamespace)) {
+                                        additionalNamespaces.add(new QName(namespaceUri, "", namespace.getPrefix()));
+                                    }
+                                }
+
+                                streamHeader = StreamHeader.create(from, to, id, version, lang, contentNamespace,
+                                        additionalNamespaces.toArray(new QName[0]));
                                 streamElementConsumer.accept(streamHeader);
                                 xmlEventReader.nextEvent();
                             } else {

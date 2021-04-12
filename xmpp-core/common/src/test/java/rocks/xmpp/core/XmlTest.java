@@ -71,7 +71,7 @@ public abstract class XmlTest {
 
     public static final XMLOutputFactory OUTPUT_FACTORY = XMLOutputFactory.newFactory();
 
-    private final Unmarshaller unmarshaller;
+    protected final Unmarshaller unmarshaller;
 
     private final Marshaller marshaller;
 

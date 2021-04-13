@@ -118,7 +118,8 @@ public class NettyServer {
 
                         // Create a new connection for the client.
                         final TcpBinding connection =
-                                new NettyChannelConnection(ch, session, null, serverConfiguration::getUnmarshaller,
+                                new NettyChannelConnection(ch, session, session, Collections.emptyList(),
+                                        serverConfiguration::getUnmarshaller,
                                         Collections.emptyList(), serverConfiguration::getMarshaller, null,
                                         new ConnectionConfiguration() {
                                             @Override

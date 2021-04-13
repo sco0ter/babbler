@@ -33,6 +33,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import rocks.xmpp.core.Session;
+import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.WriterInterceptor;
 import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.stream.model.StreamElement;
@@ -50,21 +52,28 @@ final class NettyXmppEncoder extends MessageToByteEncoder<StreamElement> {
 
     private final Consumer<Throwable> onFailure;
 
+    private final Session session;
+
+    private final Connection connection;
+
     /**
      * @param writerInterceptors The writer interceptors.
      * @param onFailure          Called when an exception in the pipeline has occurred. If null, the exception is
      *                           propagated to next handler. If non-null this callback is called instead.
      */
-    NettyXmppEncoder(final Iterable<WriterInterceptor> writerInterceptors, final Consumer<Throwable> onFailure) {
+    NettyXmppEncoder(final Iterable<WriterInterceptor> writerInterceptors, final Consumer<Throwable> onFailure,
+                     final Session session, final Connection connection) {
         this.writerInterceptors = writerInterceptors;
         this.onFailure = onFailure;
+        this.session = session;
+        this.connection = connection;
     }
 
     @Override
     protected final void encode(final ChannelHandlerContext ctx, final StreamElement streamElement,
                                 final ByteBuf byteBuf) throws Exception {
         try (Writer writer = new OutputStreamWriter(new ByteBufOutputStream(byteBuf), StandardCharsets.UTF_8)) {
-            WriterInterceptorChain chain = new WriterInterceptorChain(writerInterceptors);
+            WriterInterceptorChain chain = new WriterInterceptorChain(writerInterceptors, session, connection);
             chain.proceed(streamElement, writer);
         }
     }

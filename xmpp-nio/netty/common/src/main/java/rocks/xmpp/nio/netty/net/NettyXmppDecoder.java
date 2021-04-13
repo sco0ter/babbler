@@ -37,6 +37,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.DecoderException;
+import rocks.xmpp.core.Session;
+import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.ReaderInterceptor;
 import rocks.xmpp.core.net.ReaderInterceptorChain;
 import rocks.xmpp.core.stream.model.StreamElement;
@@ -61,6 +63,10 @@ final class NettyXmppDecoder extends ByteToMessageDecoder {
 
     private final Consumer<StreamElement> streamElementConsumer;
 
+    private final Session session;
+
+    private final Connection connection;
+
     /**
      * Creates the decoder.
      *
@@ -70,13 +76,16 @@ final class NettyXmppDecoder extends ByteToMessageDecoder {
      *                             propagated to next handler. If non-null this callback is called instead.
      */
     NettyXmppDecoder(final Consumer<StreamElement> streamElement, final List<ReaderInterceptor> readerInterceptors,
-                     final Function<Locale, Unmarshaller> unmarshallerSupplier, final Consumer<Throwable> onFailure) {
+                     final Function<Locale, Unmarshaller> unmarshallerSupplier, final Consumer<Throwable> onFailure,
+                     final Session session, final Connection connection) {
         this.xmppStreamDecoder = new XmppStreamDecoder(unmarshallerSupplier);
         List<ReaderInterceptor> interceptors = new ArrayList<>(readerInterceptors);
         interceptors.add(xmppStreamDecoder);
         this.readerInterceptors = interceptors;
         this.onFailure = onFailure;
         this.streamElementConsumer = streamElement;
+        this.session = session;
+        this.connection = connection;
     }
 
     @Override
@@ -86,7 +95,8 @@ final class NettyXmppDecoder extends ByteToMessageDecoder {
 
         xmppStreamDecoder.decode(byteBuffer, (s, streamElement) -> {
             try (StringReader stringReader = new StringReader(s)) {
-                ReaderInterceptorChain readerInterceptorChain = new ReaderInterceptorChain(readerInterceptors);
+                ReaderInterceptorChain readerInterceptorChain =
+                        new ReaderInterceptorChain(readerInterceptors, session, connection);
                 // Start the reader chain
                 readerInterceptorChain.proceed(stringReader, streamElementConsumer);
             } catch (Exception e) {

@@ -24,41 +24,41 @@
 
 package rocks.xmpp.core.net;
 
-import java.io.Reader;
-import java.util.Iterator;
-import java.util.function.Consumer;
-
 import rocks.xmpp.core.Session;
-import rocks.xmpp.core.stream.model.StreamElement;
 
 /**
- * An interceptor chain, which manages the sequential processing of multiple interceptors.
+ * Abstract base class for reader and writer interceptor chains.
  *
  * @author Christian Schudt
- * @see ReaderInterceptor
+ * @see ReaderInterceptorChain
  * @see WriterInterceptorChain
  */
-public final class ReaderInterceptorChain extends AbstractInterceptorChain {
+abstract class AbstractInterceptorChain {
 
-    private final Iterator<ReaderInterceptor> iterator;
+    private final Session session;
 
-    public ReaderInterceptorChain(Iterable<ReaderInterceptor> readerInterceptors, Session session,
-                                  Connection connection) {
-        super(session, connection);
-        iterator = readerInterceptors.iterator();
+    private final Connection connection;
+
+    AbstractInterceptorChain(Session session, Connection connection) {
+        this.connection = connection;
+        this.session = session;
     }
 
     /**
-     * Proceeds to the next interceptor if present.
+     * Gets the session.
      *
-     * @param reader        The reader.
-     * @param streamElement Consumes the read stream element.
-     * @throws Exception Any exception happening during interception.
+     * @return The session.
      */
-    public void proceed(Reader reader, Consumer<StreamElement> streamElement) throws Exception {
-        if (iterator.hasNext()) {
-            ReaderInterceptor readerInterceptor = iterator.next();
-            readerInterceptor.process(reader, streamElement, this);
-        }
+    public final Session getSession() {
+        return session;
+    }
+
+    /**
+     * Gets the connection to which the interceptor chain is applied.
+     *
+     * @return The connection.
+     */
+    public final Connection getConnection() {
+        return connection;
     }
 }

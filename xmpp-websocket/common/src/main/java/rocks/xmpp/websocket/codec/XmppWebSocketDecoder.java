@@ -36,6 +36,8 @@ import javax.xml.XMLConstants;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 
+import rocks.xmpp.core.Session;
+import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.ReaderInterceptor;
 import rocks.xmpp.core.net.ReaderInterceptorChain;
 import rocks.xmpp.core.stream.model.StreamElement;
@@ -57,12 +59,17 @@ import rocks.xmpp.util.XmppStreamDecoder;
  */
 public final class XmppWebSocketDecoder implements Decoder.TextStream<StreamElement> {
 
+    private Session session;
+
+    private Connection connection;
+
     private Iterable<ReaderInterceptor> interceptors;
 
     @Override
     public final StreamElement decode(final Reader reader) throws DecodeException, IOException {
         try {
-            ReaderInterceptorChain readerInterceptorChain = new ReaderInterceptorChain(interceptors);
+            ReaderInterceptorChain readerInterceptorChain =
+                    new ReaderInterceptorChain(interceptors, session, connection);
             List<StreamElement> out = new ArrayList<>();
             readerInterceptorChain.proceed(reader, out::add);
             if (!out.isEmpty()) {
@@ -79,8 +86,11 @@ public final class XmppWebSocketDecoder implements Decoder.TextStream<StreamElem
     @SuppressWarnings("unchecked")
     @Override
     public final void init(final EndpointConfig config) {
+        this.session = (Session) config.getUserProperties().get(UserProperties.SESSION);
+        this.connection = (Connection) config.getUserProperties().get(UserProperties.CONNECTION);
+
         XMLInputFactory xmlInputFactory =
-                (XMLInputFactory) config.getUserProperties().get(XmppWebSocketDecoder.UserProperties.XML_INPUT_FACTORY);
+                (XMLInputFactory) config.getUserProperties().get(UserProperties.XML_INPUT_FACTORY);
         if (xmlInputFactory == null) {
             xmlInputFactory = XMLInputFactory.newFactory();
         }
@@ -124,6 +134,10 @@ public final class XmppWebSocketDecoder implements Decoder.TextStream<StreamElem
          * <p>The value must be a {@code java.util.function.BiConsumer<String, StreamElement>}.</p>
          */
         public static final String ON_READ = "onRead";
+
+        public static final String CONNECTION = "connection";
+
+        public static final String SESSION = "session";
 
         private UserProperties() {
         }

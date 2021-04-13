@@ -40,6 +40,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.WriterInterceptor;
 import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.session.XmppSession;
@@ -63,6 +64,8 @@ final class XmppStreamWriter {
 
     private final XmppSession xmppSession;
 
+    private final Connection connection;
+
     private final ScheduledExecutorService executor;
 
     private final List<WriterInterceptor> writerInterceptors = new ArrayList<>();
@@ -77,8 +80,10 @@ final class XmppStreamWriter {
      */
     private boolean streamOpened;
 
-    XmppStreamWriter(Iterable<WriterInterceptor> writerInterceptors, final XmppSession xmppSession) {
+    XmppStreamWriter(final Iterable<WriterInterceptor> writerInterceptors, final Connection connection,
+                     final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
+        this.connection = connection;
         writerInterceptors.forEach(this.writerInterceptors::add);
         this.writerInterceptors.add(new XmppStreamEncoder(xmppSession.getConfiguration().getXmlOutputFactory(),
                 xmppSession::createMarshaller, s -> false));
@@ -105,7 +110,8 @@ final class XmppStreamWriter {
         Objects.requireNonNull(clientStreamElement);
         return CompletableFuture.runAsync(() -> {
             try {
-                WriterInterceptorChain writerInterceptorChain = new WriterInterceptorChain(writerInterceptors);
+                WriterInterceptorChain writerInterceptorChain =
+                        new WriterInterceptorChain(writerInterceptors, xmppSession, connection);
                 writerInterceptorChain.proceed(clientStreamElement, outputStreamWriter);
                 if (flush) {
                     outputStreamWriter.flush();
@@ -121,7 +127,9 @@ final class XmppStreamWriter {
         return CompletableFuture.runAsync(() -> {
             this.outputStreamWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
             try {
-                WriterInterceptorChain writerInterceptorChain = new WriterInterceptorChain(writerInterceptors);
+                WriterInterceptorChain
+                        writerInterceptorChain =
+                        new WriterInterceptorChain(writerInterceptors, xmppSession, connection);
                 writerInterceptorChain.proceed(streamHeader, outputStreamWriter);
                 outputStreamWriter.flush();
                 streamOpened = true;
@@ -136,7 +144,8 @@ final class XmppStreamWriter {
             if (streamOpened) {
                 // Close the stream.
                 try {
-                    WriterInterceptorChain writerInterceptorChain = new WriterInterceptorChain(writerInterceptors);
+                    WriterInterceptorChain writerInterceptorChain =
+                            new WriterInterceptorChain(writerInterceptors, xmppSession, connection);
                     writerInterceptorChain.proceed(StreamHeader.CLOSING_STREAM_TAG, outputStreamWriter);
                     outputStreamWriter.flush();
                     outputStreamWriter.close();

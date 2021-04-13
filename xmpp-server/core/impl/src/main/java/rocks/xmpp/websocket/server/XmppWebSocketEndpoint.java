@@ -35,6 +35,7 @@ import javax.websocket.Session;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.session.server.InboundClientSession;
+import rocks.xmpp.websocket.codec.XmppWebSocketEncoder;
 import rocks.xmpp.websocket.net.WebSocketConnection;
 
 /**
@@ -57,6 +58,8 @@ public final class XmppWebSocketEndpoint extends Endpoint {
                 new WebSocketConnection(session, xmppSession::handleElement, null, closeFuture, null);
 
         xmppSession.setConnection(connection);
+        config.getUserProperties().put(XmppWebSocketEncoder.UserProperties.SESSION, xmppSession);
+        config.getUserProperties().put(XmppWebSocketEncoder.UserProperties.CONNECTION, connection);
 
         // Store the XMPP session in the WebSocket's properties in order to close it again.
         session.getUserProperties().put(InboundClientSession.class.getName(), xmppSession);

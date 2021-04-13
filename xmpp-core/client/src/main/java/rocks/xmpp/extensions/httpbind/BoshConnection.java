@@ -214,7 +214,7 @@ public final class BoshConnection extends AbstractConnection {
             writerInterceptors.add(debugger);
         }
         writerInterceptors.add(streamEncoder);
-        return new WriterInterceptorChain(writerInterceptors);
+        return new WriterInterceptorChain(writerInterceptors, xmppSession, this);
     }
 
     private ReaderInterceptorChain newReaderChain() {
@@ -223,7 +223,7 @@ public final class BoshConnection extends AbstractConnection {
             readerInterceptors.add(debugger);
         }
         readerInterceptors.add(streamDecoder);
-        return new ReaderInterceptorChain(readerInterceptors);
+        return new ReaderInterceptorChain(readerInterceptors, xmppSession, this);
     }
 
     /**

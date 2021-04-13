@@ -49,6 +49,7 @@ import io.netty.handler.ssl.JdkSslContext;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
+import rocks.xmpp.core.Session;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.net.ConnectionConfiguration;
@@ -80,6 +81,7 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
 
     public NettyChannelConnection(final Channel channel,
                                   final StreamHandler streamHandler,
+                                  final Session session,
                                   final List<ReaderInterceptor> readerInterceptors,
                                   final Function<Locale, Unmarshaller> unmarshallerSupplier,
                                   final List<WriterInterceptor> writerInterceptors,
@@ -90,10 +92,11 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
         this.channel = channel;
         this.streamHandler = streamHandler;
         this.onException = onException;
-        this.decoder = new NettyXmppDecoder(this::onRead, readerInterceptors, unmarshallerSupplier, onException);
+        this.decoder = new NettyXmppDecoder(this::onRead, readerInterceptors, unmarshallerSupplier, onException,
+                session, this);
         List<WriterInterceptor> interceptors = new ArrayList<>(writerInterceptors);
         interceptors.add(new XmppStreamEncoder(XMLOutputFactory.newFactory(), marshallerSupplier, s -> false));
-        channel.pipeline().addLast(decoder, new NettyXmppEncoder(interceptors, onException));
+        channel.pipeline().addLast(decoder, new NettyXmppEncoder(interceptors, onException, session, this));
     }
 
     private static <T> CompletableFuture<T> completableFutureFromNettyFuture(final Future<T> future) {

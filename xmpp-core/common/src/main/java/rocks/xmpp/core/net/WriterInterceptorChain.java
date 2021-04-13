@@ -27,6 +27,7 @@ package rocks.xmpp.core.net;
 import java.io.Writer;
 import java.util.Iterator;
 
+import rocks.xmpp.core.Session;
 import rocks.xmpp.core.stream.model.StreamElement;
 
 /**
@@ -34,12 +35,15 @@ import rocks.xmpp.core.stream.model.StreamElement;
  *
  * @author Christian Schudt
  * @see WriterInterceptor
+ * @see ReaderInterceptorChain
  */
-public final class WriterInterceptorChain {
+public final class WriterInterceptorChain extends AbstractInterceptorChain {
 
     private final Iterator<WriterInterceptor> iterator;
 
-    public WriterInterceptorChain(Iterable<WriterInterceptor> writerInterceptors) {
+    public WriterInterceptorChain(Iterable<WriterInterceptor> writerInterceptors, Session session,
+                                  Connection connection) {
+        super(session, connection);
         iterator = writerInterceptors.iterator();
     }
 

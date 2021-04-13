@@ -157,7 +157,7 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
         xmppStreamReader.startReading(this::openedByPeer, this::closedByPeer);
 
         // Start writing to the output stream.
-        xmppStreamWriter = new XmppStreamWriter(xmppSession.getWriterInterceptors(), this.xmppSession);
+        xmppStreamWriter = new XmppStreamWriter(xmppSession.getWriterInterceptors(), this, this.xmppSession);
         xmppStreamWriter.initialize(tcpConnectionConfiguration.getKeepAliveInterval());
         final OutputStream os;
         synchronized (this) {

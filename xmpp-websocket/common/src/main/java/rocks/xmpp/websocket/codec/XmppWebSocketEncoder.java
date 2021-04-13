@@ -35,6 +35,8 @@ import javax.websocket.EndpointConfig;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLOutputFactory;
 
+import rocks.xmpp.core.Session;
+import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.WriterInterceptor;
 import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.stream.model.StreamElement;
@@ -57,12 +59,17 @@ import rocks.xmpp.util.XmppStreamEncoder;
  */
 public final class XmppWebSocketEncoder implements Encoder.TextStream<StreamElement> {
 
+    private Session session;
+
+    private Connection connection;
+
     private Iterable<WriterInterceptor> interceptors;
 
     @Override
     public final void encode(final StreamElement object, final Writer writer) throws EncodeException, IOException {
         try {
-            WriterInterceptorChain writerInterceptorChain = new WriterInterceptorChain(interceptors);
+            WriterInterceptorChain writerInterceptorChain =
+                    new WriterInterceptorChain(interceptors, session, connection);
             writerInterceptorChain.proceed(object, writer);
         } catch (IOException e) {
             throw e;
@@ -74,6 +81,10 @@ public final class XmppWebSocketEncoder implements Encoder.TextStream<StreamElem
     @SuppressWarnings("unchecked")
     @Override
     public final void init(final EndpointConfig config) {
+
+        this.session = (Session) config.getUserProperties().get(UserProperties.SESSION);
+        this.connection = (Connection) config.getUserProperties().get(UserProperties.CONNECTION);
+
         XMLOutputFactory xmlOutputFactory =
                 (XMLOutputFactory) config.getUserProperties().get(UserProperties.XML_OUTPUT_FACTORY);
         if (xmlOutputFactory == null) {
@@ -118,6 +129,10 @@ public final class XmppWebSocketEncoder implements Encoder.TextStream<StreamElem
          * java.util.function.BiConsumer<String, StreamElement>}.
          */
         public static final String ON_WRITE = "onWrite";
+
+        public static final String CONNECTION = "connection";
+
+        public static final String SESSION = "session";
 
         private UserProperties() {
         }

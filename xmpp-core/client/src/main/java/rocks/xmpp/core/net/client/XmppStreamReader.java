@@ -83,25 +83,22 @@ final class XmppStreamReader {
         this.xmppStreamDecoder = new XmppStreamDecoder(xmppSession.getConfiguration().getXmlInputFactory(),
                 xmppSession::createUnmarshaller, namespace);
     }
-
-    private ReaderInterceptorChain newReaderChain() {
-        List<ReaderInterceptor> readerInterceptors = new ArrayList<>();
-
-        if (debugger != null) {
-            readerInterceptors.add(debugger);
-        }
-        readerInterceptors.add(xmppStreamDecoder);
-        return new ReaderInterceptorChain(readerInterceptors);
-    }
-
+    
     void startReading(final Consumer<SessionOpen> openedByPeer, final Runnable closedByPeer) {
         executorService.execute(
                 new Runnable() {
                     @Override
                     public void run() {
                         try {
-                            newReaderChain()
-                                    .proceed(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8),
+                            List<ReaderInterceptor> readerInterceptors = new ArrayList<>();
+
+                            if (debugger != null) {
+                                readerInterceptors.add(debugger);
+                            }
+                            readerInterceptors.add(xmppStreamDecoder);
+                            ReaderInterceptorChain
+                                    context = new ReaderInterceptorChain(readerInterceptors, xmppSession, connection);
+                            context.proceed(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8),
                                             streamElement -> handle(streamElement, openedByPeer, closedByPeer, this));
                             if (streamError != null) {
                                 throw streamError;

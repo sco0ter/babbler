@@ -51,12 +51,7 @@
         <dependency>
             <groupId>fish.payara.extras</groupId>
             <artifactId>payara-micro</artifactId>
-            <version>5.201</version>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-            <scope>compile</scope>
+            <version>5.2021.2</version>
         </dependency>
     </dependencies>
 </project>

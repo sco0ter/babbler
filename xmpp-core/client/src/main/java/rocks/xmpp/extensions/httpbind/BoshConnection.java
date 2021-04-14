@@ -70,7 +70,6 @@ import rocks.xmpp.core.net.ReaderInterceptorChain;
 import rocks.xmpp.core.net.WriterInterceptor;
 import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
@@ -111,8 +110,6 @@ public final class BoshConnection extends AbstractConnection {
     private final AtomicLong rid = new AtomicLong();
 
     private final BoshConnectionConfiguration boshConnectionConfiguration;
-
-    private final XmppDebugger debugger;
 
     private final XmppSession xmppSession;
 
@@ -185,7 +182,6 @@ public final class BoshConnection extends AbstractConnection {
         this.url = url;
         this.xmppSession = xmppSession;
         this.boshConnectionConfiguration = configuration;
-        this.debugger = xmppSession.getDebugger();
 
         compressionMethods = new LinkedHashMap<>();
         for (CompressionMethod compressionMethod : boshConnectionConfiguration.getCompressionMethods()) {
@@ -209,19 +205,13 @@ public final class BoshConnection extends AbstractConnection {
     }
 
     private WriterInterceptorChain newWriterChain() {
-        List<WriterInterceptor> writerInterceptors = new ArrayList<>();
-        if (debugger != null) {
-            writerInterceptors.add(debugger);
-        }
+        List<WriterInterceptor> writerInterceptors = new ArrayList<>(xmppSession.getWriterInterceptors());
         writerInterceptors.add(streamEncoder);
         return new WriterInterceptorChain(writerInterceptors, xmppSession, this);
     }
 
     private ReaderInterceptorChain newReaderChain() {
-        List<ReaderInterceptor> readerInterceptors = new ArrayList<>();
-        if (debugger != null) {
-            readerInterceptors.add(debugger);
-        }
+        List<ReaderInterceptor> readerInterceptors = new ArrayList<>(xmppSession.getReaderInterceptors());
         readerInterceptors.add(streamDecoder);
         return new ReaderInterceptorChain(readerInterceptors, xmppSession, this);
     }

@@ -230,7 +230,7 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
             clientEndpointConfig.getUserProperties()
                     .put(XmppWebSocketEncoder.UserProperties.ON_WRITE, xmppSession.getWriterInterceptors());
             clientEndpointConfig.getUserProperties()
-                    .put(XmppWebSocketDecoder.UserProperties.ON_READ, Collections.singleton(xmppSession.getDebugger()));
+                    .put(XmppWebSocketDecoder.UserProperties.ON_READ, xmppSession.getReaderInterceptors());
         }
         clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.XML_OUTPUT_FACTORY,
                 xmppSession.getConfiguration().getXmlOutputFactory());

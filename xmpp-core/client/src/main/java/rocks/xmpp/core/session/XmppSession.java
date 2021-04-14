@@ -70,6 +70,7 @@ import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.Session;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.Connection;
+import rocks.xmpp.core.net.ReaderInterceptor;
 import rocks.xmpp.core.net.WriterInterceptor;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
@@ -182,6 +183,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
 
     private final List<WriterInterceptor> writerInterceptors = new CopyOnWriteArrayList<>();
 
+    private final List<ReaderInterceptor> readerInterceptors = new CopyOnWriteArrayList<>();
+
     private final Set<IQHandler> iqHandlers = new CopyOnWriteArraySet<>();
 
     /**
@@ -279,6 +282,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                 this.debugger = configuration.getDebugger().getConstructor().newInstance();
                 this.debugger.initialize(this);
                 this.writerInterceptors.add(this.debugger);
+                this.readerInterceptors.add(this.debugger);
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
@@ -810,8 +814,12 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
         connectionListeners.remove(connectionListener);
     }
 
-    public List<WriterInterceptor> getWriterInterceptors() {
-        return writerInterceptors;
+    public final List<WriterInterceptor> getWriterInterceptors() {
+        return Collections.unmodifiableList(writerInterceptors);
+    }
+
+    public final List<ReaderInterceptor> getReaderInterceptors() {
+        return Collections.unmodifiableList(readerInterceptors);
     }
 
     /**

@@ -39,7 +39,6 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.ReaderInterceptor;
 import rocks.xmpp.core.net.ReaderInterceptorChain;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
@@ -69,37 +68,33 @@ final class XmppStreamReader {
 
     private final ExecutorService executorService;
 
-    private final XmppDebugger debugger;
+    private final List<ReaderInterceptor> readerInterceptors = new ArrayList<>();
 
     private final XmppStreamDecoder xmppStreamDecoder;
 
     private StreamErrorException streamError = null;
 
-    XmppStreamReader(String namespace, final SocketConnection connection, XmppSession xmppSession) {
+    XmppStreamReader(final Iterable<ReaderInterceptor> readerInterceptors, String namespace,
+                     final SocketConnection connection, XmppSession xmppSession) {
         this.connection = connection;
         this.xmppSession = xmppSession;
-        this.debugger = xmppSession.getDebugger();
         this.executorService = new QueuedExecutorService(EXECUTOR_SERVICE);
         this.xmppStreamDecoder = new XmppStreamDecoder(xmppSession.getConfiguration().getXmlInputFactory(),
                 xmppSession::createUnmarshaller, namespace);
+        readerInterceptors.forEach(this.readerInterceptors::add);
+        this.readerInterceptors.add(xmppStreamDecoder);
     }
-    
+
     void startReading(final Consumer<SessionOpen> openedByPeer, final Runnable closedByPeer) {
         executorService.execute(
                 new Runnable() {
                     @Override
                     public void run() {
                         try {
-                            List<ReaderInterceptor> readerInterceptors = new ArrayList<>();
-
-                            if (debugger != null) {
-                                readerInterceptors.add(debugger);
-                            }
-                            readerInterceptors.add(xmppStreamDecoder);
-                            ReaderInterceptorChain
-                                    context = new ReaderInterceptorChain(readerInterceptors, xmppSession, connection);
+                            ReaderInterceptorChain context = new ReaderInterceptorChain(readerInterceptors, xmppSession,
+                                    connection);
                             context.proceed(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8),
-                                            streamElement -> handle(streamElement, openedByPeer, closedByPeer, this));
+                                    streamElement -> handle(streamElement, openedByPeer, closedByPeer, this));
                             if (streamError != null) {
                                 throw streamError;
                             }

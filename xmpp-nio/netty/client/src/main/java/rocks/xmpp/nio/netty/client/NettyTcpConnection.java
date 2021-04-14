@@ -26,7 +26,6 @@ package rocks.xmpp.nio.netty.client;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.util.Collections;
 import java.util.Locale;
 import java.util.concurrent.CompletionStage;
 import javax.net.ssl.HostnameVerifier;
@@ -82,8 +81,7 @@ public final class NettyTcpConnection extends NettyChannelConnection {
     NettyTcpConnection(final Channel channel, final XmppSession xmppSession,
                        final NettyTcpConnectionConfiguration connectionConfiguration) {
         super(channel, xmppSession, xmppSession,
-                xmppSession.getDebugger() != null ? Collections.singletonList(xmppSession.getDebugger())
-                        : Collections.emptyList(),
+                xmppSession.getReaderInterceptors(),
                 xmppSession::createUnmarshaller,
                 xmppSession.getWriterInterceptors(),
                 xmppSession::createMarshaller,

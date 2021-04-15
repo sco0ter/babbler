@@ -60,7 +60,7 @@ public final class TestXmppSession extends XmppSession {
             }
         });
 
-        activeConnection = new AbstractConnection(SocketConnectionConfiguration.builder().build()) {
+        activeConnection = new AbstractConnection(SocketConnectionConfiguration.builder().build(), null, null) {
 
             @Override
             protected void restartStream() {
@@ -68,7 +68,6 @@ public final class TestXmppSession extends XmppSession {
 
             @Override
             protected CompletionStage<Void> closeStream() {
-                closedByPeer();
                 return CompletableFuture.completedFuture(null);
             }
 

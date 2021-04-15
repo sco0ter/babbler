@@ -50,7 +50,6 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
 import rocks.xmpp.core.Session;
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.net.ReaderInterceptor;
@@ -75,10 +74,6 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
 
     protected SessionOpen sessionOpen;
 
-    private final StreamHandler streamHandler;
-
-    private final Consumer<Throwable> onException;
-
     public NettyChannelConnection(final Channel channel,
                                   final StreamHandler streamHandler,
                                   final Session session,
@@ -88,11 +83,9 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
                                   final Supplier<Marshaller> marshallerSupplier,
                                   final Consumer<Throwable> onException,
                                   final ConnectionConfiguration connectionConfiguration) {
-        super(connectionConfiguration);
+        super(connectionConfiguration, streamHandler, onException);
         this.channel = channel;
-        this.streamHandler = streamHandler;
-        this.onException = onException;
-        this.decoder = new NettyXmppDecoder(this::onRead, readerInterceptors, unmarshallerSupplier, onException,
+        this.decoder = new NettyXmppDecoder(this::handleElement, readerInterceptors, unmarshallerSupplier, onException,
                 session, this);
         List<WriterInterceptor> interceptors = new ArrayList<>(writerInterceptors);
         interceptors.add(new XmppStreamEncoder(XMLOutputFactory.newFactory(), marshallerSupplier, s -> false));
@@ -109,21 +102,6 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
             }
         });
         return completableFuture;
-    }
-
-    private void onRead(final StreamElement streamElement) {
-        if (streamElement instanceof SessionOpen) {
-            openedByPeer((SessionOpen) streamElement);
-        } else if (streamElement == StreamHeader.CLOSING_STREAM_TAG) {
-            closedByPeer();
-        }
-        try {
-            if (streamHandler.handleElement(streamElement)) {
-                restartStream();
-            }
-        } catch (XmppException e) {
-            onException.accept(e);
-        }
     }
 
     @Override

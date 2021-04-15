@@ -32,7 +32,6 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.websocket.Session;
 
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.ConnectionConfiguration;
@@ -55,35 +54,14 @@ public class WebSocketConnection extends AbstractConnection {
 
     private final CompletionStage<Void> closeFuture;
 
-    private final StreamHandler streamHandler;
-
-    private final Consumer<Throwable> onException;
-
     protected SessionOpen sessionOpen;
 
     public WebSocketConnection(Session session, StreamHandler streamHandler, Consumer<Throwable> onException,
                                CompletableFuture<Void> closeFuture, ConnectionConfiguration connectionConfiguration) {
-        super(connectionConfiguration);
+        super(connectionConfiguration, streamHandler, onException);
         this.closeFuture = closeFuture;
         this.session = session;
-        this.streamHandler = streamHandler;
-        this.onException = onException;
-        session.addMessageHandler(StreamElement.class, this::onRead);
-    }
-
-    private void onRead(final StreamElement streamElement) {
-        if (streamElement instanceof Open) {
-            openedByPeer((Open) streamElement);
-        } else if (streamElement instanceof Close) {
-            closedByPeer();
-        }
-        try {
-            if (streamHandler.handleElement(streamElement)) {
-                restartStream();
-            }
-        } catch (XmppException e) {
-            onException.accept(e);
-        }
+        session.addMessageHandler(StreamElement.class, this::handleElement);
     }
 
     @Override

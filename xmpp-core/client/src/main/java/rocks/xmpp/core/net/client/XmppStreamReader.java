@@ -33,13 +33,10 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
-import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.ReaderInterceptor;
 import rocks.xmpp.core.net.ReaderInterceptorChain;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamErrorException;
@@ -85,7 +82,7 @@ final class XmppStreamReader {
         this.readerInterceptors.add(xmppStreamDecoder);
     }
 
-    void startReading(final Consumer<SessionOpen> openedByPeer, final Runnable closedByPeer) {
+    void startReading() {
         executorService.execute(
                 new Runnable() {
                     @Override
@@ -94,7 +91,7 @@ final class XmppStreamReader {
                             ReaderInterceptorChain context = new ReaderInterceptorChain(readerInterceptors, xmppSession,
                                     connection);
                             context.proceed(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8),
-                                    streamElement -> handle(streamElement, openedByPeer, closedByPeer, this));
+                                    streamElement -> handle(streamElement, this));
                             if (streamError != null) {
                                 throw streamError;
                             }
@@ -113,12 +110,8 @@ final class XmppStreamReader {
         );
     }
 
-    private void handle(StreamElement streamElement, final Consumer<SessionOpen> openedByPeer,
-                        final Runnable closedByPeer, final Runnable reader) {
+    private void handle(StreamElement streamElement, final Runnable reader) {
         try {
-            if (streamElement instanceof SessionOpen) {
-                openedByPeer.accept((SessionOpen) streamElement);
-            }
             if (streamElement == StreamHeader.CLOSING_STREAM_TAG) {
                 if (xmppSession.getStatus() != XmppSession.Status.CLOSING) {
                     // The server initiated a graceful disconnect by sending <stream:stream/> without an stream error.
@@ -127,18 +120,14 @@ final class XmppStreamReader {
                             new StreamError(Condition.UNDEFINED_CONDITION, "Stream closed by server", Locale.ENGLISH,
                                     null));
                 }
-                closedByPeer.run();
             }
 
-            if (xmppSession.handleElement(streamElement)) {
+            if (connection.handleElement(streamElement)) {
                 xmppStreamDecoder.restart();
-                connection.restartStream();
                 reader.run();
             }
         } catch (StreamErrorException e) {
             streamError = e;
-        } catch (XmppException e) {
-            xmppSession.notifyException(e);
         }
     }
 

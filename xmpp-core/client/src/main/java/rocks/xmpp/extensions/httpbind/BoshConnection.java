@@ -76,6 +76,7 @@ import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamFeatures;
+import rocks.xmpp.core.stream.model.StreamHeader;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.util.XmppStreamDecoder;
@@ -178,7 +179,7 @@ public final class BoshConnection extends AbstractConnection {
     private SessionOpen sessionOpen;
 
     BoshConnection(final URL url, final XmppSession xmppSession, final BoshConnectionConfiguration configuration) {
-        super(configuration);
+        super(configuration, xmppSession, xmppSession::notifyException);
         this.url = url;
         this.xmppSession = xmppSession;
         this.boshConnectionConfiguration = configuration;
@@ -357,7 +358,7 @@ public final class BoshConnection extends AbstractConnection {
         // It's the session creation response.
         if (responseBody.getSid() != null) {
             synchronized (this) {
-                openedByPeer(responseBody);
+                handleElement(responseBody);
                 sessionId = responseBody.getSid();
                 if (responseBody.getAck() != null) {
                     usingAcknowledgments = true;
@@ -378,7 +379,6 @@ public final class BoshConnection extends AbstractConnection {
                         }
                     }
                 }
-                xmppSession.handleElement(responseBody);
             }
         }
 
@@ -387,14 +387,22 @@ public final class BoshConnection extends AbstractConnection {
             ackReceived(responseBody.getAck());
         }
 
+        for (Object wrappedObject : responseBody.getWrappedObjects()) {
+            handleElement(wrappedObject);
+        }
+
         // If the body contains an error condition, which is not a stream error,
         // terminate the connection by throwing an exception.
-        if (responseBody.getType() == Body.Type.TERMINATE && responseBody.getCondition() != null
-                && responseBody.getCondition() != Body.Condition.REMOTE_STREAM_ERROR) {
-            // Shutdown the connection, we don't want to send further requests from now on.
-            shutdown();
-            closeFuture.completeExceptionally(new BoshException(responseBody.getCondition(), responseBody.getUri()));
-            throw new BoshException(responseBody.getCondition(), responseBody.getUri());
+        if (responseBody.getType() == Body.Type.TERMINATE) {
+            handleElement(StreamHeader.CLOSING_STREAM_TAG);
+            if (responseBody.getCondition() != null
+                    && responseBody.getCondition() != Body.Condition.REMOTE_STREAM_ERROR) {
+                // Shutdown the connection, we don't want to send further requests from now on.
+                shutdown();
+                closeFuture
+                        .completeExceptionally(new BoshException(responseBody.getCondition(), responseBody.getUri()));
+                throw new BoshException(responseBody.getCondition(), responseBody.getUri());
+            }
         } else if (responseBody.getType() == Body.Type.ERROR) {
             // In any response it sends to the client, the connection manager MAY return a recoverable error by setting
             // a 'type' attribute of the <body/> element to "error".
@@ -405,12 +413,6 @@ public final class BoshConnection extends AbstractConnection {
             // This enables the connection manager to recover a session after the previous request was
             // lost due to a communication failure.
             unacknowledgedRequests.forEach((key, value) -> sendNewRequest(value, true));
-        }
-
-        for (Object wrappedObject : responseBody.getWrappedObjects()) {
-            if (xmppSession.handleElement(wrappedObject)) {
-                restartStream();
-            }
         }
     }
 

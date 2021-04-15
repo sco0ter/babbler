@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.session.model.SessionClose;
 
 /**
  * The implementation of the {@code <close/>} element in the {@code urn:ietf:params:xml:ns:xmpp-framing} namespace.
@@ -38,7 +39,7 @@ import rocks.xmpp.addr.Jid;
  * @since 0.7.0
  */
 @XmlRootElement
-public final class Close extends Frame {
+public final class Close extends Frame implements SessionClose {
 
     @XmlAttribute(name = "see-other-uri")
     private final URI uri;

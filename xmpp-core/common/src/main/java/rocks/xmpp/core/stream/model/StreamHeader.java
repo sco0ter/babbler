@@ -38,6 +38,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.session.model.SessionClose;
 import rocks.xmpp.core.session.model.SessionOpen;
 
 /**
@@ -77,7 +78,7 @@ public final class StreamHeader implements SessionOpen, CharSequence {
     /**
      * The closing stream tag {@code </stream:stream>}. The {@code toString()} method returns the XML string.
      */
-    public static final StreamElement CLOSING_STREAM_TAG = new StreamElement() {
+    public static final StreamElement CLOSING_STREAM_TAG = new SessionClose() {
         @Override
         public String toString() {
             return "</" + StreamHeader.STREAM_NAMESPACE_PREFIX + ':' + StreamHeader.LOCAL_NAME + '>';

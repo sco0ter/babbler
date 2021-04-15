@@ -117,7 +117,7 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
 
     public SocketConnection(final Socket socket, final XmppSession xmppSession,
                             final TcpConnectionConfiguration<Socket> configuration) {
-        super(configuration);
+        super(configuration, xmppSession, xmppSession::notifyException);
         this.socket = socket;
         try {
             this.outputStream = new BufferedOutputStream(socket.getOutputStream());
@@ -155,7 +155,7 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
         // Start reading from the input stream.
         xmppStreamReader = new XmppStreamReader(xmppSession.getReaderInterceptors(), streamHeader.getContentNamespace(),
                 this, this.xmppSession);
-        xmppStreamReader.startReading(this::openedByPeer, this::closedByPeer);
+        xmppStreamReader.startReading();
 
         // Start writing to the output stream.
         xmppStreamWriter = new XmppStreamWriter(xmppSession.getWriterInterceptors(), this, this.xmppSession);

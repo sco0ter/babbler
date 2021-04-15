@@ -29,9 +29,13 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
+import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.session.model.SessionClose;
 import rocks.xmpp.core.session.model.SessionOpen;
+import rocks.xmpp.core.stream.StreamHandler;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.util.concurrent.CompletionStages;
 
@@ -40,7 +44,7 @@ import rocks.xmpp.util.concurrent.CompletionStages;
  *
  * @author Christian Schudt
  */
-public abstract class AbstractConnection implements Connection {
+public abstract class AbstractConnection implements Connection, StreamHandler {
 
     private final AtomicBoolean closed = new AtomicBoolean();
 
@@ -48,10 +52,18 @@ public abstract class AbstractConnection implements Connection {
 
     private final ConnectionConfiguration connectionConfiguration;
 
+    private final StreamHandler streamHandler;
+
+    private final Consumer<Throwable> onException;
+
     private String streamId;
 
-    protected AbstractConnection(ConnectionConfiguration connectionConfiguration) {
+    protected AbstractConnection(ConnectionConfiguration connectionConfiguration,
+                                 StreamHandler streamHandler,
+                                 Consumer<Throwable> onException) {
         this.connectionConfiguration = connectionConfiguration;
+        this.streamHandler = streamHandler;
+        this.onException = onException;
     }
 
     @Override
@@ -61,6 +73,27 @@ public abstract class AbstractConnection implements Connection {
 
     @Override
     public boolean isUsingAcknowledgements() {
+        return false;
+    }
+
+    @Override
+    public boolean handleElement(final Object streamElement) {
+        if (streamElement instanceof SessionOpen) {
+            synchronized (this) {
+                streamId = ((SessionOpen) streamElement).getId();
+            }
+        } else if (streamElement instanceof SessionClose) {
+            closedByPeer.complete(null);
+            closeAsync();
+        }
+        try {
+            if (streamHandler.handleElement(streamElement)) {
+                restartStream();
+                return true;
+            }
+        } catch (XmppException e) {
+            onException.accept(e);
+        }
         return false;
     }
 
@@ -87,18 +120,6 @@ public abstract class AbstractConnection implements Connection {
      * @return The future which is complete, when the connection is closed.
      */
     protected abstract CompletionStage<Void> closeConnection();
-
-    /**
-     * @param sessionOpen The stream header.
-     */
-    protected final synchronized void openedByPeer(SessionOpen sessionOpen) {
-        streamId = sessionOpen.getId();
-    }
-
-    protected void closedByPeer() {
-        closedByPeer.complete(null);
-        closeAsync();
-    }
 
     @Override
     public final synchronized String getStreamId() {

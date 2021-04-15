@@ -147,7 +147,7 @@ public final class BoshConnection extends AbstractConnection {
 
     BoshConnection(final StreamHandler streamHandler, final Body sessionRequest, final AsyncResponse asyncResponse,
                    final SecurityContext securityContext, final BoshConnectionManager connectionManager) {
-        super(null);
+        super(null, streamHandler, null);
         this.connectionManager = connectionManager;
         this.streamHandler = streamHandler;
         requestReceived(sessionRequest, asyncResponse, securityContext);

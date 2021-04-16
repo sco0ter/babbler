@@ -82,7 +82,7 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
 
     private final ClientStreamManager streamManager;
 
-    private final TcpConnectionConfiguration<Socket> tcpConnectionConfiguration;
+    private final TcpConnectionConfiguration tcpConnectionConfiguration;
 
     private final XmppSession xmppSession;
 
@@ -116,7 +116,7 @@ public final class SocketConnection extends AbstractConnection implements TcpBin
     private SessionOpen sessionOpen;
 
     public SocketConnection(final Socket socket, final XmppSession xmppSession,
-                            final TcpConnectionConfiguration<Socket> configuration) {
+                            final TcpConnectionConfiguration configuration) {
         super(configuration, xmppSession, xmppSession::notifyException);
         this.socket = socket;
         try {

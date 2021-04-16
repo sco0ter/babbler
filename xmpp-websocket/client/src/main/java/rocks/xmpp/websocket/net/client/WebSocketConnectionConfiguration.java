@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import javax.net.ssl.SSLContext;
 import javax.websocket.ClientEndpointConfig;
@@ -164,13 +163,13 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
     }
 
     @Override
-    public final Connection createConnection(final XmppSession xmppSession) throws Exception {
+    public final CompletableFuture<Connection> createConnection(final XmppSession xmppSession) throws Exception {
         final CompletableFuture<Void> closeFuture = new CompletableFuture<>();
         return createWebSocketSession(xmppSession, closeFuture);
     }
 
-    private WebSocketClientConnection createWebSocketSession(XmppSession xmppSession,
-                                                             CompletableFuture<Void> closeFuture)
+    private CompletableFuture<Connection> createWebSocketSession(XmppSession xmppSession,
+                                                                 CompletableFuture<Void> closeFuture)
             throws Exception {
 
         final URI path;
@@ -257,7 +256,7 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
                     "http://" + inetSocketAddress.getHostName() + ':' + inetSocketAddress.getPort());
         }
 
-        AtomicReference<WebSocketClientConnection> connection = new AtomicReference<>();
+        CompletableFuture<Connection> connection = new CompletableFuture<>();
         client.connectToServer(new Endpoint() {
             @Override
             public void onOpen(Session session, EndpointConfig config) {
@@ -273,7 +272,7 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
                     WebSocketClientConnection websocketConnection =
                             new WebSocketClientConnection(session, closeFuture, xmppSession,
                                     WebSocketConnectionConfiguration.this);
-                    connection.set(websocketConnection);
+                    connection.complete(websocketConnection);
                     config.getUserProperties().put(XmppWebSocketEncoder.UserProperties.SESSION, xmppSession);
                     config.getUserProperties().put(XmppWebSocketEncoder.UserProperties.CONNECTION, websocketConnection);
                 }
@@ -281,6 +280,7 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
 
             @Override
             public void onError(Session session, Throwable t) {
+                connection.completeExceptionally(t);
                 xmppSession.notifyException(t);
             }
 
@@ -296,7 +296,7 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
         if (connection.get() == null) {
             throw new IOException("Session could not be opened.");
         }
-        return connection.get();
+        return connection;
     }
 
     private static String findWebSocketEndpoint(String xmppServiceDomain, String nameServer, long timeout) {
@@ -325,7 +325,8 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
     /**
      * A builder to create a {@link WebSocketConnectionConfiguration} instance.
      */
-    public static final class Builder extends ClientConnectionConfiguration.Builder<Builder> {
+    public static final class Builder
+            extends ClientConnectionConfiguration.Builder<Builder, WebSocketConnectionConfiguration> {
 
         private String path;
 

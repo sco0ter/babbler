@@ -24,36 +24,38 @@
 
 package rocks.xmpp.core.net.client;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.concurrent.CompletableFuture;
 
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
-import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.dns.DnsResolver;
-import rocks.xmpp.dns.SrvRecord;
 
 /**
  * A configuration for a TCP connection.
  *
- * @param <T> The transport object, e.g. {@link java.net.Socket}.
  * @author Christian Schudt
  * @see rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration
  * @see SocketConnection
  */
-public abstract class TcpConnectionConfiguration<T> extends ClientConnectionConfiguration {
+public final class TcpConnectionConfiguration extends ClientConnectionConfiguration {
 
     private final int keepAliveInterval;
 
-    protected TcpConnectionConfiguration(Builder<? extends TcpConnectionConfiguration.Builder<?>> builder) {
+    private final TransportConnector<TcpConnectionConfiguration> connector;
+
+    protected TcpConnectionConfiguration(Builder builder) {
         super(builder);
         this.keepAliveInterval = builder.keepAliveInterval;
+        this.connector = builder.getConnector();
+    }
+
+    /**
+     * Creates a new builder for this class.
+     *
+     * @return The builder.
+     */
+    public static TcpConnectionConfiguration.Builder builder() {
+        return new TcpConnectionConfiguration.Builder();
     }
 
     /**
@@ -65,139 +67,18 @@ public abstract class TcpConnectionConfiguration<T> extends ClientConnectionConf
         return keepAliveInterval;
     }
 
-    /**
-     * Creates the connection
-     *
-     * @param xmppSession The XMPP session.
-     * @param creator     The creation function.
-     * @return The connection.
-     * @throws Exception If any exception occurs when creating and connecting.
-     */
-    protected final Connection createConnection(XmppSession xmppSession, Function<T, TcpBinding> creator)
-            throws Exception {
-        T socket;
-        final AtomicBoolean useDirectTls = new AtomicBoolean(getChannelEncryption() == ChannelEncryption.DIRECT);
-        if (getHostname() != null && !getHostname().isEmpty()) {
-            socket = connect(getHostname(), getPort());
-        } else if (xmppSession.getDomain() != null) {
-            if ((socket = connectWithXmppServiceDomain(xmppSession.getDomain(),
-                    xmppSession.getConfiguration().getNameServer(), useDirectTls::set)) == null) {
-                // 9. If the initiating entity does not receive a response to its SRV query, it SHOULD attempt the
-                // fallback process described in the next section.
-                socket = connect(xmppSession.getDomain().toString(), getPort());
-            }
-        } else {
-            throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
+    @Override
+    public CompletableFuture<Connection> createConnection(XmppSession xmppSession) throws Exception {
+        if (connector == null) {
+            return new SocketConnector().connect(xmppSession, this);
         }
-        TcpBinding tcpBinding = creator.apply(socket);
-        if (useDirectTls.get()) {
-            tcpBinding.secureConnection();
-        }
-        return tcpBinding;
-    }
-
-    /**
-     * Connects to a host and port.
-     *
-     * @param hostname The host.
-     * @param port     The port.
-     * @return The connected transport.
-     * @throws Exception If any exception occurred during connecting.
-     */
-    protected abstract T connect(String hostname, int port) throws Exception;
-
-    /**
-     * This is the preferred way to resolve the FQDN.
-     *
-     * @param xmppServiceDomain The fully qualified domain name.
-     * @param nameServer        The name server used for DNS resolution.
-     * @param isDirectTls       The consumer which gets notified, if direct TLS is used.
-     * @return The socket or null, if the connection could not be established.
-     * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">3.2.1.  Preferred Process: SRV Lookup</a>
-     */
-    private T connectWithXmppServiceDomain(final Jid xmppServiceDomain, final String nameServer,
-                                           final Consumer<Boolean> isDirectTls) {
-
-        // 1. The initiating entity constructs a DNS SRV query whose inputs are:
-        //
-        //   * Service of "xmpp-client" (for client-to-server connections) or "xmpp-server"
-        //   (for server-to-server connections)
-        try {
-
-            final List<SrvRecord> srvRecords = new ArrayList<>();
-            if (getChannelEncryption() != ChannelEncryption.DIRECT) {
-                // Don't lookup unencrypted end points, if only direct TLS is allowed.
-                srvRecords.addAll(DnsResolver
-                        .resolveSRV("xmpp-client", xmppServiceDomain, nameServer, getConnectTimeout()));
-            }
-            final List<SrvRecord> srvRecordsXmpps = new ArrayList<>();
-            if (getChannelEncryption() != ChannelEncryption.DISABLED) {
-                // Only resolve SRV if TLS is not disabled.
-                srvRecordsXmpps.addAll(DnsResolver
-                        .resolveSRV("xmpps-client", xmppServiceDomain, nameServer, getConnectTimeout()));
-            }
-            srvRecords.addAll(srvRecordsXmpps);
-            // 3. If a response is received, it will contain one or more combinations of a port and FDQN,
-            // each of which is weighted and prioritized as described in [DNS-SRV].
-            // Sort the entries, so that the best one is tried first.
-            srvRecords.sort(null);
-            IOException ex = null;
-            for (SrvRecord srvRecord : srvRecords) {
-                if (srvRecord != null) {
-                    // (However, if the result of the SRV lookup is a single resource record with a Target of ".",
-                    // i.e., the root domain, then the initiating entity MUST abort SRV processing at this point
-                    // because according to [DNS-SRV] such a Target "means that the service is decidedly
-                    // not available at this domain".)
-                    if (".".equals(srvRecord.getTarget())) {
-                        if (srvRecordsXmpps.contains(srvRecord)) {
-                            // Direct TLS is not supported, in this case try the non-direct-TLS targets.
-                            continue;
-                        } else {
-                            return null;
-                        }
-                    }
-
-                    try {
-                        // 4. The initiating entity chooses at least one of the returned FQDNs to resolve
-                        // (following the rules in [DNS-SRV]), which it does by performing DNS "A" or "AAAA" lookups
-                        // on the FDQN; this will result in an IPv4 or IPv6 address.
-                        // 5. The initiating entity uses the IP address(es) from the successfully resolved FDQN
-                        // (with the corresponding port number returned by the SRV lookup) as the connection address
-                        // for the receiving entity.
-                        // 6. If the initiating entity fails to connect using that IP address but the "A" or "AAAA"
-                        // lookups returned more than one IP address, then the initiating entity uses the next resolved
-                        // IP address for that FDQN as the connection address.
-                        T socket = connect(srvRecord.getTarget(), srvRecord.getPort());
-                        if (srvRecordsXmpps.contains(srvRecord)) {
-                            isDirectTls.accept(true);
-                        }
-                        return socket;
-                    } catch (IOException e) {
-                        // 7. If the initiating entity fails to connect using all resolved IP addresses for a given
-                        // FDQN, then it repeats the process of resolution and connection for the next FQDN returned by
-                        // the SRV lookup based on the priority and weight as defined in [DNS-SRV].
-                        ex = e;
-                    }
-                }
-            }
-
-            // 8. If the initiating entity receives a response to its SRV query but it is not able to establish an XMPP
-            // connection using the data received in the response, it SHOULD NOT attempt the fallback process described
-            // in the next section (this helps to prevent a state mismatch between inbound and outbound connections).
-            if (!srvRecords.isEmpty()) {
-                throw new IOException("Could not connect to any host.", ex);
-            }
-        } catch (Exception e) {
-            // Unable to resolve the domain, try fallback.
-            return null;
-        }
-        return null;
+        return connector.connect(xmppSession, this);
     }
 
     /**
      * A builder to create a {@link TcpConnectionConfiguration} instance.
      */
-    public abstract static class Builder<T extends Builder<T>> extends ClientConnectionConfiguration.Builder<T> {
+    public static class Builder extends ClientConnectionConfiguration.Builder<Builder, TcpConnectionConfiguration> {
 
         private int keepAliveInterval;
 
@@ -208,6 +89,16 @@ public abstract class TcpConnectionConfiguration<T> extends ClientConnectionConf
             keepAliveInterval(30);
         }
 
+        @Override
+        protected Builder self() {
+            return this;
+        }
+
+        @Override
+        public TcpConnectionConfiguration build() {
+            return new TcpConnectionConfiguration(this);
+        }
+
         /**
          * Sets the whitespace keep-alive interval in seconds. If the interval is negative, no whitespace will be sent
          * at all.
@@ -215,7 +106,7 @@ public abstract class TcpConnectionConfiguration<T> extends ClientConnectionConf
          * @param keepAliveInterval The whitespace keep-alive interval.
          * @return The builder.
          */
-        public final Builder<T> keepAliveInterval(int keepAliveInterval) {
+        public final Builder keepAliveInterval(int keepAliveInterval) {
             this.keepAliveInterval = keepAliveInterval;
             return this;
         }

@@ -25,16 +25,18 @@
 package rocks.xmpp.extensions.httpbind;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.Proxy;
 import java.net.URL;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
-import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
+import rocks.xmpp.core.net.client.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.TxtRecord;
@@ -61,7 +63,7 @@ import rocks.xmpp.dns.TxtRecord;
  *
  * <p>This class is immutable.</p>
  *
- * @see SocketConnectionConfiguration
+ * @see TcpConnectionConfiguration
  * @see BoshConnection
  */
 public final class BoshConnectionConfiguration extends ClientConnectionConfiguration {
@@ -122,7 +124,7 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
     }
 
     @Override
-    public Connection createConnection(XmppSession xmppSession) throws Exception {
+    public CompletableFuture<Connection> createConnection(XmppSession xmppSession) throws Exception {
 
         URL url;
         String protocol = getChannelEncryption() == ChannelEncryption.DIRECT ? "https" : "http";
@@ -149,12 +151,19 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
         }
 
         BoshConnection boshConnection = new BoshConnection(url, xmppSession, this);
-        boshConnection.connect();
-        return boshConnection;
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                boshConnection.connect();
+                return boshConnection;
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        });
     }
 
     /**
-     * Tries to find the BOSH URL by a DNS TXT lookup as described in <a href="https://xmpp.org/extensions/xep-0156.html">XEP-0156</a>.
+     * Tries to find the BOSH URL by a DNS TXT lookup as described in
+     * <a href="https://xmpp.org/extensions/xep-0156.html">XEP-0156</a>.
      *
      * @param xmppServiceDomain The fully qualified domain name.
      * @param nameServer        The name server.
@@ -225,7 +234,8 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
     /**
      * A builder to create a {@link rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration} instance.
      */
-    public static final class Builder extends ClientConnectionConfiguration.Builder<Builder> {
+    public static final class Builder
+            extends ClientConnectionConfiguration.Builder<Builder, BoshConnectionConfiguration> {
 
         private Duration wait;
 

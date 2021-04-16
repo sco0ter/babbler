@@ -28,6 +28,7 @@ import java.net.Proxy;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
@@ -64,7 +65,7 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
 
     private final List<CompressionMethod> compressionMethods;
 
-    protected ClientConnectionConfiguration(Builder<? extends Builder<?>> builder) {
+    protected ClientConnectionConfiguration(Builder<? extends Builder<?, ?>, ?> builder) {
         this.hostname = builder.hostname;
         this.port = builder.port;
         this.proxy = builder.proxy;
@@ -82,7 +83,7 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
      * @return The connection.
      * @throws Exception Any exception which may occur during connection establishment.
      */
-    public abstract Connection createConnection(XmppSession xmppSession) throws Exception;
+    public abstract CompletableFuture<Connection> createConnection(XmppSession xmppSession) throws Exception;
 
     /**
      * Gets the hostname.
@@ -163,7 +164,7 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
      *
      * @param <T> The concrete builder class.
      */
-    public abstract static class Builder<T extends Builder<T>> {
+    public abstract static class Builder<T extends Builder<T, C>, C extends ClientConnectionConfiguration> {
 
         protected String hostname;
 
@@ -180,6 +181,8 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
         protected int connectTimeout;
 
         protected List<CompressionMethod> compressionMethods = Collections.emptyList();
+
+        private TransportConnector<C> connector;
 
         protected Builder() {
         }
@@ -329,10 +332,30 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
         }
 
         /**
+         * Sets the transport connector, which is used to establish a connection.
+         *
+         * @param connector The transport connector.
+         * @return The builder.
+         */
+        public final T connector(TransportConnector<C> connector) {
+            this.connector = connector;
+            return self();
+        }
+
+        /**
          * Builds the connection configuration.
          *
          * @return The concrete connection configuration.
          */
         public abstract ClientConnectionConfiguration build();
+
+        /**
+         * Gets the transport connector.
+         *
+         * @return The transport connector.
+         */
+        public TransportConnector<C> getConnector() {
+            return connector;
+        }
     }
 }

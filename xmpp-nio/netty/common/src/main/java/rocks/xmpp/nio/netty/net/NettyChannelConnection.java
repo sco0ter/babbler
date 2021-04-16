@@ -92,7 +92,14 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
         channel.pipeline().addLast(decoder, new NettyXmppEncoder(interceptors, onException, session, this));
     }
 
-    private static <T> CompletableFuture<T> completableFutureFromNettyFuture(final Future<T> future) {
+    /**
+     * Converts a {@link Future} to a {@link CompletableFuture}.
+     *
+     * @param future The Netty Future.
+     * @param <T>    The type.
+     * @return The {@link CompletableFuture}.
+     */
+    public static <T> CompletableFuture<T> completableFutureFromNettyFuture(final Future<T> future) {
         final CompletableFuture<T> completableFuture = new CompletableFuture<>();
         future.addListener(f -> {
             if (f.isSuccess()) {

@@ -44,6 +44,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
+import rocks.xmpp.core.net.client.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
@@ -56,6 +57,7 @@ import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.extensions.time.EntityTimeManager;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.roster.model.Contact;
+import rocks.xmpp.nio.netty.client.NettyChannelConnector;
 import rocks.xmpp.nio.netty.client.NettyTcpConnectionConfiguration;
 import rocks.xmpp.websocket.net.client.WebSocketConnectionConfiguration;
 
@@ -111,10 +113,11 @@ public final class SampleApplication {
 
                     WebSocketConnectionConfiguration webSocketConfiguration = WebSocketConnectionConfiguration.builder()
                             .hostname("localhost")
-                            .port(8443)
-                            .path("/xmpp/ws")
+                            .port(7443)
+                            .path("/ws")
                             .sslContext(getTrustAllSslContext())
                             .channelEncryption(ChannelEncryption.DIRECT)
+                            .hostnameVerifier((s, sslSession) -> true)
                             .build();
 
                     NettyTcpConnectionConfiguration nettyTcpConnectionConfiguration =
@@ -127,8 +130,16 @@ public final class SampleApplication {
                                     .eventLoopGroup(eventLoopGroup)
                                     .build();
 
+                    TcpConnectionConfiguration tcpConnectionConfiguration = TcpConnectionConfiguration.builder()
+                            .connector(new NettyChannelConnector())
+                            .port(5222)
+                            .sslContext(getTrustAllSslContext())
+                            //.channelEncryption(ChannelEncryption.DIRECT)
+                            .hostnameVerifier((s, sslSession) -> true)
+                            .build();
+
                     XmppClient xmppClient =
-                            XmppClient.create("localhost", configuration, socketConnectionConfiguration);
+                            XmppClient.create("localhost", configuration, webSocketConfiguration);
 
                     // Listen for inbound messages.
                     xmppClient.addInboundMessageListener(
@@ -189,7 +200,7 @@ public final class SampleApplication {
     }
 
     protected static SSLContext getTrustAllSslContext() throws GeneralSecurityException {
-        SSLContext sslContext = SSLContext.getInstance("TLS");
+        SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
         sslContext.init(null, new TrustManager[]{
                 new X509TrustManager() {
                     @Override

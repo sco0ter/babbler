@@ -43,6 +43,7 @@ import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.Future;
+import rocks.xmpp.core.net.client.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.core.stream.model.StreamError;
@@ -68,7 +69,7 @@ public final class NettyTcpConnection extends NettyChannelConnection {
 
     private final CompressionManager compressionManager;
 
-    private final NettyTcpConnectionConfiguration connectionConfiguration;
+    private final TcpConnectionConfiguration connectionConfiguration;
 
     private final XmppSession xmppSession;
 
@@ -79,7 +80,7 @@ public final class NettyTcpConnection extends NettyChannelConnection {
      * @param connectionConfiguration The connection configuration.
      */
     NettyTcpConnection(final Channel channel, final XmppSession xmppSession,
-                       final NettyTcpConnectionConfiguration connectionConfiguration) {
+                       final TcpConnectionConfiguration connectionConfiguration) {
         super(channel, xmppSession, xmppSession,
                 xmppSession.getReaderInterceptors(),
                 xmppSession::createUnmarshaller,

@@ -24,32 +24,31 @@
 
 package rocks.xmpp.nio.netty.client;
 
-import java.net.Proxy;
+import java.util.concurrent.CompletableFuture;
 
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.proxy.HttpProxyHandler;
-import io.netty.handler.proxy.Socks5ProxyHandler;
 import rocks.xmpp.core.net.Connection;
+import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.net.client.TcpConnectionConfiguration;
+import rocks.xmpp.core.net.client.TransportConnector;
 import rocks.xmpp.core.session.XmppSession;
 
 /**
  * @author Christian Schudt
+ * @deprecated Use {@link TcpConnectionConfiguration.Builder#connector(TransportConnector)} with {@link
+ * NettyChannelConnector}.
  */
-public final class NettyTcpConnectionConfiguration extends TcpConnectionConfiguration<Channel> {
+@Deprecated(forRemoval = true)
+public final class NettyTcpConnectionConfiguration extends ClientConnectionConfiguration {
 
     private final EventLoopGroup eventLoopGroup;
 
+    private final int keepAliveInterval;
+
     private NettyTcpConnectionConfiguration(final NettyTcpConnectionConfiguration.Builder builder) {
         super(builder);
+        this.keepAliveInterval = builder.keepAliveInterval;
         this.eventLoopGroup = builder.eventLoopGroup != null ? builder.eventLoopGroup : new NioEventLoopGroup();
     }
 
@@ -63,34 +62,9 @@ public final class NettyTcpConnectionConfiguration extends TcpConnectionConfigur
     }
 
     @Override
-    public final Connection createConnection(final XmppSession xmppSession) throws Exception {
-        return createConnection(xmppSession, channel -> new NettyTcpConnection(channel,
-                xmppSession, this));
-    }
-
-    @Override
-    protected Channel connect(String hostname, int port) throws Exception {
-        final Bootstrap b = new Bootstrap();
-        b.group(getEventLoopGroup());
-        b.channel(NioSocketChannel.class);
-        b.option(ChannelOption.SO_KEEPALIVE, true);
-        b.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, getConnectTimeout());
-        b.handler(new ChannelInitializer<SocketChannel>() {
-            @Override
-            public final void initChannel(final SocketChannel ch) {
-                Proxy proxy = getProxy();
-                if (proxy != null) {
-                    if (proxy.type() == Proxy.Type.SOCKS) {
-                        ch.pipeline().addFirst(new Socks5ProxyHandler(getProxy().address()));
-                    } else if (proxy.type() == Proxy.Type.HTTP) {
-                        ch.pipeline().addFirst(new HttpProxyHandler(getProxy().address()));
-                    }
-                }
-            }
-        });
-        ChannelFuture channelFuture = b.connect(hostname, port);
-        channelFuture.get();
-        return channelFuture.channel();
+    public final CompletableFuture<Connection> createConnection(final XmppSession xmppSession) throws Exception {
+        return new NettyChannelConnector(eventLoopGroup).connect(xmppSession,
+                TcpConnectionConfiguration.builder().keepAliveInterval(keepAliveInterval).build());
     }
 
     /**
@@ -111,9 +85,12 @@ public final class NettyTcpConnectionConfiguration extends TcpConnectionConfigur
      * A builder to create a {@link NettyTcpConnectionConfiguration} instance.
      */
     public static final class Builder
-            extends TcpConnectionConfiguration.Builder<NettyTcpConnectionConfiguration.Builder> {
+            extends
+            ClientConnectionConfiguration.Builder<NettyTcpConnectionConfiguration.Builder, TcpConnectionConfiguration> {
 
         private EventLoopGroup eventLoopGroup;
+
+        private int keepAliveInterval;
 
         /**
          * Sets the NIO event loop.
@@ -123,6 +100,11 @@ public final class NettyTcpConnectionConfiguration extends TcpConnectionConfigur
          */
         public Builder eventLoopGroup(final EventLoopGroup eventLoopGroup) {
             this.eventLoopGroup = eventLoopGroup;
+            return this;
+        }
+
+        public final Builder keepAliveInterval(int keepAliveInterval) {
+            this.keepAliveInterval = keepAliveInterval;
             return this;
         }
 

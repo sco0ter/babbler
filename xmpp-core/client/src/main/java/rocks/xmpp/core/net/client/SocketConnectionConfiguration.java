@@ -24,9 +24,8 @@
 
 package rocks.xmpp.core.net.client;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.concurrent.CompletableFuture;
 import javax.net.SocketFactory;
 
 import rocks.xmpp.core.net.ChannelEncryption;
@@ -58,15 +57,21 @@ import rocks.xmpp.core.session.XmppSession;
  * @author Christian Schudt
  * @see rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration
  * @see SocketConnection
+ * @deprecated Use {@link TcpConnectionConfiguration.Builder#connector(TransportConnector)} with {@link
+ * SocketConnector}.
  */
-public final class SocketConnectionConfiguration extends TcpConnectionConfiguration<Socket> {
+@Deprecated(forRemoval = true)
+public final class SocketConnectionConfiguration extends ClientConnectionConfiguration {
 
     private static volatile SocketConnectionConfiguration defaultConfiguration;
 
     private final SocketFactory socketFactory;
 
+    private final int keepAliveInterval;
+
     SocketConnectionConfiguration(Builder builder) {
         super(builder);
+        this.keepAliveInterval = builder.keepAliveInterval;
         this.socketFactory = builder.socketFactory;
     }
 
@@ -108,8 +113,10 @@ public final class SocketConnectionConfiguration extends TcpConnectionConfigurat
     }
 
     @Override
-    public final Connection createConnection(XmppSession xmppSession) throws Exception {
-        return createConnection(xmppSession, socket -> new SocketConnection(socket, xmppSession, this));
+    public final CompletableFuture<Connection> createConnection(XmppSession xmppSession) throws Exception {
+        return new SocketConnector().createConnection(xmppSession,
+                TcpConnectionConfiguration.builder().keepAliveInterval(keepAliveInterval).build(),
+                (socket, config) -> new SocketConnection(socket, xmppSession, config));
     }
 
     /**
@@ -121,33 +128,34 @@ public final class SocketConnectionConfiguration extends TcpConnectionConfigurat
         return socketFactory;
     }
 
-    @Override
-    protected final Socket connect(final String hostname, final int port) throws IOException {
-        final Socket socket;
-        if (getSocketFactory() == null) {
-            if (getProxy() != null) {
-                socket = new Socket(getProxy());
-            } else {
-                socket = new Socket();
-            }
-        } else {
-            socket = getSocketFactory().createSocket();
-        }
-        // SocketFactory may return an already connected socket,
-        // so check the connected state to prevent SocketException.
-        if (!socket.isConnected()) {
-            socket.connect(new InetSocketAddress(hostname, port), getConnectTimeout());
-        }
-
-        return socket;
-    }
-
     /**
      * A builder to create a {@link TcpConnectionConfiguration} instance.
      */
-    public static final class Builder extends TcpConnectionConfiguration.Builder<Builder> {
+    public static final class Builder
+            extends ClientConnectionConfiguration.Builder<Builder, TcpConnectionConfiguration> {
 
         private SocketFactory socketFactory;
+
+        private int keepAliveInterval;
+
+        protected Builder() {
+            // default values.
+            channelEncryption(ChannelEncryption.OPTIONAL);
+            port(5222);
+            keepAliveInterval(30);
+        }
+
+        /**
+         * Sets the whitespace keep-alive interval in seconds. If the interval is negative, no whitespace will be sent
+         * at all.
+         *
+         * @param keepAliveInterval The whitespace keep-alive interval.
+         * @return The builder.
+         */
+        public final Builder keepAliveInterval(int keepAliveInterval) {
+            this.keepAliveInterval = keepAliveInterval;
+            return this;
+        }
 
         /**
          * Sets a socket factory which creates the socket. This can be useful if you want connect to the legacy SSL port

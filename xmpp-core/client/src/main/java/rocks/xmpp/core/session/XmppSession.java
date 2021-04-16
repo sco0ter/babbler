@@ -446,7 +446,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                 ClientConnectionConfiguration connectionConfiguration = connectionIterator.next();
                 Connection connection = null;
                 try {
-                    connection = connectionConfiguration.createConnection(this);
+                    connection = connectionConfiguration.createConnection(this).join();
                     connection.open(StreamHeader
                             .create(from, xmppServiceDomain, null, version, configuration.getLanguage(), namespace));
                     activeConnection = connection;

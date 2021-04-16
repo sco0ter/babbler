@@ -226,12 +226,10 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
                 (Supplier<Marshaller>) xmppSession::createMarshaller);
         clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.UNMARSHALLER,
                 (Supplier<Unmarshaller>) xmppSession::createUnmarshaller);
-        if (xmppSession.getDebugger() != null) {
-            clientEndpointConfig.getUserProperties()
-                    .put(XmppWebSocketEncoder.UserProperties.ON_WRITE, xmppSession.getWriterInterceptors());
-            clientEndpointConfig.getUserProperties()
-                    .put(XmppWebSocketDecoder.UserProperties.ON_READ, xmppSession.getReaderInterceptors());
-        }
+        clientEndpointConfig.getUserProperties()
+                .put(XmppWebSocketEncoder.UserProperties.ON_WRITE, xmppSession.getWriterInterceptors());
+        clientEndpointConfig.getUserProperties()
+                .put(XmppWebSocketDecoder.UserProperties.ON_READ, xmppSession.getReaderInterceptors());
         clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.XML_OUTPUT_FACTORY,
                 xmppSession.getConfiguration().getXmlOutputFactory());
         clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.XML_INPUT_FACTORY,
@@ -351,8 +349,7 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
 
         /**
          * Sets the ping interval. If not null and non-negative, a WebSocket ping is sent periodically to the server. If
-         * no pong is received within the configured response timeout
-         * ({@link XmppSessionConfiguration.Builder#defaultResponseTimeout(Duration)})
+         * no pong is received within the configured response timeout ({@link XmppSessionConfiguration.Builder#defaultResponseTimeout(Duration)})
          * the XMPP session is closed with an exception.
          *
          * @param pingInterval The ping interval.

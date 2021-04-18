@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,38 +30,46 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
+import javax.websocket.MessageHandler;
 import javax.websocket.Session;
 
-import rocks.xmpp.core.net.AbstractConnection;
-import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.ConnectionConfiguration;
-import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stream.StreamHandler;
 import rocks.xmpp.core.stream.model.StreamElement;
-import rocks.xmpp.websocket.model.Close;
-import rocks.xmpp.websocket.model.Open;
 
 /**
- * An XMPP WebSocket connection.
+ * Generic WebSocket connection which is based on Jakarta WebSocket API.
  *
- * @author Christian Schudt
- * @see <a href="https://tools.ietf.org/html/rfc7395">XMPP Subprotocol for WebSocket</a>
- * @since 0.7.0
+ * <p>The connection is implemented from a server point of view, i.e. during stream restarts no "open" element is
+ * sent.</p>
+ *
+ * <p>Client implementations may use this class and pass their own message handler which restarts the stream.</p>
  */
-public class WebSocketConnection extends AbstractConnection {
+public final class JakartaWebSocketConnection extends AbstractWebSocketConnection {
 
-    protected final Session session;
+    private final Session session;
 
-    private final CompletionStage<Void> closeFuture;
-
-    protected SessionOpen sessionOpen;
-
-    public WebSocketConnection(Session session, StreamHandler streamHandler, Consumer<Throwable> onException,
-                               CompletableFuture<Void> closeFuture, ConnectionConfiguration connectionConfiguration) {
-        super(connectionConfiguration, streamHandler, onException);
-        this.closeFuture = closeFuture;
+    /**
+     * Creates
+     *
+     * @param session                 The session.
+     * @param connectionConfiguration The configuration.
+     * @param streamHandler           Handles inbound elements.
+     * @param onException             Handles exceptions.
+     * @param closeFuture             The close future, which is completed when the session is closed.
+     * @param messageHandler          Optional message handler; if null the default handling of this connection is
+     *                                used.
+     */
+    public JakartaWebSocketConnection(
+            Session session,
+            ConnectionConfiguration connectionConfiguration,
+            StreamHandler streamHandler,
+            Consumer<Throwable> onException,
+            CompletionStage<Void> closeFuture,
+            MessageHandler.Whole<StreamElement> messageHandler) {
+        super(connectionConfiguration, streamHandler, onException, closeFuture);
         this.session = session;
-        session.addMessageHandler(StreamElement.class, this::handleElement);
+        session.addMessageHandler(StreamElement.class, messageHandler != null ? messageHandler : this::handleElement);
     }
 
     @Override
@@ -69,12 +77,7 @@ public class WebSocketConnection extends AbstractConnection {
     }
 
     @Override
-    protected final CompletionStage<Void> closeStream() {
-        return send(new Close());
-    }
-
-    @Override
-    protected CompletionStage<Void> closeConnection() {
+    public final CompletionStage<Void> closeConnection() {
         return CompletableFuture.runAsync(() -> {
             try {
                 session.close();
@@ -85,15 +88,8 @@ public class WebSocketConnection extends AbstractConnection {
     }
 
     @Override
-    public final CompletionStage<Void> closeFuture() {
-        return closeFuture;
-    }
-
-    @Override
-    public CompletableFuture<Void> send(final StreamElement streamElement) {
-        final CompletableFuture<Void> future = write(streamElement);
-        flush();
-        return future;
+    public final InetSocketAddress getRemoteAddress() {
+        return InetSocketAddress.createUnresolved(session.getRequestURI().getHost(), session.getRequestURI().getPort());
     }
 
     @Override
@@ -116,25 +112,6 @@ public class WebSocketConnection extends AbstractConnection {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-    }
-
-    @Override
-    public final InetSocketAddress getRemoteAddress() {
-        return InetSocketAddress.createUnresolved(session.getRequestURI().getHost(), session.getRequestURI().getPort());
-    }
-
-    @Override
-    public final CompletionStage<Void> open(final SessionOpen sessionOpen) {
-        this.sessionOpen = sessionOpen;
-        // Opens the stream
-        return send(
-                new Open(sessionOpen.getTo(), sessionOpen.getFrom(), sessionOpen.getId(), sessionOpen.getLanguage()));
-    }
-
-    @Override
-    public final boolean isSecure() {
-        // session.isSecure() does always return false for client connections, also use the configuration.
-        return session.isSecure() || getConfiguration().getChannelEncryption() == ChannelEncryption.DIRECT;
     }
 
     @Override

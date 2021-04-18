@@ -24,44 +24,17 @@
 
 package rocks.xmpp.websocket.net.client;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.net.URI;
 import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
 import javax.net.ssl.SSLContext;
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.CloseReason;
-import javax.websocket.Endpoint;
-import javax.websocket.EndpointConfig;
-import javax.websocket.HandshakeResponse;
-import javax.websocket.Session;
-import javax.websocket.SessionException;
-import javax.websocket.server.HandshakeRequest;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
-import org.glassfish.tyrus.client.ClientManager;
-import org.glassfish.tyrus.client.ClientProperties;
-import org.glassfish.tyrus.client.SslEngineConfigurator;
-import org.glassfish.tyrus.client.ThreadPoolConfig;
-import org.glassfish.tyrus.container.jdk.client.JdkClientContainer;
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
+import rocks.xmpp.core.net.client.TransportConnector;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
-import rocks.xmpp.dns.DnsResolver;
-import rocks.xmpp.dns.TxtRecord;
-import rocks.xmpp.websocket.codec.XmppWebSocketDecoder;
-import rocks.xmpp.websocket.codec.XmppWebSocketEncoder;
-import rocks.xmpp.websocket.net.WebSocketConnection;
 
 /**
  * A configuration for a WebSocket connection.
@@ -80,6 +53,7 @@ import rocks.xmpp.websocket.net.WebSocketConnection;
  *    .path("/ws/")
  *    .sslContext(sslContext)
  *    .channelEncryption(ChannelEncryption.DIRECT)
+ *    .connector(new JdkWebSocketConnector())
  *    .build();
  * }</pre>
  *
@@ -88,7 +62,6 @@ import rocks.xmpp.websocket.net.WebSocketConnection;
  *
  * <p>This class is immutable.</p>
  *
- * @see WebSocketConnection
  * @see <a href="https://tools.ietf.org/html/rfc7395">XMPP Subprotocol for WebSocket</a>
  * @since 0.7.0
  */
@@ -100,10 +73,13 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
 
     private final Duration pingInterval;
 
+    private final TransportConnector<WebSocketConnectionConfiguration> connector;
+
     private WebSocketConnectionConfiguration(Builder builder) {
         super(builder);
         this.path = builder.path;
         this.pingInterval = builder.pingInterval;
+        this.connector = builder.getConnector();
     }
 
     /**
@@ -163,157 +139,11 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
     }
 
     @Override
-    public final CompletableFuture<Connection> createConnection(final XmppSession xmppSession) throws Exception {
-        final CompletableFuture<Void> closeFuture = new CompletableFuture<>();
-        return createWebSocketSession(xmppSession, closeFuture);
-    }
-
-    private CompletableFuture<Connection> createWebSocketSession(XmppSession xmppSession,
-                                                                 CompletableFuture<Void> closeFuture)
-            throws Exception {
-
-        final URI path;
-        synchronized (this) {
-
-            URI uri;
-            String protocol = getChannelEncryption() == ChannelEncryption.DIRECT ? "wss" : "ws";
-            // If no port has been configured, use the default ports.
-            int targetPort =
-                    getPort() > 0 ? getPort() : (getChannelEncryption() == ChannelEncryption.DIRECT ? 5281 : 5280);
-            // If a hostname has been configured, use it to connect.
-            if (getHostname() != null) {
-                uri = new URI(protocol, null, getHostname(), targetPort, getPath(), null, null);
-            } else if (xmppSession.getDomain() != null) {
-                // If a URL has not been set, try to find the URL by the domain
-                // via a DNS-TXT lookup as described in XEP-0156.
-                String resolvedUrl = findWebSocketEndpoint(xmppSession.getDomain().toString(),
-                        xmppSession.getConfiguration().getNameServer(), getConnectTimeout());
-                if (resolvedUrl != null) {
-                    uri = new URI(resolvedUrl);
-                } else {
-                    // Fallback mechanism:
-                    // If the URL could not be resolved, use the domain name and port 5280 as default.
-                    uri = new URI(protocol, null, xmppSession.getDomain().toString(), targetPort, getPath(), null,
-                            null);
-                }
-            } else {
-                throw new IllegalStateException("Neither an URL nor a domain given for a WebSocket connection.");
-            }
-
-            path = uri;
+    public final CompletableFuture<Connection> createConnection(final XmppSession xmppSession) {
+        if (connector == null) {
+            return new JdkWebSocketConnector().connect(xmppSession, this);
         }
-        final AtomicBoolean handshakeSucceeded = new AtomicBoolean();
-        final ClientEndpointConfig clientEndpointConfig = ClientEndpointConfig.Builder.create()
-                .encoders(Collections.singletonList(XmppWebSocketEncoder.class))
-                .decoders(Collections.singletonList(XmppWebSocketDecoder.class))
-                .preferredSubprotocols(Collections.singletonList("xmpp"))
-                .configurator(new ClientEndpointConfig.Configurator() {
-                    @Override
-                    public void afterResponse(HandshakeResponse response) {
-                        // If a client receives a handshake response that does not include
-                        // 'xmpp' in the 'Sec-WebSocket-Protocol' header, then an XMPP
-                        // subprotocol WebSocket connection was not established and the client
-                        // MUST close the WebSocket connection.
-                        List<String> responseHeader =
-                                response.getHeaders().get(HandshakeRequest.SEC_WEBSOCKET_PROTOCOL);
-                        if (responseHeader != null && responseHeader.contains("xmpp")) {
-                            handshakeSucceeded.set(true);
-                        }
-                    }
-                }).build();
-        clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.MARSHALLER,
-                (Supplier<Marshaller>) xmppSession::createMarshaller);
-        clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.UNMARSHALLER,
-                (Supplier<Unmarshaller>) xmppSession::createUnmarshaller);
-        clientEndpointConfig.getUserProperties()
-                .put(XmppWebSocketEncoder.UserProperties.ON_WRITE, xmppSession.getWriterInterceptors());
-        clientEndpointConfig.getUserProperties()
-                .put(XmppWebSocketDecoder.UserProperties.ON_READ, xmppSession.getReaderInterceptors());
-        clientEndpointConfig.getUserProperties().put(XmppWebSocketEncoder.UserProperties.XML_OUTPUT_FACTORY,
-                xmppSession.getConfiguration().getXmlOutputFactory());
-        clientEndpointConfig.getUserProperties().put(XmppWebSocketDecoder.UserProperties.XML_INPUT_FACTORY,
-                xmppSession.getConfiguration().getXmlInputFactory());
-
-        final ClientManager client = ClientManager.createClient(JdkClientContainer.class.getName());
-        if (getSSLContext() != null) {
-            SslEngineConfigurator sslEngineConfigurator = new SslEngineConfigurator(getSSLContext());
-            client.getProperties().put(ClientProperties.SSL_ENGINE_CONFIGURATOR, sslEngineConfigurator);
-            sslEngineConfigurator.setHostnameVerifier(getHostnameVerifier());
-        }
-
-        final ThreadPoolConfig config = ThreadPoolConfig.defaultConfig();
-        config.setThreadFactory(xmppSession.getConfiguration().getThreadFactory("WebSocket Client"));
-        client.getProperties().put(ClientProperties.WORKER_THREAD_POOL_CONFIG, config);
-
-        int connectTimeout = getConnectTimeout();
-        if (connectTimeout > 0) {
-            client.getProperties().put(ClientProperties.HANDSHAKE_TIMEOUT, connectTimeout);
-        }
-        final Proxy proxy = getProxy();
-        if (proxy != null && proxy.type() == Proxy.Type.HTTP) {
-            InetSocketAddress inetSocketAddress = (InetSocketAddress) proxy.address();
-            client.getProperties().put(ClientProperties.PROXY_URI,
-                    "http://" + inetSocketAddress.getHostName() + ':' + inetSocketAddress.getPort());
-        }
-
-        CompletableFuture<Connection> connection = new CompletableFuture<>();
-        client.connectToServer(new Endpoint() {
-            @Override
-            public void onOpen(Session session, EndpointConfig config) {
-                if (!handshakeSucceeded.get()) {
-                    try {
-                        String msg =
-                                "Server response did not include 'Sec-WebSocket-Protocol' header with value 'xmpp'.";
-                        session.close(new CloseReason(CloseReason.CloseCodes.PROTOCOL_ERROR, msg));
-                    } catch (IOException e) {
-                        xmppSession.notifyException(e);
-                    }
-                } else {
-                    WebSocketClientConnection websocketConnection =
-                            new WebSocketClientConnection(session, closeFuture, xmppSession,
-                                    WebSocketConnectionConfiguration.this);
-                    connection.complete(websocketConnection);
-                    config.getUserProperties().put(XmppWebSocketEncoder.UserProperties.SESSION, xmppSession);
-                    config.getUserProperties().put(XmppWebSocketEncoder.UserProperties.CONNECTION, websocketConnection);
-                }
-            }
-
-            @Override
-            public void onError(Session session, Throwable t) {
-                connection.completeExceptionally(t);
-                xmppSession.notifyException(t);
-            }
-
-            @Override
-            public void onClose(Session session, CloseReason closeReason) {
-                if (closeReason.getCloseCode() != CloseReason.CloseCodes.NORMAL_CLOSURE) {
-                    closeFuture.completeExceptionally(new SessionException(closeReason.toString(), null, session));
-                }
-                closeFuture.complete(null);
-            }
-        }, clientEndpointConfig, path);
-
-        if (connection.get() == null) {
-            throw new IOException("Session could not be opened.");
-        }
-        return connection;
-    }
-
-    private static String findWebSocketEndpoint(String xmppServiceDomain, String nameServer, long timeout) {
-
-        try {
-            List<TxtRecord> txtRecords = DnsResolver.resolveTXT(xmppServiceDomain, nameServer, timeout);
-            for (TxtRecord txtRecord : txtRecords) {
-                Map<String, String> attributes = txtRecord.asAttributes();
-                String url = attributes.get("_xmpp-client-websocket");
-                if (url != null) {
-                    return url;
-                }
-            }
-        } catch (IOException e) {
-            return null;
-        }
-        return null;
+        return connector.connect(xmppSession, this);
     }
 
     @Override
@@ -334,11 +164,11 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
 
         private Builder() {
             // default values
-            path("/ws/");
+            path("/ws");
         }
 
         /**
-         * Sets the path on the host, e.g. "/ws/"
+         * Sets the path on the host, e.g. "/ws"
          *
          * @param path The path on the host.
          * @return The builder.
@@ -350,7 +180,8 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
 
         /**
          * Sets the ping interval. If not null and non-negative, a WebSocket ping is sent periodically to the server. If
-         * no pong is received within the configured response timeout ({@link XmppSessionConfiguration.Builder#defaultResponseTimeout(Duration)})
+         * no pong is received within the configured response timeout
+         * ({@link XmppSessionConfiguration.Builder#defaultResponseTimeout(Duration)})
          * the XMPP session is closed with an exception.
          *
          * @param pingInterval The ping interval.

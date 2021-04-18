@@ -59,6 +59,7 @@ import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.nio.netty.client.NettyChannelConnector;
 import rocks.xmpp.nio.netty.client.NettyTcpConnectionConfiguration;
+import rocks.xmpp.websocket.net.client.JakartaWebSocketConnector;
 import rocks.xmpp.websocket.net.client.WebSocketConnectionConfiguration;
 
 /**
@@ -111,12 +112,14 @@ public final class SampleApplication {
                             .hostnameVerifier((s, sslSession) -> true)
                             .build();
 
+                    System.setProperty("jdk.internal.httpclient.disableHostnameVerification", "true");
                     WebSocketConnectionConfiguration webSocketConfiguration = WebSocketConnectionConfiguration.builder()
                             .hostname("localhost")
                             .port(7443)
                             .path("/ws")
                             .sslContext(getTrustAllSslContext())
                             .channelEncryption(ChannelEncryption.DIRECT)
+                            .connector(new JakartaWebSocketConnector())
                             .hostnameVerifier((s, sslSession) -> true)
                             .build();
 

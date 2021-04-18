@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,11 +25,14 @@
 package rocks.xmpp.websocket.net.client;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
@@ -37,25 +40,28 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import javax.websocket.MessageHandler;
-import javax.websocket.PongMessage;
-import javax.websocket.Session;
+import javax.xml.XMLConstants;
 
 import rocks.xmpp.core.XmppException;
+import rocks.xmpp.core.net.ReaderInterceptor;
+import rocks.xmpp.core.net.WriterInterceptor;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stream.client.StreamFeaturesManager;
-import rocks.xmpp.core.stream.model.StreamElement;
+import rocks.xmpp.core.stream.model.StreamError;
+import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.extensions.sm.client.ClientStreamManager;
+import rocks.xmpp.util.XmppStreamDecoder;
+import rocks.xmpp.util.XmppStreamEncoder;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
-import rocks.xmpp.websocket.net.WebSocketConnection;
+import rocks.xmpp.websocket.net.AbstractWebSocketConnection;
 
 /**
- * A WebSocket connection initiated by a client.
+ * Abstract base class for client-initiated WebSocket connections.
  *
- * @author Christian Schudt
+ * <p>Client connections periodically send ping messages to check if the connection is alive.</p>
  */
-public final class WebSocketClientConnection extends WebSocketConnection {
+abstract class AbstractWebSocketClientConnection extends AbstractWebSocketConnection {
 
     private static final ExecutorService EXECUTOR_SERVICE =
             Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("WebSocket Ping Scheduler"));
@@ -66,46 +72,65 @@ public final class WebSocketClientConnection extends WebSocketConnection {
 
     private final Set<String> pings = new CopyOnWriteArraySet<>();
 
-    private ScheduledExecutorService executorService;
+    private final URI uri;
+
+    protected final XmppSession xmppSession;
+
+    protected final List<WriterInterceptor> writerInterceptors;
+
+    protected final List<ReaderInterceptor> readerInterceptors;
+
+    protected ScheduledExecutorService executorService;
 
     /**
      * Guarded by "this".
      */
-    private Future<?> pingFuture;
+    protected Future<?> pingFuture;
 
     /**
      * Guarded by "this".
      */
     private Future<?> pongFuture;
 
-    WebSocketClientConnection(Session session, CompletableFuture<Void> closeFuture, XmppSession xmppSession,
-                              WebSocketConnectionConfiguration connectionConfiguration) {
-        super(session, xmppSession, xmppSession::notifyException, closeFuture, connectionConfiguration);
+    protected AbstractWebSocketClientConnection(final WebSocketConnectionConfiguration connectionConfiguration,
+                                                final URI uri,
+                                                final XmppSession xmppSession,
+                                                final CompletionStage<Void> closeFuture) {
+        super(connectionConfiguration, xmppSession, xmppSession::notifyException, closeFuture);
+        this.uri = uri;
+        this.xmppSession = xmppSession;
+        this.writerInterceptors = new ArrayList<>(xmppSession.getWriterInterceptors());
+        this.writerInterceptors.add(new XmppStreamEncoder(xmppSession.getConfiguration().getXmlOutputFactory(),
+                xmppSession::createMarshaller, streamElement -> streamElement instanceof StreamFeatures
+                || streamElement instanceof StreamError));
+        this.readerInterceptors = new ArrayList<>(xmppSession.getReaderInterceptors());
+        this.readerInterceptors.add(new XmppStreamDecoder(xmppSession.getConfiguration().getXmlInputFactory(),
+                xmppSession::createUnmarshaller, XMLConstants.NULL_NS_URI));
         this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         this.streamManager = xmppSession.getManager(ClientStreamManager.class);
-        this.streamFeaturesManager.addFeatureNegotiator(streamManager);
         this.streamManager.reset();
         this.executorService = new QueuedScheduledExecutorService(EXECUTOR_SERVICE);
-        session.addMessageHandler(new PongHandler());
+
         if (connectionConfiguration.getPingInterval() != null && !connectionConfiguration.getPingInterval().isNegative()
                 && !connectionConfiguration.getPingInterval().isZero()) {
             pingFuture = this.executorService.scheduleAtFixedRate(() -> {
                 // Send a WebSocket ping in an interval.
                 synchronized (this) {
                     try {
-                        if (this.session.isOpen()) {
+                        if (!isClosed()) {
                             String uuid = UUID.randomUUID().toString();
                             if (pings.add(uuid)) {
                                 // Send the ping with the UUID as application data, so that we can match it to the pong.
-                                this.session.getBasicRemote()
-                                        .sendPing(ByteBuffer.wrap(uuid.getBytes(StandardCharsets.UTF_8)));
+                                sendPing(ByteBuffer.wrap(uuid.getBytes(StandardCharsets.UTF_8)));
+
                                 // Later check if the ping has been answered by a pong.
                                 pongFuture = this.executorService.schedule(() -> {
                                             if (pings.remove(uuid)) {
                                                 // Ping has not been removed by a corresponding pong (still unanswered).
                                                 // Notify the session with an exception.
                                                 xmppSession.notifyException(
-                                                        new XmppException("No WebSocket pong received in time."));
+                                                        new XmppException(
+                                                                "No WebSocket pong received in time."));
                                             }
                                         }, xmppSession.getConfiguration().getDefaultResponseTimeout().toMillis(),
                                         TimeUnit.MILLISECONDS);
@@ -117,21 +142,11 @@ public final class WebSocketClientConnection extends WebSocketConnection {
                 }
             }, 0, connectionConfiguration.getPingInterval().toMillis(), TimeUnit.MILLISECONDS);
         }
-        closeFuture().whenComplete((aVoid, throwable) -> {
-            if (throwable != null) {
-                xmppSession.notifyException(throwable);
-            }
-        });
     }
 
     @Override
-    public final CompletableFuture<Void> send(final StreamElement streamElement) {
-        return write(streamElement).thenRun(this::flush);
-    }
-
-    @Override
-    protected final void restartStream() {
-        open(sessionOpen);
+    public final InetSocketAddress getRemoteAddress() {
+        return InetSocketAddress.createUnresolved(uri.getHost(), uri.getPort());
     }
 
     @Override
@@ -140,46 +155,59 @@ public final class WebSocketClientConnection extends WebSocketConnection {
     }
 
     @Override
-    protected CompletionStage<Void> closeConnection() {
-        return super.closeConnection().thenRun(() -> {
-            streamFeaturesManager.removeFeatureNegotiator(streamManager);
-
-            pings.clear();
-            synchronized (this) {
-                if (pingFuture != null) {
-                    pingFuture.cancel(false);
-                    pingFuture = null;
-                }
-                if (pongFuture != null) {
-                    pongFuture.cancel(false);
-                    pongFuture = null;
-                }
-                if (executorService != null) {
-                    executorService.shutdown();
-                    try {
-                        if (!executorService.awaitTermination(50, TimeUnit.MILLISECONDS)) {
-                            executorService.shutdownNow();
-                        }
-                    } catch (InterruptedException e) {
-                        // (Re-)Cancel if current thread also interrupted
-                        executorService.shutdownNow();
-                        Thread.currentThread().interrupt();
-                    }
-                    executorService = null;
-                }
-            }
-        });
+    protected final void restartStream() {
+        open(sessionOpen);
     }
 
-    private final class PongHandler implements MessageHandler.Whole<PongMessage> {
+    /**
+     * Sends a ping message.
+     *
+     * @param message The ping message.
+     * @throws IOException If sending failed.
+     */
+    protected abstract void sendPing(ByteBuffer message) throws IOException;
 
-        @Override
-        public final void onMessage(final PongMessage message) {
-            // We received a pong from the server.
-            // We can now remove the corresponding ping.
-            final byte[] bytes = new byte[message.getApplicationData().limit()];
-            message.getApplicationData().get(bytes);
-            pings.remove(new String(bytes, StandardCharsets.UTF_8));
+    /**
+     * This method must be called when a pong is received.
+     *
+     * @param message The pong message.
+     */
+    protected void pongReceived(ByteBuffer message) {
+        // We received a pong from the server.
+        // We can now remove the corresponding ping.
+        final byte[] bytes = new byte[message.limit()];
+        message.get(bytes);
+        pings.remove(new String(bytes, StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Cancels any ping messages and executors. This method must be called after closing the WebSocket.
+     */
+    protected void doCloseConnection() {
+        streamFeaturesManager.removeFeatureNegotiator(streamManager);
+
+        synchronized (this) {
+            if (pingFuture != null) {
+                pingFuture.cancel(false);
+                pingFuture = null;
+            }
+            if (pongFuture != null) {
+                pongFuture.cancel(false);
+                pongFuture = null;
+            }
+            if (executorService != null) {
+                executorService.shutdown();
+                try {
+                    if (!executorService.awaitTermination(50, TimeUnit.MILLISECONDS)) {
+                        executorService.shutdownNow();
+                    }
+                } catch (InterruptedException e) {
+                    // (Re-)Cancel if current thread also interrupted
+                    executorService.shutdownNow();
+                    Thread.currentThread().interrupt();
+                }
+                executorService = null;
+            }
         }
     }
 }

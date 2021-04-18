@@ -36,7 +36,7 @@ import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.errors.Condition;
 import rocks.xmpp.session.server.InboundClientSession;
 import rocks.xmpp.websocket.codec.XmppWebSocketEncoder;
-import rocks.xmpp.websocket.net.WebSocketConnection;
+import rocks.xmpp.websocket.net.JakartaWebSocketConnection;
 
 /**
  * The WebSocket endpoint for XMPP. It listens for new inbound WebSocket connections, creates XMPP sessions from them
@@ -54,8 +54,8 @@ public final class XmppWebSocketEndpoint extends Endpoint {
         // Associate it with a WebSocketConnection.
 
         InboundClientSession xmppSession = CDI.current().select(InboundClientSession.class).get();
-        WebSocketConnection connection =
-                new WebSocketConnection(session, xmppSession::handleElement, null, closeFuture, null);
+        JakartaWebSocketConnection connection =
+                new JakartaWebSocketConnection(session, null, xmppSession::handleElement, null, closeFuture, null);
 
         xmppSession.setConnection(connection);
         config.getUserProperties().put(XmppWebSocketEncoder.UserProperties.SESSION, xmppSession);

@@ -25,7 +25,7 @@
 /**
  * Provides classes for <a href="https://xmpp.org/extensions/xep-0054.html">XEP-0054: vcard-temp</a>.
  *
- * <p>It provides canonical documentation of the vCard-XML format currently in use within the Jabber community.</p></p>
+ * <p>It provides canonical documentation of the vCard-XML format currently in use within the Jabber community.</p>
  */
 package rocks.xmpp.extensions.vcard.temp;
 

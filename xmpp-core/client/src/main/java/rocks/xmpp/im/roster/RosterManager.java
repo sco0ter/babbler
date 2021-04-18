@@ -672,7 +672,7 @@ public final class RosterManager extends AbstractIQHandler {
      * Sets the group delimiter without storing it on the server.
      *
      * <p>If this is set to a non-null value, contact groups are split by the specified delimiter in order to build a
-     * nested hierarchy of groups.</p></p>
+     * nested hierarchy of groups.</p>
      *
      * @param groupDelimiter The group delimiter.
      * @see #storeGroupDelimiter(String)

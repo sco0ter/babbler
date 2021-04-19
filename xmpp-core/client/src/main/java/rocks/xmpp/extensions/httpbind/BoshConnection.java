@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,16 +25,11 @@
 package rocks.xmpp.extensions.httpbind;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.Writer;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
-import java.net.Proxy;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -53,6 +48,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -60,7 +56,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
-import javax.net.ssl.HttpsURLConnection;
 import javax.xml.bind.DatatypeConverter;
 
 import rocks.xmpp.core.net.AbstractConnection;
@@ -77,28 +72,54 @@ import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.StreamFeatures;
 import rocks.xmpp.core.stream.model.StreamHeader;
+import rocks.xmpp.dns.DnsResolver;
+import rocks.xmpp.dns.TxtRecord;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.util.XmppStreamDecoder;
 import rocks.xmpp.util.XmppStreamEncoder;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.CompletionStages;
+import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 
 /**
- * The implementation of <a href="https://xmpp.org/extensions/xep-0124.html">XEP-0124: Bidirectional-streams Over
- * Synchronous HTTP (BOSH)</a> and <a href="https://xmpp.org/extensions/xep-0206.html">XEP-0206: XMPP Over BOSH</a>.
+ * The abstract base class for BOSH connections.
  *
  * @author Christian Schudt
+ * @see <a href="https://xmpp.org/extensions/xep-0124.html">XEP-0124: Bidirectional-streams Over
+ * Synchronous HTTP (BOSH)</a>
+ * @see <a href="https://xmpp.org/extensions/xep-0206.html">XEP-0206: XMPP Over BOSH</a>
  */
-public final class BoshConnection extends AbstractConnection {
+public abstract class BoshConnection extends AbstractConnection {
 
     /**
      * The executor, which will execute HTTP requests.
      */
-    private static final ExecutorService HTTP_BIND_EXECUTOR =
+    static final ExecutorService HTTP_BIND_EXECUTOR =
             Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("BOSH Request Thread"));
 
-    private static final System.Logger logger = System.getLogger(BoshConnection.class.getName());
+    protected static final System.Logger logger = System.getLogger(BoshConnection.class.getName());
+
+    final Executor inOrderRequestExecutor = new QueuedScheduledExecutorService(HTTP_BIND_EXECUTOR);
+
+    protected final XmppSession xmppSession;
+
+    /**
+     * Guarded by "this".
+     */
+    protected final URL url;
+
+    final BoshConnectionConfiguration boshConnectionConfiguration;
+
+    /**
+     * Our supported compression methods.
+     */
+    final Map<String, CompressionMethod> compressionMethods;
+
+    /**
+     * The encoding we can support. This is added as "Accept-Encoding" header in a request.
+     */
+    final String clientAcceptEncoding;
 
     /**
      * Use ConcurrentSkipListMap to maintain insertion order.
@@ -110,21 +131,12 @@ public final class BoshConnection extends AbstractConnection {
      */
     private final AtomicLong rid = new AtomicLong();
 
-    private final BoshConnectionConfiguration boshConnectionConfiguration;
-
-    private final XmppSession xmppSession;
-
     private final Deque<String> keySequence = new ArrayDeque<>();
 
     /**
      * The current request count, i.e. the current number of simultaneous requests.
      */
     private final AtomicInteger requestCount = new AtomicInteger();
-
-    /**
-     * Our supported compression methods.
-     */
-    private final Map<String, CompressionMethod> compressionMethods;
 
     /**
      * Maps the stream element which is sent to a future associated with it. The future is done, when the element has
@@ -138,19 +150,9 @@ public final class BoshConnection extends AbstractConnection {
      */
     private final Collection<Object> elementsToSend = new ArrayDeque<>();
 
-    /**
-     * The encoding we can support. This is added as "Accept-Encoding" header in a request.
-     */
-    private final String clientAcceptEncoding;
-
-    /**
-     * Guarded by "this".
-     */
-    private final URL url;
-
     private final CompletableFuture<Void> closeFuture = new CompletableFuture<>();
 
-    private final AtomicBoolean shutdown = new AtomicBoolean(true);
+    private final AtomicBoolean shutdown = new AtomicBoolean(false);
 
     private final XmppStreamEncoder streamEncoder;
 
@@ -159,7 +161,7 @@ public final class BoshConnection extends AbstractConnection {
     /**
      * The compression method which is used to compress requests. Guarded by "this".
      */
-    private CompressionMethod requestCompressionMethod;
+    CompressionMethod requestCompressionMethod;
 
     /**
      * Guarded by "elementsToSend".
@@ -185,7 +187,7 @@ public final class BoshConnection extends AbstractConnection {
         this.boshConnectionConfiguration = configuration;
 
         compressionMethods = new LinkedHashMap<>();
-        for (CompressionMethod compressionMethod : boshConnectionConfiguration.getCompressionMethods()) {
+        for (CompressionMethod compressionMethod : this.boshConnectionConfiguration.getCompressionMethods()) {
             compressionMethods.put(compressionMethod.getName(), compressionMethod);
         }
         if (!compressionMethods.isEmpty()) {
@@ -203,18 +205,12 @@ public final class BoshConnection extends AbstractConnection {
         });
         streamDecoder = new XmppStreamDecoder(xmppSession.getConfiguration().getXmlInputFactory(),
                 xmppSession::createUnmarshaller, "");
-    }
 
-    private WriterInterceptorChain newWriterChain() {
-        List<WriterInterceptor> writerInterceptors = new ArrayList<>(xmppSession.getWriterInterceptors());
-        writerInterceptors.add(streamEncoder);
-        return new WriterInterceptorChain(writerInterceptors, xmppSession, this);
-    }
-
-    private ReaderInterceptorChain newReaderChain() {
-        List<ReaderInterceptor> readerInterceptors = new ArrayList<>(xmppSession.getReaderInterceptors());
-        readerInterceptors.add(streamDecoder);
-        return new ReaderInterceptorChain(readerInterceptors, xmppSession, this);
+        // Set the initial request id with a large random number.
+        // The largest possible number for a RID is (2^53)-1
+        // So initialize it with a random number with max value of 2^52.
+        // This will still allow for at least 4503599627370495 requests (2^53-1-2^52), which should be sufficient.
+        rid.set(new BigInteger(52, new Random()).longValue());
     }
 
     /**
@@ -248,6 +244,82 @@ public final class BoshConnection extends AbstractConnection {
     }
 
     /**
+     * Gets the URL from the configuration.
+     *
+     * @param xmppSession   The session.
+     * @param configuration The configuration.
+     * @return The URL.
+     * @throws MalformedURLException If the URL is malformed. This can only occur, if the URL has been discovered via
+     *                               DNS TXT.
+     */
+    static URL getUrl(XmppSession xmppSession, BoshConnectionConfiguration configuration)
+            throws MalformedURLException {
+        URL url;
+        String protocol = configuration.getChannelEncryption() == ChannelEncryption.DIRECT ? "https" : "http";
+        // If no port has been configured, use the default ports.
+        int targetPort = configuration.getPort() > 0 ? configuration.getPort()
+                : (configuration.getChannelEncryption() == ChannelEncryption.DIRECT ? 5281 : 5280);
+        // If a hostname has been configured, use it to connect.
+        if (configuration.getHostname() != null) {
+            url = new URL(protocol, configuration.getHostname(), targetPort, configuration.getPath());
+        } else if (xmppSession.getDomain() != null) {
+            // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup
+            // as described in XEP-0156.
+            String resolvedUrl =
+                    findBoshUrl(xmppSession.getDomain().toString(), xmppSession.getConfiguration().getNameServer(),
+                            configuration.getConnectTimeout());
+            if (resolvedUrl != null) {
+                url = new URL(resolvedUrl);
+            } else {
+                // Fallback mechanism:
+                // If the URL could not be resolved, use the domain name and port 5280 as default.
+                url = new URL(protocol, xmppSession.getDomain().toString(), targetPort, configuration.getPath());
+            }
+        } else {
+            throw new IllegalStateException("Neither an URL nor a domain given for a BOSH connection.");
+        }
+        return url;
+    }
+
+    /**
+     * Tries to find the BOSH URL by a DNS TXT lookup as described in
+     * <a href="https://xmpp.org/extensions/xep-0156.html">XEP-0156</a>.
+     *
+     * @param xmppServiceDomain The fully qualified domain name.
+     * @param nameServer        The name server.
+     * @param timeout           The lookup timeout.
+     * @return The BOSH URL, if it could be found or null.
+     */
+    private static String findBoshUrl(String xmppServiceDomain, String nameServer, long timeout) {
+
+        try {
+            List<TxtRecord> txtRecords = DnsResolver.resolveTXT(xmppServiceDomain, nameServer, timeout);
+            for (TxtRecord txtRecord : txtRecords) {
+                Map<String, String> attributes = txtRecord.asAttributes();
+                String url = attributes.get("_xmpp-client-xbosh");
+                if (url != null) {
+                    return url;
+                }
+            }
+        } catch (IOException e) {
+            return null;
+        }
+        return null;
+    }
+
+    WriterInterceptorChain newWriterChain() {
+        List<WriterInterceptor> writerInterceptors = new ArrayList<>(xmppSession.getWriterInterceptors());
+        writerInterceptors.add(streamEncoder);
+        return new WriterInterceptorChain(writerInterceptors, xmppSession, this);
+    }
+
+    private ReaderInterceptorChain newReaderChain() {
+        List<ReaderInterceptor> readerInterceptors = new ArrayList<>(xmppSession.getReaderInterceptors());
+        readerInterceptors.add(streamDecoder);
+        return new ReaderInterceptorChain(readerInterceptors, xmppSession, this);
+    }
+
+    /**
      * Generates a key sequence.
      *
      * @see <a href="https://xmpp.org/extensions/xep-0124.html#keys-generate">15.3 Generating the Key Sequence</a>
@@ -275,43 +347,6 @@ public final class BoshConnection extends AbstractConnection {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Connects to the BOSH server.
-     *
-     * @throws IOException If a connection could not be established.
-     */
-    final synchronized void connect() throws IOException {
-
-        if (sessionId != null) {
-            // Already connected.
-            return;
-        }
-
-        this.usingAcknowledgments = false;
-        this.requestCompressionMethod = null;
-        this.requestCount.set(0);
-
-        // Set the initial request id with a large random number.
-        // The largest possible number for a RID is (2^53)-1
-        // So initialize it with a random number with max value of 2^52.
-        // This will still allow for at least 4503599627370495 requests (2^53-1-2^52), which should be sufficient.
-        rid.set(new BigInteger(52, new Random()).longValue());
-
-        // Try if we can connect in order to fail fast if we can't.
-        HttpURLConnection connection = null;
-        try {
-            connection = getConnection();
-            connection.setConnectTimeout(boshConnectionConfiguration.getConnectTimeout());
-            connection.setReadTimeout(boshConnectionConfiguration.getConnectTimeout());
-            connection.connect();
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-        shutdown.set(false);
     }
 
     @Override
@@ -357,8 +392,8 @@ public final class BoshConnection extends AbstractConnection {
     private void unpackBody(Body responseBody) throws Exception {
         // It's the session creation response.
         if (responseBody.getSid() != null) {
+            handleElement(responseBody);
             synchronized (this) {
-                handleElement(responseBody);
                 sessionId = responseBody.getSid();
                 if (responseBody.getAck() != null) {
                     usingAcknowledgments = true;
@@ -483,6 +518,7 @@ public final class BoshConnection extends AbstractConnection {
                 }
             } finally {
                 closeFuture.complete(null);
+                shutdown();
             }
         });
     }
@@ -596,201 +632,130 @@ public final class BoshConnection extends AbstractConnection {
      */
     private CompletableFuture<Void> sendNewRequest(final Body.Builder bodyBuilder, boolean resendAfterError) {
 
-        // Make sure, no two threads access this block, in order to ensure that requestCount
-        // and shutdown.get() don't return inconsistent values.
-        synchronized (this) {
-            if (!shutdown.get()) {
-                return CompletableFuture.runAsync(() -> {
+        if (!shutdown.get()) {
 
-                    // Open a HTTP connection.
-                    HttpURLConnection httpConnection = null;
-                    boolean responseReceived = false;
-                    Body body = null;
-                    try {
-
-                        if (!resendAfterError) {
-                            synchronized (elementsToSend) {
-                                appendKey(bodyBuilder);
-
-                                // Acknowledge the highest received rid.
-                                // The only exception is that, after its session creation request,
-                                // the client SHOULD NOT include an 'ack' attribute in any request if it has received
-                                // responses to all its previous requests.
-                                if (!unacknowledgedRequests.isEmpty()) {
-                                    bodyBuilder.ack(highestReceivedRid);
-                                }
-                                bodyBuilder.wrappedObjects(elementsToSend);
-                                // Prevent that the session is terminated with policy-violation due to this:
-                                //
-                                // If during any period the client sends a sequence of new requests equal in length to
-                                // the number specified by the 'requests' attribute,
-                                // and if the connection manager has not yet responded to any of the requests,
-                                // and if the last request was empty
-                                // and did not include either a 'pause' attribute or a 'type' attribute set to
-                                // "terminate", and if the last two requests arrived within a period shorter than the
-                                // number of seconds specified by the 'polling' attribute in the session creation
-                                // response, then the connection manager SHOULD consider that the client is making
-                                // requests more frequently than it was permitted and terminate the HTTP session and
-                                // return a 'policy-violation' terminal binding error to the client.
-                                //
-                                // In short: If we would send a second empty request, don't do that!
-                                // Also don't send a new request, if the connection is shutdown.
-                                body = bodyBuilder.build();
-                                if (body.getType() != Body.Type.TERMINATE
-                                        && (shutdown.get() || (requestCount.get() > 0
-                                        && body.getPause() == null
-                                        && !body.isRestart()
-                                        && getSessionId() != null
-                                        && elementsToSend.isEmpty()))) {
-                                    return;
-                                }
-                                // Clear everything after the elements have been sent.
-                                elementsToSend.clear();
-                            }
-                        }
-
-                        httpConnection = getConnection();
-                        httpConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
-
-                        // We can decompress server responses, so tell the server about it.
-                        if (clientAcceptEncoding != null) {
-                            httpConnection.setRequestProperty("Accept-Encoding", clientAcceptEncoding);
-                        }
-
-                        final CompressionMethod compressionMethod;
-                        synchronized (this) {
-                            compressionMethod = requestCompressionMethod;
-                        }
-                        // If we can compress, tell the server about it.
-                        if (compressionMethod != null) {
-                            httpConnection.setRequestProperty("Content-Encoding", compressionMethod.getName());
-                        }
-
-                        httpConnection.setDoOutput(true);
-                        httpConnection.setRequestMethod("POST");
-                        // If the connection manager does not respond in time, throw a SocketTimeoutException, which
-                        // terminates the connection.
-                        httpConnection
-                                .setReadTimeout(((int) boshConnectionConfiguration.getWait().getSeconds() + 5) * 1000);
-
-                        requestCount.getAndIncrement();
-                        try {
-                            try (OutputStream requestStream = compressionMethod != null
-                                    ? compressionMethod.compress(httpConnection.getOutputStream())
-                                    : httpConnection.getOutputStream()) {
-                                // Create the writer for this connection.
-                                body = bodyBuilder.requestId(rid.getAndIncrement()).build();
-                                // Then write the XML to the output stream by marshalling the object to the writer.
-                                // Marshaller needs to be recreated here, because it's not thread-safe.
-                                try (Writer writer = new OutputStreamWriter(requestStream, StandardCharsets.UTF_8)) {
-                                    WriterInterceptorChain writerInterceptorChain = newWriterChain();
-                                    writerInterceptorChain.proceed(body, writer);
-                                }
-
-                                body.getWrappedObjects().stream()
-                                        .filter(wrappedObject -> wrappedObject instanceof StreamElement)
-                                        .forEach(wrappedObject -> {
-                                            StreamElement streamElement = (StreamElement) wrappedObject;
-                                            CompletableFuture<Void> future = sendFutures.remove(streamElement);
-                                            if (future != null) {
-                                                future.complete(null);
-                                            }
-                                        });
-                            } catch (Exception e) {
-                                rid.getAndDecrement();
-                                throw e;
-                            }
-
-                            if (isUsingAcknowledgements()) {
-                                unacknowledgedRequests.put(body.getRid(), bodyBuilder);
-                            }
-                            // Wait for the response
-                            if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-
-                                responseReceived = true;
-
-                                // The response itself acknowledges the request, so we can remove the request.
-                                ackReceived(body.getRid());
-
-                                // We received a response for the request. Store the RID, so that we can inform the
-                                // connection manager with our next request, that we received a response.
-                                synchronized (elementsToSend) {
-                                    highestReceivedRid = body.getRid() != null ? body.getRid() : 0;
-                                }
-
-                                String contentEncoding = httpConnection.getHeaderField("Content-Encoding");
-                                try (InputStream responseStream = contentEncoding != null
-                                        ? compressionMethods.get(contentEncoding)
-                                        .decompress(httpConnection.getInputStream())
-                                        : httpConnection.getInputStream()) {
-
-                                    try (Reader reader = new InputStreamReader(responseStream,
-                                            StandardCharsets.UTF_8)) {
-                                        ReaderInterceptorChain readerInterceptorChain = newReaderChain();
-                                        List<StreamElement> streamElements = new ArrayList<>();
-                                        readerInterceptorChain.proceed(reader, streamElements::add);
-                                        for (StreamElement element : streamElements) {
-                                            if (element instanceof Body) {
-                                                this.unpackBody((Body) element);
-                                            }
-                                        }
-                                    } catch (StreamErrorException e) {
-                                        logger.log(System.Logger.Level.WARNING, "Server responded with malformed XML.",
-                                                e);
-                                    }
-                                }
-                                // Wait shortly before sending the long polling request.
-                                // This allows the send method to chime in and send a <body/> with actual payload
-                                // instead of an empty body just to "hold the line".
-                                Thread.sleep(50);
-                            } else {
-                                // Shutdown the connection, we don't want to send further requests from now on.
-                                shutdown();
-                                handleCode(httpConnection.getResponseCode());
-                                try (InputStream errorStream = httpConnection.getErrorStream()) {
-                                    while (errorStream.read() > -1) {
-                                        // Just read the error stream, so that the connection can be reused.
-                                        // http://docs.oracle.com/javase/8/docs/technotes/guides/net/http-keepalive.html
-                                    }
-                                }
-                            }
-                        } finally {
-                            // As soon as the client receives a response from the connection manager it sends another
-                            // request, thereby ensuring that the connection manager is (almost) always holding a
-                            // request that it can use to "push" data to the client.
-                            if (requestCount.decrementAndGet() == 0 && responseReceived) {
-                                synchronized (this) {
-                                    if (!shutdown.get()) {
-                                        sendNewRequest(Body.builder().sessionId(sessionId), false);
-                                    }
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        xmppSession.notifyException(e);
-                        if (body != null) {
-                            body.getWrappedObjects().stream()
-                                    .filter(wrappedObject -> wrappedObject instanceof StreamElement)
-                                    .forEach(wrappedObject -> {
-                                        StreamElement streamElement = (StreamElement) wrappedObject;
-                                        CompletableFuture<Void> future = sendFutures.remove(streamElement);
-                                        if (future != null) {
-                                            future.completeExceptionally(e);
-                                        }
-                                    });
-                        }
-                        throw new CompletionException(e);
-                    } finally {
-                        if (httpConnection != null) {
-                            httpConnection.disconnect();
-                        }
+            final Body body;
+            if (!resendAfterError) {
+                synchronized (elementsToSend) {
+                    // Prevent that the session is terminated with policy-violation due to this:
+                    //
+                    // If during any period the client sends a sequence of new requests equal in length to
+                    // the number specified by the 'requests' attribute,
+                    // and if the connection manager has not yet responded to any of the requests,
+                    // and if the last request was empty
+                    // and did not include either a 'pause' attribute or a 'type' attribute set to
+                    // "terminate", and if the last two requests arrived within a period shorter than the
+                    // number of seconds specified by the 'polling' attribute in the session creation
+                    // response, then the connection manager SHOULD consider that the client is making
+                    // requests more frequently than it was permitted and terminate the HTTP session and
+                    // return a 'policy-violation' terminal binding error to the client.
+                    //
+                    // In short: If we would send a second empty request, don't do that!
+                    // Also don't send a new request, if the connection is shutdown.
+                    Body b = bodyBuilder.build();
+                    if (b.getType() != Body.Type.TERMINATE
+                            && (shutdown.get() || (requestCount.get() > 0
+                            && b.getPause() == null
+                            && !b.isRestart()
+                            && getSessionId() != null
+                            && elementsToSend.isEmpty()))) {
+                        return CompletableFuture.completedFuture(null);
                     }
-                }, HTTP_BIND_EXECUTOR);
-            } else {
-                throw new IllegalStateException("Connection already shutdown via close() or detach()");
+
+                    appendKey(bodyBuilder);
+
+                    // Acknowledge the highest received rid.
+                    // The only exception is that, after its session creation request,
+                    // the client SHOULD NOT include an 'ack' attribute in any request if it has received
+                    // responses to all its previous requests.
+                    if (!unacknowledgedRequests.isEmpty()) {
+                        bodyBuilder.ack(highestReceivedRid);
+                    }
+                    bodyBuilder.wrappedObjects(elementsToSend);
+                    // Clear everything after the elements have been sent.
+                    elementsToSend.clear();
+                }
+            }
+
+            requestCount.getAndIncrement();
+
+            // Create the writer for this connection.
+            body = bodyBuilder.requestId(rid.getAndIncrement()).build();
+
+            if (isUsingAcknowledgements()) {
+                unacknowledgedRequests.put(body.getRid(), bodyBuilder);
+            }
+
+            return sendBody(body).whenComplete((aVoid, exc) -> {
+                body.getWrappedObjects().stream()
+                        .filter(wrappedObject -> wrappedObject instanceof StreamElement)
+                        .forEach(wrappedObject -> {
+                            StreamElement streamElement = (StreamElement) wrappedObject;
+                            CompletableFuture<Void> future = sendFutures.remove(streamElement);
+                            if (future != null) {
+                                if (exc != null) {
+                                    future.completeExceptionally(exc);
+                                } else {
+                                    future.complete(null);
+                                }
+                            }
+                        });
+                if (exc != null) {
+                    rid.getAndDecrement();
+                    xmppSession.notifyException(exc);
+                    throw exc instanceof CompletionException ? (CompletionException) exc : new CompletionException(exc);
+                }
+            });
+        } else {
+            throw new IllegalStateException("Connection already shutdown via close() or detach()");
+        }
+    }
+
+    final void handleSuccessfulResponse(Reader reader, Body requestBody) throws Exception {
+        try {
+            // The response itself acknowledges the request, so we can remove the request.
+            ackReceived(requestBody.getRid());
+
+            // We received a response for the request. Store the RID, so that we can inform the
+            // connection manager with our next request, that we received a response.
+            synchronized (elementsToSend) {
+                highestReceivedRid = requestBody.getRid() != null ? requestBody.getRid() : 0;
+            }
+
+            ReaderInterceptorChain readerInterceptorChain = newReaderChain();
+            List<StreamElement> streamElements = new ArrayList<>();
+            readerInterceptorChain.proceed(reader, streamElements::add);
+            for (StreamElement element : streamElements) {
+                if (element instanceof Body) {
+                    this.unpackBody((Body) element);
+                }
+            }
+        } catch (StreamErrorException e) {
+            logger.log(System.Logger.Level.WARNING, "Server responded with malformed XML.",
+                    e);
+        } finally {
+            // As soon as the client receives a response from the connection manager it sends another
+            // request, thereby ensuring that the connection manager is (almost) always holding a
+            // request that it can use to "push" data to the client.
+            if (requestCount.decrementAndGet() == 0) {
+                sendNewRequest(Body.builder().sessionId(sessionId), false);
             }
         }
     }
+
+    final void handleErrorHttpResponse(int httpResponseCode) throws BoshException {
+        // Shutdown the connection, we don't want to send further requests from now on.
+        shutdown();
+        handleCode(httpResponseCode);
+    }
+
+    /**
+     * Sends a body using a specific transport.
+     *
+     * @param body The body.
+     * @return The future which is complete, when the body has been sent.
+     */
+    protected abstract CompletableFuture<Void> sendBody(Body body);
 
     private void ackReceived(Long rid) {
         if (rid != null) {
@@ -802,27 +767,6 @@ public final class BoshConnection extends AbstractConnection {
                 });
             }
         }
-    }
-
-    private HttpURLConnection getConnection() throws IOException {
-        Proxy proxy = boshConnectionConfiguration.getProxy();
-        HttpURLConnection httpURLConnection;
-        if (proxy != null) {
-            httpURLConnection = (HttpURLConnection) url.openConnection(proxy);
-        } else {
-            httpURLConnection = (HttpURLConnection) url.openConnection();
-        }
-        if (httpURLConnection instanceof HttpsURLConnection) {
-            if (boshConnectionConfiguration.getSSLContext() != null) {
-                ((HttpsURLConnection) httpURLConnection)
-                        .setSSLSocketFactory(boshConnectionConfiguration.getSSLContext().getSocketFactory());
-            }
-            if (boshConnectionConfiguration.getHostnameVerifier() != null) {
-                ((HttpsURLConnection) httpURLConnection)
-                        .setHostnameVerifier(boshConnectionConfiguration.getHostnameVerifier());
-            }
-        }
-        return httpURLConnection;
     }
 
     /**
@@ -839,15 +783,5 @@ public final class BoshConnection extends AbstractConnection {
      */
     public final String getRoute() {
         return boshConnectionConfiguration.getRoute();
-    }
-
-    @Override
-    public final String toString() {
-        StringBuilder sb = new StringBuilder("BOSH connection at ").append(url);
-        String streamId = getStreamId();
-        if (streamId != null) {
-            sb.append(" (").append(streamId).append(')');
-        }
-        return sb.toString();
     }
 }

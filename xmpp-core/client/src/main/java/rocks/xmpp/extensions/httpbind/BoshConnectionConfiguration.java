@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,22 +24,16 @@
 
 package rocks.xmpp.extensions.httpbind;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.Proxy;
-import java.net.URL;
 import java.time.Duration;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.net.client.TcpConnectionConfiguration;
+import rocks.xmpp.core.net.client.TransportConnector;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.dns.DnsResolver;
-import rocks.xmpp.dns.TxtRecord;
 
 /**
  * A configuration for a BOSH connection.
@@ -59,7 +53,7 @@ import rocks.xmpp.dns.TxtRecord;
  *     .build();
  * }</pre>
  *
- * <p>The above sample configuration will connect to <code>http://localhost:5280/http-bind/</code>.
+ * <p>The above sample boshConnectionConfiguration will connect to <code>http://localhost:5280/http-bind/</code>.
  *
  * <p>This class is immutable.</p>
  *
@@ -78,18 +72,21 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
 
     private final boolean useKeySequence;
 
+    private final TransportConnector<BoshConnectionConfiguration> connector;
+
     private BoshConnectionConfiguration(Builder builder) {
         super(builder);
         this.wait = builder.wait;
         this.path = builder.path;
         this.route = builder.route;
         this.useKeySequence = builder.useKeySequence;
+        this.connector = builder.getConnector();
     }
 
     /**
-     * Gets the default configuration.
+     * Gets the default boshConnectionConfiguration.
      *
-     * @return The default configuration.
+     * @return The default boshConnectionConfiguration.
      */
     public static BoshConnectionConfiguration getDefault() {
         // Use double-checked locking idiom
@@ -124,67 +121,12 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
     }
 
     @Override
-    public CompletableFuture<Connection> createConnection(XmppSession xmppSession) throws Exception {
+    public final CompletableFuture<Connection> createConnection(XmppSession xmppSession) {
 
-        URL url;
-        String protocol = getChannelEncryption() == ChannelEncryption.DIRECT ? "https" : "http";
-        // If no port has been configured, use the default ports.
-        int targetPort = getPort() > 0 ? getPort() : (getChannelEncryption() == ChannelEncryption.DIRECT ? 5281 : 5280);
-        // If a hostname has been configured, use it to connect.
-        if (getHostname() != null) {
-            url = new URL(protocol, getHostname(), targetPort, getPath());
-        } else if (xmppSession.getDomain() != null) {
-            // If a URL has not been set, try to find the URL by the domain via a DNS-TXT lookup
-            // as described in XEP-0156.
-            String resolvedUrl =
-                    findBoshUrl(xmppSession.getDomain().toString(), xmppSession.getConfiguration().getNameServer(),
-                            getConnectTimeout());
-            if (resolvedUrl != null) {
-                url = new URL(resolvedUrl);
-            } else {
-                // Fallback mechanism:
-                // If the URL could not be resolved, use the domain name and port 5280 as default.
-                url = new URL(protocol, xmppSession.getDomain().toString(), targetPort, getPath());
-            }
-        } else {
-            throw new IllegalStateException("Neither an URL nor a domain given for a BOSH connection.");
+        if (connector == null) {
+            return new HttpUrlConnector().connect(xmppSession, this);
         }
-
-        BoshConnection boshConnection = new BoshConnection(url, xmppSession, this);
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                boshConnection.connect();
-                return boshConnection;
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        });
-    }
-
-    /**
-     * Tries to find the BOSH URL by a DNS TXT lookup as described in
-     * <a href="https://xmpp.org/extensions/xep-0156.html">XEP-0156</a>.
-     *
-     * @param xmppServiceDomain The fully qualified domain name.
-     * @param nameServer        The name server.
-     * @param timeout           The lookup timeout.
-     * @return The BOSH URL, if it could be found or null.
-     */
-    private static String findBoshUrl(String xmppServiceDomain, String nameServer, long timeout) {
-
-        try {
-            List<TxtRecord> txtRecords = DnsResolver.resolveTXT(xmppServiceDomain, nameServer, timeout);
-            for (TxtRecord txtRecord : txtRecords) {
-                Map<String, String> attributes = txtRecord.asAttributes();
-                String url = attributes.get("_xmpp-client-xbosh");
-                if (url != null) {
-                    return url;
-                }
-            }
-        } catch (IOException e) {
-            return null;
-        }
-        return null;
+        return connector.connect(xmppSession, this);
     }
 
     /**

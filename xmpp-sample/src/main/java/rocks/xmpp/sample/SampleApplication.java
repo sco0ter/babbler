@@ -49,8 +49,10 @@ import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
 import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.extensions.compress.CompressionMethod;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration;
+import rocks.xmpp.extensions.httpbind.HttpClientConnector;
 import rocks.xmpp.extensions.last.LastActivityManager;
 import rocks.xmpp.extensions.ping.PingManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
@@ -104,19 +106,20 @@ public final class SampleApplication {
 
                     BoshConnectionConfiguration boshConfiguration = BoshConnectionConfiguration.builder()
                             .hostname("localhost")
-
-                            .port(8443)
-                            .path("/xmpp/http-bind")
+                            .port(443)
+                            .path("/http-bind")
+                            .compressionMethods(CompressionMethod.GZIP)
                             .sslContext(getTrustAllSslContext())
                             .channelEncryption(ChannelEncryption.DIRECT)
                             .hostnameVerifier((s, sslSession) -> true)
+                            .connector(new HttpClientConnector())
                             .build();
 
                     System.setProperty("jdk.internal.httpclient.disableHostnameVerification", "true");
                     WebSocketConnectionConfiguration webSocketConfiguration = WebSocketConnectionConfiguration.builder()
                             .hostname("localhost")
-                            .port(7443)
-                            .path("/ws")
+                            .port(8443)
+                            .path("/xmpp/ws")
                             .sslContext(getTrustAllSslContext())
                             .channelEncryption(ChannelEncryption.DIRECT)
                             .connector(new JakartaWebSocketConnector())
@@ -137,12 +140,12 @@ public final class SampleApplication {
                             .connector(new NettyChannelConnector())
                             .port(5222)
                             .sslContext(getTrustAllSslContext())
-                            //.channelEncryption(ChannelEncryption.DIRECT)
+                            .channelEncryption(ChannelEncryption.DISABLED)
                             .hostnameVerifier((s, sslSession) -> true)
                             .build();
 
                     XmppClient xmppClient =
-                            XmppClient.create("localhost", configuration, webSocketConfiguration);
+                            XmppClient.create("localhost", configuration, boshConfiguration);
 
                     // Listen for inbound messages.
                     xmppClient.addInboundMessageListener(

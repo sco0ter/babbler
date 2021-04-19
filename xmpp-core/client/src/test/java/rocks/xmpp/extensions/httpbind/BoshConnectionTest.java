@@ -38,7 +38,7 @@ public class BoshConnectionTest {
     public void testInsertionOrder() {
 
         BoshConnection boshConnection =
-                new BoshConnection(null, new TestXmppSession(), BoshConnectionConfiguration.getDefault());
+                new HttpUrlBoshConnection(null, new TestXmppSession(), BoshConnectionConfiguration.getDefault());
 
         Body.Builder body1 = Body.builder();
         boshConnection.unacknowledgedRequests.put(1L, body1);

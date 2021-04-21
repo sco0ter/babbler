@@ -26,10 +26,10 @@ package rocks.xmpp.core.net.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -41,17 +41,20 @@ import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.SrvRecord;
+import rocks.xmpp.util.concurrent.CompletionStages;
 
 /**
  * An abstract transport connector which binds XMPP to TCP using the preferred TCP resolution process.
  *
- * <p>Implementations must implement {@link #connect(String, int, TcpConnectionConfiguration)} which establishes the TCP
- * connection.</p>
+ * <p>Implementations must implement {@link #connect(String, int, TcpConnectionConfiguration)} which establishes the
+ * TCP connection.</p>
  *
  * @param <T> The concrete TCP transport implementation, such as {@link java.net.Socket}.
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">3.2.1.  Preferred Process: SRV Lookup</a>
  */
 public abstract class AbstractTcpConnector<T> implements TransportConnector<TcpConnectionConfiguration> {
+
+    private static final System.Logger logger = System.getLogger(AbstractTcpConnector.class.getName());
 
     /**
      * Creates the connection.
@@ -109,13 +112,14 @@ public abstract class AbstractTcpConnector<T> implements TransportConnector<TcpC
      * @param xmppServiceDomain The fully qualified domain name.
      * @param nameServer        The name server used for DNS resolution.
      * @param isDirectTls       The consumer which gets notified, if direct TLS is used.
-     * @return The socket or null, if the connection could not be established.
+     * @return The future which completes with a connected socket or null, if the connection could not be established
+     * and the fallback (use domain as hostname) should be tried.
      * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp-resolution-prefer">3.2.1.  Preferred Process: SRV Lookup</a>
      */
-    private CompletableFuture<T> connectWithXmppServiceDomain(final Jid xmppServiceDomain,
-                                                              TcpConnectionConfiguration configuration,
-                                                              final String nameServer,
-                                                              final Consumer<Boolean> isDirectTls) {
+    CompletableFuture<T> connectWithXmppServiceDomain(final Jid xmppServiceDomain,
+                                                      final TcpConnectionConfiguration configuration,
+                                                      final String nameServer,
+                                                      final Consumer<Boolean> isDirectTls) {
 
         // 1. The initiating entity constructs a DNS SRV query whose inputs are:
         //
@@ -140,61 +144,72 @@ public abstract class AbstractTcpConnector<T> implements TransportConnector<TcpC
             // each of which is weighted and prioritized as described in [DNS-SRV].
             // Sort the entries, so that the best one is tried first.
             srvRecords.sort(null);
-            IOException ex = null;
-            for (SrvRecord srvRecord : srvRecords) {
-                if (srvRecord != null) {
-                    // (However, if the result of the SRV lookup is a single resource record with a Target of ".",
-                    // i.e., the root domain, then the initiating entity MUST abort SRV processing at this point
-                    // because according to [DNS-SRV] such a Target "means that the service is decidedly
-                    // not available at this domain".)
-                    if (".".equals(srvRecord.getTarget())) {
-                        if (srvRecordsXmpps.contains(srvRecord)) {
-                            // Direct TLS is not supported, in this case try the non-direct-TLS targets.
-                            continue;
-                        } else {
-                            return null;
-                        }
-                    }
 
-                    try {
-                        // 4. The initiating entity chooses at least one of the returned FQDNs to resolve
-                        // (following the rules in [DNS-SRV]), which it does by performing DNS "A" or "AAAA" lookups
-                        // on the FDQN; this will result in an IPv4 or IPv6 address.
-                        // 5. The initiating entity uses the IP address(es) from the successfully resolved FDQN
-                        // (with the corresponding port number returned by the SRV lookup) as the connection address
-                        // for the receiving entity.
-                        // 6. If the initiating entity fails to connect using that IP address but the "A" or "AAAA"
-                        // lookups returned more than one IP address, then the initiating entity uses the next resolved
-                        // IP address for that FDQN as the connection address.
-                        CompletableFuture<T> socket =
-                                connect(srvRecord.getTarget(), srvRecord.getPort(), configuration);
-                        // TODO don't block here
-                        socket.get();
-                        if (srvRecordsXmpps.contains(srvRecord)) {
-                            isDirectTls.accept(true);
-                        }
-                        return socket;
-                    } catch (ExecutionException e) {
-                        // 7. If the initiating entity fails to connect using all resolved IP addresses for a given
-                        // FDQN, then it repeats the process of resolution and connection for the next FQDN returned by
-                        // the SRV lookup based on the priority and weight as defined in [DNS-SRV].
-                        if (e.getCause() instanceof IOException) {
-                            ex = (IOException) e.getCause();
-                        }
-                    }
-                }
-            }
-
-            // 8. If the initiating entity receives a response to its SRV query but it is not able to establish an XMPP
-            // connection using the data received in the response, it SHOULD NOT attempt the fallback process described
-            // in the next section (this helps to prevent a state mismatch between inbound and outbound connections).
             if (!srvRecords.isEmpty()) {
-                throw new IOException("Could not connect to any host.", ex);
+                return connectToNextHost(srvRecords.iterator(), srvRecordsXmpps, configuration, isDirectTls);
             }
         } catch (Exception e) {
             // Unable to resolve the domain, try fallback.
             return null;
         }
         return null;
+    }
+
+    private CompletableFuture<T> connectToNextHost(Iterator<SrvRecord> iterator,
+                                                   List<SrvRecord> srvRecordsXmpps,
+                                                   TcpConnectionConfiguration configuration,
+                                                   Consumer<Boolean> isDirectTls) {
+        if (iterator.hasNext()) {
+            SrvRecord srvRecord = iterator.next();
+
+            // If the result of the SRV lookup is a single resource record with a Target of ".",
+            // i.e., the root domain, then the initiating entity MUST abort SRV processing at this point
+            // because according to [DNS-SRV] such a Target "means that the service is decidedly
+            // not available at this domain".
+            if (".".equals(srvRecord.getTarget())) {
+                if (srvRecordsXmpps.contains(srvRecord)) {
+                    // Direct TLS is not supported, in this case try the non-direct-TLS targets.
+                    return connectToNextHost(iterator, srvRecordsXmpps, configuration, isDirectTls);
+                } else {
+                    return null;
+                }
+            }
+
+            // 4. The initiating entity chooses at least one of the returned FQDNs to resolve
+            // (following the rules in [DNS-SRV]), which it does by performing DNS "A" or "AAAA" lookups
+            // on the FDQN; this will result in an IPv4 or IPv6 address.
+            // 5. The initiating entity uses the IP address(es) from the successfully resolved FDQN
+            // (with the corresponding port number returned by the SRV lookup) as the connection address
+            // for the receiving entity.
+            // 6. If the initiating entity fails to connect using that IP address but the "A" or "AAAA"
+            // lookups returned more than one IP address, then the initiating entity uses the next resolved
+            // IP address for that FDQN as the connection address.
+            // 7. If the initiating entity fails to connect using all resolved IP addresses for a given
+            // FDQN, then it repeats the process of resolution and connection for the next FQDN returned by
+            // the SRV lookup based on the priority and weight as defined in [DNS-SRV].
+            // 8. If the initiating entity receives a response to its SRV query but it is not able to establish an XMPP
+            // connection using the data received in the response, it SHOULD NOT attempt the fallback process described
+            // in the next section (this helps to prevent a state mismatch between inbound and outbound connections).
+
+            logger.log(System.Logger.Level.DEBUG, "Trying to connect to {0}:{1}", srvRecord.getTarget(),
+                    String.valueOf(srvRecord.getPort()));
+            CompletableFuture<T> socket = connect(srvRecord.getTarget(), srvRecord.getPort(), configuration);
+            return CompletionStages
+                    .withFallback(socket,
+                            (failedStage, exc) -> connectToNextHost(iterator, srvRecordsXmpps, configuration,
+                                    isDirectTls))
+                    .thenApply(s -> {
+                        if (srvRecordsXmpps.contains(srvRecord)) {
+                            isDirectTls.accept(true);
+                        }
+                        return s;
+                    }).toCompletableFuture();
+
+        }
+
+        // 8. If the initiating entity receives a response to its SRV query but it is not able to establish an XMPP
+        // connection using the data received in the response, it SHOULD NOT attempt the fallback process described
+        // in the next section (this helps to prevent a state mismatch between inbound and outbound connections).
+        return CompletableFuture.failedFuture(new IOException("Could not connect to any host"));
     }
 }

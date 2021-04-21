@@ -66,7 +66,7 @@ public final class SrvRecord implements Comparable<SrvRecord> {
         this(data.getShort() & 0xFFFF, data.getShort() & 0xFFFF, data.getShort() & 0xFFFF, ResourceRecord.parse(data));
     }
 
-    SrvRecord(final int priority, final int weight, final int port, final String target) {
+    public SrvRecord(final int priority, final int weight, final int port, final String target) {
         this.priority = priority;
         this.weight = weight;
         this.port = port;

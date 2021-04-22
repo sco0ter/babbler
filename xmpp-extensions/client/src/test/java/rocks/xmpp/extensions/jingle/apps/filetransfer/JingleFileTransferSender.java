@@ -28,7 +28,7 @@ import java.nio.file.Paths;
 import java.util.concurrent.Executors;
 
 import rocks.xmpp.core.net.ChannelEncryption;
-import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
+import rocks.xmpp.core.net.client.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.core.session.debug.ConsoleDebugger;
@@ -42,7 +42,7 @@ public class JingleFileTransferSender {
         Executors.newFixedThreadPool(1).execute(() -> {
             try {
 
-                SocketConnectionConfiguration tcpConfiguration = SocketConnectionConfiguration.builder()
+                TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
                         .port(5222)
                         .channelEncryption(ChannelEncryption.DISABLED)
                         .build();

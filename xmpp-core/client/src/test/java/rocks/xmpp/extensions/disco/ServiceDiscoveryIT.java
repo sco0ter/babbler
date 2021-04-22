@@ -32,7 +32,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.IntegrationTest;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
+import rocks.xmpp.core.net.client.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.extensions.disco.model.items.Item;
@@ -49,7 +49,7 @@ public class ServiceDiscoveryIT extends IntegrationTest {
         XmppSessionConfiguration configuration = XmppSessionConfiguration.builder()
                 //.debugger(ConsoleDebugger.class)
                 .build();
-        xmppSession = XmppClient.create(DOMAIN, configuration, SocketConnectionConfiguration.getDefault());
+        xmppSession = XmppClient.create(DOMAIN, configuration, TcpConnectionConfiguration.builder().build());
         xmppSession.connect();
         xmppSession.login(USER_1, PASSWORD_1);
     }

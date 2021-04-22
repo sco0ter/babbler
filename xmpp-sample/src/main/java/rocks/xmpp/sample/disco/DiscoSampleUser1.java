@@ -31,7 +31,7 @@ import java.util.concurrent.Executors;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.net.ChannelEncryption;
-import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
+import rocks.xmpp.core.net.client.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
 import rocks.xmpp.debug.gui.VisualDebugger;
@@ -52,7 +52,7 @@ public final class DiscoSampleUser1 {
         Executors.newFixedThreadPool(1).execute(() -> {
             try {
 
-                SocketConnectionConfiguration tcpConfiguration = SocketConnectionConfiguration.builder()
+                TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
                         .port(5222)
                         .channelEncryption(ChannelEncryption.DISABLED)
                         .build();

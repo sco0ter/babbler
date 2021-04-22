@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.ChannelEncryption;
-import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
+import rocks.xmpp.core.net.client.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.SendTask;
 import rocks.xmpp.core.session.XmppClient;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
@@ -51,7 +51,7 @@ public final class StreamManagementSample {
         Executors.newFixedThreadPool(1).execute(() -> {
             try {
 
-                SocketConnectionConfiguration socketConnectionConfiguration = SocketConnectionConfiguration.builder()
+                TcpConnectionConfiguration socketConnectionConfiguration = TcpConnectionConfiguration.builder()
                         .hostname("localhost")
                         .port(5222)
                         .channelEncryption(ChannelEncryption.DISABLED) // Disable TLS only for simpler example here.

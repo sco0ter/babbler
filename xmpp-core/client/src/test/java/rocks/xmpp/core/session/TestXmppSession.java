@@ -31,7 +31,7 @@ import java.util.concurrent.CompletionStage;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.net.AbstractConnection;
-import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
+import rocks.xmpp.core.net.client.TcpConnectionConfiguration;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.model.StreamElement;
@@ -60,7 +60,7 @@ public final class TestXmppSession extends XmppSession {
             }
         });
 
-        activeConnection = new AbstractConnection(SocketConnectionConfiguration.builder().build(), null, null) {
+        activeConnection = new AbstractConnection(TcpConnectionConfiguration.builder().build(), null, null) {
 
             @Override
             protected void restartStream() {

@@ -42,7 +42,6 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.bind.model.Bind;
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
-import rocks.xmpp.core.net.client.SocketConnectionConfiguration;
 import rocks.xmpp.core.sasl.AuthenticationException;
 import rocks.xmpp.core.sasl.model.Mechanisms;
 import rocks.xmpp.core.session.model.Session;
@@ -99,7 +98,7 @@ import rocks.xmpp.im.subscription.PresenceManager;
  *
  * @author Christian Schudt
  * @see XmppSessionConfiguration
- * @see SocketConnectionConfiguration
+ * @see rocks.xmpp.core.net.client.TcpConnectionConfiguration
  * @see rocks.xmpp.extensions.httpbind.BoshConnectionConfiguration
  */
 public final class XmppClient extends XmppSession {

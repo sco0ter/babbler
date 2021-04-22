@@ -149,10 +149,9 @@ public final class StreamFeaturesManager extends Manager implements StreamHandle
 
     @SuppressWarnings("unchecked")
     public final <T> List<T> getFeatures(Class<T> clazz) {
-        return Collections.unmodifiableList(this.advertisedFeatures.values().stream()
+        return this.advertisedFeatures.values().stream()
                 .filter(extension -> clazz.isAssignableFrom(extension.getClass()))
-                .map(extension -> (T) extension)
-                .collect(Collectors.toList()));
+                .map(extension -> (T) extension).collect(Collectors.toUnmodifiableList());
     }
 
     /**
@@ -215,7 +214,7 @@ public final class StreamFeaturesManager extends Manager implements StreamHandle
      */
     @Override
     public final boolean handleElement(Object element) throws StreamNegotiationException {
-        StreamNegotiationResult streamNegotiationResult = StreamNegotiationResult.IGNORE;
+        StreamNegotiationResult streamNegotiationResult;
         // Check if the element is known to any feature negotiator.
         for (StreamFeatureNegotiator<? extends StreamFeature> streamFeatureNegotiator : streamFeatureNegotiators) {
             streamNegotiationResult = streamFeatureNegotiator.processNegotiation(element);

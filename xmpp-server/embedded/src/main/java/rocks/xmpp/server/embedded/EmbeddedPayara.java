@@ -37,6 +37,7 @@ public final class EmbeddedPayara {
 
     public static void main(String[] args) throws BootstrapException {
 
+        PayaraMicro.unpackJars();
         PayaraMicro.getInstance()
                 .setNoCluster(true)
                 .setHttpPort(8080)

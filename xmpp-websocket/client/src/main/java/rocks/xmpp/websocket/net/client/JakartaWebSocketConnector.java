@@ -31,7 +31,6 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import javax.websocket.ClientEndpointConfig;
@@ -161,13 +160,13 @@ public final class JakartaWebSocketConnector extends AbstractWebSocketConnector 
                         config.getUserProperties().put(XmppWebSocketEncoder.UserProperties.SESSION, xmppSession);
                         config.getUserProperties()
                                 .put(XmppWebSocketEncoder.UserProperties.CONNECTION, webSocketConnection);
-                        webSocketConnection.open(sessionOpen).whenComplete(((aVoid, throwable) -> {
+                        webSocketConnection.open(sessionOpen).whenComplete((aVoid, throwable) -> {
                             if (throwable == null) {
                                 connectionFuture.complete(webSocketConnection);
                             } else {
                                 connectionFuture.completeExceptionally(throwable);
                             }
-                        }));
+                        });
                     }
                 }
 

@@ -63,7 +63,8 @@ public final class NettyTcpConnectionConfiguration extends ClientConnectionConfi
     }
 
     @Override
-    public final CompletableFuture<Connection> createConnection(final XmppSession xmppSession, SessionOpen sessionOpen) {
+    public final CompletableFuture<Connection> createConnection(final XmppSession xmppSession,
+                                                                final SessionOpen sessionOpen) {
         return new NettyChannelConnector(eventLoopGroup).connect(xmppSession,
                 TcpConnectionConfiguration.builder().keepAliveInterval(keepAliveInterval).build(), sessionOpen);
     }

@@ -70,7 +70,7 @@ public final class SocketConnectionConfiguration extends ClientConnectionConfigu
 
     private final int keepAliveInterval;
 
-    SocketConnectionConfiguration(Builder builder) {
+    private SocketConnectionConfiguration(Builder builder) {
         super(builder);
         this.keepAliveInterval = builder.keepAliveInterval;
         this.socketFactory = builder.socketFactory;
@@ -139,7 +139,7 @@ public final class SocketConnectionConfiguration extends ClientConnectionConfigu
 
         private int keepAliveInterval;
 
-        protected Builder() {
+        private Builder() {
             // default values.
             channelEncryption(ChannelEncryption.OPTIONAL);
             port(5222);

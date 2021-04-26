@@ -140,7 +140,8 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
     }
 
     @Override
-    public final CompletableFuture<Connection> createConnection(final XmppSession xmppSession, SessionOpen sessionOpen) {
+    public final CompletableFuture<Connection> createConnection(final XmppSession xmppSession,
+                                                                final SessionOpen sessionOpen) {
         if (connector == null) {
             return new JdkWebSocketConnector().connect(xmppSession, this, sessionOpen);
         }

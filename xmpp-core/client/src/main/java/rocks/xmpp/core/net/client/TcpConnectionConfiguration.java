@@ -44,7 +44,7 @@ public final class TcpConnectionConfiguration extends ClientConnectionConfigurat
 
     private final TransportConnector<TcpConnectionConfiguration> connector;
 
-    protected TcpConnectionConfiguration(Builder builder) {
+    private TcpConnectionConfiguration(Builder builder) {
         super(builder);
         this.keepAliveInterval = builder.keepAliveInterval;
         this.connector = builder.getConnector();

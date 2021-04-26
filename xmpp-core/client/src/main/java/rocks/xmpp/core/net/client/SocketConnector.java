@@ -9,6 +9,7 @@ import javax.net.SocketFactory;
 
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.model.SessionOpen;
 
 /**
  * A TCP transport connector which uses {@link Socket}.
@@ -81,8 +82,9 @@ public final class SocketConnector extends AbstractTcpConnector<Socket> {
 
     @Override
     public final CompletableFuture<Connection> connect(final XmppSession xmppSession,
-                                                       final TcpConnectionConfiguration configuration) {
+                                                       final TcpConnectionConfiguration configuration,
+                                                       final SessionOpen sessionOpen) {
         return createConnection(xmppSession, configuration,
-                (socket, config) -> new SocketConnection(socket, xmppSession, config));
+                (socket, config) -> new SocketConnection(socket, xmppSession, config), sessionOpen);
     }
 }

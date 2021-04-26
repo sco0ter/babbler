@@ -25,12 +25,12 @@
 package rocks.xmpp.extensions.httpbind;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.concurrent.CompletableFuture;
 
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.TransportConnector;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.model.SessionOpen;
 
 /**
  * A BOSH transport connector which uses {@link java.net.http.HttpClient}.
@@ -55,18 +55,17 @@ import rocks.xmpp.core.session.XmppSession;
 public final class HttpClientConnector implements TransportConnector<BoshConnectionConfiguration> {
 
     @Override
-    public final CompletableFuture<Connection> connect(XmppSession xmppSession,
-                                                       BoshConnectionConfiguration configuration) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                HttpClientBoshConnection boshConnection =
-                        new HttpClientBoshConnection(BoshConnection.getUrl(xmppSession, configuration), xmppSession,
-                                configuration);
-                // TODO test connection?
-                return boshConnection;
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        });
+    public final CompletableFuture<Connection> connect(final XmppSession xmppSession,
+                                                       final BoshConnectionConfiguration configuration,
+                                                       final SessionOpen sessionOpen) {
+        try {
+            HttpClientBoshConnection boshConnection =
+                    new HttpClientBoshConnection(BoshConnection.getUrl(xmppSession, configuration), xmppSession,
+                            configuration);
+            return boshConnection.open(sessionOpen).thenApply(aVoid -> (Connection) boshConnection)
+                    .toCompletableFuture();
+        } catch (IOException e) {
+            return CompletableFuture.failedFuture(e);
+        }
     }
 }

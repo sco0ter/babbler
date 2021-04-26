@@ -45,6 +45,7 @@ import rocks.xmpp.core.net.client.SocketConnector;
 import rocks.xmpp.core.net.client.TcpConnectionConfiguration;
 import rocks.xmpp.core.net.client.TransportConnector;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.nio.netty.net.NettyChannelConnection;
 
 /**
@@ -116,8 +117,9 @@ public final class NettyChannelConnector extends AbstractTcpConnector<Channel> {
 
     @Override
     public final CompletableFuture<Connection> connect(final XmppSession xmppSession,
-                                                       final TcpConnectionConfiguration configuration) {
+                                                       final TcpConnectionConfiguration configuration,
+                                                       final SessionOpen sessionOpen) {
         return createConnection(xmppSession, configuration,
-                (channel, config) -> new NettyTcpConnection(channel, xmppSession, config));
+                (channel, config) -> new NettyTcpConnection(channel, xmppSession, config), sessionOpen);
     }
 }

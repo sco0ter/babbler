@@ -59,27 +59,6 @@ final class HttpUrlBoshConnection extends BoshConnection {
         super(url, xmppSession, configuration);
     }
 
-    /**
-     * Connects to the BOSH server.
-     *
-     * @throws IOException If a connection could not be established.
-     */
-    final synchronized void connect() throws IOException {
-
-        // Try if we can connect in order to fail fast if we can't.
-        HttpURLConnection connection = null;
-        try {
-            connection = getConnection();
-            connection.setConnectTimeout(boshConnectionConfiguration.getConnectTimeout());
-            connection.setReadTimeout(boshConnectionConfiguration.getConnectTimeout());
-            connection.connect();
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-    }
-
     @Override
     public CompletableFuture<Void> sendBody(Body body) {
 
@@ -163,6 +142,9 @@ final class HttpUrlBoshConnection extends BoshConnection {
         }, HTTP_BIND_EXECUTOR).handle((httpConnection, exc) -> {
             if (httpConnection != null) {
                 httpConnection.disconnect();
+            }
+            if (exc != null) {
+                throw exc instanceof CompletionException ? (CompletionException) exc : new CompletionException(exc);
             }
             return null;
         });

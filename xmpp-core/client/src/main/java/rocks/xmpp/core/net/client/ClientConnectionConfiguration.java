@@ -37,6 +37,7 @@ import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
+import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.extensions.compress.CompressionMethod;
 
 /**
@@ -80,10 +81,10 @@ public abstract class ClientConnectionConfiguration implements ConnectionConfigu
      * A factory method to create the connection.
      *
      * @param xmppSession The XMPP session, which is associated with the connection.
+     * @param sessionOpen The session open element.
      * @return The connection.
-     * @throws Exception Any exception which may occur during connection establishment.
      */
-    public abstract CompletableFuture<Connection> createConnection(XmppSession xmppSession) throws Exception;
+    public abstract CompletableFuture<Connection> createConnection(XmppSession xmppSession, SessionOpen sessionOpen);
 
     /**
      * Gets the hostname.

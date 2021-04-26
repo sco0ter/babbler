@@ -39,6 +39,7 @@ import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.TcpBinding;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.dns.DnsResolver;
 import rocks.xmpp.dns.SrvRecord;
 import rocks.xmpp.util.concurrent.CompletionStages;
@@ -62,12 +63,14 @@ public abstract class AbstractTcpConnector<T> implements TransportConnector<TcpC
      * @param xmppSession The XMPP session.
      * @param creator     The creation function using the return value of {@link #connect(String, int,
      *                    TcpConnectionConfiguration)} as input.
+     * @param sessionOpen The session open element.
      * @return A future which is complete, when the connection is established.
      */
     protected final CompletableFuture<Connection> createConnection(XmppSession xmppSession,
                                                                    TcpConnectionConfiguration configuration,
                                                                    BiFunction<T, TcpConnectionConfiguration,
-                                                                           TcpBinding> creator) {
+                                                                           TcpBinding> creator,
+                                                                   SessionOpen sessionOpen) {
         CompletableFuture<T> socket;
         final AtomicBoolean useDirectTls =
                 new AtomicBoolean(configuration.getChannelEncryption() == ChannelEncryption.DIRECT);
@@ -93,7 +96,7 @@ public abstract class AbstractTcpConnector<T> implements TransportConnector<TcpC
                 }
             }
             return tcpBinding;
-        });
+        }).thenCompose(connection -> connection.open(sessionOpen).thenApply(aVoid -> connection));
     }
 
     /**

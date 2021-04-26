@@ -35,6 +35,7 @@ import java.util.concurrent.CompletableFuture;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.TransportConnector;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.model.SessionOpen;
 
 /**
  * A WebSocket transport connector which uses {@link java.net.http.WebSocket}.
@@ -68,7 +69,8 @@ public final class JdkWebSocketConnector extends AbstractWebSocketConnector {
 
     @Override
     public final CompletableFuture<Connection> connect(final XmppSession xmppSession,
-                                                       final WebSocketConnectionConfiguration configuration) {
+                                                       final WebSocketConnectionConfiguration configuration,
+                                                       final SessionOpen sessionOpen) {
         final CompletableFuture<Void> closeFuture = new CompletableFuture<>();
 
         final URI uri;
@@ -94,6 +96,7 @@ public final class JdkWebSocketConnector extends AbstractWebSocketConnector {
                 .newWebSocketBuilder()
                 .subprotocols("xmpp")
                 .buildAsync(uri, webSocketClientConnection)
-                .thenApply(webSocket -> webSocketClientConnection);
+                .thenCompose(webSocket -> webSocketClientConnection.open(sessionOpen))
+                .thenApply(aVoid -> webSocketClientConnection);
     }
 }

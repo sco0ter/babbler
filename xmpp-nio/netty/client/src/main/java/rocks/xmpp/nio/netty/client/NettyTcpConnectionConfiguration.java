@@ -33,6 +33,7 @@ import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.net.client.TcpConnectionConfiguration;
 import rocks.xmpp.core.net.client.TransportConnector;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.model.SessionOpen;
 
 /**
  * @author Christian Schudt
@@ -62,9 +63,9 @@ public final class NettyTcpConnectionConfiguration extends ClientConnectionConfi
     }
 
     @Override
-    public final CompletableFuture<Connection> createConnection(final XmppSession xmppSession) throws Exception {
+    public final CompletableFuture<Connection> createConnection(final XmppSession xmppSession, SessionOpen sessionOpen) {
         return new NettyChannelConnector(eventLoopGroup).connect(xmppSession,
-                TcpConnectionConfiguration.builder().keepAliveInterval(keepAliveInterval).build());
+                TcpConnectionConfiguration.builder().keepAliveInterval(keepAliveInterval).build(), sessionOpen);
     }
 
     /**

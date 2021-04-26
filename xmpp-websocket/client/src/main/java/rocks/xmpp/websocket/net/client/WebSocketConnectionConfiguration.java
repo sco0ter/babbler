@@ -35,6 +35,7 @@ import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.net.client.TransportConnector;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.XmppSessionConfiguration;
+import rocks.xmpp.core.session.model.SessionOpen;
 
 /**
  * A configuration for a WebSocket connection.
@@ -139,11 +140,11 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
     }
 
     @Override
-    public final CompletableFuture<Connection> createConnection(final XmppSession xmppSession) {
+    public final CompletableFuture<Connection> createConnection(final XmppSession xmppSession, SessionOpen sessionOpen) {
         if (connector == null) {
-            return new JdkWebSocketConnector().connect(xmppSession, this);
+            return new JdkWebSocketConnector().connect(xmppSession, this, sessionOpen);
         }
-        return connector.connect(xmppSession, this);
+        return connector.connect(xmppSession, this, sessionOpen);
     }
 
     @Override

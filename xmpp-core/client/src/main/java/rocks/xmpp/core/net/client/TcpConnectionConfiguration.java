@@ -29,6 +29,7 @@ import java.util.concurrent.CompletableFuture;
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.model.SessionOpen;
 
 /**
  * A configuration for a TCP connection.
@@ -68,11 +69,11 @@ public final class TcpConnectionConfiguration extends ClientConnectionConfigurat
     }
 
     @Override
-    public CompletableFuture<Connection> createConnection(XmppSession xmppSession) throws Exception {
+    public CompletableFuture<Connection> createConnection(XmppSession xmppSession, SessionOpen sessionOpen) {
         if (connector == null) {
-            return new SocketConnector().connect(xmppSession, this);
+            return new SocketConnector().connect(xmppSession, this, sessionOpen);
         }
-        return connector.connect(xmppSession, this);
+        return connector.connect(xmppSession, this, sessionOpen);
     }
 
     /**

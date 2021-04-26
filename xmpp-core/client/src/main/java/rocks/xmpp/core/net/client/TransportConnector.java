@@ -28,6 +28,7 @@ import java.util.concurrent.CompletableFuture;
 
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.model.SessionOpen;
 
 /**
  * Transport Connectors bind XMPP to a transport protocol such as TCP, BOSH or WebSockets.
@@ -54,7 +55,8 @@ public interface TransportConnector<T extends ClientConnectionConfiguration> {
      *
      * @param xmppSession   The XMPP session which will be bound to the transport protocol.
      * @param configuration The connection configuration for the specific transport protocol.
+     * @param sessionOpen   The session open element.
      * @return A {@link CompletableFuture} which returns an established (connected) connection on completion.
      */
-    CompletableFuture<Connection> connect(XmppSession xmppSession, T configuration);
+    CompletableFuture<Connection> connect(XmppSession xmppSession, T configuration, SessionOpen sessionOpen);
 }

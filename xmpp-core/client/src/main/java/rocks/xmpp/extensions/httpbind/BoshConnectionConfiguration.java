@@ -34,6 +34,7 @@ import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.net.client.TcpConnectionConfiguration;
 import rocks.xmpp.core.net.client.TransportConnector;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.model.SessionOpen;
 
 /**
  * A configuration for a BOSH connection.
@@ -121,12 +122,12 @@ public final class BoshConnectionConfiguration extends ClientConnectionConfigura
     }
 
     @Override
-    public final CompletableFuture<Connection> createConnection(XmppSession xmppSession) {
+    public final CompletableFuture<Connection> createConnection(XmppSession xmppSession, SessionOpen sessionOpen) {
 
         if (connector == null) {
-            return new HttpUrlConnector().connect(xmppSession, this);
+            return new HttpUrlConnector().connect(xmppSession, this, sessionOpen);
         }
-        return connector.connect(xmppSession, this);
+        return connector.connect(xmppSession, this, sessionOpen);
     }
 
     /**

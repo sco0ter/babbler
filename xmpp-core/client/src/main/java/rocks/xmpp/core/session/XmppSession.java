@@ -440,32 +440,32 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
             logger.log(System.Logger.Level.WARNING, "Failure during closing previous connection.", e);
         }
 
-        synchronized (connectionConfigurations) {
-            Iterator<ClientConnectionConfiguration> connectionIterator = getConnections().iterator();
-            while (connectionIterator.hasNext()) {
-                ClientConnectionConfiguration connectionConfiguration = connectionIterator.next();
-                Connection connection = null;
-                try {
-                    connection = connectionConfiguration.createConnection(this).join();
-                    connection.open(StreamHeader
-                            .create(from, xmppServiceDomain, null, version, configuration.getLanguage(), namespace));
+        Iterator<ClientConnectionConfiguration> connectionIterator = getConnections().iterator();
+        while (connectionIterator.hasNext()) {
+            ClientConnectionConfiguration connectionConfiguration = connectionIterator.next();
+            Connection connection = null;
+            try {
+                connection = connectionConfiguration.createConnection(this, StreamHeader
+                        .create(from, xmppServiceDomain, null, version, configuration.getLanguage(), namespace))
+                        .join();
+                synchronized (connectionConfigurations) {
                     activeConnection = connection;
-                    break;
-                } catch (Exception e) {
-                    if (connection != null) {
-                        try {
-                            connection.close();
-                        } catch (Exception e1) {
-                            e.addSuppressed(e1);
-                        }
+                }
+                break;
+            } catch (Exception e) {
+                if (connection != null) {
+                    try {
+                        connection.close();
+                    } catch (Exception e1) {
+                        e.addSuppressed(e1);
                     }
-                    if (connectionIterator.hasNext()) {
-                        logger.log(System.Logger.Level.WARNING, "{0} failed to connect. Trying alternative connection.",
-                                connectionConfiguration);
-                        logger.log(System.Logger.Level.DEBUG, e.getMessage(), e);
-                    } else {
-                        throw new ConnectionException("Failed to connect to " + connectionConfiguration, e);
-                    }
+                }
+                if (connectionIterator.hasNext()) {
+                    logger.log(System.Logger.Level.WARNING, "{0} failed to connect. Trying alternative connection.",
+                            connectionConfiguration);
+                    logger.log(System.Logger.Level.DEBUG, e.getMessage(), e);
+                } else {
+                    throw new ConnectionException("Failed to connect to " + connectionConfiguration, e);
                 }
             }
             logger.log(System.Logger.Level.DEBUG, "Connected via {0}", activeConnection);

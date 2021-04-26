@@ -31,6 +31,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import javax.websocket.ClientEndpointConfig;
@@ -52,6 +53,7 @@ import org.glassfish.tyrus.container.jdk.client.JdkClientContainer;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.TransportConnector;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.websocket.codec.XmppWebSocketDecoder;
 import rocks.xmpp.websocket.codec.XmppWebSocketEncoder;
 
@@ -76,7 +78,8 @@ public final class JakartaWebSocketConnector extends AbstractWebSocketConnector 
 
     @Override
     public final CompletableFuture<Connection> connect(final XmppSession xmppSession,
-                                                       final WebSocketConnectionConfiguration configuration) {
+                                                       final WebSocketConnectionConfiguration configuration,
+                                                       final SessionOpen sessionOpen) {
         final CompletableFuture<Void> closeFuture = new CompletableFuture<>();
 
         final AtomicBoolean handshakeSucceeded = new AtomicBoolean();
@@ -155,10 +158,16 @@ public final class JakartaWebSocketConnector extends AbstractWebSocketConnector 
                         JakartaWebSocketClientConnection webSocketConnection =
                                 new JakartaWebSocketClientConnection(session, closeFuture, xmppSession,
                                         configuration, uri);
-                        connectionFuture.complete(webSocketConnection);
                         config.getUserProperties().put(XmppWebSocketEncoder.UserProperties.SESSION, xmppSession);
                         config.getUserProperties()
                                 .put(XmppWebSocketEncoder.UserProperties.CONNECTION, webSocketConnection);
+                        webSocketConnection.open(sessionOpen).whenComplete(((aVoid, throwable) -> {
+                            if (throwable == null) {
+                                connectionFuture.complete(webSocketConnection);
+                            } else {
+                                connectionFuture.completeExceptionally(throwable);
+                            }
+                        }));
                     }
                 }
 

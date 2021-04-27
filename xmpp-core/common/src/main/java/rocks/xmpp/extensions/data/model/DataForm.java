@@ -579,6 +579,17 @@ public final class DataForm implements Comparable<DataForm> {
         }
 
         /**
+         * Gets a unique identifier for the field in the context of the form.
+         *
+         * @return The var attribute.
+         * @deprecated Use {@link #getName()}
+         */
+        @Deprecated(forRemoval = true)
+        public final String getVar() {
+            return name;
+        }
+
+        /**
          * Gets the field label.
          *
          * @return The label.

@@ -39,16 +39,16 @@ import rocks.xmpp.websocket.model.Open;
 /**
  * Abstract base class for WebSocket connections.
  */
-public abstract class AbstractWebSocketConnection extends AbstractConnection {
+public abstract class WebSocketConnection extends AbstractConnection {
 
     private final CompletionStage<Void> closeFuture;
 
     protected SessionOpen sessionOpen;
 
-    protected AbstractWebSocketConnection(ConnectionConfiguration connectionConfiguration,
-                                          final StreamHandler streamHandler,
-                                          final Consumer<Throwable> onException,
-                                          final CompletionStage<Void> closeFuture) {
+    protected WebSocketConnection(ConnectionConfiguration connectionConfiguration,
+                                  final StreamHandler streamHandler,
+                                  final Consumer<Throwable> onException,
+                                  final CompletionStage<Void> closeFuture) {
         super(connectionConfiguration, streamHandler, onException);
         this.closeFuture = closeFuture;
         closeFuture().whenComplete((aVoid, throwable) -> {

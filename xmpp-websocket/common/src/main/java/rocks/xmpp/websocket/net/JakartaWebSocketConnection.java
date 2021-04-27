@@ -45,7 +45,7 @@ import rocks.xmpp.core.stream.model.StreamElement;
  *
  * <p>Client implementations may use this class and pass their own message handler which restarts the stream.</p>
  */
-public final class JakartaWebSocketConnection extends AbstractWebSocketConnection {
+public final class JakartaWebSocketConnection extends WebSocketConnection {
 
     private final Session session;
 

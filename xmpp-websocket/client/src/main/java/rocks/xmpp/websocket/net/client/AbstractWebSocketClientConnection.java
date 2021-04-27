@@ -54,14 +54,14 @@ import rocks.xmpp.util.XmppStreamDecoder;
 import rocks.xmpp.util.XmppStreamEncoder;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
-import rocks.xmpp.websocket.net.AbstractWebSocketConnection;
+import rocks.xmpp.websocket.net.WebSocketConnection;
 
 /**
  * Abstract base class for client-initiated WebSocket connections.
  *
  * <p>Client connections periodically send ping messages to check if the connection is alive.</p>
  */
-abstract class AbstractWebSocketClientConnection extends AbstractWebSocketConnection {
+abstract class AbstractWebSocketClientConnection extends WebSocketConnection {
 
     private static final ExecutorService EXECUTOR_SERVICE =
             Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("WebSocket Ping Scheduler"));

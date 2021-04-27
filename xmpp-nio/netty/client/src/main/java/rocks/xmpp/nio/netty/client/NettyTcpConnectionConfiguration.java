@@ -34,6 +34,7 @@ import rocks.xmpp.core.net.client.TcpConnectionConfiguration;
 import rocks.xmpp.core.net.client.TransportConnector;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.model.SessionOpen;
+import rocks.xmpp.extensions.compress.CompressionMethod;
 
 /**
  * @author Christian Schudt
@@ -66,7 +67,15 @@ public final class NettyTcpConnectionConfiguration extends ClientConnectionConfi
     public final CompletableFuture<Connection> createConnection(final XmppSession xmppSession,
                                                                 final SessionOpen sessionOpen) {
         return new NettyChannelConnector(eventLoopGroup).connect(xmppSession,
-                TcpConnectionConfiguration.builder().keepAliveInterval(keepAliveInterval).build(), sessionOpen);
+                TcpConnectionConfiguration.builder()
+                        .hostname(getHostname())
+                        .port(getPort())
+                        .proxy(getProxy())
+                        .channelEncryption(getChannelEncryption())
+                        .sslContext(getSSLContext())
+                        .hostnameVerifier(getHostnameVerifier())
+                        .compressionMethods(getCompressionMethods().toArray(new CompressionMethod[0]))
+                        .keepAliveInterval(keepAliveInterval).build(), sessionOpen);
     }
 
     /**

@@ -32,6 +32,7 @@ import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.model.SessionOpen;
+import rocks.xmpp.extensions.compress.CompressionMethod;
 
 /**
  * A configuration for a TCP connection using {@link Socket}.
@@ -116,7 +117,15 @@ public final class SocketConnectionConfiguration extends ClientConnectionConfigu
     @Override
     public final CompletableFuture<Connection> createConnection(XmppSession xmppSession, SessionOpen sessionOpen) {
         return new SocketConnector().createConnection(xmppSession,
-                TcpConnectionConfiguration.builder().keepAliveInterval(keepAliveInterval).build(),
+                TcpConnectionConfiguration.builder()
+                        .hostname(getHostname())
+                        .port(getPort())
+                        .proxy(getProxy())
+                        .channelEncryption(getChannelEncryption())
+                        .sslContext(getSSLContext())
+                        .hostnameVerifier(getHostnameVerifier())
+                        .compressionMethods(getCompressionMethods().toArray(new CompressionMethod[0]))
+                        .keepAliveInterval(keepAliveInterval).build(),
                 (socket, config) -> new SocketConnection(socket, xmppSession, config), sessionOpen);
     }
 

@@ -28,20 +28,22 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.OutboundPresenceHandler;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.extensions.caps.AbstractEntityCapabilities1Protocol;
-import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
+import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 
 /**
- * @author Christian Schudt
+ * The Entity Caps protocol implementation from a client perspective.
+ *
+ * <p>Clients attach the Entity Caps extension to outbound presence.</p>
  */
-public class ClientEntityCapabilities1Protocol extends AbstractEntityCapabilities1Protocol
+public final class ClientEntityCapabilities1Protocol extends AbstractEntityCapabilities1Protocol
         implements OutboundPresenceHandler {
 
     private final ClientEntityCapabilitiesSupport capsSupport;
 
     public ClientEntityCapabilities1Protocol(XmppSession xmppSession) {
         super(xmppSession.getManager(ServiceDiscoveryManager.class),
-                xmppSession.getManager(EntityCapabilitiesCache.class));
+                xmppSession.getManager(EntityCapabilitiesManager.class));
         this.capsSupport = new ClientEntityCapabilitiesSupport(xmppSession, this);
     }
 

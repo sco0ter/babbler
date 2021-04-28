@@ -86,14 +86,14 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
 
     private final Class<T> entityCapabilitiesClass;
 
-    private final EntityCapabilitiesCache entityCapabilitiesCache;
+    private final EntityCapabilitiesManager entityCapabilitiesManager;
 
     protected AbstractEntityCapabilitiesProtocol(final Class<T> entityCapabilitiesClass,
                                                  final ServiceDiscoveryManager serviceDiscoveryManager,
-                                                 final EntityCapabilitiesCache entityCapabilitiesCache) {
+                                                 final EntityCapabilitiesManager entityCapabilitiesManager) {
         this.serviceDiscoveryManager = Objects.requireNonNull(serviceDiscoveryManager);
         this.entityCapabilitiesClass = Objects.requireNonNull(entityCapabilitiesClass);
-        this.entityCapabilitiesCache = Objects.requireNonNull(entityCapabilitiesCache);
+        this.entityCapabilitiesManager = Objects.requireNonNull(entityCapabilitiesManager);
         this.publishedNodes = new LruCache<>(10);
     }
 
@@ -139,7 +139,7 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
         for (Hashed hashed : capabilityHashSet) {
 
             // Cache our own capabilities.
-            entityCapabilitiesCache.writeCapabilities(Hash.from(hashed), infoDiscovery);
+            entityCapabilitiesManager.writeCapabilities(Hash.from(hashed), infoDiscovery);
 
             final String node = entityCapabilities.createCapabilityHashNode(hashed);
             infoDiscoveries.add(new InfoDiscovery(node, infoDiscovery.getIdentities(), infoDiscovery.getFeatures(),
@@ -187,11 +187,11 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
             }
             final Hash hash = Hash.from(hashed);
             // Check if the hash is already known.
-            final DiscoverableInfo discoverableInfo = entityCapabilitiesCache.readCapabilities(hash);
+            final DiscoverableInfo discoverableInfo = entityCapabilitiesManager.readCapabilities(hash);
 
             if (discoverableInfo != null) {
                 // If its known, just update the information for this entity.
-                entityCapabilitiesCache.writeEntityCapabilities(entity, discoverableInfo);
+                entityCapabilitiesManager.writeEntityCapabilities(entity, discoverableInfo);
             } else {
                 final String nodeToDiscover = caps.createCapabilityHashNode(hash);
                 try {
@@ -256,11 +256,11 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
                                     // application MUST consider the result to be valid and SHOULD globally cache the
                                     // result for all JabberIDs with which it communicates.
                                     if (Arrays.equals(computedHash, hash.getHashValue())) {
-                                        entityCapabilitiesCache.writeCapabilities(hash, infoDiscovery);
+                                        entityCapabilitiesManager.writeCapabilities(hash, infoDiscovery);
                                     } else {
                                         processCapabilitiesHashSet(capabilityHashSet, entity, caps);
                                     }
-                                    entityCapabilitiesCache.writeEntityCapabilities(entity, infoDiscovery);
+                                    entityCapabilitiesManager.writeEntityCapabilities(entity, infoDiscovery);
                                 }
                             });
                     // 3.9 If the values of the received and reconstructed hashes do not match, the processing
@@ -280,7 +280,7 @@ public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabil
                                     "Failed to discover information for entity '{0}' for node '{1}'", entity,
                                     nodeToDiscover);
                         } else {
-                            entityCapabilitiesCache.writeEntityCapabilities(entity, result);
+                            entityCapabilitiesManager.writeEntityCapabilities(entity, result);
                         }
                     });
 

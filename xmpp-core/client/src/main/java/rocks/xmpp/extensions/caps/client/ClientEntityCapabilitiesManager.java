@@ -31,16 +31,13 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.stream.XMLStreamWriter;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.stanza.model.StanzaErrorException;
-import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
+import rocks.xmpp.extensions.caps2.client.ClientEntityCapabilities2Protocol;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.hashes.model.Hash;
@@ -50,10 +47,15 @@ import rocks.xmpp.util.cache.LruCache;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
- * @author Christian Schudt
+ * Caches entity capabilities.
+ *
+ * <p>This class is shared by both Entity Caps implementations, {@link ClientEntityCapabilities1Protocol} and {@link
+ * ClientEntityCapabilities2Protocol} and provides a single (global) cache to both of them.</p>
+ *
+ * <p>It also allows to explicitly query for a entity capabilities. If they are already cached, the cached capabilities
+ * are returned, otherwise a Service Discovery query is made.</p>
  */
-public class ClientEntityCapabilitiesManager extends Manager
-        implements EntityCapabilitiesCache, EntityCapabilitiesManager {
+public final class ClientEntityCapabilitiesManager implements EntityCapabilitiesManager {
 
     private static final System.Logger logger = System.getLogger(ClientEntityCapabilitiesManager.class.getName());
 
@@ -67,8 +69,10 @@ public class ClientEntityCapabilitiesManager extends Manager
 
     private final DirectoryCache directoryCache;
 
+    private final XmppSession xmppSession;
+
     public ClientEntityCapabilitiesManager(XmppSession xmppSession) {
-        super(xmppSession);
+        this.xmppSession = xmppSession;
         this.directoryCache = xmppSession.getConfiguration().getCacheDirectory() != null
                 ? new DirectoryCache(xmppSession.getConfiguration().getCacheDirectory().resolve("caps")) : null;
     }
@@ -164,27 +168,5 @@ public class ClientEntityCapabilitiesManager extends Manager
                             }));
         }
         return new AsyncResult<>(CompletableFuture.completedFuture(discoverableInfo));
-    }
-
-    /**
-     * Checks whether the entity supports the given feature. If the features are already known and cached
-     *
-     * @param feature The feature.
-     * @param jid     The JID, which should usually be a full JID.
-     * @return The async result with true, if this entity supports the feature.
-     */
-    @Override
-    public final AsyncResult<Boolean> isSupported(String feature, Jid jid) {
-        return discoverCapabilities(jid)
-                .handle((infoNode, e) -> {
-                    if (e == null) {
-                        return infoNode.getFeatures().contains(feature);
-                    } else {
-                        if (e.getCause() instanceof StanzaErrorException) {
-                            return false;
-                        }
-                        throw (CompletionException) e;
-                    }
-                });
     }
 }

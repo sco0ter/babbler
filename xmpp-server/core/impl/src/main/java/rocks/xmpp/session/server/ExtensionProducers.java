@@ -29,7 +29,7 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
+import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.caps.server.ServerEntityCapabilities1Protocol;
 import rocks.xmpp.extensions.caps2.server.ServerEntityCapabilities2Protocol;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -43,6 +43,7 @@ import rocks.xmpp.extensions.softwareinfo.SoftwareInformationProtocol;
 import rocks.xmpp.extensions.time.handler.EntityTimeHandler;
 import rocks.xmpp.extensions.version.SoftwareVersionProtocol;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 @ApplicationScoped
 public class ExtensionProducers {
@@ -93,7 +94,7 @@ public class ExtensionProducers {
     @Produces
     @ApplicationScoped
     public ServerEntityCapabilities1Protocol entityCapabilities1() {
-        return new ServerEntityCapabilities1Protocol(serviceDiscoveryManager, new EntityCapabilitiesCache() {
+        return new ServerEntityCapabilities1Protocol(serviceDiscoveryManager, new EntityCapabilitiesManager() {
             @Override
             public DiscoverableInfo readCapabilities(Hash hash) {
                 return null;
@@ -112,6 +113,11 @@ public class ExtensionProducers {
             @Override
             public void writeEntityCapabilities(Jid entity, DiscoverableInfo discoverableInfo) {
 
+            }
+
+            @Override
+            public AsyncResult<DiscoverableInfo> discoverCapabilities(Jid jid) {
+                return serviceDiscoveryManager.discoverInformation(jid);
             }
         });
     }
@@ -119,7 +125,7 @@ public class ExtensionProducers {
     @Produces
     @ApplicationScoped
     public ServerEntityCapabilities2Protocol entityCapabilities2() {
-        return new ServerEntityCapabilities2Protocol(serviceDiscoveryManager, new EntityCapabilitiesCache() {
+        return new ServerEntityCapabilities2Protocol(serviceDiscoveryManager, new EntityCapabilitiesManager() {
             @Override
             public DiscoverableInfo readCapabilities(Hash hash) {
                 return null;
@@ -138,6 +144,11 @@ public class ExtensionProducers {
             @Override
             public void writeEntityCapabilities(Jid entity, DiscoverableInfo discoverableInfo) {
 
+            }
+
+            @Override
+            public AsyncResult<DiscoverableInfo> discoverCapabilities(Jid jid) {
+                return serviceDiscoveryManager.discoverInformation(jid);
             }
         });
     }

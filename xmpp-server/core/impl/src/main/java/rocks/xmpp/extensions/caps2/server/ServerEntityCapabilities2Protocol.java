@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.caps2.server;
 
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.server.StreamFeatureProvider;
-import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
+import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.caps2.AbstractEntityCapabilities2Protocol;
 import rocks.xmpp.extensions.caps2.model.EntityCapabilities2;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
@@ -38,8 +38,8 @@ public class ServerEntityCapabilities2Protocol extends AbstractEntityCapabilitie
         implements StreamFeatureProvider<EntityCapabilities2> {
 
     public ServerEntityCapabilities2Protocol(ServiceDiscoveryManager serviceDiscoveryManager,
-                                             EntityCapabilitiesCache entityCapabilitiesCache) {
-        super(serviceDiscoveryManager, entityCapabilitiesCache);
+                                             EntityCapabilitiesManager entityCapabilitiesManager) {
+        super(serviceDiscoveryManager, entityCapabilitiesManager);
     }
 
     @Override

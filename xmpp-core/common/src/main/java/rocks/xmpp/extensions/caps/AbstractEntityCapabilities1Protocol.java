@@ -55,8 +55,8 @@ public abstract class AbstractEntityCapabilities1Protocol
     private String node;
 
     protected AbstractEntityCapabilities1Protocol(ServiceDiscoveryManager serviceDiscoveryManager,
-                                                  EntityCapabilitiesCache entityCapabilitiesCache) {
-        super(EntityCapabilities1.class, serviceDiscoveryManager, entityCapabilitiesCache);
+                                                  EntityCapabilitiesManager entityCapabilitiesManager) {
+        super(EntityCapabilities1.class, serviceDiscoveryManager, entityCapabilitiesManager);
     }
 
     @Override

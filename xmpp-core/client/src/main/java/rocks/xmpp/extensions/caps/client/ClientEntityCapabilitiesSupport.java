@@ -15,6 +15,10 @@ import rocks.xmpp.extensions.disco.client.ClientServiceDiscoveryManager;
 import rocks.xmpp.im.subscription.PresenceManager;
 
 /**
+ * Helper class to add entity capabilities to outbound presence.
+ *
+ * <p>This class is used by both entity capabilities protocols</p>.
+ *
  * @author Christian Schudt
  */
 public final class ClientEntityCapabilitiesSupport implements OutboundPresenceHandler {

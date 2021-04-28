@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import rocks.xmpp.extensions.caps.AbstractEntityCapabilitiesProtocol;
-import rocks.xmpp.extensions.caps.EntityCapabilitiesCache;
+import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
 import rocks.xmpp.extensions.caps2.model.EntityCapabilities2;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
@@ -50,8 +50,8 @@ public abstract class AbstractEntityCapabilities2Protocol
     private static final Set<String> FEATURES = Collections.singleton(EntityCapabilities2.NAMESPACE);
 
     protected AbstractEntityCapabilities2Protocol(ServiceDiscoveryManager serviceDiscoveryManager,
-                                                  EntityCapabilitiesCache entityCapabilitiesCache) {
-        super(EntityCapabilities2.class, serviceDiscoveryManager, entityCapabilitiesCache);
+                                                  EntityCapabilitiesManager entityCapabilitiesManager) {
+        super(EntityCapabilities2.class, serviceDiscoveryManager, entityCapabilitiesManager);
     }
 
     @Override

@@ -27,6 +27,7 @@ package rocks.xmpp.extensions.rpc;
 import java.util.List;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.extensions.rpc.model.Value;
 
 /**
@@ -45,8 +46,9 @@ public interface RpcHandler {
      * @param methodName The method name.
      * @param parameters The parameter list.
      * @return The result.
-     * @throws RpcException If this exception is thrown, an application-level error (fault) is returned in the XML-RPC
-     *                      structure.
+     * @throws RpcException         If this exception is thrown, an application-level error (fault) is returned in the
+     *                              XML-RPC structure.
+     * @throws StanzaErrorException If this exception is thrown, a stanza error is returned to the caller.
      */
-    Value process(Jid requester, String methodName, List<Value> parameters) throws RpcException;
+    Value process(Jid requester, String methodName, List<Value> parameters) throws RpcException, StanzaErrorException;
 }

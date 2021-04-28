@@ -34,6 +34,7 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
@@ -65,7 +66,7 @@ public abstract class AbstractRpcManager extends AbstractIQHandler
     }
 
     @Override
-    public final synchronized void setRpcHandler(RpcHandler rpcHandler) {
+    public synchronized void setRpcHandler(RpcHandler rpcHandler) {
         this.rpcHandler = rpcHandler;
     }
 
@@ -106,6 +107,9 @@ public abstract class AbstractRpcManager extends AbstractIQHandler
                 return iq.createResult(Rpc.ofMethodResponse(value));
             } catch (RpcException e1) {
                 return iq.createResult(Rpc.ofFaultResponse(e1.getFaultCode(), e1.getFaultString()));
+            } catch (StanzaErrorException e1) {
+                logger.log(System.Logger.Level.WARNING, e1.getMessage(), e1);
+                return iq.createError(e1.getError());
             } catch (Throwable e1) {
                 logger.log(System.Logger.Level.WARNING, e1.getMessage(), e1);
                 return iq.createError(Condition.INTERNAL_SERVER_ERROR);

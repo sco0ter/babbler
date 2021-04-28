@@ -54,6 +54,16 @@ public final class ClientRpcManager extends AbstractRpcManager {
     }
 
     @Override
+    public final synchronized void setRpcHandler(RpcHandler rpcHandler) {
+        super.setRpcHandler(rpcHandler);
+        if (rpcHandler != null) {
+            xmppSession.enableFeature(getNamespace());
+        } else {
+            xmppSession.disableFeature(getNamespace());
+        }
+    }
+
+    @Override
     public AsyncResult<Value> call(Jid jid, String methodName, Value... parameters) {
         AsyncResult<IQ> query = xmppSession.query(IQ.set(jid, Rpc.ofMethodCall(methodName, parameters)));
         return query.thenApply(result -> {

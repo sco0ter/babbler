@@ -38,6 +38,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
@@ -52,7 +53,7 @@ import rocks.xmpp.extensions.rpc.model.Value;
 public class AbstractRpcManagerTest {
 
     @Test
-    public void processRequest() throws RpcException {
+    public void processRequest() throws RpcException, StanzaErrorException {
         AbstractRpcManager rpcManager = Mockito.mock(AbstractRpcManager.class, Mockito.CALLS_REAL_METHODS);
         Assert.assertFalse(rpcManager.isEnabled());
 
@@ -93,7 +94,7 @@ public class AbstractRpcManagerTest {
     }
 
     @Test
-    public void processRequestWithFault() throws RpcException {
+    public void processRequestWithFault() throws RpcException, StanzaErrorException {
         AbstractRpcManager rpcManager = Mockito.mock(AbstractRpcManager.class, Mockito.CALLS_REAL_METHODS);
         Assert.assertFalse(rpcManager.isEnabled());
 

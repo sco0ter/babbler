@@ -30,14 +30,19 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
+import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.TestXmppSession;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.core.stanza.model.StanzaError;
+import rocks.xmpp.core.stanza.model.StanzaErrorException;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.rpc.client.ClientRpcManager;
 import rocks.xmpp.extensions.rpc.model.Value;
 
 /**
- * @author Christian Schudt
+ * Tests for {@link ClientRpcManager}.
  */
 public class RpcManagerTest extends BaseTest {
 
@@ -62,7 +67,6 @@ public class RpcManagerTest extends BaseTest {
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
 
         RpcManager rpcManager = xmppSession1.getManager(RpcManager.class);
-        //rpcManager.executorService = new SameThreadExecutorService();
         rpcManager.setRpcHandler((requester, methodName, parameters) -> {
             if (methodName.equals("square")) {
                 return Value.of(parameters.get(0).getAsInteger() * parameters.get(0).getAsInteger());
@@ -83,8 +87,6 @@ public class RpcManagerTest extends BaseTest {
 
         RpcManager rpcManager = xmppSession1.getManager(RpcManager.class);
 
-        //rpcManager.executorService = new SameThreadExecutorService();
-
         rpcManager.setRpcHandler((requester, methodName, parameters) -> {
             if (methodName.equals("fault")) {
                 throw new RpcException(2, "faulty");
@@ -102,33 +104,31 @@ public class RpcManagerTest extends BaseTest {
         Assert.fail("RpcException expected.");
     }
 
-//    @Test
-//    public void testStanzaException() throws XmppException, RpcException {
-//        MockServer mockServer = new MockServer();
-//
-//        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
-//        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
-//
-//        RpcManager rpcManager = xmppSession1.getManager(RpcManager.class);
-//        rpcManager.setEnabled(true);
-//        rpcManager.setRpcHandler(new RpcHandler() {
-//            @Override
-//            public Value process(Jid requester, String methodName, List<Value> parameters) throws RpcException {
-//                if (methodName.equals("fault")) {
-//                    IQ iq = new IQ(IQ.Type.ERROR);
-//                    iq.setError(new StanzaError(new Forbidden()));
-//                    throw new StanzaException(iq);
-//                }
-//                return null;
-//            }
-//        });
-//
-//        try {
-//            xmppSession2.getManager(RpcManager.class).call(ROMEO, "fault", new Value(2));
-//        } catch (StanzaException e) {
-//            Assert.assertTrue(e.getStanza().getError().getCondition() instanceof Forbidden);
-//            return;
-//        }
-//        Assert.fail("StanzaException expected.");
-//    }
+    @Test
+    public void testStanzaException() {
+        MockServer mockServer = new MockServer();
+
+        XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
+        XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
+
+        RpcManager rpcManager = xmppSession1.getManager(RpcManager.class);
+        rpcManager.setRpcHandler((requester, methodName, parameters) -> {
+            if (methodName.equals("fault")) {
+                IQ iq = new IQ(IQ.Type.ERROR, null);
+                iq.setError(new StanzaError(Condition.FORBIDDEN));
+                throw new StanzaErrorException(iq);
+            }
+            return null;
+        });
+
+        try {
+            xmppSession2.getManager(RpcManager.class).call(ROMEO, "fault", Value.of(2)).getResult();
+        } catch (StanzaErrorException e) {
+            Assert.assertSame(e.getStanza().getError().getCondition(), Condition.FORBIDDEN);
+            return;
+        } catch (XmppException e) {
+            Assert.fail("StanzaErrorException expected.");
+        }
+        Assert.fail("StanzaErrorException expected.");
+    }
 }

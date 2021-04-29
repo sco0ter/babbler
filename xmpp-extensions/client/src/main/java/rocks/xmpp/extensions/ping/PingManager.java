@@ -25,19 +25,22 @@
 package rocks.xmpp.extensions.ping;
 
 import java.time.Duration;
+import java.util.Set;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.IQEvent;
-import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.InboundIQHandler;
+import rocks.xmpp.core.stanza.InboundMessageHandler;
+import rocks.xmpp.core.stanza.InboundPresenceHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -65,7 +68,8 @@ import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
  *
  * @author Christian Schudt
  */
-public final class PingManager extends Manager {
+public final class PingManager extends Manager implements ExtensionProtocol, InboundMessageHandler,
+        InboundPresenceHandler, InboundIQHandler {
 
     private static final ExecutorService EXECUTOR_SERVICE =
             Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Scheduled Ping Thread"));
@@ -82,13 +86,7 @@ public final class PingManager extends Manager {
      */
     private Duration pingInterval = Duration.ofMinutes(15);
 
-    private final IQHandler iqHandler;
-
-    private final Consumer<MessageEvent> inboundMessageListener;
-
-    private final Consumer<PresenceEvent> inboundPresenceListener;
-
-    private final Consumer<IQEvent> inboundIQListener;
+    private final PingHandler iqHandler;
 
     /**
      * Creates the ping manager.
@@ -101,33 +99,18 @@ public final class PingManager extends Manager {
         scheduledExecutorService.setRemoveOnCancelPolicy(true);
 
         this.iqHandler = new PingHandler();
-        inboundMessageListener = e -> rescheduleNextPing();
-        inboundPresenceListener = e -> rescheduleNextPing();
-        inboundIQListener = e -> rescheduleNextPing();
-
     }
 
     @Override
     protected final void onEnable() {
         super.onEnable();
         xmppSession.addIQHandler(iqHandler);
-
-        // Reschedule server pings whenever we receive a stanza from the server.
-        // When we receive a stanza, we are obviously connected.
-        // Pinging should be deferred in this case.
-        xmppSession.addInboundMessageListener(inboundMessageListener);
-        xmppSession.addInboundPresenceListener(inboundPresenceListener);
-        xmppSession.addInboundIQListener(inboundIQListener);
         rescheduleNextPing();
     }
 
     @Override
     protected final void onDisable() {
         super.onDisable();
-        xmppSession.removeIQHandler(iqHandler);
-        xmppSession.removeInboundMessageListener(inboundMessageListener);
-        xmppSession.removeInboundPresenceListener(inboundPresenceListener);
-        xmppSession.removeInboundIQListener(inboundIQListener);
         cancelNextPing();
     }
 
@@ -242,5 +225,33 @@ public final class PingManager extends Manager {
             cancelNextPing();
             scheduledExecutorService.shutdownNow();
         }
+    }
+
+    @Override
+    public final String getNamespace() {
+        return iqHandler.getNamespace();
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return iqHandler.getFeatures();
+    }
+
+    @Override
+    public final void handleInboundIQ(IQEvent e) {
+        // Reschedule server pings whenever we receive a stanza from the server.
+        // When we receive a stanza, we are obviously connected.
+        // Pinging should be deferred in this case.
+        rescheduleNextPing();
+    }
+
+    @Override
+    public final void handleInboundMessage(MessageEvent e) {
+        rescheduleNextPing();
+    }
+
+    @Override
+    public final void handleInboundPresence(PresenceEvent e) {
+        rescheduleNextPing();
     }
 }

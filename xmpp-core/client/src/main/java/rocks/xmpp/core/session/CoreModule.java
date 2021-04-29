@@ -53,10 +53,9 @@ public final class CoreModule implements Module {
 
                 // XEP-0030: Service Discovery
                 Extension.of(ClientServiceDiscoveryManager.class, true),
-                Extension.of(ClientServiceDiscoveryManager.class, true),
-
+                
                 // XEP-0059: Result Set Management
-                Extension.of(new ResultSetManagementProtocol(), true),
+                Extension.of(ResultSetManagementProtocol.class, true),
 
                 // XEP-0106: JID Escaping
                 Extension.of(Jid.ESCAPING_FEATURE, true),
@@ -67,7 +66,7 @@ public final class CoreModule implements Module {
                 Extension.of(ClientEntityCapabilities1Protocol.class, true),
 
                 // XEP-0300: Use of Cryptographic Hash Functions in XMPP
-                Extension.of(new CryptographicHashFunctionsProtocol(), true),
+                Extension.of(CryptographicHashFunctionsProtocol.class, true),
 
                 // XEP-0390 Entity Capabilities 2.0
                 Extension.of(ClientEntityCapabilities2Protocol.class, true),

@@ -28,11 +28,14 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
@@ -95,7 +98,9 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  *
  * @author Christian Schudt
  */
-public final class LastActivityManager extends Manager {
+public final class LastActivityManager extends Manager implements ExtensionProtocol {
+
+    private static final Set<String> FEATURES = Collections.singleton(LastActivity.NAMESPACE);
 
     private final Consumer<PresenceEvent> outboundPresenceListener;
 
@@ -229,5 +234,15 @@ public final class LastActivityManager extends Manager {
      */
     public AsyncResult<LastActivity> getLastActivity(Jid jid) {
         return xmppSession.query(IQ.get(jid, new LastActivity()), LastActivity.class);
+    }
+
+    @Override
+    public final String getNamespace() {
+        return LastActivity.NAMESPACE;
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return FEATURES;
     }
 }

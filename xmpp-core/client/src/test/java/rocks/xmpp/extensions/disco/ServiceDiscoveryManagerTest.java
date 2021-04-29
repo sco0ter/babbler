@@ -36,12 +36,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.mockito.Mock;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.client.ClientServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
@@ -127,24 +129,17 @@ public class ServiceDiscoveryManagerTest extends BaseTest {
         Assert.assertTrue(result.getIdentities().size() > 0);
     }
 
-    @Test(enabled = false)
-    public void testServiceDiscoveryEntry() {
-        TestXmppSession connection1 = new TestXmppSession();
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
+    @Test
+    public void testServiceDiscoveryEntry() throws ExecutionException, InterruptedException {
+        XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(serviceDiscoveryManager.isEnabled());
         String featureInfo = "http://jabber.org/protocol/disco#info";
         String featureItems = "http://jabber.org/protocol/disco#items";
-        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(featureInfo));
-        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(featureItems));
-        //serviceDiscoveryManager.setEnabled(false);
-        Assert.assertFalse(serviceDiscoveryManager.isEnabled());
-        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(featureInfo));
-        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(featureItems));
-
-        // Enable it by adding the features.
-        //serviceDiscoveryManager.addFeature(featureInfo);
-        //serviceDiscoveryManager.addFeature(featureItems);
+        DiscoverableInfo discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
+        Assert.assertTrue(discoverableInfo.getFeatures().contains(featureInfo));
+        Assert.assertTrue(discoverableInfo.getFeatures().contains(featureItems));
         Assert.assertTrue(serviceDiscoveryManager.isEnabled());
     }
 

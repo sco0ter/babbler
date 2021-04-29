@@ -32,7 +32,10 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
+import rocks.xmpp.extensions.time.model.EntityTime;
 
 /**
  * @author Christian Schudt
@@ -49,7 +52,7 @@ public class EntityTimeManagerTest extends BaseTest {
         Assert.assertNotNull(entityTime);
     }
 
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void testEntityTimeIfDisabled() throws InterruptedException {
         MockServer mockServer = new MockServer();
         TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
@@ -65,16 +68,17 @@ public class EntityTimeManagerTest extends BaseTest {
     }
 
     @Test
-    public void testServiceDiscoveryEntry() {
-        TestXmppSession connection1 = new TestXmppSession();
-        EntityTimeManager entityTimeManager = connection1.getManager(EntityTimeManager.class);
+    public void testServiceDiscoveryEntry() throws ExecutionException, InterruptedException {
+        XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
+        EntityTimeManager entityTimeManager = xmppSession.getManager(EntityTimeManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(entityTimeManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        String feature = "urn:xmpp:time";
-        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
+        DiscoverableInfo discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
+        Assert.assertTrue(discoverableInfo.getFeatures().contains(EntityTime.NAMESPACE));
         entityTimeManager.setEnabled(false);
         Assert.assertFalse(entityTimeManager.isEnabled());
-        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
+        Assert.assertFalse(discoverableInfo.getFeatures().contains(EntityTime.NAMESPACE));
     }
 }

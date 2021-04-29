@@ -25,11 +25,13 @@
 package rocks.xmpp.extensions.bytestreams.ibb;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.IQHandler;
@@ -55,15 +57,16 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
  */
-public final class InBandByteStreamManager extends ByteStreamManager implements IQHandler, InboundMessageHandler {
+public final class InBandByteStreamManager extends ByteStreamManager implements IQHandler, InboundMessageHandler,
+        ExtensionProtocol {
+
+    private static final Set<String> FEATURES = Collections.singleton(InBandByteStream.NAMESPACE);
 
     private static final System.Logger logger = System.getLogger(InBandByteStreamManager.class.getName());
 
     final Map<String, IbbSession> ibbSessionMap = new ConcurrentHashMap<>();
 
     private final IQHandler iqHandler;
-
-    private final Consumer<MessageEvent> messageHandler = this::handleInboundMessage;
 
     // Guarded by "this"
     private InBandByteStream.Open.StanzaType stanzaType = InBandByteStream.Open.StanzaType.IQ;
@@ -123,20 +126,6 @@ public final class InBandByteStreamManager extends ByteStreamManager implements 
                 return iq.createError(Condition.SERVICE_UNAVAILABLE);
             }
         };
-    }
-
-    @Override
-    protected final void onEnable() {
-        super.onEnable();
-        xmppSession.addIQHandler(this);
-        xmppSession.addInboundMessageListener(messageHandler);
-    }
-
-    @Override
-    protected final void onDisable() {
-        super.onDisable();
-        xmppSession.removeIQHandler(this);
-        xmppSession.removeInboundMessageListener(messageHandler);
     }
 
     /**
@@ -231,5 +220,15 @@ public final class InBandByteStreamManager extends ByteStreamManager implements 
                 xmppSession.send(e.getMessage().createError(Condition.ITEM_NOT_FOUND));
             }
         }
+    }
+
+    @Override
+    public final String getNamespace() {
+        return InBandByteStream.NAMESPACE;
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return FEATURES;
     }
 }

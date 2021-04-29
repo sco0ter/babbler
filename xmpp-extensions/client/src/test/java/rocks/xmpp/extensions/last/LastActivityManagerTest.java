@@ -33,6 +33,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
@@ -109,17 +110,17 @@ public class LastActivityManagerTest extends BaseTest {
     }
 
     @Test
-    public void testServiceDiscoveryEntry() {
-        TestXmppSession xmppSession1 = new TestXmppSession();
-        LastActivityManager lastActivityManager = xmppSession1.getManager(LastActivityManager.class);
+    public void testServiceDiscoveryEntry() throws ExecutionException, InterruptedException {
+        XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
+        LastActivityManager lastActivityManager = xmppSession.getManager(LastActivityManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(lastActivityManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession1.getManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         String feature = "jabber:iq:last";
-        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        Assert.assertTrue(serviceDiscoveryManager.discoverInformation(JULIET).get().getFeatures().contains(feature));
         lastActivityManager.setEnabled(false);
         Assert.assertFalse(lastActivityManager.isEnabled());
-        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        Assert.assertFalse(serviceDiscoveryManager.discoverInformation(JULIET).get().getFeatures().contains(feature));
     }
 
     @Test

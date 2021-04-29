@@ -42,24 +42,29 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamEvent;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 
 /**
- * @author Christian Schudt
+ * Test for {@link InBandByteStreamManager},
  */
 public class IbbTest extends BaseTest {
 
     @Test
-    public void testServiceDiscoveryEntry() {
-        TestXmppSession connection1 = new TestXmppSession();
-        InBandByteStreamManager inBandBytestreamManager = connection1.getManager(InBandByteStreamManager.class);
+    public void testServiceDiscoveryEntry() throws InterruptedException, ExecutionException {
+        XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
+        InBandByteStreamManager inBandBytestreamManager = xmppSession.getManager(InBandByteStreamManager.class);
         // By default, the manager should be enabled.
         Assert.assertTrue(inBandBytestreamManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        String feature = "http://jabber.org/protocol/ibb";
-        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
+
+        DiscoverableInfo discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
+
+        Assert.assertTrue(discoverableInfo.getFeatures().contains(InBandByteStream.NAMESPACE));
+
         inBandBytestreamManager.setEnabled(false);
         Assert.assertFalse(inBandBytestreamManager.isEnabled());
-        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
+        Assert.assertFalse(discoverableInfo.getFeatures().contains(InBandByteStream.NAMESPACE));
     }
 
     @Test

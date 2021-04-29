@@ -25,8 +25,11 @@
 package rocks.xmpp.extensions.forward;
 
 import java.time.Instant;
+import java.util.Collections;
+import java.util.Set;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Message;
@@ -53,7 +56,9 @@ import rocks.xmpp.extensions.forward.model.Forwarded;
  *
  * @author Christian Schudt
  */
-public final class StanzaForwardingManager extends Manager {
+public final class StanzaForwardingManager extends Manager implements ExtensionProtocol {
+
+    private static final Set<String> FEATURES = Collections.singleton(Forwarded.NAMESPACE);
 
     /**
      * Creates the stanza forwarding manager.
@@ -74,5 +79,15 @@ public final class StanzaForwardingManager extends Manager {
         Message outerMessage = new Message(to, message.getType());
         outerMessage.putExtension(new Forwarded(message, new DelayedDelivery(Instant.now())));
         xmppSession.send(outerMessage);
+    }
+
+    @Override
+    public final String getNamespace() {
+        return Forwarded.NAMESPACE;
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return FEATURES;
     }
 }

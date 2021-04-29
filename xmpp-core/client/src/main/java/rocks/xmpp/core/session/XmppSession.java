@@ -79,13 +79,7 @@ import rocks.xmpp.core.session.debug.XmppDebugger;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.IQEvent;
 import rocks.xmpp.core.stanza.IQHandler;
-import rocks.xmpp.core.stanza.InboundIQHandler;
-import rocks.xmpp.core.stanza.InboundMessageHandler;
-import rocks.xmpp.core.stanza.InboundPresenceHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
-import rocks.xmpp.core.stanza.OutboundIQHandler;
-import rocks.xmpp.core.stanza.OutboundMessageHandler;
-import rocks.xmpp.core.stanza.OutboundPresenceHandler;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.ExtensibleStanza;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -159,6 +153,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
     protected final ClientServiceDiscoveryManager serviceDiscoveryManager;
 
     protected final StreamFeaturesManager streamFeaturesManager;
+
+    private final ExtensionProtocolRegistry extensionProtocolRegistry;
 
     final Set<Consumer<ConnectionEvent>> connectionListeners = new CopyOnWriteArraySet<>();
 
@@ -259,6 +255,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                 configuration.getExecutor() != null ? configuration.getExecutor() : STANZA_LISTENER_EXECUTOR);
         this.serviceDiscoveryManager = getManager(ClientServiceDiscoveryManager.class);
         this.streamFeaturesManager = getManager(StreamFeaturesManager.class);
+        this.extensionProtocolRegistry = getManager(ExtensionProtocolRegistry.class);
+        serviceDiscoveryManager.addInfo(extensionProtocolRegistry);
         getManager(ClientEntityCapabilitiesManager.class);
         // Add a shutdown hook, which will gracefully close the connection, when the JVM is halted.
         if (configuration.isCloseOnShutdown()) {
@@ -299,34 +297,13 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
         configuration.getExtensions().forEach(extension -> {
             if (extension.getManager() != null) {
                 Object manager = getManager(extension.getManager());
+                if (manager instanceof Manager) {
+                    ((Manager) manager).setEnabled(extension.isEnabled());
+                }
                 if (manager instanceof ExtensionProtocol) {
-                    if (manager instanceof Manager) {
-                        ((Manager) manager).setEnabled(extension.isEnabled());
-                    }
-                    if (manager instanceof IQHandler) {
-                        addIQHandler((IQHandler) manager);
-                    }
-                    if (manager instanceof InboundMessageHandler) {
-                        addInboundMessageListener(((InboundMessageHandler) manager)::handleInboundMessage);
-                    }
-                    if (manager instanceof OutboundMessageHandler) {
-                        addOutboundMessageListener(((OutboundMessageHandler) manager)::handleOutboundMessage);
-                    }
-                    if (manager instanceof InboundPresenceHandler) {
-                        addInboundPresenceListener(((InboundPresenceHandler) manager)::handleInboundPresence);
-                    }
-                    if (manager instanceof OutboundPresenceHandler) {
-                        addOutboundPresenceListener(((OutboundPresenceHandler) manager)::handleOutboundPresence);
-                    }
-                    if (manager instanceof InboundIQHandler) {
-                        addInboundIQListener(((InboundIQHandler) manager)::handleInboundIQ);
-                    }
-                    if (manager instanceof OutboundIQHandler) {
-                        addOutboundIQListener(((OutboundIQHandler) manager)::handleOutboundIQ);
-                    }
-                    serviceDiscoveryManager.registerFeature((ExtensionProtocol) manager);
+                    extensionProtocolRegistry.registerExtension((ExtensionProtocol) manager);
                 } else {
-                    serviceDiscoveryManager.registerFeature(extension);
+                    extensionProtocolRegistry.registerExtension(extension);
                 }
                 if (manager instanceof InfoProvider) {
                     serviceDiscoveryManager.addInfoProvider((InfoProvider) manager);
@@ -335,9 +312,8 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
                     writerInterceptors.add((WriterInterceptor) manager);
                 }
             } else {
-                serviceDiscoveryManager.registerFeature(extension);
+                extensionProtocolRegistry.registerExtension(extension);
             }
-
         });
     }
 
@@ -1557,6 +1533,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      * @param name The associated manager class.
      */
     public final void enableFeature(String name) {
+        extensionProtocolRegistry.enableExtension(name);
         serviceDiscoveryManager.addFeature(name);
     }
 
@@ -1566,7 +1543,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      * @param managerClass The associated manager class.
      */
     public final void enableFeature(Class<?> managerClass) {
-        serviceDiscoveryManager.addFeature(managerClass);
+        extensionProtocolRegistry.enableExtension(managerClass);
     }
 
     /**
@@ -1575,6 +1552,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      * @param name The associated manager class.
      */
     public final void disableFeature(String name) {
+        extensionProtocolRegistry.disableExtension(name);
         serviceDiscoveryManager.removeFeature(name);
     }
 
@@ -1584,7 +1562,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      * @param managerClass The associated manager class.
      */
     public final void disableFeature(Class<? extends Manager> managerClass) {
-        serviceDiscoveryManager.removeFeature(managerClass);
+        extensionProtocolRegistry.disableExtension(managerClass);
     }
 
     /**
@@ -1593,7 +1571,7 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
      * @return The enabled features.
      */
     public final Set<String> getEnabledFeatures() {
-        return serviceDiscoveryManager.getDefaultInfo().getFeatures();
+        return extensionProtocolRegistry.getFeatures();
     }
 
     /**

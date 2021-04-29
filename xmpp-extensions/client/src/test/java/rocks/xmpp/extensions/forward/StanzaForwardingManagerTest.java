@@ -24,28 +24,32 @@
 
 package rocks.xmpp.extensions.forward;
 
+import java.util.concurrent.ExecutionException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
+import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.forward.model.Forwarded;
 
 /**
- * @author Christian Schudt
+ * Tests for {@link StanzaForwardingManager}.
  */
 public class StanzaForwardingManagerTest extends BaseTest {
 
     @Test
-    public void testServiceDiscoveryEntry() {
-        TestXmppSession connection1 = new TestXmppSession();
-        StanzaForwardingManager stanzaForwardingManager = connection1.getManager(StanzaForwardingManager.class);
+    public void testServiceDiscoveryEntry() throws ExecutionException, InterruptedException {
+        XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
+        StanzaForwardingManager stanzaForwardingManager = xmppSession.getManager(StanzaForwardingManager.class);
         // By default, the manager should be NOT enabled.
         Assert.assertFalse(stanzaForwardingManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        String feature = "urn:xmpp:forward:0";
-        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
+        Assert.assertFalse(serviceDiscoveryManager.discoverInformation(JULIET).get().getFeatures().contains(Forwarded.NAMESPACE));
         stanzaForwardingManager.setEnabled(true);
         Assert.assertTrue(stanzaForwardingManager.isEnabled());
-        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        Assert.assertTrue(serviceDiscoveryManager.discoverInformation(JULIET).get().getFeatures().contains(Forwarded.NAMESPACE));
     }
 }

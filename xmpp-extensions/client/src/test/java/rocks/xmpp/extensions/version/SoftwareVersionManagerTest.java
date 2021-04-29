@@ -31,6 +31,7 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.version.model.SoftwareVersion;
 
@@ -69,18 +70,18 @@ public class SoftwareVersionManagerTest extends BaseTest {
     }
 
     @Test
-    public void testServiceDiscoveryEntry() {
-        TestXmppSession connection1 = new TestXmppSession();
-        SoftwareVersionManager softwareVersionManager = connection1.getManager(SoftwareVersionManager.class);
+    public void testServiceDiscoveryEntry() throws ExecutionException, InterruptedException {
+        XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
+        SoftwareVersionManager softwareVersionManager = xmppSession.getManager(SoftwareVersionManager.class);
         softwareVersionManager.setSoftwareVersion(new SoftwareVersion());
         // By default, the manager should be enabled.
         Assert.assertTrue(softwareVersionManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        String feature = "jabber:iq:version";
-        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
+
+        Assert.assertTrue(serviceDiscoveryManager.discoverInformation(JULIET).get().getFeatures().contains(SoftwareVersion.NAMESPACE));
         softwareVersionManager.setSoftwareVersion(null);
         Assert.assertFalse(softwareVersionManager.isEnabled());
-        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        Assert.assertFalse(serviceDiscoveryManager.discoverInformation(JULIET).get().getFeatures().contains(SoftwareVersion.NAMESPACE));
     }
 
 }

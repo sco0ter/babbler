@@ -24,12 +24,14 @@
 
 package rocks.xmpp.extensions.receipts;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.InboundMessageHandler;
@@ -60,7 +62,9 @@ import rocks.xmpp.util.XmppUtils;
  * }</pre>
  */
 public final class MessageDeliveryReceiptsManager extends Manager
-        implements InboundMessageHandler, OutboundMessageHandler {
+        implements ExtensionProtocol, InboundMessageHandler, OutboundMessageHandler {
+
+    private static final Set<String> FEATURES = Collections.singleton(MessageDeliveryReceipts.NAMESPACE);
 
     /**
      * A default filter for automatic receipt request on outbound messages.
@@ -81,10 +85,6 @@ public final class MessageDeliveryReceiptsManager extends Manager
 
     final Set<Consumer<MessageDeliveredEvent>> messageDeliveredListeners = new CopyOnWriteArraySet<>();
 
-    private final Consumer<MessageEvent> inboundMessageListener;
-
-    private final Consumer<MessageEvent> outboundMessageListener;
-
     private Predicate<Message> messageFilter;
 
     /**
@@ -94,23 +94,6 @@ public final class MessageDeliveryReceiptsManager extends Manager
      */
     private MessageDeliveryReceiptsManager(final XmppSession xmppSession) {
         super(xmppSession, true);
-
-        this.inboundMessageListener = this::handleInboundMessage;
-        this.outboundMessageListener = this::handleOutboundMessage;
-    }
-
-    @Override
-    protected void onEnable() {
-        super.onEnable();
-        xmppSession.addInboundMessageListener(inboundMessageListener);
-        xmppSession.addOutboundMessageListener(outboundMessageListener);
-    }
-
-    @Override
-    protected void onDisable() {
-        super.onDisable();
-        xmppSession.removeInboundMessageListener(inboundMessageListener);
-        xmppSession.removeOutboundMessageListener(outboundMessageListener);
     }
 
     /**
@@ -190,5 +173,15 @@ public final class MessageDeliveryReceiptsManager extends Manager
             return;
         }
         message.putExtension(MessageDeliveryReceipts.REQUEST);
+    }
+
+    @Override
+    public final String getNamespace() {
+        return MessageDeliveryReceipts.NAMESPACE;
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return FEATURES;
     }
 }

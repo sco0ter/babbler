@@ -47,16 +47,16 @@ import rocks.xmpp.extensions.rpc.model.Value;
 public class RpcManagerTest extends BaseTest {
 
     @Test
-    public void testServiceDiscoveryEntry() {
-        TestXmppSession connection1 = new TestXmppSession();
-        ClientRpcManager rpcManager = connection1.getManager(ClientRpcManager.class);
+    public void testServiceDiscoveryEntry() throws ExecutionException, InterruptedException {
+        XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
+        ClientRpcManager rpcManager = xmppSession.getManager(ClientRpcManager.class);
         Assert.assertFalse(rpcManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         String feature = "jabber:iq:rpc";
-        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        Assert.assertFalse(serviceDiscoveryManager.discoverInformation(JULIET).get().getFeatures().contains(feature));
         rpcManager.setRpcHandler((requester, methodName, parameters) -> null);
         Assert.assertTrue(rpcManager.isEnabled());
-        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        Assert.assertTrue(serviceDiscoveryManager.discoverInformation(JULIET).get().getFeatures().contains(feature));
     }
 
     @Test

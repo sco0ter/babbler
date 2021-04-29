@@ -32,73 +32,59 @@ import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
 import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
+import rocks.xmpp.extensions.shim.model.Headers;
 
 /**
- * @author Christian Schudt
+ * Tests for {@link HeaderManager}.
  */
 public class HeadersManagerTest extends BaseTest {
 
     @Test
-    public void testServiceDiscoveryIfHeadersAreDisabled() throws InterruptedException {
-        MockServer mockServer = new MockServer();
-        new TestXmppSession(JULIET, mockServer);
-        TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);
+    public void testServiceDiscoveryIfHeadersAreDisabled() throws InterruptedException, ExecutionException {
+        XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
 
-        ServiceDiscoveryManager serviceDiscoveryManager = connection2.getManager(ServiceDiscoveryManager.class);
-        DiscoverableInfo discoverableInfo = null;
-        try {
-            discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
-        } catch (ExecutionException e) {
-            Assert.fail();
-        }
-        Assert.assertFalse(discoverableInfo.getFeatures().contains("http://jabber.org/protocol/shim"));
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
+        DiscoverableInfo discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
+        Assert.assertFalse(discoverableInfo.getFeatures().contains(Headers.NAMESPACE));
+
+        Assert.assertFalse(discoverableInfo.getFeatures().contains(Headers.NAMESPACE));
     }
 
     @Test
-    public void testServiceDiscoveryIfHeadersAreEnabled() throws InterruptedException {
-        MockServer mockServer = new MockServer();
-        TestXmppSession connection1 = new TestXmppSession(JULIET, mockServer);
-        TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);
+    public void testServiceDiscoveryIfHeadersAreEnabled() throws InterruptedException, ExecutionException {
+        XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
 
         // JULIET supports the following headers:
-        HeaderManager headerManager = connection1.getManager(HeaderManager.class);
+        HeaderManager headerManager = xmppSession.getManager(HeaderManager.class);
         headerManager.getSupportedHeaders().add("In-Reply-To");
         headerManager.getSupportedHeaders().add("Keywords");
 
-        ServiceDiscoveryManager serviceDiscoveryManager = connection2.getManager(ServiceDiscoveryManager.class);
-        DiscoverableInfo discoverableInfo = null;
-        try {
-            discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
-        } catch (ExecutionException e) {
-            Assert.fail();
-        }
-        Assert.assertTrue(discoverableInfo.getFeatures().contains("http://jabber.org/protocol/shim"));
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
 
-        try {
-            DiscoverableInfo discoverableInfo1 =
-                    serviceDiscoveryManager.discoverInformation(JULIET, "http://jabber.org/protocol/shim").get();
-            Assert.assertTrue(discoverableInfo1.getFeatures().contains("http://jabber.org/protocol/shim#In-Reply-To"));
-            Assert.assertTrue(discoverableInfo1.getFeatures().contains("http://jabber.org/protocol/shim#Keywords"));
-        } catch (ExecutionException e) {
-            Assert.fail();
-        }
+        DiscoverableInfo discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
+
+        Assert.assertTrue(discoverableInfo.getFeatures().contains(Headers.NAMESPACE));
+
+        discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET, "http://jabber.org/protocol/shim").get();
+        Assert.assertTrue(discoverableInfo.getFeatures().contains("http://jabber.org/protocol/shim#In-Reply-To"));
+        Assert.assertTrue(discoverableInfo.getFeatures().contains("http://jabber.org/protocol/shim#Keywords"));
+
     }
 
     @Test
     public void testDiscoverSupportedHeaders() throws ExecutionException, InterruptedException {
-        MockServer mockServer = new MockServer();
-        TestXmppSession connection1 = new TestXmppSession(JULIET, mockServer);
-        TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);
+        XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
 
         // JULIET supports the following headers:
-        HeaderManager headerManager = connection1.getManager(HeaderManager.class);
+        HeaderManager headerManager = xmppSession.getManager(HeaderManager.class);
         headerManager.getSupportedHeaders().add("In-Reply-To");
         headerManager.getSupportedHeaders().add("Keywords");
 
-        HeaderManager headerManager2 = connection2.getManager(HeaderManager.class);
+        HeaderManager headerManager2 = xmppSession.getManager(HeaderManager.class);
         List<String> headers = headerManager2.discoverSupportedHeaders(JULIET).get();
 
         Assert.assertEquals(headers.size(), 2);
@@ -108,11 +94,9 @@ public class HeadersManagerTest extends BaseTest {
 
     @Test
     public void testDiscoverSupportedHeadersIfProtocolIsNotEnabled() throws InterruptedException {
-        MockServer mockServer = new MockServer();
-        new TestXmppSession(JULIET, mockServer);
-        TestXmppSession connection2 = new TestXmppSession(ROMEO, mockServer);
+        XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
 
-        HeaderManager headerManager2 = connection2.getManager(HeaderManager.class);
+        HeaderManager headerManager2 = xmppSession.getManager(HeaderManager.class);
         try {
             headerManager2.discoverSupportedHeaders(JULIET).get();
         } catch (ExecutionException e) {

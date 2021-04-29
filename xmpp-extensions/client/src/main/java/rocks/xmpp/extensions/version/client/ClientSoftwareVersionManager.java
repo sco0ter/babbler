@@ -90,4 +90,14 @@ public final class ClientSoftwareVersionManager extends SoftwareVersionProtocol 
     public void setSoftwareVersion(SoftwareVersion softwareVersion) {
         setSoftwareInfo(softwareVersion);
     }
+
+    @Override
+    public synchronized void setSoftwareInfo(SoftwareVersion softwareVersion) {
+        super.setSoftwareInfo(softwareVersion);
+        if (softwareVersion != null) {
+            xmppSession.enableFeature(getNamespace());
+        } else {
+            xmppSession.disableFeature(getNamespace());
+        }
+    }
 }

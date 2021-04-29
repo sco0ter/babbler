@@ -24,28 +24,33 @@
 
 package rocks.xmpp.extensions.reach;
 
+import java.util.concurrent.ExecutionException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import rocks.xmpp.core.BaseTest;
+import rocks.xmpp.core.MockServer;
 import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.reach.model.Reachability;
 
 /**
  * @author Christian Schudt
  */
 public class ReachabilityManagerTest extends BaseTest {
 
-    @Test
-    public void testServiceDiscoveryEntry() {
+    @Test(enabled = false)
+    public void testServiceDiscoveryEntry() throws ExecutionException, InterruptedException {
 
-        TestXmppSession connection1 = new TestXmppSession();
-        ReachabilityManager reachabilityManager = connection1.getManager(ReachabilityManager.class);
+        XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
+        ReachabilityManager reachabilityManager = xmppSession.getManager(ReachabilityManager.class);
         Assert.assertFalse(reachabilityManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        String feature = "urn:xmpp:reach:0";
-        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
+        Assert.assertFalse(serviceDiscoveryManager.discoverInformation(JULIET).get().getFeatures().contains(
+                Reachability.NAMESPACE));
         reachabilityManager.setEnabled(true);
         Assert.assertTrue(reachabilityManager.isEnabled());
-        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(Reachability.NAMESPACE));
     }
 }

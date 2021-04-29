@@ -33,15 +33,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
+import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamManager;
@@ -69,11 +72,15 @@ import rocks.xmpp.util.concurrent.CompletionStages;
  *
  * @author Christian Schudt
  */
-public final class Socks5ByteStreamManager extends ByteStreamManager {
+public final class Socks5ByteStreamManager extends ByteStreamManager implements IQHandler, ExtensionProtocol {
+
+    private static final Set<String> FEATURES = Collections.singleton(Socks5ByteStream.NAMESPACE);
 
     private final ServiceDiscoveryManager serviceDiscoveryManager;
 
     private final LocalSocks5Server localSocks5Server;
+
+    private final IQHandler iqHandler;
 
     /**
      * Guarded by "this".
@@ -88,7 +95,23 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
     private Socks5ByteStreamManager(final XmppSession xmppSession) {
         super(xmppSession);
         this.serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
+        this.iqHandler = new AbstractIQHandler(Socks5ByteStream.class, IQ.Type.SET) {
+            @Override
+            protected IQ processRequest(IQ iq) {
+                Socks5ByteStream socks5ByteStream = iq.getExtension(Socks5ByteStream.class);
 
+                if (socks5ByteStream.getSessionId() == null) {
+                    // If the request is malformed (e.g., the <query/> element does not include the 'sid' attribute),
+                    // the Target MUST return an error of <bad-request/>.
+                    return iq.createError(Condition.BAD_REQUEST);
+                } else {
+                    XmppUtils.notifyEventListeners(byteStreamListeners,
+                            new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq,
+                                    new ArrayList<>(socks5ByteStream.getStreamHosts())));
+                    return null;
+                }
+            }
+        };
         this.localSocks5Server = new LocalSocks5Server();
     }
 
@@ -122,28 +145,6 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
             throw new IOException("Unable to connect to any stream host.", ioException);
         }
         return new S5bSession(sessionId, socketUsed, streamHostUsed, timeout);
-    }
-
-    @Override
-    protected void initialize() {
-        super.initialize();
-        xmppSession.addIQHandler(new AbstractIQHandler(Socks5ByteStream.class, IQ.Type.SET) {
-            @Override
-            protected IQ processRequest(IQ iq) {
-                Socks5ByteStream socks5ByteStream = iq.getExtension(Socks5ByteStream.class);
-
-                if (socks5ByteStream.getSessionId() == null) {
-                    // If the request is malformed (e.g., the <query/> element does not include the 'sid' attribute),
-                    // the Target MUST return an error of <bad-request/>.
-                    return iq.createError(Condition.BAD_REQUEST);
-                } else {
-                    XmppUtils.notifyEventListeners(byteStreamListeners,
-                            new S5bEvent(Socks5ByteStreamManager.this, socks5ByteStream.getSessionId(), xmppSession, iq,
-                                    new ArrayList<>(socks5ByteStream.getStreamHosts())));
-                    return null;
-                }
-            }
-        });
     }
 
     /**
@@ -403,5 +404,25 @@ public final class Socks5ByteStreamManager extends ByteStreamManager {
     protected void dispose() {
         super.dispose();
         localSocks5Server.stop();
+    }
+
+    @Override
+    public final String getNamespace() {
+        return Socks5ByteStream.NAMESPACE;
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return FEATURES;
+    }
+
+    @Override
+    public final Class<?> getPayloadClass() {
+        return iqHandler.getPayloadClass();
+    }
+
+    @Override
+    public final IQ handleRequest(IQ iq) {
+        return iqHandler.handleRequest(iq);
     }
 }

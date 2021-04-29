@@ -181,15 +181,7 @@ public final class Extension implements ExtensionProtocol {
                                boolean enabled, Class<?>... classes) {
         return new Extension(namespace, manager, features, enabled, classes);
     }
-
-    public static Extension of(ExtensionProtocol extensionProtocol, boolean enabled) {
-        return new Extension(extensionProtocol.getNamespace(), null, extensionProtocol.getFeatures(), enabled);
-    }
-
-    public static Extension of(ExtensionProtocol extensionProtocol, Class<? extends Manager> manager, boolean enabled) {
-        return new Extension(extensionProtocol.getNamespace(), manager, extensionProtocol.getFeatures(), enabled);
-    }
-
+    
     /**
      * Gets the protocol namespace.
      *

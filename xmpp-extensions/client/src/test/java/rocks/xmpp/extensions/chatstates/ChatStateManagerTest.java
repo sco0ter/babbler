@@ -26,6 +26,7 @@ package rocks.xmpp.extensions.chatstates;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.concurrent.ExecutionException;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -37,6 +38,7 @@ import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.client.ClientMessage;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.im.chat.ChatManager;
 
@@ -78,17 +80,18 @@ public class ChatStateManagerTest extends BaseTest {
     }
 
     @Test
-    public void testServiceDiscoveryEntry() {
+    public void testServiceDiscoveryEntry() throws ExecutionException, InterruptedException {
 
-        XmppSession xmppSession1 = new TestXmppSession();
+        XmppSession xmppSession1 = new TestXmppSession(JULIET, new MockServer());
         ChatStateManager chatStateManager = xmppSession1.getManager(ChatStateManager.class);
         // By default, Chat States are disabled.
         Assert.assertFalse(chatStateManager.isEnabled());
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession1.getManager(ServiceDiscoveryManager.class);
-        String feature = "http://jabber.org/protocol/chatstates";
-        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        DiscoverableInfo discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
+        Assert.assertFalse(discoverableInfo.getFeatures().contains(ChatState.NAMESPACE));
         chatStateManager.setEnabled(true);
         Assert.assertTrue(chatStateManager.isEnabled());
-        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
+        Assert.assertTrue(discoverableInfo.getFeatures().contains(ChatState.NAMESPACE));
     }
 }

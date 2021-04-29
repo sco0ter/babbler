@@ -24,24 +24,18 @@
 
 package rocks.xmpp.extensions.disco.client;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EventObject;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.ExtensionProtocol;
-import rocks.xmpp.core.session.Extension;
-import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.data.model.DataForm;
@@ -78,21 +72,21 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
 
     private final Set<Consumer<EventObject>> capabilitiesChangeListeners = new CopyOnWriteArraySet<>();
 
-    private final Map<String, Extension> featureToExtension = new HashMap<>();
-
-    private final Map<Class<?>, Set<Extension>> managersToExtensions = new HashMap<>();
-
-    private final Set<ExtensionProtocol> extensions = new HashSet<>();
-
     private final ClientInfo clientInfo = new ClientInfo();
+
+    private final List<DiscoverableInfo> discoverableInfos = new ArrayList<>();
+
+    private final DiscoverableInfo rootNode;
 
     private final XmppSession xmppSession;
 
     private ClientServiceDiscoveryManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;
+        this.discoverableInfos.add(clientInfo);
+        this.rootNode = new CombinedRootNode();
         addInfoProvider((to, from, node, locale) -> {
             if (node == null) {
-                return clientInfo;
+                return rootNode;
             }
             return null;
         });
@@ -182,24 +176,10 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
     @Override
     public final void addFeature(String feature) {
         if (clientInfo.features.add(feature)) {
-            Extension extension = featureToExtension.get(feature);
-            setEnabled(extension != null ? Collections.singleton(extension) : null, feature, true);
             if (xmppSession.isConnected()) {
                 XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
             }
         }
-    }
-
-    /**
-     * Adds a feature by its manager class.
-     *
-     * @param managerClass The manager class.
-     * @see #addFeature(String)
-     * @see #getFeatures()
-     */
-    public final void addFeature(Class<?> managerClass) {
-        // This will eventually call addFeature(String)
-        setEnabled(managersToExtensions.get(managerClass), null, true);
     }
 
     /**
@@ -212,29 +192,15 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
     @Override
     public final void removeFeature(String feature) {
         if (clientInfo.features.remove(feature)) {
-            Extension extension = featureToExtension.get(feature);
-            setEnabled(extension != null ? Collections.singleton(extension) : null, feature, false);
             if (xmppSession.isConnected()) {
                 XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
             }
         }
     }
 
-    /**
-     * Removes a feature by its manager class.
-     *
-     * @param managerClass The feature.
-     * @see #addFeature(String)
-     * @see #getFeatures()
-     */
-    public final void removeFeature(Class<?> managerClass) {
-        // This will eventually call addFeature(String)
-        setEnabled(managersToExtensions.get(managerClass), null, false);
-    }
-
     @Override
     public final DiscoverableInfo getDefaultInfo() {
-        return clientInfo;
+        return rootNode;
     }
 
     /**
@@ -246,7 +212,8 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
      * @see <a href="https://xmpp.org/extensions/xep-0128.html">XEP-0128: Service Discovery Extensions</a>
      */
     public final void addExtension(DataForm extension) {
-        if (clientInfo.getExtensions().add(extension) && xmppSession.isConnected()) {
+        clientInfo.getExtensions().add(extension);
+        if (xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
     }
@@ -263,6 +230,15 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
         if (clientInfo.getExtensions().remove(extension) && xmppSession.isConnected()) {
             XmppUtils.notifyEventListeners(capabilitiesChangeListeners, new EventObject(this));
         }
+    }
+
+    /**
+     * Adds discoverable information to the root node.
+     *
+     * @param discoverableInfo The info.
+     */
+    public final void addInfo(DiscoverableInfo discoverableInfo) {
+        discoverableInfos.add(discoverableInfo);
     }
 
     /**
@@ -295,78 +271,28 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
         return xmppSession.query(IQ.get(jid, new ItemDiscovery(node, resultSetManagement)), ItemNode.class);
     }
 
-    private void setEnabled(Iterable<Extension> extensions, String feature, boolean enabled) {
-        if (extensions != null) {
-            for (Extension extension : extensions) {
-                // Check if the extension has an associated manager class, which we need to enable/disable.
-                Class<?> managerClass = extension.getManager();
-                if (managerClass != null) {
-                    Object manager = xmppSession.getManager(managerClass);
-                    // A manager can manage multiple features
-                    // (e.g. ServiceDiscoveryManager manages disco#items and disco#info feature)
-                    // If we disable one feature, but not the other one, the manager should still be enabled.
-                    boolean mayDisable = true;
-                    if (feature != null && !enabled) {
-                        Set<Extension> ex = managersToExtensions.get(managerClass);
-                        for (Extension e : ex) {
-                            if (clientInfo.getFeatures().contains(e.getNamespace())) {
-                                mayDisable = false;
-                                break;
-                            }
-                        }
-                    }
-                    if (manager instanceof Manager && mayDisable && enabled != ((Manager) manager).isEnabled()) {
-                        ((Manager) manager).setEnabled(enabled);
-                    }
-                }
+    private final class CombinedRootNode implements DiscoverableInfo {
 
-                // Enable the feature (by adding it to the Service Discovery list)
-                enableFeature(extension.getNamespace(), enabled);
+        @Override
+        public final Set<Identity> getIdentities() {
+            return discoverableInfos.stream().flatMap(discoverableInfo -> discoverableInfo.getIdentities().stream())
+                    .collect(Collectors.toSet());
+        }
 
-                // Do the same for each sub-feature.
-                for (String subFeature : extension.getFeatures()) {
-                    enableFeature(subFeature, enabled);
-                }
-            }
-        } else {
-            enableFeature(feature, enabled);
+        @Override
+        public final Set<String> getFeatures() {
+            return discoverableInfos.stream().flatMap(discoverableInfo -> discoverableInfo.getFeatures().stream())
+                    .collect(Collectors.toSet());
+        }
+
+        @Override
+        public final List<DataForm> getExtensions() {
+            return discoverableInfos.stream().flatMap(discoverableInfo -> discoverableInfo.getExtensions().stream())
+                    .collect(Collectors.toList());
         }
     }
 
-    private void enableFeature(String feature, boolean enabled) {
-        if (feature != null) {
-            if (enabled) {
-                addFeature(feature);
-            } else {
-                removeFeature(feature);
-            }
-        }
-    }
-
-    /**
-     * Registers a feature / extension.
-     *
-     * @param extension The extension.
-     */
-    public final void registerFeature(Extension extension) {
-        if (extension.getNamespace() != null) {
-            featureToExtension.put(extension.getNamespace(), extension);
-        }
-        if (extension.getManager() != null) {
-            Set<Extension> extensions =
-                    managersToExtensions.computeIfAbsent(extension.getManager(), key -> new HashSet<>());
-            extensions.add(extension);
-        }
-        if (extension.isEnabled()) {
-            setEnabled(Collections.singleton(extension), null, true);
-        }
-    }
-
-    public final void registerFeature(ExtensionProtocol extension) {
-        extensions.add(extension);
-    }
-
-    private final class ClientInfo implements DiscoverableInfo {
+    private static final class ClientInfo implements DiscoverableInfo {
 
         private final Set<Identity> identities = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
@@ -385,17 +311,7 @@ public final class ClientServiceDiscoveryManager extends AbstractServiceDiscover
 
         @Override
         public Set<String> getFeatures() {
-            // Concat manually added features, with enabled known extensions
-            return Stream.concat(features.stream(),
-                    ClientServiceDiscoveryManager.this.extensions
-                            .stream()
-                            // Extensions with manager currently get excluded, because they are manually added to
-                            // the feature set.
-                            // This shall change in the future
-                            // TODO
-                            .filter(ExtensionProtocol::isEnabled)
-                            .flatMap(extension -> extension.getFeatures().stream()))
-                    .collect(Collectors.toSet());
+            return features;
         }
 
         @Override

@@ -42,7 +42,6 @@ import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.carbons.MessageCarbonsManager;
 import rocks.xmpp.extensions.carbons.model.MessageCarbons;
 import rocks.xmpp.extensions.chatstates.ChatStateManager;
-import rocks.xmpp.extensions.chatstates.model.ChatState;
 import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 import rocks.xmpp.extensions.forward.StanzaForwardingManager;
@@ -61,7 +60,6 @@ import rocks.xmpp.extensions.jingle.model.Jingle;
 import rocks.xmpp.extensions.jingle.transports.ibb.model.InBandByteStreamsTransportMethod;
 import rocks.xmpp.extensions.jingle.transports.s5b.model.S5bTransportMethod;
 import rocks.xmpp.extensions.last.LastActivityManager;
-import rocks.xmpp.extensions.last.model.LastActivity;
 import rocks.xmpp.extensions.mood.MoodManager;
 import rocks.xmpp.extensions.mood.model.Mood;
 import rocks.xmpp.extensions.muc.MultiUserChatManager;
@@ -72,7 +70,6 @@ import rocks.xmpp.extensions.offline.model.OfflineMessage;
 import rocks.xmpp.extensions.oob.OutOfBandFileTransferManager;
 import rocks.xmpp.extensions.oob.model.iq.OobIQ;
 import rocks.xmpp.extensions.ping.PingManager;
-import rocks.xmpp.extensions.ping.handler.PingHandler;
 import rocks.xmpp.extensions.privacy.PrivacyListManager;
 import rocks.xmpp.extensions.privacy.model.Privacy;
 import rocks.xmpp.extensions.reach.ReachabilityManager;
@@ -93,7 +90,6 @@ import rocks.xmpp.extensions.sm.client.ClientStreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.extensions.softwareinfo.SoftwareInformationProtocol;
 import rocks.xmpp.extensions.time.EntityTimeManager;
-import rocks.xmpp.extensions.time.handler.EntityTimeHandler;
 import rocks.xmpp.extensions.tune.model.Tune;
 import rocks.xmpp.extensions.vcard.avatar.VCardBasedAvatarsProtocol;
 import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
@@ -117,7 +113,7 @@ public final class ExtensionModule implements Module {
                 Extension.of(ClientRpcManager.class, false),
 
                 // XEP-0012: Last Activity
-                Extension.of(LastActivity.NAMESPACE, LastActivityManager.class, true),
+                Extension.of(LastActivityManager.class, true),
 
                 // XEP-0013: Flexible Offline Message Retrieval
                 Extension.of(OfflineMessage.NAMESPACE, OfflineMessageManager.class, false),
@@ -157,7 +153,7 @@ public final class ExtensionModule implements Module {
                 Extension.of(AvatarData.NAMESPACE, UserAvatarProtocol.class, false),
 
                 // XEP-0085: Chat State Notifications
-                Extension.of(ChatState.NAMESPACE, ChatStateManager.class, false),
+                Extension.of(ChatStateManager.class, false),
 
                 // XEP-0092: Software Version
                 Extension.of(ClientSoftwareVersionManager.class, true),
@@ -205,10 +201,10 @@ public final class ExtensionModule implements Module {
                 Extension.of(StreamManagement.NAMESPACE, ClientStreamManager.class, false),
 
                 // XEP-0199: XMPP Ping
-                Extension.of(new PingHandler(), PingManager.class, true),
+                Extension.of(PingManager.class, true),
 
                 // XEP-0202: Entity Time
-                Extension.of(new EntityTimeHandler(), EntityTimeManager.class, true),
+                Extension.of(EntityTimeManager.class, true),
 
                 // XEP-0232: Software Information
                 Extension.of(SoftwareInformationProtocol.class, true),

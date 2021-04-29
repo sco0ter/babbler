@@ -25,6 +25,7 @@
 package rocks.xmpp.extensions.receipts;
 
 import java.util.Collections;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 import org.testng.Assert;
@@ -181,16 +182,15 @@ public class MessageDeliveryReceiptsManagerTest extends BaseTest {
     }
 
     @Test
-    public void testServiceDiscoveryEntry() {
-        TestXmppSession connection1 = new TestXmppSession();
+    public void testServiceDiscoveryEntry() throws ExecutionException, InterruptedException {
+        XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
         MessageDeliveryReceiptsManager messageDeliveryReceiptsManager =
-                connection1.getManager(MessageDeliveryReceiptsManager.class);
+                xmppSession.getManager(MessageDeliveryReceiptsManager.class);
         Assert.assertFalse(messageDeliveryReceiptsManager.isEnabled());
-        ServiceDiscoveryManager serviceDiscoveryManager = connection1.getManager(ServiceDiscoveryManager.class);
-        String feature = "urn:xmpp:receipts";
-        Assert.assertFalse(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);;
+        Assert.assertFalse(serviceDiscoveryManager.discoverInformation(JULIET).get().getFeatures().contains(MessageDeliveryReceipts.NAMESPACE));
         messageDeliveryReceiptsManager.setEnabled(true);
         Assert.assertTrue(messageDeliveryReceiptsManager.isEnabled());
-        Assert.assertTrue(serviceDiscoveryManager.getDefaultInfo().getFeatures().contains(feature));
+        Assert.assertTrue(serviceDiscoveryManager.discoverInformation(JULIET).get().getFeatures().contains(MessageDeliveryReceipts.NAMESPACE));
     }
 }

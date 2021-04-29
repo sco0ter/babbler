@@ -24,13 +24,15 @@
 
 package rocks.xmpp.extensions.chatstates;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.InboundMessageHandler;
@@ -78,32 +80,17 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a>
  */
-public final class ChatStateManager extends Manager implements InboundMessageHandler, OutboundMessageHandler {
+public final class ChatStateManager extends Manager
+        implements ExtensionProtocol, InboundMessageHandler, OutboundMessageHandler {
+
+    private static final Set<String> FEATURES = Collections.singleton(ChatState.NAMESPACE);
 
     private final Map<Chat, ChatState> chatMap = new ConcurrentHashMap<>();
 
     private final Map<Jid, Boolean> contactSupportsChatStateNotifications = new ConcurrentHashMap<>();
 
-    private final Consumer<MessageEvent> inboundMessageHandler = this::handleInboundMessage;
-
-    private final Consumer<MessageEvent> outboundMessageHandler = this::handleOutboundMessage;
-
     private ChatStateManager(final XmppSession xmppSession) {
         super(xmppSession, true);
-    }
-
-    @Override
-    protected void onEnable() {
-        super.onEnable();
-        xmppSession.addInboundMessageListener(inboundMessageHandler);
-        xmppSession.addOutboundMessageListener(outboundMessageHandler);
-    }
-
-    @Override
-    protected void onDisable() {
-        super.onDisable();
-        xmppSession.removeInboundMessageListener(inboundMessageHandler);
-        xmppSession.removeOutboundMessageListener(outboundMessageHandler);
     }
 
     /**
@@ -208,5 +195,15 @@ public final class ChatStateManager extends Manager implements InboundMessageHan
                 }
             }
         }
+    }
+
+    @Override
+    public final String getNamespace() {
+        return ChatState.NAMESPACE;
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return FEATURES;
     }
 }

@@ -71,7 +71,7 @@ public class SoftwareVersionProtocol extends AbstractIQHandler implements Softwa
     }
 
     @Override
-    public final synchronized void setSoftwareInfo(SoftwareVersion softwareVersion) {
+    public synchronized void setSoftwareInfo(SoftwareVersion softwareVersion) {
         this.softwareVersion = softwareVersion;
     }
 

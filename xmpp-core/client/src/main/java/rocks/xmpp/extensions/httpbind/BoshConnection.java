@@ -48,9 +48,9 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -100,7 +100,7 @@ public abstract class BoshConnection extends AbstractConnection {
 
     protected static final System.Logger logger = System.getLogger(BoshConnection.class.getName());
 
-    final Executor inOrderRequestExecutor = new QueuedScheduledExecutorService(HTTP_BIND_EXECUTOR);
+    final ScheduledExecutorService inOrderRequestExecutor = new QueuedScheduledExecutorService(HTTP_BIND_EXECUTOR);
 
     protected final XmppSession xmppSession;
 
@@ -738,7 +738,12 @@ public abstract class BoshConnection extends AbstractConnection {
             // request, thereby ensuring that the connection manager is (almost) always holding a
             // request that it can use to "push" data to the client.
             if (requestCount.decrementAndGet() == 0) {
-                sendNewRequest(Body.builder().sessionId(sessionId), false);
+                // Wait shortly before sending the next long polling request.
+                // This allows the send method to chime in and send a <body/> with actual payload
+                // instead of an empty body just to "hold the line".
+                inOrderRequestExecutor.schedule(() -> {
+                    sendNewRequest(Body.builder().sessionId(sessionId), false);
+                }, 100, TimeUnit.MILLISECONDS);
             }
         }
     }

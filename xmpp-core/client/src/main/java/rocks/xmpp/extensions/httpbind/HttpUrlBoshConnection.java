@@ -121,10 +121,6 @@ final class HttpUrlBoshConnection extends BoshConnection {
                             logger.log(System.Logger.Level.WARNING, "Server responded with malformed XML.", e);
                         }
                     }
-                    // Wait shortly before sending the long polling request.
-                    // This allows the send method to chime in and send a <body/> with actual payload
-                    // instead of an empty body just to "hold the line".
-                    Thread.sleep(50);
                 } else {
                     // Shutdown the connection, we don't want to send further requests from now on.
                     handleErrorHttpResponse(httpConnection.getResponseCode());

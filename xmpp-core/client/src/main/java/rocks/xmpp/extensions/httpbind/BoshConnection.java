@@ -509,18 +509,18 @@ public abstract class BoshConnection extends AbstractConnection {
 
     @Override
     protected CompletionStage<Void> closeConnection() {
-        return CompletableFuture.runAsync(() -> {
-            try {
-                synchronized (this) {
-                    sessionId = null;
-                    requestCompressionMethod = null;
-                    keySequence.clear();
-                }
-            } finally {
-                closeFuture.complete(null);
-                shutdown();
+
+        try {
+            synchronized (this) {
+                sessionId = null;
+                requestCompressionMethod = null;
+                keySequence.clear();
             }
-        });
+        } finally {
+            closeFuture.complete(null);
+            shutdown();
+        }
+        return closeFuture;
     }
 
     @Override

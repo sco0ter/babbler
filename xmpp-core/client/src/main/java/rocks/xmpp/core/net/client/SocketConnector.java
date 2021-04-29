@@ -77,7 +77,7 @@ public final class SocketConnector extends AbstractTcpConnector<Socket> {
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
-        });
+        }, XmppStreamWriter.EXECUTOR);
     }
 
     @Override

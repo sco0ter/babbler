@@ -59,7 +59,7 @@ import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
  */
 final class XmppStreamWriter {
 
-    private static final ExecutorService EXECUTOR =
+    static final ExecutorService EXECUTOR =
             Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Writer Thread"));
 
     private final XmppSession xmppSession;

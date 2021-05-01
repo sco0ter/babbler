@@ -143,7 +143,7 @@ public final class WebSocketConnectionConfiguration extends ClientConnectionConf
     public final CompletableFuture<Connection> createConnection(final XmppSession xmppSession,
                                                                 final SessionOpen sessionOpen) {
         if (connector == null) {
-            return new JdkWebSocketConnector().connect(xmppSession, this, sessionOpen);
+            return new HttpClientWebSocketConnector().connect(xmppSession, this, sessionOpen);
         }
         return connector.connect(xmppSession, this, sessionOpen);
     }

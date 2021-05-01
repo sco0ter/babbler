@@ -43,8 +43,7 @@ import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
 
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.net.AbstractConnection;
-import rocks.xmpp.core.net.TcpBinding;
+import rocks.xmpp.core.net.TcpConnection;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stream.StreamNegotiationException;
@@ -70,7 +69,7 @@ import rocks.xmpp.extensions.sm.client.ClientStreamManager;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/rfcs/rfc6120.html#tcp">3.  TCP Binding</a>
  */
-public final class SocketConnection extends AbstractConnection implements TcpBinding {
+public final class SocketConnection extends TcpConnection {
 
     private static final System.Logger logger = System.getLogger(SocketConnection.class.getName());
 

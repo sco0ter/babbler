@@ -26,7 +26,7 @@ package rocks.xmpp.core.extensions.compress.server;
 
 import java.util.Arrays;
 
-import rocks.xmpp.core.net.TcpBinding;
+import rocks.xmpp.core.net.TcpConnection;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.errors.Condition;
@@ -43,7 +43,7 @@ public final class CompressionNegotiator implements StreamFeatureProvider<Compre
 
     private final CompressionFeature feature;
 
-    private final TcpBinding connection;
+    private final TcpConnection connection;
 
     /**
      * Constructs the compression negotiator.
@@ -51,7 +51,7 @@ public final class CompressionNegotiator implements StreamFeatureProvider<Compre
      * @param connection The connection.
      * @param method     The method.
      */
-    public CompressionNegotiator(final TcpBinding connection, final String... method) {
+    public CompressionNegotiator(final TcpConnection connection, final String... method) {
         this.connection = connection;
         this.feature = new CompressionFeature(Arrays.asList(method));
     }

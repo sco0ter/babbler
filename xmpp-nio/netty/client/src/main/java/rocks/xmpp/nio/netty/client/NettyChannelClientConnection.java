@@ -55,11 +55,11 @@ import rocks.xmpp.extensions.sm.client.ClientStreamManager;
 import rocks.xmpp.nio.netty.net.NettyChannelConnection;
 
 /**
- * @author Christian Schudt
+ * Client initiated TCP connection based on Netty channels.
  */
-public final class NettyTcpConnection extends NettyChannelConnection {
+final class NettyChannelClientConnection extends NettyChannelConnection {
 
-    private static final System.Logger logger = System.getLogger(NettyTcpConnection.class.getName());
+    private static final System.Logger logger = System.getLogger(NettyChannelClientConnection.class.getName());
 
     private final StreamFeaturesManager streamFeaturesManager;
 
@@ -79,8 +79,8 @@ public final class NettyTcpConnection extends NettyChannelConnection {
      * @param xmppSession             The XMPP session.
      * @param connectionConfiguration The connection configuration.
      */
-    NettyTcpConnection(final Channel channel, final XmppSession xmppSession,
-                       final TcpConnectionConfiguration connectionConfiguration) {
+    NettyChannelClientConnection(final Channel channel, final XmppSession xmppSession,
+                                 final TcpConnectionConfiguration connectionConfiguration) {
         super(channel, xmppSession, xmppSession,
                 xmppSession.getReaderInterceptors(),
                 xmppSession::createUnmarshaller,

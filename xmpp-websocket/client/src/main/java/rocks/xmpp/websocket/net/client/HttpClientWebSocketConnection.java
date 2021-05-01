@@ -41,7 +41,7 @@ import rocks.xmpp.core.stream.model.StreamElement;
 /**
  * A WebSocket connection which is based on JDK's {@link java.net.http.WebSocket}.
  */
-final class JdkWebSocketClientConnection extends AbstractWebSocketClientConnection
+final class HttpClientWebSocketConnection extends AbstractWebSocketClientConnection
         implements WebSocket.Listener {
 
     private final StringBuilder receivedMessaged = new StringBuilder();
@@ -50,7 +50,7 @@ final class JdkWebSocketClientConnection extends AbstractWebSocketClientConnecti
 
     private CompletableFuture<?> accumulatedMessage = new CompletableFuture<>();
 
-    JdkWebSocketClientConnection(
+    HttpClientWebSocketConnection(
             WebSocketConnectionConfiguration connectionConfiguration, URI uri,
             XmppSession xmppSession, CompletableFuture<Void> closeFuture) {
         super(connectionConfiguration, uri, xmppSession, closeFuture);

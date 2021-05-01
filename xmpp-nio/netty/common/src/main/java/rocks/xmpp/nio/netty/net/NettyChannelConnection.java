@@ -50,10 +50,9 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.concurrent.Future;
 import rocks.xmpp.core.Session;
-import rocks.xmpp.core.net.AbstractConnection;
 import rocks.xmpp.core.net.ConnectionConfiguration;
 import rocks.xmpp.core.net.ReaderInterceptor;
-import rocks.xmpp.core.net.TcpBinding;
+import rocks.xmpp.core.net.TcpConnection;
 import rocks.xmpp.core.net.WriterInterceptor;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stream.StreamHandler;
@@ -66,7 +65,7 @@ import rocks.xmpp.util.XmppStreamEncoder;
  *
  * @author Christian Schudt
  */
-public class NettyChannelConnection extends AbstractConnection implements TcpBinding {
+public class NettyChannelConnection extends TcpConnection {
 
     protected final Channel channel;
 
@@ -218,12 +217,13 @@ public class NettyChannelConnection extends AbstractConnection implements TcpBin
     }
 
     @Override
-    public final String toString() {
-        final StringBuilder sb = new StringBuilder("TCP NIO connection at ").append(channel.remoteAddress());
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("TCP connection to ").append(channel.remoteAddress());
         final String streamId = getStreamId();
         if (streamId != null) {
             sb.append(" (").append(streamId).append(')');
         }
+        sb.append(" using io.netty.channel.Channel");
         return sb.toString();
     }
 }

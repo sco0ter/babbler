@@ -120,6 +120,6 @@ public final class NettyChannelConnector extends AbstractTcpConnector<Channel> {
                                                        final TcpConnectionConfiguration configuration,
                                                        final SessionOpen sessionOpen) {
         return createConnection(xmppSession, configuration,
-                (channel, config) -> new NettyTcpConnection(channel, xmppSession, config), sessionOpen);
+                (channel, config) -> new NettyChannelClientConnection(channel, xmppSession, config), sessionOpen);
     }
 }

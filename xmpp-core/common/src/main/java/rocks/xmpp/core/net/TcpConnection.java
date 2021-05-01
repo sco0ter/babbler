@@ -24,19 +24,29 @@
 
 package rocks.xmpp.core.net;
 
+import java.util.function.Consumer;
+
+import rocks.xmpp.core.stream.StreamHandler;
+
 /**
  * Defines characteristics of a TCP binding, like stream encryption via TLS and stream compression.
  *
  * @author Christian Schudt
  */
-public interface TcpBinding extends Connection {
+public abstract class TcpConnection extends AbstractConnection {
+
+    protected TcpConnection(ConnectionConfiguration connectionConfiguration,
+                            StreamHandler streamHandler,
+                            Consumer<Throwable> onException) {
+        super(connectionConfiguration, streamHandler, onException);
+    }
 
     /**
      * Secures the connection with TLS.
      *
      * @throws Exception Any exception which may occur during TLS handshake.
      */
-    void secureConnection() throws Exception;
+    public abstract void secureConnection() throws Exception;
 
     /**
      * Compresses the connection.
@@ -45,5 +55,5 @@ public interface TcpBinding extends Connection {
      * @param onSuccess Invoked after the compression method has been chosen, but before compression is applied.
      * @throws Exception Any exception which may occur during compression.
      */
-    void compressConnection(final String method, final Runnable onSuccess) throws Exception;
+    public abstract void compressConnection(final String method, final Runnable onSuccess) throws Exception;
 }

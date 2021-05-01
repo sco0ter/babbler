@@ -26,7 +26,7 @@ package rocks.xmpp.core.tls.client;
 
 import rocks.xmpp.core.Session;
 import rocks.xmpp.core.net.ChannelEncryption;
-import rocks.xmpp.core.net.TcpBinding;
+import rocks.xmpp.core.net.TcpConnection;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
@@ -42,15 +42,15 @@ import rocks.xmpp.core.tls.model.StartTls;
  */
 public final class StartTlsManager implements StreamFeatureNegotiator<StartTls> {
 
-    private final TcpBinding tcpBinding;
+    private final TcpConnection tcpConnection;
 
     private final ChannelEncryption channelEncryption;
 
     private final Session session;
 
-    public StartTlsManager(Session session, TcpBinding tcpBinding, ChannelEncryption channelEncryption) {
+    public StartTlsManager(Session session, TcpConnection tcpConnection, ChannelEncryption channelEncryption) {
         this.session = session;
-        this.tcpBinding = tcpBinding;
+        this.tcpConnection = tcpConnection;
         this.channelEncryption = channelEncryption;
     }
 
@@ -69,7 +69,7 @@ public final class StartTlsManager implements StreamFeatureNegotiator<StartTls> 
             }
         } else if (element instanceof Proceed) {
             try {
-                tcpBinding.secureConnection();
+                tcpConnection.secureConnection();
             } catch (Exception e) {
                 throw new StreamNegotiationException(e);
             }

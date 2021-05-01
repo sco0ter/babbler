@@ -55,7 +55,7 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 import rocks.xmpp.core.extensions.compress.server.CompressionNegotiator;
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.ConnectionConfiguration;
-import rocks.xmpp.core.net.TcpBinding;
+import rocks.xmpp.core.net.TcpConnection;
 import rocks.xmpp.core.server.ServerConfiguration;
 import rocks.xmpp.core.tls.server.StartTlsNegotiator;
 import rocks.xmpp.nio.netty.net.NettyChannelConnection;
@@ -117,7 +117,7 @@ public class NettyServer {
                         final InboundClientSession session = CDI.current().select(InboundClientSession.class).get();
 
                         // Create a new connection for the client.
-                        final TcpBinding connection =
+                        final TcpConnection connection =
                                 new NettyChannelConnection(ch, session, session, Collections.emptyList(),
                                         serverConfiguration::getUnmarshaller,
                                         Collections.emptyList(), serverConfiguration::getMarshaller, null,

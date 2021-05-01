@@ -52,7 +52,7 @@ import rocks.xmpp.core.session.model.SessionOpen;
  *     .port(443)
  *     .sslContext(sslContext)
  *     .channelEncryption(ChannelEncryption.DIRECT)
- *     .connector(new JdkWebSocketConnector())
+ *     .connector(new HttpClientWebSocketConnector())
  *     .build();
  * }</pre>
  *
@@ -65,7 +65,7 @@ import rocks.xmpp.core.session.model.SessionOpen;
  *
  * @see WebSocketConnectionConfiguration.Builder#connector(TransportConnector)
  */
-public final class JdkWebSocketConnector extends AbstractWebSocketConnector {
+public final class HttpClientWebSocketConnector extends AbstractWebSocketConnector {
 
     @Override
     public final CompletableFuture<Connection> connect(final XmppSession xmppSession,
@@ -79,8 +79,8 @@ public final class JdkWebSocketConnector extends AbstractWebSocketConnector {
         } catch (URISyntaxException e) {
             return CompletableFuture.failedFuture(e);
         }
-        JdkWebSocketClientConnection webSocketClientConnection =
-                new JdkWebSocketClientConnection(configuration, uri, xmppSession, closeFuture);
+        HttpClientWebSocketConnection webSocketClientConnection =
+                new HttpClientWebSocketConnection(configuration, uri, xmppSession, closeFuture);
         HttpClient.Builder builder = HttpClient.newBuilder();
 
         if (configuration.getSSLContext() != null) {

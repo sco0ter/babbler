@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import rocks.xmpp.core.Session;
-import rocks.xmpp.core.net.TcpBinding;
+import rocks.xmpp.core.net.TcpConnection;
 import rocks.xmpp.core.stream.StreamFeatureNegotiator;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
@@ -57,7 +57,7 @@ public final class CompressionManager implements StreamFeatureNegotiator<Compres
 
     private static final System.Logger logger = System.getLogger(CompressionManager.class.getName());
 
-    private final TcpBinding tcpBinding;
+    private final TcpConnection tcpConnection;
 
     private final List<CompressionMethod> compressionMethods = new CopyOnWriteArrayList<>();
 
@@ -65,9 +65,9 @@ public final class CompressionManager implements StreamFeatureNegotiator<Compres
 
     private CompressionMethod negotiatedCompressionMethod;
 
-    public CompressionManager(final Session session, final TcpBinding tcpBinding) {
+    public CompressionManager(final Session session, final TcpConnection tcpConnection) {
         this.session = session;
-        this.tcpBinding = tcpBinding;
+        this.tcpConnection = tcpConnection;
     }
 
     @Override
@@ -94,7 +94,7 @@ public final class CompressionManager implements StreamFeatureNegotiator<Compres
             }
         } else if (element == StreamCompression.COMPRESSED) {
             try {
-                tcpBinding.compressConnection(negotiatedCompressionMethod.getName(), null);
+                tcpConnection.compressConnection(negotiatedCompressionMethod.getName(), null);
             } catch (Exception e) {
                 // Failure of the negotiation SHOULD NOT be treated as an unrecoverable error
                 logger.log(System.Logger.Level.WARNING, "Failure during stream compression.", e);

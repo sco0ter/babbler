@@ -37,7 +37,7 @@ import java.util.function.Consumer;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.net.ChannelEncryption;
 import rocks.xmpp.core.net.Connection;
-import rocks.xmpp.core.net.TcpBinding;
+import rocks.xmpp.core.net.TcpConnection;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.dns.DnsResolver;
@@ -69,7 +69,7 @@ public abstract class AbstractTcpConnector<T> implements TransportConnector<TcpC
     protected final CompletableFuture<Connection> createConnection(XmppSession xmppSession,
                                                                    TcpConnectionConfiguration configuration,
                                                                    BiFunction<T, TcpConnectionConfiguration,
-                                                                           TcpBinding> creator,
+                                                                           TcpConnection> creator,
                                                                    SessionOpen sessionOpen) {
         CompletableFuture<T> socket;
         final AtomicBoolean useDirectTls =
@@ -87,15 +87,15 @@ public abstract class AbstractTcpConnector<T> implements TransportConnector<TcpC
             throw new IllegalStateException("Neither 'xmppServiceDomain' nor 'host' is set.");
         }
         return socket.thenApply(s -> {
-            TcpBinding tcpBinding = creator.apply(s, configuration);
+            TcpConnection tcpConnection = creator.apply(s, configuration);
             if (useDirectTls.get()) {
                 try {
-                    tcpBinding.secureConnection();
+                    tcpConnection.secureConnection();
                 } catch (Exception e) {
                     throw new CompletionException(e);
                 }
             }
-            return tcpBinding;
+            return tcpConnection;
         }).thenCompose(connection -> connection.open(sessionOpen).thenApply(aVoid -> connection));
     }
 

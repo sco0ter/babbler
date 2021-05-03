@@ -64,6 +64,7 @@
         </menu>
         <menu name="User Guide">
             <item href="basics.html" name="Getting Started"/>
+            <item href="basic-concepts.html" name="Basic Concepts"/>
             <item href="im.html" name="Contacts, Presence and Messaging"/>
             <item href="extensions.html" name="Using Extensions"/>
             <item href="customextensions.html" name="Writing Custom Extensions"/>

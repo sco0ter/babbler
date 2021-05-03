@@ -218,7 +218,7 @@ In order to create immutable and reusable configuration objects (which could be 
 avoid huge constructors, the Builder Pattern is used to create custom configurations:
 
 ```java
-SocketConnectionConfiguration tcpConfiguration = SocketConnectionConfiguration.builder()
+TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
     .hostname("localhost")
     .port(5222)
     .build();
@@ -262,7 +262,7 @@ During connecting, the session will try all configured connections in order, unt
 You can set a custom `SSLContext` by configuring it like this:
 
 ```java
-SocketConnectionConfiguration tcpConfiguration = SocketConnectionConfiguration.builder()
+TcpConnectionConfiguration tcpConfiguration = TcpConnectionConfiguration.builder()
     .channelEncryption(ChannelEncryption.OPTIONAL)
     .sslContext(sslContext)
     .hostnameVerifier(hostnameVerifier)

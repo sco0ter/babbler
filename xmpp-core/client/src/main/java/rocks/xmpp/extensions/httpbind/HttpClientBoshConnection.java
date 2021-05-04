@@ -53,9 +53,14 @@ import rocks.xmpp.extensions.httpbind.model.Body;
  */
 final class HttpClientBoshConnection extends BoshConnection {
 
+    private final HttpClient httpClient;
+
     HttpClientBoshConnection(URL url, XmppSession xmppSession,
                              BoshConnectionConfiguration configuration) {
         super(url, xmppSession, configuration);
+        httpClient = HttpClientConnector.newHttpClientBuilder(boshConnectionConfiguration)
+                .executor(inOrderRequestExecutor)
+                .build();
     }
 
     @Override
@@ -87,7 +92,7 @@ final class HttpClientBoshConnection extends BoshConnection {
 
                     try (Writer writer = new OutputStreamWriter(requestStream, StandardCharsets.UTF_8)) {
                         newWriterChain().proceed(body, writer);
-                        return newHttpClient().sendAsync(
+                        return httpClient.sendAsync(
                                 builder.POST(HttpRequest.BodyPublishers.ofByteArray(outputStream.toByteArray()))
                                         .build(), HttpResponse.BodyHandlers.ofInputStream())
                                 .thenAccept(httpResponse -> {
@@ -120,12 +125,6 @@ final class HttpClientBoshConnection extends BoshConnection {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private HttpClient newHttpClient() {
-        HttpClient.Builder builder = HttpClientConnector.newHttpClientBuilder(boshConnectionConfiguration);
-        builder.executor(inOrderRequestExecutor);
-        return builder.build();
     }
 
     @Override

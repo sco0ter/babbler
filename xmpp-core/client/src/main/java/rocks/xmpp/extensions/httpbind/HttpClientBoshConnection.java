@@ -35,14 +35,11 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.io.Writer;
-import java.net.InetSocketAddress;
-import java.net.ProxySelector;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
 import rocks.xmpp.core.session.XmppSession;
@@ -126,17 +123,8 @@ final class HttpClientBoshConnection extends BoshConnection {
     }
 
     private HttpClient newHttpClient() {
-        HttpClient.Builder builder = HttpClient.newBuilder();
+        HttpClient.Builder builder = HttpClientConnector.newHttpClientBuilder(boshConnectionConfiguration);
         builder.executor(inOrderRequestExecutor);
-        if (boshConnectionConfiguration.getSSLContext() != null) {
-            builder.sslContext(boshConnectionConfiguration.getSSLContext());
-        }
-        if (boshConnectionConfiguration.getProxy() != null) {
-            builder.proxy(ProxySelector.of((InetSocketAddress) boshConnectionConfiguration.getProxy().address()));
-        }
-        if (boshConnectionConfiguration.getConnectTimeout() > 0) {
-            builder.connectTimeout(Duration.ofMillis(boshConnectionConfiguration.getConnectTimeout()));
-        }
         return builder.build();
     }
 

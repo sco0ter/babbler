@@ -25,9 +25,14 @@
 package rocks.xmpp.extensions.httpbind;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
+import java.net.http.HttpClient;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
 import rocks.xmpp.core.net.Connection;
+import rocks.xmpp.core.net.client.ClientConnectionConfiguration;
 import rocks.xmpp.core.net.client.TransportConnector;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.model.SessionOpen;
@@ -67,5 +72,28 @@ public final class HttpClientConnector implements TransportConnector<BoshConnect
         } catch (IOException e) {
             return CompletableFuture.failedFuture(e);
         }
+    }
+
+    /**
+     * Returns a new {@link HttpClient.Builder} configured with the given configuration.
+     *
+     * <p>The builder is configured with a {@link javax.net.ssl.SSLContext}, with a {@link java.net.Proxy} and a
+     * connection timeout.</p>
+     *
+     * @param connectionConfiguration The configuration.
+     * @return The builder.
+     */
+    public static HttpClient.Builder newHttpClientBuilder(ClientConnectionConfiguration connectionConfiguration) {
+        HttpClient.Builder builder = HttpClient.newBuilder();
+        if (connectionConfiguration.getSSLContext() != null) {
+            builder.sslContext(connectionConfiguration.getSSLContext());
+        }
+        if (connectionConfiguration.getProxy() != null) {
+            builder.proxy(ProxySelector.of((InetSocketAddress) connectionConfiguration.getProxy().address()));
+        }
+        if (connectionConfiguration.getConnectTimeout() > 0) {
+            builder.connectTimeout(Duration.ofMillis(connectionConfiguration.getConnectTimeout()));
+        }
+        return builder;
     }
 }

@@ -24,18 +24,16 @@
 
 package rocks.xmpp.websocket.net.client;
 
-import java.net.InetSocketAddress;
-import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
-import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
 import rocks.xmpp.core.net.Connection;
 import rocks.xmpp.core.net.client.TransportConnector;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.session.model.SessionOpen;
+import rocks.xmpp.extensions.httpbind.HttpClientConnector;
 
 /**
  * A WebSocket transport connector which uses {@link java.net.http.WebSocket}.
@@ -79,19 +77,10 @@ public final class HttpClientWebSocketConnector extends AbstractWebSocketConnect
         } catch (URISyntaxException e) {
             return CompletableFuture.failedFuture(e);
         }
+        
         HttpClientWebSocketConnection webSocketClientConnection =
                 new HttpClientWebSocketConnection(configuration, uri, xmppSession, closeFuture);
-        HttpClient.Builder builder = HttpClient.newBuilder();
-
-        if (configuration.getSSLContext() != null) {
-            builder.sslContext(configuration.getSSLContext());
-        }
-        if (configuration.getProxy() != null) {
-            builder.proxy(ProxySelector.of((InetSocketAddress) configuration.getProxy().address()));
-        }
-        if (configuration.getConnectTimeout() > 0) {
-            builder.connectTimeout(Duration.ofMillis(configuration.getConnectTimeout()));
-        }
+        HttpClient.Builder builder = HttpClientConnector.newHttpClientBuilder(configuration);
         return builder.build()
                 .newWebSocketBuilder()
                 .subprotocols("xmpp")

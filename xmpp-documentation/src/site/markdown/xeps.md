@@ -18,8 +18,6 @@ clients)*
 2.2</small><br/>
 ![supported][supported]           [XEP-0012: Last Activity](https://xmpp.org/extensions/xep-0012.html) <small>
 2.0</small><br/>
-![supported][supported]           [XEP-0013: Flexible Offline Message Retrieval](https://xmpp.org/extensions/xep-0013.html) <small>
-1.2</small><br/>
 ![supported][supported]           [XEP-0030: Service Discovery](https://xmpp.org/extensions/xep-0030.html) <small>
 2.5rc3</small><br/>
 ![supported][supported]           [XEP-0033: Extended Stanza Addressing](https://xmpp.org/extensions/xep-0033.html) <small>
@@ -28,11 +26,9 @@ clients)*
 1.31</small><br/>
 ![supported][supported]           [XEP-0047: In-Band Bytestreams](https://xmpp.org/extensions/xep-0047.html) <small>
 2.0</small><br/>
-![supported][supported]           [XEP-0048: Bookmarks](https://xmpp.org/extensions/xep-0048.html) <small>
-1.1</small><br/>
 ![supported][supported]           [XEP-0049: Private XML Storage](https://xmpp.org/extensions/xep-0049.html) <small>
 1.2</small><br/>
-![not supported][not supported]   [XEP-0050: Ad-Hoc Commands](https://xmpp.org/extensions/xep-0050.html)<br/>
+![not supported][not supported]   [XEP-0050: Ad-Hoc Commands](https://xmpp.org/extensions/xep-0050.html) <br/>
 ![supported][supported]           [XEP-0054: vcard-temp](https://xmpp.org/extensions/xep-0054.html) <small>
 1.2</small><br/>
 ![supported][supported]           [XEP-0055: Jabber Search](https://xmpp.org/extensions/xep-0055.html) <small>
@@ -91,21 +87,21 @@ clients)*
 1.0</small><br/>
 ![supported][supported]           [XEP-0153: vCard-Based Avatars](https://xmpp.org/extensions/xep-0153.html) <small>
 1.1</small><br/>
-![not supported][not supported]   [XEP-0155: Stanza Session Negotiation](https://xmpp.org/extensions/xep-0155.html)<br/>
+![not supported][not supported]   [XEP-0155: Stanza Session Negotiation](https://xmpp.org/extensions/xep-0155.html) <br/>
 ![supported][supported]           [XEP-0156: Discovering Alternative XMPP Connection Methods](https://xmpp.org/extensions/xep-0156.html) <small>
 1.1.2</small><br/>
-![not supported][not supported]   [XEP-0158: CAPTCHA Forms](https://xmpp.org/extensions/xep-0158.html)<br/>
+![not supported][not supported]   [XEP-0158: CAPTCHA Forms](https://xmpp.org/extensions/xep-0158.html) <br/>
 ![supported][supported]           [XEP-0163: Personal Eventing Protocol](https://xmpp.org/extensions/xep-0163.html) <small>
 1.2</small><br/>
-![in development][in development] [XEP-0166: Jingle](https://xmpp.org/extensions/xep-0166.html)<br/>
-![not supported][not supported]   [XEP-0167: Jingle RTP Sessions](https://xmpp.org/extensions/xep-0167.html)<br/>
+![in development][in development] [XEP-0166: Jingle](https://xmpp.org/extensions/xep-0166.html) <br/>
+![not supported][not supported]   [XEP-0167: Jingle RTP Sessions](https://xmpp.org/extensions/xep-0167.html) <br/>
 ![supported][supported]           [XEP-0171: Language Translation](https://xmpp.org/extensions/xep-0171.html) <small>
 1.1.1</small><br/>
 ![supported][supported]           [XEP-0172: User Nickname](https://xmpp.org/extensions/xep-0172.html) <small>
 1.1</small><br/>
-![not supported][not supported]   [XEP-0174: Serverless Messaging](https://xmpp.org/extensions/xep-0174.html)<br/>
-![not supported][not supported]   [XEP-0176: Jingle ICE-UDP Transport Method](https://xmpp.org/extensions/xep-0176.html)<br/>
-![not supported][not supported]   [XEP-0177: Jingle Raw UDP Transport Method](https://xmpp.org/extensions/xep-0177.html)<br/>
+![not supported][not supported]   [XEP-0174: Serverless Messaging](https://xmpp.org/extensions/xep-0174.html) <br/>
+![not supported][not supported]   [XEP-0176: Jingle ICE-UDP Transport Method](https://xmpp.org/extensions/xep-0176.html) <br/>
+![not supported][not supported]   [XEP-0177: Jingle Raw UDP Transport Method](https://xmpp.org/extensions/xep-0177.html) <br/>
 ![supported][supported]           [XEP-0184: Message Delivery Receipts](https://xmpp.org/extensions/xep-0184.html) <small>
 1.2</small><br/>
 ![supported][supported]           [XEP-0191: Blocking Command](https://xmpp.org/extensions/xep-0191.html) <small>
@@ -124,50 +120,68 @@ clients)*
 1.0</small><br/>
 ![supported][supported]           [XEP-0224: Attention](https://xmpp.org/extensions/xep-0224.html) <small>
 1.0</small><br/>
-![not supported][not supported]   [XEP-0229: Stream Compression with LZW](https://xmpp.org/extensions/xep-0229.html)<br/>
-![not supported][not supported]   [XEP-0231: Bits of Binary](https://xmpp.org/extensions/xep-0231.html)<br/>
+![not supported][not supported]   [XEP-0229: Stream Compression with LZW](https://xmpp.org/extensions/xep-0229.html) <br/>
+![not supported][not supported]   [XEP-0231: Bits of Binary](https://xmpp.org/extensions/xep-0231.html) <br/>
 ![supported][supported]           [XEP-0249: Direct MUC Invitations](https://xmpp.org/extensions/xep-0249.html) <small>
 1.2</small><br/>
 ![supported][supported]           [XEP-0256: Last Activity in Presence](https://xmpp.org/extensions/xep-0256.html) <small>
 1.1</small><br/>
 ![supported][supported]           [XEP-0258: Security Labels in XMPP](https://xmpp.org/extensions/xep-0258.html) <small>
 1.1</small><br/>
-![in development][in development] [XEP-0260: Jingle SOCKS5 Bytestreams Transport Method](https://xmpp.org/extensions/xep-0260.html)<br/>
-![in development][in development] [XEP-0261: Jingle In-Band Bytestreams Transport Method](https://xmpp.org/extensions/xep-0261.html)<br/>
-![not supported][not supported]   [XEP-0262: Use of ZRTP in Jingle RTP Sessions](https://xmpp.org/extensions/xep-0262.html)<br/>
-![not supported][not supported]   [XEP-0266: Codecs for Jingle Audio](https://xmpp.org/extensions/xep-0266.html)<br/>
-![not supported][not supported]   [XEP-0293: Jingle RTP Feedback Negotiation](https://xmpp.org/extensions/xep-0293.html)<br/>
-![not supported][not supported]   [XEP-0294: Jingle RTP Header Extensions Negotiation](https://xmpp.org/extensions/xep-0294.html)<br/>
+![in development][in development] [XEP-0260: Jingle SOCKS5 Bytestreams Transport Method](https://xmpp.org/extensions/xep-0260.html) <br/>
+![in development][in development] [XEP-0261: Jingle In-Band Bytestreams Transport Method](https://xmpp.org/extensions/xep-0261.html) <br/>
+![not supported][not supported]   [XEP-0262: Use of ZRTP in Jingle RTP Sessions](https://xmpp.org/extensions/xep-0262.html) <br/>
+![not supported][not supported]   [XEP-0266: Codecs for Jingle Audio](https://xmpp.org/extensions/xep-0266.html) <br/>
+![not supported][not supported]   [XEP-0293: Jingle RTP Feedback Negotiation](https://xmpp.org/extensions/xep-0293.html) <br/>
+![not supported][not supported]   [XEP-0294: Jingle RTP Header Extensions Negotiation](https://xmpp.org/extensions/xep-0294.html) <br/>
 ![supported][supported]           [XEP-0297: Stanza Forwarding](https://xmpp.org/extensions/xep-0297.html) <small>
 1.0</small><br/>
+![supported][supported]           [XEP-0300: Use of Cryptographic Hash Functions in XMPP](https://xmpp.org/extensions/xep-0300.html) <small>
+1.0.0</small><br/>
 ![supported][supported]           [XEP-0301: In-Band Real Time Text](https://xmpp.org/extensions/xep-0301.html) <small>
 1.0</small><br/>
 ![supported][supported]           [XEP-0308: Last Message Correction](https://xmpp.org/extensions/xep-0308.html) <small>
 1.0</small><br/>
 ![supported][supported]           [XEP-0319: Last User Interaction in Presence](https://xmpp.org/extensions/xep-0319.html) <small>
 1.0.2</small><br/>
-![not supported][not supported]   [XEP-0368: SRV records for XMPP over TLS](https://xmpp.org/extensions/xep-0368.html)<br/>
+![not supported][not supported]   [XEP-0338: Jingle Grouping Framework](https://xmpp.org/extensions/xep-0338.html) <br/>
+![not supported][not supported]   [XEP-0339: Source-Specific Media Attributes in Jingle](https://xmpp.org/extensions/xep-0339.html) <br/>
+![supported][supported]           [XEP-0352: Client State Indication](https://xmpp.org/extensions/xep-0352.html) <small>
+1.0.0</small><br/>
+![not supported][not supported]   [XEP-0363: HTTP File Upload](https://xmpp.org/extensions/xep-0363.html) <br/>
+![supported][supported]           [XEP-0368: SRV records for XMPP over TLS](https://xmpp.org/extensions/xep-0368.html) <small>
+1.1.0</small><br/>
+![not supported][not supported]   [XEP-0393: Message Styling](https://xmpp.org/extensions/xep-0393.html) <br/>
+![not supported][not supported]   [XEP-0402: PEP Native Bookmarks](https://xmpp.org/extensions/xep-0402.html) <br/>
+![not supported][not supported]   [XEP-0410: MUC Self-Ping (Schrödinger's Chat)](https://xmpp.org/extensions/xep-0410.html) <br/>
+
 
 Supported deprecated and experimental XEPs:
 
+![supported][supported]           [XEP-0013: Flexible Offline Message Retrieval](https://xmpp.org/extensions/xep-0013.html) <small>
+1.2</small><br/>
 ![supported][supported]           [XEP-0016: Privacy Lists](https://xmpp.org/extensions/xep-0016.html) <small>
 1.7</small><br/>
 ![supported][supported]           [XEP-0020: Feature Negotiation](https://xmpp.org/extensions/xep-0020.html) <small>
 1.6</small><br/>
+![supported][supported]           [XEP-0048: Bookmarks](https://xmpp.org/extensions/xep-0048.html) <small>
+1.1</small><br/>
 ![supported][supported]           [XEP-0071: XHTML-IM](https://xmpp.org/extensions/xep-0071.html) <small>
 1.5.4</small><br/>
 ![supported][supported]           [XEP-0095: Stream Initiation](https://xmpp.org/extensions/xep-0095.html) <small>
 1.2</small><br/>
 ![supported][supported]           [XEP-0096: SI File Transfer](https://xmpp.org/extensions/xep-0096.html) <small>
 1.3</small><br/>
+![supported][supported]           [XEP-0126: Invisibility](https://xmpp.org/extensions/xep-0126.html) <small>
+1.1</small><br/>
 ![supported][supported]           [XEP-0186: Invisible Command](https://xmpp.org/extensions/xep-0186.html) <small>
-0.13</small><br/>
+0.14.0</small><br/>
 ![supported][supported]           [XEP-0280: Message Carbons](https://xmpp.org/extensions/xep-0280.html) <small>
 0.9</small><br/>
-![supported][supported]           [XEP-0300: Use of Cryptographic Hash Functions in XMPP](https://xmpp.org/extensions/xep-0300.html) <small>
-0.5.3</small><br/>
 ![supported][supported]           [XEP-0335: JSON Containers](https://xmpp.org/extensions/xep-0335.html) <small>
 0.1</small><br/>
+![supported][supported]           [XEP-0392: Consistent Color Generation](https://xmpp.org/extensions/xep-0392.html) <small>
+0.4.1</small><br/>
 
 Additionally following informational XEP documents are respected:
 
@@ -177,8 +191,6 @@ Additionally following informational XEP documents are respected:
 1.1</small><br/>
 ![supported][supported]           [XEP-0083: Nested Roster Groups](https://xmpp.org/extensions/xep-0083.html) <small>
 1.0</small><br/>
-![supported][supported]           [XEP-0126: Invisibility](https://xmpp.org/extensions/xep-0126.html) <small>
-1.1</small><br/>
 ![supported][supported]           [XEP-0128: Service Discovery Extensions](https://xmpp.org/extensions/xep-0128.html) <small>
 1.0</small><br/>
 ![supported][supported]           [XEP-0149: Time Periods](https://xmpp.org/extensions/xep-0149.html) <small>

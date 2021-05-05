@@ -55,7 +55,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Function;
 import javax.xml.bind.DatatypeConverter;
 
 import rocks.xmpp.core.net.AbstractConnection;
@@ -79,7 +78,6 @@ import rocks.xmpp.extensions.httpbind.model.Body;
 import rocks.xmpp.util.XmppStreamDecoder;
 import rocks.xmpp.util.XmppStreamEncoder;
 import rocks.xmpp.util.XmppUtils;
-import rocks.xmpp.util.concurrent.CompletionStages;
 import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
 
 /**
@@ -494,9 +492,7 @@ public abstract class BoshConnection extends AbstractConnection {
                         .sessionId(sid)
                         .type(Body.Type.TERMINATE);
 
-                future = sendNewRequest(bodyBuilder, false)
-                        .applyToEither(CompletionStages.timeoutAfter(500, TimeUnit.MILLISECONDS), Function.identity())
-                        .exceptionally(exc -> null);
+                future = sendNewRequest(bodyBuilder, false);
             } else {
                 future = CompletableFuture.completedFuture(null);
             }

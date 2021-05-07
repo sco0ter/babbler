@@ -116,10 +116,10 @@ public final class ExtensionModule implements Module {
                 Extension.of(LastActivityManager.class, true),
 
                 // XEP-0013: Flexible Offline Message Retrieval
-                Extension.of(OfflineMessage.NAMESPACE, OfflineMessageManager.class, false),
+                Extension.of(OfflineMessageManager.class, false),
 
                 // XEP-0016: Privacy Lists
-                Extension.of(Privacy.NAMESPACE, PrivacyListManager.class, false),
+                Extension.of(PrivacyListManager.class, true),
 
                 // XEP-0020: Feature Negotiation
                 Extension.of(FeatureNegotiation.NAMESPACE, true),

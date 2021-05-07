@@ -26,15 +26,15 @@ package rocks.xmpp.extensions.privacy;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 
-import rocks.xmpp.core.session.Manager;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.privacy.model.Privacy;
@@ -64,45 +64,33 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  *
  * @author Christian Schudt
  */
-public final class PrivacyListManager extends Manager {
+public final class PrivacyListManager extends AbstractIQHandler implements ExtensionProtocol {
 
     private final Set<Consumer<PrivacyListEvent>> privacyListListeners = new CopyOnWriteArraySet<>();
 
-    private final IQHandler iqHandler;
+    private final XmppSession xmppSession;
 
     private PrivacyListManager(final XmppSession xmppSession) {
-        super(xmppSession, true);
-        iqHandler = new AbstractIQHandler(Privacy.class, IQ.Type.SET) {
-            @Override
-            protected IQ processRequest(IQ iq) {
-                if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
-                    Privacy privacy = iq.getExtension(Privacy.class);
-                    if (privacy != null) {
-                        List<PrivacyList> privacyLists = privacy.getPrivacyLists();
-                        if (privacyLists.size() == 1) {
-                            XmppUtils.notifyEventListeners(privacyListListeners,
-                                    new PrivacyListEvent(PrivacyListManager.this, privacyLists.get(0).getName()));
-                        }
-                    }
-                    // In accordance with the semantics of IQ stanzas defined in XMPP Core [7], each connected resource
-                    // MUST return an IQ result to the server as well.
-                    return iq.createResult();
+        super(Privacy.class, IQ.Type.SET);
+        this.xmppSession = xmppSession;
+    }
+
+    @Override
+    protected IQ processRequest(IQ iq) {
+        if (iq.getFrom() == null || iq.getFrom().equals(xmppSession.getConnectedResource().asBareJid())) {
+            Privacy privacy = iq.getExtension(Privacy.class);
+            if (privacy != null) {
+                List<PrivacyList> privacyLists = privacy.getPrivacyLists();
+                if (privacyLists.size() == 1) {
+                    XmppUtils.notifyEventListeners(privacyListListeners,
+                            new PrivacyListEvent(PrivacyListManager.this, privacyLists.get(0).getName()));
                 }
-                return iq.createError(Condition.NOT_ACCEPTABLE);
             }
-        };
-    }
-
-    @Override
-    protected void onEnable() {
-        super.onEnable();
-        xmppSession.addIQHandler(iqHandler);
-    }
-
-    @Override
-    protected void onDisable() {
-        super.onDisable();
-        xmppSession.removeIQHandler(iqHandler);
+            // In accordance with the semantics of IQ stanzas defined in XMPP Core [7], each connected resource
+            // MUST return an IQ result to the server as well.
+            return iq.createResult();
+        }
+        return iq.createError(Condition.NOT_ACCEPTABLE);
     }
 
     /**
@@ -233,7 +221,17 @@ public final class PrivacyListManager extends Manager {
     }
 
     @Override
-    protected void dispose() {
-        privacyListListeners.clear();
+    public final String getNamespace() {
+        return Privacy.NAMESPACE;
+    }
+
+    @Override
+    public final boolean isEnabled() {
+        return !privacyListListeners.isEmpty();
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return Collections.emptySet();
     }
 }

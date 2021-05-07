@@ -45,7 +45,6 @@ import rocks.xmpp.extensions.forward.model.Forwarded;
 import rocks.xmpp.extensions.geoloc.GeoLocationManager;
 import rocks.xmpp.extensions.geoloc.model.GeoLocation;
 import rocks.xmpp.extensions.httpauth.HttpAuthenticationManager;
-import rocks.xmpp.extensions.httpauth.model.ConfirmationRequest;
 import rocks.xmpp.extensions.idle.model.Idle;
 import rocks.xmpp.extensions.invisible.InvisibilityManager;
 import rocks.xmpp.extensions.invisible.model.InvisibleCommand;
@@ -85,7 +84,6 @@ import rocks.xmpp.extensions.softwareinfo.SoftwareInformationProtocol;
 import rocks.xmpp.extensions.time.EntityTimeManager;
 import rocks.xmpp.extensions.tune.model.Tune;
 import rocks.xmpp.extensions.vcard.avatar.VCardBasedAvatarsProtocol;
-import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
 import rocks.xmpp.extensions.vcard.temp.VCardManager;
 import rocks.xmpp.extensions.version.client.ClientSoftwareVersionManager;
 
@@ -132,7 +130,7 @@ public final class ExtensionModule implements Module {
                 Extension.of(OobIQ.NAMESPACE, OutOfBandFileTransferManager.class, true),
 
                 // XEP-0070: Verifying HTTP Requests via XMPP
-                Extension.of(ConfirmationRequest.NAMESPACE, HttpAuthenticationManager.class, false),
+                Extension.of(HttpAuthenticationManager.class, false),
 
                 // XEP-0077: In-Band Registration
                 Extension.of(Registration.NAMESPACE, RegistrationManager.class, false),

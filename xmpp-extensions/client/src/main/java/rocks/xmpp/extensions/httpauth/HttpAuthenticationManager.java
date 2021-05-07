@@ -24,14 +24,15 @@
 
 package rocks.xmpp.extensions.httpauth;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 
-import rocks.xmpp.core.session.Manager;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.InboundMessageHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
@@ -50,54 +51,16 @@ import rocks.xmpp.util.XmppUtils;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0070.html">XEP-0070: Verifying HTTP Requests via XMPP</a>
  */
-public final class HttpAuthenticationManager extends Manager {
+public final class HttpAuthenticationManager extends AbstractIQHandler implements InboundMessageHandler,
+        ExtensionProtocol {
 
     private final Set<Consumer<HttpAuthenticationEvent>> httpAuthenticationListeners = new CopyOnWriteArraySet<>();
 
-    private final IQHandler iqHandler;
-
-    private final Consumer<MessageEvent> inboundMessageListener;
+    private final XmppSession xmppSession;
 
     private HttpAuthenticationManager(XmppSession xmppSession) {
-        // TODO: Include namespace here for Service Discovery? (no mentioning in XEP-0070)
-        super(xmppSession, true);
-
-        iqHandler = new AbstractIQHandler(ConfirmationRequest.class, IQ.Type.GET) {
-            @Override
-            protected IQ processRequest(IQ iq) {
-                ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
-                XmppUtils.notifyEventListeners(httpAuthenticationListeners,
-                        new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, iq,
-                                confirmationRequest));
-                return httpAuthenticationListeners.isEmpty() ? iq.createError(Condition.SERVICE_UNAVAILABLE) : null;
-            }
-        };
-
-        inboundMessageListener = e -> {
-            Message message = e.getMessage();
-            if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
-                ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
-                if (confirmationRequest != null) {
-                    XmppUtils.notifyEventListeners(httpAuthenticationListeners,
-                            new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, message,
-                                    confirmationRequest));
-                }
-            }
-        };
-    }
-
-    @Override
-    protected void onEnable() {
-        super.onEnable();
-        xmppSession.addIQHandler(iqHandler);
-        xmppSession.addInboundMessageListener(inboundMessageListener);
-    }
-
-    @Override
-    protected void onDisable() {
-        super.onDisable();
-        xmppSession.removeIQHandler(iqHandler);
-        xmppSession.removeInboundMessageListener(inboundMessageListener);
+        super(ConfirmationRequest.class, IQ.Type.GET);
+        this.xmppSession = xmppSession;
     }
 
     /**
@@ -121,7 +84,39 @@ public final class HttpAuthenticationManager extends Manager {
     }
 
     @Override
-    protected void dispose() {
-        httpAuthenticationListeners.clear();
+    protected IQ processRequest(IQ iq) {
+        ConfirmationRequest confirmationRequest = iq.getExtension(ConfirmationRequest.class);
+        XmppUtils.notifyEventListeners(httpAuthenticationListeners,
+                new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, iq,
+                        confirmationRequest));
+        return httpAuthenticationListeners.isEmpty() ? iq.createError(Condition.SERVICE_UNAVAILABLE) : null;
+    }
+
+    @Override
+    public void handleInboundMessage(MessageEvent e) {
+        Message message = e.getMessage();
+        if (message.getType() == null || message.getType() == Message.Type.NORMAL) {
+            ConfirmationRequest confirmationRequest = message.getExtension(ConfirmationRequest.class);
+            if (confirmationRequest != null) {
+                XmppUtils.notifyEventListeners(httpAuthenticationListeners,
+                        new HttpAuthenticationEvent(HttpAuthenticationManager.this, xmppSession, message,
+                                confirmationRequest));
+            }
+        }
+    }
+
+    @Override
+    public final String getNamespace() {
+        return ConfirmationRequest.NAMESPACE;
+    }
+
+    @Override
+    public final boolean isEnabled() {
+        return !httpAuthenticationListeners.isEmpty();
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return Collections.emptySet();
     }
 }

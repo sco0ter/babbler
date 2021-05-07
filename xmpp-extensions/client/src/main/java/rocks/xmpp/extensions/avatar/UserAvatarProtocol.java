@@ -28,11 +28,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Consumer;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
@@ -61,22 +59,8 @@ public final class UserAvatarProtocol extends AbstractAvatarManager
 
     private static final System.Logger logger = System.getLogger(UserAvatarProtocol.class.getName());
 
-    private final Consumer<MessageEvent> inboundMessageListener = this::handleInboundMessage;
-
-    public UserAvatarProtocol(XmppSession xmppSession) {
+    UserAvatarProtocol(XmppSession xmppSession) {
         super(xmppSession);
-    }
-
-    @Override
-    protected final void onEnable() {
-        super.onEnable();
-        xmppSession.addInboundMessageListener(inboundMessageListener);
-    }
-
-    @Override
-    protected final void onDisable() {
-        super.onDisable();
-        xmppSession.removeInboundMessageListener(inboundMessageListener);
     }
 
     /**
@@ -90,8 +74,13 @@ public final class UserAvatarProtocol extends AbstractAvatarManager
     }
 
     @Override
+    public final boolean isEnabled() {
+        return !avatarChangeListeners.isEmpty();
+    }
+
+    @Override
     public final Set<String> getFeatures() {
-        return Collections.emptySet();
+        return Set.of(AvatarMetadata.NAMESPACE, AvatarMetadata.NAMESPACE + "+notify", AvatarData.NAMESPACE);
     }
 
     @Override

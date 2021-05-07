@@ -31,8 +31,6 @@ import rocks.xmpp.core.session.Extension;
 import rocks.xmpp.core.session.Module;
 import rocks.xmpp.extensions.activity.model.Activity;
 import rocks.xmpp.extensions.avatar.UserAvatarProtocol;
-import rocks.xmpp.extensions.avatar.model.data.AvatarData;
-import rocks.xmpp.extensions.avatar.model.metadata.AvatarMetadata;
 import rocks.xmpp.extensions.blocking.BlockingManager;
 import rocks.xmpp.extensions.blocking.model.BlockList;
 import rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager;
@@ -143,8 +141,7 @@ public final class ExtensionModule implements Module {
                 Extension.of(GeoLocation.NAMESPACE, GeoLocationManager.class, true, false),
 
                 // XEP-0084: User Avatar
-                Extension.of(AvatarMetadata.NAMESPACE, UserAvatarProtocol.class, true, false),
-                Extension.of(AvatarData.NAMESPACE, UserAvatarProtocol.class, false),
+                Extension.of(UserAvatarProtocol.class, false),
 
                 // XEP-0085: Chat State Notifications
                 Extension.of(ChatStateManager.class, false),
@@ -177,7 +174,7 @@ public final class ExtensionModule implements Module {
                 Extension.of(Reachability.NAMESPACE, ReachabilityManager.class, false),
 
                 // XEP-0153: vCard-Based Avatars
-                Extension.of(AvatarUpdate.NAMESPACE, VCardBasedAvatarsProtocol.class, false),
+                Extension.of(VCardBasedAvatarsProtocol.class, false),
 
                 // XEP-0166: Jingle
                 Extension.of(Jingle.NAMESPACE, JingleManager.class, false),

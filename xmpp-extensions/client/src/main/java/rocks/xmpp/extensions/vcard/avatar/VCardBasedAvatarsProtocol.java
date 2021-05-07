@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
@@ -64,10 +63,6 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager
 
     private static final System.Logger logger = System.getLogger(VCardBasedAvatarsProtocol.class.getName());
 
-    private final Consumer<PresenceEvent> inboundPresenceListener = this::handleInboundPresence;
-
-    private final Consumer<PresenceEvent> outboundPresenceListener = this::handleOutboundPresence;
-
     final Set<String> nonConformingResources = Collections.synchronizedSet(new HashSet<>());
 
     /**
@@ -81,7 +76,7 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager
 
     private final Map<Jid, AsyncResult<byte[]>> avatarRequests = new ConcurrentHashMap<>();
 
-    public VCardBasedAvatarsProtocol(XmppSession xmppSession) {
+    VCardBasedAvatarsProtocol(XmppSession xmppSession) {
         this(xmppSession,
                 xmppSession.getManager(VCardManager.class),
                 xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(
@@ -96,20 +91,11 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager
         this.vCardManager = vCardManager;
         this.hashesLocalStore = hashesLocalStore;
         restoreUserHashes();
-    }
-
-    @Override
-    protected final void onEnable() {
-        super.onEnable();
-        xmppSession.addInboundPresenceListener(inboundPresenceListener);
-        xmppSession.addOutboundPresenceListener(outboundPresenceListener);
-    }
-
-    @Override
-    protected final void onDisable() {
-        super.onDisable();
-        xmppSession.removeInboundPresenceListener(inboundPresenceListener);
-        xmppSession.removeOutboundPresenceListener(outboundPresenceListener);
+        xmppSession.addSessionStatusListener(sessionStatusEvent -> {
+            if (sessionStatusEvent.getStatus() == XmppSession.Status.CLOSED) {
+                backupUserHashes();
+            }
+        });
     }
 
     @Override
@@ -355,12 +341,12 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager
     }
 
     @Override
-    public final Set<String> getFeatures() {
-        return Collections.emptySet();
+    public final boolean isEnabled() {
+        return !avatarChangeListeners.isEmpty();
     }
 
     @Override
-    protected void dispose() {
-        backupUserHashes();
+    public final Set<String> getFeatures() {
+        return Collections.emptySet();
     }
 }

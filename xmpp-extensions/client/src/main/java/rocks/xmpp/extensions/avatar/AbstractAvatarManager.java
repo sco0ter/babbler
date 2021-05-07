@@ -40,7 +40,6 @@ import javax.imageio.ImageIO;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.XmppException;
-import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.cache.DirectoryCache;
@@ -52,18 +51,53 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * @author Christian Schudt
  * @see AvatarManager
  */
-public abstract class AbstractAvatarManager extends Manager implements AvatarManager {
+public abstract class AbstractAvatarManager implements AvatarManager {
 
     private static final System.Logger logger = System.getLogger(AbstractAvatarManager.class.getName());
 
-    private final Set<Consumer<AvatarChangeEvent>> avatarChangeListeners = new CopyOnWriteArraySet<>();
+    protected final Set<Consumer<AvatarChangeEvent>> avatarChangeListeners = new CopyOnWriteArraySet<>();
+
+    protected final XmppSession xmppSession;
 
     private final Map<String, byte[]> avatarCache;
 
     protected AbstractAvatarManager(XmppSession xmppSession) {
-        super(xmppSession, true);
+        this.xmppSession = xmppSession;
         this.avatarCache = xmppSession.getConfiguration().getCacheDirectory() != null ? new DirectoryCache(
                 xmppSession.getConfiguration().getCacheDirectory().resolve("avatars")) : null;
+    }
+
+    /**
+     * Converts {@code bitmap} into {@link BufferedImage}.
+     *
+     * @param bitmap The bitmap to convert. Must not be {@code null}.
+     * @return Instance of {@link BufferedImage} created from {@code bitmap}. Never {@code null}.
+     * @throws ConversionException if conversion failed
+     */
+    static BufferedImage asBufferedImage(final byte[] bitmap) throws ConversionException {
+        try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(requireNonNull(bitmap))) {
+            return ofNullable(ImageIO.read(inputStream)).orElseThrow(ConversionException::new);
+        } catch (final IOException e) {
+            throw new ConversionException(e);
+        }
+    }
+
+    /**
+     * Converts {@code image} into {@code byte[]}.
+     *
+     * @param bufferedImage The image to convert. Must not be {@code null}.
+     * @return PNG bitmap created from {@code image}. Never {@code null}.
+     * @throws ConversionException if conversion failed
+     */
+    private static byte[] asPNG(final BufferedImage bufferedImage) throws ConversionException {
+        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            if (!ImageIO.write(requireNonNull(bufferedImage), "png", outputStream)) {
+                throw new ConversionException();
+            }
+            return outputStream.toByteArray();
+        } catch (final IOException e) {
+            throw new ConversionException(e);
+        }
     }
 
     protected void notifyListeners(Jid contact, byte[] avatar) {
@@ -130,39 +164,6 @@ public abstract class AbstractAvatarManager extends Manager implements AvatarMan
     @Override
     public void removeAvatarChangeListener(Consumer<AvatarChangeEvent> avatarChangeListener) {
         avatarChangeListeners.remove(avatarChangeListener);
-    }
-
-    /**
-     * Converts {@code bitmap} into {@link BufferedImage}.
-     *
-     * @param bitmap The bitmap to convert. Must not be {@code null}.
-     * @return Instance of {@link BufferedImage} created from {@code bitmap}. Never {@code null}.
-     * @throws ConversionException if conversion failed
-     */
-    static BufferedImage asBufferedImage(final byte[] bitmap) throws ConversionException {
-        try (final ByteArrayInputStream inputStream = new ByteArrayInputStream(requireNonNull(bitmap))) {
-            return ofNullable(ImageIO.read(inputStream)).orElseThrow(ConversionException::new);
-        } catch (final IOException e) {
-            throw new ConversionException(e);
-        }
-    }
-
-    /**
-     * Converts {@code image} into {@code byte[]}.
-     *
-     * @param bufferedImage The image to convert. Must not be {@code null}.
-     * @return PNG bitmap created from {@code image}. Never {@code null}.
-     * @throws ConversionException if conversion failed
-     */
-    private static byte[] asPNG(final BufferedImage bufferedImage) throws ConversionException {
-        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            if (!ImageIO.write(requireNonNull(bufferedImage), "png", outputStream)) {
-                throw new ConversionException();
-            }
-            return outputStream.toByteArray();
-        } catch (final IOException e) {
-            throw new ConversionException(e);
-        }
     }
 
     /**

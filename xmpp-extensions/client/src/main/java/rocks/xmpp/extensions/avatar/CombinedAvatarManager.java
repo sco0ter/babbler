@@ -59,20 +59,6 @@ public final class CombinedAvatarManager extends AbstractAvatarManager {
         this.userAvatarProtocol = xmppSession.getManager(UserAvatarProtocol.class);
     }
 
-    @Override
-    protected final void onEnable() {
-        super.onEnable();
-        this.vCardBasedAvatarsProtocol.setEnabled(true);
-        this.userAvatarProtocol.setEnabled(true);
-    }
-
-    @Override
-    protected final void onDisable() {
-        super.onDisable();
-        this.vCardBasedAvatarsProtocol.setEnabled(false);
-        this.userAvatarProtocol.setEnabled(false);
-    }
-
     /**
      * Gets the user avatar from the user's vCard.
      *

@@ -35,15 +35,19 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.Manager;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.InboundMessageHandler;
+import rocks.xmpp.core.stanza.InboundPresenceHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
+import rocks.xmpp.core.stanza.OutboundPresenceHandler;
 import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
+import rocks.xmpp.extensions.pubsub.model.Item;
+import rocks.xmpp.extensions.pubsub.model.event.Event;
 import rocks.xmpp.extensions.reach.model.Address;
 import rocks.xmpp.extensions.reach.model.Reachability;
 import rocks.xmpp.util.XmppUtils;
@@ -53,12 +57,12 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * Allows to query for reachability addresses of another contact, automatically responds to reachability queries and
  * notifies {@linkplain Consumer}s, when the reachability of a contact has changed either via presence or PEP.
  *
- * <p>By default this manager is not enabled. If you support reachability addresses you have to {@linkplain
- * #setEnabled(boolean) enable} it.</p>
- *
  * @author Christian Schudt
  */
-public final class ReachabilityManager extends Manager {
+public final class ReachabilityManager extends AbstractIQHandler
+        implements InboundPresenceHandler, OutboundPresenceHandler, InboundMessageHandler, ExtensionProtocol {
+
+    private static final Set<String> FEATURES = Collections.singleton(Reachability.NAMESPACE);
 
     private final Set<Consumer<ReachabilityEvent>> reachabilityListeners = new CopyOnWriteArraySet<>();
 
@@ -66,97 +70,15 @@ public final class ReachabilityManager extends Manager {
 
     private final List<Address> addresses = new CopyOnWriteArrayList<>();
 
-    private final Consumer<PresenceEvent> inboundPresenceListener;
+    private final XmppSession xmppSession;
 
-    private final Consumer<PresenceEvent> outboundPresenceListener;
-
-    private final Consumer<MessageEvent> inboundMessageEvent;
-
-    private final IQHandler iqHandler;
-
-    private ReachabilityManager(final XmppSession xmppSession) {
-        super(xmppSession, true);
-
-        this.inboundPresenceListener = e -> {
-            Presence presence = e.getPresence();
-            boolean hasReachability = checkStanzaForReachabilityAndNotify(presence);
-            Jid contact = presence.getFrom().asBareJid();
-            if (!hasReachability && reachabilities.remove(contact) != null) {
-                // If no reachability was found in presence, check, if the contact has previously sent any reachability
-                // via presence.
-                XmppUtils.notifyEventListeners(reachabilityListeners,
-                        new ReachabilityEvent(ReachabilityManager.this, contact, Collections.emptyList()));
-            }
-        };
-
-        this.outboundPresenceListener = e -> {
-            Presence presence = e.getPresence();
-            if (presence.isAvailable() && presence.getTo() == null) {
-                synchronized (addresses) {
-                    if (!addresses.isEmpty()) {
-                        presence.putExtension(new Reachability(new ArrayDeque<>(addresses)));
-                    }
-                }
-            }
-        };
-
-        this.inboundMessageEvent = e -> checkStanzaForReachabilityAndNotify(e.getMessage());
-
-        this.iqHandler = new AbstractIQHandler(Reachability.class, IQ.Type.GET) {
-            @Override
-            protected IQ processRequest(IQ iq) {
-                // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type
-                // "get"
-                return iq.createResult(new Reachability(addresses));
-            }
-        };
-    }
-
-    @Override
-    protected void onEnable() {
-        super.onEnable();
-        xmppSession.addInboundPresenceListener(inboundPresenceListener);
-        xmppSession.addOutboundPresenceListener(outboundPresenceListener);
-
-        // A user MAY send reachability addresses in an XMPP <message/> stanza.
-        xmppSession.addInboundMessageListener(inboundMessageEvent);
-
-        // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
-        xmppSession.addIQHandler(iqHandler);
-
-        // TODO: implement similar logic for PEP
-    }
-
-    @Override
-    protected void onDisable() {
-        super.onDisable();
-        xmppSession.removeInboundPresenceListener(inboundPresenceListener);
-        xmppSession.removeOutboundPresenceListener(outboundPresenceListener);
-        xmppSession.removeInboundMessageListener(inboundMessageEvent);
-        xmppSession.removeIQHandler(iqHandler);
+    ReachabilityManager(final XmppSession xmppSession) {
+        super(Reachability.class, IQ.Type.GET);
+        this.xmppSession = xmppSession;
     }
 
     public List<Address> getReachabilityAddresses() {
         return addresses;
-    }
-
-    private boolean checkStanzaForReachabilityAndNotify(Stanza stanza) {
-        Reachability reachability = stanza.getExtension(Reachability.class);
-        if (stanza.getFrom() != null) {
-            Jid contact = stanza.getFrom().asBareJid();
-            if (reachability != null) {
-                synchronized (reachabilities) {
-                    List<Address> oldReachabilityAddresses = reachabilities.get(contact);
-                    if (oldReachabilityAddresses == null || !oldReachabilityAddresses
-                            .equals(reachability.getAddresses())) {
-                        reachabilities.put(contact, reachability.getAddresses());
-                        XmppUtils.notifyEventListeners(reachabilityListeners,
-                                new ReachabilityEvent(this, contact, reachability.getAddresses()));
-                    }
-                }
-            }
-        }
-        return reachability != null;
     }
 
     /**
@@ -197,9 +119,82 @@ public final class ReachabilityManager extends Manager {
     }
 
     @Override
-    protected void dispose() {
-        reachabilityListeners.clear();
-        reachabilities.clear();
-        addresses.clear();
+    protected final IQ processRequest(IQ iq) {
+        // In addition, a contact MAY request a user's reachability addresses in an XMPP <iq/> stanza of type "get"
+        return iq.createResult(new Reachability(addresses));
+    }
+
+    @Override
+    public final void handleInboundPresence(PresenceEvent e) {
+        Presence presence = e.getPresence();
+        boolean hasReachability = checkStanzaForReachabilityAndNotify(presence);
+        Jid contact = presence.getFrom().asBareJid();
+        if (!hasReachability && reachabilities.remove(contact) != null) {
+            // If no reachability was found in presence, check, if the contact has previously sent any reachability
+            // via presence.
+            XmppUtils.notifyEventListeners(reachabilityListeners,
+                    new ReachabilityEvent(this, contact, Collections.emptyList()));
+        }
+    }
+
+    @Override
+    public final void handleInboundMessage(MessageEvent e) {
+        // a user MAY send reachability addresses in an XMPP <message/> stanza.
+        boolean hasReachability = checkStanzaForReachabilityAndNotify(e.getMessage());
+
+        if (!hasReachability) {
+            Event event = e.getMessage().getExtension(Event.class);
+            if (event != null) {
+                for (final Item item : event.getItems()) {
+                    if (item.getPayload() instanceof Reachability) {
+                        handleReachability(e.getMessage().getFrom(), (Reachability) item.getPayload());
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean checkStanzaForReachabilityAndNotify(Stanza stanza) {
+        Reachability reachability = stanza.getExtension(Reachability.class);
+        if (reachability != null && stanza.getFrom() != null) {
+            Jid contact = stanza.getFrom().asBareJid();
+            handleReachability(contact, reachability);
+        }
+        return reachability != null;
+    }
+
+    private void handleReachability(Jid contact, Reachability reachability) {
+        List<Address> oldReachabilityAddresses = reachabilities.put(contact, reachability.getAddresses());
+        if (oldReachabilityAddresses == null || !oldReachabilityAddresses.equals(reachability.getAddresses())) {
+            XmppUtils.notifyEventListeners(reachabilityListeners,
+                    new ReachabilityEvent(this, contact, Collections.unmodifiableList(reachability.getAddresses())));
+        }
+    }
+
+    @Override
+    public final void handleOutboundPresence(PresenceEvent e) {
+        Presence presence = e.getPresence();
+        if (presence.isAvailable()) {
+            synchronized (addresses) {
+                if (!addresses.isEmpty()) {
+                    presence.putExtension(new Reachability(new ArrayDeque<>(addresses)));
+                }
+            }
+        }
+    }
+
+    @Override
+    public final String getNamespace() {
+        return Reachability.NAMESPACE;
+    }
+
+    @Override
+    public final boolean isEnabled() {
+        return !addresses.isEmpty();
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return FEATURES;
     }
 }

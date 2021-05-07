@@ -57,19 +57,32 @@ public final class Address {
         this.uri = null;
     }
 
-    public Address(URI uri) {
-        this.uri = Objects.requireNonNull(uri);
-    }
-
+    /**
+     * Constructs an reachability address.
+     *
+     * @param uri          The alternate communications method for reaching the user.
+     * @param descriptions Descriptions of the URI.
+     */
     public Address(URI uri, Description... descriptions) {
         this.uri = Objects.requireNonNull(uri);
         this.desc.addAll(Arrays.asList(descriptions));
     }
 
+    /**
+     * Gets the alternate communications method for reaching the user.
+     *
+     * @return The URI.
+     */
     public final URI getUri() {
         return uri;
     }
 
+    /**
+     * Gets the optional descriptions, which describes the URI.
+     *
+     * @return The descriptions.
+     * @see #getUri()
+     */
     public final List<Description> getDescriptions() {
         return Collections.unmodifiableList(desc);
     }

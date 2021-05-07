@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.muc;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -34,11 +35,11 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.Manager;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.stanza.InboundMessageHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.Message;
-import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.items.DiscoverableItem;
@@ -46,6 +47,7 @@ import rocks.xmpp.extensions.disco.model.items.Item;
 import rocks.xmpp.extensions.disco.model.items.ItemNode;
 import rocks.xmpp.extensions.disco.model.items.ItemProvider;
 import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
+import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.extensions.muc.model.user.Invite;
 import rocks.xmpp.extensions.muc.model.user.MucUser;
 import rocks.xmpp.extensions.rsm.ResultSetProvider;
@@ -58,7 +60,9 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
  */
-public final class MultiUserChatManager extends Manager implements ItemProvider {
+public final class MultiUserChatManager implements InboundMessageHandler, ItemProvider, ExtensionProtocol {
+
+    private static final Set<String> FEATURES = Collections.singleton(Muc.NAMESPACE);
 
     private static final String ROOMS_NODE = "http://jabber.org/protocol/muc#rooms";
 
@@ -68,47 +72,11 @@ public final class MultiUserChatManager extends Manager implements ItemProvider 
 
     private final Map<Jid, DiscoverableItem> enteredRoomsMap = new ConcurrentSkipListMap<>();
 
-    private final Consumer<MessageEvent> messageListener;
+    private final XmppSession xmppSession;
 
     private MultiUserChatManager(final XmppSession xmppSession) {
-        super(xmppSession, true);
+        this.xmppSession = xmppSession;
         this.serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
-        this.messageListener = e -> {
-            Message message = e.getMessage();
-            // Check, if the message contains a mediated invitation.
-            MucUser mucUser = message.getExtension(MucUser.class);
-            if (mucUser != null) {
-                for (Invite invite : mucUser.getInvites()) {
-                    XmppUtils.notifyEventListeners(invitationListeners,
-                            new InvitationEvent(MultiUserChatManager.this, xmppSession, invite.getFrom(),
-                                    message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(),
-                                    invite.getThread(), true));
-                }
-            } else {
-                // Check, if the message contains a direct invitation.
-                DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);
-                if (directInvitation != null) {
-                    XmppUtils.notifyEventListeners(invitationListeners,
-                            new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(),
-                                    directInvitation.getRoomAddress(), directInvitation.getReason(),
-                                    directInvitation.getPassword(), directInvitation.isContinue(),
-                                    directInvitation.getThread(), false));
-                }
-            }
-        };
-    }
-
-    @Override
-    protected void onEnable() {
-        super.onEnable();
-        // Listen for inbound invitations.
-        xmppSession.addInboundMessageListener(messageListener);
-    }
-
-    @Override
-    protected void onDisable() {
-        super.onDisable();
-        xmppSession.removeInboundMessageListener(messageListener);
     }
 
     /**
@@ -207,16 +175,50 @@ public final class MultiUserChatManager extends Manager implements ItemProvider 
     }
 
     @Override
-    protected void dispose() {
-        invitationListeners.clear();
-    }
-
-    @Override
-    public ResultSetProvider<DiscoverableItem> getItems(Jid to, Jid from, String node, Locale locale)
-            throws StanzaErrorException {
+    public ResultSetProvider<DiscoverableItem> getItems(Jid to, Jid from, String node, Locale locale) {
         if (isEnabled() && ROOMS_NODE.equals(node)) {
             return ResultSetProvider.forItems(enteredRoomsMap.values());
         }
         return null;
+    }
+
+    @Override
+    public final String getNamespace() {
+        return Muc.NAMESPACE;
+    }
+
+    @Override
+    public final boolean isEnabled() {
+        return !invitationListeners.isEmpty();
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return FEATURES;
+    }
+
+    @Override
+    public final void handleInboundMessage(MessageEvent e) {
+        Message message = e.getMessage();
+        // Check, if the message contains a mediated invitation.
+        MucUser mucUser = message.getExtension(MucUser.class);
+        if (mucUser != null) {
+            for (Invite invite : mucUser.getInvites()) {
+                XmppUtils.notifyEventListeners(invitationListeners,
+                        new InvitationEvent(MultiUserChatManager.this, xmppSession, invite.getFrom(),
+                                message.getFrom(), invite.getReason(), mucUser.getPassword(), invite.isContinue(),
+                                invite.getThread(), true));
+            }
+        } else {
+            // Check, if the message contains a direct invitation.
+            DirectInvitation directInvitation = message.getExtension(DirectInvitation.class);
+            if (directInvitation != null) {
+                XmppUtils.notifyEventListeners(invitationListeners,
+                        new InvitationEvent(MultiUserChatManager.this, xmppSession, message.getFrom(),
+                                directInvitation.getRoomAddress(), directInvitation.getReason(),
+                                directInvitation.getPassword(), directInvitation.isContinue(),
+                                directInvitation.getThread(), false));
+            }
+        }
     }
 }

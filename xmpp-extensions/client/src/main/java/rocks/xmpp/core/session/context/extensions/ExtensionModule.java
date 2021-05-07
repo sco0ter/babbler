@@ -64,14 +64,11 @@ import rocks.xmpp.extensions.mood.MoodManager;
 import rocks.xmpp.extensions.mood.model.Mood;
 import rocks.xmpp.extensions.muc.MultiUserChatManager;
 import rocks.xmpp.extensions.muc.conference.model.DirectInvitation;
-import rocks.xmpp.extensions.muc.model.Muc;
 import rocks.xmpp.extensions.offline.OfflineMessageManager;
-import rocks.xmpp.extensions.offline.model.OfflineMessage;
 import rocks.xmpp.extensions.oob.OutOfBandFileTransferManager;
 import rocks.xmpp.extensions.oob.model.iq.OobIQ;
 import rocks.xmpp.extensions.ping.PingManager;
 import rocks.xmpp.extensions.privacy.PrivacyListManager;
-import rocks.xmpp.extensions.privacy.model.Privacy;
 import rocks.xmpp.extensions.reach.ReachabilityManager;
 import rocks.xmpp.extensions.reach.model.Reachability;
 import rocks.xmpp.extensions.receipts.MessageDeliveryReceiptsManager;
@@ -125,7 +122,7 @@ public final class ExtensionModule implements Module {
                 Extension.of(FeatureNegotiation.NAMESPACE, true),
 
                 // XEP-0045: Multi-User Chat
-                Extension.of(Muc.NAMESPACE, MultiUserChatManager.class, true),
+                Extension.of(MultiUserChatManager.class, true),
 
                 // XEP-0047: In-Band Bytestreams
                 Extension.of(InBandByteStream.NAMESPACE, InBandByteStreamManager.class, true),

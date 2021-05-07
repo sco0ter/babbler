@@ -114,8 +114,8 @@ public final class SocketConnection extends TcpConnection {
 
     private SessionOpen sessionOpen;
 
-    public SocketConnection(final Socket socket, final XmppSession xmppSession,
-                            final TcpConnectionConfiguration configuration) {
+    SocketConnection(final Socket socket, final XmppSession xmppSession,
+                     final TcpConnectionConfiguration configuration) {
         super(configuration, xmppSession, xmppSession::notifyException);
         this.socket = socket;
         try {
@@ -134,7 +134,6 @@ public final class SocketConnection extends TcpConnection {
             streamFeaturesManager.addFeatureNegotiator(securityManager);
             streamFeaturesManager.addFeatureNegotiator(compressionManager);
             streamFeaturesManager.addFeatureNegotiator(streamManager);
-            streamManager.reset();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

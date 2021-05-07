@@ -31,6 +31,7 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.WriterInterceptor;
 import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.session.XmppSession;
+import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
@@ -195,7 +196,7 @@ public final class ClientStreamManager extends AbstractStreamManager implements 
     /**
      * Resets any client enabled state.
      */
-    public synchronized void reset() {
+    private synchronized void reset() {
         enabled = null;
         enabledByClient.set(true);
     }
@@ -228,7 +229,9 @@ public final class ClientStreamManager extends AbstractStreamManager implements 
         // When about to send a stanza, first put the stanza (paired with the current value of X)
         // in an "unacknowledged" queue.
         // Note that this doesn't work for BOSH connections, since streamElement is always of type Body.
-        if (streamElement instanceof Stanza) {
+        if (streamElement instanceof SessionOpen) {
+            reset();
+        } else if (streamElement instanceof Stanza) {
             markUnacknowledged((Stanza) streamElement);
             // TODO: Consider optimization here: Allow streamElement not to be flushed, but flush later after
             //  sending the request

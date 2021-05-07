@@ -108,7 +108,6 @@ abstract class AbstractWebSocketClientConnection extends WebSocketConnection {
                 xmppSession::createUnmarshaller, XMLConstants.NULL_NS_URI));
         this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
         this.streamManager = xmppSession.getManager(ClientStreamManager.class);
-        this.streamManager.reset();
         this.executorService = new QueuedScheduledExecutorService(EXECUTOR_SERVICE);
 
         if (connectionConfiguration.getPingInterval() != null && !connectionConfiguration.getPingInterval().isNegative()

@@ -24,7 +24,11 @@
 
 package rocks.xmpp.extensions.vcard.temp;
 
+import java.util.Collections;
+import java.util.Set;
+
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -42,7 +46,9 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  *
  * @author Christian Schudt
  */
-public final class VCardManager extends Manager {
+public final class VCardManager extends Manager implements ExtensionProtocol {
+
+    private static final Set<String> FEATURES = Collections.singleton(VCard.NAMESPACE);
 
     private VCardManager(final XmppSession xmppSession) {
         super(xmppSession);
@@ -88,5 +94,15 @@ public final class VCardManager extends Manager {
                 xmppSession.send(presence);
             }
         });
+    }
+
+    @Override
+    public final String getNamespace() {
+        return VCard.NAMESPACE;
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return FEATURES;
     }
 }

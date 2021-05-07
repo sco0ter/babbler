@@ -36,9 +36,7 @@ import rocks.xmpp.extensions.avatar.model.metadata.AvatarMetadata;
 import rocks.xmpp.extensions.blocking.BlockingManager;
 import rocks.xmpp.extensions.blocking.model.BlockList;
 import rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager;
-import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.bytestreams.s5b.Socks5ByteStreamManager;
-import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.carbons.MessageCarbonsManager;
 import rocks.xmpp.extensions.carbons.model.MessageCarbons;
 import rocks.xmpp.extensions.chatstates.ChatStateManager;
@@ -91,7 +89,6 @@ import rocks.xmpp.extensions.tune.model.Tune;
 import rocks.xmpp.extensions.vcard.avatar.VCardBasedAvatarsProtocol;
 import rocks.xmpp.extensions.vcard.avatar.model.AvatarUpdate;
 import rocks.xmpp.extensions.vcard.temp.VCardManager;
-import rocks.xmpp.extensions.vcard.temp.model.VCard;
 import rocks.xmpp.extensions.version.client.ClientSoftwareVersionManager;
 
 /**
@@ -125,13 +122,13 @@ public final class ExtensionModule implements Module {
                 Extension.of(MultiUserChatManager.class, true),
 
                 // XEP-0047: In-Band Bytestreams
-                Extension.of(InBandByteStream.NAMESPACE, InBandByteStreamManager.class, true),
+                Extension.of(InBandByteStreamManager.class, true),
 
                 // XEP-0054: vcard-temp
-                Extension.of(VCard.NAMESPACE, VCardManager.class, true),
+                Extension.of(VCardManager.class, false),
 
                 // XEP-0065: SOCKS5 Bytestreams
-                Extension.of(Socks5ByteStream.NAMESPACE, Socks5ByteStreamManager.class, true),
+                Extension.of(Socks5ByteStreamManager.class, true),
 
                 // XEP-0066: Out of Band Data
                 Extension.of(OobIQ.NAMESPACE, OutOfBandFileTransferManager.class, true),

@@ -125,7 +125,6 @@ final class NettyChannelClientConnection extends NettyChannelConnection {
                 .addAll(connectionConfiguration.getCompressionMethods());
 
         this.streamFeaturesManager = xmppSession.getManager(StreamFeaturesManager.class);
-        this.streamFeaturesManager.addFeatureNegotiator(streamManager);
         this.streamFeaturesManager.addFeatureNegotiator(startTlsManager);
         this.streamFeaturesManager.addFeatureNegotiator(compressionManager);
     }
@@ -176,7 +175,6 @@ final class NettyChannelClientConnection extends NettyChannelConnection {
     @Override
     protected final CompletionStage<Void> closeConnection() {
         return super.closeConnection().thenRun(() -> {
-            this.streamFeaturesManager.removeFeatureNegotiator(streamManager);
             this.streamFeaturesManager.removeFeatureNegotiator(startTlsManager);
             this.streamFeaturesManager.removeFeatureNegotiator(compressionManager);
         });

@@ -42,6 +42,8 @@ import rocks.xmpp.core.stanza.OutboundIQHandler;
 import rocks.xmpp.core.stanza.OutboundMessageHandler;
 import rocks.xmpp.core.stanza.OutboundPresenceHandler;
 import rocks.xmpp.core.stanza.PresenceEvent;
+import rocks.xmpp.core.stream.StreamFeatureNegotiator;
+import rocks.xmpp.core.stream.client.StreamFeaturesManager;
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
@@ -139,6 +141,10 @@ final class ExtensionProtocolRegistry implements DiscoverableInfo {
             if (extensionProtocol instanceof OutboundIQHandler) {
                 xmppSession.addOutboundIQListener(outboundIQeHandlerConsumerMap.get(extensionProtocol));
             }
+            if (extensionProtocol instanceof StreamFeatureNegotiator) {
+                xmppSession.getManager(StreamFeaturesManager.class)
+                        .addFeatureNegotiator((StreamFeatureNegotiator<?>) extensionProtocol);
+            }
         }
     }
 
@@ -179,6 +185,10 @@ final class ExtensionProtocolRegistry implements DiscoverableInfo {
             }
             if (extensionProtocol instanceof OutboundIQHandler) {
                 xmppSession.removeOutboundIQListener(outboundIQeHandlerConsumerMap.get(extensionProtocol));
+            }
+            if (extensionProtocol instanceof StreamFeatureNegotiator) {
+                xmppSession.getManager(StreamFeaturesManager.class)
+                        .removeFeatureNegotiator((StreamFeatureNegotiator<?>) extensionProtocol);
             }
         }
     }

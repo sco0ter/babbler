@@ -133,7 +133,6 @@ public final class SocketConnection extends TcpConnection {
                     .addAll(tcpConnectionConfiguration.getCompressionMethods());
             streamFeaturesManager.addFeatureNegotiator(securityManager);
             streamFeaturesManager.addFeatureNegotiator(compressionManager);
-            streamFeaturesManager.addFeatureNegotiator(streamManager);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -308,7 +307,6 @@ public final class SocketConnection extends TcpConnection {
 
         streamFeaturesManager.removeFeatureNegotiator(securityManager);
         streamFeaturesManager.removeFeatureNegotiator(compressionManager);
-        streamFeaturesManager.removeFeatureNegotiator(streamManager);
         try {
             synchronized (this) {
                 inputStream = null;

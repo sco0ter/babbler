@@ -194,14 +194,6 @@ public final class ClientStreamManager extends AbstractStreamManager implements 
     }
 
     /**
-     * Resets any client enabled state.
-     */
-    private synchronized void reset() {
-        enabled = null;
-        enabledByClient.set(true);
-    }
-
-    /**
      * Resumes the stream.
      *
      * @return The async result, which is done, if either the stream is not resumable, or the server resumed the stream.
@@ -230,7 +222,7 @@ public final class ClientStreamManager extends AbstractStreamManager implements 
         // in an "unacknowledged" queue.
         // Note that this doesn't work for BOSH connections, since streamElement is always of type Body.
         if (streamElement instanceof SessionOpen) {
-            reset();
+            enabledByClient.set(false);
         } else if (streamElement instanceof Stanza) {
             markUnacknowledged((Stanza) streamElement);
             // TODO: Consider optimization here: Allow streamElement not to be flushed, but flush later after

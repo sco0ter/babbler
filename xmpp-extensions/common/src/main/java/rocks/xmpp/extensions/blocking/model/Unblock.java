@@ -41,7 +41,7 @@ import rocks.xmpp.addr.Jid;
 @XmlRootElement
 public final class Unblock extends Blockable {
 
-    private Unblock() {
+    public Unblock() {
     }
 
     /**

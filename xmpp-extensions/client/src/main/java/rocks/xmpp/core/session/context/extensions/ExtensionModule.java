@@ -32,7 +32,6 @@ import rocks.xmpp.core.session.Module;
 import rocks.xmpp.extensions.activity.model.Activity;
 import rocks.xmpp.extensions.avatar.UserAvatarProtocol;
 import rocks.xmpp.extensions.blocking.BlockingManager;
-import rocks.xmpp.extensions.blocking.model.BlockList;
 import rocks.xmpp.extensions.bytestreams.ibb.InBandByteStreamManager;
 import rocks.xmpp.extensions.bytestreams.s5b.Socks5ByteStreamManager;
 import rocks.xmpp.extensions.carbons.MessageCarbonsManager;
@@ -188,7 +187,7 @@ public final class ExtensionModule implements Module {
                 Extension.of(InvisibleCommand.NAMESPACE, InvisibilityManager.class, false),
 
                 // XEP-0191: Blocking Command
-                Extension.of(BlockList.NAMESPACE, BlockingManager.class, false),
+                Extension.of(BlockingManager.class, false),
 
                 // XEP-0198: Stream Management
                 Extension.of(StreamManagement.NAMESPACE, ClientStreamManager.class, false),

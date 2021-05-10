@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,8 +42,6 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 /**
  * Implementation of <a href="https://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet
  * Metadata</a>.
- *
- * @author Christian Schudt
  */
 public class StanzaHeadersAndInternetMetadataProtocol implements HeaderManager {
 
@@ -61,7 +59,17 @@ public class StanzaHeadersAndInternetMetadataProtocol implements HeaderManager {
 
     @Override
     public final Set<String> getSupportedHeaders() {
-        return supportedHeaders;
+        return Collections.unmodifiableSet(supportedHeaders);
+    }
+
+    @Override
+    public boolean addSupportedHeader(String header) {
+        return supportedHeaders.add(header);
+    }
+
+    @Override
+    public boolean removeSupportedHeader(String header) {
+        return supportedHeaders.remove(header);
     }
 
     @Override

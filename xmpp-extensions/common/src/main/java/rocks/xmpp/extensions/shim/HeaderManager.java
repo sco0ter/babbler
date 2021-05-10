@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,7 +48,7 @@ public interface HeaderManager extends InfoProvider, ExtensionProtocol {
     AsyncResult<List<String>> discoverSupportedHeaders(Jid jid);
 
     /**
-     * Gets the supported headers.
+     * Gets the supported headers as unmodifiable set.
      *
      * <p>If you want to advertise support for a specific header, add it to this set.
      * Service discovery requests to the 'header' node will then reveal supported headers.</p>
@@ -56,4 +56,23 @@ public interface HeaderManager extends InfoProvider, ExtensionProtocol {
      * @return The supported headers.
      */
     Set<String> getSupportedHeaders();
+
+    /**
+     * Adds a supported header. Adding a header automatically includes this protocol in service discovery responses.
+     *
+     * @param header The header.
+     * @return True, if the header was added.
+     * @see #removeSupportedHeader(String)
+     */
+    boolean addSupportedHeader(String header);
+
+    /**
+     * Removes a supported header. If there are no headers left, this protocol is no longer included in service
+     * discovery responses.
+     *
+     * @param header The header.
+     * @return True, if the header was removed.
+     * @see #addSupportedHeader(String)
+     */
+    boolean removeSupportedHeader(String header);
 }

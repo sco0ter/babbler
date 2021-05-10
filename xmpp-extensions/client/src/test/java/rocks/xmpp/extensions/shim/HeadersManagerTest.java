@@ -60,8 +60,8 @@ public class HeadersManagerTest extends BaseTest {
 
         // JULIET supports the following headers:
         HeaderManager headerManager = xmppSession.getManager(HeaderManager.class);
-        headerManager.getSupportedHeaders().add("In-Reply-To");
-        headerManager.getSupportedHeaders().add("Keywords");
+        Assert.assertTrue(headerManager.addSupportedHeader("In-Reply-To"));
+        Assert.assertTrue(headerManager.addSupportedHeader("Keywords"));
 
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
 
@@ -81,11 +81,10 @@ public class HeadersManagerTest extends BaseTest {
 
         // JULIET supports the following headers:
         HeaderManager headerManager = xmppSession.getManager(HeaderManager.class);
-        headerManager.getSupportedHeaders().add("In-Reply-To");
-        headerManager.getSupportedHeaders().add("Keywords");
+        headerManager.addSupportedHeader("In-Reply-To");
+        headerManager.addSupportedHeader("Keywords");
 
-        HeaderManager headerManager2 = xmppSession.getManager(HeaderManager.class);
-        List<String> headers = headerManager2.discoverSupportedHeaders(JULIET).get();
+        List<String> headers = headerManager.discoverSupportedHeaders(JULIET).get();
 
         Assert.assertEquals(headers.size(), 2);
         Assert.assertTrue(headers.contains("In-Reply-To"));
@@ -96,9 +95,9 @@ public class HeadersManagerTest extends BaseTest {
     public void testDiscoverSupportedHeadersIfProtocolIsNotEnabled() throws InterruptedException {
         XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
 
-        HeaderManager headerManager2 = xmppSession.getManager(HeaderManager.class);
+        HeaderManager headerManager = xmppSession.getManager(HeaderManager.class);
         try {
-            headerManager2.discoverSupportedHeaders(JULIET).get();
+            headerManager.discoverSupportedHeaders(JULIET).get();
         } catch (ExecutionException e) {
             Assert.assertTrue(e.getCause() instanceof StanzaErrorException);
             return;

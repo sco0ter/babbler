@@ -39,7 +39,26 @@ import rocks.xmpp.extensions.shim.StanzaHeadersAndInternetMetadataProtocol;
  */
 public final class ClientHeaderManager extends StanzaHeadersAndInternetMetadataProtocol {
 
+    private final XmppSession xmppSession;
+
     private ClientHeaderManager(XmppSession xmppSession) {
         super(xmppSession.getManager(ServiceDiscoveryManager.class));
+        this.xmppSession = xmppSession;
+    }
+
+    @Override
+    public final boolean addSupportedHeader(String header) {
+        boolean result = super.addSupportedHeader(header);
+        xmppSession.enableFeature(getNamespace());
+        return result;
+    }
+
+    @Override
+    public final boolean removeSupportedHeader(String header) {
+        boolean result = super.removeSupportedHeader(header);
+        if (getSupportedHeaders().isEmpty()) {
+            xmppSession.disableFeature(getNamespace());
+        }
+        return result;
     }
 }

@@ -175,9 +175,6 @@ public final class SocketConnection extends TcpConnection {
      */
     @Override
     public void secureConnection() throws IOException, CertificateException, NoSuchAlgorithmException {
-        if (isSecure()) {
-            return;
-        }
         SSLContext sslContext = tcpConnectionConfiguration.getSSLContext();
         if (sslContext == null) {
             sslContext = SSLContext.getDefault();
@@ -192,6 +189,9 @@ public final class SocketConnection extends TcpConnection {
                     socket.getPort(),
                     true);
             sslSocket = (SSLSocket) socket;
+            outputStream = new BufferedOutputStream(sslSocket.getOutputStream());
+            // http://java-performance.info/java-io-bufferedinputstream-and-java-util-zip-gzipinputstream/
+            inputStream = new BufferedInputStream(sslSocket.getInputStream(), 65536);
         }
 
         HostnameVerifier verifier = tcpConnectionConfiguration.getHostnameVerifier();
@@ -214,11 +214,6 @@ public final class SocketConnection extends TcpConnection {
             }
         }
 
-        synchronized (this) {
-            outputStream = new BufferedOutputStream(socket.getOutputStream());
-            // http://java-performance.info/java-io-bufferedinputstream-and-java-util-zip-gzipinputstream/
-            inputStream = new BufferedInputStream(socket.getInputStream(), 65536);
-        }
         logger.log(Level.DEBUG, "Connection has been secured via TLS.");
     }
 

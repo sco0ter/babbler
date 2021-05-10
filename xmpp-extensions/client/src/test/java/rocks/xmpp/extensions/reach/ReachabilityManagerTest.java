@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2015 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -50,8 +50,6 @@ import rocks.xmpp.extensions.reach.model.Reachability;
 
 /**
  * Tests for {@link ReachabilityManager}.
- *
- * @author Christian Schudt
  */
 public class ReachabilityManagerTest extends BaseTest {
 
@@ -142,7 +140,7 @@ public class ReachabilityManagerTest extends BaseTest {
         XmppSession xmppSession = Mockito.mock(XmppSession.class);
         ReachabilityManager reachabilityManager = Mockito.spy(new ReachabilityManager(xmppSession));
 
-        reachabilityManager.getReachabilityAddresses().add(new Address(URI.create("tel:+1-303-555-1212")));
+        reachabilityManager.addReachabilityAddress(new Address(URI.create("tel:+1-303-555-1212")));
 
         IQ iq = new IQ(IQ.Type.GET, new Reachability());
 
@@ -162,8 +160,9 @@ public class ReachabilityManagerTest extends BaseTest {
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         Assert.assertFalse(serviceDiscoveryManager.discoverInformation(JULIET).get().getFeatures().contains(
                 Reachability.NAMESPACE));
-        reachabilityManager.getReachabilityAddresses().add(new Address(URI.create("")));
+        reachabilityManager.addReachabilityAddress(new Address(URI.create("")));
         Assert.assertTrue(reachabilityManager.isEnabled());
-        Assert.assertTrue(serviceDiscoveryManager.discoverInformation(JULIET).get().getFeatures().contains(Reachability.NAMESPACE));
+        Assert.assertTrue(serviceDiscoveryManager.discoverInformation(JULIET).get().getFeatures()
+                .contains(Reachability.NAMESPACE));
     }
 }

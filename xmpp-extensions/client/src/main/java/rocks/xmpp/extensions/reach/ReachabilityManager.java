@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -56,8 +56,6 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 /**
  * Allows to query for reachability addresses of another contact, automatically responds to reachability queries and
  * notifies {@linkplain Consumer}s, when the reachability of a contact has changed either via presence or PEP.
- *
- * @author Christian Schudt
  */
 public final class ReachabilityManager extends AbstractIQHandler
         implements InboundPresenceHandler, OutboundPresenceHandler, InboundMessageHandler, ExtensionProtocol {
@@ -77,8 +75,41 @@ public final class ReachabilityManager extends AbstractIQHandler
         this.xmppSession = xmppSession;
     }
 
+    /**
+     * Gets the reachability address as unmodifiable list.
+     *
+     * @return The reachability addresses.
+     */
     public List<Address> getReachabilityAddresses() {
-        return addresses;
+        return Collections.unmodifiableList(addresses);
+    }
+
+    /**
+     * Adds a reachability address.
+     *
+     * @param address The reachability address.
+     * @return True, if the address was added.
+     * @see #removeReachabilityAddress(Address)
+     */
+    public boolean addReachabilityAddress(Address address) {
+        boolean result = addresses.add(address);
+        xmppSession.enableFeature(getNamespace());
+        return result;
+    }
+
+    /**
+     * Removes a reachability address.
+     *
+     * @param address The reachability address.
+     * @return True, if the address was removed.
+     * @see #addReachabilityAddress(Address)
+     */
+    public boolean removeReachabilityAddress(Address address) {
+        boolean result = addresses.add(address);
+        if (addresses.isEmpty()) {
+            xmppSession.disableFeature(getNamespace());
+        }
+        return result;
     }
 
     /**

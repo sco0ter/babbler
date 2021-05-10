@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2015 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.time.model.EntityTime;
 
 /**
- * @author Christian Schudt
+ * Tests for {@link EntityTimeManager}.
  */
 public class EntityTimeManagerTest extends BaseTest {
 
@@ -52,13 +52,13 @@ public class EntityTimeManagerTest extends BaseTest {
         Assert.assertNotNull(entityTime);
     }
 
-    @Test(enabled = true)
+    @Test
     public void testEntityTimeIfDisabled() throws InterruptedException {
         MockServer mockServer = new MockServer();
-        TestXmppSession connection1 = new TestXmppSession(ROMEO, mockServer);
-        TestXmppSession connection2 = new TestXmppSession(JULIET, mockServer);
-        connection2.getManager(EntityTimeManager.class).setEnabled(false);
-        EntityTimeManager entityTimeManager = connection1.getManager(EntityTimeManager.class);
+        TestXmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
+        TestXmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
+        xmppSession2.disableFeature(EntityTime.NAMESPACE);
+        EntityTimeManager entityTimeManager = xmppSession1.getManager(EntityTimeManager.class);
         try {
             entityTimeManager.getEntityTime(JULIET).get();
         } catch (ExecutionException e) {
@@ -70,14 +70,13 @@ public class EntityTimeManagerTest extends BaseTest {
     @Test
     public void testServiceDiscoveryEntry() throws ExecutionException, InterruptedException {
         XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
-        EntityTimeManager entityTimeManager = xmppSession.getManager(EntityTimeManager.class);
         // By default, the manager should be enabled.
-        Assert.assertTrue(entityTimeManager.isEnabled());
+        Assert.assertTrue(xmppSession.getEnabledFeatures().contains(EntityTime.NAMESPACE));
         ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
         DiscoverableInfo discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
         Assert.assertTrue(discoverableInfo.getFeatures().contains(EntityTime.NAMESPACE));
-        entityTimeManager.setEnabled(false);
-        Assert.assertFalse(entityTimeManager.isEnabled());
+        xmppSession.disableFeature(EntityTime.NAMESPACE);
+        Assert.assertFalse(xmppSession.getEnabledFeatures().contains(EntityTime.NAMESPACE));
         discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
         Assert.assertFalse(discoverableInfo.getFeatures().contains(EntityTime.NAMESPACE));
     }

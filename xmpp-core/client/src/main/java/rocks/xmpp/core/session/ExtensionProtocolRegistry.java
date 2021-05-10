@@ -25,6 +25,7 @@
 package rocks.xmpp.core.session;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -59,6 +60,8 @@ import rocks.xmpp.extensions.disco.model.info.Identity;
 final class ExtensionProtocolRegistry implements DiscoverableInfo {
 
     private final Map<String, ExtensionProtocol> extensionProtocolMap = new HashMap<>();
+
+    private final Set<ExtensionProtocol> enabledExtensions = new HashSet<>();
 
     private final Map<OutboundPresenceHandler, Consumer<PresenceEvent>> outboundPresenceHandlerConsumerMap =
             new HashMap<>();
@@ -114,7 +117,9 @@ final class ExtensionProtocolRegistry implements DiscoverableInfo {
 
     synchronized void enableExtension(String namespace) {
         ExtensionProtocol extensionProtocol = extensionProtocolMap.get(namespace);
+
         if (extensionProtocol != null) {
+            enabledExtensions.add(extensionProtocol);
             if (!extensionProtocol.isEnabled()) {
                 if (extensionProtocol instanceof Manager) {
                     ((Manager) extensionProtocol).setEnabled(true);
@@ -160,6 +165,7 @@ final class ExtensionProtocolRegistry implements DiscoverableInfo {
     synchronized void disableExtension(String namespace) {
         ExtensionProtocol extensionProtocol = extensionProtocolMap.get(namespace);
         if (extensionProtocol != null) {
+            enabledExtensions.remove(extensionProtocol);
             if (extensionProtocol.isEnabled()) {
                 if (extensionProtocol instanceof Manager) {
                     ((Manager) extensionProtocol).setEnabled(false);
@@ -204,7 +210,7 @@ final class ExtensionProtocolRegistry implements DiscoverableInfo {
 
     @Override
     public final Set<Identity> getIdentities() {
-        return this.extensionProtocolMap.values()
+        return this.enabledExtensions
                 .stream()
                 .filter(e -> e instanceof DiscoverableInfo && e.isEnabled())
                 .flatMap(extension -> ((DiscoverableInfo) extension).getIdentities().stream())
@@ -213,7 +219,7 @@ final class ExtensionProtocolRegistry implements DiscoverableInfo {
 
     @Override
     public final Set<String> getFeatures() {
-        return this.extensionProtocolMap.values()
+        return this.enabledExtensions
                 .stream()
                 .filter(ExtensionProtocol::isEnabled)
                 .flatMap(extension -> extension.getFeatures().stream())
@@ -222,7 +228,7 @@ final class ExtensionProtocolRegistry implements DiscoverableInfo {
 
     @Override
     public final List<DataForm> getExtensions() {
-        return this.extensionProtocolMap.values()
+        return this.enabledExtensions
                 .stream()
                 .filter(e -> e instanceof DiscoverableInfo && e.isEnabled())
                 .flatMap(extension -> ((DiscoverableInfo) extension).getExtensions().stream())

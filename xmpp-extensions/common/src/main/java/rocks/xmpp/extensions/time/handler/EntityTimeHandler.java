@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2020 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,7 @@ import rocks.xmpp.extensions.time.model.EntityTime;
  *
  * @author Christian Schudt
  */
-public final class EntityTimeHandler extends AbstractIQHandler implements ExtensionProtocol {
+public class EntityTimeHandler extends AbstractIQHandler implements ExtensionProtocol {
 
     private static final Set<String> FEATURES = Collections.singleton(EntityTime.NAMESPACE);
 

@@ -74,6 +74,7 @@ import rocks.xmpp.extensions.rosterx.ContactExchangeManager;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 import rocks.xmpp.extensions.rpc.client.ClientRpcManager;
 import rocks.xmpp.extensions.rtt.RealTimeTextManager;
+import rocks.xmpp.extensions.search.SearchManager;
 import rocks.xmpp.extensions.shim.client.ClientHeaderManager;
 import rocks.xmpp.extensions.si.StreamInitiationManager;
 import rocks.xmpp.extensions.si.model.StreamInitiation;
@@ -122,6 +123,9 @@ public final class ExtensionModule implements Module {
 
                 // XEP-0054: vcard-temp
                 Extension.of(VCardManager.class, false),
+
+                // XEP-0055: Jabber Search
+                Extension.of(SearchManager.class, true),
 
                 // XEP-0065: SOCKS5 Bytestreams
                 Extension.of(Socks5ByteStreamManager.class, true),

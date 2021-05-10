@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,11 @@
 
 package rocks.xmpp.extensions.search;
 
+import java.util.Collections;
+import java.util.Set;
+
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.Manager;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.search.model.Search;
@@ -34,6 +37,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 /**
  * The search manager allows to perform search requests on a server or service component according to <a
  * href="https://xmpp.org/extensions/xep-0055.html">XEP-0055: Jabber Search</a>.
+ * 
  * <blockquote>
  * <p><cite><a href="https://xmpp.org/extensions/xep-0055.html#intro">1. Introduction</a></cite></p>
  * <p>The basic functionality is to query an information repository regarding the possible search fields, to send a
@@ -43,9 +47,10 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * Forms (XEP-0004)</a> protocol.</p>
  * </blockquote>
  *
- * @author Christian Schudt
  */
-public final class SearchManager extends Manager {
+public final class SearchManager implements ExtensionProtocol {
+
+    private final XmppSession xmppSession;
 
     /**
      * Creates the search manager.
@@ -53,7 +58,7 @@ public final class SearchManager extends Manager {
      * @param xmppSession The search manager.
      */
     private SearchManager(XmppSession xmppSession) {
-        super(xmppSession);
+        this.xmppSession = xmppSession;
     }
 
     /**
@@ -84,5 +89,20 @@ public final class SearchManager extends Manager {
      */
     public AsyncResult<Search> search(Search search, Jid service) {
         return xmppSession.query(IQ.set(service, search), Search.class);
+    }
+
+    @Override
+    public final String getNamespace() {
+        return Search.NAMESPACE;
+    }
+
+    @Override
+    public final boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return Collections.emptySet();
     }
 }

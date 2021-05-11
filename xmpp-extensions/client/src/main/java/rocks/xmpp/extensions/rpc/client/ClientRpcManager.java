@@ -47,7 +47,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  */
 public final class ClientRpcManager extends AbstractRpcManager {
 
-    private XmppSession xmppSession;
+    private final XmppSession xmppSession;
 
     private ClientRpcManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;

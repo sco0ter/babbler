@@ -43,7 +43,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  */
 public final class EntityTimeManager extends EntityTimeHandler {
 
-    private XmppSession xmppSession;
+    private final XmppSession xmppSession;
 
     private EntityTimeManager(final XmppSession xmppSession) {
         this.xmppSession = xmppSession;

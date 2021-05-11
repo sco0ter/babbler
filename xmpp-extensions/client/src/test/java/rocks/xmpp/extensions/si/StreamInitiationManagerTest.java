@@ -40,7 +40,10 @@ import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
+import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
+import rocks.xmpp.extensions.si.model.StreamInitiation;
 import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 
 /**
@@ -55,8 +58,10 @@ public class StreamInitiationManagerTest extends BaseTest {
 
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
-
+        xmppSession2.enableFeature(StreamInitiation.NAMESPACE);
+        
         FileTransferManager fileTransferManager = xmppSession2.getManager(FileTransferManager.class);
+
         fileTransferManager.addFileTransferOfferListener(e -> {
             if (!e.getName().equals("Filename") || e.getSize() != 123) {
                 Assert.fail();
@@ -79,7 +84,8 @@ public class StreamInitiationManagerTest extends BaseTest {
 
         XmppSession xmppSession1 = new TestXmppSession(ROMEO, mockServer);
         XmppSession xmppSession2 = new TestXmppSession(JULIET, mockServer);
-
+        xmppSession2.enableFeature(StreamInitiation.NAMESPACE);
+        
         FileTransferManager fileTransferManager = xmppSession2.getManager(FileTransferManager.class);
         fileTransferManager.addFileTransferOfferListener(e -> {
             if (!e.getName().equals("Filename") || e.getSize() != 123) {
@@ -94,7 +100,7 @@ public class StreamInitiationManagerTest extends BaseTest {
                     Duration.ofSeconds(2)).get();
         } catch (ExecutionException e) {
             if (!(((StanzaErrorException) e.getCause()).getCondition() == Condition.FORBIDDEN)) {
-                Assert.fail();
+                Assert.fail(e.getMessage(), e.getCause());
             } else {
                 return;
             }
@@ -119,5 +125,24 @@ public class StreamInitiationManagerTest extends BaseTest {
         Assert.assertEquals(streamInitiationManager.getSupportedStreamMethods().size(), 1);
         // Only IBB should be advertised by SI
         Assert.assertTrue(streamInitiationManager.getSupportedStreamMethods().contains(InBandByteStream.NAMESPACE));
+    }
+
+    @Test
+    public void testServiceDiscoveryEntry() throws ExecutionException, InterruptedException {
+        XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
+        // By default, the manager should be disabled.
+        Assert.assertFalse(xmppSession.getEnabledFeatures().contains(StreamInitiation.NAMESPACE));
+        Assert.assertFalse(xmppSession.getEnabledFeatures().contains(SIFileTransferOffer.NAMESPACE));
+        
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
+        DiscoverableInfo discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
+        Assert.assertFalse(discoverableInfo.getFeatures().contains(StreamInitiation.NAMESPACE));
+        Assert.assertFalse(discoverableInfo.getFeatures().contains(SIFileTransferOffer.NAMESPACE));
+        xmppSession.enableFeature(StreamInitiation.NAMESPACE);
+        Assert.assertTrue(xmppSession.getEnabledFeatures().contains(StreamInitiation.NAMESPACE));
+        Assert.assertTrue(xmppSession.getEnabledFeatures().contains(SIFileTransferOffer.NAMESPACE));
+        discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
+        Assert.assertTrue(discoverableInfo.getFeatures().contains(StreamInitiation.NAMESPACE));
+        Assert.assertTrue(discoverableInfo.getFeatures().contains(SIFileTransferOffer.NAMESPACE));
     }
 }

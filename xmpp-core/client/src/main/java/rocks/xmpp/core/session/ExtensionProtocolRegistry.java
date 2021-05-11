@@ -221,7 +221,7 @@ final class ExtensionProtocolRegistry implements DiscoverableInfo {
     public final Set<String> getFeatures() {
         return this.enabledExtensions
                 .stream()
-                .filter(ExtensionProtocol::isEnabled)
+                //.filter(ExtensionProtocol::isEnabled)
                 .flatMap(extension -> extension.getFeatures().stream())
                 .collect(Collectors.toSet());
     }

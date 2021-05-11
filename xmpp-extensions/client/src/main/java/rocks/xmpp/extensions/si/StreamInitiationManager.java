@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -45,10 +46,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.Manager;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.IQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.core.stanza.model.errors.Condition;
@@ -70,10 +70,10 @@ import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.util.concurrent.CompletionStages;
 
-/**
- * @author Christian Schudt
- */
-public final class StreamInitiationManager extends Manager implements FileTransferNegotiator {
+public final class StreamInitiationManager extends AbstractIQHandler
+        implements FileTransferNegotiator, ExtensionProtocol {
+
+    private static final Set<String> FEATURES = Set.of(StreamInitiation.NAMESPACE, SIFileTransferOffer.NAMESPACE);
 
     private static final System.Logger logger = System.getLogger(StreamInitiationManager.class.getName());
 
@@ -85,11 +85,11 @@ public final class StreamInitiationManager extends Manager implements FileTransf
 
     private final ByteStreamManager socks5ByteStreamManager;
 
-    private final IQHandler iqHandler;
+    private final XmppSession xmppSession;
 
     private StreamInitiationManager(final XmppSession xmppSession) {
-        super(xmppSession);
-
+        super(StreamInitiation.class, IQ.Type.SET);
+        this.xmppSession = xmppSession;
         inBandByteStreamManager = xmppSession.getManager(InBandByteStreamManager.class);
         socks5ByteStreamManager = xmppSession.getManager(Socks5ByteStreamManager.class);
 
@@ -100,57 +100,6 @@ public final class StreamInitiationManager extends Manager implements FileTransf
                     (FileTransferOffer) streamInitiation.getProfileElement(), streamInitiation,
                     StreamInitiationManager.this);
         });
-
-        iqHandler = new AbstractIQHandler(StreamInitiation.class, IQ.Type.SET) {
-            @Override
-            protected IQ processRequest(IQ iq) {
-                StreamInitiation streamInitiation = iq.getExtension(StreamInitiation.class);
-
-                FeatureNegotiation featureNegotiation = streamInitiation.getFeatureNegotiation();
-                // Assume no valid streams by default, unless valid streams are found.
-                boolean noValidStreams = true;
-                if (featureNegotiation != null) {
-                    DataForm dataForm = featureNegotiation.getDataForm();
-                    if (dataForm != null) {
-                        DataForm.Field field = dataForm.findField(STREAM_METHOD);
-                        if (field != null) {
-                            List<String> streamMethods = field.getOptions().stream().map(DataForm.Option::getValue)
-                                    .collect(Collectors.toList());
-                            if (!Collections.disjoint(streamMethods, getSupportedStreamMethods())) {
-                                // Request contains valid streams
-                                noValidStreams = false;
-                            }
-                        }
-                    }
-                }
-                if (noValidStreams) {
-                    return iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST,
-                            StreamInitiation.NO_VALID_STREAMS));
-                } else {
-                    ProfileManager profileManager = profileManagers.get(streamInitiation.getProfile());
-
-                    if (profileManager == null) {
-                        return iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST,
-                                StreamInitiation.BAD_PROFILE));
-                    } else {
-                        profileManager.handle(iq, streamInitiation);
-                        return null;
-                    }
-                }
-            }
-        };
-    }
-
-    @Override
-    protected void onEnable() {
-        super.onEnable();
-        xmppSession.addIQHandler(iqHandler);
-    }
-
-    @Override
-    protected void onDisable() {
-        super.onDisable();
-        xmppSession.removeIQHandler(iqHandler);
     }
 
     /**
@@ -305,6 +254,58 @@ public final class StreamInitiationManager extends Manager implements FileTransf
                 new ArrayDeque<>(Arrays.asList(Socks5ByteStream.NAMESPACE, InBandByteStream.NAMESPACE));
         allStreamMethods.retainAll(xmppSession.getEnabledFeatures());
         return allStreamMethods;
+    }
+
+    @Override
+    public final String getNamespace() {
+        return StreamInitiation.NAMESPACE;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return FEATURES;
+    }
+
+    @Override
+    protected final IQ processRequest(IQ iq) {
+        StreamInitiation streamInitiation = iq.getExtension(StreamInitiation.class);
+
+        FeatureNegotiation featureNegotiation = streamInitiation.getFeatureNegotiation();
+        // Assume no valid streams by default, unless valid streams are found.
+        boolean noValidStreams = true;
+        if (featureNegotiation != null) {
+            DataForm dataForm = featureNegotiation.getDataForm();
+            if (dataForm != null) {
+                DataForm.Field field = dataForm.findField(STREAM_METHOD);
+                if (field != null) {
+                    List<String> streamMethods =
+                            field.getOptions().stream().map(DataForm.Option::getValue).collect(Collectors.toList());
+                    if (!Collections.disjoint(streamMethods, getSupportedStreamMethods())) {
+                        // Request contains valid streams
+                        noValidStreams = false;
+                    }
+                }
+            }
+        }
+        if (noValidStreams) {
+            return iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST,
+                    StreamInitiation.NO_VALID_STREAMS));
+        } else {
+            ProfileManager profileManager = profileManagers.get(streamInitiation.getProfile());
+
+            if (profileManager == null) {
+                return iq.createError(new StanzaError(rocks.xmpp.core.stanza.model.errors.Condition.BAD_REQUEST,
+                        StreamInitiation.BAD_PROFILE));
+            } else {
+                profileManager.handle(iq, streamInitiation);
+                return null;
+            }
+        }
     }
 
     private interface ProfileManager {

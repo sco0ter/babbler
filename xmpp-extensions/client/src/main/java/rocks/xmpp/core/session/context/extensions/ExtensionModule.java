@@ -38,7 +38,6 @@ import rocks.xmpp.extensions.carbons.MessageCarbonsManager;
 import rocks.xmpp.extensions.carbons.model.MessageCarbons;
 import rocks.xmpp.extensions.chatstates.ChatStateManager;
 import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
-import rocks.xmpp.extensions.filetransfer.FileTransferManager;
 import rocks.xmpp.extensions.forward.StanzaForwardingManager;
 import rocks.xmpp.extensions.forward.model.Forwarded;
 import rocks.xmpp.extensions.geoloc.GeoLocationManager;
@@ -76,8 +75,6 @@ import rocks.xmpp.extensions.rtt.RealTimeTextManager;
 import rocks.xmpp.extensions.search.SearchManager;
 import rocks.xmpp.extensions.shim.client.ClientHeaderManager;
 import rocks.xmpp.extensions.si.StreamInitiationManager;
-import rocks.xmpp.extensions.si.model.StreamInitiation;
-import rocks.xmpp.extensions.si.profile.filetransfer.model.SIFileTransferOffer;
 import rocks.xmpp.extensions.sm.client.ClientStreamManager;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 import rocks.xmpp.extensions.softwareinfo.SoftwareInformationProtocol;
@@ -151,10 +148,7 @@ public final class ExtensionModule implements Module {
                 Extension.of(ClientSoftwareVersionManager.class, true),
 
                 // XEP-0095: Stream Initiation
-                Extension.of(StreamInitiation.NAMESPACE, StreamInitiationManager.class, true),
-
-                // XEP-0096: SI File Transfer
-                Extension.of(SIFileTransferOffer.NAMESPACE, FileTransferManager.class, true),
+                Extension.of(StreamInitiationManager.class, true),
 
                 // XEP-0107: User Mood
                 Extension.of(Mood.NAMESPACE, MoodManager.class, true, false),

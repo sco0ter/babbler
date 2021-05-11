@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.extensions.caps.EntityCapabilitiesManager;
@@ -45,15 +44,13 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  *
  * <p>Offline Message Retrieval must be used before sending initial presence, in order to tell the server, that it must
  * not flood the client with offline messages later.</p>
- *
- * <p>Enabling or disabling this manager has no effect.</p>
- *
- * @author Christian Schudt
  */
-public final class OfflineMessageManager extends Manager {
+public final class OfflineMessageManager {
+
+    private final XmppSession xmppSession;
 
     private OfflineMessageManager(XmppSession xmppSession) {
-        super(xmppSession);
+        this.xmppSession = xmppSession;
     }
 
     /**

@@ -26,6 +26,8 @@ package rocks.xmpp.extensions.reach;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
@@ -47,6 +49,7 @@ import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
 import rocks.xmpp.extensions.pubsub.model.event.Event;
 import rocks.xmpp.extensions.reach.model.Address;
 import rocks.xmpp.extensions.reach.model.Reachability;
+import rocks.xmpp.util.concurrent.AsyncResult;
 
 /**
  * Tests for {@link ReachabilityManager}.
@@ -152,6 +155,24 @@ public class ReachabilityManagerTest extends BaseTest {
     }
 
     @Test
+    public void testRequestReachabilityAddresses() throws ExecutionException, InterruptedException {
+        XmppSession xmppSession = Mockito.mock(XmppSession.class);
+        ReachabilityManager reachabilityManager = Mockito.spy(new ReachabilityManager(xmppSession));
+        Mockito.doReturn(new AsyncResult<>(CompletableFuture.completedFuture(new IQ(IQ.Type.RESULT,
+                new Reachability(Collections.singleton(new Address(URI.create("tel:+1-303-555-1212"))))))))
+                .when(xmppSession).query(Mockito.any(IQ.class));
+        List<Address> addresses = reachabilityManager.requestReachabilityAddresses(JULIET).get();
+        ArgumentCaptor<IQ> argumentCaptor = ArgumentCaptor.forClass(IQ.class);
+        Mockito.verify(xmppSession).query(argumentCaptor.capture());
+
+        IQ request = argumentCaptor.getValue();
+        Assert.assertEquals(request.getType(), IQ.Type.GET);
+        Assert.assertTrue(request.hasExtension(Reachability.class));
+        Assert.assertEquals(addresses.size(), 1);
+        Assert.assertEquals(addresses.get(0), new Address(URI.create("tel:+1-303-555-1212")));
+    }
+
+    @Test
     public void testServiceDiscoveryEntry() throws ExecutionException, InterruptedException {
 
         XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
@@ -161,8 +182,13 @@ public class ReachabilityManagerTest extends BaseTest {
         Assert.assertFalse(serviceDiscoveryManager.discoverInformation(JULIET).get().getFeatures().contains(
                 Reachability.NAMESPACE));
         reachabilityManager.addReachabilityAddress(new Address(URI.create("")));
+        Assert.assertEquals(reachabilityManager.getReachabilityAddresses().size(), 1);
         Assert.assertTrue(reachabilityManager.isEnabled());
         Assert.assertTrue(serviceDiscoveryManager.discoverInformation(JULIET).get().getFeatures()
                 .contains(Reachability.NAMESPACE));
+        Assert.assertTrue(reachabilityManager.removeReachabilityAddress(new Address(URI.create(""))));
+        Assert.assertFalse(serviceDiscoveryManager.discoverInformation(JULIET).get().getFeatures()
+                .contains(Reachability.NAMESPACE));
+
     }
 }

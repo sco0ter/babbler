@@ -105,7 +105,7 @@ public final class ReachabilityManager extends AbstractIQHandler
      * @see #addReachabilityAddress(Address)
      */
     public boolean removeReachabilityAddress(Address address) {
-        boolean result = addresses.add(address);
+        boolean result = addresses.remove(address);
         if (addresses.isEmpty()) {
             xmppSession.disableFeature(getNamespace());
         }
@@ -198,7 +198,7 @@ public final class ReachabilityManager extends AbstractIQHandler
         List<Address> oldReachabilityAddresses = reachabilities.put(contact, reachability.getAddresses());
         if (oldReachabilityAddresses == null || !oldReachabilityAddresses.equals(reachability.getAddresses())) {
             XmppUtils.notifyEventListeners(reachabilityListeners,
-                    new ReachabilityEvent(this, contact, Collections.unmodifiableList(reachability.getAddresses())));
+                    new ReachabilityEvent(this, contact, reachability.getAddresses()));
         }
     }
 

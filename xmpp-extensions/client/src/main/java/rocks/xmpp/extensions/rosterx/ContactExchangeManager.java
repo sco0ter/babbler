@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2016 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -35,10 +36,10 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 
 import rocks.xmpp.addr.Jid;
-import rocks.xmpp.core.session.Manager;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
-import rocks.xmpp.core.stanza.IQHandler;
+import rocks.xmpp.core.stanza.InboundMessageHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Message;
@@ -55,64 +56,32 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 /**
  * Manages contact exchange between entities.
  *
- * @author Christian Schudt
+ * <h3>Usage</h3>
+ *
+ * <p>{@linkplain #addContactExchangeListener(Consumer) Listen for inbound contact suggestions} and eventually
+ * {@linkplain #approve(ContactExchange.Item) approve} a roster item.</p>
+ *
+ * <p>If you {@linkplain #addTrustedEntity(Jid) add a trusted entity}, it will be auto-approved without notifying
+ * listeners.</p>
+ *
+ * <p>In order to suggest contacts to another entity use {@link #suggestContactAddition(Jid, Contact...)}.</p>
+ *
  * @see <a href="https://xmpp.org/extensions/xep-0144.html">XEP-0144: Roster Item Exchange</a>
  */
-public final class ContactExchangeManager extends Manager {
+public final class ContactExchangeManager extends AbstractIQHandler
+        implements InboundMessageHandler, ExtensionProtocol {
+
+    private static final Set<String> FEATURES = Collections.singleton(ContactExchange.NAMESPACE);
 
     private final Set<Consumer<ContactExchangeEvent>> contactExchangeListeners = new CopyOnWriteArraySet<>();
 
     private final Collection<Jid> trustedEntities = new CopyOnWriteArraySet<>();
 
-    private final Consumer<MessageEvent> inboundMessageListener;
-
-    private final IQHandler iqHandler;
+    private final XmppSession xmppSession;
 
     private ContactExchangeManager(final XmppSession xmppSession) {
-        super(xmppSession);
-        this.inboundMessageListener = e -> {
-            Message message = e.getMessage();
-            ContactExchange contactExchange = message.getExtension(ContactExchange.class);
-            if (contactExchange != null) {
-                List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
-                if (!items.isEmpty()) {
-                    processItems(items, message.getFrom(), message.getBody(), DelayedDelivery.sendDate(message));
-
-                }
-            }
-        };
-        this.iqHandler = new AbstractIQHandler(ContactExchange.class, IQ.Type.SET) {
-            @Override
-            protected IQ processRequest(IQ iq) {
-                ContactExchange contactExchange = iq.getExtension(ContactExchange.class);
-                if (xmppSession.getManager(RosterManager.class).getContact(iq.getFrom().asBareJid()) == null) {
-                    // If the receiving entity will not process the suggested action(s) because the sending entity is
-                    // not in the receiving entity's roster, the receiving entity MUST return an error to the sending
-                    // entity, which error SHOULD be <not-authorized/>.
-                    return iq.createError(Condition.NOT_AUTHORIZED);
-                } else {
-                    List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
-                    if (!items.isEmpty()) {
-                        processItems(items, iq.getFrom(), null, Instant.now());
-                    }
-                    return iq.createResult();
-                }
-            }
-        };
-    }
-
-    @Override
-    protected void onEnable() {
-        super.onEnable();
-        xmppSession.addInboundMessageListener(inboundMessageListener);
-        xmppSession.addIQHandler(iqHandler);
-    }
-
-    @Override
-    protected void onDisable() {
-        super.onDisable();
-        xmppSession.removeInboundMessageListener(inboundMessageListener);
-        xmppSession.removeIQHandler(iqHandler);
+        super(ContactExchange.class, IQ.Type.SET);
+        this.xmppSession = xmppSession;
     }
 
     private void processItems(List<ContactExchange.Item> items, Jid sender, String message, Instant date) {
@@ -186,14 +155,50 @@ public final class ContactExchangeManager extends Manager {
     }
 
     /**
-     * Gets a collection of trusted entities for which roster item exchange suggestions are approved automatically (no
-     * listeners will be called). The JIDs contained in this collection must be bare JIDs.
+     * Gets a unmodifiable collection of trusted entities for which roster item exchange suggestions are approved
+     * automatically (no listeners will be called).
      *
      * @return The trusted entities.
      * @see <a href="https://xmpp.org/extensions/xep-0144.html#security-trust">8.1 Trusted Entities</a>
+     * @see #addTrustedEntity(Jid)
      */
     public final Collection<Jid> getTrustedEntities() {
-        return trustedEntities;
+        return Collections.unmodifiableCollection(trustedEntities);
+    }
+
+    /**
+     * Adds a trusted entity for which roster item exchange suggestions are approved automatically (no listeners will be
+     * called).
+     *
+     * @param jid The bare JID.
+     * @return True, if the entity was added.
+     * @see <a href="https://xmpp.org/extensions/xep-0144.html#security-trust">8.1 Trusted Entities</a>
+     * @see #removeTrustedEntity(Jid)
+     */
+    public final boolean addTrustedEntity(Jid jid) {
+        if (!jid.isBareJid()) {
+            throw new IllegalArgumentException("jid must be bare");
+        }
+        boolean result = trustedEntities.add(jid);
+        if (result) {
+            xmppSession.enableFeature(getNamespace());
+        }
+        return result;
+    }
+
+    /**
+     * Removes a trusted entity for which roster item exchange suggestions are approved automatically.
+     *
+     * @param jid The bare JID.
+     * @return True, if the entity was removed.
+     * @see #addTrustedEntity(Jid)
+     */
+    public final boolean removeTrustedEntity(Jid jid) {
+        boolean result = trustedEntities.remove(jid);
+        if (contactExchangeListeners.isEmpty() && trustedEntities.isEmpty()) {
+            xmppSession.disableFeature(getNamespace());
+        }
+        return result;
     }
 
     /**
@@ -311,6 +316,7 @@ public final class ContactExchangeManager extends Manager {
      */
     public void addContactExchangeListener(Consumer<ContactExchangeEvent> contactExchangeListener) {
         contactExchangeListeners.add(contactExchangeListener);
+        xmppSession.enableFeature(getNamespace());
     }
 
     /**
@@ -321,11 +327,52 @@ public final class ContactExchangeManager extends Manager {
      */
     public void removeContactExchangeListener(Consumer<ContactExchangeEvent> contactExchangeListener) {
         contactExchangeListeners.remove(contactExchangeListener);
+        if (contactExchangeListeners.isEmpty() && trustedEntities.isEmpty()) {
+            xmppSession.disableFeature(getNamespace());
+        }
     }
 
     @Override
-    protected void dispose() {
-        contactExchangeListeners.clear();
-        trustedEntities.clear();
+    protected final IQ processRequest(IQ iq) {
+        ContactExchange contactExchange = iq.getExtension(ContactExchange.class);
+        if (xmppSession.getManager(RosterManager.class).getContact(iq.getFrom().asBareJid()) == null) {
+            // If the receiving entity will not process the suggested action(s) because the sending entity is
+            // not in the receiving entity's roster, the receiving entity MUST return an error to the sending
+            // entity, which error SHOULD be <not-authorized/>.
+            return iq.createError(Condition.NOT_AUTHORIZED);
+        } else {
+            List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
+            if (!items.isEmpty()) {
+                processItems(items, iq.getFrom(), null, Instant.now());
+            }
+            return iq.createResult();
+        }
+    }
+
+    @Override
+    public final void handleInboundMessage(MessageEvent e) {
+        Message message = e.getMessage();
+        ContactExchange contactExchange = message.getExtension(ContactExchange.class);
+        if (contactExchange != null) {
+            List<ContactExchange.Item> items = getItemsToProcess(contactExchange.getItems());
+            if (!items.isEmpty()) {
+                processItems(items, message.getFrom(), message.getBody(), DelayedDelivery.sendDate(message));
+            }
+        }
+    }
+
+    @Override
+    public final String getNamespace() {
+        return ContactExchange.NAMESPACE;
+    }
+
+    @Override
+    public final boolean isEnabled() {
+        return false;
+    }
+
+    @Override
+    public final Set<String> getFeatures() {
+        return FEATURES;
     }
 }

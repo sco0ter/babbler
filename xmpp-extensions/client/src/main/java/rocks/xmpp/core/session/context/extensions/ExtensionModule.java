@@ -63,13 +63,11 @@ import rocks.xmpp.extensions.oob.model.iq.OobIQ;
 import rocks.xmpp.extensions.ping.PingManager;
 import rocks.xmpp.extensions.privacy.PrivacyListManager;
 import rocks.xmpp.extensions.reach.ReachabilityManager;
-import rocks.xmpp.extensions.reach.model.Reachability;
 import rocks.xmpp.extensions.receipts.MessageDeliveryReceiptsManager;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 import rocks.xmpp.extensions.register.RegistrationManager;
 import rocks.xmpp.extensions.register.model.Registration;
 import rocks.xmpp.extensions.rosterx.ContactExchangeManager;
-import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 import rocks.xmpp.extensions.rpc.client.ClientRpcManager;
 import rocks.xmpp.extensions.rtt.RealTimeTextManager;
 import rocks.xmpp.extensions.search.SearchManager;
@@ -163,10 +161,10 @@ public final class ExtensionModule implements Module {
                 Extension.of(ClientHeaderManager.class, false),
 
                 // XEP-0144: Roster Item Exchange
-                Extension.of(ContactExchange.NAMESPACE, ContactExchangeManager.class, false),
+                Extension.of(ContactExchangeManager.class, false),
 
                 // XEP-0152: Reachability Addresses
-                Extension.of(Reachability.NAMESPACE, ReachabilityManager.class, false),
+                Extension.of(ReachabilityManager.class, false),
 
                 // XEP-0153: vCard-Based Avatars
                 Extension.of(VCardBasedAvatarsProtocol.class, false),

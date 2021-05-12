@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2015 Christian Schudt
+ * Copyright (c) 2014-2021 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,25 +29,32 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.BaseTest;
+import rocks.xmpp.core.MockServer;
+import rocks.xmpp.core.session.TestXmppSession;
+import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.roster.model.Contact;
 import rocks.xmpp.im.roster.model.Roster;
 
 /**
- * @author Christian Schudt
+ * Tests for {@link ContactExchangeManager}.
  */
 public class ContactExchangeManagerTest extends BaseTest {
 
     @BeforeClass
-    public void prepareRoster() throws Exception {
+    public void prepareRoster() {
         Roster roster = new Roster(new Contact(Jid.of("juliet@example.net"), "juliet", "friends", "friends2"),
                 new Contact(Jid.of("romeo@example.net"), "romeo", "friends"));
         // Simulate a roster push in order to fill the roster.
@@ -245,5 +252,36 @@ public class ContactExchangeManagerTest extends BaseTest {
         Assert.assertEquals(contactExchangeManager.approve(
                 new ContactExchange.Item(Jid.of("romeo@example.net"), "Romeo", Collections.emptyList(),
                         ContactExchange.Item.Action.MODIFY)), ContactExchange.Item.Action.MODIFY);
+    }
+
+    @Test
+    public void testServiceDiscoveryEntry() throws ExecutionException, InterruptedException {
+        XmppSession xmppSession = new TestXmppSession(JULIET, new MockServer());
+        // By default, the manager should be disabled.
+        Assert.assertFalse(xmppSession.getEnabledFeatures().contains(ContactExchange.NAMESPACE));
+        ServiceDiscoveryManager serviceDiscoveryManager = xmppSession.getManager(ServiceDiscoveryManager.class);
+        DiscoverableInfo discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
+        Assert.assertFalse(discoverableInfo.getFeatures().contains(ContactExchange.NAMESPACE));
+        ContactExchangeManager contactExchangeManager = xmppSession.getManager(ContactExchangeManager.class);
+        Consumer<ContactExchangeEvent> listener = e -> {
+        };
+        // By adding a listener, it should be auto-enabled
+        contactExchangeManager.addContactExchangeListener(listener);
+        Assert.assertTrue(xmppSession.getEnabledFeatures().contains(ContactExchange.NAMESPACE));
+        discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
+        Assert.assertTrue(discoverableInfo.getFeatures().contains(ContactExchange.NAMESPACE));
+
+        Assert.assertTrue(contactExchangeManager.addTrustedEntity(Jid.of("test")));
+
+        // Removing all listeners should disable it, unless there are still trusted entities.
+        contactExchangeManager.removeContactExchangeListener(listener);
+        Assert.assertTrue(xmppSession.getEnabledFeatures().contains(ContactExchange.NAMESPACE));
+        discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
+        Assert.assertTrue(discoverableInfo.getFeatures().contains(ContactExchange.NAMESPACE));
+
+        Assert.assertTrue(contactExchangeManager.removeTrustedEntity(Jid.of("test")));
+        Assert.assertFalse(xmppSession.getEnabledFeatures().contains(ContactExchange.NAMESPACE));
+        discoverableInfo = serviceDiscoveryManager.discoverInformation(JULIET).get();
+        Assert.assertFalse(discoverableInfo.getFeatures().contains(ContactExchange.NAMESPACE));
     }
 }

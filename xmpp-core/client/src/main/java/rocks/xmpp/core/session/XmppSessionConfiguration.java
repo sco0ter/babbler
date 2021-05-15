@@ -95,8 +95,8 @@ public final class XmppSessionConfiguration {
                 // specifically try Mac's application data folder.
                 path = Paths.get(appData, "Library", "Application Support");
                 if (!Files.exists(path)) {
-                    // Seems like we are not on a Mac, use user.home then.
-                    path = Paths.get(appData);
+                    // Seems like we are neither on Windows nor on a Mac, use a standard linux app config path then.
+                    path = Paths.get(appData, ".config");
                 }
             }
             path = path.resolve(appName);

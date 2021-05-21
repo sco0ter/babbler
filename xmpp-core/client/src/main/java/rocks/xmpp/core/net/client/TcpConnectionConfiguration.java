@@ -24,6 +24,7 @@
 
 package rocks.xmpp.core.net.client;
 
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
 import rocks.xmpp.core.net.ChannelEncryption;
@@ -40,7 +41,7 @@ import rocks.xmpp.core.session.model.SessionOpen;
  */
 public final class TcpConnectionConfiguration extends ClientConnectionConfiguration {
 
-    private final int keepAliveInterval;
+    private final Duration keepAliveInterval;
 
     private final TransportConnector<TcpConnectionConfiguration> connector;
 
@@ -64,7 +65,7 @@ public final class TcpConnectionConfiguration extends ClientConnectionConfigurat
      *
      * @return The whitespace keep-alive interval.
      */
-    public final int getKeepAliveInterval() {
+    public final Duration getKeepAliveInterval() {
         return keepAliveInterval;
     }
 
@@ -81,13 +82,13 @@ public final class TcpConnectionConfiguration extends ClientConnectionConfigurat
      */
     public static class Builder extends ClientConnectionConfiguration.Builder<Builder, TcpConnectionConfiguration> {
 
-        private int keepAliveInterval;
+        private Duration keepAliveInterval;
 
         protected Builder() {
             // default values.
             channelEncryption(ChannelEncryption.OPTIONAL);
             port(5222);
-            keepAliveInterval(30);
+            keepAliveInterval(Duration.ofSeconds(30));
         }
 
         @Override
@@ -101,13 +102,13 @@ public final class TcpConnectionConfiguration extends ClientConnectionConfigurat
         }
 
         /**
-         * Sets the whitespace keep-alive interval in seconds. If the interval is negative, no whitespace will be sent
+         * Sets the whitespace keep-alive interval. If the interval is negative, no whitespace will be sent
          * at all.
          *
          * @param keepAliveInterval The whitespace keep-alive interval.
          * @return The builder.
          */
-        public final Builder keepAliveInterval(int keepAliveInterval) {
+        public final Builder keepAliveInterval(Duration keepAliveInterval) {
             this.keepAliveInterval = keepAliveInterval;
             return this;
         }

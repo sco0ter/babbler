@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -90,8 +91,8 @@ final class XmppStreamWriter {
         this.executor = new QueuedScheduledExecutorService(EXECUTOR);
     }
 
-    void initialize(int keepAliveInterval) {
-        if (keepAliveInterval > 0) {
+    void initialize(Duration keepAliveInterval) {
+        if (keepAliveInterval != null && !keepAliveInterval.isNegative() && !keepAliveInterval.isZero()) {
             executor.scheduleAtFixedRate(() -> {
                 if (EnumSet.of(XmppSession.Status.CONNECTED, XmppSession.Status.AUTHENTICATED)
                         .contains(xmppSession.getStatus())) {
@@ -102,7 +103,7 @@ final class XmppStreamWriter {
                         notifyException(e);
                     }
                 }
-            }, keepAliveInterval, keepAliveInterval, TimeUnit.SECONDS);
+            }, keepAliveInterval.toSeconds(), keepAliveInterval.toSeconds(), TimeUnit.SECONDS);
         }
     }
 

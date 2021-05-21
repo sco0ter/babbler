@@ -26,8 +26,10 @@ package rocks.xmpp.nio.netty.client;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.time.Duration;
 import java.util.Locale;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.TimeUnit;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
@@ -91,19 +93,22 @@ final class NettyChannelClientConnection extends NettyChannelConnection {
         this.xmppSession = xmppSession;
         this.connectionConfiguration = connectionConfiguration;
 
-        int keepAliveInterval = connectionConfiguration.getKeepAliveInterval();
+        Duration keepAliveInterval = connectionConfiguration.getKeepAliveInterval();
 
-        channel.pipeline().addLast("idleStateHandler", new IdleStateHandler(0, keepAliveInterval, 0));
-        channel.pipeline().addLast("idleStateEventHandler", new ChannelDuplexHandler() {
+        if (keepAliveInterval != null && !keepAliveInterval.isNegative() && !keepAliveInterval.isZero()) {
+            channel.pipeline().addLast("idleStateHandler",
+                    new IdleStateHandler(0, keepAliveInterval.toSeconds(), 0, TimeUnit.SECONDS));
+            channel.pipeline().addLast("idleStateEventHandler", new ChannelDuplexHandler() {
 
-            @Override
-            public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
-                if (evt instanceof IdleStateEvent) {
-                    ctx.writeAndFlush(' ');
+                @Override
+                public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
+                    if (evt instanceof IdleStateEvent) {
+                        ctx.writeAndFlush(' ');
+                    }
                 }
-            }
 
-        });
+            });
+        }
 
         closeFuture().whenComplete((aVoid, throwable) -> {
             if (throwable != null) {

@@ -25,6 +25,7 @@
 package rocks.xmpp.core.net.client;
 
 import java.net.Socket;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import javax.net.SocketFactory;
 
@@ -125,7 +126,7 @@ public final class SocketConnectionConfiguration extends ClientConnectionConfigu
                         .sslContext(getSSLContext())
                         .hostnameVerifier(getHostnameVerifier())
                         .compressionMethods(getCompressionMethods().toArray(new CompressionMethod[0]))
-                        .keepAliveInterval(keepAliveInterval).build(),
+                        .keepAliveInterval(Duration.ofSeconds(keepAliveInterval)).build(),
                 (socket, config) -> new SocketConnection(socket, xmppSession, config), sessionOpen);
     }
 

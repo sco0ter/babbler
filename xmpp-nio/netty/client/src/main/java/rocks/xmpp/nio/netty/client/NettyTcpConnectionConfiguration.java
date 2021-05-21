@@ -24,6 +24,7 @@
 
 package rocks.xmpp.nio.netty.client;
 
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
 import io.netty.channel.EventLoopGroup;
@@ -75,7 +76,7 @@ public final class NettyTcpConnectionConfiguration extends ClientConnectionConfi
                         .sslContext(getSSLContext())
                         .hostnameVerifier(getHostnameVerifier())
                         .compressionMethods(getCompressionMethods().toArray(new CompressionMethod[0]))
-                        .keepAliveInterval(keepAliveInterval).build(), sessionOpen);
+                        .keepAliveInterval(Duration.ofSeconds(keepAliveInterval)).build(), sessionOpen);
     }
 
     /**

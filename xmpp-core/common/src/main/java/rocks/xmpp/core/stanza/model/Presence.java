@@ -437,7 +437,7 @@ public class Presence extends ExtensibleStanza implements Comparable<Presence> {
 
     @Override
     public final Presence createError(StanzaError error) {
-        return new Presence(getTo(), Presence.Type.ERROR, getShow(), getStatuses(), getPriority(), getId(), getFrom(),
+        return new Presence(getFrom(), Presence.Type.ERROR, getShow(), getStatuses(), getPriority(), getId(), getTo(),
                 getLanguage(), getExtensions(), error);
     }
 

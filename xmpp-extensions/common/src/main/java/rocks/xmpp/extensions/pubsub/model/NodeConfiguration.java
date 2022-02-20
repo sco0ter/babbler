@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2014-2018 Christian Schudt
+ * Copyright (c) 2014-2022 Christian Schudt
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -525,11 +525,55 @@ public final class NodeConfiguration implements StandardizedDataForm {
     }
 
     /**
+     * Converts this (immutable) data form to a builder, so that a modified form can be created.
+     *
+     * @return The builder.
+     */
+    public final Builder toBuilder() {
+        return builder()
+                .accessModel(getAccessModel())
+                .allowSubscriptions(isAllowSubscriptions())
+                .bodyXslt(getBodyXslt())
+                .childrenAssociationPolicy(getChildrenAssociationPolicy())
+                .childrenAssociationWhitelist(getChildrenAssociationWhitelist())
+                .children(getChildren())
+                .childrenMax(getChildrenMax())
+                .collection(getCollection())
+                .contacts(getContacts())
+                .dataformXslt(getDataformXslt())
+                .deliverNotifications(isDeliverNotifications())
+                .deliverPayloads(isDeliverPayloads())
+                .description(getDescription())
+                .itemExpire(getItemExpire())
+                .itemReply(getItemReply())
+                .language(getLanguage())
+                .maxItems(getMaxItems())
+                .maxPayloadSize(getMaxPayloadSize())
+                .nodeType(getNodeType())
+                .notificationType(getNotificationType())
+                .notifyConfig(isNotifyConfig())
+                .notifyDelete(isNotifyDelete())
+                .notifyRetract(isNotifyRetract())
+                .notifySub(isNotifySub())
+                .persistItems(isPersistItems())
+                .presenceBasedDelivery(isPresenceBasedDelivery())
+                .publisherModel(getPublisherModel())
+                .purgeOffline(isPurgeOffline())
+                .rosterGroupsAllowed(getRosterGroupsAllowed())
+                .sendLastPublishedItem(getSendLastPublishedItem())
+                .temporarySubscriptions(isTemporarySubscriptions())
+                .nodeTitle(getNodeTitle())
+                .type(getPayloadType());
+    }
+
+    /**
      * A builder to build node configurations.
      */
     public static final class Builder extends DataForm.Builder<Builder> {
 
         private AccessModel accessModel;
+
+        private Boolean allowSubscriptions;
 
         private URL bodyXslt;
 
@@ -557,7 +601,7 @@ public final class NodeConfiguration implements StandardizedDataForm {
 
         private ItemReply itemReply;
 
-        private Locale language;
+        private String language;
 
         private Integer maxItems;
 
@@ -589,8 +633,6 @@ public final class NodeConfiguration implements StandardizedDataForm {
 
         private Boolean temporarySubscriptions;
 
-        private Boolean allowSubscriptions;
-
         private String nodeTitle;
 
         private String type;
@@ -606,6 +648,17 @@ public final class NodeConfiguration implements StandardizedDataForm {
          */
         public final Builder accessModel(AccessModel accessModel) {
             this.accessModel = accessModel;
+            return this;
+        }
+
+        /**
+         * Whether to allow subscriptions.
+         *
+         * @param allowSubscriptions Whether to allow subscriptions.
+         * @return The builder.
+         */
+        public final Builder allowSubscriptions(Boolean allowSubscriptions) {
+            this.allowSubscriptions = allowSubscriptions;
             return this;
         }
 
@@ -660,7 +713,7 @@ public final class NodeConfiguration implements StandardizedDataForm {
          * @param childrenMax The maximum number of child nodes that can be associated with a collection.
          * @return The builder.
          */
-        public final Builder childrenMax(int childrenMax) {
+        public final Builder childrenMax(Integer childrenMax) {
             this.childrenMax = childrenMax;
             return this;
         }
@@ -705,7 +758,7 @@ public final class NodeConfiguration implements StandardizedDataForm {
          * @param deliverNotifications Whether to deliver event notifications.
          * @return The builder.
          */
-        public final Builder deliverNotifications(boolean deliverNotifications) {
+        public final Builder deliverNotifications(Boolean deliverNotifications) {
             this.deliverNotifications = deliverNotifications;
             return this;
         }
@@ -716,7 +769,7 @@ public final class NodeConfiguration implements StandardizedDataForm {
          * @param deliverPayloads Whether to deliver payloads with event notifications; applies only to leaf nodes.
          * @return The builder.
          */
-        public final Builder deliverPayloads(boolean deliverPayloads) {
+        public final Builder deliverPayloads(Boolean deliverPayloads) {
             this.deliverPayloads = deliverPayloads;
             return this;
         }
@@ -738,7 +791,7 @@ public final class NodeConfiguration implements StandardizedDataForm {
          * @param itemExpire Number of seconds after which to automatically purge items.
          * @return The builder.
          */
-        public final Builder itemExpire(int itemExpire) {
+        public final Builder itemExpire(Integer itemExpire) {
             this.itemExpire = itemExpire;
             return this;
         }
@@ -761,6 +814,17 @@ public final class NodeConfiguration implements StandardizedDataForm {
          * @return The builder.
          */
         public final Builder language(Locale language) {
+            this.language = language != null ? language.toLanguageTag() : null;
+            return this;
+        }
+
+        /**
+         * The default language of the node.
+         *
+         * @param language The default language of the node.
+         * @return The builder.
+         */
+        public final Builder language(String language) {
             this.language = language;
             return this;
         }
@@ -771,7 +835,7 @@ public final class NodeConfiguration implements StandardizedDataForm {
          * @param maxItems The maximum number of items to persist.
          * @return The builder.
          */
-        public final Builder maxItems(int maxItems) {
+        public final Builder maxItems(Integer maxItems) {
             this.maxItems = maxItems;
             return this;
         }
@@ -782,7 +846,7 @@ public final class NodeConfiguration implements StandardizedDataForm {
          * @param maxPayloadSize The maximum payload size in bytes.
          * @return The builder.
          */
-        public final Builder maxPayloadSize(int maxPayloadSize) {
+        public final Builder maxPayloadSize(Integer maxPayloadSize) {
             this.maxPayloadSize = maxPayloadSize;
             return this;
         }
@@ -805,7 +869,8 @@ public final class NodeConfiguration implements StandardizedDataForm {
          * @return The builder.
          */
         public final Builder notificationType(Message.Type notificationType) {
-            if (notificationType != Message.Type.HEADLINE && notificationType != Message.Type.NORMAL) {
+            if (notificationType != null && notificationType != Message.Type.HEADLINE
+                    && notificationType != Message.Type.NORMAL) {
                 throw new IllegalArgumentException("only 'normal' and 'headline' type allowed.");
             }
             this.notificationType = notificationType;
@@ -818,7 +883,7 @@ public final class NodeConfiguration implements StandardizedDataForm {
          * @param notifyConfig Whether to notify subscribers when the node configuration changes.
          * @return The builder.
          */
-        public final Builder notifyConfig(boolean notifyConfig) {
+        public final Builder notifyConfig(Boolean notifyConfig) {
             this.notifyConfig = notifyConfig;
             return this;
         }
@@ -829,7 +894,7 @@ public final class NodeConfiguration implements StandardizedDataForm {
          * @param notifyDelete Whether to notify subscribers when the node is deleted.
          * @return The builder.
          */
-        public final Builder notifyDelete(boolean notifyDelete) {
+        public final Builder notifyDelete(Boolean notifyDelete) {
             this.notifyDelete = notifyDelete;
             return this;
         }
@@ -840,7 +905,7 @@ public final class NodeConfiguration implements StandardizedDataForm {
          * @param notifyRetract Whether to notify subscribers when items are removed from the node.
          * @return The builder.
          */
-        public final Builder notifyRetract(boolean notifyRetract) {
+        public final Builder notifyRetract(Boolean notifyRetract) {
             this.notifyRetract = notifyRetract;
             return this;
         }
@@ -851,7 +916,7 @@ public final class NodeConfiguration implements StandardizedDataForm {
          * @param notifySub Whether to notify owners about new subscribers and unsubscribes.
          * @return The builder.
          */
-        public final Builder notifySub(boolean notifySub) {
+        public final Builder notifySub(Boolean notifySub) {
             this.notifySub = notifySub;
             return this;
         }
@@ -862,7 +927,7 @@ public final class NodeConfiguration implements StandardizedDataForm {
          * @param persistItems Whether to persist items to storage.
          * @return The builder.
          */
-        public final Builder persistItems(boolean persistItems) {
+        public final Builder persistItems(Boolean persistItems) {
             this.persistItems = persistItems;
             return this;
         }
@@ -873,7 +938,7 @@ public final class NodeConfiguration implements StandardizedDataForm {
          * @param presenceBasedDelivery Whether to deliver notifications to available users only.
          * @return The builder.
          */
-        public final Builder presenceBasedDelivery(boolean presenceBasedDelivery) {
+        public final Builder presenceBasedDelivery(Boolean presenceBasedDelivery) {
             this.presenceBasedDelivery = presenceBasedDelivery;
             return this;
         }
@@ -895,7 +960,7 @@ public final class NodeConfiguration implements StandardizedDataForm {
          * @param purgeOffline Whether to purge all items when the relevant publisher goes offline.
          * @return The builder.
          */
-        public final Builder purgeOffline(boolean purgeOffline) {
+        public final Builder purgeOffline(Boolean purgeOffline) {
             this.purgeOffline = purgeOffline;
             return this;
         }
@@ -929,19 +994,8 @@ public final class NodeConfiguration implements StandardizedDataForm {
          * @return The builder.
          * @see <a href="https://xmpp.org/extensions/xep-0060.html#impl-tempsub">12.4 Temporary Subscriptions</a>
          */
-        public final Builder temporarySubscriptions(boolean temporarySubscriptions) {
+        public final Builder temporarySubscriptions(Boolean temporarySubscriptions) {
             this.temporarySubscriptions = temporarySubscriptions;
-            return this;
-        }
-
-        /**
-         * Whether to allow subscriptions.
-         *
-         * @param allowSubscriptions Whether to allow subscriptions.
-         * @return The builder.
-         */
-        public final Builder allowSubscriptions(boolean allowSubscriptions) {
-            this.allowSubscriptions = allowSubscriptions;
             return this;
         }
 
@@ -972,12 +1026,16 @@ public final class NodeConfiguration implements StandardizedDataForm {
             return this;
         }
 
+        public final NodeConfiguration build() {
+            return build(DataForm.Type.SUBMIT);
+        }
+
         /**
          * Builds the node configuration.
          *
          * @return The data form.
          */
-        public final NodeConfiguration build() {
+        public final NodeConfiguration build(DataForm.Type formType) {
 
             Collection<DataForm.Field> fields = new ArrayDeque<>();
             if (accessModel != null) {
@@ -1028,7 +1086,7 @@ public final class NodeConfiguration implements StandardizedDataForm {
                         .type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (language != null) {
-                fields.add(DataForm.Field.builder().name(LANGUAGE).value(language.toLanguageTag())
+                fields.add(DataForm.Field.builder().name(LANGUAGE).value(language)
                         .type(DataForm.Field.Type.LIST_SINGLE).build());
             }
             if (maxItems != null) {
@@ -1091,7 +1149,7 @@ public final class NodeConfiguration implements StandardizedDataForm {
             if (type != null) {
                 fields.add(DataForm.Field.builder().name(TYPE).value(type).build());
             }
-            fields(fields).formType(FORM_TYPE).type(DataForm.Type.SUBMIT);
+            fields(fields).formType(FORM_TYPE).type(formType);
             return new NodeConfiguration(new DataForm(this));
         }
     }

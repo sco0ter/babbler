@@ -162,8 +162,8 @@ public final class SubscribeOptions implements StandardizedDataForm {
      */
     public final Instant getExpire() {
         DataForm.Field field = dataForm.findField(EXPIRE);
-        if (!field.getValues().isEmpty() && field.getValues().get(0) != null && !field.getValues().get(0)
-                .equals("presence")) {
+        if (field != null && !field.getValues().isEmpty() && field.getValues().get(0) != null && !field.getValues()
+                .get(0).equals("presence")) {
             return field.getValueAsInstant();
         }
         return null;
@@ -174,7 +174,7 @@ public final class SubscribeOptions implements StandardizedDataForm {
      *
      * @return True, if the body is included.
      */
-    public final Boolean isIncludeBody() {
+    public final boolean isIncludeBody() {
         return dataForm.findValueAsBoolean(INCLUDE_BODY);
     }
 
@@ -218,9 +218,10 @@ public final class SubscribeOptions implements StandardizedDataForm {
         String value = dataForm.findValue(SUBSCRIPTION_DEPTH);
         if ("all".equals(value)) {
             return -1;
-        } else {
+        } else if (value != null) {
             return Integer.valueOf(value);
         }
+        return null;
     }
 
     /**
@@ -230,8 +231,8 @@ public final class SubscribeOptions implements StandardizedDataForm {
      */
     public final boolean isTemporary() {
         DataForm.Field field = dataForm.findField(EXPIRE);
-        return !field.getValues().isEmpty() && field.getValues().get(0) != null && field.getValues().get(0)
-                .equals("presence");
+        return field != null && !field.getValues().isEmpty() && field.getValues().get(0) != null && field.getValues()
+                .get(0).equals("presence");
     }
 
     /**
@@ -248,6 +249,24 @@ public final class SubscribeOptions implements StandardizedDataForm {
          * Receive notification of new nodes only
          */
         NODES
+    }
+
+    /**
+     * Converts this (immutable) data form to a builder, so that a modified form can be created.
+     *
+     * @return The builder.
+     */
+    public final SubscribeOptions.Builder toBuilder() {
+        return builder()
+                .deliver(isDeliver())
+                .digest(isDigest())
+                .digestFrequency(getDigestFrequency())
+                .expireAt(getExpire())
+                .includeBody(isIncludeBody())
+                .showValues(getShowValues())
+                .subscriptionDepth(getSubscriptionDepth())
+                .subscriptionType(getSubscriptionType())
+                .temporary(isTemporary());
     }
 
     /**
@@ -307,7 +326,7 @@ public final class SubscribeOptions implements StandardizedDataForm {
          * @param digestFrequency The minimum number of milliseconds between sending any two notification digests.
          * @return The builder.
          */
-        public final Builder digestFrequency(int digestFrequency) {
+        public final Builder digestFrequency(Integer digestFrequency) {
             this.digestFrequency = digestFrequency;
             return this;
         }
@@ -380,7 +399,7 @@ public final class SubscribeOptions implements StandardizedDataForm {
          * @return The builder.
          * @see <a href="https://xmpp.org/extensions/xep-0060.html#auto-subscribe">9.1 Auto-Subscribe</a>
          */
-        public final Builder subscriptionDepth(int subscriptionDepth) {
+        public final Builder subscriptionDepth(Integer subscriptionDepth) {
             this.subscriptionDepth = subscriptionDepth;
             return this;
         }

@@ -393,6 +393,36 @@ public final class RoomConfiguration implements StandardizedDataForm {
     }
 
     /**
+     * Converts this (immutable) data form to a builder, so that a modified form can be created.
+     *
+     * @return The builder.
+     */
+    public final RoomConfiguration.Builder toBuilder() {
+        return builder()
+                .administrators(getAdministrators())
+                .changeSubjectAllowed(isChangeSubjectAllowed())
+                .description(getDescription())
+                .invitesAllowed(isInvitesAllowed())
+                .language(getLanguage())
+                .loggingEnabled(isLoggingEnabled())
+                .maxHistoryMessages(getMaxHistoryMessages())
+                .maxUsers(getMaxUsers())
+                .membersOnly(isMembersOnly())
+                .moderated(isModerated())
+                .name(getName())
+                .owners(getOwners())
+                .password(getPassword())
+                .passwordProtected(isPasswordProtected())
+                .persistent(isPersistent())
+                .rolesForWhichPresenceIsBroadcast(getRolesForWhichPresenceIsBroadcast())
+                .rolesThatMayDiscoverRealJids(getRolesThatMayDiscoverRealJids())
+                .rolesThatMayRetrieveMemberList(getRolesThatMayRetrieveMemberList())
+                .rolesThatMaySendPrivateMessages(getRolesThatMaySendPrivateMessages())
+                .publicRoom(isPublicRoom())
+                .pubSubNode(getPubSubNode());
+    }
+
+    /**
      * A builder to build a room configuration. The form is of type {@link DataForm.Type#SUBMIT} by default.
      */
     public static final class Builder extends DataForm.Builder<Builder> {
@@ -536,7 +566,7 @@ public final class RoomConfiguration implements StandardizedDataForm {
          * @param maxUsers The max users.
          * @return The builder.
          */
-        public Builder maxUsers(int maxUsers) {
+        public Builder maxUsers(Integer maxUsers) {
             this.maxUsers = maxUsers;
             return this;
         }

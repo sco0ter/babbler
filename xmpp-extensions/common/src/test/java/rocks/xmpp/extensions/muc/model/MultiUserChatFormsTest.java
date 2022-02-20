@@ -254,4 +254,49 @@ public class MultiUserChatFormsTest extends XmlTest {
         Assert.assertEquals(roomInfo2.getLogs().toString(), "http://www.shakespeare.lit/chatlogs/coven/");
         Assert.assertEquals(roomInfo2.getMaxHistoryMessages(), Integer.valueOf(50));
     }
+
+    @Test
+    public void testRoomInfoToBuilder() {
+        RoomInfo roomInfo = RoomInfo.builder()
+                .maxHistoryMessages(1)
+                .build();
+        RoomInfo.Builder builder = roomInfo.toBuilder();
+        builder.maxHistoryMessages(2);
+        RoomInfo roomInfo2 = builder.build();
+        Assert.assertEquals(roomInfo2.getMaxHistoryMessages(), Integer.valueOf(2));
+    }
+
+    @Test
+    public void testRoomConfigurationToBuilder() {
+        RoomConfiguration roomConfiguration = RoomConfiguration.builder()
+                .maxHistoryMessages(1)
+                .rolesThatMayDiscoverRealJids(Collections.singleton(Role.MODERATOR))
+                .build();
+        RoomConfiguration.Builder builder = roomConfiguration.toBuilder();
+        builder.maxHistoryMessages(2);
+        RoomConfiguration roomConfiguration2 = builder.build();
+        Assert.assertEquals(roomConfiguration2.getMaxHistoryMessages(), Integer.valueOf(2));
+    }
+
+    @Test
+    public void testRequestVoiceToBuilder() {
+        RequestVoice requestVoice = RequestVoice.builder()
+                .roomNick("Nick")
+                .build();
+        RequestVoice.Builder builder = requestVoice.toBuilder();
+        builder.roomNick("Nick2");
+        RequestVoice requestVoice2 = builder.build();
+        Assert.assertEquals(requestVoice2.getRoomNick(), "Nick2");
+    }
+
+    @Test
+    public void testRoomRegistrationToBuilder() {
+        RoomRegistration roomRegistration = RoomRegistration.builder()
+                .email("mail")
+                .build();
+        RoomRegistration.Builder builder = roomRegistration.toBuilder();
+        builder.email("mail2");
+        RoomRegistration roomRegistration2 = builder.build();
+        Assert.assertEquals(roomRegistration2.getEmail(), "mail2");
+    }
 }

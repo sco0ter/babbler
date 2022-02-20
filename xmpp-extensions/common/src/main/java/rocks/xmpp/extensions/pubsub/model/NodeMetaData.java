@@ -244,6 +244,25 @@ public final class NodeMetaData implements StandardizedDataForm {
     }
 
     /**
+     * Converts this (immutable) data form to a builder, so that a modified form can be created.
+     *
+     * @return The builder.
+     */
+    public final NodeMetaData.Builder toBuilder() {
+        return builder()
+                .contacts(getContacts())
+                .creationDate(getCreationDate())
+                .description(getDescription())
+                .nodeTitle(getNodeTitle())
+                .creator(getCreator())
+                .language(getLanguage())
+                .numberOfSubscribers(getNumberOfSubscribers())
+                .owners(getOwners())
+                .payloadType(getPayloadType())
+                .publishers(getPublishers());
+    }
+
+    /**
      * A builder class to build the meta data form. If not provided the default data form type is {@link
      * rocks.xmpp.extensions.data.model.DataForm.Type#RESULT}.
      */
@@ -333,7 +352,7 @@ public final class NodeMetaData implements StandardizedDataForm {
          * @param numberOfSubscribers The number of subscribers to the node.
          * @return The builder.
          */
-        public final Builder numberOfSubscribers(int numberOfSubscribers) {
+        public final Builder numberOfSubscribers(Integer numberOfSubscribers) {
             this.numberOfSubscribers = numberOfSubscribers;
             return this;
         }

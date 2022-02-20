@@ -234,6 +234,41 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertEquals(nodeConfiguration1.getNodeTitle(), "Title");
         Assert.assertEquals(nodeConfiguration1.getPayloadType(), "Type");
 
+        NodeConfiguration.Builder builder = nodeConfiguration1.toBuilder();
+        builder.deliverPayloads(false);
+        NodeConfiguration nodeConfiguration2 = builder.build();
+        Assert.assertFalse(nodeConfiguration2.isDeliverPayloads());
+        Assert.assertEquals(nodeConfiguration2.getNodeTitle(), "Title");
+    }
+
+    @Test
+    public void testNodeConfigurationToBuilder() {
+        NodeConfiguration nodeConfiguration = NodeConfiguration.builder()
+                .deliverNotifications(true).build();
+        NodeConfiguration.Builder builder = nodeConfiguration.toBuilder();
+        builder.deliverPayloads(false);
+        NodeConfiguration nodeConfiguration2 = builder.build();
+        Assert.assertFalse(nodeConfiguration2.isDeliverPayloads());
+    }
+
+    @Test
+    public void testNodeMetaDataToBuilder() {
+        NodeMetaData metaData = NodeMetaData.builder()
+                .nodeTitle("Title").build();
+        NodeMetaData.Builder builder = metaData.toBuilder();
+        builder.nodeTitle("New Title");
+        NodeMetaData metaData2 = builder.build();
+        Assert.assertEquals(metaData2.getNodeTitle(), "New Title");
+    }
+
+    @Test
+    public void testPublishOptionsToBuilder() {
+        PublishOptions publishOptions = PublishOptions.builder()
+                .accessModel(AccessModel.AUTHORIZE).build();
+        PublishOptions.Builder builder = publishOptions.toBuilder();
+        builder.accessModel(AccessModel.OPEN);
+        PublishOptions publishOptions2 = builder.build();
+        Assert.assertEquals(publishOptions2.getAccessModel(), AccessModel.OPEN);
     }
 
     @Test
@@ -277,5 +312,15 @@ public class PubSubConfigurationFormsTest extends XmlTest {
         Assert.assertEquals(subscribeOptions.getSubscriptionType(), SubscribeOptions.SubscriptionType.NODES);
         Assert.assertEquals(subscribeOptions.getSubscriptionDepth(), Integer.valueOf(-1));
 
+    }
+
+    @Test
+    public void testSubscribeOptionsToBuilder() {
+        SubscribeOptions subscribeOptions = SubscribeOptions.builder()
+                .subscriptionType(SubscribeOptions.SubscriptionType.ITEMS).build();
+        SubscribeOptions.Builder builder = subscribeOptions.toBuilder();
+        builder.subscriptionType(SubscribeOptions.SubscriptionType.NODES);
+        SubscribeOptions subscribeOptions2 = builder.build();
+        Assert.assertEquals(subscribeOptions2.getSubscriptionType(), SubscribeOptions.SubscriptionType.NODES);
     }
 }

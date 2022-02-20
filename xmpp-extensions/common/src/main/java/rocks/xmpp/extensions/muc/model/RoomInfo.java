@@ -230,6 +230,24 @@ public final class RoomInfo implements StandardizedDataForm {
     }
 
     /**
+     * Converts this (immutable) data form to a builder, so that a modified form can be created.
+     *
+     * @return The builder.
+     */
+    public final RoomInfo.Builder toBuilder() {
+        return builder()
+                .changeSubjectAllowed(isChangeSubjectAllowed())
+                .contacts(getContacts())
+                .currentNumberOfOccupants(getCurrentNumberOfOccupants())
+                .description(getDescription())
+                .language(getLanguage())
+                .ldapGroup(getLdapGroup())
+                .logs(getLogs())
+                .maxHistoryMessages(getMaxHistoryMessages())
+                .subject(getSubject());
+    }
+
+    /**
      * A builder to build a room info form. The form is of type {@link DataForm.Type#RESULT} by default.
      */
     public static final class Builder extends DataForm.Builder<Builder> {
@@ -261,7 +279,7 @@ public final class RoomInfo implements StandardizedDataForm {
          * @param maxHistoryMessages The maximum number of history messages returned by the room.
          * @return The builder.
          */
-        public Builder maxHistoryMessages(int maxHistoryMessages) {
+        public Builder maxHistoryMessages(Integer maxHistoryMessages) {
             this.maxHistoryMessages = maxHistoryMessages;
             return this;
         }
@@ -328,7 +346,7 @@ public final class RoomInfo implements StandardizedDataForm {
          * @param occupants The number of occupants.
          * @return The builder.
          */
-        public Builder currentNumberOfOccupants(int occupants) {
+        public Builder currentNumberOfOccupants(Integer occupants) {
             this.occupants = occupants;
             return this;
         }

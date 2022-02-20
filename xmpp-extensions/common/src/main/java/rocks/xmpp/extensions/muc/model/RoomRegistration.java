@@ -194,6 +194,22 @@ public final class RoomRegistration implements StandardizedDataForm {
     }
 
     /**
+     * Converts this (immutable) data form to a builder, so that a modified form can be created.
+     *
+     * @return The builder.
+     */
+    public final RoomRegistration.Builder toBuilder() {
+        return builder()
+                .allowRegister(isRegisterAllowed())
+                .email(getEmail())
+                .familyName(getFamilyName())
+                .faqEntry(getFaqEntry())
+                .givenName(getGivenName())
+                .nickname(getRoomNick())
+                .webPage(getWebPage());
+    }
+
+    /**
      * A builder to build MUC registration forms. The form is of type {@link DataForm.Type#SUBMIT} by default.
      */
     public static final class Builder extends DataForm.Builder<Builder> {

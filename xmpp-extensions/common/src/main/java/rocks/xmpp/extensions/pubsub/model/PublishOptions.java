@@ -175,6 +175,19 @@ public final class PublishOptions implements StandardizedDataForm {
     }
 
     /**
+     * Converts this (immutable) data form to a builder, so that a modified form can be created.
+     *
+     * @return The builder.
+     */
+    public final PublishOptions.Builder toBuilder() {
+        return builder()
+                .accessModel(getAccessModel())
+                .persistItems(isPersistItems())
+                .sendLastPublishedItem(getSendLastPublishedItem())
+                .rosterGroupsAllowed(getRosterGroupsAllowed());
+    }
+
+    /**
      * A builder class to build the publish options form. If not provided the default data form type is {@link
      * rocks.xmpp.extensions.data.model.DataForm.Type#SUBMIT}.
      */

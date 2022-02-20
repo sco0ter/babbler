@@ -153,6 +153,19 @@ public final class RequestVoice implements StandardizedDataForm {
     }
 
     /**
+     * Converts this (immutable) data form to a builder, so that a modified form can be created.
+     *
+     * @return The builder.
+     */
+    public final RequestVoice.Builder toBuilder() {
+        return builder()
+                .allowRequest(isRequestAllowed())
+                .jid(getJid())
+                .role(getRole())
+                .roomNick(getRoomNick());
+    }
+
+    /**
      * A builder to build a request voice form. The form is of type {@link DataForm.Type#SUBMIT} by default.
      */
     public static final class Builder extends DataForm.Builder<Builder> {

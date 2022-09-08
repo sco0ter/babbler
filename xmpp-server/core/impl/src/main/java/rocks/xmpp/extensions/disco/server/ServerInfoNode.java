@@ -62,7 +62,9 @@ public class ServerInfoNode implements DiscoverableInfo, InfoProvider {
     @Override
     public Set<String> getFeatures() {
         return extensionProtocols.stream()
-                .flatMap(extensionProtocol -> extensionProtocol.getFeatures().stream())
+                .filter(extensionProtocol -> extensionProtocol.isEnabled()
+                        && extensionProtocol instanceof DiscoverableInfo)
+                .flatMap(extensionProtocol -> ((DiscoverableInfo) extensionProtocol).getFeatures().stream())
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 

@@ -34,10 +34,11 @@ import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.forward.model.Forwarded;
 
 /**
- * This manager allows to forward stanzas to other XMPP entities.
+ * This manager allows forwarding stanzas to other XMPP entities.
  *
  * <p>Enabling this manager simply indicates support for the stanza forwarding extension in a service discovery
  * response and has no further effect.</p>
@@ -56,7 +57,7 @@ import rocks.xmpp.extensions.forward.model.Forwarded;
  *
  * @author Christian Schudt
  */
-public final class StanzaForwardingManager extends Manager implements ExtensionProtocol {
+public final class StanzaForwardingManager extends Manager implements ExtensionProtocol, DiscoverableInfo {
 
     private static final Set<String> FEATURES = Collections.singleton(Forwarded.NAMESPACE);
 

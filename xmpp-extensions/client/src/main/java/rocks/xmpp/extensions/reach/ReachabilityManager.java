@@ -46,6 +46,7 @@ import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Stanza;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.pubsub.model.Item;
 import rocks.xmpp.extensions.pubsub.model.event.Event;
 import rocks.xmpp.extensions.reach.model.Address;
@@ -58,7 +59,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * notifies {@linkplain Consumer}s, when the reachability of a contact has changed either via presence or PEP.
  */
 public final class ReachabilityManager extends AbstractIQHandler
-        implements InboundPresenceHandler, OutboundPresenceHandler, InboundMessageHandler, ExtensionProtocol {
+        implements InboundPresenceHandler, OutboundPresenceHandler, InboundMessageHandler, ExtensionProtocol,
+        DiscoverableInfo {
 
     private static final Set<String> FEATURES = Collections.singleton(Reachability.NAMESPACE);
 

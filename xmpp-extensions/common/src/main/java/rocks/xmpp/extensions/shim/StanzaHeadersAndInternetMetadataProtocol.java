@@ -43,7 +43,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * Implementation of <a href="https://xmpp.org/extensions/xep-0131.html">XEP-0131: Stanza Headers and Internet
  * Metadata</a>.
  */
-public class StanzaHeadersAndInternetMetadataProtocol implements HeaderManager {
+public class StanzaHeadersAndInternetMetadataProtocol implements HeaderManager, DiscoverableInfo {
 
     private static final Set<String> FEATURES = Collections.singleton(Headers.NAMESPACE);
 

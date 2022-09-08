@@ -52,6 +52,7 @@ import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.bytestreams.s5b.model.StreamHost;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
@@ -72,7 +73,8 @@ import rocks.xmpp.util.concurrent.CompletionStages;
  *
  * @author Christian Schudt
  */
-public final class Socks5ByteStreamManager extends ByteStreamManager implements IQHandler, ExtensionProtocol {
+public final class Socks5ByteStreamManager extends ByteStreamManager
+        implements IQHandler, ExtensionProtocol, DiscoverableInfo {
 
     private static final Set<String> FEATURES = Collections.singleton(Socks5ByteStream.NAMESPACE);
 

@@ -32,6 +32,7 @@ import java.util.Set;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.time.model.EntityTime;
 
 /**
@@ -39,7 +40,7 @@ import rocks.xmpp.extensions.time.model.EntityTime;
  *
  * @author Christian Schudt
  */
-public class EntityTimeHandler extends AbstractIQHandler implements ExtensionProtocol {
+public class EntityTimeHandler extends AbstractIQHandler implements ExtensionProtocol, DiscoverableInfo {
 
     private static final Set<String> FEATURES = Collections.singleton(EntityTime.NAMESPACE);
 

@@ -25,13 +25,10 @@
 package rocks.xmpp.extensions.softwareinfo;
 
 import java.util.Collections;
-import java.util.Locale;
+import java.util.List;
 import java.util.Set;
 
-import rocks.xmpp.addr.Jid;
-import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
-import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
-import rocks.xmpp.extensions.disco.model.info.InfoProvider;
+import rocks.xmpp.extensions.data.model.DataForm;
 
 /**
  * Represents the XEP-0232: Software Information.
@@ -45,7 +42,7 @@ import rocks.xmpp.extensions.disco.model.info.InfoProvider;
  * @see <a href="https://xmpp.org/extensions/xep-0232.html">XEP-0232: Software Information</a>
  * @since 0.9.0
  */
-public final class SoftwareInformationProtocol implements InfoProvider, SoftwareInfoProvider<SoftwareInformation> {
+public final class SoftwareInformationProtocol implements SoftwareInfoProvider<SoftwareInformation> {
 
     private SoftwareInformation softwareInformation;
 
@@ -90,11 +87,10 @@ public final class SoftwareInformationProtocol implements InfoProvider, Software
     }
 
     @Override
-    public final synchronized DiscoverableInfo getInfo(Jid to, Jid from, String node, Locale locale) {
+    public final synchronized List<DataForm> getExtensions() {
         if (softwareInformation != null) {
-            return new InfoDiscovery(Collections.emptyList(), Collections.emptyList(),
-                    Collections.singletonList(softwareInformation.getDataForm()));
+            return Collections.singletonList(softwareInformation.getDataForm());
         }
-        return null;
+        return Collections.emptyList();
     }
 }

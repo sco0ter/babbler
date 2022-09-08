@@ -60,6 +60,7 @@ import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
 import rocks.xmpp.extensions.bytestreams.s5b.Socks5ByteStreamManager;
 import rocks.xmpp.extensions.bytestreams.s5b.model.Socks5ByteStream;
 import rocks.xmpp.extensions.data.model.DataForm;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.featureneg.model.FeatureNegotiation;
 import rocks.xmpp.extensions.filetransfer.FileTransfer;
 import rocks.xmpp.extensions.filetransfer.FileTransferManager;
@@ -71,7 +72,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 import rocks.xmpp.util.concurrent.CompletionStages;
 
 public final class StreamInitiationManager extends AbstractIQHandler
-        implements FileTransferNegotiator, ExtensionProtocol {
+        implements FileTransferNegotiator, ExtensionProtocol, DiscoverableInfo {
 
     private static final Set<String> FEATURES = Set.of(StreamInitiation.NAMESPACE, SIFileTransferOffer.NAMESPACE);
 

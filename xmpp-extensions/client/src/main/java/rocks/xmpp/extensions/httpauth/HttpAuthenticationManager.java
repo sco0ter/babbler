@@ -24,7 +24,6 @@
 
 package rocks.xmpp.extensions.httpauth;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
@@ -113,10 +112,5 @@ public final class HttpAuthenticationManager extends AbstractIQHandler implement
     @Override
     public final boolean isEnabled() {
         return !httpAuthenticationListeners.isEmpty();
-    }
-
-    @Override
-    public final Set<String> getFeatures() {
-        return Collections.emptySet();
     }
 }

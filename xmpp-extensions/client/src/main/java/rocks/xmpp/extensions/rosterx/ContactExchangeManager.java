@@ -46,6 +46,7 @@ import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.rosterx.model.ContactExchange;
 import rocks.xmpp.im.roster.RosterManager;
 import rocks.xmpp.im.roster.model.Contact;
@@ -69,7 +70,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * @see <a href="https://xmpp.org/extensions/xep-0144.html">XEP-0144: Roster Item Exchange</a>
  */
 public final class ContactExchangeManager extends AbstractIQHandler
-        implements InboundMessageHandler, ExtensionProtocol {
+        implements InboundMessageHandler, ExtensionProtocol, DiscoverableInfo {
 
     private static final Set<String> FEATURES = Collections.singleton(ContactExchange.NAMESPACE);
 

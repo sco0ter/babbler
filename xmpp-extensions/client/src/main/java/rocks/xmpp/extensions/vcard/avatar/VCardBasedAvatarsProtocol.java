@@ -344,9 +344,4 @@ public final class VCardBasedAvatarsProtocol extends AbstractAvatarManager
     public final boolean isEnabled() {
         return !avatarChangeListeners.isEmpty();
     }
-
-    @Override
-    public final Set<String> getFeatures() {
-        return Collections.emptySet();
-    }
 }

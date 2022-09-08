@@ -24,8 +24,6 @@
 
 package rocks.xmpp.core;
 
-import java.util.Set;
-
 /**
  * An XMPP Extension Protocol.
  *
@@ -47,11 +45,4 @@ public interface ExtensionProtocol {
      * @return true, if enabled; false if disabled.
      */
     boolean isEnabled();
-
-    /**
-     * Gets the features of this protocol, which can be discovered by service discovery.
-     *
-     * @return The features.
-     */
-    Set<String> getFeatures();
 }

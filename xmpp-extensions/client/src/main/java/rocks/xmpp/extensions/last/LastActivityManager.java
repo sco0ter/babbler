@@ -46,6 +46,7 @@ import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.core.stanza.model.Presence.Show;
 import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.idle.model.Idle;
 import rocks.xmpp.extensions.last.model.LastActivity;
 import rocks.xmpp.util.concurrent.AsyncResult;
@@ -98,7 +99,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  *
  * @author Christian Schudt
  */
-public final class LastActivityManager extends Manager implements ExtensionProtocol {
+public final class LastActivityManager extends Manager implements ExtensionProtocol, DiscoverableInfo {
 
     private static final Set<String> FEATURES = Collections.singleton(LastActivity.NAMESPACE);
 

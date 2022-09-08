@@ -36,13 +36,14 @@ import rocks.xmpp.core.net.server.NettyServer;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.last.model.LastActivity;
 
 /**
  * @author Christian Schudt
  */
 @ApplicationScoped
-public final class LastActivityHandler extends AbstractIQHandler implements ExtensionProtocol {
+public final class LastActivityHandler extends AbstractIQHandler implements ExtensionProtocol, DiscoverableInfo {
 
     private static final Set<String> FEATURES = Collections.singleton(LastActivity.NAMESPACE);
 

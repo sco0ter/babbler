@@ -39,6 +39,7 @@ import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.OutboundMessageHandler;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;
 import rocks.xmpp.util.XmppUtils;
 
@@ -62,7 +63,7 @@ import rocks.xmpp.util.XmppUtils;
  * }</pre>
  */
 public final class MessageDeliveryReceiptsManager extends Manager
-        implements ExtensionProtocol, InboundMessageHandler, OutboundMessageHandler {
+        implements ExtensionProtocol, InboundMessageHandler, OutboundMessageHandler, DiscoverableInfo {
 
     private static final Set<String> FEATURES = Collections.singleton(MessageDeliveryReceipts.NAMESPACE);
 

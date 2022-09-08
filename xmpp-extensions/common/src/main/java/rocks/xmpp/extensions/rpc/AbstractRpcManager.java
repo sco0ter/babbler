@@ -27,10 +27,8 @@ package rocks.xmpp.extensions.rpc;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
-import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -38,8 +36,6 @@ import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
-import rocks.xmpp.extensions.disco.model.info.InfoDiscovery;
-import rocks.xmpp.extensions.disco.model.info.InfoProvider;
 import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rpc.model.Value;
 
@@ -53,7 +49,7 @@ import rocks.xmpp.extensions.rpc.model.Value;
  * @see <a href="https://xmpp.org/extensions/xep-0009.html">XEP-0009: Jabber-RPC</a>
  */
 public abstract class AbstractRpcManager extends AbstractIQHandler
-        implements InfoProvider, RpcManager, ExtensionProtocol {
+        implements RpcManager, ExtensionProtocol, DiscoverableInfo {
 
     private static final Set<String> FEATURES = Collections.singleton(Rpc.NAMESPACE);
 
@@ -83,6 +79,11 @@ public abstract class AbstractRpcManager extends AbstractIQHandler
     @Override
     public final synchronized boolean isEnabled() {
         return rpcHandler != null;
+    }
+
+    @Override
+    public final Set<Identity> getIdentities() {
+        return Collections.singleton(Identity.automationRpc());
     }
 
     @Override
@@ -116,14 +117,5 @@ public abstract class AbstractRpcManager extends AbstractIQHandler
             }
         }
         return iq.createError(Condition.SERVICE_UNAVAILABLE);
-    }
-
-    @Override
-    public final DiscoverableInfo getInfo(Jid to, Jid from, String node, Locale locale) {
-        if (isEnabled()) {
-            return new InfoDiscovery(Collections.singleton(Identity.automationRpc()), FEATURES,
-                    Collections.emptyList());
-        }
-        return null;
     }
 }

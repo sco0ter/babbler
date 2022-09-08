@@ -46,6 +46,7 @@ import rocks.xmpp.core.stanza.PresenceEvent;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.ping.handler.PingHandler;
 import rocks.xmpp.extensions.ping.model.Ping;
 import rocks.xmpp.util.XmppUtils;
@@ -69,7 +70,7 @@ import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
  * @author Christian Schudt
  */
 public final class PingManager extends Manager implements ExtensionProtocol, InboundMessageHandler,
-        InboundPresenceHandler, InboundIQHandler {
+        InboundPresenceHandler, InboundIQHandler, DiscoverableInfo {
 
     private static final ExecutorService EXECUTOR_SERVICE =
             Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Scheduled Ping Thread"));

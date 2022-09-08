@@ -43,6 +43,7 @@ import rocks.xmpp.extensions.blocking.model.Block;
 import rocks.xmpp.extensions.blocking.model.BlockList;
 import rocks.xmpp.extensions.blocking.model.Blockable;
 import rocks.xmpp.extensions.blocking.model.Unblock;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
@@ -71,7 +72,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  *
  * <p>This class is thread-safe.</p>
  */
-public final class BlockingManager extends AbstractIQHandler implements ExtensionProtocol {
+public final class BlockingManager extends AbstractIQHandler implements ExtensionProtocol, DiscoverableInfo {
 
     private final Set<Jid> blockedContacts = new HashSet<>();
 

@@ -43,6 +43,7 @@ import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.extensions.bytestreams.ByteStreamManager;
 import rocks.xmpp.extensions.bytestreams.ByteStreamSession;
 import rocks.xmpp.extensions.bytestreams.ibb.model.InBandByteStream;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.util.XmppUtils;
 import rocks.xmpp.util.concurrent.AsyncResult;
 
@@ -58,7 +59,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * @see <a href="https://xmpp.org/extensions/xep-0047.html">XEP-0047: In-Band Bytestreams</a>
  */
 public final class InBandByteStreamManager extends ByteStreamManager implements IQHandler, InboundMessageHandler,
-        ExtensionProtocol {
+        ExtensionProtocol, DiscoverableInfo {
 
     private static final Set<String> FEATURES = Collections.singleton(InBandByteStream.NAMESPACE);
 

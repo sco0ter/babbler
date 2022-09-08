@@ -42,6 +42,7 @@ import rocks.xmpp.extensions.address.model.Address;
 import rocks.xmpp.extensions.address.model.Addresses;
 import rocks.xmpp.extensions.avatar.model.data.AvatarData;
 import rocks.xmpp.extensions.avatar.model.metadata.AvatarMetadata;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.pubsub.PubSubManager;
 import rocks.xmpp.extensions.pubsub.PubSubService;
 import rocks.xmpp.extensions.pubsub.model.Item;
@@ -55,7 +56,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * @author Christian Schudt
  */
 public final class UserAvatarProtocol extends AbstractAvatarManager
-        implements InboundMessageHandler, ExtensionProtocol {
+        implements InboundMessageHandler, ExtensionProtocol, DiscoverableInfo {
 
     private static final System.Logger logger = System.getLogger(UserAvatarProtocol.class.getName());
 

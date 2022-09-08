@@ -30,6 +30,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import rocks.xmpp.core.ExtensionProtocol;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.hashes.model.Hash;
 
 /**
@@ -38,7 +39,7 @@ import rocks.xmpp.extensions.hashes.model.Hash;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0300.html">XEP-0300: Use of Cryptographic Hash Functions in XMPP</a>
  */
-public final class CryptographicHashFunctionsProtocol implements ExtensionProtocol {
+public final class CryptographicHashFunctionsProtocol implements ExtensionProtocol, DiscoverableInfo {
 
     private static final Set<String> FEATURES = new LinkedHashSet<>();
 

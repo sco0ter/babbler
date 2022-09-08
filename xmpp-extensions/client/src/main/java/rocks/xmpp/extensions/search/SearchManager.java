@@ -24,9 +24,6 @@
 
 package rocks.xmpp.extensions.search;
 
-import java.util.Collections;
-import java.util.Set;
-
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.XmppSession;
@@ -99,10 +96,5 @@ public final class SearchManager implements ExtensionProtocol {
     @Override
     public final boolean isEnabled() {
         return true;
-    }
-
-    @Override
-    public final Set<String> getFeatures() {
-        return Collections.emptySet();
     }
 }

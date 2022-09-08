@@ -33,6 +33,7 @@ import rocks.xmpp.core.session.Manager;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.Presence;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.vcard.avatar.VCardBasedAvatarsProtocol;
 import rocks.xmpp.extensions.vcard.temp.model.VCard;
 import rocks.xmpp.im.subscription.PresenceManager;
@@ -46,7 +47,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  *
  * @author Christian Schudt
  */
-public final class VCardManager extends Manager implements ExtensionProtocol {
+public final class VCardManager extends Manager implements ExtensionProtocol, DiscoverableInfo {
 
     private static final Set<String> FEATURES = Collections.singleton(VCard.NAMESPACE);
 

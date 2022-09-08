@@ -212,7 +212,7 @@ final class ExtensionProtocolRegistry implements DiscoverableInfo {
     public final Set<Identity> getIdentities() {
         return this.enabledExtensions
                 .stream()
-                .filter(e -> e instanceof DiscoverableInfo && e.isEnabled())
+                .filter(e -> e instanceof DiscoverableInfo)
                 .flatMap(extension -> ((DiscoverableInfo) extension).getIdentities().stream())
                 .collect(Collectors.toSet());
     }
@@ -221,8 +221,8 @@ final class ExtensionProtocolRegistry implements DiscoverableInfo {
     public final Set<String> getFeatures() {
         return this.enabledExtensions
                 .stream()
-                //.filter(ExtensionProtocol::isEnabled)
-                .flatMap(extension -> extension.getFeatures().stream())
+                .filter(e -> e instanceof DiscoverableInfo)
+                .flatMap(extension -> ((DiscoverableInfo) extension).getFeatures().stream())
                 .collect(Collectors.toSet());
     }
 
@@ -230,7 +230,7 @@ final class ExtensionProtocolRegistry implements DiscoverableInfo {
     public final List<DataForm> getExtensions() {
         return this.enabledExtensions
                 .stream()
-                .filter(e -> e instanceof DiscoverableInfo && e.isEnabled())
+                .filter(e -> e instanceof DiscoverableInfo)
                 .flatMap(extension -> ((DiscoverableInfo) extension).getExtensions().stream())
                 .collect(Collectors.toList());
     }

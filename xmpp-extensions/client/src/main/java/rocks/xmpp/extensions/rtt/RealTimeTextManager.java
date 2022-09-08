@@ -38,6 +38,7 @@ import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.InboundMessageHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.Message;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.messagecorrect.model.Replace;
 import rocks.xmpp.extensions.rtt.model.RealTimeText;
 import rocks.xmpp.im.chat.Chat;
@@ -49,7 +50,7 @@ import rocks.xmpp.util.XmppUtils;
  * @author Christian Schudt
  * @see <a href="http://www.xmpp.org/extensions/xep-0301.html">XEP-0301: In-Band Real Time Text</a>
  */
-public final class RealTimeTextManager implements InboundMessageHandler, ExtensionProtocol {
+public final class RealTimeTextManager implements InboundMessageHandler, ExtensionProtocol, DiscoverableInfo {
 
     private static final Set<String> FEATURES = Collections.singleton(RealTimeText.NAMESPACE);
 

@@ -25,13 +25,14 @@
 package rocks.xmpp.extensions.softwareinfo;
 
 import rocks.xmpp.core.ExtensionProtocol;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 
 /**
  * Provides {@link SoftwareInfo} for a requester.
  *
  * @author Christian Schudt
  */
-public interface SoftwareInfoProvider<T extends SoftwareInfo> extends ExtensionProtocol {
+public interface SoftwareInfoProvider<T extends SoftwareInfo> extends ExtensionProtocol, DiscoverableInfo {
 
     /**
      * Gets the software information.

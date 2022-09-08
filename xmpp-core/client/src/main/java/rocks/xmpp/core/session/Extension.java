@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 
 import rocks.xmpp.core.ExtensionProtocol;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 
 /**
  * Represents an XMPP protocol extension (XEP).
@@ -66,7 +67,7 @@ import rocks.xmpp.core.ExtensionProtocol;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0030.html">XEP-0030: Service Discovery</a>
  */
-public final class Extension implements ExtensionProtocol {
+public final class Extension implements ExtensionProtocol, DiscoverableInfo {
 
     private final String namespace;
 

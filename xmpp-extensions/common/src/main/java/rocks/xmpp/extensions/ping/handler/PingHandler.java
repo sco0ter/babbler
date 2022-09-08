@@ -30,6 +30,7 @@ import java.util.Set;
 import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.ping.model.Ping;
 
 /**
@@ -37,7 +38,7 @@ import rocks.xmpp.extensions.ping.model.Ping;
  *
  * @author Christian Schudt
  */
-public final class PingHandler extends AbstractIQHandler implements ExtensionProtocol {
+public final class PingHandler extends AbstractIQHandler implements ExtensionProtocol, DiscoverableInfo {
 
     private static final Set<String> FEATURES = Collections.singleton(Ping.NAMESPACE);
 

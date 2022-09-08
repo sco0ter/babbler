@@ -26,7 +26,6 @@ package rocks.xmpp.extensions.privacy;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -228,10 +227,5 @@ public final class PrivacyListManager extends AbstractIQHandler implements Exten
     @Override
     public final boolean isEnabled() {
         return !privacyListListeners.isEmpty();
-    }
-
-    @Override
-    public final Set<String> getFeatures() {
-        return Collections.emptySet();
     }
 }

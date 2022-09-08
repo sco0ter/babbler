@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import rocks.xmpp.core.ExtensionProtocol;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
 
 /**
@@ -36,7 +37,7 @@ import rocks.xmpp.extensions.rsm.model.ResultSetManagement;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0059.html">XEP-0059: Result Set Management</a>
  */
-public final class ResultSetManagementProtocol implements ExtensionProtocol {
+public final class ResultSetManagementProtocol implements ExtensionProtocol, DiscoverableInfo {
 
     private static final Set<String> FEATURES = Collections.singleton(ResultSetManagement.NAMESPACE);
 

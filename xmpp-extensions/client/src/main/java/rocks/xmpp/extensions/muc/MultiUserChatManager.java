@@ -41,6 +41,7 @@ import rocks.xmpp.core.stanza.InboundMessageHandler;
 import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.disco.ServiceDiscoveryManager;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.disco.model.items.DiscoverableItem;
 import rocks.xmpp.extensions.disco.model.items.Item;
@@ -60,7 +61,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0045.html">XEP-0045: Multi-User Chat</a>
  */
-public final class MultiUserChatManager implements InboundMessageHandler, ItemProvider, ExtensionProtocol {
+public final class MultiUserChatManager
+        implements InboundMessageHandler, ItemProvider, ExtensionProtocol, DiscoverableInfo {
 
     private static final Set<String> FEATURES = Collections.singleton(Muc.NAMESPACE);
 

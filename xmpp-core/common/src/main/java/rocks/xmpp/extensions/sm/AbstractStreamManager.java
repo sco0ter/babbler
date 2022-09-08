@@ -41,6 +41,7 @@ import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.model.StreamError;
 import rocks.xmpp.core.stream.model.StreamErrorException;
 import rocks.xmpp.core.stream.model.errors.Condition;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.sm.model.StreamManagement;
 
 /**
@@ -49,7 +50,8 @@ import rocks.xmpp.extensions.sm.model.StreamManagement;
  * @author Christian Schudt
  * @see <a href="https://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>
  */
-public abstract class AbstractStreamManager implements StreamFeatureNegotiator<StreamManagement>, ExtensionProtocol {
+public abstract class AbstractStreamManager
+        implements StreamFeatureNegotiator<StreamManagement>, ExtensionProtocol, DiscoverableInfo {
 
     /**
      * 2^32 - 1

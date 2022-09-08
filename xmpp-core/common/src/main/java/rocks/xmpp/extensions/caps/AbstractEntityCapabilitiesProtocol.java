@@ -76,7 +76,7 @@ import rocks.xmpp.util.cache.LruCache;
  * @author Christian Schudt
  */
 public abstract class AbstractEntityCapabilitiesProtocol<T extends EntityCapabilities>
-        implements InboundPresenceHandler, InfoProvider, ExtensionProtocol {
+        implements InboundPresenceHandler, InfoProvider, ExtensionProtocol, DiscoverableInfo {
 
     private static final System.Logger logger = System.getLogger(AbstractEntityCapabilitiesProtocol.class.getName());
 

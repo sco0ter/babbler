@@ -40,6 +40,7 @@ import rocks.xmpp.core.stanza.MessageEvent;
 import rocks.xmpp.core.stanza.OutboundMessageHandler;
 import rocks.xmpp.core.stanza.model.Message;
 import rocks.xmpp.extensions.chatstates.model.ChatState;
+import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.xhtmlim.model.Html;
 import rocks.xmpp.im.chat.Chat;
 import rocks.xmpp.util.concurrent.AsyncResult;
@@ -81,7 +82,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * @see <a href="https://xmpp.org/extensions/xep-0085.html">XEP-0085: Chat State Notifications</a>
  */
 public final class ChatStateManager extends Manager
-        implements ExtensionProtocol, InboundMessageHandler, OutboundMessageHandler {
+        implements ExtensionProtocol, DiscoverableInfo, InboundMessageHandler, OutboundMessageHandler {
 
     private static final Set<String> FEATURES = Collections.singleton(ChatState.NAMESPACE);
 

@@ -24,6 +24,7 @@
 
 package rocks.xmpp.extensions.disco.model.info;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -43,7 +44,9 @@ public interface DiscoverableInfo {
      *
      * @return The identities.
      */
-    Set<Identity> getIdentities();
+    default Set<Identity> getIdentities() {
+        return Collections.emptySet();
+    }
 
     /**
      * Gets the features.
@@ -58,5 +61,7 @@ public interface DiscoverableInfo {
      *
      * @return The service discovery extensions.
      */
-    List<DataForm> getExtensions();
+    default List<DataForm> getExtensions() {
+        return Collections.emptyList();
+    }
 }

@@ -41,7 +41,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
 /**
  * @author Christian Schudt
  */
-public interface ServiceDiscoveryManager extends IQHandler, ExtensionProtocol {
+public interface ServiceDiscoveryManager extends IQHandler, ExtensionProtocol, DiscoverableInfo {
 
     /**
      * Discovers information about another XMPP entity.

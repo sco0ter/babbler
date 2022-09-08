@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.mockito.Mockito;
@@ -40,7 +39,6 @@ import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.IQ;
 import rocks.xmpp.core.stanza.model.StanzaErrorException;
 import rocks.xmpp.core.stanza.model.errors.Condition;
-import rocks.xmpp.extensions.disco.model.info.DiscoverableInfo;
 import rocks.xmpp.extensions.disco.model.info.Identity;
 import rocks.xmpp.extensions.rpc.model.Rpc;
 import rocks.xmpp.extensions.rpc.model.Value;
@@ -131,15 +129,11 @@ public class AbstractRpcManagerTest {
     public void getInfo() {
         AbstractRpcManager rpcManager = Mockito.mock(AbstractRpcManager.class, Mockito.CALLS_REAL_METHODS);
         Assert.assertFalse(rpcManager.isEnabled());
-        DiscoverableInfo discoverableInfo = rpcManager.getInfo(Jid.of("to"), Jid.of("from"), null, Locale.ENGLISH);
-        Assert.assertNull(discoverableInfo);
         rpcManager.setRpcHandler(Mockito.mock(RpcHandler.class));
 
         IQ request = IQ.get(Rpc.ofMethodCall("method1"));
         request.setFrom(Jid.of("requester"));
-        discoverableInfo = rpcManager.getInfo(Jid.of("to"), Jid.of("from"), null, Locale.ENGLISH);
-        Assert.assertNotNull(discoverableInfo);
-        Assert.assertFalse(discoverableInfo.getIdentities().isEmpty());
-        Assert.assertEquals(discoverableInfo.getIdentities().iterator().next(), Identity.automationRpc());
+
+        Assert.assertEquals(rpcManager.getIdentities().iterator().next(), Identity.automationRpc());
     }
 }

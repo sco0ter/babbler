@@ -321,7 +321,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.3.2</version>
+                    <version>3.4.1</version>
                     <configuration>
                         <groups>
                             <group>
@@ -365,6 +365,8 @@
                         <windowtitle>Babbler ${project.version}</windowtitle>
                         <docfilessubdirs>true</docfilessubdirs>
                         <show>public</show>
+                        <!-- Workaround for javadoc : No source files for package -->
+                        <sourcepath>src/main/java</sourcepath>
                         <!-- Workaround for https://bugs.openjdk.java.net/browse/JDK-8215291 -->
                         <additionalJOption>--no-module-directories</additionalJOption>
                     </configuration>

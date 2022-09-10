@@ -195,8 +195,9 @@
                     <compilerArgs>
                         <arg>-XDcompilePolicy=simple</arg>
                         <arg>-Xplugin:ErrorProne -Xep:FutureReturnValueIgnored:OFF -Xep:UnusedVariable:OFF
-                            -Xep:MissingSummary:OFF -Xep:DoNotCallSuggester:OFF
+                            -Xep:MissingSummary:OFF -Xep:DoNotCallSuggester:OFF -Xep:UnicodeInCode:OFF
                         </arg>
+                        <!-- https://youtrack.jetbrains.com/issue/IDEA-288257/False-positive-UnicodeInCode-warnings-after-upgrading-project-to-ErrorProne-2110 -->
                     </compilerArgs>
                     <annotationProcessorPaths>
                         <path>

@@ -28,7 +28,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.logging.LogRecord;
 import java.util.logging.SimpleFormatter;
 
@@ -40,7 +39,7 @@ public class LogFormatter extends SimpleFormatter {
     @Override
     public synchronized String format(LogRecord logRecord) {
         StringBuilder sb = new StringBuilder();
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
+        DateTimeFormatter dateFormat = DateTimeFormatter.ISO_DATE_TIME;
         LocalDateTime resultDate =
                 LocalDateTime.ofInstant(Instant.ofEpochMilli(logRecord.getMillis()), ZoneId.systemDefault());
         sb.append(dateFormat.format(resultDate))

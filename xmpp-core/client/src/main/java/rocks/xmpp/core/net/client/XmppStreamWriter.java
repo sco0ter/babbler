@@ -60,6 +60,8 @@ import rocks.xmpp.util.concurrent.QueuedScheduledExecutorService;
  */
 final class XmppStreamWriter {
 
+    private static final System.Logger logger = System.getLogger(XmppStreamWriter.class.getName());
+
     static final ExecutorService EXECUTOR =
             Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Writer Thread"));
 
@@ -97,6 +99,9 @@ final class XmppStreamWriter {
                 if (EnumSet.of(XmppSession.Status.CONNECTED, XmppSession.Status.AUTHENTICATED)
                         .contains(xmppSession.getStatus())) {
                     try {
+                        if (logger.isLoggable(System.Logger.Level.TRACE)) {
+                            logger.log(System.Logger.Level.TRACE, "Sending whitespace ping, connection " + System.identityHashCode(connection));
+                        }
                         outputStreamWriter.write(' ');
                         outputStreamWriter.flush();
                     } catch (Exception e) {
@@ -133,6 +138,9 @@ final class XmppStreamWriter {
                         new WriterInterceptorChain(writerInterceptors, xmppSession, connection);
                 writerInterceptorChain.proceed(streamHeader, outputStreamWriter);
                 outputStreamWriter.flush();
+                if (logger.isLoggable(System.Logger.Level.TRACE)) {
+                    logger.log(System.Logger.Level.TRACE, "Stream opened for connection " + System.identityHashCode(connection));
+                }
                 streamOpened = true;
             } catch (Exception e) {
                 notifyException(e);
@@ -152,6 +160,9 @@ final class XmppStreamWriter {
                     outputStreamWriter.close();
                     outputStreamWriter = null;
                     streamOpened = false;
+                    if (logger.isLoggable(System.Logger.Level.TRACE)) {
+                        logger.log(System.Logger.Level.TRACE, "Sent closing stream tag, closed stream writer for connection " + System.identityHashCode(connection));
+                    }
                 } catch (Exception e) {
                     notifyException(e);
                 }
@@ -179,7 +190,6 @@ final class XmppStreamWriter {
         // Shutdown the executors.
         synchronized (this) {
             executor.shutdown();
-
             if (outputStreamWriter != null) {
                 try {
                     outputStreamWriter.close();
@@ -189,7 +199,9 @@ final class XmppStreamWriter {
                 }
             }
         }
-
+        if (logger.isLoggable(System.Logger.Level.TRACE)) {
+            logger.log(System.Logger.Level.TRACE, "Got exception, shutdown writer for connection " + System.identityHashCode(connection), exception);
+        }
         xmppSession.notifyException(exception);
     }
 
@@ -204,11 +216,17 @@ final class XmppStreamWriter {
                 // Wait for the closing stream element to be sent before we can close the socket.
                 if (!executor.awaitTermination(50, TimeUnit.MILLISECONDS)) {
                     executor.shutdownNow();
+                    if (logger.isLoggable(System.Logger.Level.TRACE)) {
+                        logger.log(System.Logger.Level.TRACE, "Couldn't shutdown writer executor, shutdown now, for connection " + System.identityHashCode(connection));
+                    }
                 }
             } catch (InterruptedException e) {
                 // (Re-)Cancel if current thread also interrupted
                 executor.shutdownNow();
                 Thread.currentThread().interrupt();
+            }
+            if (logger.isLoggable(System.Logger.Level.TRACE)) {
+                logger.log(System.Logger.Level.TRACE, "Shutdown writer executor for connection " + System.identityHashCode(connection));
             }
         });
     }

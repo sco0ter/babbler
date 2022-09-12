@@ -207,7 +207,7 @@ public class NettyChannelConnection extends TcpConnection {
     }
 
     @Override
-    protected final CompletionStage<Void> closeStream() {
+    protected CompletionStage<Void> closeStream() {
         return send(StreamHeader.CLOSING_STREAM_TAG);
     }
 

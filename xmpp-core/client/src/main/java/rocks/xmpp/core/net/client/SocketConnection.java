@@ -274,6 +274,9 @@ public final class SocketConnection extends TcpConnection {
     @Override
     protected CompletionStage<Void> closeStream() {
 
+        streamFeaturesManager.removeFeatureNegotiator(securityManager);
+        streamFeaturesManager.removeFeatureNegotiator(compressionManager);
+
         final XmppStreamWriter writer;
         final XmppStreamReader reader;
 
@@ -300,8 +303,6 @@ public final class SocketConnection extends TcpConnection {
     @Override
     protected CompletionStage<Void> closeConnection() {
 
-        streamFeaturesManager.removeFeatureNegotiator(securityManager);
-        streamFeaturesManager.removeFeatureNegotiator(compressionManager);
         try {
             synchronized (this) {
                 inputStream = null;

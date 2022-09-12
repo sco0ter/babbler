@@ -178,10 +178,9 @@ final class NettyChannelClientConnection extends NettyChannelConnection {
     }
 
     @Override
-    protected final CompletionStage<Void> closeConnection() {
-        return super.closeConnection().thenRun(() -> {
-            this.streamFeaturesManager.removeFeatureNegotiator(startTlsManager);
-            this.streamFeaturesManager.removeFeatureNegotiator(compressionManager);
-        });
+    protected final CompletionStage<Void> closeStream() {
+        this.streamFeaturesManager.removeFeatureNegotiator(startTlsManager);
+        this.streamFeaturesManager.removeFeatureNegotiator(compressionManager);
+        return super.closeStream();
     }
 }

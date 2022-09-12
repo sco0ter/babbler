@@ -25,11 +25,11 @@
 package rocks.xmpp.core.net.client;
 
 import java.io.InputStreamReader;
+import java.lang.System.Logger.Level;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -56,6 +56,8 @@ import rocks.xmpp.util.concurrent.QueuedExecutorService;
  */
 final class XmppStreamReader {
 
+    private static final System.Logger logger = System.getLogger(XmppStreamWriter.class.getName());
+
     private static final ExecutorService EXECUTOR_SERVICE =
             Executors.newCachedThreadPool(XmppUtils.createNamedThreadFactory("Reader Thread"));
 
@@ -68,8 +70,6 @@ final class XmppStreamReader {
     private final List<ReaderInterceptor> readerInterceptors = new ArrayList<>();
 
     private final XmppStreamDecoder xmppStreamDecoder;
-
-    private StreamErrorException streamError = null;
 
     XmppStreamReader(final Iterable<ReaderInterceptor> readerInterceptors, String namespace,
                      final SocketConnection connection, XmppSession xmppSession) {
@@ -92,9 +92,6 @@ final class XmppStreamReader {
                                     connection);
                             context.proceed(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8),
                                     streamElement -> handle(streamElement, this));
-                            if (streamError != null) {
-                                throw streamError;
-                            }
                         } catch (Exception e) {
                             // shutdown the service, but don't await termination,
                             // in order to not block the reader thread.
@@ -103,7 +100,9 @@ final class XmppStreamReader {
                             // Recheck if there was a stream error. In this case don't report the original exception,
                             // but the stream error. This may happen, if the server doesn't gracefully close the stream
                             // after sending a stream error.
-                            xmppSession.notifyException(Objects.requireNonNullElse(streamError, e));
+                            if (!connection.isClosed()) {
+                                xmppSession.notifyException(e);
+                            }
                         }
                     }
                 }
@@ -111,23 +110,22 @@ final class XmppStreamReader {
     }
 
     private void handle(StreamElement streamElement, final Runnable reader) {
-        try {
-            if (streamElement == StreamHeader.CLOSING_STREAM_TAG) {
-                if (xmppSession.getStatus() != XmppSession.Status.CLOSING) {
-                    // The server initiated a graceful disconnect by sending <stream:stream/> without an stream error.
-                    // In this case we want to reconnect, therefore throw an exception as if a stream error has occurred
-                    throw new StreamErrorException(
-                            new StreamError(Condition.UNDEFINED_CONDITION, "Stream closed by server", Locale.ENGLISH,
-                                    null));
-                }
-            }
 
-            if (connection.handleElement(streamElement)) {
-                xmppStreamDecoder.restart();
-                reader.run();
+        boolean wasClosed = connection.isClosed();
+        if (connection.handleElement(streamElement)) {
+            xmppStreamDecoder.restart();
+            reader.run();
+        }
+
+        if (streamElement == StreamHeader.CLOSING_STREAM_TAG && !wasClosed) {
+            // The server initiated a graceful disconnect by sending <stream:stream/> without a stream error.
+            // In this case we want to reconnect, therefore throw an exception as if a stream error has occurred
+            if (logger.isLoggable(Level.DEBUG)){
+                logger.log(Level.DEBUG, "Stream closed by server");
             }
-        } catch (StreamErrorException e) {
-            streamError = e;
+            xmppSession.notifyException(new StreamErrorException(
+                    new StreamError(Condition.UNDEFINED_CONDITION, "Stream closed by server", Locale.ENGLISH,
+                            null)));
         }
     }
 

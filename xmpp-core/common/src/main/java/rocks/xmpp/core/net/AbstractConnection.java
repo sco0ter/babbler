@@ -176,7 +176,7 @@ public abstract class AbstractConnection implements Connection, StreamHandler {
      *
      * @return True, if closed.
      */
-    protected final boolean isClosed() {
+    public final boolean isClosed() {
         return closed.get();
     }
 }

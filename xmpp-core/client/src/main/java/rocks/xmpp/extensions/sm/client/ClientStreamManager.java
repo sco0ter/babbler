@@ -31,8 +31,8 @@ import rocks.xmpp.core.XmppException;
 import rocks.xmpp.core.net.WriterInterceptor;
 import rocks.xmpp.core.net.WriterInterceptorChain;
 import rocks.xmpp.core.session.XmppSession;
-import rocks.xmpp.core.session.model.SessionOpen;
 import rocks.xmpp.core.stanza.model.Stanza;
+import rocks.xmpp.core.stanza.model.errors.Condition;
 import rocks.xmpp.core.stream.StreamNegotiationException;
 import rocks.xmpp.core.stream.StreamNegotiationResult;
 import rocks.xmpp.core.stream.model.StreamElement;
@@ -56,6 +56,8 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * @see <a href="https://xmpp.org/extensions/xep-0198.html">XEP-0198: Stream Management</a>
  */
 public final class ClientStreamManager extends AbstractStreamManager implements WriterInterceptor {
+
+    private static final System.Logger logger = System.getLogger(ClientStreamManager.class.getName());
 
     private final XmppSession xmppSession;
 
@@ -99,14 +101,20 @@ public final class ClientStreamManager extends AbstractStreamManager implements 
         }
         try {
             if (element instanceof StreamManagement) {
-                // Client sets outbound count to zero.
-                synchronized (this) {
-                    acknowledgedStanzaCount = 0;
-                    enabledByClient.set(true);
+
+                // Note that a client SHALL only make at most one attempt to enable stream management.
+                // If a server receives a second <enable/> element it SHOULD respond with a stream error,
+                // thus terminating the client connection.
+                if (enabledByClient.compareAndSet(false, true)) {
+                    synchronized (this) {
+                        // Client sets outbound count to zero.
+                        acknowledgedStanzaCount = 0;
+                    }
+                    unacknowledgedStanzas.clear();
+                    xmppSession.send(new StreamManagement.Enable(true));
+                    return StreamNegotiationResult.INCOMPLETE;
                 }
-                unacknowledgedStanzas.clear();
-                xmppSession.send(new StreamManagement.Enable(true));
-                return StreamNegotiationResult.INCOMPLETE;
+                return StreamNegotiationResult.IGNORE;
             } else if (element instanceof StreamManagement.Enabled) {
                 // In addition, client sets inbound count to zero.
                 synchronized (this) {
@@ -119,12 +127,18 @@ public final class ClientStreamManager extends AbstractStreamManager implements 
                 if (failed.getLastHandledStanza() != null) {
                     markAcknowledged(failed.getLastHandledStanza());
                 }
+                // Don't send further requests to the server, it won't answer them anyway.
+                synchronized (this) {
+                    enabled = null;
+                }
                 resumed(false);
+                if (failed.getError() == Condition.ITEM_NOT_FOUND) {
+                    logger.log(System.Logger.Level.WARNING,
+                            "Could not find previous stream management session, stream resumption failed.");
+                }
                 // Stream management errors SHOULD be considered recoverable.
-                // Therefore don't throw an exception.
-                // Most likely Stream Resumption failed, because the server session timed out.
-                // Return Status.INCOMPLETE here, so that SM negotiation can be renegotiated normally.
-                return StreamNegotiationResult.INCOMPLETE;
+                // Therefore, don't throw an exception, but ignore it.
+                return StreamNegotiationResult.IGNORE;
             } else if (element instanceof StreamManagement.Resumed) {
                 StreamManagement.Resumed resumed = (StreamManagement.Resumed) element;
                 markAcknowledged(resumed.getLastHandledStanza());
@@ -221,9 +235,7 @@ public final class ClientStreamManager extends AbstractStreamManager implements 
         // When about to send a stanza, first put the stanza (paired with the current value of X)
         // in an "unacknowledged" queue.
         // Note that this doesn't work for BOSH connections, since streamElement is always of type Body.
-        if (streamElement instanceof SessionOpen) {
-            enabledByClient.set(false);
-        } else if (streamElement instanceof Stanza) {
+        if (streamElement instanceof Stanza) {
             markUnacknowledged((Stanza) streamElement);
             // TODO: Consider optimization here: Allow streamElement not to be flushed, but flush later after
             //  sending the request

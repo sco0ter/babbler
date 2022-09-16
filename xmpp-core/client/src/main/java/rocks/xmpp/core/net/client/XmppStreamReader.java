@@ -120,7 +120,7 @@ final class XmppStreamReader {
         if (streamElement == StreamHeader.CLOSING_STREAM_TAG && !wasClosed) {
             // The server initiated a graceful disconnect by sending <stream:stream/> without a stream error.
             // In this case we want to reconnect, therefore throw an exception as if a stream error has occurred
-            if (logger.isLoggable(Level.DEBUG)){
+            if (logger.isLoggable(Level.DEBUG)) {
                 logger.log(Level.DEBUG, "Stream closed by server");
             }
             xmppSession.notifyException(new StreamErrorException(

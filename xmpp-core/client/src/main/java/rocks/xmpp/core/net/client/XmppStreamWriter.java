@@ -100,7 +100,8 @@ final class XmppStreamWriter {
                         .contains(xmppSession.getStatus())) {
                     try {
                         if (logger.isLoggable(System.Logger.Level.TRACE)) {
-                            logger.log(System.Logger.Level.TRACE, "Sending whitespace ping, connection " + System.identityHashCode(connection));
+                            logger.log(System.Logger.Level.TRACE,
+                                    "Sending whitespace ping, connection " + System.identityHashCode(connection));
                         }
                         outputStreamWriter.write(' ');
                         outputStreamWriter.flush();
@@ -139,7 +140,8 @@ final class XmppStreamWriter {
                 writerInterceptorChain.proceed(streamHeader, outputStreamWriter);
                 outputStreamWriter.flush();
                 if (logger.isLoggable(System.Logger.Level.TRACE)) {
-                    logger.log(System.Logger.Level.TRACE, "Stream opened for connection " + System.identityHashCode(connection));
+                    logger.log(System.Logger.Level.TRACE,
+                            "Stream opened for connection " + System.identityHashCode(connection));
                 }
                 streamOpened = true;
             } catch (Exception e) {
@@ -161,7 +163,9 @@ final class XmppStreamWriter {
                     outputStreamWriter = null;
                     streamOpened = false;
                     if (logger.isLoggable(System.Logger.Level.TRACE)) {
-                        logger.log(System.Logger.Level.TRACE, "Sent closing stream tag, closed stream writer for connection " + System.identityHashCode(connection));
+                        logger.log(System.Logger.Level.TRACE,
+                                "Sent closing stream tag, closed stream writer for connection "
+                                        + System.identityHashCode(connection));
                     }
                 } catch (Exception e) {
                     notifyException(e);
@@ -200,7 +204,8 @@ final class XmppStreamWriter {
             }
         }
         if (logger.isLoggable(System.Logger.Level.TRACE)) {
-            logger.log(System.Logger.Level.TRACE, "Got exception, shutdown writer for connection " + System.identityHashCode(connection), exception);
+            logger.log(System.Logger.Level.TRACE,
+                    "Got exception, shutdown writer for connection " + System.identityHashCode(connection), exception);
         }
         xmppSession.notifyException(exception);
     }
@@ -217,7 +222,9 @@ final class XmppStreamWriter {
                 if (!executor.awaitTermination(50, TimeUnit.MILLISECONDS)) {
                     executor.shutdownNow();
                     if (logger.isLoggable(System.Logger.Level.TRACE)) {
-                        logger.log(System.Logger.Level.TRACE, "Couldn't shutdown writer executor, shutdown now, for connection " + System.identityHashCode(connection));
+                        logger.log(System.Logger.Level.TRACE,
+                                "Couldn't shutdown writer executor, shutdown now, for connection "
+                                        + System.identityHashCode(connection));
                     }
                 }
             } catch (InterruptedException e) {
@@ -226,7 +233,8 @@ final class XmppStreamWriter {
                 Thread.currentThread().interrupt();
             }
             if (logger.isLoggable(System.Logger.Level.TRACE)) {
-                logger.log(System.Logger.Level.TRACE, "Shutdown writer executor for connection " + System.identityHashCode(connection));
+                logger.log(System.Logger.Level.TRACE,
+                        "Shutdown writer executor for connection " + System.identityHashCode(connection));
             }
         });
     }

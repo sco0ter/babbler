@@ -55,7 +55,7 @@ public interface ReconnectionStrategy {
      *
      * @param attempt The current reconnection attempt. The first attempt is 0, the second attempt is 1, etc...
      * @param cause   The cause for the disconnection.
-     * @return The the duration after which the next reconnection is attempted.
+     * @return The duration after which the next reconnection is attempted.
      */
     Duration getNextReconnectionAttempt(int attempt, Throwable cause);
 

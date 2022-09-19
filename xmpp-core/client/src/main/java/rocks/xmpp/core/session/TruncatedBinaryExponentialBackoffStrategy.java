@@ -36,10 +36,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * <p>The formula for doing this, is: <code>(2<sup>n</sup> - 1) * s</code>, where <code>n</code> is the number of
  * reconnection attempt and <code>s</code> is the slot time, which is 60 seconds by default.</p>
  *
- * <p>In practice this means, the first reconnection attempt occurs after a random period of time between 0 and 60
- * seconds.<br> The second attempt chooses a random number &gt;= 0 and &lt; 180 seconds.<br> The third attempt chooses a
- * random number &gt;= 0 and &lt; 420 seconds.<br> The fourth attempt chooses a random number &gt;= 0 and &lt; 900
- * seconds.<br> The fifth attempt chooses a random number &gt;= 0 and &lt; 1860 seconds (= 31 minutes)<br></p>
+ * <p>In practice this means, the first reconnection attempt occurs after a random period of time between 1 and 60
+ * seconds.<br> The second attempt chooses a random number &gt;= 1 and &lt; 180 seconds.<br> The third attempt chooses a
+ * random number &gt;= 1 and &lt; 420 seconds.<br> The fourth attempt chooses a random number &gt;= 1 and &lt; 900
+ * seconds.<br> The fifth attempt chooses a random number &gt;= 1 and &lt; 1860 seconds (= 31 minutes)<br></p>
  *
  * <p>The strategy is called "truncated", because it won't increase the time span after the nth iteration, which means
  * in the example above, the sixth and any further attempt behaves equally to the fifth attempt.</p>
@@ -69,13 +69,13 @@ class TruncatedBinaryExponentialBackoffStrategy implements ReconnectionStrategy 
 
     @Override
     public Duration getNextReconnectionAttempt(int attempt, Throwable throwable) {
-        // For the first attempt choose a random number between 0 and 60.
-        // For the second attempt choose a random number between 0 and 180.
-        // For the third attempt choose a random number between 0 and 420.
-        // For the fourth attempt choose a random number between 0 and 900.
-        // For the fifth attempt choose a random number between 0 and 1860.
+        // For the first attempt choose a random number between 1 and 60.
+        // For the second attempt choose a random number between 1 and 180.
+        // For the third attempt choose a random number between 1 and 420.
+        // For the fourth attempt choose a random number between 1 and 900.
+        // For the fifth attempt choose a random number between 1 and 1860.
         // ==> max wait time: 1860 seconds = 31 minutes. (if ceiling == 5)
-        return Duration.ofSeconds(ThreadLocalRandom.current()
-                .nextInt((int) ((Math.pow(2, Math.min(attempt, ceiling) + 1) - 1) * slotTime)));
+        return Duration.ofSeconds(1 + ThreadLocalRandom.current()
+                .nextInt((int) ((Math.pow(2, Math.min(attempt, ceiling) + 1) - 1) * slotTime) - 1));
     }
 }

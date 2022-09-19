@@ -80,18 +80,18 @@ public class ReconnectionStrategyTest {
 
     private static void shouldBackoffBinaryExponentially(ReconnectionStrategy strategy, Throwable cause) {
         Duration first = strategy.getNextReconnectionAttempt(0, cause);
-        Assert.assertTrue(first.getSeconds() >= 0 && first.getSeconds() < 60);
+        Assert.assertTrue(first.getSeconds() >= 1 && first.getSeconds() < 60);
         Duration second = strategy.getNextReconnectionAttempt(1, null);
-        Assert.assertTrue(second.getSeconds() >= 0 && second.getSeconds() < 180);
+        Assert.assertTrue(second.getSeconds() >= 1 && second.getSeconds() < 180);
         Duration third = strategy.getNextReconnectionAttempt(2, null);
-        Assert.assertTrue(third.getSeconds() >= 0 && third.getSeconds() < 420);
+        Assert.assertTrue(third.getSeconds() >= 1 && third.getSeconds() < 420);
         Duration fourth = strategy.getNextReconnectionAttempt(3, null);
-        Assert.assertTrue(fourth.getSeconds() >= 0 && fourth.getSeconds() < 900);
+        Assert.assertTrue(fourth.getSeconds() >= 1 && fourth.getSeconds() < 900);
         Duration fifth = strategy.getNextReconnectionAttempt(4, null);
-        Assert.assertTrue(fifth.getSeconds() >= 0 && fifth.getSeconds() < 1860);
+        Assert.assertTrue(fifth.getSeconds() >= 1 && fifth.getSeconds() < 1860);
         Duration sixth = strategy.getNextReconnectionAttempt(5, null);
-        Assert.assertTrue(sixth.getSeconds() >= 0 && sixth.getSeconds() < 1860);
+        Assert.assertTrue(sixth.getSeconds() >= 1 && sixth.getSeconds() < 1860);
         Duration seventh = strategy.getNextReconnectionAttempt(6, null);
-        Assert.assertTrue(seventh.getSeconds() >= 0 && seventh.getSeconds() < 1860);
+        Assert.assertTrue(seventh.getSeconds() >= 1 && seventh.getSeconds() < 1860);
     }
 }

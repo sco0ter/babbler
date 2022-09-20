@@ -40,7 +40,7 @@
         <module>client</module>
     </modules>
     <properties>
-        <io.netty.version>4.1.27.Final</io.netty.version>
+        <io.netty.version>4.1.82.Final</io.netty.version>
     </properties>
     <dependencyManagement>
         <dependencies>

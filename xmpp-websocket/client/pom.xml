@@ -79,12 +79,12 @@
         <dependency>
             <groupId>org.glassfish.tyrus</groupId>
             <artifactId>tyrus-container-jdk-client</artifactId>
-            <version>1.17</version>
+            <version>1.19</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.tyrus</groupId>
             <artifactId>tyrus-client</artifactId>
-            <version>1.17</version>
+            <version>1.19</version>
         </dependency>
         <dependency>
             <groupId>javax.websocket</groupId>

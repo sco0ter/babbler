@@ -4,6 +4,11 @@
 ## Version 0.9.0 (not yet released)
 
 * Migrate to Java 11 (doesn't run on Java 8 anymore)
+* Introduce the concept of a transport connector
+* Add new BOSH connector using `java.net.http.HttpClient`
+* Allow to return stanza errors in RPC handler
+* Presence#createError should flip 'to' and 'from' (issue #156)
+* Add toBuilder() method to standardized data forms (issue #162)
 * Limit the thread usage when multiple clients are running in the same VM
 * Stream Management: Add handled-count-too-high failure
 * Allow the original child element to be included in error responses

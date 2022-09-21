@@ -1,5 +1,18 @@
 # Release Notes
 
+## 0.9.0
+
+### Java 11 Support
+
+This release requires Java 11. JAXB has been pulled in as external dependency, since it's no longer part of the JDK.
+
+### Transport Connectors
+
+Transport Connectors now let you chose among multiple implementations for a given connection method,
+e.g. for TCP binding you can choose between JDK's Socket or Netty's Channel.
+
+See [Basic Concepts](basic-concepts.md)
+
 ## 0.8.0
 
 ### New Project Structure and Modularization

@@ -1,7 +1,7 @@
 # Changelog
 ---
 
-## Version 0.9.0 (not yet released)
+## Version 0.9.0 (2022-09-22)
 
 * Migrate to Java 11 (doesn't run on Java 8 anymore)
 * Introduce the concept of a transport connector

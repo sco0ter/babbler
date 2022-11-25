@@ -30,9 +30,9 @@ import static java.util.Comparator.nullsLast;
 
 import java.util.Comparator;
 import java.util.Objects;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlEnumValue;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlEnumValue;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.im.roster.model.SubscriptionState;

@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.muc.model;
 
 import java.time.Instant;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.testng.Assert;

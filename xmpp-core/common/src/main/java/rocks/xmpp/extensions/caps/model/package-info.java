@@ -35,7 +35,7 @@
 @XmlSchema(namespace = EntityCapabilities1.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
 package rocks.xmpp.extensions.caps.model;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlNsForm;
+import jakarta.xml.bind.annotation.XmlSchema;

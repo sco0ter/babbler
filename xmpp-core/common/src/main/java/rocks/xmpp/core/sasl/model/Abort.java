@@ -24,8 +24,8 @@
 
 package rocks.xmpp.core.sasl.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 import rocks.xmpp.core.stream.model.StreamElement;
 

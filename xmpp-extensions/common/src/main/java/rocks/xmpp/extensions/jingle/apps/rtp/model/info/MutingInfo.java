@@ -24,9 +24,9 @@
 
 package rocks.xmpp.extensions.jingle.apps.rtp.model.info;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlEnumValue;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 /**
  * @author Christian Schudt

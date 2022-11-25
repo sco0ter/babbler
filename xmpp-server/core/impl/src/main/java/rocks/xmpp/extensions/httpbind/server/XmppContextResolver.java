@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.httpbind.server;
 import javax.enterprise.inject.spi.CDI;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 
 import rocks.xmpp.core.server.ServerConfiguration;
 

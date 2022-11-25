@@ -39,7 +39,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.sasl.SaslException;
 import javax.security.sasl.SaslServer;
 import javax.security.sasl.SaslServerFactory;
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 
 import rocks.xmpp.core.sasl.scram.SaslPrep;
 import rocks.xmpp.core.sasl.scram.ScramBase;

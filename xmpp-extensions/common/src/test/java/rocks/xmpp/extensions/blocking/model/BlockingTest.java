@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.blocking.model;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.testng.Assert;

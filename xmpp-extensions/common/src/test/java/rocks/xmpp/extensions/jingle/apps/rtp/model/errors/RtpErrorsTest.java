@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.jingle.apps.rtp.model.errors;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.testng.Assert;

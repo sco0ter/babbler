@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.ping.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <ping/>} element in the {@code urn:xmpp:ping} namespace.

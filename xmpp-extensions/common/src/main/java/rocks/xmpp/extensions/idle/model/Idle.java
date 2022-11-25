@@ -28,9 +28,9 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.EnumSet;
 import java.util.Objects;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import rocks.xmpp.core.stanza.model.Presence;
 import rocks.xmpp.extensions.delay.model.DelayedDelivery;

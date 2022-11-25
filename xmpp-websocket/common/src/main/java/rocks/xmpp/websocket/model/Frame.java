@@ -26,8 +26,8 @@ package rocks.xmpp.websocket.model;
 
 import java.util.Locale;
 import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.LanguageElement;

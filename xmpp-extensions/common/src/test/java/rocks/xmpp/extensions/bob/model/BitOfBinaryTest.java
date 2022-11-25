@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.bob.model;
 
 import java.nio.charset.StandardCharsets;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.testng.Assert;

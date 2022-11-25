@@ -65,10 +65,10 @@ Create a `package-info.java` and put JAXB annotations in it, like this:
 @XmlSchema(namespace = "http://xmpp.rocks", elementFormDefault = XmlNsForm.QUALIFIED)
 package yourpackage;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlNsForm;
+import jakarta.xml.bind.annotation.XmlSchema;
 ```
 
 Then you have to create a configuration for the session with your extension:

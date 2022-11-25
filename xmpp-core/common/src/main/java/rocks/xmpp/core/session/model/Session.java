@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.session.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import rocks.xmpp.core.stream.model.StreamFeature;
 

@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.amp.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 /**
  * An abstract base class for all Advanced Message Processing Errors.

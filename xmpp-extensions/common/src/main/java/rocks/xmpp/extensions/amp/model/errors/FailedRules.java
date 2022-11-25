@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.amp.model.errors;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import rocks.xmpp.extensions.amp.model.AdvancedMessageProcessingError;
 

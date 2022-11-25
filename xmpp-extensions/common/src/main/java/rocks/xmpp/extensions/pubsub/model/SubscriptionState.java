@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.pubsub.model;
 
-import javax.xml.bind.annotation.XmlEnumValue;
+import jakarta.xml.bind.annotation.XmlEnumValue;
 
 /**
  * Represents the subscription state to a node.

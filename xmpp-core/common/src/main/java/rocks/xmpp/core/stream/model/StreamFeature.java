@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.stream.model;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 /**
  * A base class for a stream feature, which is advertised by the server in its {@code <stream:features/>} element.

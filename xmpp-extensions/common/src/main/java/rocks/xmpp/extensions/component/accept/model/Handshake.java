@@ -25,8 +25,8 @@
 package rocks.xmpp.extensions.component.accept.model;
 
 import java.nio.charset.StandardCharsets;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlValue;
 
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.util.XmppUtils;

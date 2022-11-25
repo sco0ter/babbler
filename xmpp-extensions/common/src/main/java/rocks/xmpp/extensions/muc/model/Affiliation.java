@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.muc.model;
 
-import javax.xml.bind.annotation.XmlEnumValue;
+import jakarta.xml.bind.annotation.XmlEnumValue;
 
 /**
  * A long-lived association or connection with a room; the possible affiliations are "owner", "admin", "member", and

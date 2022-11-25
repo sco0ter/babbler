@@ -27,7 +27,7 @@ package rocks.xmpp.session.server;
 import java.util.stream.Stream;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.mockito.ArgumentCaptor;

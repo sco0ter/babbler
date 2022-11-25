@@ -35,5 +35,5 @@
 @XmlSchema(namespace = "urn:xmpp:jingle:errors:1", elementFormDefault = XmlNsForm.QUALIFIED)
 package rocks.xmpp.extensions.jingle.model.errors;
 
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlNsForm;
+import jakarta.xml.bind.annotation.XmlSchema;

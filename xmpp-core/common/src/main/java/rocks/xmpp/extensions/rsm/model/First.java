@@ -25,8 +25,8 @@
 package rocks.xmpp.extensions.rsm.model;
 
 import java.util.Objects;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlValue;
 
 /**
  * @author Christian Schudt

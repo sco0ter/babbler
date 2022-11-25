@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.data.mediaelement.model;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.testng.Assert;

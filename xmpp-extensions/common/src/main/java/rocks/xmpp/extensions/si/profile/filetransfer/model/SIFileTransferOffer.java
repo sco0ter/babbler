@@ -28,9 +28,9 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import rocks.xmpp.extensions.filetransfer.model.FileTransferOffer;
 import rocks.xmpp.extensions.filetransfer.model.Range;

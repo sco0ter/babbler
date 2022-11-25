@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.vcard.avatar.model;
 
-import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import rocks.xmpp.extensions.hashes.model.Hashed;
 

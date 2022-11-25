@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.pubsub.model.event;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Collections;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.testng.Assert;

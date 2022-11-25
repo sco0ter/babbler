@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.si.profile.filetransfer.model;
 
 import java.math.BigInteger;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.testng.Assert;

@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.dialback.model;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 

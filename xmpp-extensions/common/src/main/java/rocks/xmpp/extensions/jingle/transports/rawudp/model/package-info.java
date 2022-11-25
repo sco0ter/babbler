@@ -34,7 +34,7 @@
 @XmlSchema(namespace = "urn:xmpp:jingle:transports:raw-udp:1", elementFormDefault = XmlNsForm.QUALIFIED)
 package rocks.xmpp.extensions.jingle.transports.rawudp.model;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlNsForm;
+import jakarta.xml.bind.annotation.XmlSchema;

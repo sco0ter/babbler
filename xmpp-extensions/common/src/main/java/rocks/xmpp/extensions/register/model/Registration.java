@@ -26,9 +26,9 @@ package rocks.xmpp.extensions.register.model;
 
 import java.net.URI;
 import java.net.URL;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import rocks.xmpp.extensions.data.model.DataForm;
 import rocks.xmpp.extensions.oob.model.x.OobX;

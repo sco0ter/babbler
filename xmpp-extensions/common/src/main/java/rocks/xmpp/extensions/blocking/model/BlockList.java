@@ -25,8 +25,8 @@
 package rocks.xmpp.extensions.blocking.model;
 
 import java.util.List;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.extensions.blocking.model.errors.Blocked;

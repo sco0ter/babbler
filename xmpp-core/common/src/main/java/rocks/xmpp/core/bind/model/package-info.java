@@ -30,7 +30,7 @@
 @XmlSchema(namespace = "urn:ietf:params:xml:ns:xmpp-bind", elementFormDefault = XmlNsForm.QUALIFIED)
 package rocks.xmpp.core.bind.model;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlNsForm;
+import jakarta.xml.bind.annotation.XmlSchema;

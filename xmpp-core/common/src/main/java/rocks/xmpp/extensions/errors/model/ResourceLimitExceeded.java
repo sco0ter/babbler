@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.errors.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <resource-limit-exceeded/>} element in the {@code urn:xmpp:errors} namespace.

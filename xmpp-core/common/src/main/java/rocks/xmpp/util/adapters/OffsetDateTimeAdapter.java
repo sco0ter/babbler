@@ -32,7 +32,7 @@ import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Converts an {@link java.time.OffsetDateTime} to a string representation according to <a

@@ -24,8 +24,8 @@
 
 package rocks.xmpp.core;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 import org.testng.annotations.BeforeClass;
 import rocks.xmpp.addr.Jid;

@@ -25,8 +25,8 @@
 package rocks.xmpp.extensions.avatar.model.data;
 
 import java.util.Objects;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlValue;
 
 /**
  * The implementation of the {@code <data/>} element in the {@code urn:xmpp:avatar:data} namespace.

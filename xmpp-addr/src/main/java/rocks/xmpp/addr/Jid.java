@@ -25,7 +25,7 @@
 package rocks.xmpp.addr;
 
 import java.io.Serializable;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * Represents the JID as described in <a href="https://tools.ietf.org/html/rfc7622">Extensible Messaging and Presence

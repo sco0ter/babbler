@@ -40,7 +40,7 @@ import java.util.ServiceLoader;
 public interface XmppContext {
 
     /**
-     * Gets the classes to be bound to the {@link javax.xml.bind.JAXBContext}.
+     * Gets the classes to be bound to the {@link jakarta.xml.bind.JAXBContext}.
      *
      * @return The clases to be bound.
      */

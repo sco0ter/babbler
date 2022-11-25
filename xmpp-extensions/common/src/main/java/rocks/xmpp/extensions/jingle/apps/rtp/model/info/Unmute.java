@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.jingle.apps.rtp.model.info;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <unmute/>} element in the {@code urn:xmpp:jingle:apps:rtp:info:1} namespace.

@@ -26,8 +26,8 @@ package rocks.xmpp.extensions.hashes.model;
 
 import java.util.HashSet;
 import java.util.Set;
-import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.testng.Assert;

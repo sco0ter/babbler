@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 import javax.websocket.EncodeException;
 import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.Marshaller;
 import javax.xml.stream.XMLOutputFactory;
 
 import rocks.xmpp.core.Session;

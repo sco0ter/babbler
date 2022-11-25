@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.vcard.temp.model;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * @author Christian Schudt

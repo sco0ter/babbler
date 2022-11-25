@@ -95,11 +95,11 @@
 
         <!-- Imports -->
         <module name="AvoidStarImport"/>
-        <module name="CustomImportOrder">
+        <!-- module name="CustomImportOrder">
             <property name="customImportOrderRules" value="STATIC###STANDARD_JAVA_PACKAGE###THIRD_PARTY_PACKAGE"/>
             <property name="separateLineBetweenGroups" value="true"/>
             <property name="sortImportsInGroupAlphabetically" value="true"/>
-        </module>
+        </module -->
         <module name="IllegalImport"/>
         <module name="RedundantImport"/>
         <module name="UnusedImports"/>

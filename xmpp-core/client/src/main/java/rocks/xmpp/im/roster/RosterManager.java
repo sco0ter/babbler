@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
 import javax.xml.stream.XMLStreamWriter;
 
 import rocks.xmpp.addr.Jid;
+import rocks.xmpp.core.ExtensionProtocol;
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.core.stanza.AbstractIQHandler;
 import rocks.xmpp.core.stanza.model.IQ;
@@ -83,10 +84,10 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * <h3>Nested Roster Groups</h3>
  *
  * <p><a href="https://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a> are supported, but are
- * disabled by default, which means the group delimiter is not retrieved before {@linkplain #requestRoster() requesting
- * the roster}. You can {@linkplain #setAskForGroupDelimiter(boolean) change} this behavior or {@linkplain
- * #setGroupDelimiter(String) set a group delimiter} without retrieving it from the server in case you want to use a fix
- * roster group delimiter.</p>
+ * disabled by default, which means the group delimiter is not retrieved before
+ * {@linkplain #requestRoster() requesting the roster}. You can {@linkplain #setAskForGroupDelimiter(boolean) change}
+ * this behavior or {@linkplain #setGroupDelimiter(String) set a group delimiter} without retrieving it from the server
+ * in case you want to use a fix roster group delimiter.</p>
  *
  * <p>You can listen for roster updates (aka roster pushes) and for initial roster retrieval, by {@linkplain
  * #addRosterListener(Consumer) adding} a {@link Consumer}.</p>
@@ -98,7 +99,7 @@ import rocks.xmpp.util.concurrent.AsyncResult;
  * @see <a href="https://xmpp.org/rfcs/rfc6121.html#roster-versioning">2.6.  Roster Versioning</a>
  * @see <a href="https://xmpp.org/extensions/xep-0083.html">XEP-0083: Nested Roster Groups</a>
  */
-public final class RosterManager extends AbstractIQHandler {
+public final class RosterManager extends AbstractIQHandler implements ExtensionProtocol {
 
     private static final System.Logger logger = System.getLogger(RosterManager.class.getName());
 
@@ -245,7 +246,7 @@ public final class RosterManager extends AbstractIQHandler {
                         if (groupDelimiter != null && !groupDelimiter.isEmpty()) {
                             nestedGroups = group.split(groupDelimiter, 255);
                         } else {
-                            nestedGroups = new String[]{group};
+                            nestedGroups = new String[] { group };
                         }
 
                         StringBuilder currentGroupName = new StringBuilder();
@@ -418,6 +419,7 @@ public final class RosterManager extends AbstractIQHandler {
      */
     public final void addRosterListener(Consumer<RosterEvent> rosterListener) {
         rosterListeners.add(rosterListener);
+        xmppSession.enableFeature(getNamespace());
     }
 
     /**
@@ -428,6 +430,9 @@ public final class RosterManager extends AbstractIQHandler {
      */
     public final void removeRosterListener(Consumer<RosterEvent> rosterListener) {
         rosterListeners.remove(rosterListener);
+        if (rosterListeners.isEmpty()) {
+            xmppSession.disableFeature(getNamespace());
+        }
     }
 
     /**
@@ -464,10 +469,10 @@ public final class RosterManager extends AbstractIQHandler {
      * this method.
      *
      * <p><a href="https://xmpp.org/rfcs/rfc6121.html#roster-versioning">Roster Versioning</a> is supported, which
-     * means that this method checks if there's a cached version of your roster in the {@linkplain
-     * rocks.xmpp.core.session.XmppSessionConfiguration#getCacheDirectory() cache directory}. If so and if Roster
-     * Versioning is supported by the server, the cached version is returned and any missing roster items are sent later
-     * by the server via roster pushes.</p>
+     * means that this method checks if there's a cached version of your roster in the
+     * {@linkplain rocks.xmpp.core.session.XmppSessionConfiguration#getCacheDirectory() cache directory}. If so and if
+     * Roster Versioning is supported by the server, the cached version is returned and any missing roster items are
+     * sent later by the server via roster pushes.</p>
      *
      * @return The async roster result.
      */
@@ -736,9 +741,19 @@ public final class RosterManager extends AbstractIQHandler {
             // Gracefully send an empty result.
             return iq.createResult();
         } else {
-            // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data;
+            // If the client receives a roster push from an unauthorized entity, it MUST NOT process the pushed data.
             // in addition, the client can either return a stanza error of <service-unavailable/> error
             return iq.createError(Condition.SERVICE_UNAVAILABLE);
         }
+    }
+
+    @Override
+    public String getNamespace() {
+        return Roster.NAMESPACE;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return !rosterListeners.isEmpty();
     }
 }

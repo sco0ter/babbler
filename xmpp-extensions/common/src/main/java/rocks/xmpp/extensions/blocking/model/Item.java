@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.blocking.model;
 
 import java.util.Objects;
-import javax.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlAttribute;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.Addressable;

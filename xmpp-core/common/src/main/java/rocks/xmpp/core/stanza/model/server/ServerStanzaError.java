@@ -25,7 +25,7 @@
 package rocks.xmpp.core.stanza.model.server;
 
 import java.util.Locale;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.StanzaError;

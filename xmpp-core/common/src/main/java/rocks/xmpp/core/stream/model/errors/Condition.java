@@ -24,8 +24,8 @@
 
 package rocks.xmpp.core.stream.model.errors;
 
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlValue;
 
 import rocks.xmpp.util.Strings;
 

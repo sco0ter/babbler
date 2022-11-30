@@ -24,7 +24,7 @@
 
 package rocks.xmpp.addr;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Converts a String representation of a JID to JID object and vice a versa.

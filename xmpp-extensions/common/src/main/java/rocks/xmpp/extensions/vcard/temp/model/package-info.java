@@ -32,8 +32,8 @@
 @XmlSchema(namespace = VCard.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
 package rocks.xmpp.extensions.vcard.temp.model;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlNsForm;
+import jakarta.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

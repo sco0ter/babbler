@@ -36,7 +36,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.sasl.SaslException;
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 
 /**
  * A base SCRAM implementation.

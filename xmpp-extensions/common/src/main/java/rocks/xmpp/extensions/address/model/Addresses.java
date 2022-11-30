@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.Message;

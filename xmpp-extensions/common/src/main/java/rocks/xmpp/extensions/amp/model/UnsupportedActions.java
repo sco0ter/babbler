@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.amp.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <unsupported-actions/>} element in the {@code http://jabber.org/protocol/amp}

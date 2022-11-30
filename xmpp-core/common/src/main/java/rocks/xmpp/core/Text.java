@@ -29,9 +29,9 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.Objects;
 import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import rocks.xmpp.core.sasl.model.Failure;
 import rocks.xmpp.core.stanza.model.Message;

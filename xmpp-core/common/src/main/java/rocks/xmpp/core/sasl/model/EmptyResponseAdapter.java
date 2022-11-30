@@ -1,7 +1,7 @@
 package rocks.xmpp.core.sasl.model;
 
-import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Converts a zero-length byte array to a single equals sign ("=") instead to an empty string (as the default Base64

@@ -26,8 +26,8 @@ package rocks.xmpp.core.stanza.model.errors;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlValue;
 
 import rocks.xmpp.core.stanza.model.StanzaError;
 import rocks.xmpp.util.Strings;

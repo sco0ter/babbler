@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.rpc.model;
 
 import java.util.Objects;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlValue;
 
 /**
  * @author Christian Schudt

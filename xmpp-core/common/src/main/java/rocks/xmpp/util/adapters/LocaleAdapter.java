@@ -25,7 +25,7 @@
 package rocks.xmpp.util.adapters;
 
 import java.util.Locale;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Converts an {@link Locale} to a string representation using {@link Locale#toLanguageTag()} and vice versa, using

@@ -41,7 +41,7 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.sasl.SaslException;
 import javax.security.sasl.SaslServer;
-import javax.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.DatatypeConverter;
 
 /**
  * The server implementation of the SCRAM-SHA-1 SASL mechanism.

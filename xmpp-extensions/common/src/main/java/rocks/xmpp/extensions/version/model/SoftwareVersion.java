@@ -25,7 +25,7 @@
 package rocks.xmpp.extensions.version.model;
 
 import java.util.Objects;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import rocks.xmpp.extensions.softwareinfo.SoftwareInfo;
 

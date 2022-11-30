@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.register.model.feature;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import rocks.xmpp.core.stream.model.StreamFeature;
 

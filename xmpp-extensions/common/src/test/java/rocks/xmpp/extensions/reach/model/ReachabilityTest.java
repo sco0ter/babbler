@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.reach.model;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Locale;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.testng.Assert;

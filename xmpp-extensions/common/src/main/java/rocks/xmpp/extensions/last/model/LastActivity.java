@@ -24,9 +24,9 @@
 
 package rocks.xmpp.extensions.last.model;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlValue;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:last} namespace.

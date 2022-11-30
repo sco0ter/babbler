@@ -31,8 +31,8 @@ import javax.enterprise.inject.spi.CDI;
 import javax.websocket.Endpoint;
 import javax.websocket.server.ServerApplicationConfig;
 import javax.websocket.server.ServerEndpointConfig;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 import rocks.xmpp.core.server.ServerConfiguration;
 import rocks.xmpp.websocket.codec.XmppWebSocketDecoder;

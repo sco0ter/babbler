@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
-import javax.xml.soap.SOAPConstants;
+import jakarta.xml.soap.SOAPConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 

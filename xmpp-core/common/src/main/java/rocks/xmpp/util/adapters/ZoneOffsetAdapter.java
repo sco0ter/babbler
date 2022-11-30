@@ -25,7 +25,7 @@
 package rocks.xmpp.util.adapters;
 
 import java.time.ZoneOffset;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Converts a {@link java.time.ZoneOffset} to a string representation according to <a

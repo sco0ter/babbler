@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.stanza.model.errors;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <gone/>} stanza error.

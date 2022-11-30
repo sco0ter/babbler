@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.vcard.temp.model;
 
 import java.time.LocalDate;
 import java.time.Month;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.testng.Assert;

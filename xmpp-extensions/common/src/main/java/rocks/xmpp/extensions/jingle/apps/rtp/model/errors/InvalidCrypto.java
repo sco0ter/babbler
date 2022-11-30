@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.jingle.apps.rtp.model.errors;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <invalid-crypto/>} element in the {@code urn:xmpp:jingle:apps:rtp:errors:1}

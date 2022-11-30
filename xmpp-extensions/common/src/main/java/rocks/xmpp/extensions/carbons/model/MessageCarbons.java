@@ -25,11 +25,11 @@
 package rocks.xmpp.extensions.carbons.model;
 
 import java.util.Objects;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlType;
 
 import rocks.xmpp.extensions.forward.model.Forwarded;
 import rocks.xmpp.extensions.receipts.model.MessageDeliveryReceipts;

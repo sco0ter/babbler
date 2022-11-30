@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.soap.model.fault;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * Represents the 'Receiver' SOAP fault.

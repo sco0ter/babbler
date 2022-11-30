@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.muc.model;
 
-import javax.xml.bind.annotation.XmlEnumValue;
+import jakarta.xml.bind.annotation.XmlEnumValue;
 
 /**
  * A temporary position or privilege level within a room, distinct from a user's long-lived affiliation with the room;

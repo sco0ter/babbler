@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.disco.model.info;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import javax.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlAttribute;
 
 import rocks.xmpp.util.Strings;
 

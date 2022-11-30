@@ -31,5 +31,5 @@
 @XmlSchema(namespace = Ping.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
 package rocks.xmpp.extensions.ping.model;
 
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlNsForm;
+import jakarta.xml.bind.annotation.XmlSchema;

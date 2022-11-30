@@ -26,7 +26,7 @@ package rocks.xmpp.websocket;
 
 import java.net.URI;
 import java.util.Locale;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.testng.Assert;

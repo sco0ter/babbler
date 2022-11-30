@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.blocking.model.errors;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <blocked/>} element in the {@code urn:xmpp:blocking:errors} namespace.

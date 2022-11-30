@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.soap.model.fault;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 /**
  * @author Christian Schudt

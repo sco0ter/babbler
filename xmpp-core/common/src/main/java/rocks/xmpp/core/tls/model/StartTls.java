@@ -24,8 +24,8 @@
 
 package rocks.xmpp.core.tls.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
 
 import rocks.xmpp.core.stream.model.StreamElement;
 import rocks.xmpp.core.stream.model.StreamFeature;

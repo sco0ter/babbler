@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.privatedata.model;
 
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <query/>} element in the {@code jabber:iq:private} namespace.

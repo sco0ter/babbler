@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.jingle.model.errors;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <out-of-order/>} jingle error.

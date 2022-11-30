@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.bytestreams.s5b.model;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.testng.Assert;

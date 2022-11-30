@@ -37,10 +37,10 @@ import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import javax.xml.bind.DataBindingException;
-import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.DataBindingException;
+import jakarta.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamWriter;
 
 import rocks.xmpp.core.XmppContext;

@@ -27,7 +27,7 @@ package rocks.xmpp.extensions.disco.model;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.testng.Assert;

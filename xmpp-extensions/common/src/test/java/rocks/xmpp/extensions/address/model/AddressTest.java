@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.address.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.testng.Assert;

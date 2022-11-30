@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.pubsub.model.errors;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 /**
  * The implementation of the {@code <nodeid-required/>} pubsub error. This class is a singleton.

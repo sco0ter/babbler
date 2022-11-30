@@ -33,5 +33,5 @@
 @XmlSchema(namespace = ChatState.NAMESPACE, elementFormDefault = XmlNsForm.QUALIFIED)
 package rocks.xmpp.extensions.chatstates.model;
 
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlNsForm;
+import jakarta.xml.bind.annotation.XmlSchema;

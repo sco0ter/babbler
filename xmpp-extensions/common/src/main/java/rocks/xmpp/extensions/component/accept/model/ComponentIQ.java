@@ -25,8 +25,8 @@
 package rocks.xmpp.extensions.component.accept.model;
 
 import java.util.Locale;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stanza.model.IQ;

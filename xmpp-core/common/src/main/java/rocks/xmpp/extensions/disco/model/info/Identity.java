@@ -28,7 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Objects;
 import javax.xml.XMLConstants;
-import javax.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlAttribute;
 
 import rocks.xmpp.core.LanguageElement;
 import rocks.xmpp.util.Strings;

@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.jingle.transports.iceudp.model;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlAttribute;
 
 /**
  * @author Christian Schudt

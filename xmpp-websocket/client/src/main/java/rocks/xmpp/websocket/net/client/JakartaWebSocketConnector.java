@@ -41,8 +41,8 @@ import javax.websocket.HandshakeResponse;
 import javax.websocket.Session;
 import javax.websocket.SessionException;
 import javax.websocket.server.HandshakeRequest;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.client.ClientProperties;

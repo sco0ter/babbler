@@ -26,7 +26,7 @@ package rocks.xmpp.extensions.oob.model.x;
 
 import java.net.URI;
 import java.util.Objects;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * The implementation of the {@code <x/>} element in the {@code jabber:x:oob} namespace.

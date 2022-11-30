@@ -24,7 +24,7 @@
 
 package rocks.xmpp.core.bind.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import rocks.xmpp.addr.Jid;
 import rocks.xmpp.core.stream.model.StreamFeature;

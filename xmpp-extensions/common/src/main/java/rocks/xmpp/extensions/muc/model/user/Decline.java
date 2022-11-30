@@ -24,7 +24,7 @@
 
 package rocks.xmpp.extensions.muc.model.user;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlAttribute;
 
 import rocks.xmpp.addr.Jid;
 

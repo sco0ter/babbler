@@ -33,7 +33,7 @@ import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
 import javax.xml.XMLConstants;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 
 import rocks.xmpp.core.Session;

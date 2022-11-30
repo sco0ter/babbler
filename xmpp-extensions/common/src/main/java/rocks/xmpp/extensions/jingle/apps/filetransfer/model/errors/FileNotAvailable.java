@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.jingle.apps.filetransfer.model.errors;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 /**
  * @author Christian Schudt

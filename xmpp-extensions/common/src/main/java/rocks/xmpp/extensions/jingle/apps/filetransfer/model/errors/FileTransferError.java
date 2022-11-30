@@ -24,8 +24,8 @@
 
 package rocks.xmpp.extensions.jingle.apps.filetransfer.model.errors;
 
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 import rocks.xmpp.util.Strings;
 

@@ -29,7 +29,7 @@
 @XmlSchema(namespace = BlockList.NAMESPACE + ":errors", elementFormDefault = XmlNsForm.QUALIFIED)
 package rocks.xmpp.extensions.blocking.model.errors;
 
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlNsForm;
+import jakarta.xml.bind.annotation.XmlSchema;
 
 import rocks.xmpp.extensions.blocking.model.BlockList;

@@ -25,8 +25,8 @@
 package rocks.xmpp.extensions.bookmarks.model;
 
 import java.text.Collator;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 /**
  * An abstract base class for bookmarks.

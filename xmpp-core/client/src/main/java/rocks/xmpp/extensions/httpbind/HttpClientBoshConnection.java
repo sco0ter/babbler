@@ -41,6 +41,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import rocks.xmpp.core.session.XmppSession;
 import rocks.xmpp.extensions.compress.CompressionMethod;
@@ -95,7 +96,7 @@ final class HttpClientBoshConnection extends BoshConnection {
                         return httpClient.sendAsync(
                                 builder.POST(HttpRequest.BodyPublishers.ofByteArray(outputStream.toByteArray()))
                                         .build(), HttpResponse.BodyHandlers.ofInputStream())
-                                .thenAccept(httpResponse -> {
+                                .thenAcceptAsync(httpResponse -> {
                                     try {
                                         if (httpResponse.statusCode() == 200) {
 
@@ -114,9 +115,9 @@ final class HttpClientBoshConnection extends BoshConnection {
                                             handleErrorHttpResponse(httpResponse.statusCode());
                                         }
                                     } catch (Exception e) {
-                                        xmppSession.notifyException(e);
+                                        throw new CompletionException(e);
                                     }
-                                });
+                                }, inOrderResponseExecutor);
                     }
                 }
             }

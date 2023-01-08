@@ -30,7 +30,7 @@
     <parent>
         <groupId>rocks.xmpp</groupId>
         <artifactId>xmpp-nio</artifactId>
-        <version>0.9.1-SNAPSHOT</version>
+        <version>0.9.1</version>
     </parent>
     <artifactId>xmpp-nio-codec</artifactId>
     <name>XMPP.rocks - NIO Codec</name>

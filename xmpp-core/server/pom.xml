@@ -30,7 +30,7 @@
     <parent>
         <groupId>rocks.xmpp</groupId>
         <artifactId>xmpp-core</artifactId>
-        <version>0.9.1-SNAPSHOT</version>
+        <version>0.9.1</version>
     </parent>
     <artifactId>xmpp-core-server</artifactId>
     <name>XMPP.rocks - Core (RFC 6120 / 6121) - Server</name>

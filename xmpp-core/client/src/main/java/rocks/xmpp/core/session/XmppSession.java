@@ -1489,12 +1489,12 @@ public abstract class XmppSession implements Session, StreamHandler, AutoCloseab
         streamFeaturesManager.cancelNegotiation();
         if (EnumSet.of(Status.AUTHENTICATED, Status.AUTHENTICATING, Status.CONNECTED, Status.CONNECTING)
                 .contains(getStatus()) && !(e instanceof AuthenticationException)) {
+            updateStatus(Status.DISCONNECTED, e);
             try {
                 closeAndNullifyConnection();
             } catch (Exception e1) {
                 e.addSuppressed(e1);
             }
-            updateStatus(Status.DISCONNECTED, e);
         }
     }
 

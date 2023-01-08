@@ -100,6 +100,8 @@ public abstract class BoshConnection extends AbstractConnection {
 
     final ScheduledExecutorService inOrderRequestExecutor = new QueuedScheduledExecutorService(HTTP_BIND_EXECUTOR);
 
+    final ScheduledExecutorService inOrderResponseExecutor = new QueuedScheduledExecutorService(HTTP_BIND_EXECUTOR);
+
     protected final XmppSession xmppSession;
 
     /**

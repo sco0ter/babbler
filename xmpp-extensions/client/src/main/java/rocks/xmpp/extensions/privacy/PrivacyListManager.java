@@ -100,6 +100,7 @@ public final class PrivacyListManager extends AbstractIQHandler implements Exten
      */
     public void addPrivacyListListener(Consumer<PrivacyListEvent> privacyListListener) {
         privacyListListeners.add(privacyListListener);
+        xmppSession.enableFeature(getNamespace());
     }
 
     /**
@@ -110,6 +111,9 @@ public final class PrivacyListManager extends AbstractIQHandler implements Exten
      */
     public void removePrivacyListListener(Consumer<PrivacyListEvent> privacyListListener) {
         privacyListListeners.remove(privacyListListener);
+        if (privacyListListeners.isEmpty()) {
+            xmppSession.disableFeature(getNamespace());
+        }
     }
 
     /**

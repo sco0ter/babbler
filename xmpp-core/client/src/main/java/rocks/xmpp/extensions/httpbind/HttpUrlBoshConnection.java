@@ -63,87 +63,98 @@ final class HttpUrlBoshConnection extends BoshConnection {
     public CompletableFuture<Void> sendBody(Body body) {
 
         return CompletableFuture.supplyAsync(() -> {
-            try {
-                HttpURLConnection httpConnection;
-                httpConnection = getConnection();
-                httpConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
+                    try {
+                        HttpURLConnection httpConnection;
+                        httpConnection = getConnection();
+                        httpConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
 
-                // We can decompress server responses, so tell the server about it.
-                if (clientAcceptEncoding != null) {
-                    httpConnection.setRequestProperty("Accept-Encoding", clientAcceptEncoding);
-                }
-
-                final CompressionMethod compressionMethod;
-
-                compressionMethod = requestCompressionMethod;
-
-                // If we can compress, tell the server about it.
-                if (compressionMethod != null) {
-                    httpConnection.setRequestProperty("Content-Encoding", compressionMethod.getName());
-                }
-
-                httpConnection.setDoOutput(true);
-                httpConnection.setRequestMethod("POST");
-                // If the connection manager does not respond in time, throw a SocketTimeoutException, which
-                // terminates the connection.
-                httpConnection
-                        .setReadTimeout(((int) boshConnectionConfiguration.getWait().getSeconds() + 5) * 1000);
-
-                try (OutputStream requestStream = compressionMethod != null
-                        ? compressionMethod.compress(httpConnection.getOutputStream())
-                        : httpConnection.getOutputStream()) {
-                    // Create the writer for this connection.
-                    // Then write the XML to the output stream by marshalling the object to the writer.
-                    // Marshaller needs to be recreated here, because it's not thread-safe.
-                    try (Writer writer = new OutputStreamWriter(requestStream, StandardCharsets.UTF_8)) {
-                        WriterInterceptorChain writerInterceptorChain = newWriterChain();
-                        writerInterceptorChain.proceed(body, writer);
-                    }
-                }
-                return httpConnection;
-            } catch (Exception e) {
-                throw new CompletionException(e);
-            }
-        }, inOrderRequestExecutor).thenApplyAsync(httpConnection -> {
-            try {
-                // Wait for the response
-                if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-
-                    String contentEncoding = httpConnection.getHeaderField("Content-Encoding");
-                    try (InputStream responseStream = contentEncoding != null
-                            ? compressionMethods.get(contentEncoding)
-                            .decompress(httpConnection.getInputStream())
-                            : httpConnection.getInputStream()) {
-
-                        try (Reader reader = new InputStreamReader(responseStream, UTF_8)) {
-                            handleSuccessfulResponse(reader, body);
-                        } catch (StreamErrorException e) {
-                            logger.log(System.Logger.Level.WARNING, "Server responded with malformed XML.", e);
+                        // We can decompress server responses, so tell the server about it.
+                        if (clientAcceptEncoding != null) {
+                            httpConnection.setRequestProperty("Accept-Encoding", clientAcceptEncoding);
                         }
-                    }
-                } else {
-                    // Shutdown the connection, we don't want to send further requests from now on.
-                    handleErrorHttpResponse(httpConnection.getResponseCode());
-                    try (InputStream errorStream = httpConnection.getErrorStream()) {
-                        while (errorStream.read() > -1) {
-                            // Just read the error stream, so that the connection can be reused.
-                            // http://docs.oracle.com/javase/8/docs/technotes/guides/net/http-keepalive.html
+
+                        final CompressionMethod compressionMethod;
+
+                        compressionMethod = requestCompressionMethod;
+
+                        // If we can compress, tell the server about it.
+                        if (compressionMethod != null) {
+                            httpConnection.setRequestProperty("Content-Encoding", compressionMethod.getName());
                         }
+
+                        httpConnection.setDoOutput(true);
+                        httpConnection.setRequestMethod("POST");
+                        // If the connection manager does not respond in time, throw a SocketTimeoutException, which
+                        // terminates the connection.
+                        httpConnection
+                                .setReadTimeout(((int) boshConnectionConfiguration.getWait().getSeconds() + 5) * 1000);
+
+                        try (OutputStream requestStream = compressionMethod != null
+                                ? compressionMethod.compress(httpConnection.getOutputStream())
+                                : httpConnection.getOutputStream()) {
+                            // Create the writer for this connection.
+                            // Then write the XML to the output stream by marshalling the object to the writer.
+                            // Marshaller needs to be recreated here, because it's not thread-safe.
+                            try (Writer writer = new OutputStreamWriter(requestStream, StandardCharsets.UTF_8)) {
+                                WriterInterceptorChain writerInterceptorChain = newWriterChain();
+                                writerInterceptorChain.proceed(body, writer);
+                            }
+                        }
+                        return httpConnection;
+                    } catch (Exception e) {
+                        throw new CompletionException(e);
                     }
-                }
-            } catch (Exception e) {
-                throw new CompletionException(e);
-            }
-            return httpConnection;
-        }, HTTP_BIND_EXECUTOR).handle((httpConnection, exc) -> {
-            if (httpConnection != null) {
-                httpConnection.disconnect();
-            }
-            if (exc != null) {
-                throw exc instanceof CompletionException ? (CompletionException) exc : new CompletionException(exc);
-            }
-            return null;
-        });
+                }, inOrderRequestExecutor)
+                .thenApplyAsync(httpURLConnection -> {
+                    try {
+                        httpURLConnection.getResponseCode();
+                    } catch (IOException e) {
+                        throw new CompletionException(e);
+                    }
+                    return httpURLConnection;
+                }, HTTP_BIND_EXECUTOR)
+                .thenApplyAsync(httpConnection -> {
+                    try {
+                        // Wait for the response
+                        if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+
+                            String contentEncoding = httpConnection.getHeaderField("Content-Encoding");
+                            try (InputStream responseStream = contentEncoding != null
+                                    ? compressionMethods.get(contentEncoding)
+                                    .decompress(httpConnection.getInputStream())
+                                    : httpConnection.getInputStream()) {
+
+                                try (Reader reader = new InputStreamReader(responseStream, UTF_8)) {
+                                    handleSuccessfulResponse(reader, body);
+                                } catch (StreamErrorException e) {
+                                    logger.log(System.Logger.Level.WARNING, "Server responded with malformed XML.", e);
+                                }
+                            }
+                        } else {
+                            // Shutdown the connection, we don't want to send further requests from now on.
+                            handleErrorHttpResponse(httpConnection.getResponseCode());
+                            try (InputStream errorStream = httpConnection.getErrorStream()) {
+                                while (errorStream.read() > -1) {
+                                    // Just read the error stream, so that the connection can be reused.
+                                    // http://docs.oracle.com/javase/8/docs/technotes/guides/net/http-keepalive.html
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        throw new CompletionException(e);
+                    }
+                    return httpConnection;
+                }, inOrderResponseExecutor).handle((httpConnection, exc) -> {
+                    if (httpConnection != null) {
+                        httpConnection.disconnect();
+                    }
+                    if (exc != null) {
+                        throw exc instanceof CompletionException
+                                ? (CompletionException) exc
+                                : new CompletionException(exc);
+                    }
+                    return null;
+                });
     }
 
     private HttpURLConnection getConnection() throws IOException {

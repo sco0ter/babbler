@@ -1,6 +1,13 @@
 # Changelog
 ---
 
+### Version 0.9.1 (2023-01-08)
+
+* Emit status event immediately on disconnection, before closing the connection
+* Improve BoshConnection by applying an in-order executor for HTTP responses
+* Implement ExtensionProtocol on RosterManager, so that it will be registered as IQHandler and can receive roster pushes
+* Automatically PrivacyListManager enable if a listener is added
+
 ## Version 0.9.0 (2022-09-22)
 
 * Migrate to Java 11 (doesn't run on Java 8 anymore)
